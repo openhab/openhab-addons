@@ -46,6 +46,12 @@ public class EtaPUHandler extends BaseThingHandler {
 
     public EtaPUHandler(Thing thing) {
         super(thing);
+
+        addReadOnlyChannels();
+
+    }
+
+    private void addReadOnlyChannels() {
         addChannel("kesselstatus", "/user/var/112/10021/0/0/12000");
         addChannel("heizkreisstatus", "/user/var/112/10101/0/0/12090");
         addChannel("stoermeldung", "/user/var/112/10241/0/11149/2001");
@@ -67,18 +73,15 @@ public class EtaPUHandler extends BaseThingHandler {
         addChannel("heizgrenzetag", "/user/var/112/10101/0/0/12096");
         addChannel("heizgrenzenacht", "/user/var/112/10101/0/0/12097");
         addChannel("aussentemperatur", "/user/var//112/10241/0/0/12197");
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Read only
-
     }
 
     @Override
     public void initialize() {
-
         sourceConfig = getConfigAs(SourceConfig.class);
         scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -89,32 +92,35 @@ public class EtaPUHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                     }
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            e.getClass().getName() + ":" + e.getMessage());
-                    logger.debug("Error refreshing source " + getThing().getUID(), e);
+
                 }
             }
 
         }, 0, sourceConfig.refreshInterval, TimeUnit.SECONDS);
         if (sourceConfig.ipAddress != null && !sourceConfig.ipAddress.isEmpty()) {
-            updateStatus(ThingStatus.ONLINE);
-            refresh();
+            int channelsupdated = refresh();
+            if (channelsupdated > 0) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Es konnten keine Channels abgefragt werden.");
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Keine IP Adresse konfiguriert.");
         }
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
-
     }
 
-    private synchronized void refresh() {
+    private synchronized int refresh() {
+        int channelsupdated = 0;
         for (ETAChannel channel : channels) {
-            refreshChannel(channel);
+            try {
+                refreshChannel(channel);
+                channelsupdated++;
+            } catch (Exception e) {
+                logger.warn("Error refreshing channel " + channel.getId() + " of thing " + getThing().getUID(), e);
+            }
         }
+        return channelsupdated;
     }
 
     private void refreshChannel(ETAChannel etachannel) {
