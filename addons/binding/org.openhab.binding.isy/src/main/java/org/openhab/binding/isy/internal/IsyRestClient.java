@@ -124,7 +124,9 @@ public class IsyRestClient implements OHIsyClient {
     @Override
     public List<Variable> getVariables() {
         // stateVariablesTarget
-
+        String variables = integerVariablesTarget.request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue)
+                .accept(MediaType.TEXT_XML).get(String.class);
+        logger.debug("variables string is: " + variables);
         List<Variable> integerVariables = integerVariablesTarget.request()
                 .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.TEXT_XML)
                 .get(new GenericType<List<Variable>>() {
