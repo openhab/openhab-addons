@@ -123,10 +123,12 @@ public class Enigma2CommandExecutor {
      */
     public void setMute(Command command) {
         if (command instanceof OnOffType) {
-            if (isMuted() && command == OnOffType.ON) {
+            OnOffType currentState = (OnOffType) getMutedState();
+            OnOffType onOffType = (OnOffType) command;
+            if (currentState == OnOffType.OFF && onOffType == OnOffType.ON) {
                 sendRcCommand(Enigma2RemoteKey.MUTE);
             }
-            if (!isMuted() && command == OnOffType.ON) {
+            if (currentState == OnOffType.ON && onOffType == OnOffType.OFF) {
                 sendRcCommand(Enigma2RemoteKey.MUTE);
             }
         } else {
@@ -452,10 +454,6 @@ public class Enigma2CommandExecutor {
             logger.error("Error during send Command: {}", e);
         }
         return null;
-    }
-
-    private boolean isMuted() {
-        return (getMutedState() == OnOffType.ON);
     }
 
     private String createUserPasswordHostnamePrefix() {
