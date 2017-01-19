@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Sets;
 
 import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
+import name.eskildsen.zoneminder.IZoneMinderDaemonStatus;
 import name.eskildsen.zoneminder.IZoneMinderMonitor;
 import name.eskildsen.zoneminder.IZoneMinderMonitorData;
 import name.eskildsen.zoneminder.ZoneMinderFactory;
@@ -602,26 +603,69 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     @Override
     protected void onFetchData() {
-
         IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(getZoneMinderId());
-        IZoneMinderMonitorData data = monitorProxy.getMonitorData();
+        IZoneMinderMonitorData data = null;
+        IZoneMinderDaemonStatus captureDaemon = null;
+        IZoneMinderDaemonStatus analysisDaemon = null;
+        IZoneMinderDaemonStatus frameDaemon = null;
 
-        if (isConnected()) {
-            channelMonitorStatus = monitorProxy.getMonitorDetailedStatus();
-            channelFunction = data.getFunction();
-            channelEnabled = data.getEnabled();
-            channelEventCause = monitorProxy.getLastEvent().getCause();
-            channelDaemonCapture = monitorProxy.getCaptureDaemonStatus().getStatus();
-            channelDaemonAnalysis = monitorProxy.getAnalysisDaemonStatus().getStatus();
-            channelDaemonFrame = monitorProxy.getFrameDaemonStatus().getStatus();
+        data = monitorProxy.getMonitorData();
+        captureDaemon = monitorProxy.getCaptureDaemonStatus();
+        analysisDaemon = monitorProxy.getAnalysisDaemonStatus();
+        frameDaemon = monitorProxy.getFrameDaemonStatus();
+        if ((data.getHttpResponseCode() != 200) || (captureDaemon.getHttpResponseCode() != 200)
+                || (analysisDaemon.getHttpResponseCode() != 200) || (frameDaemon.getHttpResponseCode() != 200)) {
+
+            if (data.getHttpResponseCode() != 200) {
+                logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
+                        data.getHttpResponseCode(), data.getHttpResponseMessage());
+
+                channelMonitorStatus = ZoneMinderMonitorStatusEnum.UNKNOWN;
+                channelFunction = ZoneMinderMonitorFunctionEnum.NONE;
+                channelEnabled = false;
+                channelEventCause = "";
+            }
+            if (captureDaemon.getHttpResponseCode() != 200) {
+                channelDaemonCapture = false;
+                logger.warn("{}: HTTP Response CaptureDaemon: Code='{}', Message'{}'", getLogIdentifier(),
+                        captureDaemon.getHttpResponseCode(), captureDaemon.getHttpResponseMessage());
+
+                logger.warn("{}: HTTP Response AnalysisDaemon: Code='{}', Message='{}'", getLogIdentifier(),
+                        analysisDaemon.getHttpResponseCode(), analysisDaemon.getHttpResponseMessage());
+
+            }
+            if (analysisDaemon.getHttpResponseCode() != 200) {
+                channelDaemonAnalysis = false;
+
+                logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
+                        analysisDaemon.getHttpResponseCode(), analysisDaemon.getHttpResponseMessage());
+
+            }
+            if (frameDaemon.getHttpResponseCode() != 200) {
+                channelDaemonFrame = false;
+                logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
+                        frameDaemon.getHttpResponseCode(), frameDaemon.getHttpResponseMessage());
+
+            }
+
         } else {
-            channelMonitorStatus = ZoneMinderMonitorStatusEnum.UNKNOWN;
-            channelFunction = ZoneMinderMonitorFunctionEnum.NONE;
-            channelEnabled = false;
-            channelEventCause = "";
-            channelDaemonCapture = false;
-            channelDaemonAnalysis = false;
-            channelDaemonFrame = false;
+            if (isConnected()) {
+                channelMonitorStatus = monitorProxy.getMonitorDetailedStatus();
+                channelFunction = data.getFunction();
+                channelEnabled = data.getEnabled();
+                channelEventCause = monitorProxy.getLastEvent().getCause();
+                channelDaemonCapture = captureDaemon.getStatus();
+                channelDaemonAnalysis = analysisDaemon.getStatus();
+                channelDaemonFrame = frameDaemon.getStatus();
+            } else {
+                channelMonitorStatus = ZoneMinderMonitorStatusEnum.UNKNOWN;
+                channelFunction = ZoneMinderMonitorFunctionEnum.NONE;
+                channelEnabled = false;
+                channelEventCause = "";
+                channelDaemonCapture = false;
+                channelDaemonAnalysis = false;
+                channelDaemonFrame = false;
+            }
         }
 
         RecalculateChannelStates();

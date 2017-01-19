@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.security.auth.login.FailedLoginException;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -246,7 +248,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
             zoneMinderConnection = ZoneMinderFactory.CreateConnection(getBridgeConfig().getProtocol(),
                     getBridgeConfig().getHostName(), getBridgeConfig().getHttpPort(), getBridgeConfig().getTelnetPort(),
                     getBridgeConfig().getServerBasePath(), getBridgeConfig().getUserName(),
-                    getBridgeConfig().getPassword());
+                    getBridgeConfig().getPassword(), 3000);
 
             taskRefreshData = null;
             taskPriorityRefreshData = null;
@@ -391,22 +393,49 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
             /*
              * Fetch data for Bridge
              */
-            ZoneMinderHostLoad hostLoad = zoneMinderServerProxy.getHostCpuLoad();
-            if (hostLoad != null) {
-                channelCpuLoad = hostLoad.getCpuLoad().toString();
-            } else {
-                logger.warn("BRIDGE [{}]: ZoneMinderHostLoad dataset could not be obtained", getThingId());
+            ZoneMinderHostLoad hostLoad = null;
+            try {
+                hostLoad = zoneMinderServerProxy.getHostCpuLoad();
+
+            } catch (FailedLoginException | ZoneMinderUrlNotFoundException | IOException ex) {
+                logger.error("BRIDGE [{}]: Exceptioon thrown in call to ZoneMinderHostLoad ('{}')", getThingId(), ex);
             }
 
-            if (getBridgeConfig().getRefreshIntervalLowPriorityTask() != 0) {
-                ZoneMinderDiskUsage du = zoneMinderServerProxy.getHostDiskUsage();
+            if (hostLoad == null) {
+                logger.warn("BRIDGE [{}]: ZoneMinderHostLoad dataset could not be obtained (received 'null')",
+                        getThingId());
+            } else if (hostLoad.getHttpResponseCode() != 200) {
+                logger.warn(
+                        "BRIDGE [{}]: ZoneMinderHostLoad dataset could not be obtained (HTTP Response: Code='{}', Message='{}')",
+                        getThingId(), hostLoad.getHttpResponseCode(), hostLoad.getHttpResponseMessage());
 
-                if (du != null) {
-                    channelDiskUsage = du.getDiskUsage();
+            } else {
+                channelCpuLoad = hostLoad.getCpuLoad().toString();
+            }
+
+            // if (getBridgeConfig().getRefreshIntervalLowPriorityTask() != 0) {
+            if (fetchDiskUsage) {
+                ZoneMinderDiskUsage diskUsage = null;
+                try {
+                    diskUsage = zoneMinderServerProxy.getHostDiskUsage();
+                } catch (FailedLoginException | ZoneMinderUrlNotFoundException | IOException ex) {
+                    logger.error("BRIDGE [{}]: Exceptioon thrown in call to ZoneMinderDiskUsage ('{}')", getThingId(),
+                            ex);
+                }
+
+                if (diskUsage == null) {
+                    logger.warn("BRIDGE [{}]: ZoneMinderDiskUsage dataset could not be obtained (received 'null')",
+                            getThingId());
+                } else if (hostLoad.getHttpResponseCode() != 200) {
+                    logger.warn(
+                            "BRIDGE [{}]: ZoneMinderDiskUsage dataset could not be obtained (HTTP Response: Code='{}', Message='{}')",
+                            getThingId(), hostLoad.getHttpResponseCode(), hostLoad.getHttpResponseMessage());
+
                 } else {
-                    logger.warn("BRIDGE [{}]: ZoneMinderDiskUsage dataset could not be obtained", getThingId());
+                    channelDiskUsage = diskUsage.getDiskUsage();
                 }
             }
+
         } else {
             _alive = false;
             // Make sure old data is cleared
@@ -853,7 +882,8 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, IZoneMinderConnectionInfo connection) {
         logger.info("BRIDGE [{}]: Brigde went ONLINE", getThingId());
         try {
-            ZoneMinderFactory.Initialize(connection, 5);
+            // TODO:: SHould be five
+            ZoneMinderFactory.Initialize(connection, 8);
         } catch (IllegalArgumentException | GeneralSecurityException | IOException | ZoneMinderUrlNotFoundException e) {
             // Well, we just checked for all these problems, so they shouldn't really appear here....
             logger.error("BRIDGE [{}]: Exception occurred when initializing ZoneMidner API '{}'", getThingId(),
@@ -947,17 +977,26 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         // Update property information about this device
         Map<String, String> properties = editProperties();
         IZoneMinderServer serverProxy = ZoneMinderFactory.getServerProxy();
-        ZoneMinderHostVersion hostVersion = serverProxy.getHostVersion();
-        ZoneMinderConfig configUseApi = serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_USE_API);
-        ZoneMinderConfig configUseAuth = serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_USE_AUTH);
-        ZoneMinderConfig configTrigerrs = serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_TRIGGERS);
 
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_VERSION, hostVersion.getVersion());
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_API_VERSION, hostVersion.getApiVersion());
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_USE_API, configUseApi.getValueAsString());
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_USE_AUTHENTIFICATION,
-                configUseAuth.getValueAsString());
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_TRIGGERS_ENABELD, configTrigerrs.getValueAsString());
+        ZoneMinderHostVersion hostVersion = null;
+        try {
+            hostVersion = serverProxy.getHostVersion();
+
+            ZoneMinderConfig configUseApi = serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_USE_API);
+            ZoneMinderConfig configUseAuth = serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_USE_AUTH);
+            ZoneMinderConfig configTrigerrs = serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_TRIGGERS);
+
+            properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_VERSION, hostVersion.getVersion());
+            properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_API_VERSION, hostVersion.getApiVersion());
+            properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_USE_API, configUseApi.getValueAsString());
+            properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_USE_AUTHENTIFICATION,
+                    configUseAuth.getValueAsString());
+            properties.put(ZoneMinderMonitorProperties.PROPERTY_SERVER_TRIGGERS_ENABELD,
+                    configTrigerrs.getValueAsString());
+        } catch (FailedLoginException | ZoneMinderUrlNotFoundException | IOException e) {
+            // Don't care here
+        }
+
         // Must loop over the new properties since we might have added data
         boolean update = false;
         Map<String, String> originalProperties = editProperties();
