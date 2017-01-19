@@ -38,6 +38,8 @@ import org.w3c.dom.NodeList;
  * @author Thomas Traunbauer - Initial contribution
  */
 public class Enigma2CommandHandler {
+    // Source found on
+    // https://dream.reichholf.net/wiki/Enigma2:WebInterface#RemoteControl
 
     private Logger logger = LoggerFactory.getLogger(Enigma2CommandHandler.class);
 
@@ -416,14 +418,29 @@ public class Enigma2CommandHandler {
     private void sendRcCommand(Enigma2RemoteKey commandValue) {
         if (commandValue == null) {
             logger.error("Error in item configuration. No remote control code provided (third part of item config)");
+        } else {
+            sendRcCommand(commandValue.getValue());
         }
+    }
+
+    private void sendRcCommand(int key) {
         try {
-            if (commandValue != null) {
-                HttpUtil.executeUrl("GET",
-                        createUserPasswordHostnamePrefix() + SUFFIX_REMOTE_CONTROL + commandValue.toString(), timeout);
-            }
+            HttpUtil.executeUrl("GET", createUserPasswordHostnamePrefix() + SUFFIX_REMOTE_CONTROL + key, timeout);
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
+        }
+    }
+
+    public void sendRemoteKey(Command command) {
+        if (command instanceof StringType) {
+            try {
+                int key = Integer.parseInt(command.toString());
+                sendRcCommand(key);
+            } catch (Exception e) {
+                logger.error("Error during send Command: {}", e);
+            }
+        } else {
+            logger.error("Unsupported command type: {}", command.getClass().getName());
         }
     }
 

@@ -41,6 +41,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
     private ChannelUID channelMuteUID;
     private ChannelUID channelPlayerControlUID;
     private ChannelUID channelChannelUID;
+    private ChannelUID channelRemoteKeyUID;
 
     private ChannelUID channelNowPlaylingTitleUID;
     private ChannelUID channelNowPlaylingDescriptionUID;
@@ -63,6 +64,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
         channelMuteUID = getChannelUID(Enigma2BindingConstants.CHANNEL_MUTE);
         channelPlayerControlUID = getChannelUID(Enigma2BindingConstants.CHANNEL_PLAYER_CONTROL);
         channelChannelUID = getChannelUID(Enigma2BindingConstants.CHANNEL_CHANNEL);
+        channelRemoteKeyUID = getChannelUID(Enigma2BindingConstants.CHANNEL_REMOTE_KEY);
 
         channelNowPlaylingTitleUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_TITLE);
         channelNowPlaylingDescriptionUID = getChannelUID(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION);
@@ -92,6 +94,8 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandHa
                 commandHandler.setMute(command);
             } else if (channelUID.equals(channelPlayerControlUID)) {
                 commandHandler.setPlayControl(command);
+            } else if (channelUID.equals(channelRemoteKeyUID)) {
+                commandHandler.sendRemoteKey(command);
             }
         }
     }

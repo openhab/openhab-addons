@@ -14,6 +14,7 @@
             <channel id="mute" typeId="mute" />
             <channel id="playerControl" typeId="playerControl" />
             <channel id="channel" typeId="channel" />
+            <channel id="remoteKey" typeId="remoteKey" />
             
             <channel id="nowPlayingTitle" typeId="nowPlayingTitle" />
             <channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
@@ -64,7 +65,12 @@
     <channel-type id="channel">
         <item-type>String</item-type>
         <label>Channel</label>
-        <description>set the current channel number</description>
+        <description>Switch to selected Channel</description>
+    </channel-type>
+    <channel-type id="remoteKey">
+        <item-type>String</item-type>
+        <label>Remote Key</label>
+        <description>Sends a Remote Key</description>
     </channel-type>
     
     <channel-type id="nowPlayingTitle">

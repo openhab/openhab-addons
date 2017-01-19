@@ -13,6 +13,13 @@ package org.openhab.binding.enigma2.internal;
  * @author Thomas Traunbauer - Initial contribution
  */
 public enum Enigma2RemoteKey {
+    // Source found on
+    // https://dream.reichholf.net/wiki/Webinterface_Befehle#Tasten_der_Fernsteuerung:_.2Fcgi-bin.2Frc.3F.3Ckey.3E:.3Cduration.3E:.3Creptime.3E.2C.3Ckey....3E
+    // but tests showed, that
+    // MENU is 139 instead of 141
+    // TV is 377 instead of 385
+    // RADIO is 385 instead of 377
+
     POWER1(116),
 
     KEY1(2),
@@ -38,7 +45,7 @@ public enum Enigma2RemoteKey {
     CHANNEL_DOWN(403),
 
     INF0(358),
-    MENU(141),
+    MENU(139),
     LEFT(105),
     RIGHT(106),
     UP(103),
@@ -59,13 +66,10 @@ public enum Enigma2RemoteKey {
     FAST_FORWARD(208),
     FAST_BACKWARD(168),
 
-    TV(385),
-    RADIO(377),
+    TV(377),
+    RADIO(385),
     TEXT(66),
-    HELP(138),
-
-    NUMBER(128),
-    EQUALS(385);
+    HELP(138);
 
     private int value;
 
@@ -73,14 +77,7 @@ public enum Enigma2RemoteKey {
         this.value = value;
     }
 
-    public int getValue() {
+    public Integer getValue() {
         return value;
-    }
-
-    @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(value);
-        return buffer.toString();
     }
 }
