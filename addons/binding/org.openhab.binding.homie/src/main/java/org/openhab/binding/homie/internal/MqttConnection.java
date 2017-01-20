@@ -8,7 +8,6 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -68,47 +67,22 @@ public class MqttConnection {
         }
     }
 
-    public void listenForNodeProperties(Bridge device, Thing node, IMqttMessageListener messageListener)
-            throws MqttException {
-        String topic = String.format("%s/%s/%s/", basetopic, device.getUID().getId(), node.getUID().getId());
-
-        client.subscribe(topic + HomieConventions.HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX, SUBSCRIBE_QOS,
-                messageListener);
-        client.subscribe(topic + HomieConventions.HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX, SUBSCRIBE_QOS,
-                messageListener);
-
-    }
-
     public void subscribe(Thing thing, IMqttMessageListener messageListener) throws MqttException {
         String topic = String.format("%s/%s/#", basetopic, thing.getUID().getId());
-        client.subscribe(topic, SUBSCRIBE_QOS, messageListener);
+        resubscribe(topic, messageListener);
 
     }
 
     public void listenForDeviceIds(IMqttMessageListener messageListener) {
         logger.debug("Listening for devices on topic " + listenDeviceTopic);
         try {
-            client.unsubscribe(listenDeviceTopic);
-            client.subscribe(listenDeviceTopic, SUBSCRIBE_QOS, messageListener);
+            resubscribe(listenDeviceTopic, messageListener);
         } catch (MqttException e) {
             logger.error("Failed to subscribe to topic " + listenDeviceTopic, e);
         }
     }
 
-    public void listenForNodeIds(Bridge bridge, IMqttMessageListener messageListener) throws MqttException {
-        subscribe(bridge, messageListener);
-    }
-
     public void unsubscribeListenForDeviceIds() {
-        try {
-            client.unsubscribe(listenDeviceTopic);
-        } catch (MqttException e) {
-            logger.error("Failed to unsubscribe from topic " + listenDeviceTopic, e);
-        }
-
-    }
-
-    public void unsubscribeListenForNodeIds() {
         try {
             client.unsubscribe(listenDeviceTopic);
         } catch (MqttException e) {
@@ -130,8 +104,7 @@ public class MqttConnection {
         logger.debug(
                 "(Re-)Subscribing to topic '" + topic + "' to listen for events of channel '" + channel.getUID() + "'");
         try {
-            client.unsubscribe(topic);
-            client.subscribe(topic, SUBSCRIBE_QOS, handler);
+            resubscribe(topic, handler);
             logger.debug("Subscribed to topic " + topic);
         } catch (MqttException e) {
             logger.error("Error (re)subscribing to channel. topic is " + topic, e);
