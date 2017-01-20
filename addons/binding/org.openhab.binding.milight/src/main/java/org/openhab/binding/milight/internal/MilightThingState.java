@@ -100,11 +100,11 @@ public class MilightThingState {
     }
 
     public void warmer() {
-        brightness = com.warmer(bulb, brightness);
+        colorTemperature = com.warmer(bulb, colorTemperature);
     }
 
     public void cooler() {
-        brightness = com.cooler(bulb, brightness);
+        colorTemperature = com.cooler(bulb, colorTemperature);
     }
 
     public void nextDiscoMode() {

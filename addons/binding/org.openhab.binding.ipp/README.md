@@ -28,4 +28,5 @@ All devices support some of the following channels:
 | jobs | Number       | Total number of print jobs on the printer |
 | waitingJobs | Number       | Number of waiting print jobs on the printer |
 | doneJobs | Number       | Number of completed print jobs on the printer |
+
 ## Full Example
