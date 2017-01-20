@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
  */
 public class EiscpProtocol {
 
+    private static final Logger logger = LoggerFactory.getLogger(EiscpProtocol.class);
+
     /**
      * Wraps a command in a eISCP data message (data characters).
      *
@@ -24,6 +26,7 @@ public class EiscpProtocol {
      * @return String holding the full eISCP message packet
      **/
     static public String createEiscpPdu(EiscpMessage msg) {
+
         String data = msg.getCommand() + msg.getValue();
         StringBuilder sb = new StringBuilder();
         int eiscpDataSize = 2 + data.length() + 1; // this is the eISCP data size
@@ -47,7 +50,7 @@ public class EiscpProtocol {
         sb.append((char) ((eiscpDataSize >> 8) & 0xFF));
         sb.append((char) (eiscpDataSize & 0xFF));
 
-        // eiscp_version = "01";
+        // eISCP version = "01";
         sb.append((char) 0x01);
 
         // 3 chars reserved = "00"+"00"+"00";
@@ -69,6 +72,12 @@ public class EiscpProtocol {
         // msg end - EOF
         sb.append((char) 0x0D);
 
+        if (logger.isTraceEnabled()) {
+            String d = sb.toString();
+            logger.trace("Created eISCP message: {} -> {}", DatatypeConverter.printHexBinary(d.getBytes()),
+                    toPrintable(d));
+        }
+
         return sb.toString();
     }
 
@@ -84,13 +93,14 @@ public class EiscpProtocol {
     static public EiscpMessage getNextMessage(DataInputStream stream)
             throws IOException, InterruptedException, EiscpException {
 
-        Logger logger = LoggerFactory.getLogger(EiscpProtocol.class);
-
         while (true) {
 
             // 1st 4 chars are the lead in
 
-            if (stream.readByte() != 'I') {
+            byte firstByte = stream.readByte();
+            if (firstByte != 'I') {
+                logger.trace("Expected character 'I', received '{}'",
+                        toPrintable(new String(new byte[] { firstByte })));
                 continue;
             }
             if (stream.readByte() != 'S') {
@@ -113,7 +123,7 @@ public class EiscpProtocol {
                 throw new EiscpException("Unsupported header size: " + headerSize);
             }
 
-            // header size
+            // data size
             final int dataSize = (stream.readByte() & 0xFF) << 24 | (stream.readByte() & 0xFF) << 16
                     | (stream.readByte() & 0xFF) << 8 | (stream.readByte() & 0xFF);
 
@@ -126,9 +136,9 @@ public class EiscpProtocol {
             }
 
             // skip 3 reserved bytes
-            stream.readByte();
-            stream.readByte();
-            stream.readByte();
+            byte b1 = stream.readByte();
+            byte b2 = stream.readByte();
+            byte b3 = stream.readByte();
 
             byte[] data = new byte[dataSize];
             int bytesReceived = 0;
@@ -138,13 +148,32 @@ public class EiscpProtocol {
                     bytesReceived = bytesReceived + stream.read(data, bytesReceived, data.length - bytesReceived);
 
                     if (logger.isTraceEnabled()) {
-                        logger.trace("Received {} bytes: {}", bytesReceived, DatatypeConverter.printHexBinary(data));
+                        // create header for debugging purposes
+                        final StringBuilder sb = new StringBuilder();
+                        sb.append("ISCP");
+                        sb.append((char) 0x00);
+                        sb.append((char) 0x00);
+                        sb.append((char) 0x00);
+                        sb.append((char) 0x10);
+                        // 4 char Big Endian data size
+                        sb.append((char) ((dataSize >> 24) & 0xFF));
+                        sb.append((char) ((dataSize >> 16) & 0xFF));
+                        sb.append((char) ((dataSize >> 8) & 0xFF));
+                        sb.append((char) (dataSize & 0xFF));
+                        // eiscp version;
+                        sb.append((char) versionChar);
+                        // reserved bytes
+                        sb.append((char) b1).append((char) b2).append((char) b3);
+                        // data
+                        sb.append(new String(data, "UTF-8"));
+                        logger.trace("Received message, {} -> {}",
+                                DatatypeConverter.printHexBinary(sb.toString().getBytes()), toPrintable(sb.toString()));
                     }
 
                 }
             } catch (Throwable t) {
                 if (bytesReceived != dataSize) {
-                    logger.debug("Received: '{}'", new String(data, "UTF-8"));
+                    logger.debug("Received bad data: '{}'", toPrintable(new String(data, "UTF-8")));
                     throw new EiscpException(
                             "Data missing, expected + " + dataSize + " received " + bytesReceived + " bytes");
                 } else {
@@ -163,8 +192,7 @@ public class EiscpProtocol {
             @SuppressWarnings("unused")
             final byte unitType = data[1];
 
-            // data should be end to "[EOF]" or "[EOF][CR]" or
-            // "[EOF][CR][LF]" characters depend on model
+            // data should be end to "[EOF]" or "[EOF][CR]" or "[EOF][CR][LF]" characters depend on model
             // [EOF] End of File ASCII Code 0x1A
             // [CR] Carriage Return ASCII Code 0x0D (\r)
             // [LF] Line Feed ASCII Code 0x0A (\n)
@@ -204,5 +232,35 @@ public class EiscpProtocol {
                 throw new EiscpException("Fatal error occured when parsing eISCP message, cause=" + e.getCause());
             }
         }
+    }
+
+    public static String toPrintable(final String rawData) {
+        final StringBuilder sb = new StringBuilder();
+
+        if (rawData == null) {
+            return "";
+        }
+
+        for (final char c : rawData.toCharArray()) {
+            if ((c <= 31) || (c == 127) || (c == '\\') || (c == '%')) {
+                switch (c) {
+                    case '\r':
+                        sb.append("[CR]");
+                        break;
+                    case '\n':
+                        sb.append("[LF]");
+                        break;
+                    case (byte) 0x1A:
+                        sb.append("[EOF]");
+                        break;
+                    default:
+                        sb.append(String.format("[%02X]", (int) c));
+                }
+            } else {
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
     }
 }
