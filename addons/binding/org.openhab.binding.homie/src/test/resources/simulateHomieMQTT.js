@@ -53,7 +53,7 @@ function publish() {
 	//var Thread = Java.type("java.lang.Thread");
 	for(i=0;i<2;i++){
 		var device=new ESHHomieDevice("abc123-"+i,"ESH D1 Mini "+i,"MyFirmware");
-		//device.announce();
+		device.announce();
 		if(i==1){
 			device.sendprops();
 		}

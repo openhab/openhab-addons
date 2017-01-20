@@ -3,25 +3,28 @@ package org.openhab.binding.homie.internal;
 import static org.openhab.binding.homie.HomieBindingConstants.*;
 
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.homie.handler.HomieDeviceHandler;
 import org.openhab.binding.homie.internal.conventionv200.HomieConventions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MqttConnection {
+    private static final int PUBLISH_QOS = 2;
     private static final int SUBSCRIBE_QOS = 2;
     private static Logger logger = LoggerFactory.getLogger(MqttConnection.class);
 
     private final String brokerURL;
     private final String basetopic;
-    private MqttAsyncClient client;
+    private MqttClient client;
     private final String listenDeviceTopic;
 
     private final String qualifier;
@@ -56,7 +59,8 @@ public class MqttConnection {
             logger.debug("Homie MQTT Connection start");
             MqttConnectOptions opts = new MqttConnectOptions();
             opts.setAutomaticReconnect(true);
-            client = new MqttAsyncClient(brokerURL, MQTT_CLIENTID + "-" + qualifier, new MemoryPersistence());
+            opts.setCleanSession(true);
+            client = new MqttClient(brokerURL, MQTT_CLIENTID + "-" + qualifier, new MemoryPersistence());
             client.connect(opts);
             logger.debug("Homie MQTT Connection connected");
         } catch (MqttException e) {
@@ -78,6 +82,7 @@ public class MqttConnection {
     public void subscribe(Thing thing, IMqttMessageListener messageListener) throws MqttException {
         String topic = String.format("%s/%s/#", basetopic, thing.getUID().getId());
         client.subscribe(topic, SUBSCRIBE_QOS, messageListener);
+
     }
 
     public void listenForDeviceIds(IMqttMessageListener messageListener) {
@@ -141,6 +146,13 @@ public class MqttConnection {
         client.subscribe(topic + HomieConventions.HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX, SUBSCRIBE_QOS,
                 listener);
         client.subscribe(topic + "#", SUBSCRIBE_QOS, listener);
+    }
+
+    public void send(String deviceId, String nodeId, String property, Command command)
+            throws MqttPersistenceException, MqttException {
+        String topic = String.format("%s/%s/%s/%s/set", basetopic, deviceId, nodeId, property);
+        client.publish(topic, command.toString().getBytes(), PUBLISH_QOS, true);
+
     }
 
 }

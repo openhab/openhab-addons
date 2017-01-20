@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
@@ -102,8 +103,7 @@ public class HomieChannelTypeProviderImpl implements HomieChannelTypeProvider {
     @Override
     public ChannelTypeUID createChannelTypeBySettings(String unit, BigDecimal min, BigDecimal max, BigDecimal step,
             String itemType, boolean isReadonly, String category) {
-        String settingsIdentifier = String.format("gen-unit_%s__min_%d__max_%d__step_%d__itype_%s__ro_%s", unit, min,
-                max, step, itemType, Boolean.toString(isReadonly));
+        String settingsIdentifier = String.format("gen-", UUID.randomUUID());
 
         ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, settingsIdentifier);
         String description = "";

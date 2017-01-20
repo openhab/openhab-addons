@@ -26,6 +26,6 @@ public class HomieConventions {
     public static final String ESH_MIN_TOPIC = "min";
     public static final String ESH_MAX_TOPIC = "max";
     public static final String ESH_STEP_TOPIC = "step";
-    public static final String ESH_ITEMTYPE = "itemtype";
-    public static final String ESH_VALUE = "value";
+    public static final String ESH_ITEMTYPE_TOPIC = "itemtype";
+    public static final String ESH_UNIT_TOPIC = "unit";
 }
