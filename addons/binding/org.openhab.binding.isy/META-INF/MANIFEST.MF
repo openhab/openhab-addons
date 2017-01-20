@@ -10,10 +10,8 @@ Bundle-ClassPath: .,
  lib/websocket-common-9.2.14.v20151106.jar,
  lib/websocket-client-9.2.14.v20151106.jar
 Import-Package: 
- javax.ws.rs,
  javax.ws.rs.client,
  javax.ws.rs.core,
- javax.ws.rs.ext,
  org.apache.commons.codec,
  org.apache.commons.codec.binary,
  org.eclipse.jetty.io,
@@ -39,4 +37,5 @@ Export-Package: org.openhab.binding.isy;uses:="org.eclipse.smarthome.core.thing"
    org.eclipse.smarthome.core.types"
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.jetty.util,
- com.google.guava
+ com.google.guava,
+ com.eclipsesource.jaxrs.jersey-min
