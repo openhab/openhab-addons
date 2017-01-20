@@ -16,7 +16,8 @@ No binding configuration required.
 
 ## Thing Configuration
 
-The things requires the geolocation (latitude, longitude) for which the calculation is done. Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
+A thing requires the geolocation (latitude, longitude) for which the calculation is done.
+Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
 
 ## Channels
 
@@ -49,37 +50,7 @@ The things requires the geolocation (latitude, longitude) for which the calculat
     * **group** `position`
         * **channel** `azimuth, elevation` (Number)
 
-## Full Example
-
-Things:
-
-```
-astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60]
-astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60]
-```
-
-Items:
-
-```
-DateTime Sunrise_Time  "Sunrise [%1$tH:%1$tM]"  { channel="astro:sun:home:rise#start" }
-DateTime Sunset_Time   "Sunset [%1$tH:%1$tM]"   { channel="astro:sun:home:set#start" }
-Number   Azimuth       "Azimuth"                { channel="astro:sun:home:position#azimuth" }
-Number   Elevation     "Elevation"              { channel="astro:sun:home:position#elevation" }
-String   MoonPhase     "MoonPhase"              { channel="astro:moon:home:phase#name" }
-```
-
-Events:
-
-```
-rule "example trigger rule"
-when
-    Channel 'astro:sun:home:rise#event' triggered START 
-then
-    ...
-end
-```
-
-Available events:
+### Trigger Channels
 * **thing** `sun`
     * **group** `rise, set, noon, night, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
         * **event** `START, END`
@@ -99,5 +70,48 @@ Available events:
     * **group** `apogee`
         * **event**: `APOGEE`
 
-**Note**: Offsets for each event group can be configured in the channel properties
+**Offsets:** For each event group you can optionally configure an offset in minutes.
+The offset must be configured in the channel properties for the corresponding thing.
+The minimum allowed offset is -1440 and the maximum allowed offset is 1440.
 
+## Full Example
+
+Things:
+
+```
+astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
+astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
+```
+
+or optionally with an offset
+
+```
+astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ] {
+    Channels:
+        Type rangeEvent : rise#event [
+            offset=-30
+        ]
+}
+astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
+```
+
+Items:
+
+```
+DateTime Sunrise_Time  "Sunrise [%1$tH:%1$tM]"  { channel="astro:sun:home:rise#start" }
+DateTime Sunset_Time   "Sunset [%1$tH:%1$tM]"   { channel="astro:sun:home:set#start" }
+Number   Azimuth       "Azimuth [%.1f °]"       { channel="astro:sun:home:position#azimuth" }
+Number   Elevation     "Elevation [%.1f °]"     { channel="astro:sun:home:position#elevation" }
+String   MoonPhase     "Moon Phase [%s]"        { channel="astro:moon:home:phase#name" }
+```
+
+Events:
+
+```
+rule "example trigger rule"
+when
+    Channel 'astro:sun:home:rise#event' triggered START 
+then
+    ...
+end
+```

@@ -50,7 +50,7 @@
     </config-description>
 
     <config-description uri="thing-type:netatmo:device">
-        <parameter name="equipmentId" type="text" pattern="[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}">
+        <parameter name="equipmentId" type="text" pattern="\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}">
             <label>Equipment ID</label>
             <description>Id of the Device (mac address)</description>
             <required>true</required>
@@ -65,13 +65,13 @@
     </config-description>                 
     
     <config-description uri="thing-type:netatmo:module">
-        <parameter name="equipmentId" type="text" pattern="[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}">
+        <parameter name="equipmentId" type="text" pattern="\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}">
             <label>Module ID</label>
             <description>Id of the Module</description>
             <required>true</required>
         </parameter>
         
-        <parameter name="parentId" type="text" pattern="[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}}">
+        <parameter name="parentId" type="text" pattern="\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}">
             <label>Device ID</label>
             <description>Id of the main device</description>
             <required>true</required>
@@ -79,13 +79,13 @@
     </config-description>     
     
     <config-description uri="thing-type:netatmo:natherm1">
-        <parameter name="equipmentId" type="text" pattern="[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}">
+        <parameter name="equipmentId" type="text" pattern="\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}">
             <label>Module ID</label>
             <description>Id of the Module</description>
             <required>true</required>
         </parameter>
         
-        <parameter name="parentId" type="text" pattern="[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}">
+        <parameter name="parentId" type="text" pattern="\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}:\p{XDigit}{2}">
             <label>Device ID</label>
             <description>Id of the main device</description>
             <required>true</required>
