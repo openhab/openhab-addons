@@ -16,6 +16,7 @@ public class HomieConventions {
      * Topic suffix which contents will be used to name a discovered device
      */
     public final static String NAME_TOPIC_SUFFIX = "$name";
+    public final static String INTERNAL_PROPERTY_MARKER = "$";
 
     public static final String HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX = "$type";
     public static final String HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX = "$properties";

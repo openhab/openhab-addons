@@ -139,13 +139,17 @@ public class MqttConnection {
 
     }
 
+    private void resubscribe(String topic, IMqttMessageListener listener) throws MqttException {
+        client.unsubscribe(topic);
+        client.subscribe(topic, SUBSCRIBE_QOS, listener);
+    }
+
     public void listenForNode(String deviceId, String nodeId, IMqttMessageListener listener) throws MqttException {
         String topic = String.format("%s/%s/%s/", basetopic, deviceId, nodeId);
         // Subscribe to type and proplist separately, as the notifications have to arrive first at the listener
-        client.subscribe(topic + HomieConventions.HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX, SUBSCRIBE_QOS, listener);
-        client.subscribe(topic + HomieConventions.HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX, SUBSCRIBE_QOS,
-                listener);
-        client.subscribe(topic + "#", SUBSCRIBE_QOS, listener);
+        resubscribe(topic + HomieConventions.HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX, listener);
+        resubscribe(topic + HomieConventions.HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX, listener);
+        resubscribe(topic + "#", listener);
     }
 
     public void send(String deviceId, String nodeId, String property, Command command)

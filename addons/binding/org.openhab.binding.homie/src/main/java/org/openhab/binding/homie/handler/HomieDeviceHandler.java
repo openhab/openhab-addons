@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -38,6 +37,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.homie.HomieChannelTypeProvider;
 import org.openhab.binding.homie.internal.HomieConfiguration;
@@ -64,7 +64,6 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         private final MqttConnection connection;
         private final String channelCategory;
         private final TopicParser topicParser;
-        private final AtomicBoolean isInitialized = new AtomicBoolean(false);
         private NodePropertiesList properties;
 
         public NodeHandler(String nodeId, HomieConfiguration configString, String channelCategory) {
@@ -82,9 +81,7 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         }
 
         public synchronized void init() throws MqttException {
-            if (isInitialized.compareAndSet(false, true)) {
-                connection.listenForNode(getThing().getUID().getId(), nodeId, this);
-            }
+            connection.listenForNode(getThing().getUID().getId(), nodeId, this);
         }
 
         protected void sendCommand(String property, Command command) {
@@ -95,7 +92,19 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
             }
         }
 
-        protected abstract void handleCommand(Command command);
+        protected final void handleCommand(Command command) {
+            if (command == RefreshType.REFRESH) {
+                try {
+                    connection.listenForNode(getThing().getUID().getId(), nodeId, this);
+                } catch (MqttException e) {
+                    logger.error("Error handling command", e);
+                }
+            } else {
+                onHandleCommand(command);
+            }
+        }
+
+        protected abstract void onHandleCommand(Command command);
 
         public String getNodeId() {
             return nodeId;
@@ -173,11 +182,16 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         }
 
         @Override
-        public void handleCommand(Command command) {
-            if (isReadonly) {
-                logger.warn("Node '{}' received command '{}' but is readonly", getNodeId(), command);
+        public void onHandleCommand(Command command) {
+            if (command == RefreshType.REFRESH) {
+
             } else {
-                sendCommand(ESH_VALUE_TOPIC, command);
+                if (isReadonly) {
+                    logger.warn("Node '{}' received command '{}' but is readonly", getNodeId(), command);
+                } else {
+                    sendCommand(ESH_VALUE_TOPIC, command);
+                    handleCommand(RefreshType.REFRESH);
+                }
             }
         }
 
@@ -253,7 +267,7 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         }
 
         @Override
-        protected void handleCommand(Command command) {
+        protected void onHandleCommand(Command command) {
             logger.warn("Handling non ESH Homie Nodes is not implemented yet");
 
         }

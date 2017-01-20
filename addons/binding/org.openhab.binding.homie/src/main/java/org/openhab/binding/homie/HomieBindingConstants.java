@@ -24,7 +24,6 @@ public class HomieBindingConstants {
     public final static ThingTypeUID HOMIE_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "homieDeviceV2");
 
     public final static int DEVICE_DISCOVERY_TIMEOUT_SECONDS = 30;
-    public final static int NODE_DISCOVERY_TIMEOUT_SECONDS = 60;
 
     public final static String MQTT_CLIENTID = "homieOpenhab2Binding";
 
