@@ -76,6 +76,7 @@ public class OnkyoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                     : device.getDetails().getFriendlyName();
             Map<String, Object> properties = new HashMap<>(2, 1);
             properties.put(HOST_PARAMETER, device.getIdentity().getDescriptorURL().getHost());
+            properties.put(UDN_PARAMETER, device.getIdentity().getUdn().getIdentifierString());
 
             result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties).build();
         }

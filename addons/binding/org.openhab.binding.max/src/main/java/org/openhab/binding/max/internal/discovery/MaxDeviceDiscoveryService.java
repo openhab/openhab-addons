@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
 
     private final static int SEARCH_TIME = 60;
-    private final static Logger logger = LoggerFactory.getLogger(MaxDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxDeviceDiscoveryService.class);
 
     private MaxCubeBridgeHandler maxCubeBridgeHandler;
 

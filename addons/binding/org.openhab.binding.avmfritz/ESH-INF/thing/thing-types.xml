@@ -5,6 +5,29 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <!-- Supported Fritz! devices and features -->
+    <thing-type id="FRITZ_DECT_210">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="fritzbox" />
+        </supported-bridge-type-refs>
+
+        <label>FRITZ!DECT 210</label>
+        <description>FRITZ!DECT210 switchable outlet</description>
+
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+            <channel id="energy" typeId="energy" />
+            <channel id="power" typeId="power" />
+            <channel id="outlet" typeId="outlet" />
+        </channels>
+
+        <config-description>
+            <parameter name="ain" type="text" required="true">
+                <label>AIN</label>
+                <description>The AHA id (AIN) that identifies one specific device.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
     <thing-type id="FRITZ_DECT_200">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
@@ -108,8 +131,22 @@
 			</parameter>
 		</config-description>
     </thing-type>
+    <thing-type id="FRITZ_DECT_Repeater_100">
+    	<supported-bridge-type-refs>
+    		<bridge-type-ref id="fritzbox" />
+    	</supported-bridge-type-refs>
+    	<label>FRITZ!DECT Repeater 100</label>
+    	<description>FRITZ!DECT Repeater 100 DECT repeater</description>
+    	<channels>
+    		<channel typeId="temperature" id="temperature"></channel>
+    	</channels>
+    	<config-description>
+    		<parameter name="ain" type="text" required="true">
+    			<label>AIN</label>
+    			<description>The AHA id (AIN) that identifies one specific device.</description></parameter></config-description>
+    </thing-type>
 
-	<!-- Channel definitions of fritz devices -->
+    <!-- Channel definitions of fritz devices -->
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
 		<label>Actual Temperature</label>

@@ -37,7 +37,7 @@ import com.google.common.base.Strings;
  */
 public final class C_Message extends Message {
 
-    private static final Logger logger = LoggerFactory.getLogger(C_Message.class);
+    private final Logger logger = LoggerFactory.getLogger(C_Message.class);
 
     private String rfAddress = null;
     private int length = 0;

@@ -109,6 +109,9 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
                 mode = ThermostatMode.AUTO;
             } else if (stringValue.equals(settings.getThermostatOffMode())) {
                 mode = ThermostatMode.OFF;
+            } else if (  stringValue.equals("UNDEF") || stringValue.equals("NULL") ) {
+                logger.debug("Heating cooling target mode not available. Relaying value of OFF to Homekit");
+                mode = ThermostatMode.OFF;
             } else {
                 logger.error("Unrecognized heating cooling target mode: " + stringValue
                         + ". Expected cool, heat, auto, or off strings in value.");
