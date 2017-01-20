@@ -301,7 +301,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Emits an event for the given channel.
      */
     public void triggerEvent(String channelId, String event) {
-        triggerChannel(getThing().getChannel(channelId).getUID(), event);
+        if (getThing().getChannel(channelId) != null) {
+            triggerChannel(getThing().getChannel(channelId).getUID(), event);
+        }
     }
 
     /**
