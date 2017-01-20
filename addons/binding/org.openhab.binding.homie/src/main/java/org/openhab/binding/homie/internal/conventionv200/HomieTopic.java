@@ -129,6 +129,10 @@ public class HomieTopic {
         return result;
     }
 
+    public boolean isESHDescription() {
+        return isNodeProperty() && !isInternalProperty() && StringUtils.equals(getPropertyName(), ESH_DESC_TOPIC);
+    }
+
     public boolean isESHMin() {
         return isNodeProperty() && !isInternalProperty() && StringUtils.equals(getPropertyName(), ESH_MIN_TOPIC);
     }

@@ -136,10 +136,11 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         private BigDecimal step;
         private String itemType = "String";
         private boolean isReadonly;
+        private String description = "";
 
         public ESHNodeHandler(String nodeId, HomieConfiguration config, String category) throws MqttException {
             super(nodeId, config, category);
-
+            description = "Homie Node '" + getNodeId() + "'";
         }
 
         @Override
@@ -156,7 +157,7 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
 
             // @formatter:off
                 Channel newChannel = ChannelBuilder.create(getChannelUID(), itemType)
-                        .withDescription("Homie Node '"+getNodeId()+"'")
+                        .withDescription(description)
                         .withKind(ChannelKind.STATE)
                         .withLabel(getNodeId())
                         .withType(channelTypeUID).build();
@@ -196,6 +197,9 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
                 updateChannelType();
             } else if (topic.isESHItemType()) {
                 this.itemType = message;
+                updateChannelType();
+            } else if (topic.isESHDescription()) {
+                this.description = message;
                 updateChannelType();
             } else if (topic.isESHValue()) {
                 State state = transformToState(message);

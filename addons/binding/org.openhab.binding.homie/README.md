@@ -27,6 +27,7 @@ If you want openHAB to render your nodes properly, you have to provide the follo
 | `min` | No | Any Number | Minimum value that `value` can contain | `25.0` |
 | `max` | No | Any Number | Maximum value that `value` can contain | `31.0` |
 | `step` | No | Any Number | Steps in which `value` may be increased or decreased | `0.5`|
+| `desc` | No | Any String | Description for this node | `Heater in livingroom`
 
 
 ### Topic `value` (inbound)

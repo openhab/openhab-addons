@@ -46,6 +46,7 @@ ESHHomieDevice.prototype.sendprops=function(){
 	mqttspy.publish(basetopic+this.id+"/heater/min","20.0",1,true);
 	mqttspy.publish(basetopic+this.id+"/heater/max","30.0",1,true);
 	mqttspy.publish(basetopic+this.id+"/heater/step","0.5",1,true);
+	mqttspy.publish(basetopic+this.id+"/heater/desc","Heater in livingroom",1,true);
 }
 
 
