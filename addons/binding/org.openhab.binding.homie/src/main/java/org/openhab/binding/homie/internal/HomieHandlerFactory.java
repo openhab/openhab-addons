@@ -68,8 +68,8 @@ public class HomieHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(HOMIE_DEVICE_THING_TYPE)) {
             logger.info("Create homie thing for " + thing.toString());
-            MqttConnection mqtt = MqttConnection.fromConfiguration(configuration, this);
-            HomieDeviceHandler handler = new HomieDeviceHandler(thing, mqtt, provider);
+
+            HomieDeviceHandler handler = new HomieDeviceHandler(thing, provider, configuration);
             return handler;
         }
         return null;

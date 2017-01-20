@@ -77,6 +77,10 @@ public class HomieTopic {
         return internalPropertyName;
     }
 
+    public boolean isESHNodeUnit() {
+        return isNodeProperty() && !isInternalProperty() && StringUtils.equals(getPropertyName(), ESH_VALUE_TOPIC);
+    }
+
     /**
      * Check if this is a $type announcement
      *
@@ -123,6 +127,30 @@ public class HomieTopic {
             result += "/" + subproperty;
         }
         return result;
+    }
+
+    public boolean isESHMin() {
+        return isNodeProperty() && !isInternalProperty() && StringUtils.equals(getPropertyName(), ESH_MIN_TOPIC);
+    }
+
+    public boolean isESHMax() {
+        return isNodeProperty() && !isInternalProperty() && StringUtils.equals(getPropertyName(), ESH_MAX_TOPIC);
+    }
+
+    public boolean isESHStep() {
+        return isNodeProperty() && !isInternalProperty() && StringUtils.equals(getPropertyName(), ESH_STEP_TOPIC);
+    }
+
+    public boolean isESHItemType() {
+        return isNodeProperty() && !isInternalProperty() && StringUtils.equals(getPropertyName(), ESH_ITEMTYPE);
+    }
+
+    public boolean isESHValue() {
+        return isNodeProperty() && !isInternalProperty() && StringUtils.equals(getPropertyName(), ESH_VALUE);
+    }
+
+    public boolean isInternalDeviceProperty() {
+        return isInternalProperty() && isDeviceProperty();
     }
 
 }

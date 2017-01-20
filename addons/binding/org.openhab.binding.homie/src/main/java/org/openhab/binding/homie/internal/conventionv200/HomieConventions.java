@@ -20,4 +20,12 @@ public class HomieConventions {
     public static final String HOMIE_NODE_TYPE_ANNOUNCEMENT_TOPIC_SUFFIX = "$type";
     public static final String HOMIE_NODE_PROPERTYLIST_ANNOUNCEMENT_TOPIC_SUFFIX = "$properties";
 
+    // Additional conventions (not part of Homie convention) below
+    public static final String ESH_TYPE_PREFIX = "ESH:";
+    public static final String ESH_VALUE_TOPIC = "value";
+    public static final String ESH_MIN_TOPIC = "min";
+    public static final String ESH_MAX_TOPIC = "max";
+    public static final String ESH_STEP_TOPIC = "step";
+    public static final String ESH_ITEMTYPE = "itemtype";
+    public static final String ESH_VALUE = "value";
 }

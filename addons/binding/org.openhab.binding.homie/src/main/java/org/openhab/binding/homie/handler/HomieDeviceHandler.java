@@ -8,18 +8,26 @@
 package org.openhab.binding.homie.handler;
 
 import static org.openhab.binding.homie.HomieBindingConstants.*;
+import static org.openhab.binding.homie.internal.conventionv200.HomieConventions.*;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -27,13 +35,13 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.homie.HomieChannelTypeProvider;
+import org.openhab.binding.homie.internal.HomieConfiguration;
 import org.openhab.binding.homie.internal.MqttConnection;
 import org.openhab.binding.homie.internal.conventionv200.HomieTopic;
 import org.openhab.binding.homie.internal.conventionv200.NodePropertiesList;
@@ -50,11 +58,186 @@ import org.slf4j.LoggerFactory;
  */
 public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessageListener {
 
+    private abstract class NodeHandler implements IMqttMessageListener {
+        private final String nodeId;
+        private final String channelId;
+        private final ChannelUID channelUID;
+        private final MqttConnection connection;
+        private final String channelCategory;
+        private final TopicParser topicParser;
+        private final AtomicBoolean isInitialized = new AtomicBoolean(false);
+        private NodePropertiesList properties;
+
+        public NodeHandler(String nodeId, HomieConfiguration configString, String channelCategory) {
+            this.nodeId = nodeId;
+            this.channelCategory = channelCategory;
+            this.channelId = nodeId;
+            this.channelUID = new ChannelUID(getThing().getUID(), channelId);
+            this.connection = MqttConnection.fromConfiguration(config, this);
+            this.topicParser = new TopicParser(config.getBaseTopic());
+
+        }
+
+        protected NodePropertiesList getProperties() {
+            return properties;
+        }
+
+        public synchronized void init() throws MqttException {
+            if (isInitialized.compareAndSet(false, true)) {
+                mqttconnection.listenForNode(getThing().getUID().getId(), nodeId, this);
+            }
+        }
+
+        public String getNodeId() {
+            return nodeId;
+        }
+
+        public String getCategory() {
+            return channelCategory;
+        }
+
+        public ChannelUID getChannelUID() {
+            return channelUID;
+        }
+
+        public Channel getChannel() {
+            return getThing().getChannel(channelId);
+        }
+
+        @Override
+        public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+            String msg = mqttMessage.toString();
+            HomieTopic ht = topicParser.parse(topic);
+            onMqttMessage(ht, msg);
+        }
+
+        protected abstract void onMqttMessage(HomieTopic topic, String message);
+
+        public void setProperties(NodePropertiesList properties) {
+            this.properties = properties;
+        }
+
+    }
+
+    private class ESHNodeHandler extends NodeHandler {
+
+        private String unit;
+        private BigDecimal min;
+        private BigDecimal max;
+        private BigDecimal step;
+        private String itemType;
+        private boolean isReadonly;
+
+        public ESHNodeHandler(String nodeId, HomieConfiguration config, String category) throws MqttException {
+            super(nodeId, config, category);
+
+        }
+
+        @Override
+        public synchronized void init() throws MqttException {
+            isReadonly = getProperties().isPropertySettable(ESH_VALUE);
+            super.init();
+
+        }
+
+        private void updateChannelType() {
+            ChannelTypeUID channelTypeUID = typeProvider.createChannelTypeBySettings(unit, min, max, step, itemType,
+                    isReadonly, getCategory());
+            Channel currentChannel = getChannel();
+            if (!currentChannel.getChannelTypeUID().equals(channelTypeUID)) {
+
+                // @formatter:off
+                Channel newChannel = ChannelBuilder.create(getChannelUID(), itemType)
+                        .withDescription(getNodeId())
+                        .withKind(ChannelKind.STATE)
+                        .withLabel(getNodeId())
+                        .withType(channelTypeUID).build();
+                // @formatter:on
+
+                Thing newThing = editThing().withoutChannel(getChannelUID()).withChannel(newChannel).build();
+                updateThing(newThing);
+            }
+        }
+
+        @Override
+        protected void onMqttMessage(HomieTopic topic, String message) {
+            if (topic.isESHNodeUnit()) {
+                this.unit = message;
+                updateChannelType();
+            } else if (topic.isESHMin()) {
+                this.min = new BigDecimal(message);
+                updateChannelType();
+            } else if (topic.isESHMax()) {
+                this.max = new BigDecimal(message);
+                updateChannelType();
+            } else if (topic.isESHStep()) {
+                this.step = new BigDecimal(message);
+                updateChannelType();
+            } else if (topic.isESHItemType()) {
+                this.itemType = message;
+                updateChannelType();
+            } else if (topic.isESHValue()) {
+                State state = transformToState(message);
+                updateState(getChannelUID(), state);
+            }
+
+        }
+
+        private State transformToState(String message) {
+            State result = null;
+            if (StringUtils.equals(itemType, "Switch")) {
+                boolean on = StringUtils.equalsAnyIgnoreCase(message, "1", "ON", "TRUE");
+                result = on ? OnOffType.ON : OnOffType.OFF;
+            } else if (StringUtils.equals(itemType, "Number")) {
+                result = new DecimalType(message);
+            } else if (StringUtils.equals(itemType, "Rollershutter")) {
+                boolean up = StringUtils.equalsAnyIgnoreCase(message, "1", "ON", "TRUE", "UP");
+                result = up ? UpDownType.UP : UpDownType.DOWN;
+            } else if (StringUtils.equals(itemType, "Color")) {
+                result = new HSBType(message);
+            } else if (StringUtils.equals(itemType, "Contact")) {
+                boolean open = StringUtils.equalsAnyIgnoreCase(message, "1", "ON", "TRUE", "OPEN");
+                result = open ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            } else if (StringUtils.equals(itemType, "Dimmer")) {
+                result = new PercentType(message);
+            } else if (StringUtils.equals(itemType, "Player")) {
+                boolean play = StringUtils.equalsAnyIgnoreCase(message, "1", "ON", "TRUE", "PLAY");
+                result = play ? PlayPauseType.PLAY : PlayPauseType.PAUSE;
+            } else if (StringUtils.equals(itemType, "String")) {
+                result = new StringType(message);
+            } else {
+                logger.warn("Cannot transform message '{}' to a ESH state, using itemtype 'String' instead");
+                result = new StringType(message);
+            }
+            return result;
+        }
+
+    }
+
+    private class DefaultNodeHandler extends NodeHandler {
+
+        public DefaultNodeHandler(String nodeId, HomieConfiguration config) throws MqttException {
+            super(nodeId, config, "");
+
+        }
+
+        @Override
+        protected void onMqttMessage(HomieTopic topic, String message) {
+            logger.warn("Handling non ESH Homie Nodes is not implemented yet");
+
+        }
+
+    }
+
+    private Map<String, NodeHandler> nodeHandlers = new HashMap<>();
+
     private Logger logger = LoggerFactory.getLogger(HomieDeviceHandler.class);
     private final MqttConnection mqttconnection;
     private final TopicParser topicParser;
-    private final HomieChannelTypeProvider provider;
+    private final HomieChannelTypeProvider typeProvider;
     private final NodePropertiesListAnnouncementParser parser = new NodePropertiesListAnnouncementParser();
+
+    private final HomieConfiguration config;
 
     /**
      * Constructor
@@ -62,10 +245,11 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
      * @param thing The Bridge that will be handled
      * @param provider
      */
-    public HomieDeviceHandler(Thing thing, MqttConnection connection, HomieChannelTypeProvider provider) {
+    public HomieDeviceHandler(Thing thing, HomieChannelTypeProvider provider, HomieConfiguration config) {
         super(thing);
-        this.mqttconnection = connection;
-        this.provider = provider;
+        this.config = config;
+        this.mqttconnection = MqttConnection.fromConfiguration(config, this);
+        this.typeProvider = provider;
         topicParser = new TopicParser(mqttconnection.getBasetopic());
 
     }
@@ -101,18 +285,34 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
 
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-        logger.debug("Message for topic '" + topic + "' arrived");
+        logger.debug("Inbound Message. Topic '{}' Message '{}'", topic, mqttMessage);
         String message = mqttMessage.toString();
         try {
             HomieTopic ht = topicParser.parse(topic);
-            String prop = ht.getCombinedNodePropertyName();
+
             if (ht.isNodeTypeAnnouncement()) {
-                updateChannelType(ht, message);
+                String nodeId = ht.getNodeId();
+                NodeHandler nodeHandler = null;
+                if (StringUtils.startsWith(message, ESH_TYPE_PREFIX)) {
+                    String category = StringUtils.remove(message, ESH_TYPE_PREFIX);
+                    nodeHandler = new ESHNodeHandler(nodeId, config, category);
+                    logger.debug("Processing node type announcement for {}. Set node type to ESH", nodeId);
+                } else {
+                    logger.warn("Node {} does not support additional ESH convention", nodeId);
+                    nodeHandler = new DefaultNodeHandler(nodeId, config);
+                }
+                nodeHandlers.put(nodeId, nodeHandler);
             } else if (ht.isNodePropertyAnnouncement()) {
-                NodePropertiesList properties = parser.parse(message);
-                createChannel(ht, properties);
-            } else {
-                updateChannelState(prop, message);
+                String nodeId = ht.getNodeId();
+                NodeHandler handler = nodeHandlers.get(nodeId);
+                if (handler != null) {
+                    logger.debug("Processing property list announcement for node {}", nodeId);
+                    NodePropertiesList properties = parser.parse(message);
+                    handler.setProperties(properties);
+                    handler.init();
+                }
+            } else if (ht.isInternalDeviceProperty()) {
+                updateInternalChannelState(ht.getCombinedInternalPropertyName(), message);
             }
 
         } catch (ParseException e) {
@@ -121,35 +321,7 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
 
     }
 
-    private void updateChannelType(HomieTopic ht, String message) {
-        String channelId = ht.getNodeId();
-        logger.debug("Updating type of channel with ID " + channelId);
-    }
-
-    private void createChannel(HomieTopic ht, NodePropertiesList properties) {
-        String channelId = ht.getNodeId();
-        if (getThing().getChannel(channelId) == null) {
-            logger.debug("Creating channel with ID " + channelId);
-
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, "ct-" + channelId);
-            provider.addChannelType(channelTypeUID, true);
-
-            Map<String, String> channelProperties = new HashMap<>();
-            channelProperties.put(CHANNELPROPERTY_TOPICSUFFIX, ht.getNodeId() + "/#");
-
-            ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
-            Channel channel = ChannelBuilder.create(channelUID, "String").withLabel(channelId)
-                    .withKind(ChannelKind.STATE).withType(channelTypeUID).withProperties(channelProperties).build();
-            ThingBuilder builder = editThing();
-            builder.withChannel(channel);
-            updateThing(builder.build());
-            handleCommand(channelUID, RefreshType.REFRESH);
-        } else {
-            logger.debug("Channel with ID " + channelId + " already exists");
-        }
-    }
-
-    private void updateChannelState(String topicSuffix, String message) {
+    private void updateInternalChannelState(String topicSuffix, String message) {
         boolean processedAtLeastOnce = false;
         for (Channel channel : getThing().getChannels()) {
             String chanTopSuffix = channel.getProperties().get(CHANNELPROPERTY_TOPICSUFFIX);
@@ -175,7 +347,7 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
         }
 
         if (!processedAtLeastOnce) {
-            logger.debug("Topic '" + topicSuffix + "' with message '" + message + "' was not processed");
+            logger.warn("Topic '" + topicSuffix + "' with message '" + message + "' was not processed");
         }
 
     }

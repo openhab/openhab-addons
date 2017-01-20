@@ -3,7 +3,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Bridge - Homie Convention V2.0 -->
+	
 	<thing-type id="homieDeviceV2">
 		<label>Homie Device</label>
 		<description>This thing represents a Homie Device that complies with the Homie MQTT Convention V2.0.0</description>

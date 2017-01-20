@@ -1,5 +1,7 @@
 package org.openhab.binding.homie.internal;
 
+import static org.openhab.binding.homie.HomieBindingConstants.BINDING_ID;
+
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Collection;
@@ -95,6 +97,35 @@ public class HomieChannelTypeProviderImpl implements HomieChannelTypeProvider {
                 chGrp.getDescription(), channelDefinitions);
         groups.put(channelGroupId, newGroup);
 
+    }
+
+    @Override
+    public ChannelTypeUID createChannelTypeBySettings(String unit, BigDecimal min, BigDecimal max, BigDecimal step,
+            String itemType, boolean isReadonly, String category) {
+        String settingsIdentifier = String.format("gen-unit_%s__min_%d__max_%d__step_%d__itype_%s__ro_%s", unit, min,
+                max, step, itemType, Boolean.toString(isReadonly));
+
+        ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, settingsIdentifier);
+        String description = "";
+        URI configDescriptionURI = null;
+        ChannelKind kind = ChannelKind.STATE;
+        BigDecimal state_min = min;
+        BigDecimal state_max = max;
+        BigDecimal state_step = step;
+        String state_pattern = "%s " + unit;
+        boolean state_readOnly = isReadonly;
+        List<StateOption> state_options = Collections.emptyList();
+        StateDescription state = new StateDescription(state_min, state_max, state_step, state_pattern, state_readOnly,
+                state_options);
+        Set<String> tags = Collections.emptySet();
+        String label = uid.getId();
+        boolean advanced = false;
+
+        EventDescription event = null;
+        ChannelType type = new ChannelType(uid, advanced, itemType, kind, label, description, category, tags, state,
+                event, configDescriptionURI);
+        types.put(uid, type);
+        return uid;
     }
 
 }
