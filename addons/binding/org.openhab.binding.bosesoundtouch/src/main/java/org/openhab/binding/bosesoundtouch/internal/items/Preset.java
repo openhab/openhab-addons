@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,8 @@
 package org.openhab.binding.bosesoundtouch.internal.items;
 
 /**
+ * The {@link Preset} class manages a Preset, which is a ContentItem, and a position
+ *
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer
  */

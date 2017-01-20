@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,8 @@ package org.openhab.binding.bosesoundtouch.internal.items;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
 
 /**
+ * The {@link ZoneMember} class manages a ZoneMember
+ *
  * @author Christian Niessner - Initial contribution
  */
 public class ZoneMember {

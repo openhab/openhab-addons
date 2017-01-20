@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -554,7 +554,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     private boolean removeZoneMember(BoseSoundTouchHandler oh) {
         boolean found = false;
-        for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
+        for (Iterator< ZoneMember>mi = zoneMembers.iterator(); mi.hasNext();) {
             ZoneMember m = mi.next();
             if (oh == m.getHandler()) {
                 mi.remove();
