@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Kostal Inverter Binding
 Bundle-SymbolicName: org.openhab.binding.kostalinverter;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/jsoup-1.8.3.jar

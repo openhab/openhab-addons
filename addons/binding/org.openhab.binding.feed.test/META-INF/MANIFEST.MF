@@ -4,7 +4,7 @@ Bundle-Name: Feed Binding Tests
 Bundle-SymbolicName: org.openhab.binding.feed.test;singleton:=true
 Bundle-Vendor: openHAB
 Fragment-Host: org.openhab.binding.feed
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.google.common.base,
  groovy.json,
