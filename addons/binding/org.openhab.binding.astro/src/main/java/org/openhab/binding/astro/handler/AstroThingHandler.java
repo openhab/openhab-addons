@@ -303,6 +303,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     public void triggerEvent(String channelId, String event) {
         if (getThing().getChannel(channelId) != null) {
             triggerChannel(getThing().getChannel(channelId).getUID(), event);
+        } else {
+            logger.warn("Event {} in thing {} does not exist, please recreate the thing", event, getThing().getUID());
         }
     }
 
