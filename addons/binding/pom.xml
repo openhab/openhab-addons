@@ -32,6 +32,7 @@
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.homematic</module>
+	<module>org.openhab.binding.homie</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
