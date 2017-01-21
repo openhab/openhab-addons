@@ -133,10 +133,7 @@ public class IsyWebSocketSubscription implements WebSocketListener {
                 String action = (String) actionExpr.evaluate(doc, XPathConstants.STRING);
                 String node = (String) nodeExpr.evaluate(doc, XPathConstants.STRING);
                 if ("ST".equals(control)) {
-                    logger.debug("status change detected");
-                    logger.debug("Test: " + control);
-                    logger.debug("Action: " + action);
-                    logger.debug("Node: " + node);
+                    logger.debug("[status change]Control: " + control + ", Action: " + action + ", Node: " + node);
                     listener.onModelChanged(control, action, node);
                 } else if ("_1".equals(control) && "6".equals(action)) {
                     logger.debug("Possible variable event: " + message);
