@@ -68,7 +68,6 @@ public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClient
                         IsyThingHandler handler;
                         if ("_1".equals(control) && "6".equals(action)) {
                             handler = getVariableHandler(node);
-                            logger.debug("handler");
                         } else {
                             handler = getThingHandler(node);
                         }
