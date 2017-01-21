@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homie" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	
+	<thing-type id="homieDeviceV2">
+		<label>Homie Device</label>
+		<description>This thing represents a Homie Device that complies with the Homie MQTT Convention V2.0.0</description>
+
+		<channels>
+			<channel id="homie" typeId="homie-channel">
+				<properties>
+					<property name="topic_suffix">$homie</property>
+				</properties>
+			</channel>
+
+			<channel id="online" typeId="online-channel">
+				<properties>
+					<property name="topic_suffix">$online</property>
+					<property name="thing_state_indicator">online</property>
+				</properties>
+			</channel>
+
+			<channel id="name" typeId="name-channel">
+				<properties>
+					<property name="topic_suffix">$name</property>
+				</properties>
+			</channel>
+
+			<channel id="localip" typeId="localip-channel">
+				<properties>
+					<property name="topic_suffix">$localip</property>
+				</properties>
+			</channel>
+			<channel id="mac" typeId="mac-channel">
+				<properties>
+					<property name="topic_suffix">$mac</property>
+				</properties>
+			</channel>
+
+			<channel id="stats_uptime" typeId="stats-uptime-channel">
+				<properties>
+					<property name="topic_suffix">$stats/uptime</property>
+				</properties>
+			</channel>
+			<channel id="stats_signal" typeId="stats-signal-channel">
+				<properties>
+					<property name="topic_suffix">$stats/signal</property>
+				</properties>
+			</channel>
+			<channel id="stats_interval" typeId="stats-interval-channel">
+				<properties>
+					<property name="topic_suffix">$stats/interval</property>
+				</properties>
+			</channel>
+			<channel id="fw_name" typeId="fw-name-channel">
+				<properties>
+					<property name="topic_suffix">$fw/name</property>
+				</properties>
+			</channel>
+			<channel id="fw_version" typeId="fw-version-channel">
+				<properties>
+					<property name="topic_suffix">$fw/version</property>
+				</properties>
+			</channel>
+			<channel id="fw_checksum" typeId="fw-checksum-channel">
+				<properties>
+					<property name="topic_suffix">$fw/checksum</property>
+				</properties>
+			</channel>
+			<channel id="implementation" typeId="implementation-channel">
+				<properties>
+					<property name="topic_suffix">$implementation</property>
+				</properties>
+			</channel>
+		</channels>
+	</thing-type>
+
+
+
+	<channel-type id="homie-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Homie specification Version</label>
+		<description>Version of the Homie convention the device conforms to</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="online-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>Indicates whether the device is online or not</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="name-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Device Name</label>
+		<description>The name of the device</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="localip-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Device IP</label>
+		<description>Current IP address of the device</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="mac-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Device MAC</label>
+		<description>MAC address of the device</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="stats-uptime-channel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Uptime</label>
+		<description>Time in seconds since the device came online</description>
+		<state pattern="%d s" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="stats-signal-channel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Signal</label>
+		<description>Signal level in percent. Might be not supported by wired devices</description>
+		<state pattern="%d %%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="stats-interval-channel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Update Interval</label>
+		<description>Interval (in seconds) at which the uptime and signal are refreshed</description>
+		<state pattern="%d s" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="fw-name-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Firmware Name</label>
+		<description>Name of the firmware running on the device</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="fw-version-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Version of the firmware running on the device</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="fw-checksum-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Firmware Checksum</label>
+		<description>MD5 checksum of the firmware running on the device</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="implementation-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Implementation ID</label>
+		<description>An identifier for the Homie implementation </description>
+		<state readOnly="true" />
+	</channel-type>
+
+
+
+</thing:thing-descriptions>
