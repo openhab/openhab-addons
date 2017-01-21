@@ -69,6 +69,7 @@
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zway</module>
+    <module>org.openhab.binding.km200</module>
   </modules>
 
 </project>
