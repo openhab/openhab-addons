@@ -102,7 +102,7 @@ public enum EiscpCommand {
     NETUSB_TITLE("NLT", ""),
     NETUSB_TITLE_QUERY("NLT", "QSTN"),
 
-    NETUSB_ALBUM_ART_QUERY("NJA", "QSTN"),
+    NETUSB_ALBUM_ART_QUERY("NJA", "REQ"),
     NETUSB_ALBUM_ART("NJA", ""),
 
     /*
