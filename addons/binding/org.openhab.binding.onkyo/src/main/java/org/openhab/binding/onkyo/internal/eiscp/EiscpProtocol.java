@@ -117,8 +117,6 @@ public class EiscpProtocol {
             final int headerSize = (stream.readByte() & 0xFF) << 24 | (stream.readByte() & 0xFF) << 16
                     | (stream.readByte() & 0xFF) << 8 | (stream.readByte() & 0xFF);
 
-            logger.trace("Header size: {}", headerSize);
-
             if (headerSize != 16) {
                 throw new EiscpException("Unsupported header size: " + headerSize);
             }
@@ -166,7 +164,7 @@ public class EiscpProtocol {
                         sb.append((char) b1).append((char) b2).append((char) b3);
                         // data
                         sb.append(new String(data, "UTF-8"));
-                        logger.trace("Received message, {} -> {}",
+                        logger.trace("Received eISCP message, {} -> {}",
                                 DatatypeConverter.printHexBinary(sb.toString().getBytes()), toPrintable(sb.toString()));
                     }
 
@@ -199,7 +197,17 @@ public class EiscpProtocol {
 
             int endBytes = 0;
 
-            if (data[dataSize - 4] == (byte) 0x1A && data[dataSize - 3] == '\r' && data[dataSize - 2] == '\n'
+            // TODO: Simplify this by implementation, which find [EOF] character and ignore rest of the bytes after
+            // that. But before that, proper junit test should be implement to be sure that it does not broke
+            // anything.
+
+            if (data[dataSize - 5] == (byte) 0x1A && data[dataSize - 4] == '\n' && data[dataSize - 3] == '\n'
+                    && data[dataSize - 2] == '\r' && data[dataSize - 1] == '\n') {
+
+                // skip "[EOF][LF][LF][CR][LF]"
+                endBytes = 5;
+
+            } else if (data[dataSize - 4] == (byte) 0x1A && data[dataSize - 3] == '\r' && data[dataSize - 2] == '\n'
                     && data[dataSize - 1] == 0x00) {
 
                 // skip "[EOF][CR][LF][NULL]"
@@ -242,7 +250,7 @@ public class EiscpProtocol {
         }
 
         for (final char c : rawData.toCharArray()) {
-            if ((c <= 31) || (c == 127) || (c == '\\') || (c == '%')) {
+            if (c <= 31 || c == 127) {
                 switch (c) {
                     case '\r':
                         sb.append("[CR]");
