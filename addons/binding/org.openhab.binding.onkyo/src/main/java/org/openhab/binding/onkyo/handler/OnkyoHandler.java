@@ -117,7 +117,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                                 connection.getConnectionName(), ex.getMessage());
                     }
                 }
-            }, 1, configuration.refreshInterval, TimeUnit.SECONDS);
+            }, configuration.refreshInterval, configuration.refreshInterval, TimeUnit.SECONDS);
         }
     }
 
