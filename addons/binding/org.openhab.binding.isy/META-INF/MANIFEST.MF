@@ -10,8 +10,10 @@ Bundle-ClassPath: .,
  lib/websocket-common-9.2.14.v20151106.jar,
  lib/websocket-client-9.2.14.v20151106.jar
 Import-Package: 
+ javax.ws.rs,
  javax.ws.rs.client,
  javax.ws.rs.core,
+ javax.ws.rs.ext,
  org.apache.commons.codec,
  org.apache.commons.codec.binary,
  org.eclipse.jetty.io,
@@ -23,8 +25,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.glassfish.jersey.client,
- org.glassfish.jersey.media.sse,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.isy;uses:="org.eclipse.smarthome.core.thing",
@@ -37,5 +37,4 @@ Export-Package: org.openhab.binding.isy;uses:="org.eclipse.smarthome.core.thing"
    org.eclipse.smarthome.core.types"
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.jetty.util,
- com.google.guava,
- com.eclipsesource.jaxrs.jersey-min
+ com.google.guava
