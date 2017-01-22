@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="device_v4" listed="false">
+        <label>Device meter (DSMR V4.x)</label>
+        <description>
+            <![CDATA[
+                This is the device meter that complies to the DSMR V4 specification.<br><br>
+                The channel p1_text_code and p1_text_string will be updated when the central system of the supplier company the device is communicating new values.<br>
+                The channel p1_version will never change.<br>
+                The channel p1_timestamp will change every 10 seconds.
+            ]]>
+        </description>
+        <channels>
+            <channel id="p1_text_code" typeId="p1TextCodeType"/>
+            <channel id="p1_text_string" typeId="p1TextStringType"/>
+            <channel id="p1_version_output" typeId="p1VersionType"/>
+            <channel id="p1_timestamp" typeId="p1TimestampType"/>
+        </channels>
+        <config-description-ref uri="binding:dsmr:meterdescriptor"/>
+    </thing-type>
+</thing:thing-descriptions>

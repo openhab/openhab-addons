@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="waterValueType">
+        <item-type>Number</item-type>
+        <label>Water delivery (m3)</label>
+        <description>The total amount of water used in the past hour in m3.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="waterValueType_V5">
+        <item-type>Number</item-type>
+        <label>Water delivery (m3)</label>
+        <description>The total amount of water used in the 5 minutes in m3.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="waterValvePositionType">
+        <item-type>Number</item-type>
+        <label>Water valve position</label>
+        <description>The water valve switch position.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+</thing:thing-descriptions>

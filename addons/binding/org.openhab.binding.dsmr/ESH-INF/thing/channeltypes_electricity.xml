@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="deliveryType">
+        <item-type>Number</item-type>
+        <label>Delivery (kWh)</label>
+        <description>The total amount of electricity used in kWh.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="deliveryTariff0Type">
+        <item-type>Number</item-type>
+        <label>Delivery tariff 0 (kWh)</label>
+        <description>The total amount of electricity used for tariff 0 in kWh.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="deliveryTariff1Type">
+        <item-type>Number</item-type>
+        <label>Delivery tariff 1 (kWh)</label>
+        <description>The total amount of electricity used for tariff 1 in kWh.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="deliveryTariff2Type">
+        <item-type>Number</item-type>
+        <label>Delivery tariff 2 (kWh)</label>
+        <description>The total amount of electricity used for tariff 2 in kWh.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="deliveryTariff0AntiFraudType">
+        <item-type>Number</item-type>
+        <label>Delivery tariff 0 (kWh)</label>
+        <description>The total amount of electricity used for tariff 0 in kWh(anti fraud).</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="deliveryTariff1AntiFraudType">
+        <item-type>Number</item-type>
+        <label>Delivery tariff 1 (kWh)</label>
+        <description>The total amount of electricity(kWh) used for tariff 1 in kWh(anti fraud).</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="deliveryTariff2AntiFraudType">
+        <item-type>Number</item-type>
+        <label>Delivery tariff 2 (kWh)</label>
+        <description>The total amount of electricity(kWh) used for tariff 2 in kWh(anti fraud).</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="productionTariff0Type">
+        <item-type>Number</item-type>
+        <label>Production tariff 0 (kWh)</label>
+        <description>The total amount of electricity(kWh) produced for tariff 0 in kWh.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="productionTariff1Type">
+        <item-type>Number</item-type>
+        <label>Production tariff 1 (kWh)</label>
+        <description>The total amount of electricity(kWh) produced for tariff 1 in Kwh.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="productionTariff2Type">
+        <item-type>Number</item-type>
+        <label>Production tariff 2 (kWh)</label>
+        <description>The total amount of electricity(kWh) produced for tariff 2 in kWh.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="tariffIndicatorType">
+        <item-type>String</item-type>
+        <label>Tariff Indicator</label>
+        <description>The current tariff indicator.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="activeImportPowerType">
+        <item-type>Number</item-type>
+        <label>Aggegrate active import power (W)</label>
+        <description>The aggrate active import power in W.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="actualDeliveryType">
+        <item-type>Number</item-type>
+        <label>Actual power delivery (kw)</label>
+        <description>The current power delivery in kW.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="actualProductionType">
+        <item-type>Number</item-type>
+        <label>Actual power production (kW)</label>
+        <description>The current power production in kW.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="actualTresholdAType">
+        <item-type>Number</item-type>
+        <label>Actual treshold (A)</label>
+        <description>The actual treshold in A.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="actualTresholdkWType">
+        <item-type>Number</item-type>
+        <label>Actual treshold (kW)</label>
+        <description>The actual treshold in kW.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="switchPositionType">
+        <item-type>Number</item-type>
+        <label>Switch position</label>
+        <description>The switch position.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="powerFailuresType">
+        <item-type>Number</item-type>
+        <label>Number of power failures</label>
+        <description>The number of power failures.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="longPowerFailuresType">
+        <item-type>Number</item-type>
+        <label>Number of long power failures</label>
+        <description>The number of long power failures.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="powerFailureLogType">
+        <item-type>String</item-type>
+        <label>Power failures log</label>
+        <description>The power failure log.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="voltageSagsL1Type">
+        <item-type>Number</item-type>
+        <label>Number of voltage sags L1</label>
+        <description>The number of voltage sags L1.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="voltageSagsL2Type">
+        <item-type>Number</item-type>
+        <label>Number of voltage sags L2</label>
+        <description>The number of voltage sags L2.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="voltageSagsL3Type">
+        <item-type>Number</item-type>
+        <label>Number of voltage sags L3</label>
+        <description>The number of voltage sags L3.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="voltageSwellsL1Type">
+        <item-type>Number</item-type>
+        <label>Number of voltage swells L1</label>
+        <description>The number of voltage swells L1.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="voltageSwellsL2Type">
+        <item-type>Number</item-type>
+        <label>Number of voltage swells L2</label>
+        <description>The number of voltage swells L2.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="voltageSwellsL3Type">
+        <item-type>Number</item-type>
+        <label>Number of voltage swells L3</label>
+        <description>The number of voltage swells L3.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantCurrentL1Type">
+        <item-type>Number</item-type>
+        <label>Instant current L1 (A)</label>
+        <description>The instant current L1 in A.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantCurrentL2Type">
+        <item-type>Number</item-type>
+        <label>Instant current L2 (A)</label>
+        <description>The instant current L2 in A.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantCurrentL3Type">
+        <item-type>Number</item-type>
+        <label>Instant current L3 (A)</label>
+        <description>The instant current L3 in A.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantPowerDeliveryL1Type">
+        <item-type>Number</item-type>
+        <label>Instant power delivery L1 (kW)</label>
+        <description>The instant power delivery L1 in kW.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantPowerDeliveryL2Type">
+        <item-type>Number</item-type>
+        <label>Instant power delivery L2 (kW)</label>
+        <description>The instant power delivery L2 in kW.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantPowerDeliveryL3Type">
+        <item-type>Number</item-type>
+        <label>Instant power delivery L3 (kW)</label>
+        <description>The instant power delivery L3 in kW.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantPowerProductionL1Type">
+        <item-type>Number</item-type>
+        <label>Instant power production L1 (kW)</label>
+        <description>The instant power production L1 in kW.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantPowerProductionL2Type">
+        <item-type>Number</item-type>
+        <label>Instant power production L2 (kW)</label>
+        <description>The instant power production L2 in kW.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantPowerProductionL3Type">
+        <item-type>Number</item-type>
+        <label>Instant power production L3 (kW)</label>
+        <description>The instant power production L3 in kW.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantVoltageL1Type">
+        <item-type>Number</item-type>
+        <label>Instant voltage L1 (V)</label>
+        <description>The instant voltage L1 in V.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantVoltageL2Type">
+        <item-type>Number</item-type>
+        <label>Instant voltage L2 (V)</label>
+        <description>The instant voltage L2 in V.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="instantVoltageL3Type">
+        <item-type>Number</item-type>
+        <label>Instant voltage L3 (V)</label>
+        <description>The instant voltage L3 in V.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+</thing:thing-descriptions>

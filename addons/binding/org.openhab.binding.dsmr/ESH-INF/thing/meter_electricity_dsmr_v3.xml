@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="electricity_v3_0" listed="false">
+        <label>Electricity meter (DSMR V3)</label>
+        <description>This is an electricity meter that complies to the DSMR V3 specification</description>
+
+        <channels>
+            <channel id="emeter_equipment_identifier" typeId="equipmentIdType"/>
+            <channel id="emeter_delivery_tariff1" typeId="deliveryTariff1Type"/>
+            <channel id="emeter_delivery_tariff2" typeId="deliveryTariff2Type"/>
+            <channel id="emeter_production_tariff1" typeId="productionTariff1Type"/>
+            <channel id="emeter_production_tariff2" typeId="productionTariff2Type"/>
+            <channel id="emeter_tariff_indicator" typeId="tariffIndicatorType"/>
+            <channel id="emeter_treshold_a" typeId="actualTresholdAType"/>
+            <channel id="emeter_switch_position" typeId="switchPositionType"/>
+            <channel id="emeter_actual_delivery" typeId="actualDeliveryType"/>
+            <channel id="emeter_actual_production" typeId="actualProductionType"/>
+        </channels>
+        <config-description-ref uri="binding:dsmr:meterdescriptor"/>
+    </thing-type>
+</thing:thing-descriptions>

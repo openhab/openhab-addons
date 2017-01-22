@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="gasv2_2" listed="false">
+        <label>Gas meter (DSMR V2.2)</label>
+        <description>This is a gas meter that complies to the DSMR V2.2 specification</description>
+
+        <channels>
+            <channel id="gmeter_equipment_identifier_v2" typeId="equipmentIdType"/>
+            <channel id="gmeter_24h_delivery_v2" typeId="gasDelivery24HType"/>
+            <channel id="gmeter_24h_delivery_compensated_v2" typeId="gasCompensatedDelivery24HType"/>
+            <channel id="gmeter_valve_position_v2_2" typeId="gasValvePositionType"/>
+        </channels>
+        <config-description-ref uri="binding:dsmr:meterdescriptor"/>
+    </thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="electricity_v4_0" listed="false">
+        <label>Electricity meter (DSMR V4.0)</label>
+        <description>This is an electricity meter that complies to the DSMR V4.0 specification</description>
+
+        <channels>
+            <channel id="emeter_equipment_identifier" typeId="equipmentIdType"/>
+            <channel id="emeter_delivery_tariff1" typeId="deliveryTariff1Type"/>
+            <channel id="emeter_delivery_tariff2" typeId="deliveryTariff2Type"/>
+            <channel id="emeter_production_tariff1" typeId="productionTariff1Type"/>
+            <channel id="emeter_production_tariff2" typeId="productionTariff2Type"/>
+            <channel id="emeter_tariff_indicator" typeId="tariffIndicatorType"/>
+            <channel id="emeter_treshold_kwh" typeId="actualTresholdkWType"/>
+            <channel id="emeter_switch_position" typeId="switchPositionType"/>
+            <channel id="emeter_actual_delivery" typeId="actualDeliveryType"/>
+            <channel id="emeter_actual_production" typeId="actualProductionType"/>
+            <channel id="emeter_power_failures" typeId="powerFailuresType"/>
+            <channel id="emeter_long_power_failures" typeId="longPowerFailuresType"/>
+            <channel id="emeter_power_failure_log" typeId="powerFailureLogType"/>
+            <channel id="emeter_voltage_sags_l1" typeId="voltageSagsL1Type"/>
+            <channel id="emeter_voltage_sags_l2" typeId="voltageSagsL2Type"/>
+            <channel id="emeter_voltage_sags_l3" typeId="voltageSagsL3Type"/>
+            <channel id="emeter_voltage_swells_l1" typeId="voltageSwellsL1Type"/>
+            <channel id="emeter_voltage_swells_l2" typeId="voltageSwellsL2Type"/>
+            <channel id="emeter_voltage_swells_l3" typeId="voltageSwellsL3Type"/>
+        </channels>
+        <config-description-ref uri="binding:dsmr:meterdescriptor"/>
+    </thing-type>
+</thing:thing-descriptions>
