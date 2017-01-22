@@ -25,6 +25,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.glassfish.jersey.media.sse;version="2.22.1",
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.isy;uses:="org.eclipse.smarthome.core.thing",
