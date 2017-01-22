@@ -19,6 +19,10 @@ public class Variable {
     public Integer val;
     // protected String ts;
 
+    public Variable() {
+
+    }
+
     @Override
     public String toString() {
         return new StringBuilder("Isy Variable: ts=").append(id).append(", id=").append(id).append(", enabled=")
