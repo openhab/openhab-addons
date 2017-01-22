@@ -64,7 +64,7 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        // Background discovery disabled - doesn't give much sense 
+        // Background discovery disabled - doesn't give much sense
     }
 
     /*
@@ -74,7 +74,7 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     protected void startScan() {
-        discoverZoneMinderServer();
+        // discoverZoneMinderServer();
     }
 
     /**

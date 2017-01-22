@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.zoneminder.discovery;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -25,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import name.eskildsen.zoneminder.IZoneMinderMonitorData;
-import name.eskildsen.zoneminder.ZoneMinderFactory;
 
 /**
  * When a {@link ZoneMinderMonitorDiscoveryService} finds a new Monitor we will
@@ -76,13 +74,16 @@ public class ZoneMinderMonitorDiscoveryService extends AbstractDiscoveryService 
     }
 
     protected synchronized void discoverZoneMinderMonitors() {
-        if (ZoneMinderFactory.getSessionManager().isConnected()) {
-            ArrayList<IZoneMinderMonitorData> monitors = ZoneMinderFactory.getServerProxy().getMonitors();
-
-            for (IZoneMinderMonitorData monitor : monitors) {
-                monitorAdded(monitor);
-            }
-        }
+        // TODO FIX THIS
+        /*
+         *
+         * ArrayList<IZoneMinderMonitorData> monitors = ZoneMinderFactory.getServerProxy().getMonitors();
+         *
+         * for (IZoneMinderMonitorData monitor : monitors) {
+         * monitorAdded(monitor);
+         * }
+         * }
+         */
     }
 
     protected void monitorAdded(IZoneMinderMonitorData monitor) {

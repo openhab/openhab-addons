@@ -40,15 +40,16 @@ import com.google.common.collect.Sets;
 
 import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
 import name.eskildsen.zoneminder.IZoneMinderDaemonStatus;
+import name.eskildsen.zoneminder.IZoneMinderEventSubscriber;
 import name.eskildsen.zoneminder.IZoneMinderMonitor;
 import name.eskildsen.zoneminder.IZoneMinderMonitorData;
+import name.eskildsen.zoneminder.IZoneMinderSession;
 import name.eskildsen.zoneminder.ZoneMinderFactory;
 import name.eskildsen.zoneminder.api.event.ZoneMinderEvent;
 import name.eskildsen.zoneminder.api.telnet.ZoneMinderTriggerEvent;
 import name.eskildsen.zoneminder.common.ZoneMinderMonitorFunctionEnum;
 import name.eskildsen.zoneminder.common.ZoneMinderMonitorStatusEnum;
 import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
-import name.eskildsen.zoneminder.trigger.ZoneMinderEventSubscriber;
 
 /**
  * The {@link ZoneMinderThingMonitorHandler} is responsible for handling commands, which are
@@ -57,7 +58,8 @@ import name.eskildsen.zoneminder.trigger.ZoneMinderEventSubscriber;
  * @author Martin S. Eskildsen - Initial contribution
  */
 public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
-        implements ZoneMinderEventSubscriber/* , ZoneMinderMonitorEventListener */ {
+        implements IZoneMinderEventSubscriber/* , ZoneMinderMonitorEventListener */
+{
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets
             .newHashSet(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR);
@@ -114,7 +116,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     @Override
     public String getZoneMinderId() {
         if (config == null) {
-            logger.error("MONITOR: Configuration for Thing '{}' is not loaded correctly.", getThing().getUID());
+            logger.error("{}: Configuration for Thing '{}' is not loaded correctly.", getLogIdentifier(),
+                    getThing().getUID());
             return "";
         }
         return config.getZoneMinderId().toString();
@@ -125,17 +128,20 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     public void onBridgeConnected(ZoneMinderServerBridgeHandler bridge, IZoneMinderConnectionInfo connection)
             throws IllegalArgumentException, GeneralSecurityException, IOException, ZoneMinderUrlNotFoundException {
 
-        logger.debug("{}: Bridge '{}' connected", getLogIdentifier(), bridge.getThing().getUID().getAsString());
+        logger.info("{}: Bridge '{}' connected", getLogIdentifier(), bridge.getThing().getUID().getAsString());
         super.onBridgeConnected(bridge, connection);
 
-        ZoneMinderFactory.SubscribeMonitorEvents(config.getZoneMinderId(), this);
+        ZoneMinderFactory.SubscribeMonitorEvents(connection, config.getZoneMinderId(), this);
+        IZoneMinderSession session = aquireSession();
+        updateMonitorProperties(session);
+        releaseSession();
 
-        updateMonitorProperties();
     }
 
     @Override
     public void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge) {
-        logger.debug("{}: Bridge '{}' disconnected", getLogIdentifier(), bridge.getThing().getUID().getAsString());
+        logger.info("{}: Bridge '{}' disconnected", getLogIdentifier(), bridge.getThing().getUID().getAsString());
+
         ZoneMinderFactory.UnsubscribeMonitorEvents(config.getZoneMinderId(), this);
         super.onBridgeDisconnected(bridge);
     }
@@ -153,15 +159,15 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                 updateChannel(channelUID);
                 return;
             }
-            IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(getZoneMinderId());
+
             // Communication TO Monitor
             switch (channelUID.getId()) {
 
                 // Done via Telnet connection
                 case ZoneMinderConstants.CHANNEL_MONITOR_FORCE_ALARM:
                     logger.debug(
-                            "'handleCommand' => CHANNEL_MONITOR_FORCE_ALARM: Command '{}' received for monitor '{}'",
-                            command, channelUID.getId());
+                            "{}: 'handleCommand' => CHANNEL_MONITOR_FORCE_ALARM: Command '{}' received for monitor '{}'",
+                            getLogIdentifier(), command, channelUID.getId());
 
                     if ((command == OnOffType.OFF) || (command == OnOffType.ON)) {
                         String eventText = getConfigValueAsString(ZoneMinderConstants.PARAMETER_MONITOR_EVENTTEXT);
@@ -174,22 +180,29 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                             logger.warn("'handleCommand()': Bridge is 'null'!");
                         }
 
-                        if (command == OnOffType.ON) {
-                            forceAlarmManualState = 1;
-                            logger.info("{}: Activate 'ForceAlarm' to '{}' (Reason='{}', Timeout='{}')",
-                                    getLogIdentifier(), command, eventText, eventTimeout.intValue());
+                        IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(aquireSession(),
+                                getZoneMinderId());
+                        try {
+                            if (command == OnOffType.ON) {
+                                forceAlarmManualState = 1;
+                                logger.info("{}: Activate 'ForceAlarm' to '{}' (Reason='{}', Timeout='{}')",
+                                        getLogIdentifier(), command, eventText, eventTimeout.intValue());
 
-                            monitorProxy.activateForceAlarm(255, ZoneMinderConstants.MONITOR_EVENT_OPENHAB, eventText,
-                                    "", eventTimeout.intValue());
+                                monitorProxy.activateForceAlarm(255, ZoneMinderConstants.MONITOR_EVENT_OPENHAB,
+                                        eventText, "", eventTimeout.intValue());
 
+                            }
+
+                            else if (command == OnOffType.OFF) {
+                                forceAlarmManualState = 0;
+                                logger.info("{}: Cancel 'ForceAlarm'", getLogIdentifier());
+                                monitorProxy.deactivateForceAlarm();
+
+                            }
+                        } finally {
+                            releaseSession();
                         }
 
-                        else if (command == OnOffType.OFF) {
-                            forceAlarmManualState = 0;
-                            logger.info("{}: Cancel 'ForceAlarm'", getLogIdentifier());
-                            monitorProxy.deactivateForceAlarm();
-
-                        }
                         RecalculateChannelStates();
 
                         handleCommand(channelUID, RefreshType.REFRESH);
@@ -211,7 +224,15 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
                     if ((command == OnOffType.OFF) || (command == OnOffType.ON)) {
                         boolean newState = ((command == OnOffType.ON) ? true : false);
-                        monitorProxy.SetEnabled(newState);
+
+                        IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(aquireSession(),
+                                getZoneMinderId());
+                        try {
+                            monitorProxy.SetEnabled(newState);
+                        } finally {
+                            releaseSession();
+                        }
+
                         channelEnabled = newState;
 
                         logger.info("{}: Setting enabled to '{}'", getLogIdentifier(), command);
@@ -227,7 +248,13 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                         commandString = ZoneMinderMonitorFunctionEnum.getEnum(command.toString()).toString();
                         ZoneMinderServerBridgeHandler bridge = getZoneMinderBridgeHandler();
 
-                        monitorProxy.SetFunction(commandString);
+                        IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(aquireSession(),
+                                getZoneMinderId());
+                        try {
+                            monitorProxy.SetFunction(commandString);
+                        } finally {
+                            releaseSession();
+                        }
 
                         // Make sure local copy is set to new value
                         channelFunction = ZoneMinderMonitorFunctionEnum.getEnum(command.toString());
@@ -266,12 +293,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     @Override
     public void initialize() {
-        logger.debug("MONITOR-{}: Initializing ZoneMinder handler.");
 
         super.initialize();
         this.config = getMonitorConfig();
-        logger.debug("MONITOR-{}: ZoneMinder Monitor Handler Initialized", getLogIdentifier());
-        logger.debug("MONITOR-{}:    Monitor Id:         {}", getLogIdentifier(), config.getZoneMinderId());
+        logger.info("{}: ZoneMinder Monitor Handler Initialized", getLogIdentifier());
+        logger.debug("{}:    Monitor Id:         {}", getLogIdentifier(), config.getZoneMinderId());
 
     }
 
@@ -283,7 +309,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
         // Set Current Event to actual event
         if (event.getState()) {
-            // 2017.01.09 FIXME :: curEvent = monitorProxy.getLastEvent();
             startPriorityRefresh();
 
         } else {
@@ -336,13 +361,17 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
     @Override
     public void updateAvaliabilityStatus(IZoneMinderConnectionInfo connection) {
         ThingStatus newThingStatus = ThingStatus.OFFLINE;
-        ThingStatus curRhingStatus = this.getThing().getStatus();
+        ThingStatus curThingStatus = this.getThing().getStatus();
 
         boolean connectionStatus = false;
+        if (isConnected()) {
+            return;
+        }
+
         try {
             connectionStatus = ZoneMinderFactory.validateConnection(connection);
         } catch (IllegalArgumentException e) {
-            logger.error("{}: validateConnection failed with exceptin='{}'", getLogIdentifier(), e.getMessage());
+            logger.error("{}: validateConnection failed with exception='{}'", getLogIdentifier(), e.getMessage());
         }
 
         try {
@@ -394,7 +423,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
                         getLogIdentifier(), thing.getUID());
             }
 
-            isAlive = true;
             newThingStatus = ThingStatus.ONLINE;
 
         } catch (Exception exception) {
@@ -603,69 +631,78 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
 
     @Override
     protected void onFetchData() {
-        IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(getZoneMinderId());
-        IZoneMinderMonitorData data = null;
-        IZoneMinderDaemonStatus captureDaemon = null;
-        IZoneMinderDaemonStatus analysisDaemon = null;
-        IZoneMinderDaemonStatus frameDaemon = null;
 
-        data = monitorProxy.getMonitorData();
-        captureDaemon = monitorProxy.getCaptureDaemonStatus();
-        analysisDaemon = monitorProxy.getAnalysisDaemonStatus();
-        frameDaemon = monitorProxy.getFrameDaemonStatus();
-        if ((data.getHttpResponseCode() != 200) || (captureDaemon.getHttpResponseCode() != 200)
-                || (analysisDaemon.getHttpResponseCode() != 200) || (frameDaemon.getHttpResponseCode() != 200)) {
+        IZoneMinderSession session = null;
 
-            if (data.getHttpResponseCode() != 200) {
-                logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
-                        data.getHttpResponseCode(), data.getHttpResponseMessage());
+        session = aquireSession();
+        try {
+            IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(session, getZoneMinderId());
 
-                channelMonitorStatus = ZoneMinderMonitorStatusEnum.UNKNOWN;
-                channelFunction = ZoneMinderMonitorFunctionEnum.NONE;
-                channelEnabled = false;
-                channelEventCause = "";
-            }
-            if (captureDaemon.getHttpResponseCode() != 200) {
-                channelDaemonCapture = false;
-                logger.warn("{}: HTTP Response CaptureDaemon: Code='{}', Message'{}'", getLogIdentifier(),
-                        captureDaemon.getHttpResponseCode(), captureDaemon.getHttpResponseMessage());
+            IZoneMinderMonitorData data = null;
+            IZoneMinderDaemonStatus captureDaemon = null;
+            IZoneMinderDaemonStatus analysisDaemon = null;
+            IZoneMinderDaemonStatus frameDaemon = null;
 
-                logger.warn("{}: HTTP Response AnalysisDaemon: Code='{}', Message='{}'", getLogIdentifier(),
-                        analysisDaemon.getHttpResponseCode(), analysisDaemon.getHttpResponseMessage());
+            data = monitorProxy.getMonitorData();
+            captureDaemon = monitorProxy.getCaptureDaemonStatus();
+            analysisDaemon = monitorProxy.getAnalysisDaemonStatus();
+            frameDaemon = monitorProxy.getFrameDaemonStatus();
+            if ((data.getHttpResponseCode() != 200) || (captureDaemon.getHttpResponseCode() != 200)
+                    || (analysisDaemon.getHttpResponseCode() != 200) || (frameDaemon.getHttpResponseCode() != 200)) {
 
-            }
-            if (analysisDaemon.getHttpResponseCode() != 200) {
-                channelDaemonAnalysis = false;
+                if (data.getHttpResponseCode() != 200) {
+                    logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
+                            data.getHttpResponseCode(), data.getHttpResponseMessage());
 
-                logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
-                        analysisDaemon.getHttpResponseCode(), analysisDaemon.getHttpResponseMessage());
+                    channelMonitorStatus = ZoneMinderMonitorStatusEnum.UNKNOWN;
+                    channelFunction = ZoneMinderMonitorFunctionEnum.NONE;
+                    channelEnabled = false;
+                    channelEventCause = "";
+                }
+                if (captureDaemon.getHttpResponseCode() != 200) {
+                    channelDaemonCapture = false;
+                    logger.warn("{}: HTTP Response CaptureDaemon: Code='{}', Message'{}'", getLogIdentifier(),
+                            captureDaemon.getHttpResponseCode(), captureDaemon.getHttpResponseMessage());
 
-            }
-            if (frameDaemon.getHttpResponseCode() != 200) {
-                channelDaemonFrame = false;
-                logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
-                        frameDaemon.getHttpResponseCode(), frameDaemon.getHttpResponseMessage());
+                    logger.warn("{}: HTTP Response AnalysisDaemon: Code='{}', Message='{}'", getLogIdentifier(),
+                            analysisDaemon.getHttpResponseCode(), analysisDaemon.getHttpResponseMessage());
 
-            }
+                }
+                if (analysisDaemon.getHttpResponseCode() != 200) {
+                    channelDaemonAnalysis = false;
 
-        } else {
-            if (isConnected()) {
-                channelMonitorStatus = monitorProxy.getMonitorDetailedStatus();
-                channelFunction = data.getFunction();
-                channelEnabled = data.getEnabled();
-                channelEventCause = monitorProxy.getLastEvent().getCause();
-                channelDaemonCapture = captureDaemon.getStatus();
-                channelDaemonAnalysis = analysisDaemon.getStatus();
-                channelDaemonFrame = frameDaemon.getStatus();
+                    logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
+                            analysisDaemon.getHttpResponseCode(), analysisDaemon.getHttpResponseMessage());
+
+                }
+                if (frameDaemon.getHttpResponseCode() != 200) {
+                    channelDaemonFrame = false;
+                    logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
+                            frameDaemon.getHttpResponseCode(), frameDaemon.getHttpResponseMessage());
+
+                }
+
             } else {
-                channelMonitorStatus = ZoneMinderMonitorStatusEnum.UNKNOWN;
-                channelFunction = ZoneMinderMonitorFunctionEnum.NONE;
-                channelEnabled = false;
-                channelEventCause = "";
-                channelDaemonCapture = false;
-                channelDaemonAnalysis = false;
-                channelDaemonFrame = false;
+                if (isConnected()) {
+                    channelMonitorStatus = monitorProxy.getMonitorDetailedStatus();
+                    channelFunction = data.getFunction();
+                    channelEnabled = data.getEnabled();
+                    channelEventCause = monitorProxy.getLastEvent().getCause();
+                    channelDaemonCapture = captureDaemon.getStatus();
+                    channelDaemonAnalysis = analysisDaemon.getStatus();
+                    channelDaemonFrame = frameDaemon.getStatus();
+                } else {
+                    channelMonitorStatus = ZoneMinderMonitorStatusEnum.UNKNOWN;
+                    channelFunction = ZoneMinderMonitorFunctionEnum.NONE;
+                    channelEnabled = false;
+                    channelEventCause = "";
+                    channelDaemonCapture = false;
+                    channelDaemonAnalysis = false;
+                    channelDaemonFrame = false;
+                }
             }
+        } finally {
+            releaseSession();
         }
 
         RecalculateChannelStates();
@@ -699,10 +736,10 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler
      * This is experimental
      * Try to add different properties
      */
-    private void updateMonitorProperties() {
+    private void updateMonitorProperties(IZoneMinderSession session) {
         // Update property information about this device
         Map<String, String> properties = editProperties();
-        IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(getZoneMinderId());
+        IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(session, getZoneMinderId());
         IZoneMinderMonitorData monitorData = monitorProxy.getMonitorData();
 
         properties.put(ZoneMinderMonitorProperties.PROPERTY_ID, getLogIdentifier());

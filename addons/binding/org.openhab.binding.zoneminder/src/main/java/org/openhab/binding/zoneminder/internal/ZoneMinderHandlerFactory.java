@@ -57,7 +57,7 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER)) {
 
-            logger.trace("creating handler for bridge thing '{}'", thing);
+            logger.debug("[FACTORY]: creating handler for bridge thing '{}'", thing);
             ZoneMinderServerBridgeHandler bridge = new ZoneMinderServerBridgeHandler((Bridge) thing);
             registerZoneMinderMonitorDiscoveryService(bridge);
 
@@ -76,7 +76,7 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
      */
     private synchronized void registerZoneMinderMonitorDiscoveryService(
             ZoneMinderServerBridgeHandler zoneMinderServerBridgeHandler) {
-        logger.trace("Registering discovery service for ZoneMinder Monitor");
+        logger.debug("[FACTORY]: Registering discovery service for ZoneMinder Monitor");
 
         ZoneMinderMonitorDiscoveryService discoveryService = new ZoneMinderMonitorDiscoveryService(
                 zoneMinderServerBridgeHandler);
@@ -90,11 +90,11 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void removeHandler(ThingHandler thingHandler) {
 
         if (thingHandler instanceof ZoneMinderServerBridgeHandler) {
-            logger.trace("Removing handler for bridge thing {}", thingHandler.getThing());
+            logger.debug("[FACTORY]: Removing handler for bridge thing {}", thingHandler.getThing());
 
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {
-                logger.trace("Unregistering player discovery service");
+                logger.debug("[FACTORY]: Unregistering player discovery service");
 
                 // Get the discovery service object and use it to cancel the RequestMonitorJob
                 ZoneMinderMonitorDiscoveryService discoveryService = (ZoneMinderMonitorDiscoveryService) bundleContext
@@ -114,7 +114,7 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
             ZoneMinderServerBridgeHandler bridge = thingMonitor.getZoneMinderBridgeHandler();
 
             if (bridge != null) {
-                logger.trace("removing handler for monitor thing {}", thingHandler.getThing());
+                logger.debug("[FACTORY]: removing handler for monitor thing {}", thingHandler.getThing());
             }
         }
     }
