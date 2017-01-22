@@ -34,7 +34,8 @@ Export-Package: org.openhab.binding.isy;uses:="org.eclipse.smarthome.core.thing"
    org.openhab.binding.isy.internal,
    org.eclipse.smarthome.core.thing.binding,
    org.eclipse.smarthome.config.discovery,
-   org.eclipse.smarthome.core.types"
+   org.eclipse.smarthome.core.types",
+ org.openhab.binding.isy.internal
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.jetty.util,
  com.google.guava
