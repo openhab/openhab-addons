@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="coolingValueType">
+        <item-type>Number</item-type>
+        <label>Cooling delivery (GJ)</label>
+        <description>The total amount of cooling used in the past hour in GJ.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+</thing:thing-descriptions>

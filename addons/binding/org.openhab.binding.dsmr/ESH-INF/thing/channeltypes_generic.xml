@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="deviceType">
+        <item-type>String</item-type>
+        <label>Device type</label>
+        <description>The meter device type.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="equipmentIdType">
+        <item-type>String</item-type>
+        <label>Equipment ID</label>
+        <description>Equipment identifier of the device.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="p1TextStringType">
+        <item-type>String</item-type>
+        <label>Text Message</label>
+        <description>Text message from the device.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="p1TextCodeType">
+        <item-type>String</item-type>
+        <label>Text Code</label>
+        <description>Text code from the device.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="p1VersionType">
+        <item-type>String</item-type>
+        <label>P1 Version</label>
+        <description>Version information for the device output (This mostly refers to the DSMR specification level).</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="p1TimestampType">
+        <item-type>DateTime</item-type>
+        <label>Timestamp</label>
+        <description>Timestamp of the last device read out.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+</thing:thing-descriptions>

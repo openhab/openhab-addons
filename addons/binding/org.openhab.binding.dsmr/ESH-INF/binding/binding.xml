@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+    <name>DSMR Binding</name>
+    <description><![CDATA[ <h3>General information</h3><p>
+                This binding makes data from the Dutch Smart Meter available to openHAB2.<br><br>
+                There following DSMR-meter versions (V2 - V5) are supported:<ul>
+                <li>Electricity (DSMR V2 t/m V5)
+                <li>Gas (DSMR V2 t/m V5)
+                <li>Heating (DSMR V2 t/m V5)
+                <li>Cooloing (DSMR V2 t/m V5)
+                <li>Water (DSMR V2 t/m V5)
+                <li>Generic (DSMR V3)
+                <li>Slave Electricity (DSMR V4 t/m V5)
+                </ul>
+                Depending on the device model specific values will be available.</p>
+                <p>The data from the Smart Meter is available from the P1-port (inverted TTL on a RJ-11 connector).
+                    Dedicated cables are available (Search for 'Slimme Meter P1' or 'USB-RJ11').
+                </p>
+                <h3>Installation & configuration</h3>
+                <p>After installing the binding you always need to a 'Dutch Smart Meter' thing manually. This thing needs to be configured
+                and has the following parameters:
+	                <ul>
+		                <li>Serial Port name (mandatory)
+		                <li>Serial Port parameters (optional). This can be used in case autodetection port speed fails.
+		                <li>Lenient mode (optional). In case of frequent communication loss or CRC-validation problems this mode can be activated to
+		                less the binding act less strict.
+	                </ul>
+                </p>
+                <h3>Thing discovery</h3>
+                <p>
+                The binding will autodiscover a 'Thing' for each available meter. For the newer meters (DSMR V4 and up) the binding can not
+                autodiscover the type of each meter (it can not distuinguish a water meter from a gas meter and not a cooling meter from a heating meter).<br>
+                This information is not needed for the binding to work so therefor you only have to clarify this in labels and descriptions of Things and Items. 
+                </p>
+                <h3>Meter (re-)placement</h3>
+                There following scenario's are identified during usage of the binding:
+                - Initial placement of a DSMR-meter while binding is already running. No special action is needed only set up the correct serial port.
+                - Initial placement of additional meters (gas, water, etc.) to the already installed DSMR-meer. No special action is needed. The new meters will be autodetected.
+                - Replacement of additional meters (gas, water, etc.). The new meter will be autodetected. You have to remove the old Thing manually.
+                - Replacement of DSMR-meter (with or without additional meters). <b>Important.</b> You have to remove all DSMR-related Things to ensure correct working.
+                - Removal of DSMR-meter and/or additional meters. Remove the corresponding Things. 
+                 ]]></description>
+    <author>Marcel Volaart</author>
+</binding:binding>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="water_ace4000" listed="false">
+        <label>Water meter (ACE4000)</label>
+        <description>This is a water meter that complies to the ACE4000 GTMM Mk3 specification</description>
+
+        <channels>
+            <channel id="meter_equipment_identifier" typeId="equipmentIdType"/>
+            <channel id="wmeter_value_v2" typeId="waterValueType"/>
+        </channels>
+        <config-description-ref uri="binding:dsmr:meterdescriptor"/>
+    </thing-type>
+</thing:thing-descriptions>

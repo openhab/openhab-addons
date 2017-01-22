@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="genValueType">
+        <item-type>Number</item-type>
+        <label>Delivery</label>
+        <description>The total amount delivered in the past hour.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="genValvePositionType">
+        <item-type>Number</item-type>
+        <label>Valve position</label>
+        <description>The valve switch position.</description>
+        <state readOnly="true"></state>
+    </channel-type>
+</thing:thing-descriptions>

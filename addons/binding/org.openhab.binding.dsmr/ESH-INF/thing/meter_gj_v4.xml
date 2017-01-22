@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="gj_v4" listed="false">
+        <label>GJ meter (DSMR V4.x)</label>
+        <description>
+            <![CDATA[
+                This is a Giga Joule meter that complies to the DSMR V4.x specification.<br><br>
+                It is not possible for the binding to detect if the GJ-meter is a cooling or a heating meter.<br>
+                If you now on which M-Bus channel the cooling / heating meter is connected you can determine the channel from it's descriptor.
+                The descriptor has the following format 'dsmr:gj_v4:[M-Bus channel]_[identifier]:[channelname].<br>
+                If you don't know the M-Bus channel you can determine this by hand by comparing real meter values vs the reported values.
+            ]]>
+        </description>
+
+        <channels>
+            <channel id="meter_device_type" typeId="deviceType"/>
+            <channel id="meter_equipment_identifier" typeId="equipmentIdType"/>
+            <channel id="gjmeter_value_v4" typeId="gjValueType"/>
+            <channel id="meter_valve_switch_position" typeId="gjValvePositionType"/>
+        </channels>
+        <config-description-ref uri="binding:dsmr:meterdescriptor"/>
+    </thing-type>
+</thing:thing-descriptions>

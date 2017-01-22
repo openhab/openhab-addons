@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="generic_v3_0" listed="false">
+        <label>Generic meter (DSMR V3.0)</label>
+        <description>
+            <![CDATA[
+                This is a generic meter that complies to the DSMR V3.0 specification.<br><br>
+            ]]>
+        </description>
+
+        <channels>
+            <channel id="meter_device_type" typeId="deviceType"/>
+            <channel id="meter_equipment_identifier" typeId="equipmentIdType"/>
+            <channel id="genmeter_value_v3" typeId="genValueType"/>
+            <channel id="meter_valve_switch_position" typeId="genValvePositionType"/>
+        </channels>
+        <config-description-ref uri="binding:dsmr:meterdescriptor"/>
+    </thing-type>
+</thing:thing-descriptions>

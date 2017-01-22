@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="device_v2_v3" listed="false">
+        <label>Device meter (DSMR V2.x or V3.0)</label>
+        <description>
+            <![CDATA[
+                This is the device meter that complies to the DSMR V2.x or V3 specification.<br><br>
+                The channnel values will be updated when the central system of the supplier company the device is communicating new values.
+            ]]>
+        </description>
+
+        <channels>
+            <channel id="p1_text_code" typeId="p1TextCodeType"/>
+            <channel id="p1_text_string" typeId="p1TextStringType"/>
+        </channels>
+        <config-description-ref uri="binding:dsmr:meterdescriptor"/>
+    </thing-type>
+</thing:thing-descriptions>
