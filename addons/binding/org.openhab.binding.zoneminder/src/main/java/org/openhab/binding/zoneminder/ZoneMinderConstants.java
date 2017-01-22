@@ -67,9 +67,6 @@ public class ZoneMinderConstants {
     /*
      * Channel Id's for the ZoneMinder Monitor
      */
-    // public final static String CHANNEL_MONITOR_ID = "id";
-    // public final static String CHANNEL_MONITOR_NAME = "name";
-    // public final static String CHANNEL_MONITOR_SOURCETYPE = "sourcetype";
     public final static String CHANNEL_MONITOR_ENABLED = "enabled";
     public final static String CHANNEL_MONITOR_FORCE_ALARM = "force-alarm";
     public final static String CHANNEL_MONITOR_EVENT_STATE = "alarm";

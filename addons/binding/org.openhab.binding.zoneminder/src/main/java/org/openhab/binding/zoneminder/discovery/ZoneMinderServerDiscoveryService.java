@@ -74,7 +74,7 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     protected void startScan() {
-        // discoverZoneMinderServer();
+        discoverZoneMinderServer();
     }
 
     /**
@@ -98,22 +98,22 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             highIP = convertIPToNumber(subnetInfo.getHighAddress());
 
         } catch (IllegalArgumentException e) {
-            logger.error("[DISCOVERY] -discoverZoneMinderServer(): Illegal Argument Exception - {}", e.toString());
+            logger.error("[DISCOVERY]: discoverZoneMinderServer(): Illegal Argument Exception - {}", e.toString());
             return;
         } catch (Exception e) {
-            logger.error("[DISCOVERY] - discoverZoneMinderServer(): Error - Unable to get Subnet Information! {}",
+            logger.error("[DISCOVERY]: discoverZoneMinderServer(): Error - Unable to get Subnet Information! {}",
                     e.toString());
             return;
         }
 
-        logger.debug("   Local IP Address: {} - {}", subnetInfo.getAddress(),
+        logger.debug("[DISCOVERY]:   Local IP Address: {} - {}", subnetInfo.getAddress(),
                 convertIPToNumber(subnetInfo.getAddress()));
         logger.debug("   Subnet:           {} - {}", subnetInfo.getNetworkAddress(),
                 convertIPToNumber(subnetInfo.getNetworkAddress()));
-        logger.debug("   Network Prefix:   {}", subnetInfo.getCidrSignature().split("/")[1]);
-        logger.debug("   Network Mask:     {}", subnetInfo.getNetmask());
-        logger.debug("   Low IP:           {}", convertNumberToIP(lowIP));
-        logger.debug("   High IP:          {}", convertNumberToIP(highIP));
+        logger.debug("[DISCOVERY]:   Network Prefix:   {}", subnetInfo.getCidrSignature().split("/")[1]);
+        logger.debug("[DISCOVERY]:   Network Mask:     {}", subnetInfo.getNetmask());
+        logger.debug("[DISCOVERY]:   Low IP:           {}", convertNumberToIP(lowIP));
+        logger.debug("[DISCOVERY]:   High IP:          {}", convertNumberToIP(highIP));
 
         for (long ip = lowIP; ip <= highIP; ip++) {
             try (Socket socket = new Socket()) {
@@ -211,7 +211,6 @@ public class ZoneMinderServerDiscoveryService extends AbstractDiscoveryService {
             properties.put(ZoneMinderConstants.PARAM_HOSTNAME, ipAddress);
             properties.put(ZoneMinderConstants.PARAM_PORT, new Integer(80));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    // .withLabel(BuildMonitorLabel(monitor.getId(), monitor.getName()))
                     .withLabel(ZoneMinderConstants.ZONEMINDER_SERVER_NAME).build();
             thingDiscovered(result);
         }
