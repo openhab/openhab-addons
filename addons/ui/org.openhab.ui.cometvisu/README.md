@@ -12,37 +12,37 @@ This adds a backend for the web based visualization CometVisu (http://www.cometv
 ## Installation
 
 * Copy the addon org.openhab.ui.cometvisu*.jar to the openHAB addon folder
-* Then just extract the "release" folder (the one which contains the index.html file) of the downloaded CometVisu archive in the runtime folder off your openHAB2 server. 
-Note: if you want to store the CometVisu client in another folder you have to set the webfolder in your config file
+* Then just extract the "release" folder (the one which contains the index.html file) of the downloaded CometVisu somewhere on your openHAB2 server (make sure that openHAB can access that folder). 
+Note: You have to set the path to this folder in your config file (webFolder).
 
 ## Configuration
 ### Server configuration
-You can customize some setting of the CometVisu backend in a configuration file named 'cometvisu.cfg' which has to be created in the 'conf/services/' folder of your openHAB2 instance.
+You can customize some setting of the CometVisu backend in a configuration file named 'cometvisu.cfg' which has to be created in the 'conf/services/' folder of your openHAB2 instance, if it does not exist.
 The following settings are available:
 
 Relative path to the folder the CometVisu client can be found:
 
 ```
-cometvisu:webFolder=runtime/web/src/
+webFolder=\<absolute-path-to-your-local-cometvisu-copy\>
 ```
 
 The alias where you can access the client e.g http://\<openhab-server\>:8080/\<webAlias\>/
 
 ```
-cometvisu:webAlias=/cometvisu
+webAlias=/cometvisu
 ```
 
 Enable icon mapping from openHAB-items to CometVisu-items (Note this is only needed if you use the automatic sitemap->config generation feature)
 
 ```
-cometvisu:icons>enableMapping=true
+icons>enableMapping=true
 ```
 
 List of mappings of structure: icons.mapping\>\<openhab-icon\>=\<cometvisu-icon\>
 
 ```
-cometvisu:icons.mapping>firstfloor=control_building_int_og
-cometvisu:icons.mapping>groundfloor=control_building_int_eg
+icons.mapping>firstfloor=control_building_int_og
+cons.mapping>groundfloor=control_building_int_eg
 
 ```
 The list of icons in the CometVisu is available at:
@@ -193,6 +193,9 @@ Not all of the PHP-based functions in the CometVisu client have been tested so f
 * upnpcontroller plugin
 
 The sitemap support can only be used as a starting point for own customizations, e.g. you open an automatic generated config and store it in by CometVisu by using the editor. Then you start to customize it to your own needs. New items must by added by hand from the moment you stored and changed the generated config.
+
+### 404 error
+Please make sure that openhab has the rights to read the configured \<webFolder\> folder.
 
 ### 403 error 
 If you get an 403 - Access Denied error, when you try to open the CometVisu in your browser you have not copied the correct release folder into the \<webFolder\> folder. Please check if there is a subfolder with the exact name "release/", which contains an index.html file and copy the content to the folder defined in the \<webFolder\>-property.
