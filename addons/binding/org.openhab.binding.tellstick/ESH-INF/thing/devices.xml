@@ -30,7 +30,7 @@
 				<description>The name of the device</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="deviceId" type="integer">
+			<parameter name="deviceId" type="text">
 				<label>DeviceID</label>
 				<description>This is the unique id of a device.</description>
 				<required>true</required>
@@ -72,14 +72,14 @@
 				<description>The name of the device</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="deviceId" type="integer">
+			<parameter name="deviceId" type="text">
 				<label>DeviceID</label>
 				<description>This is the unique id of a device.</description>
 				<required>true</required>
 			</parameter>
 
-			<parameter name="resend" type="integer">
-				<label>Resend</label>
+			<parameter name="repeat" type="integer">
+				<label>Repeat</label>
 				<description>The number of times to resend.</description>
 				<required>false</required>
 				<default>2</default>
