@@ -33,30 +33,33 @@ public class NAModule1Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        NADashboardData dashboardData = module.getDashboardData();
-        switch (channelId) {
-            case CHANNEL_TEMPERATURE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
-            case CHANNEL_HUMIDITY:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getHumidity());
-            case CHANNEL_TIMEUTC:
-                return ChannelTypeUtils.toDateTimeType(dashboardData.getTimeUtc());
-            case CHANNEL_HUMIDEX:
-                return ChannelTypeUtils.toDecimalType(
-                        WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
-            case CHANNEL_HEATINDEX:
-                return ChannelTypeUtils.toDecimalType(
-                        WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()));
-            case CHANNEL_DEWPOINT:
-                return ChannelTypeUtils.toDecimalType(
-                        WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()));
-            case CHANNEL_DEWPOINTDEP:
-                Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity());
-                return ChannelTypeUtils
-                        .toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint));
-            default:
-                return super.getNAThingProperty(channelId);
+        if (module != null) {
+            NADashboardData dashboardData = module.getDashboardData();
+            switch (channelId) {
+                case CHANNEL_TEMPERATURE:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
+                case CHANNEL_HUMIDITY:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getHumidity());
+                case CHANNEL_TIMEUTC:
+                    return ChannelTypeUtils.toDateTimeType(dashboardData.getTimeUtc());
+                case CHANNEL_HUMIDEX:
+                    return ChannelTypeUtils.toDecimalType(
+                            WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
+                case CHANNEL_HEATINDEX:
+                    return ChannelTypeUtils.toDecimalType(
+                            WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()));
+                case CHANNEL_DEWPOINT:
+                    return ChannelTypeUtils.toDecimalType(
+                            WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()));
+                case CHANNEL_DEWPOINTDEP:
+                    Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
+                            dashboardData.getHumidity());
+                    return ChannelTypeUtils
+                            .toDecimalType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint));
+
+            }
         }
+        return super.getNAThingProperty(channelId);
     }
 
 }

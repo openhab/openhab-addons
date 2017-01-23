@@ -225,6 +225,12 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                                 case RAIN_TOTAL:
                                     updateState(CHANNEL_RAIN_TOTAL, message.convertToState(valueSelector));
                                     break;
+                                case RAW_MESSAGE:
+                                    updateState(CHANNEL_RAW_MESSAGE, message.convertToState(valueSelector));
+                                    break;
+                                case RAW_PAYLOAD:
+                                    updateState(CHANNEL_RAW_PAYLOAD, message.convertToState(valueSelector));
+                                    break;
                                 case SET_POINT:
                                     updateState(CHANNEL_SET_POINT, message.convertToState(valueSelector));
                                     break;
@@ -266,7 +272,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                 }
             }
         } catch (Exception e) {
-            logger.error("Error occured during message receiving: {}", e.getMessage());
+            logger.error("Error occurred during message receiving: {}", e.getMessage());
         }
     }
 

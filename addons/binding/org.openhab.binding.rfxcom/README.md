@@ -36,6 +36,7 @@ This binding currently supports following packet types:
 * Temperature
 * TemperatureHumidity
 * Thermostat1
+* Undecoded
 * Wind
 
 
@@ -76,6 +77,14 @@ Bridge rfxcom:bridge:usb0 [ serialPort="/dev/tty.usbserial-06VVEG1Y" ] {
 }
 ```
 
+A TCP bridge, for use with socat on a remote host, can be configured like this:
+
+```
+Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
+    Thing lighting2 100001_1 [deviceId="100001.1", subType="AC"]
+}
+```
+
 ## Channels
 
 This binding currently supports following channels:
@@ -96,6 +105,8 @@ This binding currently supports following channels:
 | motion | Switch | Motion detection sensor state. |
 | rainrate | Number | Rain fall rate in millimeters per hour. |
 | raintotal | Number | Total rain in millimeters. |
+| rawmessage | String | Hexadecimal string of the raw RF message. |
+| rawpayload | String | Hexadecimal string of the message payload, without header. |
 | shutter | Rollershutter | Shutter channel. |
 | signallevel | Number | Received signal strength level. |
 | temperature | Number | Current temperature in degree Celsius. |

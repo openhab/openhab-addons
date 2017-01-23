@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: VoiceRSS TTS Voice Service
 Bundle-SymbolicName: org.openhab.voice.voicerss;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: 
  org.eclipse.smarthome.config.core,

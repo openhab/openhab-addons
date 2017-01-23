@@ -63,22 +63,22 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case PARTITION_ARMED:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PARTITION_ENTRY_DELAY:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PARTITION_EXIT_DELAY:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PARTITION_IN_ALARM:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
@@ -253,6 +253,14 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
                         updateChannel(channelUID, 1, "");
 
                         partitionStatus(dscAlarmMessageName);
+                        break;
+                    case ExitDelayInProgress: /* 656 */
+                        channelUID = new ChannelUID(getThing().getUID(), PARTITION_EXIT_DELAY);
+                        updateChannel(channelUID, 1, "");
+                        break;
+                    case EntryDelayInProgress: /* 657 */
+                        channelUID = new ChannelUID(getThing().getUID(), PARTITION_ENTRY_DELAY);
+                        updateChannel(channelUID, 1, "");
                         break;
                     case FailureToArm: /* 672 */
                         channelUID = new ChannelUID(getThing().getUID(), PARTITION_ARM_MODE);

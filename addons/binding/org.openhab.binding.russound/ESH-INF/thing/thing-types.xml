@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="russound"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="rio">
+        <label>Russound RIO Device</label>
+        <description>Ethernet access point to Russound RIO control system (usually the main controller)</description>
+        
+        <channels>
+            <channel id="lang" typeId="syslang"/>
+            <channel id="allon" typeId="sysallon"/>
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <context>network-address</context>
+                <label>IP or Host Name</label>
+                <description>The IP or host name of the Russound RIO access point</description>
+            </parameter>
+            <parameter name="ping" type="integer" required="false">
+                <label>Ping Interval</label>
+                <description>The ping interval in seconds to keep the connection alive</description>
+                <default>30</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="retryPolling" type="integer" required="false">
+                <label>Retry Polling</label>
+                <description>The polling, in seconds, to retry a connection attempt</description>
+                <default>10</default>
+                <advanced>true</advanced>
+            </parameter>
+        </config-description>
+        
+    </bridge-type>
+
+    <bridge-type id="controller">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="rio"/>
+        </supported-bridge-type-refs>
+
+        <label>Russound Controller</label>
+        <description>Controller of Zones, Sources, etc</description>
+
+        <config-description>
+            <parameter name="controller" type="integer" min="1" max="6" required="true">
+                <label>Controller ID</label>
+                <description>The controller identifier</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <bridge-type id="zone">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller"/>
+        </supported-bridge-type-refs>
+        
+        <label>Russound Zone</label>
+        <description>Zone within a Controller</description>
+        
+        <channels>
+            <channel id="name" typeId="zoneName"/>
+            <channel id="source" typeId="zoneSource"/>
+            <channel id="bass" typeId="zoneBass"/>
+            <channel id="treble" typeId="zoneTreble"/>
+            <channel id="balance" typeId="zoneBalance"/>
+            <channel id="loudness" typeId="zoneLoudness"/>
+            <channel id="turnonvolume" typeId="zoneTurnOnVolume"/>
+            <channel id="donotdisturb" typeId="zoneDoNotDisturb"/>
+            <channel id="partymode" typeId="zonePartyMode"/>
+            <channel id="status" typeId="zoneStatus"/>
+            <channel id="volume" typeId="zoneVolume"/>
+            <channel id="mute" typeId="zoneMute"/>
+            <channel id="page" typeId="zonePage"/>
+            <channel id="sharedsource" typeId="zoneSharedSource"/>
+            <channel id="sleeptimeremaining" typeId="zoneSleepTimeRemaining"/>
+            <channel id="lasterror" typeId="zoneLastError"/>
+            <channel id="enabled" typeId="zoneEnabled"/>
+            <channel id="repeat" typeId="zoneRepeat"/>
+            <channel id="shuffle" typeId="zoneShuffle"/>
+            <channel id="rating" typeId="zoneRating"/>
+            <channel id="keypress" typeId="zoneKeyPress"/>
+            <channel id="keyrelease" typeId="zoneKeyRelease"/>
+            <channel id="keyhold" typeId="zoneKeyHold"/>
+            <channel id="keycode" typeId="zoneKeyCode"/>
+            <channel id="event" typeId="zoneEvent"/>
+        </channels>
+
+        <config-description>
+            <parameter name="zone" type="integer" min="1" max="8" required="true">
+                <label>Zone ID</label>
+                <description>The zone identifier</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <bridge-type id="source">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="rio"/>
+        </supported-bridge-type-refs>
+        
+        <label>Russound Source</label>
+        <description>Source (tuner, streamer, etc) within the Russound System</description>
+        
+        <channels>
+            <channel id="name" typeId="srcName"/>
+            <channel id="channel" typeId="srcChannel"/>
+            <channel id="channelname" typeId="srcChannelName"/>
+            <channel id="composername" typeId="srcComposerName"/>
+            <channel id="genre" typeId="srcGenre"/>
+            <channel id="artistname" typeId="srcArtistName"/>
+            <channel id="albumname" typeId="srcAlbumName"/>
+            <channel id="coverarturl" typeId="srcCoverArtUrl"/>
+            <channel id="coverart" typeId="srcCoverArt"/>
+            <channel id="playlistname" typeId="srcPlayListName"/>
+            <channel id="songname" typeId="srcSongName"/>
+            <channel id="rating" typeId="srcRating"/>
+            <channel id="mode" typeId="srcMode"/>
+            <channel id="shufflemode" typeId="srcShuffleMode"/>
+            <channel id="repeatmode" typeId="srcRepeatMode"/>
+            <channel id="programservicename" typeId="srcProgramServiceName"/>
+            <channel id="radiotext" typeId="srcRadioText"/>
+            <channel id="radiotext2" typeId="srcRadioText2"/>
+            <channel id="radiotext3" typeId="srcRadioText3"/>
+            <channel id="radiotext4" typeId="srcRadioText4"/>
+            <channel id="volume" typeId="srcVolume"/>
+        </channels>
+
+        <config-description>
+            <parameter name="source" type="integer" min="1" max="12" required="true">
+                <label>Source ID</label>
+                <description>The source identifier</description>
+            </parameter>
+        </config-description>
+        
+    </bridge-type>
+
+    <bridge-type id="bank">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="source"/>
+        </supported-bridge-type-refs>
+
+        <label>Russound Bank</label>
+        <description>Bank of Presets for a specific Source (usually a tuner source)</description>
+
+        <channels>
+            <channel id="name" typeId="bankName"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="bank" type="integer" min="1" max="6" required="true">
+                <label>Bank ID</label>
+                <description>The bank identifier</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <thing-type id="sysfavorite">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="rio"/>
+        </supported-bridge-type-refs>
+
+        <label>System Favorite</label>
+        <description>System Favorite</description>
+
+        <channels>
+            <channel id="name" typeId="favName"/>
+            <channel id="valid" typeId="favValid"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="favorite" type="integer" min="1" max="32" required="true">
+                <label>Favorite ID</label>
+                <description>The favorite identifier</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="zonefavorite">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="zone"/>
+        </supported-bridge-type-refs>
+
+        <label>Zone Favorite</label>
+        <description>Favorite for a Zone</description>
+
+        <channels>
+            <channel id="name" typeId="zfavName"/>
+            <channel id="valid" typeId="zfavValid"/>
+            <channel id="cmd" typeId="zfavCmd"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="favorite" type="integer" min="1" max="2" required="true">
+                <label>Favorite ID</label>
+                <description>The favorite identifier</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="bankpreset">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bank"/>
+        </supported-bridge-type-refs>
+
+        <label>Russound Bank Preset</label>
+        <description>Preset (usually frequency) within a Bank for a Source (usually a tuner)</description>
+
+        <channels>
+            <channel id="name" typeId="bkpreName"/>
+            <channel id="valid" typeId="bkpreValid"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="preset" type="integer" min="1" max="6" required="true">
+                <label>Preset ID</label>
+                <description>The preset identifier</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+
+    <thing-type id="zonepreset">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="zone"/>
+        </supported-bridge-type-refs>
+
+        <label>Russound Zone Presets</label>
+        <description>Zone Preset Commands to save/restore/delete presets for the zone</description>
+
+        <channels>
+            <channel id="name" typeId="zpreName"/>
+            <channel id="valid" typeId="zpreValid"/>
+            <channel id="cmd" typeId="zpreCmd"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="preset" type="integer" min="1" max="36" required="true">
+                <label>Preset ID</label>
+                <description>The preset identifier (1-36 corresponds to banks 1-6, presets 1-6)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="syslang">
+        <item-type>String</item-type>
+        <label>Language</label>
+        <description>System Language</description>
+        <state>
+            <options>
+                <option value="ENGLISH">English</option>
+                <option value="CHINESE">Chinese</option>
+                <option value="RUSSIAN">Russian</option>
+            </options>
+        </state>
+    </channel-type>    
+    <channel-type id="sysallon">
+        <item-type>Switch</item-type>
+        <label>All Zones</label>
+        <description>Toggles All Zones</description>
+    </channel-type>
+    
+    <channel-type id="zoneName">
+        <item-type>String</item-type>
+        <label>Zone Name</label>
+        <description>The name of the zone</description>
+    </channel-type>
+    <channel-type id="zoneSource">
+        <item-type>Number</item-type>
+        <label>Source</label>
+        <description>Physical Source Number</description>
+        <state min="1" max="12"/>
+    </channel-type>
+    <channel-type id="zoneBass" advanced="true">
+        <item-type>Number</item-type>
+        <label>Bass</label>
+        <description>Bass Setting</description>
+        <state min="-10" max="10"/>
+    </channel-type>
+    <channel-type id="zoneTreble" advanced="true">
+        <item-type>Number</item-type>
+        <label>Treble</label>
+        <description>Treble Setting</description>
+        <state min="-10" max="10"/>
+    </channel-type>
+    <channel-type id="zoneBalance" advanced="true">
+        <item-type>Number</item-type>
+        <label>Balance</label>
+        <description>Balance (-10 full left, 10 full right)</description>
+        <state min="-10" max="10"/>
+    </channel-type>
+    <channel-type id="zoneLoudness" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Loudness</label>
+        <description>Loudness</description>
+    </channel-type>
+    <channel-type id="zoneTurnOnVolume" advanced="true">
+        <item-type>Number</item-type>
+        <label>Turn On Volume</label>
+        <description>The volume the zone will default to when turned on</description>
+        <state min="0" max="50"/>
+    </channel-type>
+    <channel-type id="zoneDoNotDisturb" advanced="true">
+        <item-type>String</item-type>
+        <label>Do Not Disturb</label>
+        <description>Do Not Disturb</description>
+    </channel-type>
+    <channel-type id="zonePartyMode" advanced="true">
+        <item-type>String</item-type>
+        <label>Party Mode</label>
+        <description>Party Mode</description>
+    </channel-type>
+    <channel-type id="zoneStatus">
+        <item-type>Switch</item-type>
+        <label>Status</label>
+        <description>Whether the zone is ON or OFF</description>
+    </channel-type>
+    <channel-type id="zoneVolume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Volume level of zone</description>
+        <state min="0" max="50"/>
+    </channel-type>
+    <channel-type id="zoneMute">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Whether the zone is muted</description>
+    </channel-type>
+    <channel-type id="zonePage" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Page</label>
+        <description>Whether the zone is paging</description>
+    </channel-type>
+    <channel-type id="zoneSharedSource" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Shared Source</label>
+        <description>Whether the zone is sharing it's source</description>
+    </channel-type>
+    <channel-type id="zoneSleepTimeRemaining" advanced="true">
+        <item-type>Number</item-type>
+        <label>Sleep Time Remaining</label>
+        <description>Sleep Time (in seconds) remaining</description>
+        <state min="0" max="60" step="5" readOnly="true"/>
+    </channel-type>
+    <channel-type id="zoneLastError" advanced="true">
+        <item-type>String</item-type>
+        <label>Last Error</label>
+        <description>last Error encountered in the zone</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="zoneEnabled" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Enabled</label>
+        <description>Whether the zone is enabled or not</description>
+    </channel-type>
+    <channel-type id="zoneRepeat" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Source Repeat</label>
+        <description>Toggle the zone's repeat mode</description>
+    </channel-type>
+    <channel-type id="zoneShuffle" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Source Shuffle</label>
+        <description>Toggle the zone's shuffle mode</description>
+    </channel-type>
+    <channel-type id="zoneRating" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Rating</label>
+        <description>How to rate the current song (like/dislike)</description>
+    </channel-type>
+    <channel-type id="zoneKeyPress" advanced="true">
+        <item-type>String</item-type>
+        <label>KeyPress Event</label>
+        <description>Send a KeyPress event to the zone</description>
+    </channel-type>
+    <channel-type id="zoneKeyRelease" advanced="true">
+        <item-type>String</item-type>
+        <label>KeyRelease Event</label>
+        <description>Send a KeyRelease event to the zone</description>
+    </channel-type>
+    <channel-type id="zoneKeyHold" advanced="true">
+        <item-type>String</item-type>
+        <label>KeyHold Event</label>
+        <description>Send a KeyHold event to the zone</description>
+    </channel-type>
+    <channel-type id="zoneKeyCode" advanced="true">
+        <item-type>String</item-type>
+        <label>KeyCode Event</label>
+        <description>Send a KeyCode event to the zone</description>
+    </channel-type>
+    <channel-type id="zoneEvent" advanced="true">
+        <item-type>String</item-type>
+        <label>Generic Event</label>
+        <description>Send a generic event to the zone</description>
+    </channel-type>
+    
+    <channel-type id="srcName">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>Source Name</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcChannel">
+        <item-type>String</item-type>
+        <label>Channel</label>
+        <description>Source's Channel</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcChannelName">
+        <item-type>String</item-type>
+        <label>ChannelName</label>
+        <description>Source's Channel Name</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcComposerName" advanced="true">
+        <item-type>String</item-type>
+        <label>Composer Name</label>
+        <description>Current song's composer name</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcGenre" advanced="true">
+        <item-type>String</item-type>
+        <label>Genre</label>
+        <description>Current song's genre</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcArtistName">
+        <item-type>String</item-type>
+        <label>Artist Name</label>
+        <description>Current song's artist name</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcAlbumName">
+        <item-type>String</item-type>
+        <label>Album Name</label>
+        <description>Current song's album</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcCoverArtUrl" advanced="true">
+        <item-type>String</item-type>
+        <label>Cover Art URL</label>
+        <description>Current song's covert art url</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcCoverArt" advanced="true">
+        <item-type>Image</item-type>
+        <label>Cover Art Image</label>
+        <description>Cover Art Image</description>
+    </channel-type>
+    <channel-type id="srcPlayListName" advanced="true">
+        <item-type>String</item-type>
+        <label>Play List Name</label>
+        <description>Name of the current playlist</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcSongName">
+        <item-type>String</item-type>
+        <label>Song Name</label>
+        <description>Name of the current song</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcRating" advanced="true">
+        <item-type>String</item-type>
+        <label>Song Rating</label>
+        <description>Rating of the current song</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcMode">
+        <item-type>String</item-type>
+        <label>Mode</label>
+        <description>Provider Mode or Streaming Service</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcShuffleMode" advanced="true">
+        <item-type>String</item-type>
+        <label>Shuffle Mode</label>
+        <description>Source Shuffle Mode</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcRepeatMode" advanced="true">
+        <item-type>String</item-type>
+        <label>Repeat Mode</label>
+        <description>Source Repeat Mode</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcProgramServiceName" advanced="true">
+        <item-type>String</item-type>
+        <label>Program Service Name</label>
+        <description>Program Service Name (PSN)</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcRadioText">
+        <item-type>String</item-type>
+        <label>Radio Text</label>
+        <description>Radio Text</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcRadioText2" advanced="true">
+        <item-type>String</item-type>
+        <label>Radio Text 2</label>
+        <description>Radio Text line 2</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcRadioText3" advanced="true">
+        <item-type>String</item-type>
+        <label>Radio Text 3</label>
+        <description>Radio Text line 3</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcRadioText4" advanced="true">
+        <item-type>String</item-type>
+        <label>Radio Text 4</label>
+        <description>Radio Text line 4</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcVolume" advanced="true">
+        <item-type>String</item-type>
+        <label>Volume</label>
+        <description>The volume level of the source</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="bankName">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>The name of the bank</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="favName">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>The name of the favorite</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="favValid" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Valid</label>
+        <description>If the favorite is valid or not</description>
+    </channel-type>
+    
+    <channel-type id="zfavName">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>The name of the zone favorite</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="zfavValid" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Valid</label>
+        <description>If the zone favorite is valid or not</description>
+    </channel-type>
+    <channel-type id="zfavCmd" advanced="true">
+        <item-type>String</item-type>
+        <label>Favorite Command</label>
+        <description>Preset Command ("savesys", "restoresys", "deletesys", "savezone", "restorezone", "deletezone")</description>
+        <state>
+            <options>
+                <option value="savesys">Save as system favorite</option>
+                <option value="restoresys">Restore system favorite</option>
+                <option value="deletesys">Delete system favorite</option>
+                <option value="savezone">Save as zone favorite</option>
+                <option value="restorezone">Restore zone favorite</option>
+                <option value="deletezone">Delete zone favorite</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="bkpreName">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>The name of the bank preset</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="bkpreValid" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Valid</label>
+        <description>If the bank preset is valid or not</description>
+    </channel-type>
+    
+    <channel-type id="zpreName">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>The name of the zone preset</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="zpreValid" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Valid</label>
+        <description>If the zone preset is valid or not</description>
+    </channel-type>
+    <channel-type id="zpreCmd" advanced="true">
+        <item-type>String</item-type>
+        <label>Preset Command</label>
+        <description>Preset Command ("save", "restore", "delete")</description>
+        <state>
+            <options>
+                <option value="save">Save as preset</option>
+                <option value="restore">Restore preset</option>
+                <option value="delete">Delete preset</option>
+            </options>
+        </state>
+    </channel-type>
+    
+</thing:thing-descriptions>

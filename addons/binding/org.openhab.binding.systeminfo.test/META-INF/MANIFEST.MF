@@ -4,7 +4,7 @@ Fragment-Host: org.openhab.binding.systeminfo
 Bundle-Name: Systeminfo Binding Tests
 Bundle-SymbolicName: org.openhab.binding.systeminfo.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: groovy.json,

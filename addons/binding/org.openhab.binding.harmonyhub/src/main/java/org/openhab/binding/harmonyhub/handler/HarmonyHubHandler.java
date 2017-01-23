@@ -129,6 +129,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         connect();
     }
 
@@ -202,8 +203,6 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
      * Starts the connection process
      */
     private synchronized void connect() {
-        updateStatus(ThingStatus.INITIALIZING);
-
         disconnectFromHub();
 
         HarmonyHubConfig config = getConfig().as(HarmonyHubConfig.class);

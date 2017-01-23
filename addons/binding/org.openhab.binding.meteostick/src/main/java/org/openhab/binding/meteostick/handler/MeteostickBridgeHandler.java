@@ -24,12 +24,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ import gnu.io.UnsupportedCommOperationException;
  *
  * @author Chris Jackson - Initial contribution
  */
-public class MeteostickBridgeHandler extends BaseThingHandler {
+public class MeteostickBridgeHandler extends BaseBridgeHandler {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
     private Logger logger = LoggerFactory.getLogger(MeteostickBridgeHandler.class);
@@ -68,7 +68,7 @@ public class MeteostickBridgeHandler extends BaseThingHandler {
 
     private ConcurrentMap<Integer, MeteostickEventListener> eventListeners = new ConcurrentHashMap<Integer, MeteostickEventListener>();
 
-    public MeteostickBridgeHandler(Thing thing) {
+    public MeteostickBridgeHandler(Bridge thing) {
         super(thing);
     }
 
