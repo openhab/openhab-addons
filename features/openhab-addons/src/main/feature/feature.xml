@@ -279,12 +279,6 @@
         <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.yamahareceiver/${project.version}</bundle>
     </feature>
-
-    <feature name="openhab-binding-zwave" description="Z-Wave Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zwave/${project.version}</bundle>
-    </feature>
 	
 	<feature name="openhab-binding-zway" description="Z-Way Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -365,15 +359,5 @@
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
     </feature>    
-    
-    <feature name="openhab-ui-habmin" description="HABmin" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habmin/${project.version}</bundle>
-    </feature>
-
-    <feature name="openhab-ui-habpanel" description="HABPanel" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habpanel/${project.version}</bundle>
-    </feature>
-    
+        
 </features>
