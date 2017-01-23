@@ -10,12 +10,12 @@ package org.openhab.binding.tankerkoenig.internal.config;
 
 /**
  * The {@link Station} class is the representing java model for the station specific json result of the tankerkoenig.de
+ * details.php
  * api
  *
  * @author Dennis Dollinger
  *
  */
-
 public class Station {
 
     private String id;
@@ -24,6 +24,12 @@ public class Station {
     private double e5;
     private double e10;
     private double diesel;
+
+    private String brand;
+    private String street;
+    private String place;
+    private String postCode;
+    private boolean isOpen;
 
     public String getId() {
         return id;
@@ -63,6 +69,46 @@ public class Station {
 
     public void setDiesel(double diesel) {
         this.diesel = diesel;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public String getPostCode() {
+        return postCode;
+    }
+
+    public void setPostCode(String postCode) {
+        this.postCode = postCode;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean isOpen) {
+        this.isOpen = isOpen;
     }
 
 }

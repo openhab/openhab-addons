@@ -6,8 +6,15 @@
 
 	    <!-- Sample Thing Type -->
 	    <thing-type id="tankstelle">
+	    
+	        <supported-bridge-type-refs>
+                <bridge-type-ref id="config" />
+            </supported-bridge-type-refs>
+	    
 	        <label>Tankstelle</label>
 	        <description>Dieses "Thing" bildet eine Tankstelle ab, zu welcher man sich E5-, E10-, und Diesel-Preise abrufen kann</description>
+	
+	       
 	
 	        <channels>
 	            <channel id="diesel" typeId="diesel"/>
@@ -17,21 +24,10 @@
 	        
 	        
 	        <config-description>
-	            <parameter name="apikey" type="text" required="true">
-	                <label>API-Key</label>
-	                <description>tankerkoenig API-Key. Nötige Registrierung unter https://creativecommons.tankerkoenig.de
-	                </description>
-	            </parameter>
-	            
+            
 	            <parameter name="locationid" type="text" required="true">
 	                <label>Tankstellen-ID</label>
 	                <description>Tankstellen-ID</description>
-	            </parameter>
-	            
-	            <parameter name="refresh" type="integer" min="10">
-	                <label>Aktualisierungsintervall</label>
-	                <description>Spezifiziert das Aktualisierungsintervall in Minuten. Minimum 10 Minuten.</description>
-	                <default>60</default>
 	            </parameter>
 	            
 	        </config-description>

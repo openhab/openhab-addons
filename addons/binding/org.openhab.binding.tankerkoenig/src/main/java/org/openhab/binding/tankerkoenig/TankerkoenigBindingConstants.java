@@ -7,7 +7,12 @@
  */
 package org.openhab.binding.tankerkoenig;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.common.collect.Sets;
 
 /**
  * The {@link TankerkoenigBinding} class defines common constants, which are
@@ -21,6 +26,10 @@ public class TankerkoenigBindingConstants {
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_TANKSTELLE = new ThingTypeUID(BINDING_ID, "tankstelle");
+    public final static ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "config");
+
+    public final static Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_TANKSTELLE);
 
     // List of all Channel ids
     public final static String CHANNEL_DIESEL = "diesel";

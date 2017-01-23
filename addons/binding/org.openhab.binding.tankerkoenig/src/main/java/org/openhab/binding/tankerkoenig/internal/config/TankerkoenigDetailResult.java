@@ -9,18 +9,20 @@
 package org.openhab.binding.tankerkoenig.internal.config;
 
 /***
- * The {@link TankerkoenigResult} class is the representing java model for the json result of the tankerkoenig.de api
+ * The {@link TankerkoenigDetailResult} class is the representing java model for the json result of the tankerkoenig.de
+ * details request
+ * Actually not in use. Will be needed for detailed information of gas stations
  *
  * @author Dennis Dollinger
  *
  */
-public class TankerkoenigResult {
+public class TankerkoenigDetailResult {
 
     private String status;
     private boolean ok;
     private String message;
 
-    private Station station;
+    private Station[] stations;
 
     public String getStatus() {
         return status;
@@ -46,12 +48,12 @@ public class TankerkoenigResult {
         this.message = message;
     }
 
-    public Station getStation() {
-        return station;
+    public Station[] getStations() {
+        return stations;
     }
 
-    public void setStation(Station station) {
-        this.station = station;
+    public void setStations(Station[] stations) {
+        this.stations = stations;
     }
 
 }

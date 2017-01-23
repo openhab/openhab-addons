@@ -9,12 +9,11 @@ package org.openhab.binding.tankerkoenig.handler;
 
 import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -22,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.tankerkoenig.internal.config.Tankerkoenig;
+import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +35,7 @@ public class TankerkoenigHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(TankerkoenigHandler.class);
 
-    private String apiKey;
     private String locationID;
-    private int refreshInterval;
-    private Tankerkoenig tankerkoenig;
     @SuppressWarnings("unused")
     private ScheduledFuture<?> pollingJob;
 
@@ -51,7 +47,7 @@ public class TankerkoenigHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing {}", channelUID);
-            updateData();
+            // updateData();
         } else {
             logger.warn("This binding is a read-only binding and cannot handle commands");
         }
@@ -62,55 +58,61 @@ public class TankerkoenigHandler extends BaseThingHandler {
         logger.debug("Initializing Tankerkoenig handler '{}'", getThing().getUID());
 
         Configuration config = getThing().getConfiguration();
-        apiKey = (String) config.get("apikey");
-        locationID = (String) config.get("locationid");
-        refreshInterval = ((BigDecimal) config.get("refresh")).intValue();
+        this.setLocationID((String) config.get("locationid"));
 
-        tankerkoenig = new Tankerkoenig(apiKey, locationID);
+        Bridge b = this.getBridge();
 
-        // Check api key and location id
-        String validationResult = tankerkoenig.validate();
-
-        if (!validationResult.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, validationResult);
+        if (b == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "Could not find bridge (tankerkoenig config). Did you select one?");
             return;
         }
 
-        int pollingPeriod = refreshInterval;
-        pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                updateData();
-            }
-        }, 0, pollingPeriod, TimeUnit.MINUTES);
+        BridgeHandler handler = (BridgeHandler) b.getHandler();
+        boolean registeredSuccessfully = handler.RegisterTankstelleThing(getThing());
 
-        logger.debug("Refresh job scheduled to run every {} min. for '{}'", pollingPeriod, getThing().getUID());
+        if (registeredSuccessfully == false) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The limitation of tankstellen things for one tankstellen config (the bridge) is limited to 10");
+            return;
+        }
 
         updateStatus(ThingStatus.ONLINE);
+
     }
 
-    private synchronized void updateData() {
+    @Override
+    public void handleRemoval() {
+
+        Bridge b = this.getBridge();
+        BridgeHandler handler = (BridgeHandler) b.getHandler();
+        handler.UnregisterTankstelleThing(getThing());
+        super.handleRemoval();
+    }
+
+    /***
+     * Updates the channels of a tankstelle item
+     *
+     * @param station
+     */
+    public void updateData(LittleStation station) {
         logger.debug("Update Tankerkoenig data '{}'", getThing().getUID());
 
-        tankerkoenig.update();
-
-        // Check api key and location id
-        String validationResult = tankerkoenig.validate();
-
-        if (!validationResult.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, validationResult);
-            return;
-        }
-
-        logger.info("Updating tankerkoenig items");
-
-        DecimalType diesel = new DecimalType(tankerkoenig.getResult().getStation().getDiesel());
-        DecimalType e10 = new DecimalType(tankerkoenig.getResult().getStation().getE10());
-        DecimalType e5 = new DecimalType(tankerkoenig.getResult().getStation().getE5());
+        DecimalType diesel = new DecimalType(station.getDiesel());
+        DecimalType e10 = new DecimalType(station.getE10());
+        DecimalType e5 = new DecimalType(station.getE5());
 
         updateState(CHANNEL_DIESEL, diesel);
         updateState(CHANNEL_E10, e10);
         updateState(CHANNEL_E5, e5);
 
+    }
+
+    public String getLocationID() {
+        return locationID;
+    }
+
+    public void setLocationID(String locationID) {
+        this.locationID = locationID;
     }
 }

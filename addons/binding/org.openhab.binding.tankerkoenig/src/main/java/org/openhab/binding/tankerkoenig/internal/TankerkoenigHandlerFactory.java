@@ -7,16 +7,20 @@
  */
 package org.openhab.binding.tankerkoenig.internal;
 
-import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.THING_TYPE_TANKSTELLE;
+import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
+import org.openhab.binding.tankerkoenig.handler.BridgeHandler;
 import org.openhab.binding.tankerkoenig.handler.TankerkoenigHandler;
+
+import com.google.common.collect.Sets;
 
 /**
  * The {@link TankerkoenigHandlerFactory} is responsible for creating things and thing
@@ -26,7 +30,9 @@ import org.openhab.binding.tankerkoenig.handler.TankerkoenigHandler;
  */
 public class TankerkoenigHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TANKSTELLE);
+    // private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TANKSTELLE);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(BRIDGE_THING_TYPES_UIDS,
+            TankerkoenigBindingConstants.SUPPORTED_THING_TYPES_UIDS);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -37,8 +43,10 @@ public class TankerkoenigHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (thingTypeUID.equals(THING_TYPE_TANKSTELLE)) {
+        if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
+            BridgeHandler handler = new BridgeHandler((Bridge) thing);
+            return handler;
+        } else if (thingTypeUID.equals(THING_TYPE_TANKSTELLE)) {
             return new TankerkoenigHandler(thing);
         }
 
