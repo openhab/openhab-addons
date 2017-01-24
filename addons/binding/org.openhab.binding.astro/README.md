@@ -18,8 +18,9 @@ No binding configuration required.
 
 ## Thing Configuration
 
-The things requires the geolocation (latitude, longitude) for which the calculation is done. Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
-An optional altitude configuration item can be specified to sharpen results provided by Radiation group.
+A thing requires the geolocation (latitude, longitude) for which the calculation is done.
+Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
+An optional altitude configuration item can also be specified to sharpen results provided by Radiation group.
 
 ## Channels
 
@@ -59,8 +60,20 @@ An optional altitude configuration item can be specified to sharpen results prov
 Things:
 
 ```
-astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60]
-astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60]
+astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ]
+astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
+```
+
+or optionally with an offset
+
+```
+astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ] {
+    Channels:
+        Type rangeEvent : rise#event [
+            offset=-30
+        ]
+}
+astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
 ```
 
 Items:
@@ -72,6 +85,7 @@ Number   Azimuth            "Azimuth"                { channel="astro:sun:home:p
 Number   Elevation          "Elevation"              { channel="astro:sun:home:position#elevation" }
 Number   Total_Radiation    "Radiation"              { channel="astro:sun:home:radiation#total" }
 String   MoonPhase          "MoonPhase"              { channel="astro:moon:home:phase#name" }
+Number   Total_Radiation    "Radiation"              { channel="astro:sun:home:radiation#total" }
 ```
 
 Events:
