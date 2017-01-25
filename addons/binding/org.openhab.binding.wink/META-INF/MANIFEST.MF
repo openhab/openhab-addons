@@ -5,11 +5,11 @@ Bundle-SymbolicName: org.openhab.binding.wink;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/pubnub-gson-4.3.0-all.jar
 Import-Package: 
  com.google.common.base;version="10.0.1",
  com.google.common.collect,
- com.google.gson,
  javax.ws.rs.client,
  javax.ws.rs.core,
  org.apache.commons.lang,
