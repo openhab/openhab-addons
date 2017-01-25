@@ -162,7 +162,7 @@ public class IsyRestClient implements OHIsyClient {
                     String name = getValue(firstElement, "name");
                     String address = getValue(firstElement, "address");
                     String type = getValue(firstElement, "type");
-                    returnValue.add(new Node(name, address, type));
+                    returnValue.add(new Node(removeBadChars(name), address, type));
                 }
             }
         } catch (ParserConfigurationException e) {
@@ -259,6 +259,10 @@ public class IsyRestClient implements OHIsyClient {
         return returnValue;
     }
 
+    private static String removeBadChars(String text) {
+        return text.replace("(", "").replace(")", "");
+    }
+
     @Override
     public List<Scene> getScenes() {
         List<Scene> returnValue = new ArrayList<Scene>();
@@ -277,6 +281,7 @@ public class IsyRestClient implements OHIsyClient {
 
             XPathExpression expr = xpath.compile("//group[@flag=132]");
             NodeList list = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+            logger.debug("Number scenes found from rest call: " + list.getLength());
             for (int i = 0; i < list.getLength(); i++) {
                 org.w3c.dom.Node node = list.item(i);
 
@@ -285,11 +290,10 @@ public class IsyRestClient implements OHIsyClient {
 
                     String name = getValue(firstElement, "name");
                     String address = getValue(firstElement, "address");
-
-                    returnValue.add(new Scene(name, address));
+                    logger.debug("read another scene from xml: " + name);
+                    returnValue.add(new Scene(removeBadChars(name), address));
                 }
 
-                System.out.println(node.getTextContent());
             }
         } catch (ParserConfigurationException e) {
             // TODO Auto-generated catch block
