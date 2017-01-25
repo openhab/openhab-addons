@@ -229,7 +229,7 @@
 
 	<channel-type id="sunPhaseName">
 		<item-type>String</item-type>
-		<label>Sunphase name</label>
+		<label>The current sun phase</label>
 		<description>The name of the current sun phase</description>
 		<state readOnly="true">
 			<options>
