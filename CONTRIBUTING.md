@@ -55,7 +55,7 @@ help prioritize the most common problems and requests.
 ### Conventions
 
 Fork the repo and make changes on your fork in a feature branch:
-
+
 - If it's a bugfix branch, name it XXX-something where XXX is the number of the
   issue
 - If it's a feature branch, create an enhancement issue to announce your

@@ -185,8 +185,8 @@ public class IsyRestClient implements OHIsyClient {
     }
 
     public static void main(String[] args) {
-        // IsyRestClient test = new IsyRestClient();
-        // test.doTests();
+        IsyRestClient test = new IsyRestClient("192.168.0.211", "xxxx", "xxxx", null);
+        test.doTests();
 
     }
 
