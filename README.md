@@ -34,8 +34,8 @@ enabled        | Switch    | Parameter indicating if the monitor is enabled
 force-alarm    | Switch    | Parameter indicating if Force Alarm for the the monitor is active
 alarm	       | Switch    | true if monitor has an active alarm
 recording      | Text	   | true if monitor is recording
-detailed-status| Text	   | 
-event-cause    | Text	   | 	
+detailed-status| Text	   |  Detailed status of monitor (Idle, Pre-alarm, Alarm, Alert, Recording)
+event-cause    | Text	   | empty when there is no active event, else it contains the text with the cause of the event	
 function       | Text      | Text corresponding the value in ZoneMinder: None, Monitor, Modect, Record, Mocord, Nodect
 capture-daemon | Switch      | Run state of ZMC Daemon 
 analysis-daemon| Switch      | Run state of ZMA Daemon 
