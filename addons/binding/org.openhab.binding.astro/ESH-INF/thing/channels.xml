@@ -218,6 +218,36 @@
         <config-description-ref uri="channel-type:astro:config" />      
 	</channel-type>
 
+    <!-- sunphase -->
+    <channel-group-type id="sunPhase">
+        <label>Sunphases</label>
+        <description>Sunphases</description>
+        <channels>
+            <channel id="name" typeId="sunPhaseName" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="sunPhaseName">
+        <item-type>String</item-type>
+        <label>Sunphase name</label>
+        <description>The name of the current sun phase</description>
+        <state readOnly="true">
+            <options>
+                <option value="SUN_RISE">Sunrise</option>
+                <option value="ASTRO_DAWN">Astro dawn</option>
+                <option value="NAUTIC_DAWN">Nautic dawn</option>
+                <option value="CIVIL_DAWN">Civil dawn</option>
+                <option value="CIVIL_DUSK">Civil dusk</option>
+                <option value="NAUTIC_DUSK">Nautic dusk</option>
+                <option value="ASTRO_DUSK">Astro dusk</option>
+                <option value="SUN_SET">Sunset</option>
+                <option value="DAYLIGHT">Daylight</option>
+                <option value="NOON">Noon</option>
+                <option value="NIGHT">Night</option>
+            </options>
+        </state>
+    </channel-type>
+
 	<!-- moonphase -->
 	<channel-group-type id="moonPhase">
 		<label>Moonphases</label>

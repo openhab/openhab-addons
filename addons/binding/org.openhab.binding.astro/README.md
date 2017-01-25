@@ -32,6 +32,8 @@ Optionally, a refresh interval (in seconds) can be defined to also calculate pos
         * **channel**: `spring, summer, autumn, winter` (DateTime), `name` (String)
     * **group** `eclipse`
         * **channel**: `total, partial, ring` (DateTime)
+    * **group** `phase`
+        * **channel**: `name` (String)
 * **thing** `moon`
     * **group** `rise, set`
         * **channel** `start, end` (DateTime), `duration` (Number), **Note:** start and end is always equal, duration always 0.
