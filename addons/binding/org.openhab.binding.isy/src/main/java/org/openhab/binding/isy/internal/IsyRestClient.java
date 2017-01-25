@@ -260,7 +260,7 @@ public class IsyRestClient implements OHIsyClient {
     }
 
     private static String removeBadChars(String text) {
-        return text.replace("(", "").replace(")", "");
+        return text.replace("(", "").replace(")", "").replace("-", "_");
     }
 
     @Override
