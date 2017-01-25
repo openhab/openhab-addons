@@ -1,18 +1,8 @@
 package org.openhab.binding.isy.internal;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "var")
-@XmlAccessorType(XmlAccessType.FIELD)
-
 public class Variable {
 
-    @XmlAttribute(name = "type")
     public String type;
-    @XmlAttribute(name = "id")
     public String id;
 
     public Integer init;
@@ -21,6 +11,12 @@ public class Variable {
 
     public Variable() {
 
+    }
+
+    public Variable(String id, String type, int value) {
+        this.id = id;
+        this.type = type;
+        this.val = value;
     }
 
     @Override

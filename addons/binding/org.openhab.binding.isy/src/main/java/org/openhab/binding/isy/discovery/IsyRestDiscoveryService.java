@@ -16,6 +16,7 @@ import org.openhab.binding.isy.internal.InsteonAddress;
 import org.openhab.binding.isy.internal.Node;
 import org.openhab.binding.isy.internal.OHIsyClient;
 import org.openhab.binding.isy.internal.Program;
+import org.openhab.binding.isy.internal.Scene;
 import org.openhab.binding.isy.internal.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,11 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         try {
+            discoverScenes();
+        } catch (Exception e) {
+            logger.error("error in discover scenes", e);
+        }
+        try {
             discoverNodes();
         } catch (Exception e) {
             logger.error("error in discover nodes", e);
@@ -99,7 +105,29 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withProperties(properties).withBridge(bridgeUID).withLabel(program.getName()).build();
             thingDiscovered(discoveryResult);
+
+            // TODO remove
+            logger.warn("Only discovering 1 program per scan for now, until more program functionality exists");
             break;
+        }
+    }
+
+    private void discoverScenes() {
+        OHIsyClient insteon = this.bridgeHandler.getInsteonClient();
+        Map<String, Object> properties = null;
+        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
+        for (Scene scene : insteon.getScenes()) {
+            logger.debug("discovered scene: " + scene);
+            properties = new HashMap<>(0);
+            properties.put(IsyInsteonDeviceConfiguration.ADDRESS, scene.address);
+            properties.put(IsyInsteonDeviceConfiguration.NAME, scene.name);
+
+            ThingTypeUID theThingTypeUid = IsyBindingConstants.SCENE_THING_TYPE;
+            String thingID = scene.name.replace(" ", "").replaceAll("\\.", "");
+            ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                    .withProperties(properties).withBridge(bridgeUID).withLabel(scene.name).build();
+            thingDiscovered(discoveryResult);
         }
     }
 

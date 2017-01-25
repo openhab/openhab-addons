@@ -1,20 +1,17 @@
 package org.openhab.binding.isy.internal;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement()
-@XmlAccessorType(XmlAccessType.FIELD)
-
 public class Node {
 
-    @XmlAttribute(name = "flag")
     protected String flag;
     protected String name;
     protected String address;
     protected String type;
+
+    public Node(String name, String address, String type) {
+        this.name = name;
+        this.address = address;
+        this.type = type;
+    }
 
     public String getName() {
         return name;

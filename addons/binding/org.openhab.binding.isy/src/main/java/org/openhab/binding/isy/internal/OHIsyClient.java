@@ -9,10 +9,14 @@ public interface OHIsyClient {
 
     public boolean changeVariableState(String type, String id, int value);
 
+    public boolean changeSceneState(String address, int value);
+
     public List<Node> getNodes();
 
     public Collection<Program> getPrograms();
 
     public List<Variable> getVariables();
+
+    public List<Scene> getScenes();
 
 }

@@ -40,7 +40,7 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ISYBRIDGE,
             MOTION_THING_TYPE, DIMMER_THING_TYPE, LEAKDETECTOR_THING_TYPE, SWITCH_THING_TYPE, RELAY_THING_TYPE,
             GARAGEDOORKIT_THING_TYPE, KEYPAD_LINC_6_THING_TYPE, KEYPAD_LINC_5_THING_TYPE, REMOTELINC_8_THING_TYPE,
-            INLINELINC_SWITCH_THING_TYPE, PROGRAM_THING_TYPE, VARIABLE_THING_TYPE);
+            INLINELINC_SWITCH_THING_TYPE, PROGRAM_THING_TYPE, VARIABLE_THING_TYPE, SCENE_THING_TYPE);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
@@ -56,6 +56,8 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
         // TODO: can we figure this out from the things-types.xml, it's really duplicate work.
         if (thingTypeUID.equals(PROGRAM_THING_TYPE)) {
             return new IsyProgramHandler(thing);
+        } else if (thingTypeUID.equals(SCENE_THING_TYPE)) {
+            return new SceneHandler(thing);
         } else if (thingTypeUID.equals(VARIABLE_THING_TYPE)) {
             return new IsyVariableHandler(thing);
         } else if (thingTypeUID.equals(MOTION_THING_TYPE)) {

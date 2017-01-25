@@ -49,6 +49,26 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="scene">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge" />
+        </supported-bridge-type-refs>
+        <label>Scene</label>
+        <description>Scene</description>
+        <channels>
+            <channel id="onoff" typeId="switchState" />
+        </channels>
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <label>Scene Address</label>
+                <description>Scene Address.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Text description of scene.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
     <thing-type id="variable">
         <supported-bridge-type-refs>
             <bridge-type-ref id="ipbridge" />

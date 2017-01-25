@@ -108,7 +108,8 @@ public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClient
         String addressNoDeviceId = InsteonAddress.stripDeviceId(address);
         for (Thing thing : getThing().getThings()) {
             if (!(IsyBindingConstants.PROGRAM_THING_TYPE.equals(thing.getThingTypeUID())
-                    || IsyBindingConstants.VARIABLE_THING_TYPE.equals(thing.getThingTypeUID()))) {
+                    || IsyBindingConstants.VARIABLE_THING_TYPE.equals(thing.getThingTypeUID())
+                    || IsyBindingConstants.SCENE_THING_TYPE.equals(thing.getThingTypeUID()))) {
 
                 String theAddress = (String) thing.getConfiguration().get("address");
                 if (theAddress == null) {

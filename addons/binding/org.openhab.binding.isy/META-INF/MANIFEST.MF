@@ -10,7 +10,6 @@ Bundle-ClassPath: .,
  lib/websocket-common-9.2.14.v20151106.jar,
  lib/websocket-client-9.2.14.v20151106.jar
 Import-Package: 
- javax.ws.rs,
  javax.ws.rs.client,
  javax.ws.rs.core,
  javax.ws.rs.ext,
@@ -25,17 +24,10 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.glassfish.jersey.media.sse;version="2.22.1",
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.isy;uses:="org.eclipse.smarthome.core.thing",
- org.openhab.binding.isy.handler;
-  uses:="org.eclipse.smarthome.core.thing,
-   org.slf4j,
-   org.openhab.binding.isy.internal,
-   org.eclipse.smarthome.core.thing.binding,
-   org.eclipse.smarthome.config.discovery,
-   org.eclipse.smarthome.core.types"
+Export-Package: org.openhab.binding.isy,
+ org.openhab.binding.isy.handler
 Require-Bundle: org.eclipse.osgi,
  org.eclipse.jetty.util,
  com.google.guava
