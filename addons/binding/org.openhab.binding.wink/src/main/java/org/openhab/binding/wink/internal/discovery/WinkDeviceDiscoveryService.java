@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(WinkDeviceDiscoveryService.class);
@@ -72,13 +71,14 @@ public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(WINK_DEVICE_ID, deviceDescription.get(thingIdField).toString().replaceAll("\"", ""));
+        properties.put(WINK_DEVICE_CONFIG, deviceDescription.toString());
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(deviceName).withProperties(properties)
                 .withBridge(hubUID).build();
 
         thingDiscovered(result);
 
-        logger.info("Discovered {}", uid);
+        logger.debug("Discovered {}", uid);
     }
 
     protected void enumerateDevices(JsonObject hubResponse) {
@@ -107,15 +107,19 @@ public class WinkDeviceDiscoveryService extends AbstractDiscoveryService {
         }
 
         @Override
-        public void parseRequestResult(String jsonResult) {
-            JsonParser parser = new JsonParser();
-            discoveryService.enumerateDevices(parser.parse(jsonResult).getAsJsonObject());
+        public void parseRequestResult(JsonObject jsonResult) {
+            discoveryService.enumerateDevices(jsonResult);
+        }
+
+        @Override
+        public void OnError(String error) {
+            discoveryService.logger.error("Error during the device discovery: " + error);
         }
     }
 
     private void readDeviceDatabase() throws IOException {
         try {
-            hubHandler.getConfigFromServer("users/me/wink_devices", new listDevicesCallback(this));
+            hubHandler.sendRequestToServer("users/me/wink_devices", new listDevicesCallback(this));
         } catch (IOException e) {
             logger.error("Error while querying the hub for the devices.", e);
         }

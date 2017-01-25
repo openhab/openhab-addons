@@ -27,13 +27,14 @@
         <config-description>
         	<parameter name="device_id" type="text">
         		<required>true</required></parameter>
-        	<parameter name="pubnub_subscribe_key" type="text"></parameter>
-        	<parameter name="pubnub_channel" type="text"></parameter></config-description>
+        	<parameter name="device_config_string" type="text" required="true"></parameter></config-description>
 	</thing-type>
     <channel-type id="lightDimmer">
         <item-type>Dimmer</item-type>
         <label>Light Level</label>
         <description>Increase/decrease the light level</description>
+        <category>DimmableLight</category>
+        <state min="0" max="100" pattern="%d %%"/>
     </channel-type>
 
 </thing:thing-descriptions>
