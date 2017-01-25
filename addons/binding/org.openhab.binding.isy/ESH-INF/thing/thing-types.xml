@@ -22,10 +22,6 @@
 				<label>IP or Host Name</label>
 				<description>The IP or host name of the Isy Device</description>
 			</parameter>
-			<parameter name="uuid" type="text" required="false">
-				<label>UUID</label>
-				<description>The Isy UUID</description>
-			</parameter>
 		</config-description>
 	</bridge-type>
 	<thing-type id="program">

@@ -40,7 +40,7 @@ public class SceneHandler extends AbtractIsyThingHandler {
 
     @Override
     public void handleUpdate(Object... parameters) {
-        // TODO Auto-generated method stub
+        logger.warn("Not expecting to get updates for scenes");
 
     }
 
