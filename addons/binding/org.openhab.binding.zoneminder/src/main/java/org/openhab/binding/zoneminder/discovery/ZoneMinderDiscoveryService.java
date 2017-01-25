@@ -62,13 +62,13 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
     @Override
     public void startBackgroundDiscovery() {
         logger.debug("[DISCOVERY]: Performing background discovery scan for {}", serverHandler.getThing().getUID());
-        doScan();
+        discoverMonitors();
     }
 
     @Override
     public void startScan() {
         logger.debug("[DISCOVERY]: Starting discovery scan for {}", serverHandler.getThing().getUID());
-        doScan();
+        discoverMonitors();
     }
 
     @Override
@@ -81,11 +81,11 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
         super.stopScan();
     }
 
-    public static String BuildMonitorLabel(String id, String name) {
+    protected String BuildMonitorLabel(String id, String name) {
         return String.format("%s [%s]", ZoneMinderConstants.ZONEMINDER_MONITOR_NAME, name);
     }
 
-    protected synchronized void doScan() {
+    protected synchronized void discoverMonitors() {
         // Add all existing devices
         for (IZoneMinderMonitorData monitor : serverHandler.getMonitors()) {
             deviceAdded(monitor);

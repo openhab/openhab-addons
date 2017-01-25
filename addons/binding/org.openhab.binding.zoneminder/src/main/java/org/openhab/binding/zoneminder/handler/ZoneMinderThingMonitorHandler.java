@@ -11,7 +11,6 @@ package org.openhab.binding.zoneminder.handler;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
-import java.util.EventObject;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -30,7 +29,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
-import org.openhab.binding.zoneminder.ZoneMinderMonitorProperties;
+import org.openhab.binding.zoneminder.ZoneMinderProperties;
 import org.openhab.binding.zoneminder.internal.DataRefreshPriorityEnum;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderThingMonitorConfig;
 import org.slf4j.Logger;
@@ -101,14 +100,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
 
     @Override
     public void dispose() {
-    }
-
-    protected String getLogIdentifier() {
-        String result = String.format("[MONITOR]");
-        if (config != null) {
-            result = String.format("[MONITOR-%s]", config.getZoneMinderId());
-        }
-        return result;
     }
 
     @Override
@@ -403,7 +394,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
         ThingStatus curThingStatus = this.getThing().getStatus();
 
         boolean connectionStatus = false;
-        if (isConnected()) {
+        if (isConnected() && curThingStatus == ThingStatus.ONLINE) {
             return;
         }
 
@@ -551,16 +542,6 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             logger.error("{}: Error when 'updateChannel' was called (channelId='{}'state='{}', exception'{}')",
                     getLogIdentifier(), channel.toString(), state.toString(), ex.getMessage());
         }
-    }
-
-    @Override
-    public void updateProperties(ChannelUID channelUID, int state, String description) {
-
-    }
-
-    @Override
-    public void ZoneMinderEventReceived(EventObject event, Thing thing) {
-
     }
 
     @Override
@@ -779,17 +760,17 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
         IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(session, getZoneMinderId());
         IZoneMinderMonitorData monitorData = monitorProxy.getMonitorData();
 
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_ID, getLogIdentifier());
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_NAME, monitorData.getName());
+        properties.put(ZoneMinderProperties.PROPERTY_ID, getLogIdentifier());
+        properties.put(ZoneMinderProperties.PROPERTY_MONITOR_NAME, monitorData.getName());
 
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_SOURCETYPE, monitorData.getSourceType().name());
+        properties.put(ZoneMinderProperties.PROPERTY_MONITOR_SOURCETYPE, monitorData.getSourceType().name());
 
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_ANALYSIS_FPS, monitorData.getAnalysisFPS());
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_MAXIMUM_FPS, monitorData.getMaxFPS());
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_ALARM_MAXIMUM, monitorData.getAlarmMaxFPS());
+        properties.put(ZoneMinderProperties.PROPERTY_MONITOR_ANALYSIS_FPS, monitorData.getAnalysisFPS());
+        properties.put(ZoneMinderProperties.PROPERTY_MONITOR_MAXIMUM_FPS, monitorData.getMaxFPS());
+        properties.put(ZoneMinderProperties.PROPERTY_MONITOR_ALARM_MAXIMUM, monitorData.getAlarmMaxFPS());
 
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_IMAGE_WIDTH, monitorData.getWidth());
-        properties.put(ZoneMinderMonitorProperties.PROPERTY_IMAGE_HEIGHT, monitorData.getHeight());
+        properties.put(ZoneMinderProperties.PROPERTY_MONITOR_IMAGE_WIDTH, monitorData.getWidth());
+        properties.put(ZoneMinderProperties.PROPERTY_MONITOR_IMAGE_HEIGHT, monitorData.getHeight());
 
         // Must loop over the new properties since we might have added data
         boolean update = false;
@@ -806,5 +787,21 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             logger.debug("{}: Properties synchronised", getLogIdentifier());
             updateProperties(properties);
         }
+    }
+
+    @Override
+    public String getLogIdentifier() {
+        String result = "[MONITOR]";
+
+        try {
+            if (config != null) {
+
+                result = String.format("[MONITOR-%s]", config.getZoneMinderId().toString());
+            }
+
+        } catch (Exception ex) {
+        }
+
+        return result;
     }
 }

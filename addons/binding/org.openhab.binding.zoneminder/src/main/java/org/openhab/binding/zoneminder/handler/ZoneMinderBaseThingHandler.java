@@ -11,7 +11,6 @@ package org.openhab.binding.zoneminder.handler;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
-import java.util.EventObject;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -66,7 +65,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
     private Lock lockSession = new ReentrantLock();
     private IZoneMinderSession zoneMinderSession = null;
 
-    /** Configuration from OpenHAB */
+    /** Configuration from openHAB */
     protected ZoneMinderThingConfig configuration;
 
     private DataRefreshPriorityEnum _refreshPriority = DataRefreshPriorityEnum.SCHEDULED;
@@ -105,8 +104,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
         try {
 
         } catch (Exception ex) {
-            logger.error("[MONITOR-{}]: 'ZoneMinderServerBridgeHandler' failed to initialize. Exception='{}'",
-                    getZoneMinderId(), ex.getMessage());
+            logger.error("{}: BridgeHandler failed to initialize. Exception='{}'", getLogIdentifier(), ex.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
         } finally {
         }
@@ -143,7 +141,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
      * Method to stop the data Refresh task.
      */
     protected void stopPriorityRefresh() {
-        logger.info("[MONITOR-{}]: Stopping Priority Refresh for Monitor", getZoneMinderId());
+        logger.info("{}: Stopping Priority Refresh for Monitor", getLogIdentifier());
         _refreshPriority = DataRefreshPriorityEnum.SCHEDULED;
     }
 
@@ -173,15 +171,15 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
         }
 
         if (refreshPriority == DataRefreshPriorityEnum.HIGH_PRIORITY) {
-            logger.debug("[MONITOR-{}]: Performing HIGH PRIORITY refresh", getZoneMinderId());
+            logger.debug("{}: Performing HIGH PRIORITY refresh", getLogIdentifier());
         } else {
-            logger.debug("[MONITOR-{}]: Performing refresh", getZoneMinderId());
+            logger.debug("{}: Performing refresh", getLogIdentifier());
         }
 
         if (getZoneMinderBridgeHandler() != null) {
             if (isConnected()) {
 
-                logger.debug("[MONITOR-{}]: refreshThing(): Bridge '{}' Found for Thing '{}'!", getZoneMinderId(),
+                logger.debug("{}: refreshThing(): Bridge '{}' Found for Thing '{}'!", getLogIdentifier(),
                         getThing().getUID(), this.getThing().getUID());
 
                 onFetchData();
@@ -190,14 +188,14 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
 
         Thing thing = getThing();
         List<Channel> channels = thing.getChannels();
-        logger.debug("[MONITOR-{}]: refreshThing(): Refreshing Thing - {}", getZoneMinderId(), thing.getUID());
+        logger.debug("{}: refreshThing(): Refreshing Thing - {}", getLogIdentifier(), thing.getUID());
 
         for (Channel channel : channels) {
             updateChannel(channel.getUID());
         }
 
         this.setThingRefreshed(true);
-        logger.debug("MONITOR-{}: refreshThing(): Thing Refreshed - {}", getZoneMinderId(), thing.getUID());
+        logger.debug("[{}: refreshThing(): Thing Refreshed - {}", getLogIdentifier(), thing.getUID());
 
     }
 
@@ -213,25 +211,24 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
             Bridge bridge = getBridge();
 
             if (bridge == null) {
-                logger.debug("[MONITOR-{}]: getZoneMinderBridgeHandler(): Unable to get bridge!", getZoneMinderId());
+                logger.debug("{}: getZoneMinderBridgeHandler(): Unable to get bridge!", getLogIdentifier());
                 return null;
             }
 
-            logger.debug("[MONITOR-{}]: getZoneMinderBridgeHandler(): Bridge for '{}' - '{}'", getZoneMinderId(),
+            logger.debug("{}: getZoneMinderBridgeHandler(): Bridge for '{}' - '{}'", getLogIdentifier(),
                     getThing().getUID(), bridge.getUID());
             ThingHandler handler = null;
             try {
                 handler = bridge.getHandler();
             } catch (Exception ex) {
-                logger.debug(String.format("[MONITOR-{}]: Exception in 'getZoneMinderBridgeHandler()': {}",
-                        getZoneMinderId(), ex.getMessage()));
+                logger.debug(String.format("{}: Exception in 'getZoneMinderBridgeHandler()': {}", getLogIdentifier(),
+                        ex.getMessage()));
             }
 
             if (handler instanceof ZoneMinderServerBridgeHandler) {
                 this.zoneMinderBridgeHandler = (ZoneMinderServerBridgeHandler) handler;
             } else {
-                logger.debug("[MONITOR-{}]: getZoneMinderBridgeHandler(): Unable to get bridge handler!",
-                        getZoneMinderId());
+                logger.debug("{}: getZoneMinderBridgeHandler(): Unable to get bridge handler!", getLogIdentifier());
             }
         }
 
@@ -253,27 +250,10 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
                 break;
             default:
                 logger.error(
-                        "[MONITOR-{}]: updateChannel() in base class, called for an unknown channel '{}', this channel must be handled in super class.",
-                        getZoneMinderId(), channel.getId());
+                        "{}: updateChannel() in base class, called for an unknown channel '{}', this channel must be handled in super class.",
+                        getLogIdentifier(), channel.getId());
         }
     }
-
-    /**
-     * Method to Update Device Properties.
-     *
-     * @param channelUID
-     * @param state
-     * @param description
-     */
-    public abstract void updateProperties(ChannelUID channelUID, int state, String description);
-
-    /**
-     * Receives ZoneMinder Events from the bridge.
-     *
-     * @param event.
-     * @param thing
-     */
-    public abstract void ZoneMinderEventReceived(EventObject event, Thing thing);
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -402,11 +382,14 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
             }
 
         } catch (Exception ex) {
-            logger.error("[MONITOR-{}]: Exception occurred in 'getChannelBoolAsOnOffState()' (Exception='{}')",
-                    getZoneMinderId(), ex.getMessage());
+            logger.error("{}: Exception occurred in 'getChannelBoolAsOnOffState()' (Exception='{}')",
+                    getLogIdentifier(), ex.getMessage());
         }
 
         return state;
     }
+
+    @Override
+    public abstract String getLogIdentifier();
 
 }

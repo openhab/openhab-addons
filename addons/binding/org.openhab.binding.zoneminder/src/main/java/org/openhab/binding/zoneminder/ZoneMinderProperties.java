@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.zoneminder;
 
-public class ZoneMinderMonitorProperties {
+public class ZoneMinderProperties {
     public static final String PROPERTY_ID = "Id";
 
     public static final String PROPERTY_SERVER_VERSION = "Version";
@@ -17,13 +17,13 @@ public class ZoneMinderMonitorProperties {
     public static final String PROPERTY_SERVER_USE_AUTHENTIFICATION = "Use Authentification";
     public static final String PROPERTY_SERVER_TRIGGERS_ENABLED = "Triggers enabled";
 
-    public static final String PROPERTY_NAME = "Name";
-    public static final String PROPERTY_SOURCETYPE = "Sourcetype";
+    public static final String PROPERTY_MONITOR_NAME = "Name";
+    public static final String PROPERTY_MONITOR_SOURCETYPE = "Sourcetype";
 
-    public static final String PROPERTY_ANALYSIS_FPS = "Analysis FPS";
-    public static final String PROPERTY_MAXIMUM_FPS = "Maximum FPS";
-    public static final String PROPERTY_ALARM_MAXIMUM = "Alarm Maximum FPS";
+    public static final String PROPERTY_MONITOR_ANALYSIS_FPS = "Analysis FPS";
+    public static final String PROPERTY_MONITOR_MAXIMUM_FPS = "Maximum FPS";
+    public static final String PROPERTY_MONITOR_ALARM_MAXIMUM = "Alarm Maximum FPS";
 
-    public static final String PROPERTY_IMAGE_WIDTH = "Width";
-    public static final String PROPERTY_IMAGE_HEIGHT = "Height";
+    public static final String PROPERTY_MONITOR_IMAGE_WIDTH = "Width";
+    public static final String PROPERTY_MONITOR_IMAGE_HEIGHT = "Height";
 }

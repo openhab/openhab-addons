@@ -22,7 +22,13 @@ import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
  * @author Martin S. Eskildsen
  */
 public interface ZoneMinderHandler {
+
     String getZoneMinderId();
+
+    /**
+     * Method used to relate a log entry to a thing
+     */
+    String getLogIdentifier();
 
     void updateAvaliabilityStatus(IZoneMinderConnectionInfo connection);
 
