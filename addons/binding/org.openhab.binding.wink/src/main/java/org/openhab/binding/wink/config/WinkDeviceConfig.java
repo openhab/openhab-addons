@@ -43,6 +43,13 @@ public class WinkDeviceConfig {
         }
     }
 
+    public boolean validateConfig() {
+        if (this.deviceId == null || this.name == null) {
+            return false;
+        }
+        return true;
+    }
+
     public String getDeviceId() {
         return deviceId;
     }

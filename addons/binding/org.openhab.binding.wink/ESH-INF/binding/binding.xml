@@ -4,7 +4,7 @@
         xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>OpenHab Wink Binding</name>
+    <name>Wink Binding</name>
     <description>This is the OpenHab binding for the Wink Hub.</description>
     <author>Sebastien Marchand</author>
 

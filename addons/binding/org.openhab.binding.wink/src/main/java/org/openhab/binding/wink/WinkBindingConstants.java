@@ -30,14 +30,16 @@ public class WinkBindingConstants {
     public final static String CHANNEL_PUBNUB_CHANNEL = "pubnub_channel";
 
     // List of all Channel ids for a light bulb
-    public final static String CHANNEL_LIGHT_DESIRED_STATE_POWERED = "powered";
-    public final static String CHANNEL_LIGHT_DESIRED_STATE_BRIGHTNESS = "brightness";
+    public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
 
     // REST URI constants
     public static final String WINK_URI = "https://api.wink.com/";
     public static final String WINK_DEVICES_REQUEST_PATH = "users/me/wink_devices";
     public static final String WINK_ACCESS_TOKEN = "access_token";
     public static final String WINK_REFRESH_TOKEN = "refresh_token";
+
+    // Configuration of a device (JSON).
+    public static final String WINK_DEVICE_CONFIG = "device_config_string";
 
     public static final String WINK_DEVICE_ID = "device_id";
     public static final String WINK_PUBNUB_SUBSCRIBE_KEY = "pubnub_subscribe_key";

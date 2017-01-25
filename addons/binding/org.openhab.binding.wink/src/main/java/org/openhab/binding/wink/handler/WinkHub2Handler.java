@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -32,6 +33,9 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 /**
  * TODO: The {@link WinkHub2Handler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -42,6 +46,7 @@ public class WinkHub2Handler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(WinkHub2Handler.class);
 
+    @SuppressWarnings("unused")
     private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
 
     public WinkHub2Handler(Bridge bridge) {
@@ -50,7 +55,7 @@ public class WinkHub2Handler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("Received a command!");
+        logger.error("The hub doesn't support any command!");
     }
 
     @Override
@@ -98,48 +103,73 @@ public class WinkHub2Handler extends BaseBridgeHandler {
     protected WebTarget winkTarget = winkClient.target(WINK_URI);
 
     public interface RequestCallback {
-        public void parseRequestResult(String jsonResult);
+        public void parseRequestResult(JsonObject resultJson);
+
+        public void OnError(String error);
     }
 
     protected class Request implements Runnable {
         private WebTarget target;
         private RequestCallback callback;
+        private String payLoad;
 
-        public Request(String targetPath, RequestCallback callback) {
+        public Request(String targetPath, RequestCallback callback, String payLoad) {
             this.target = winkTarget.path(targetPath);
             this.callback = callback;
+            this.payLoad = payLoad;
+        }
+
+        protected String checkForFailure(JsonObject jsonResult) {
+            if (jsonResult.get("data").isJsonNull()) {
+                return jsonResult.get("errors").getAsString();
+            }
+            return null;
         }
 
         @Override
         public void run() {
             try {
-                String result = "";
-                // if (isAwake() && getThing().getStatus() == ThingStatus.ONLINE) {
-                result = invokeAndParse(target);
-                // }
+                String result = invokeAndParse(this.target, this.payLoad);
+                logger.trace("Hub replied with: " + result);
+                JsonParser parser = new JsonParser();
+                JsonObject resultJson = parser.parse(result).getAsJsonObject();
 
-                if (result != null && result != "") {
-                    logger.debug("Hub replied with: " + result);
-                    callback.parseRequestResult(result);
+                String errors = checkForFailure(resultJson);
+                if (errors != null) {
+
                 }
+                callback.parseRequestResult(resultJson);
             } catch (Exception e) {
                 logger.error("An exception occurred while executing a request to the hub: '{}'", e.getMessage());
             }
         }
     }
 
-    protected String invokeAndParse(WebTarget target) {
+    protected String invokeAndParse(WebTarget target, String payLoad) {
         if (this.config != null) {
-            logger.debug("Requesting the hub for: " + target.toString());
-            Response response = target.request(MediaType.APPLICATION_JSON_TYPE)
-                    .header("Authorization", "Bearer " + this.config.access_token).get();
+            Response response;
+
+            logger.trace("Requesting the hub for: " + target.toString());
+            if (payLoad != null) {
+                logger.trace("Request payload: " + payLoad.toString());
+                response = target.request(MediaType.APPLICATION_JSON_TYPE)
+                        .header("Authorization", "Bearer " + this.config.access_token).put(Entity.json(payLoad));
+            } else {
+                response = target.request(MediaType.APPLICATION_JSON_TYPE)
+                        .header("Authorization", "Bearer " + this.config.access_token).get();
+            }
             return response.readEntity(String.class);
         }
         return null;
     }
 
-    public void getConfigFromServer(String deviceRequestPath, RequestCallback callback) throws IOException {
-        Request request = new Request(deviceRequestPath, callback);
+    public void sendRequestToServer(String deviceRequestPath, RequestCallback callback) throws IOException {
+        sendRequestToServer(deviceRequestPath, callback, null);
+    }
+
+    public void sendRequestToServer(String deviceRequestPath, RequestCallback callback, String payLoad)
+            throws IOException {
+        Request request = new Request(deviceRequestPath, callback, payLoad);
         request.run();
     }
 }
