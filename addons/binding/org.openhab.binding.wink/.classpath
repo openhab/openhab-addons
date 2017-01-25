@@ -4,4 +4,5 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry kind="lib" exported="true" path="lib/pubnub-gson-4.3.0-all.jar"/>
 </classpath>

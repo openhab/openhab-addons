@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.wink.config.WinkHub2Config;
 import org.openhab.binding.wink.internal.discovery.WinkDeviceDiscoveryService;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +45,6 @@ public class WinkHub2Handler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(WinkHub2Handler.class);
 
-    @SuppressWarnings("unused")
-    private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
-
     public WinkHub2Handler(Bridge bridge) {
         super(bridge);
     }
@@ -64,8 +60,7 @@ public class WinkHub2Handler extends BaseBridgeHandler {
         if (validConfiguration()) {
             WinkDeviceDiscoveryService discovery = new WinkDeviceDiscoveryService(this);
 
-            this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, discovery,
-                    null);
+            this.bundleContext.registerService(DiscoveryService.class, discovery, null);
 
             this.scheduler.schedule(new Runnable() {
                 @Override
