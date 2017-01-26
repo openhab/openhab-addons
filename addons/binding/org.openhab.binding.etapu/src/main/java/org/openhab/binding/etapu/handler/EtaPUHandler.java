@@ -102,26 +102,23 @@ public class EtaPUHandler extends BaseThingHandler {
             public void run() {
                 try {
                     if (sourceConfig.ipAddress != null && !sourceConfig.ipAddress.isEmpty()) {
-                        refresh();
-                        updateStatus(ThingStatus.ONLINE);
+                        int channelsupdated = refresh();
+                        if (channelsupdated > 0) {
+                            updateStatus(ThingStatus.ONLINE);
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Es konnten keine Channels abgefragt werden.");
+                        }
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Keine IP Adresse konfiguriert.");
                     }
                 } catch (Exception e) {
-
+                    logger.error("An error occured during ETAPU thing update.", e);
                 }
             }
 
         }, 0, sourceConfig.refreshInterval, TimeUnit.SECONDS);
-        if (sourceConfig.ipAddress != null && !sourceConfig.ipAddress.isEmpty()) {
-            int channelsupdated = refresh();
-            if (channelsupdated > 0) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Es konnten keine Channels abgefragt werden.");
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Keine IP Adresse konfiguriert.");
-        }
     }
 
     /**
