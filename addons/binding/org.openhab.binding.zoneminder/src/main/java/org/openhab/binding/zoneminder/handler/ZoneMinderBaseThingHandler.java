@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -391,5 +392,27 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
 
     @Override
     public abstract String getLogIdentifier();
+
+    protected void updateThingStatus(ThingStatus thingStatus, ThingStatusDetail statusDetail,
+            String statusDescription) {
+
+        ThingStatusInfo curStatusInfo = thing.getStatusInfo();
+        String curDescription = ((curStatusInfo.getDescription() == null) ? "" : curStatusInfo.getDescription());
+        // Status changed
+        if ((curStatusInfo.getStatus() != thingStatus) || (curStatusInfo.getStatusDetail() != statusDetail)
+                || (curDescription != statusDescription)) {
+
+            // Update Status correspondingly
+            if ((thingStatus == ThingStatus.OFFLINE) && (statusDetail != ThingStatusDetail.NONE)) {
+                logger.info("{}: Thing status changed from '{}' to '{}' (DetailedStatus='{}', Description='{}')",
+                        getLogIdentifier(), thing.getStatus(), thingStatus, statusDetail, statusDescription);
+                updateStatus(thingStatus, statusDetail, statusDescription);
+            } else {
+                logger.info("{}: Thing status changed from '{}' to '{}'", getLogIdentifier(), thing.getStatus(),
+                        thingStatus);
+                updateStatus(thingStatus);
+            }
+        }
+    }
 
 }

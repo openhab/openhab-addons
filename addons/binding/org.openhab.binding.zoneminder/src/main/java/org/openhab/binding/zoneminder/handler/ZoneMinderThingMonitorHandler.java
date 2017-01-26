@@ -390,11 +390,17 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
 
     @Override
     public void updateAvaliabilityStatus(IZoneMinderConnectionInfo connection) {
-        ThingStatus newThingStatus = ThingStatus.OFFLINE;
+        // Assume succes
+        ThingStatus newThingStatus = ThingStatus.ONLINE;
+        ThingStatusDetail thingStatusDetailed = ThingStatusDetail.NONE;
+        String thingStatusDescription = "";
+
         ThingStatus curThingStatus = this.getThing().getStatus();
 
         boolean connectionStatus = false;
+        // Is connected to ZoneMinder and thing is ONLINE
         if (isConnected() && curThingStatus == ThingStatus.ONLINE) {
+            updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
             return;
         }
 
@@ -402,6 +408,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             connectionStatus = ZoneMinderFactory.validateConnection(connection);
         } catch (IllegalArgumentException e) {
             logger.error("{}: validateConnection failed with exception='{}'", getLogIdentifier(), e.getMessage());
+            newThingStatus = ThingStatus.OFFLINE;
+            thingStatusDetailed = ThingStatusDetail.COMMUNICATION_ERROR;
+            thingStatusDescription = "Could not connect to thing";
+            updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
+            return;
         }
 
         try {
@@ -411,9 +422,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             // 1. Is there a Bridge assigned?
             if (getBridge() == null) {
                 msg = String.format("No Bridge assigned to monitor '%s'", thing.getUID());
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
                 logger.error("{}: {}", getLogIdentifier(), msg);
+                newThingStatus = ThingStatus.OFFLINE;
+                thingStatusDetailed = ThingStatusDetail.BRIDGE_OFFLINE;
+                thingStatusDescription = "No Bridge assigned to monitor";
+                updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
                 return;
             } else {
                 logger.debug("{}: ThingAvailability: Thing '{}' has Bridge '{}' defined (Check PASSED)",
@@ -423,7 +436,10 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             // 2. Is Bridge Online?
             if (getBridge().getStatus() != ThingStatus.ONLINE) {
                 msg = String.format("Bridge '%s' is OFFLINE", getBridge().getBridgeUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
+                newThingStatus = ThingStatus.OFFLINE;
+                thingStatusDetailed = ThingStatusDetail.BRIDGE_OFFLINE;
+                thingStatusDescription = msg;
+                updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
                 logger.error("{}: {}", getLogIdentifier(), msg);
                 return;
             } else {
@@ -434,7 +450,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             // 3. Is Configuration OK?
             if (getMonitorConfig() == null) {
                 msg = String.format("No valid configuration found for '%s'", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                newThingStatus = ThingStatus.OFFLINE;
+                thingStatusDetailed = ThingStatusDetail.CONFIGURATION_ERROR;
+                thingStatusDescription = msg;
+                updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
+
                 logger.error("{}: {}", getLogIdentifier(), msg);
                 return;
             } else {
@@ -445,7 +465,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             // ZoneMinder Id for Monitor not set, we are pretty much lost then
             if (getMonitorConfig().getZoneMinderId().isEmpty()) {
                 msg = String.format("No Id is specified for monitor '%s'", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                newThingStatus = ThingStatus.OFFLINE;
+                thingStatusDetailed = ThingStatusDetail.CONFIGURATION_ERROR;
+                thingStatusDescription = msg;
+                updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
+
                 logger.error("{}: {}", getLogIdentifier(), msg);
                 return;
             } else {
@@ -453,19 +477,39 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
                         getLogIdentifier(), thing.getUID());
             }
 
+            // TODO:: Also look at Analysis and Frame Daemons (only if they are supposed to be running)
+            IZoneMinderSession session = aquireSession();
+            // IZoneMinderServer serverProxy = ZoneMinderFactory.getServerProxy(session);
+            IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(session, getZoneMinderId());
+            // serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_);
+            // serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_FRAME_SERVER);
+            IZoneMinderDaemonStatus captureDaemon = monitorProxy.getCaptureDaemonStatus();
+            releaseSession();
+
+            if (!captureDaemon.getStatus()) {
+                msg = String.format("Capture Daemon is not running");
+                newThingStatus = ThingStatus.OFFLINE;
+                thingStatusDetailed = ThingStatusDetail.COMMUNICATION_ERROR;
+                thingStatusDescription = msg;
+                updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
+                logger.error("{}: {}", getLogIdentifier(), msg);
+                return;
+            }
             newThingStatus = ThingStatus.ONLINE;
 
         } catch (Exception exception) {
+            newThingStatus = ThingStatus.OFFLINE;
+            thingStatusDetailed = ThingStatusDetail.COMMUNICATION_ERROR;
+            thingStatusDescription = "Error occurred (Check log)";
+            updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
 
             logger.error("{}: 'ThingMonitorHandler.updateAvailabilityStatus()': Exception occurred '{}'",
                     getLogIdentifier(), exception.getMessage());
-        } finally {
-            if (this.thing.getStatus() != newThingStatus) {
-                logger.info("{}: Status changed to '{}'", getLogIdentifier(), newThingStatus.name());
 
-                updateStatus(newThingStatus);
-            }
+            return;
         }
+
+        updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
     }
 
     /*
@@ -664,9 +708,25 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             IZoneMinderDaemonStatus frameDaemon = null;
 
             data = monitorProxy.getMonitorData();
+            logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                    monitorProxy.getHttpUrl(), monitorProxy.getHttpResponseCode(),
+                    monitorProxy.getHttpResponseMessage());
+
             captureDaemon = monitorProxy.getCaptureDaemonStatus();
+            logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                    monitorProxy.getHttpUrl(), monitorProxy.getHttpResponseCode(),
+                    monitorProxy.getHttpResponseMessage());
+
             analysisDaemon = monitorProxy.getAnalysisDaemonStatus();
+            logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                    monitorProxy.getHttpUrl(), monitorProxy.getHttpResponseCode(),
+                    monitorProxy.getHttpResponseMessage());
+
             frameDaemon = monitorProxy.getFrameDaemonStatus();
+            logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                    monitorProxy.getHttpUrl(), monitorProxy.getHttpResponseCode(),
+                    monitorProxy.getHttpResponseMessage());
+
             if ((data.getHttpResponseCode() != 200) || (captureDaemon.getHttpResponseCode() != 200)
                     || (analysisDaemon.getHttpResponseCode() != 200) || (frameDaemon.getHttpResponseCode() != 200)) {
 
@@ -702,6 +762,10 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             } else {
                 if (isConnected()) {
                     channelMonitorStatus = monitorProxy.getMonitorDetailedStatus();
+                    logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                            monitorProxy.getHttpUrl(), monitorProxy.getHttpResponseCode(),
+                            monitorProxy.getHttpResponseMessage());
+
                     channelFunction = data.getFunction();
                     channelEnabled = data.getEnabled();
                     channelEventCause = monitorProxy.getLastEvent().getCause();
@@ -759,6 +823,8 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
         Map<String, String> properties = editProperties();
         IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(session, getZoneMinderId());
         IZoneMinderMonitorData monitorData = monitorProxy.getMonitorData();
+        logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                monitorProxy.getHttpUrl(), monitorProxy.getHttpResponseCode(), monitorProxy.getHttpResponseMessage());
 
         properties.put(ZoneMinderProperties.PROPERTY_ID, getLogIdentifier());
         properties.put(ZoneMinderProperties.PROPERTY_MONITOR_NAME, monitorData.getName());
@@ -800,6 +866,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             }
 
         } catch (Exception ex) {
+            result = "[MONITOR]";
         }
 
         return result;

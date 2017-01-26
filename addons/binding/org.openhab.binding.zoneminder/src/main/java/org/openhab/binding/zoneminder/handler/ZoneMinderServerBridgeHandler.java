@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -109,7 +110,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     }
                 }
             } catch (Exception exception) {
-                logger.error("[WATCHDOG]: Server run(): Exception: {}", exception);
+                logger.error("[WATCHDOG]: Server run(): Exception: {}", exception.getMessage());
             }
         }
     };
@@ -428,6 +429,9 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
             IZoneMinderHostLoad hostLoad = null;
             try {
                 hostLoad = zoneMinderServerProxy.getHostCpuLoad();
+                logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                        zoneMinderServerProxy.getHttpUrl(), zoneMinderServerProxy.getHttpResponseCode(),
+                        zoneMinderServerProxy.getHttpResponseMessage());
 
             } catch (FailedLoginException | ZoneMinderUrlNotFoundException | IOException ex) {
                 logger.error("{}: Exception thrown in call to ZoneMinderHostLoad ('{}')", getLogIdentifier(), ex);
@@ -449,7 +453,10 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                 IZoneMinderDiskUsage diskUsage = null;
                 try {
                     diskUsage = zoneMinderServerProxy.getHostDiskUsage();
-                } catch (FailedLoginException | ZoneMinderUrlNotFoundException | IOException ex) {
+                    logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                            zoneMinderServerProxy.getHttpUrl(), zoneMinderServerProxy.getHttpResponseCode(),
+                            zoneMinderServerProxy.getHttpResponseMessage());
+                } catch (Exception ex) {
                     logger.error("{}: Exception thrown in call to ZoneMinderDiskUsage ('{}')", getLogIdentifier(), ex);
                 }
 
@@ -633,16 +640,28 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     @Override
     public void updateAvaliabilityStatus(IZoneMinderConnectionInfo connection) {
         ThingStatus newStatus = ThingStatus.OFFLINE;
+        ThingStatusDetail statusDetail = ThingStatusDetail.NONE;
+        String statusDescription = "";
+
         boolean _isOnline = false;
 
         ThingStatus prevStatus = getThing().getStatus();
 
         try {
-            // Just perform a health check to see if we are still conencted
+            // Just perform a health check to see if we are still connected
             if (prevStatus == ThingStatus.ONLINE) {
                 if (zoneMinderSession == null) {
+                    newStatus = ThingStatus.ONLINE;
+                    statusDetail = ThingStatusDetail.NONE;
+                    statusDescription = "";
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 } else if (!zoneMinderSession.isConnected()) {
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
+                    statusDescription = "Session lost connection to ZoneMinder Server";
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
+                    logger.error("{}: {}", getLogIdentifier(), statusDescription);
                     return;
                 }
 
@@ -652,12 +671,20 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                 // If service isn't running OR we revceived a http responsecode other than 200, assume we are offline
                 if ((!daemonStatus.getStatus()) || (daemonStatus.getHttpResponseCode() != 200)) {
                     newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
+                    statusDescription = "ZoneMinder Server Daemon not running";
+
+                    logger.error("{}: {} (state='{}' and ResponseCode='{}')", getLogIdentifier(), statusDescription,
+                            daemonStatus.getStatus(), daemonStatus.getHttpResponseCode());
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
 
                 // TODO:: Check other things without being harsh????
 
                 newStatus = ThingStatus.ONLINE;
+                statusDetail = ThingStatusDetail.NONE;
+                statusDescription = "";
             }
             // If we are OFFLINE, check everything
             else if (prevStatus == ThingStatus.OFFLINE) {
@@ -672,35 +699,60 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
 
                 // Check if server Bridge configuration is valid
                 if (config == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration not found");
-                    setBridgeConnectionStatus(false);
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "Configuration not found";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
+
                 } else if (config.getHostName() == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname not given");
-                    setBridgeConnectionStatus(false);
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "Host not found in configuration";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 } else if (config.getProtocol() == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown protocol");
-                    setBridgeConnectionStatus(false);
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "Unknown protocol in configuration";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
 
                 else if (config.getHttpPort() == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown HTTP port");
-                    setBridgeConnectionStatus(false);
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "Invalid HTTP port";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
 
                 else if (config.getTelnetPort() == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown telnet port");
-                    setBridgeConnectionStatus(false);
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "Invalid telnet port";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
+                    return;
+                } else if (!ZoneMinderFactory.isZoneMinderUrl(connection)) {
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "URL not a ZoneMinder Server";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
 
                 if (!isZoneMinderLoginValid(connection)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Cannot access ZoneMinder Server. Check provided usercredentials");
-                    setBridgeConnectionStatus(false);
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "Cannot access ZoneMinder Server. Check provided usercredentials";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
 
@@ -714,29 +766,42 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                 } catch (FailedLoginException | IllegalArgumentException | IOException
                         | ZoneMinderUrlNotFoundException ex) {
                     logger.error("{}: Create Session failed with exception {}", getLogIdentifier(), ex.getMessage());
+
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
+                    statusDescription = "Failed to connect. (Check Log)";
+                    logger.error("{}: Bridge OFFLINE because of '{}' Exception='{}'", getLogIdentifier(),
+                            statusDescription, ex.getMessage());
+
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
+                    return;
                 }
                 IZoneMinderServer serverProxy = ZoneMinderFactory.getServerProxy(curSession);
 
                 // Check if server API can be accessed
                 if (!serverProxy.isApiEnabled()) {
-
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "ZoneMinder Server 'OPT_USE_API' not enabled");
-                    setBridgeConnectionStatus(false);
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "ZoneMinder Server 'OPT_USE_API' not enabled";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
 
                 } else if (!serverProxy.getHostDaemonCheckState().getStatus()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "ZoneMinder Server Daemon is not running");
-                    setBridgeConnectionStatus(false);
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "ZoneMinder Server Daemon not running";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
                 // Verify that 'OPT_TRIGGER' is set to true in ZoneMinder
                 else if (!serverProxy.isTriggerOptionEnabled()) {
-
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "ZoneMinder Server option 'OPT_TRIGGERS' not enabled");
-                    setBridgeConnectionStatus(false);
+                    newStatus = ThingStatus.OFFLINE;
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                    statusDescription = "ZoneMinder Server option 'OPT_TRIGGERS' not enabled";
+                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
+                    updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 } else {
                     // Seems like everything is as we want it :-)
@@ -747,35 +812,25 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     zoneMinderSession = curSession;
                     _online = _isOnline;
                     newStatus = ThingStatus.ONLINE;
+                    statusDetail = ThingStatusDetail.NONE;
+                    statusDescription = "";
+
                 } else {
                     zoneMinderSession = null;
                     _online = _isOnline;
                     newStatus = ThingStatus.OFFLINE;
                 }
             }
-            // Status changed
-            if (thing.getStatus() != newStatus) {
-                logger.info("{}: Bridge status changed from '{}' to '{}'", getLogIdentifier(), prevStatus, newStatus);
-                updateStatus(newStatus);
-            }
 
-        } finally {
-            if (prevStatus != newStatus) {
-                // Wen't to other state than ONLINE
-                if (prevStatus == ThingStatus.ONLINE) {
-                    onDisconnected();
-                }
-                // Wen't To ONLINE status
-                else if (newStatus == ThingStatus.ONLINE) {
-                    try {
-                        onConnected();
-                    } catch (IllegalArgumentException e) {
-                        // Just ignore that here
-                    }
-                }
-                updateStatus(newStatus);
-            }
+        } catch (Exception ex) {
+            newStatus = ThingStatus.OFFLINE;
+            statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
+            logger.error("{}: Exception occurred in updateAvailabilityStatus Exception='{}'", getLogIdentifier(),
+                    ex.getMessage());
+            statusDescription = "Error occurred (Check log)";
+
         }
+        updateBridgeStatus(newStatus, statusDetail, statusDescription);
 
         // Ask child things to update their Availability Status
         for (Thing thing : getThing().getThings()) {
@@ -791,6 +846,41 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
 
         }
 
+    }
+
+    protected void updateBridgeStatus(ThingStatus newStatus, ThingStatusDetail statusDetail, String statusDescription) {
+        ThingStatusInfo curStatusInfo = thing.getStatusInfo();
+        // Status changed
+        if ((curStatusInfo.getStatus() != newStatus) || (curStatusInfo.getStatusDetail() != statusDetail)
+                || (curStatusInfo.getDescription() != statusDescription)) {
+
+            // if (thing.getStatus() != newStatus) {
+            logger.info("{}: Bridge status changed from '{}' to '{}'", getLogIdentifier(), thing.getStatus(),
+                    newStatus);
+
+            if ((newStatus == ThingStatus.ONLINE) && (curStatusInfo.getStatus() != ThingStatus.ONLINE)) {
+                try {
+                    setBridgeConnectionStatus(true);
+                    onConnected();
+                } catch (IllegalArgumentException e) {
+                    // Just ignore that here
+                }
+            } else if ((newStatus == ThingStatus.OFFLINE) && (curStatusInfo.getStatus() != ThingStatus.OFFLINE)) {
+                try {
+                    setBridgeConnectionStatus(false);
+                    onDisconnected();
+                } catch (IllegalArgumentException e) {
+                    // Just ignore that here
+                }
+
+            }
+            // Update Status correspondingly
+            if ((newStatus == ThingStatus.OFFLINE) && (statusDetail != ThingStatusDetail.NONE)) {
+                updateStatus(newStatus, statusDetail, statusDescription);
+            } else {
+                updateStatus(newStatus);
+            }
+        }
     }
 
     protected boolean isZoneMinderLoginValid(IZoneMinderConnectionInfo connection) {
@@ -1042,7 +1132,9 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         if (isOnline()) {
 
             IZoneMinderServer serverProxy = ZoneMinderFactory.getServerProxy(zoneMinderSession);
-            return serverProxy.getMonitors();
+            ArrayList<IZoneMinderMonitorData> result = serverProxy.getMonitors();
+
+            return result;
         }
         return new ArrayList<IZoneMinderMonitorData>();
     }
@@ -1059,10 +1151,21 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         IZoneMinderHostVersion hostVersion = null;
         try {
             hostVersion = serverProxy.getHostVersion();
+            logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                    serverProxy.getHttpUrl(), serverProxy.getHttpResponseCode(), serverProxy.getHttpResponseMessage());
 
             ZoneMinderConfig configUseApi = serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_USE_API);
+            logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                    serverProxy.getHttpUrl(), serverProxy.getHttpResponseCode(), serverProxy.getHttpResponseMessage());
+
             ZoneMinderConfig configUseAuth = serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_USE_AUTH);
+            logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                    serverProxy.getHttpUrl(), serverProxy.getHttpResponseCode(), serverProxy.getHttpResponseMessage());
+
             ZoneMinderConfig configTrigerrs = serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_TRIGGERS);
+            logger.debug("{}: URL='{}' ResponseCode='{}' ResponseMessage='{}'", getLogIdentifier(),
+                    configUseApi.getHttpUrl(), configUseApi.getHttpResponseCode(),
+                    configUseApi.getHttpResponseMessage());
 
             properties.put(ZoneMinderProperties.PROPERTY_SERVER_VERSION, hostVersion.getVersion());
             properties.put(ZoneMinderProperties.PROPERTY_SERVER_API_VERSION, hostVersion.getApiVersion());
@@ -1093,10 +1196,11 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
 
     @Override
     public String getLogIdentifier() {
-        String result = "[BRIDGE (?)]";
+        String result = "[BRIDGE]";
         try {
             result = String.format("[BRIDGE (%s)]", getThingId());
         } catch (Exception e) {
+            result = "[BRIDGE (?)]";
         }
         return result;
     }
