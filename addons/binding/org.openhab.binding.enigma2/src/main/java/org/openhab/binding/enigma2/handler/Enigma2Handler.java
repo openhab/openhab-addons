@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.enigma2.Enigma2BindingConstants;
 import org.openhab.binding.enigma2.internal.Enigma2CommandExecutor;
 import org.openhab.binding.enigma2.internal.Enigma2CommandExecutorListener;
+import org.openhab.binding.enigma2.internal.Enigma2Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +78,8 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         channelNowPlaylingDescriptionExtendedUID = getChannelUID(
                 Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED);
 
-        commandExecutor = new Enigma2CommandExecutor(getHostName(), getUserName(), getPassword());
+        commandExecutor = new Enigma2CommandExecutor(
+                Enigma2Util.createUserPasswordHostnamePrefix(getHostName(), getUserName(), getPassword()));
         commandExecutor.initialize();
 
         refresher = new Refresher();

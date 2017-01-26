@@ -59,8 +59,8 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
 
             // we expect only one address per device..
             if (addrs.length > 1) {
-                logger.warn("Bose SoundTouch device " + info.getName() + " (" + label
-                        + ") reports multiple addresses - using the first one!" + Arrays.toString(addrs));
+                logger.warn("Enigma2 device {} ({}) reports multiple addresses - using the first one! {}",
+                        info.getName(), label, Arrays.toString(addrs));
             }
 
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_HOST, addrs[0].getHostAddress());
@@ -75,7 +75,7 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Override
     public ThingUID getThingUID(ServiceInfo info) {
         if (info != null) {
-            logger.debug("ServiceInfo: " + info);
+            logger.debug("ServiceInfo: {}", info);
             if (info.getType() != null) {
                 if (info.getType().equals(getServiceType())) {
                     logger.trace("Discovered a Enigma2 STB thing with name '{}'", info.getName());

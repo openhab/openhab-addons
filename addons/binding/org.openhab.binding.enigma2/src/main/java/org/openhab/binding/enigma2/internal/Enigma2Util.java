@@ -30,6 +30,8 @@ import org.xml.sax.SAXException;
  */
 public class Enigma2Util {
 
+    private static final String SUFFIX_ALL_SERVICES = "/web/getallservices";
+
     /**
      * Finds the content in an element
      *
@@ -63,14 +65,14 @@ public class Enigma2Util {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    public static Enigma2ServiceContainer generateServiceMaps()
+    public static Enigma2ServiceContainer generateServiceMaps(String deviceURL)
             throws IOException, ParserConfigurationException, SAXException {
         Enigma2ServiceContainer serviceContainer = new Enigma2ServiceContainer();
 
         File inputFile = new File("services.xml");
         BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile));
 
-        String content = executeUrl("http://192.168.0.166/web/getallservices");
+        String content = executeUrl(deviceURL + SUFFIX_ALL_SERVICES);
         writer.write(content);
         writer.close();
 
@@ -98,5 +100,16 @@ public class Enigma2Util {
         }
         inputFile.delete();
         return serviceContainer;
+    }
+
+    public static String createUserPasswordHostnamePrefix(String hostName, String userName, String password) {
+        String returnString;
+        if ((userName == null) || (userName.length() == 0)) {
+            returnString = new StringBuffer("http://" + hostName).toString();
+        } else {
+            returnString = new StringBuffer("http://" + userName).append(":").append(password).append("@")
+                    .append(hostName).toString();
+        }
+        return returnString;
     }
 }

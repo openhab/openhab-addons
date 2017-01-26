@@ -7,7 +7,7 @@ After installing the binding into the your openHAB2 distribution, you can start 
 
 After discovering and configuring the device through the web GUI you may use it. To access them, the 'classical openHAB1 way', trough the items / sitemaps / rules way. Here a few samples for the configuration:
 
-From the **items/enimga2.items** file:
+From the **items/enigma2.items** file:
 ```
 Switch  Enigma2_Power                          "Power: [%s]"          <switch>      { channel="enigma2:device:IPADDRESS:power" }
 Dimmer  Enigma2_Volume                         "Volume: [%d %%]"      <volume>      { channel="benigma2:device:IPADDRESS:volume" }
@@ -25,32 +25,32 @@ String  Enigma2_nowPlayingDescription          "Key Code: [%s]"       <text>    
 String  Enigma2_nowPlayingDescriptionExtended  "Album: [%s]"          <text>        { channel="benigma2:device:IPADDRESS:nowPlayingDescriptionExtended" }
 ```
 
-A simple sitemap **sitemaps/enimga2.sitemap**:
+A simple sitemap **sitemaps/enigma2.sitemap**:
 
 ```
-sitemap demo label="Enigma2 Test Items"
+sitemap enigma2 label="Enigma2 Test Items"
 {
-	Frame label="Enigma2" {
+    Frame label="Enigma2" {
         Switch    item=Enigma2_Power
-		Slider    item=Enigma2_Volume
-		Setpoint  item=Enigma2_Volume
-		Switch    item=Enigma2_Mute
-		Text      item=Enigma2_PlayerControl
-		Text      item=Enigma2_Channel
+        Slider    item=Enigma2_Volume
+        Setpoint  item=Enigma2_Volume
+        Switch    item=Enigma2_Mute
+        Text      item=Enigma2_PlayerControl
+        Text      item=Enigma2_Channel
         Text      item=Enigma2_RemoteKey
         Text      item=Enigma2_SendMessage
         Text      item=Enigma2_SendWarning
         Text      item=Enigma2_SendQuestion
         Switch    item=Enigma2_GetAnswer
-		Text      item=Enigma2_nowPlayingChannel
-		Text      item=Enigma2_nowPlayingTitle
-		Text      item=Enigma2_nowPlayingDescription
-		Text      item=Enigma2_nowPlayingDescriptionExtended
-	}
+        Text      item=Enigma2_nowPlayingChannel
+        Text      item=Enigma2_nowPlayingTitle
+        Text      item=Enigma2_nowPlayingDescription
+        Text      item=Enigma2_nowPlayingDescriptionExtended
+    }
 }
 ```
 
-If you need support or have new idea's please use the [openHAB cummunity](https://community.openhab.org/t/enigma2-binding/20178) to post the requests.
+If you need support or have new ideas please use the [openHAB cummunity](https://community.openhab.org/t/enigma2-binding/20178) to post the requests.
 
 #### Known issues and Workarounds
 

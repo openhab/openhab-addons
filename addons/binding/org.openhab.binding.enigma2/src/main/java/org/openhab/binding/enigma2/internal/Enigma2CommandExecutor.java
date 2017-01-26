@@ -54,19 +54,18 @@ public class Enigma2CommandExecutor {
 
     private Enigma2ServiceContainer serviceContainer;
 
-    private String hostName;
-    private String userName;
-    private String password;
+    private String deviceURL;
+    // private String hostName;
+    // private String userName;
+    // private String password;
 
-    public Enigma2CommandExecutor(String hostName, String userName, String password) {
-        this.hostName = hostName;
-        this.userName = userName;
-        this.password = password;
+    public Enigma2CommandExecutor(String deviceURL) {
+        this.deviceURL = deviceURL;
     }
 
     public void initialize() {
         try {
-            serviceContainer = Enigma2Util.generateServiceMaps();
+            serviceContainer = Enigma2Util.generateServiceMaps(deviceURL);
         } catch (IOException | ParserConfigurationException | SAXException e) {
             logger.error("Error during initialization: {}", e);
         }
@@ -79,8 +78,7 @@ public class Enigma2CommandExecutor {
      */
     public void setPowerState(Command command) {
         if (command instanceof OnOffType) {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_SET_POWERSTATE
-                    + Enigma2PowerState.TOGGLE_STANDBY.getValue();
+            String url = deviceURL + SUFFIX_SET_POWERSTATE + Enigma2PowerState.TOGGLE_STANDBY.getValue();
             try {
                 OnOffType currentState = (OnOffType) getPowerState();
                 OnOffType newState = (OnOffType) command;
@@ -107,7 +105,7 @@ public class Enigma2CommandExecutor {
         } else if (command instanceof DecimalType) {
             int value = ((DecimalType) command).intValue();
             try {
-                String url = createUserPasswordHostnamePrefix() + SUFFIX_SET_VOLUME + value;
+                String url = deviceURL + SUFFIX_SET_VOLUME + value;
                 Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
@@ -144,7 +142,7 @@ public class Enigma2CommandExecutor {
             OnOffType newState = (OnOffType) command;
             String enable = newState == OnOffType.ON ? "True" : "False";
             try {
-                String url = createUserPasswordHostnamePrefix() + SUFFIX_SET_DOWNMIX + enable;
+                String url = deviceURL + SUFFIX_SET_DOWNMIX + enable;
                 Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
@@ -197,7 +195,7 @@ public class Enigma2CommandExecutor {
                 logger.error("Can not find Channel {}", command.toString());
             } else {
                 try {
-                    String url = createUserPasswordHostnamePrefix() + SUFFIX_ZAP + servicereference;
+                    String url = deviceURL + SUFFIX_ZAP + servicereference;
                     Enigma2Util.executeUrl(url);
                 } catch (IOException e) {
                     logger.error("Error during send Command: {}", e);
@@ -234,7 +232,7 @@ public class Enigma2CommandExecutor {
     public void sendMessage(Command command) {
         if (command instanceof StringType) {
             try {
-                String url = createUserPasswordHostnamePrefix() + SUFFIX_MESSAGE + command.toString();
+                String url = deviceURL + SUFFIX_MESSAGE + command.toString();
                 Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
@@ -250,7 +248,7 @@ public class Enigma2CommandExecutor {
     public void sendWarning(Command command) {
         if (command instanceof StringType) {
             try {
-                String url = createUserPasswordHostnamePrefix() + SUFFIX_WARNING + command.toString();
+                String url = deviceURL + SUFFIX_WARNING + command.toString();
                 Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
@@ -266,7 +264,7 @@ public class Enigma2CommandExecutor {
     public void sendQuestion(Command command) {
         if (command instanceof StringType) {
             try {
-                String url = createUserPasswordHostnamePrefix() + SUFFIX_QUESTION + command.toString();
+                String url = deviceURL + SUFFIX_QUESTION + command.toString();
                 Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
@@ -281,7 +279,7 @@ public class Enigma2CommandExecutor {
      */
     public State getPowerState() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_POWERSTATE;
+            String url = deviceURL + SUFFIX_POWERSTATE;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2instandby");
             State returnState = content.contains("true") ? OnOffType.OFF : OnOffType.ON;
@@ -299,7 +297,7 @@ public class Enigma2CommandExecutor {
      */
     public State getVolumeState() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_VOLUME;
+            String url = deviceURL + SUFFIX_VOLUME;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2current");
             State returnState = new StringType(content);
@@ -317,7 +315,7 @@ public class Enigma2CommandExecutor {
      */
     public State getChannelState() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_CHANNEL;
+            String url = deviceURL + SUFFIX_CHANNEL;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2servicename");
             content = Enigma2ServiceContainer.cleanString(content);
@@ -336,7 +334,7 @@ public class Enigma2CommandExecutor {
      */
     public State getAnswerState() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_ANSWER;
+            String url = deviceURL + SUFFIX_ANSWER;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2statetext");
             State returnState = null;
@@ -360,7 +358,7 @@ public class Enigma2CommandExecutor {
      */
     public State getMutedState() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_VOLUME;
+            String url = deviceURL + SUFFIX_VOLUME;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2ismuted");
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
@@ -378,7 +376,7 @@ public class Enigma2CommandExecutor {
      */
     public State isDownmixActiveState() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_DOWNMIX;
+            String url = deviceURL + SUFFIX_DOWNMIX;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2state");
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
@@ -396,7 +394,7 @@ public class Enigma2CommandExecutor {
      */
     public State getNowPlayingTitle() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference();
+            String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2eventtitle");
             State returnState = new StringType(content);
@@ -414,7 +412,7 @@ public class Enigma2CommandExecutor {
      */
     public State getNowPlayingDescription() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference();
+            String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2eventdescription");
             State returnState = new StringType(content);
@@ -432,7 +430,7 @@ public class Enigma2CommandExecutor {
      */
     public State getNowPlayingDescriptionExtended() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_EPG + getChannelServiceReference();
+            String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2eventdescriptionextended");
             State returnState = new StringType(content);
@@ -445,7 +443,7 @@ public class Enigma2CommandExecutor {
 
     private String getChannelServiceReference() {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_CHANNEL;
+            String url = deviceURL + SUFFIX_CHANNEL;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2servicereference");
             return content;
@@ -453,17 +451,6 @@ public class Enigma2CommandExecutor {
             logger.error("Error during send Command: {}", e);
         }
         return null;
-    }
-
-    private String createUserPasswordHostnamePrefix() {
-        String returnString;
-        if ((userName == null) || (userName.length() == 0)) {
-            returnString = new StringBuffer("http://" + hostName).toString();
-        } else {
-            returnString = new StringBuffer("http://" + userName).append(":").append(password).append("@")
-                    .append(hostName).toString();
-        }
-        return returnString;
     }
 
     private void sendRcCommand(Enigma2RemoteKey commandValue) {
@@ -476,7 +463,7 @@ public class Enigma2CommandExecutor {
 
     private void sendRcCommand(int key) {
         try {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_REMOTE_CONTROL + key;
+            String url = deviceURL + SUFFIX_REMOTE_CONTROL + key;
             Enigma2Util.executeUrl(url);
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
