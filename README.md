@@ -35,7 +35,7 @@ force-alarm    | Switch    | Parameter indicating if Force Alarm for the the mon
 alarm	       | Switch    | true if monitor has an active alarm
 recording      | Text	   | true if monitor is recording
 detailed-status| Text	   |  Detailed status of monitor (Idle, Pre-alarm, Alarm, Alert, Recording)
-event-cause    | Text	   | empty when there is no active event, else it contains the text with the cause of the event	
+event-cause    | Text	   | Empty when there is no active event, else it contains the text with the cause of the event	
 function       | Text      | Text corresponding the value in ZoneMinder: None, Monitor, Modect, Record, Mocord, Nodect
 capture-daemon | Switch      | Run state of ZMC Daemon 
 analysis-daemon| Switch      | Run state of ZMA Daemon 
@@ -93,7 +93,7 @@ then
 	if (zmMonitor1_EventState.state == ON) {
 		logInfo("zoneminder.rules", "ZoneMinder Alarm started")
 	}
-	else if (zmMonitor1_TriggerEvent.state == OFF) {
+	else if (zmMonitor1_EventState.state == OFF) {
 		logInfo("zoneminder.rules", "ZoneMinder Alarm stopped")
 	}	
 end
@@ -166,7 +166,7 @@ sitemap zoneminder label="Zoneminder"
 
 <table>
 <tr><td><b>Problem</b></td><td><b>Solution</b></td></tr>
-<tr><td>Cannot connect to ZoneMinder Bridge</td><td>Check if you can logon to ZoneMinder from your OpenHAB server (with http).</td></tr>
-<tr><td></td><td>Check that it is possible to establish a Telnet connection from OpenHAB server to Zoneminder Server</td></tr>
+<tr><td>Cannot connect to ZoneMinder Bridge</td><td>Check if you can logon to ZoneMinder from your openHAB server (with http).</td></tr>
+<tr><td></td><td>Check that it is possible to establish a Telnet connection from openHAB server to Zoneminder Server</td></tr>
 <tr><td>Cannot connect to ZoneMinder Bridge via HTTPS, using Letsencrypt certificate</td><td>Verify your Java version, if Java is below build 101, letsencrypt certificate isn't known by Java. Either use HTTP or upgrade Java to newest build.</td></tr>
 </table>
