@@ -370,6 +370,7 @@
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
     </feature>    
+
     
     <feature name="openhab-ui-habmin" description="HABmin" version="${project.version}">
         <feature>openhab-runtime-base</feature>
