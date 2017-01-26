@@ -134,6 +134,11 @@ public abstract class WinkHandler extends BaseThingHandler {
         }
     }
 
+    public void updateDeviceState(String jsonDataBlob) {
+        JsonParser parser = new JsonParser();
+        updateDeviceStateCallback(parser.parse(jsonDataBlob).getAsJsonObject());
+    }
+
     abstract public void updateDeviceStateCallback(JsonObject jsonDataBlob);
 
     /////////////////////////////////////////////////
