@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Gerhard Riegler - Initial contribution
  */
 public class Device {
+
     private String id;
     private String name;
     private String description;

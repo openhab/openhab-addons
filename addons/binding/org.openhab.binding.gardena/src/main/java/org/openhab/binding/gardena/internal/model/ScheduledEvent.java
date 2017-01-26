@@ -15,8 +15,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
 public class ScheduledEvent {
+
     private String id;
     private String type;
     @JsonProperty("start_at")

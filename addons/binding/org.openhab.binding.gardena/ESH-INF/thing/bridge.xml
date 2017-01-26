@@ -21,21 +21,20 @@
 				<label>Session Timeout</label>
 				<description>The timeout in minutes for a session to Gardena Smart Home</description>
 				<advanced>true</advanced>
-                <default>30</default>
+				<default>30</default>
 			</parameter>
-            <parameter name="connectionTimeout" type="integer">
-                <label>Connection Timeout</label>
-                <description>The timeout in seconds for connections to Gardena Smart Home</description>
-                <advanced>true</advanced>
-                <default>10</default>
-            </parameter>
-            <parameter name="refresh" type="integer">
-                <label>Refresh Interval</label>
-                <description>The interval in seconds for refreshing the data from Gardena Smart Home</description>
-                <advanced>true</advanced>
-                <default>60</default>
-            </parameter>
-
+			<parameter name="connectionTimeout" type="integer">
+				<label>Connection Timeout</label>
+				<description>The timeout in seconds for connections to Gardena Smart Home</description>
+				<advanced>true</advanced>
+				<default>10</default>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>The interval in seconds for refreshing the data from Gardena Smart Home</description>
+				<advanced>true</advanced>
+				<default>60</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

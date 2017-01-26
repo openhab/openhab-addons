@@ -17,6 +17,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Gerhard Riegler - Initial contribution
  */
 public class Error {
+
     private String id;
     private String status;
     private String title;

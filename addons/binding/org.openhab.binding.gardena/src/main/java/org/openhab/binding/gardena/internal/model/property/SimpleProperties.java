@@ -16,12 +16,13 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 /**
  * need Jackson >= 2.6
  *
- * @author Gerhard
+ * @author Gerhard Riegler - Initial contribution
  *
  */
 @JsonTypeInfo(include = As.WRAPPER_OBJECT, use = Id.NAME)
 @JsonTypeName("properties")
 public class SimpleProperties {
+
     private String name;
     private String value;
 

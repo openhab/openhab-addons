@@ -17,6 +17,7 @@ import java.util.List;
  * @author Gerhard Riegler - Initial contribution
  */
 public class Devices {
+
     private List<Device> devices = new ArrayList<Device>();
 
     /**

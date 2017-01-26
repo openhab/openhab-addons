@@ -45,7 +45,8 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaThingHandler extends BaseThingHandler {
-    private Logger LOGGER = LoggerFactory.getLogger(GardenaThingHandler.class);
+
+    private final Logger logger = LoggerFactory.getLogger(GardenaThingHandler.class);
 
     public GardenaThingHandler(Thing thing) {
         super(thing);
@@ -147,7 +148,7 @@ public class GardenaThingHandler extends BaseThingHandler {
             String propertyName = channelUID.getIdWithoutGroup();
 
             if (RefreshType.REFRESH == command) {
-                LOGGER.debug("Refreshing channel '{}'", channelUID);
+                logger.debug("Refreshing channel '{}'", channelUID);
                 updateChannel(channelUID);
             } else {
                 Property commandProperty = getDevice().getAbility(abilityName).getProperty(propertyName);
@@ -156,7 +157,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         } catch (BridgeHandlerNotAvailableException | GardenaDeviceNotFoundException ex) {
             // ignore
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
+            logger.error(ex.getMessage(), ex);
         }
     }
 
