@@ -313,8 +313,19 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     return;
                 }
 
-                updateState(channel.getUID(), ZWayDeviceStateConverter.toState(device, channel));
+                try {
+                    updateState(channel.getUID(), ZWayDeviceStateConverter.toState(device, channel));
+                } catch (IllegalArgumentException iae) {
+                    logger.debug(
+                            "IllegalArgumentException ({}) during refresh channel for device: {} (level: {}) with channel: {}",
+                            iae.getMessage(), device.getMetrics().getTitle(), device.getMetrics().getLevel(),
+                            channel.getChannelTypeUID());
 
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                            "Channel refresh for device: " + device.getMetrics().getTitle() + " (level: "
+                                    + device.getMetrics().getLevel() + ") with channel: " + channel.getChannelTypeUID()
+                                    + " failed!");
+                }
                 // 2.) Trigger update function, soon as the value has been updated, openHAB will be notified
                 try {
                     device.update();
