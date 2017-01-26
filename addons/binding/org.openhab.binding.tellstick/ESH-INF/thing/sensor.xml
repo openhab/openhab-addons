@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tellstick"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="telldus-core" />
+			<bridge-type-ref id="telldus-live" />
+		</supported-bridge-type-refs>
+
+		<label>Sensor</label>
+		<description>This Thing defines a Sensor</description>
+        <channels>
+            <channel id="humidity" typeId="humidity" />
+            <channel id="timestamp" typeId="timestamp" />
+            <channel id="temperature" typeId="temperature" />
+        </channels>
+		<config-description>
+			<parameter name="protocol" type="text">
+				<label>Protocol</label>
+				<description>The protocol used by a specific device.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="model" type="text">
+                <label>Model</label>
+                <description>The model used by a specific device.</description>
+                <required>false</required>
+            </parameter>
+			<parameter name="name" type="text">
+				<label>Name</label>
+				<description>The name of the device (manually entered)</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="deviceId" type="text">
+				<label>DeviceID</label>
+				<description>This function returns the unique id of a device with a specific index.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+    <channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Actual Temperature</label>
+        <description>Actual measured room temperature</description>
+        <category>Temperature</category>
+        <state pattern="%f °C" readOnly="true">
+        </state>
+
+    </channel-type>
+    
+    <channel-type id="humidity">
+        <item-type>Number</item-type>
+        <label>Actual Humidity</label>
+        <description>Actual measured room Humidity</description>
+        <category>Humidity</category>
+        <state pattern="%d %%" readOnly="true">
+        </state>
+    </channel-type>
+    <channel-type id="timestamp">
+        <item-type>DateTime</item-type>
+        <label>Last device update</label>
+        <description>Last device update</description>
+         <state readOnly="true">
+        </state>
+    </channel-type>
+</thing:thing-descriptions>

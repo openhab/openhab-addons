@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<!-- Channels use the priority configuration parameter to inform the binding how often the channel state must be updated. 
+		High priority should be channels, which change its state dynamically at few seconds interval. Medium priority channels usually 
+		need update of the state more often - at several minutes. Low priority channels do not change their state at all, or very 
+		often. They do not need regular updates. -->
+
+	<config-description uri="systeminfo:channels:lowpriority">
+
+		<parameter-group name="priorityGroup">
+			<label>String</label>
+			<description>String</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>Low</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="systeminfo:channels:mediumpriority">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>Medium</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="systeminfo:channels:highpriority">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>High</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="systeminfo:channels:lowpriority_process">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>Low</default>
+		</parameter>
+		<parameter name="pid" type="integer" min="0" step="1">
+			<label>PID</label>
+			<description>The Process Identifier of the process.</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="systeminfo:channels:mediumpriority_process">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>Medium</default>
+		</parameter>
+		<parameter name="pid" type="integer" min="0" step="1">
+			<label>PID</label>
+			<description>The Process Identifier of the process.</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="systeminfo:channels:highpriority_process">
+		<parameter name="priority" type="text">
+			<label>Interval</label>
+			<description>Refresh interval in seconds.</description>
+			<options>
+				<option value="High">High</option>
+				<option value="Medium">Medium</option>
+				<option value="Low">Low</option>
+			</options>
+			<default>High</default>
+		</parameter>
+		<parameter name="pid" type="integer" min="0" step="1">
+			<label>PID</label>
+			<description>The Process Identifier of the process.</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
