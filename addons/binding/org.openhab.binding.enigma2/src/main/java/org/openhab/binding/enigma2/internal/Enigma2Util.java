@@ -32,6 +32,8 @@ public class Enigma2Util {
 
     /**
      * Finds the content in an element
+     *
+     * This is a quick and dirty methode, it only works if element only existis once in content
      */
     public static String getContentOfElement(String content, String element) {
         final String beginTag = "<" + element + ">";

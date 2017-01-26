@@ -35,17 +35,22 @@ public class Enigma2CommandExecutor {
     private Logger logger = LoggerFactory.getLogger(Enigma2CommandExecutor.class);
 
     private static final String SUFFIX_REMOTE_CONTROL = "/web/remotecontrol?command=";
+
+    private static final String SUFFIX_POWERSTATE = "/web/powerstate";
+    private static final String SUFFIX_SET_POWERSTATE = "/web/powerstate?newstate=";
     private static final String SUFFIX_VOLUME = "/web/vol";
-    private static final String SUFFIX_VOLUME_SET = "/web/vol?set=set";
+    private static final String SUFFIX_SET_VOLUME = "/web/vol?set=set";
+    private static final String SUFFIX_DOWNMIX = "/web/downmix";
+    private static final String SUFFIX_SET_DOWNMIX = "/web/downmix?enable=";
+
     private static final String SUFFIX_ZAP = "/web/zap?sRef=";
     private static final String SUFFIX_CHANNEL = "/web/subservices";
-    private static final String SUFFIX_POWERSTATE = "/web/powerstate";
-    private static final String SUFFIX_DOWNMIX = "/web/downmix";
+    private static final String SUFFIX_EPG = "/web/epgservice?sRef=";
+
     private static final String SUFFIX_MESSAGE = "/web/message?type=1&TIMEOUT=10&text=";
     private static final String SUFFIX_WARNING = "/web/message?type=2&TIMEOUT=30&text=";
     private static final String SUFFIX_QUESTION = "/web/message?type=0&text=";
     private static final String SUFFIX_ANSWER = "/web/messageanswer?getanswer=now";
-    private static final String SUFFIX_EPG = "/web/epgservice?sRef=";
 
     private Enigma2ServiceContainer serviceContainer;
 
@@ -74,15 +79,12 @@ public class Enigma2CommandExecutor {
      */
     public void setPowerState(Command command) {
         if (command instanceof OnOffType) {
-            String url = createUserPasswordHostnamePrefix() + SUFFIX_POWERSTATE + "?newstate="
+            String url = createUserPasswordHostnamePrefix() + SUFFIX_SET_POWERSTATE
                     + Enigma2PowerState.TOGGLE_STANDBY.getValue();
             try {
                 OnOffType currentState = (OnOffType) getPowerState();
-                OnOffType onOffType = (OnOffType) command;
-                if (currentState == OnOffType.OFF && onOffType == OnOffType.ON) {
-                    Enigma2Util.executeUrl(url);
-                }
-                if (currentState == OnOffType.ON && onOffType == OnOffType.OFF) {
+                OnOffType newState = (OnOffType) command;
+                if (currentState != newState) {
                     Enigma2Util.executeUrl(url);
                 }
             } catch (IOException e) {
@@ -105,7 +107,7 @@ public class Enigma2CommandExecutor {
         } else if (command instanceof DecimalType) {
             int value = ((DecimalType) command).intValue();
             try {
-                String url = createUserPasswordHostnamePrefix() + SUFFIX_VOLUME_SET + value;
+                String url = createUserPasswordHostnamePrefix() + SUFFIX_SET_VOLUME + value;
                 Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
@@ -123,11 +125,8 @@ public class Enigma2CommandExecutor {
     public void setMute(Command command) {
         if (command instanceof OnOffType) {
             OnOffType currentState = (OnOffType) getMutedState();
-            OnOffType onOffType = (OnOffType) command;
-            if (currentState == OnOffType.OFF && onOffType == OnOffType.ON) {
-                sendRcCommand(Enigma2RemoteKey.MUTE);
-            }
-            if (currentState == OnOffType.ON && onOffType == OnOffType.OFF) {
+            OnOffType newState = (OnOffType) command;
+            if (currentState != newState) {
                 sendRcCommand(Enigma2RemoteKey.MUTE);
             }
         } else {
@@ -142,9 +141,10 @@ public class Enigma2CommandExecutor {
      */
     public void setDownmix(Command command) {
         if (command instanceof OnOffType) {
-            String enable = (OnOffType) command == OnOffType.ON ? "True" : "False";
+            OnOffType newState = (OnOffType) command;
+            String enable = newState == OnOffType.ON ? "True" : "False";
             try {
-                String url = createUserPasswordHostnamePrefix() + SUFFIX_DOWNMIX + "?enable=" + enable;
+                String url = createUserPasswordHostnamePrefix() + SUFFIX_SET_DOWNMIX + enable;
                 Enigma2Util.executeUrl(url);
             } catch (IOException e) {
                 logger.error("Error during send Command: {}", e);
