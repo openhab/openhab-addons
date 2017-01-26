@@ -94,9 +94,13 @@ public class LightBulbHandler extends WinkHandler {
     }
 
     private void updateState(JsonObject jsonDataBlob) {
-        int brightness = Math
+        int brightnessLastReading = Math
                 .round(jsonDataBlob.get("last_reading").getAsJsonObject().get("brightness").getAsFloat() * 100);
-        updateState(CHANNEL_LIGHTLEVEL, new PercentType(brightness));
+        int brightnessDesiredState = Math
+                .round(jsonDataBlob.get("desired_state").getAsJsonObject().get("brightness").getAsFloat() * 100);
+        if (brightnessDesiredState == brightnessLastReading) {
+            updateState(CHANNEL_LIGHTLEVEL, new PercentType(brightnessDesiredState));
+        }
     }
 
     @Override
@@ -112,13 +116,13 @@ public class LightBulbHandler extends WinkHandler {
 
     private void test() {
         PNConfiguration pnConfiguration = new PNConfiguration();
-        pnConfiguration.setSubscribeKey("sub-c-f7bf7f7e-0542-11e3-a5e8-02ee2ddab7fe");
+        pnConfiguration.setSubscribeKey(this.deviceConfig.getPubnubSubscribeKey());
 
         PubNub pubnub = new PubNub(pnConfiguration);
         pubnub.addListener(new SubscribeCallback() {
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
-                logger.info("message : " + message.getMessage());
+                updateDeviceState(message.getMessage().getAsString());
                 // Handle new message stored in message.message
                 if (message.getChannel() != null) {
                     // Message has been received on channel group stored in
@@ -147,8 +151,6 @@ public class LightBulbHandler extends WinkHandler {
             }
         });
 
-        pubnub.subscribe()
-                .channels(Arrays.asList("13ec77004f36b3a3af00264e42c9ac5ccd6008ef|light_bulb-2369974|user-608902"))
-                .execute();
+        pubnub.subscribe().channels(Arrays.asList(this.deviceConfig.getPubnubChannel())).execute();
     }
 }
