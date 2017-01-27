@@ -89,7 +89,11 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                     if (locationList != null) {
                         // Add only the location if this differs from globalRoom (with id 0)
                         if (device.getLocation() != -1 && device.getLocation() != 0) {
-                            location = locationList.getLocationById(device.getLocation()).getTitle();
+                            try {
+                                location = locationList.getLocationById(device.getLocation()).getTitle();
+                            } catch (NullPointerException npe) {
+                                location = "";
+                            }
                         }
                     }
                 }
@@ -158,7 +162,11 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                     if (locationList != null) {
                         // Add only the location if this differs from globalRoom (with id 0)
                         if (device.getLocation() != -1 && device.getLocation() != 0) {
-                            location = locationList.getLocationById(device.getLocation()).getTitle();
+                            try {
+                                location = locationList.getLocationById(device.getLocation()).getTitle();
+                            } catch (NullPointerException npe) {
+                                location = "";
+                            }
                         }
                     }
 
