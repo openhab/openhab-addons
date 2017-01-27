@@ -16,7 +16,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.milight.MilightBindingConstants;
-import org.openhab.binding.milight.handler.MilightBridgeHandler;
+import org.openhab.binding.milight.handler.AbstractMilightBridgeHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -32,9 +32,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
     private ServiceRegistration<?> reg = null;
     private ThingUID bridgeUID;
     @SuppressWarnings("unused")
-    private MilightBridgeHandler handler;
+    private AbstractMilightBridgeHandler handler;
 
-    public ThingDiscoveryService(ThingUID bridgeUID, MilightBridgeHandler handler) {
+    public ThingDiscoveryService(ThingUID bridgeUID, AbstractMilightBridgeHandler handler) {
         super(MilightBindingConstants.SUPPORTED_THING_TYPES_UIDS, 2, true);
         this.bridgeUID = bridgeUID;
         this.handler = handler;
