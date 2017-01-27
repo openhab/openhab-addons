@@ -13,6 +13,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigService;
@@ -60,9 +61,9 @@ public class BridgeHandler extends BaseBridgeHandler {
         // logger.debug("discovered fritzaha bridge initialized: " + config.toString());
 
         Configuration config = getThing().getConfiguration();
-        this.setApiKey((String) config.get("apikey"));
-        this.setRefreshInterval(((BigDecimal) config.get("refresh")).intValue());
-        this.setSetupMode((boolean) config.get("setupmode"));
+        this.setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
+        this.setRefreshInterval(((BigDecimal) config.get(TankerkoenigBindingConstants.CONFIG_REFRESH)).intValue());
+        this.setSetupMode((boolean) config.get(TankerkoenigBindingConstants.CONFIG_SETUP_MODE));
         updateStatus(ThingStatus.ONLINE);
 
         int pollingPeriod = this.getRefreshInterval();

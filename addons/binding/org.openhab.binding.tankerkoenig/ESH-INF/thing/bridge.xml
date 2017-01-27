@@ -5,14 +5,14 @@
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
 
     <bridge-type id="config">
-        <label>Tankerkoenig Config</label>
-        <description>Diese Konfiguration dient als Grundlage für 1 bis 10 Tankstellen
+        <label>Tankerkoenig Configuration</label>
+        <description>Diese Konfiguration dient als Basiskonfiguration für 1 bis 10 Tankstellen
         </description>
 
         <config-description>
             <parameter name="apikey" type="text" required="true">
                 <label>API-Key</label>
-                <description>tankerkoenig API-Key. Nötige Registrierung unter https://creativecommons.tankerkoenig.de
+                <description>Tankerkoenig API-Key. Nötige Registrierung unter https://creativecommons.tankerkoenig.de
                 </description>
                 <default></default>
             </parameter>
@@ -20,7 +20,7 @@
                 <label>Aktualisierungsintervall</label>
                 <description>Spezifiziert das Aktualisierungsintervall in Minuten. Minimum 10 Minuten.</description>
                 <default>60</default>
-            </parameter>´
+            </parameter>
             
             <parameter name="setupmode" type="boolean">
                 

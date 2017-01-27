@@ -36,4 +36,10 @@ public class TankerkoenigBindingConstants {
     public final static String CHANNEL_E10 = "e10";
     public final static String CHANNEL_E5 = "e5";
 
+    // config
+    public final static String CONFIG_LOCATION_ID = "locationid";
+    public final static String CONFIG_API_KEY = "apikey";
+    public final static String CONFIG_REFRESH = "refresh";
+    public final static String CONFIG_SETUP_MODE = "setupmode";
+
 }

@@ -12,7 +12,7 @@
             </supported-bridge-type-refs>
 	    
 	        <label>Tankstelle</label>
-	        <description>Dieses "Thing" bildet eine Tankstelle ab, zu welcher man sich E5-, E10-, und Diesel-Preise abrufen kann</description>
+	        <description>Stellt Infos zu E5-, E10-, und Diesel-Preise einer Tankstelle bereit</description>
 	
 	       
 	
@@ -27,7 +27,7 @@
             
 	            <parameter name="locationid" type="text" required="true">
 	                <label>Tankstellen-ID</label>
-	                <description>Tankstellen-ID</description>
+	                <description>Tankstellen-ID. Finde die ID deiner Tankstelle hier heraus: https://creativecommons.tankerkoenig.de/configurator/index.html</description>
 	            </parameter>
 	            
 	        </config-description>
@@ -38,21 +38,21 @@
 	    <channel-type id="diesel">
 	        <item-type>Number</item-type>
 	        <label>Diesel</label>
-	        <description>Diesel price</description>
+	        <description>Diesel-Preis</description>
 	        <state readOnly="true"></state>
 	    </channel-type>
 	    
 	    <channel-type id="e10">
 	        <item-type>Number</item-type>
 	        <label>E10</label>
-	        <description>E10 price</description>
+	        <description>E10-Preis</description>
 	        <state readOnly="true"></state>
 	    </channel-type>
 	    
 	    <channel-type id="e5">
             <item-type>Number</item-type>
             <label>E5</label>
-            <description>E5 price</description>
+            <description>E5-Preis</description>
             <state readOnly="true"></state>
         </channel-type>
 

@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class TankerkoenigHandler extends BaseThingHandler {
         logger.debug("Initializing Tankerkoenig handler '{}'", getThing().getUID());
 
         Configuration config = getThing().getConfiguration();
-        this.setLocationID((String) config.get("locationid"));
+        this.setLocationID((String) config.get(TankerkoenigBindingConstants.CONFIG_LOCATION_ID));
 
         Bridge b = this.getBridge();
 

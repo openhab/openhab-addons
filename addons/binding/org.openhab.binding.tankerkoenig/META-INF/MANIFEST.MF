@@ -8,7 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: 
  com.google.gson,
- com.google.gson.reflect;version="2.5.0",
  org.apache.commons.io;version="2.2.0",
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
