@@ -12,6 +12,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -56,7 +57,11 @@ public class ZWayDeviceStateConverter {
         } else if (device instanceof SwitchBinary) {
             return getBinaryState(level.toLowerCase());
         } else if (device instanceof SwitchMultilevel) {
-            return getMultilevelState(level);
+            if (channel.getAcceptedItemType().equals("Rollershutter")) {
+                return getPercentState(level);
+            } else {
+                return getMultilevelState(level);
+            }
         } else if (device instanceof SwitchRGBW) {
             return getColorState(device.getMetrics().getColor());
         } else if (device instanceof SwitchToggle) {
@@ -78,9 +83,16 @@ public class ZWayDeviceStateConverter {
      * @param multilevel sensor value
      * @return transformed openHAB state
      */
-    private static State getMultilevelState(String multilevelSensorValue) {
-        if (multilevelSensorValue != null) {
-            return new DecimalType(multilevelSensorValue);
+    private static State getMultilevelState(String multilevelValue) {
+        if (multilevelValue != null) {
+            return new DecimalType(multilevelValue);
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private static State getPercentState(String multilevelValue) {
+        if (multilevelValue != null) {
+            return new PercentType(multilevelValue);
         }
         return UnDefType.UNDEF;
     }
