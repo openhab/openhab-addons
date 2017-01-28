@@ -66,6 +66,9 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         initializeGardena();
     }
 
+    /**
+     * Initializes the GardenaSmart account.
+     */
     private void initializeGardena() {
         final GardenaAccountHandler instance = this;
         scheduler.execute(new Runnable() {
@@ -109,6 +112,9 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         disposeGardena();
     }
 
+    /**
+     * Disposes the GardenaSmart account.
+     */
     private void disposeGardena() {
         logger.debug("Disposing Gardena account '{}'", getThing().getUID().getId());
 
