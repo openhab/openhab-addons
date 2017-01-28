@@ -24,11 +24,13 @@ A bridge must be specified, all things for a bridge are discovered automatically
 
 There are several settings for a bridge:
 
-| **email** | required | The email address for logging into the Gardena Smart Home |
-| **password** | required | The password for logging into the Gardena Smart Home |
-| **sessionTimeout** | optional | The timeout in minutes for a session to Gardena Smart Home (default = 30) |
-| **connectionTimeout** | optional | The timeout in seconds for connections to Gardena Smart Home (default = 10) |
-| **refresh** | optional | The interval in seconds for refreshing the data from Gardena Smart Home (default = 60) |
+| Name | Required | Description |
+| --- | --- | --- |
+| **email** | yes | The email address for logging into the Gardena Smart Home |
+| **password** | yes | The password for logging into the Gardena Smart Home |
+| **sessionTimeout** | no | The timeout in minutes for a session to Gardena Smart Home (default = 30) |
+| **connectionTimeout** | no | The timeout in seconds for connections to Gardena Smart Home (default = 10) |
+| **refresh** | no | The interval in seconds for refreshing the data from Gardena Smart Home (default = 60) |
 
 ## Example
 
