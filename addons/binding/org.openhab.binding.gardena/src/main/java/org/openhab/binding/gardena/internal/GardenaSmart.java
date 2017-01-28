@@ -21,7 +21,6 @@ import org.openhab.binding.gardena.internal.model.Property;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
 public interface GardenaSmart {
 
     /**

@@ -23,10 +23,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
 @JsonTypeInfo(include = As.WRAPPER_OBJECT, use = Id.NAME)
 @JsonTypeName("sessions")
 public class GardenaConfig {
+
     private static final Integer DEFAULT_SESSION_TIMEOUT = 30;
     private static final Integer DEFAULT_CONNECTION_TIMEOUT = 10;
     private static final Integer DEFAULT_REFRESH = 60;

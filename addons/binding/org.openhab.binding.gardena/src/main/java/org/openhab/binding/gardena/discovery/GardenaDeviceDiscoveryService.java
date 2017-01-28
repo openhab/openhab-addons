@@ -35,6 +35,7 @@ import com.google.common.collect.ImmutableSet;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
+
     private static final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
@@ -83,7 +84,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Starts a thread which loads all Homematic devices connected to the gateway.
+     * Starts a thread which loads all Gardena devices registered in the account
      */
     public void loadDevices() {
         if (scanFuture == null) {
@@ -119,7 +120,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
                 }
             });
         } else {
-            logger.debug("Gardena devices discovery scan in progress");
+            logger.debug("Gardena device discovery scan in progress");
         }
     }
 

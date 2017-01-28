@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeInfo(include = As.WRAPPER_OBJECT, use = Id.NAME)
 @JsonTypeName("sessions")
 public class Session {
+
     private String token;
     private long created;
 

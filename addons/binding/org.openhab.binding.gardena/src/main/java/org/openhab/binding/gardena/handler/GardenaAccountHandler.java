@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaSmartEventListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GardenaAccountHandler.class);
+
+    private final Logger logger = LoggerFactory.getLogger(GardenaAccountHandler.class);
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
 
     private GardenaDeviceDiscoveryService discoveryService;
@@ -57,10 +58,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      */
     @Override
     public void initialize() {
-        LOGGER.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
+        logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
 
         gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
-        LOGGER.debug(gardenaConfig.toString());
+        logger.debug(gardenaConfig.toString());
 
         initializeGardena();
     }
@@ -80,7 +81,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                     disposeGardena();
                     scheduleReinitialize();
-                    LOGGER.debug(ex.getMessage(), ex);
+                    logger.debug(ex.getMessage(), ex);
                 }
             }
         });
@@ -109,7 +110,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     }
 
     private void disposeGardena() {
-        LOGGER.debug("Disposing Gardena account '{}'", getThing().getUID().getId());
+        logger.debug("Disposing Gardena account '{}'", getThing().getUID().getId());
 
         if (discoveryService != null) {
             discoveryService.stopScan();
@@ -158,7 +159,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
-            LOGGER.debug("Refreshing Gardena account '{}'", getThing().getUID().getId());
+            logger.debug("Refreshing Gardena account '{}'", getThing().getUID().getId());
             disposeGardena();
             initializeGardena();
         }
@@ -179,7 +180,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 }
             }
         } catch (GardenaException ex) {
-            LOGGER.error(ex.getMessage(), ex);
+            logger.error(ex.getMessage(), ex);
         } catch (AccountHandlerNotAvailableException ex) {
             // ignore
         }

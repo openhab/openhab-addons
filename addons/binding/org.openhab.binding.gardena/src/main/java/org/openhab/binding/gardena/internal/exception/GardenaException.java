@@ -16,6 +16,7 @@ import java.io.IOException;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaException extends IOException {
+
     private static final long serialVersionUID = 8568935118878542270L;
 
     public GardenaException(String message) {

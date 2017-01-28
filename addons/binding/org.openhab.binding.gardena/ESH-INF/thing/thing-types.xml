@@ -1,80 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="gardena" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <!-- ############################### Mower ############################### -->
-	<thing-type id="mower">
+    <thing-type id="mower">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="account"/>
+            <bridge-type-ref id="account" />
         </supported-bridge-type-refs>
-	
-		<label>Gardena Smart Sileno mower</label>
-		<description>Represents a Gardena Smart Sileno mower</description>
 
-		<channel-groups>
-		    <channel-group id="device_info" typeId="deviceInfo"/>
-			<channel-group id="battery" typeId="rechargeableBattery" />
-			<channel-group id="radio" typeId="radio" />
+        <label>Gardena Smart Sileno mower</label>
+        <description>A Gardena Smart Sileno mower</description>
+
+        <channel-groups>
+            <channel-group id="device_info" typeId="deviceInfo" />
+            <channel-group id="battery" typeId="rechargeableBattery" />
+            <channel-group id="radio" typeId="radio" />
             <channel-group id="internal_temperature" typeId="internalTemperature" />
-			<channel-group id="mower" typeId="mower" />
- 		</channel-groups>
-		<properties>
-			<!-- device info -->
-			<property name="manufacturer" />
-			<property name="product" />
-			<property name="serialNumber" />
-			<property name="sgtin" />
-			<property name="version" />
-			<property name="category" />
-		</properties>
-	</thing-type>
+            <channel-group id="mower" typeId="mower" />
+        </channel-groups>
+        <properties>
+            <!-- device info -->
+            <property name="manufacturer" />
+            <property name="product" />
+            <property name="serialNumber" />
+            <property name="sgtin" />
+            <property name="version" />
+            <property name="category" />
+        </properties>
+    </thing-type>
 
     <channel-group-type id="deviceInfo">
         <label>Device Info</label>
-        <description>Informations about the device</description>
+        <description>Information about the device</description>
         <channels>
             <channel id="last_time_online" typeId="lastTimeOnline" />
         </channels>
     </channel-group-type>
 
-	<channel-group-type id="rechargeableBattery">
-		<label>Battery Info</label>
-		<description>Informations about the rechargeable battery</description>
-		<channels>
-			<channel id="level" typeId="system.battery-level" />
-			<channel id="rechargable_battery_status" typeId="rechargableBatteryStatus" />
-			<channel id="charging" typeId="charging" />
-		</channels>
-	</channel-group-type>
+    <channel-group-type id="rechargeableBattery">
+        <label>Battery Info</label>
+        <description>Information about the rechargeable battery</description>
+        <channels>
+            <channel id="level" typeId="system.battery-level" />
+            <channel id="rechargable_battery_status" typeId="rechargableBatteryStatus" />
+            <channel id="charging" typeId="charging" />
+        </channels>
+    </channel-group-type>
 
-	<channel-group-type id="radio">
-		<label>Radio Link</label>
-		<description>Informations about the radio link</description>
-		<channels>
-			<channel id="quality" typeId="radioQuality" />
-			<channel id="connection_status" typeId="connectionStatus" />
-			<channel id="state" typeId="radioState" />
-		</channels>
-	</channel-group-type>
+    <channel-group-type id="radio">
+        <label>Radio Link</label>
+        <description>Information about the radio link</description>
+        <channels>
+            <channel id="quality" typeId="radioQuality" />
+            <channel id="connection_status" typeId="connectionStatus" />
+            <channel id="state" typeId="radioState" />
+        </channels>
+    </channel-group-type>
 
-	<channel-group-type id="mower">
-		<label>Robotic Mower</label>
-		<description>Informations about the robotic mower</description>
-		<channels>
-			<channel id="manual_operation" typeId="manualOperation" />
-			<channel id="status" typeId="status" />
+    <channel-group-type id="mower">
+        <label>Robotic Mower</label>
+        <description>Information about the robotic mower</description>
+        <channels>
+            <channel id="manual_operation" typeId="manualOperation" />
+            <channel id="status" typeId="status" />
             <channel id="error" typeId="error" />
-			<channel id="source_for_next_start" typeId="sourceForNextStart" />
-			<channel id="timestamp_next_start" typeId="timestampNextStart" />
+            <channel id="source_for_next_start" typeId="sourceForNextStart" />
+            <channel id="timestamp_next_start" typeId="timestampNextStart" />
             <channel id="override_end_time" typeId="overrideEndTime" />
             <channel id="park_until_further_notice_command" typeId="parkUntilFurtherNotice" />
             <channel id="park_until_next_timer_command" typeId="parkUntilNextTimerCommand" />
             <channel id="start_resume_schedule_command" typeId="startResumeSchedule" />
             <channel id="start_override_timer_command" typeId="startOverrideTimer" />
             <channel id="mower_command_duration" typeId="mowerCommandDuration" />
-		</channels>
-	</channel-group-type>
+        </channels>
+    </channel-group-type>
 
     <channel-group-type id="internalTemperature">
         <label>Internal Temperature</label>
@@ -120,62 +120,62 @@
         <item-type>DateTime</item-type>
         <label>Last Time Online</label>
         <description>Last time the device was online</description>
-        <state readOnly="true"/>
+        <state readOnly="true" />
     </channel-type>
 
-	<channel-type id="rechargableBatteryStatus" advanced="true">
-		<item-type>String</item-type>
-		<label>Rechargable Battery Status</label>
-		<description>The status of the rechargable battery</description>
-		<state readOnly="true">
-			<options>
-				<option value="weak">Weak</option>
-				<option value="ok">OK</option>
-				<option value="undefined">Undefined</option>
-			</options>
-		</state>
-	</channel-type>
+    <channel-type id="rechargableBatteryStatus" advanced="true">
+        <item-type>String</item-type>
+        <label>Rechargable Battery Status</label>
+        <description>The status of the rechargable battery</description>
+        <state readOnly="true">
+            <options>
+                <option value="weak">Weak</option>
+                <option value="ok">OK</option>
+                <option value="undefined">Undefined</option>
+            </options>
+        </state>
+    </channel-type>
 
-	<channel-type id="charging" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Battery Charging</label>
-		<description>Battery Charging</description>
-		<state readOnly="true" />
-	</channel-type>
+    <channel-type id="charging" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Battery Charging</label>
+        <description>Battery Charging</description>
+        <state readOnly="true" />
+    </channel-type>
 
-	<channel-type id="radioQuality" advanced="true">
-		<item-type>Number</item-type>
-		<label>Radio Link Quality</label>
-		<description>Radio Link Quality</description>
-		<state pattern="%d %%" readOnly="true" />
-	</channel-type>
+    <channel-type id="radioQuality" advanced="true">
+        <item-type>Number</item-type>
+        <label>Radio Link Quality</label>
+        <description>Radio Link Quality</description>
+        <state pattern="%d %%" readOnly="true" />
+    </channel-type>
 
-	<channel-type id="connectionStatus">
-		<item-type>String</item-type>
-		<label>Connection Status</label>
-		<description>Connection Status</description>
-		<state readOnly="true">
-			<options>
-				<option value="status_device_unreachable">Device unreachable</option>
-				<option value="status_device_alive">Device alive</option>
-				<option value="unknown">Unknown</option>
-			</options>
-		</state>
-	</channel-type>
+    <channel-type id="connectionStatus">
+        <item-type>String</item-type>
+        <label>Connection Status</label>
+        <description>Connection Status</description>
+        <state readOnly="true">
+            <options>
+                <option value="status_device_unreachable">Device unreachable</option>
+                <option value="status_device_alive">Device alive</option>
+                <option value="unknown">Unknown</option>
+            </options>
+        </state>
+    </channel-type>
 
-	<channel-type id="radioState" advanced="true">
-		<item-type>String</item-type>
-		<label>Connection State</label>
-		<description>Connection State</description>
-		<state readOnly="true">
-			<options>
-				<option value="poor">Poor</option>
-				<option value="good">Good</option>
-				<option value="excellent">Excellent</option>
-				<option value="undefined">Undefined</option>
-			</options>
-		</state>
-	</channel-type>
+    <channel-type id="radioState" advanced="true">
+        <item-type>String</item-type>
+        <label>Connection State</label>
+        <description>Connection State</description>
+        <state readOnly="true">
+            <options>
+                <option value="poor">Poor</option>
+                <option value="good">Good</option>
+                <option value="excellent">Excellent</option>
+                <option value="undefined">Undefined</option>
+            </options>
+        </state>
+    </channel-type>
 
     <channel-type id="manualOperation" advanced="true">
         <item-type>String</item-type>
@@ -290,14 +290,14 @@
         <item-type>DateTime</item-type>
         <label>Timestamp Next Start</label>
         <description>Timestamp of the next start</description>
-        <state readOnly="true"/>
+        <state readOnly="true" />
     </channel-type>
 
     <channel-type id="overrideEndTime" advanced="true">
         <item-type>DateTime</item-type>
         <label>Override End Time</label>
         <description>Override End Time</description>
-        <state readOnly="true"/>
+        <state readOnly="true" />
     </channel-type>
 
     <channel-type id="temperature" advanced="true">
@@ -310,7 +310,7 @@
     <!-- ############################### Gateway ############################### -->
     <thing-type id="gateway">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="account"/>
+            <bridge-type-ref id="account" />
         </supported-bridge-type-refs>
 
         <label>Gardena Smart Home Gateway</label>
@@ -344,27 +344,27 @@
         <item-type>String</item-type>
         <label>IP Address</label>
         <description>The IP address of the gateway</description>
-        <state readOnly="true"/>
+        <state readOnly="true" />
     </channel-type>
 
     <channel-type id="timeZone" advanced="true">
         <item-type>String</item-type>
         <label>Time Zone</label>
         <description>The time zone of the gateway</description>
-        <state readOnly="true"/>
+        <state readOnly="true" />
     </channel-type>
 
     <!-- ############################### Watering Computer ############################### -->
     <thing-type id="watering_computer">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="account"/>
+            <bridge-type-ref id="account" />
         </supported-bridge-type-refs>
 
         <label>Gardena Smart Watering Computer</label>
         <description>Represents a Gardena Smart Watering Computer</description>
 
         <channel-groups>
-            <channel-group id="device_info" typeId="deviceInfo"/>
+            <channel-group id="device_info" typeId="deviceInfo" />
             <channel-group id="battery" typeId="battery" />
             <channel-group id="radio" typeId="radio" />
             <channel-group id="outlet" typeId="outlet" />
@@ -383,7 +383,7 @@
 
     <channel-group-type id="battery">
         <label>Battery Info</label>
-        <description>Informations about the battery</description>
+        <description>Information about the battery</description>
         <channels>
             <channel id="level" typeId="system.battery-level" />
             <channel id="disposable_battery_status" typeId="disposableBatteryStatus" />
@@ -392,7 +392,7 @@
 
     <channel-group-type id="outlet">
         <label>Watering Outlet</label>
-        <description>Informations about the watering outlet</description>
+        <description>Information about the watering outlet</description>
         <channels>
             <channel id="valve_open" typeId="valveOpen" />
             <channel id="manual_override" typeId="manualOverride" />
@@ -429,7 +429,7 @@
         <item-type>Contact</item-type>
         <label>Valve Open</label>
         <description>Valve Open</description>
-        <state readOnly="true"/>
+        <state readOnly="true" />
     </channel-type>
 
     <channel-type id="manualOverride" advanced="true">
@@ -449,7 +449,7 @@
         <item-type>Number</item-type>
         <label>Button Manual Override</label>
         <description>The time the valve is open when you press the button on the device</description>
-        <state pattern="%d min" min="1" max="180" step="1"/>
+        <state pattern="%d min" min="1" max="180" step="1" />
     </channel-type>
 
     <channel-type id="outletCommand">
@@ -474,14 +474,14 @@
     <!-- ############################### Sensor ############################### -->
     <thing-type id="sensor">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="account"/>
+            <bridge-type-ref id="account" />
         </supported-bridge-type-refs>
-        
+
         <label>Gardena Smart Sensor</label>
         <description>Represents a Gardena Smart Sensor</description>
 
         <channel-groups>
-            <channel-group id="device_info" typeId="deviceInfo"/>
+            <channel-group id="device_info" typeId="deviceInfo" />
             <channel-group id="battery" typeId="battery" />
             <channel-group id="radio" typeId="radio" />
             <channel-group id="ambient_temperature" typeId="ambientTemperature" />
@@ -528,14 +528,15 @@
         <item-type>Number</item-type>
         <label>Humidity</label>
         <description>The humidity</description>
-        <state pattern="%d %%" readOnly="true"/>
+        <state pattern="%d %%" readOnly="true" />
     </channel-type>
 
     <channel-type id="light">
         <item-type>Number</item-type>
         <label>Brightness</label>
         <description>The brightness</description>
-        <state pattern="%d lx" readOnly="true"/>
+        <state pattern="%d lx" readOnly="true" />
     </channel-type>
+
 
 </thing:thing-descriptions>

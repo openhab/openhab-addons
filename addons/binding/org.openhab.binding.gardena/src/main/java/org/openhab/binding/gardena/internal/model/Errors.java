@@ -20,6 +20,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author Gerhard Riegler - Initial contribution
  */
 public class Errors {
+
     private List<Error> errors = new ArrayList<Error>();
 
     /**

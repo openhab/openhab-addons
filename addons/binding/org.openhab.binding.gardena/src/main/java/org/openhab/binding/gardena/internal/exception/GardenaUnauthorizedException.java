@@ -14,6 +14,7 @@ package org.openhab.binding.gardena.internal.exception;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaUnauthorizedException extends GardenaException {
+
     private static final long serialVersionUID = 4343137351443555679L;
 
     public GardenaUnauthorizedException(Throwable ex) {

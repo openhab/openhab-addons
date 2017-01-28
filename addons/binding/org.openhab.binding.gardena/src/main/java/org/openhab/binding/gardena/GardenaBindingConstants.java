@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaBindingConstants {
+
     public static final String BINDING_ID = "gardena";
 
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
