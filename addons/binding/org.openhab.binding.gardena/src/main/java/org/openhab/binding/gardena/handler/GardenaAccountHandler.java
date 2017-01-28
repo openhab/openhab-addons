@@ -176,8 +176,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      */
     @Override
     public void onDeviceUpdated(Device device) {
+        Thing gardenaThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
         try {
-            Thing gardenaThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
             if (gardenaThing != null) {
                 GardenaThingHandler gardenaThingHandler = (GardenaThingHandler) gardenaThing.getHandler();
                 gardenaThingHandler.updateProperties(device);
@@ -187,6 +187,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
             }
         } catch (GardenaException ex) {
             logger.error(ex.getMessage(), ex);
+            logger.error("There is something wrong with your thing, please recreate the thing {}",
+                    gardenaThing.getUID());
         } catch (AccountHandlerNotAvailableException ex) {
             // ignore
         }
