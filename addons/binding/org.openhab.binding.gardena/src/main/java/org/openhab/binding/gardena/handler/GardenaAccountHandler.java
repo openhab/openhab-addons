@@ -135,7 +135,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      */
     private void unregisterDeviceDiscoveryService() {
         if (discoveryServiceRegistration != null) {
-            if (discoveryServiceRegistration.getReference() != null) {
+            if (bundleContext != null) {
                 GardenaDeviceDiscoveryService service = (GardenaDeviceDiscoveryService) bundleContext
                         .getService(discoveryServiceRegistration.getReference());
                 service.deactivate();
