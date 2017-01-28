@@ -9,6 +9,7 @@
 package org.openhab.binding.gardena.internal;
 
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.openhab.binding.gardena.internal.config.GardenaConfig;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
@@ -26,7 +27,8 @@ public interface GardenaSmart {
     /**
      * Initializes Gardena Smart Home and loads all devices from all locations.
      */
-    public void init(String id, GardenaConfig config, GardenaSmartEventListener eventListener) throws GardenaException;
+    public void init(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
+            ScheduledExecutorService scheduler) throws GardenaException;
 
     /**
      * Disposes Gardena Smart Home.

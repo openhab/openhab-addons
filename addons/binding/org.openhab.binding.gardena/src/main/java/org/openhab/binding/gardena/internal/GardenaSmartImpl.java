@@ -28,7 +28,6 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.gardena.internal.config.GardenaConfig;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
@@ -88,8 +87,6 @@ public class GardenaSmartImpl implements GardenaSmart {
 
     private static final String DEFAULT_MOWER_DURATION = "180";
 
-    private static final String GARDENA_POOL_NAME = "gardena";
-
     private static final String URL = "https://smart.gardena.com";
     private static final String URL_LOGIN = URL + "/sg-1/sessions";
     private static final String URL_LOCATIONS = URL + "/sg-1/locations/?user_id=";
@@ -105,7 +102,7 @@ public class GardenaSmartImpl implements GardenaSmart {
     private GardenaConfig config;
     private String id;
 
-    private ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GARDENA_POOL_NAME);
+    private ScheduledExecutorService scheduler;
     private ScheduledFuture<?> refreshThreadFuture;
     private RefreshDevicesThread refreshDevicesThread = new RefreshDevicesThread();
 
@@ -118,10 +115,12 @@ public class GardenaSmartImpl implements GardenaSmart {
      * {@inheritDoc}
      */
     @Override
-    public void init(String id, GardenaConfig config, GardenaSmartEventListener eventListener) throws GardenaException {
+    public void init(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
+            ScheduledExecutorService scheduler) throws GardenaException {
         this.id = id;
         this.config = config;
         this.eventListener = eventListener;
+        this.scheduler = scheduler;
 
         if (!config.isValid()) {
             throw new GardenaException("Invalid config, no email or password specified");
