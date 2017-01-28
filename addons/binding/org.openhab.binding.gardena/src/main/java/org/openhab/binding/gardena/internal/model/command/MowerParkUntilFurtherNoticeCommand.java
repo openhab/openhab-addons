@@ -8,9 +8,17 @@
  */
 package org.openhab.binding.gardena.internal.model.command;
 
+/**
+ * Command to park a mower until further notice.
+ *
+ * @author Gerhard Riegler - Initial contribution
+ */
 public class MowerParkUntilFurtherNoticeCommand extends Command {
     private static final String COMMAND = "park_until_further_notice";
 
+    /**
+     * {@inheritDoc}
+     */
     public MowerParkUntilFurtherNoticeCommand() {
         super(COMMAND);
     }

@@ -8,9 +8,18 @@
  */
 package org.openhab.binding.gardena.internal.model.command;
 
+/**
+ * Command to resume the mower scheduler.
+ *
+ * @author Gerhard Riegler - Initial contribution
+ */
+
 public class MowerStartResumeScheduleCommand extends Command {
     private static final String COMMAND = "start_resume_schedule";
 
+    /**
+     * {@inheritDoc}
+     */
     public MowerStartResumeScheduleCommand() {
         super(COMMAND);
     }

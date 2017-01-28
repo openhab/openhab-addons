@@ -8,9 +8,18 @@
  */
 package org.openhab.binding.gardena.internal.model.command;
 
+/**
+ * Command to cancel the manual watering.
+ *
+ * @author Gerhard Riegler - Initial contribution
+ */
+
 public class WateringCancelOverrideCommand extends Command {
     private static final String COMMAND = "cancel_override";
 
+    /**
+     * {@inheritDoc}
+     */
     public WateringCancelOverrideCommand() {
         super(COMMAND);
     }

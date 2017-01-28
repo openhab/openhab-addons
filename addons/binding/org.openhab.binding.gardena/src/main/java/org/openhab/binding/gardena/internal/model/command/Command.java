@@ -12,6 +12,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Base class for a Gardena command with parameters.
+ *
+ * @author Gerhard Riegler - Initial contribution
+ */
 @JsonInclude(Include.NON_NULL)
 public abstract class Command {
 
@@ -20,22 +25,39 @@ public abstract class Command {
     @JsonProperty
     protected CommandParameters parameters;
 
+    /**
+     * Creates a command with the given name.
+     */
     public Command(String command) {
         this.command = command;
     }
 
+    /**
+     * Returns the command name.
+     */
     public String getCommand() {
         return command;
     }
 
+    /**
+     * Returns the parameters of the command.
+     */
     public CommandParameters getParameters() {
         return parameters;
     }
 
+    /**
+     * Sets the parameters of the command.
+     */
     public void setParameters(CommandParameters parameters) {
         this.parameters = parameters;
     }
 
+    /**
+     * Class to hold the command parameters.
+     *
+     * @author Gerhard Riegler - Initial contribution
+     */
     @JsonInclude(Include.NON_NULL)
     public class CommandParameters {
         @JsonProperty
@@ -43,18 +65,30 @@ public abstract class Command {
         @JsonProperty(value = "manual_override")
         private String manualOverride;
 
+        /**
+         * Returns the duration parameter.
+         */
         public String getDuration() {
             return duration;
         }
 
+        /**
+         * Sets the duration parameter.
+         */
         public void setDuration(String duration) {
             this.duration = duration;
         }
 
+        /**
+         * Returns the manual override parameter.
+         */
         public String getManualOverride() {
             return manualOverride;
         }
 
+        /**
+         * Sets the manual override parameter.
+         */
         public void setManualOverride(String manualOverride) {
             this.manualOverride = manualOverride;
         }
