@@ -44,12 +44,12 @@ import org.slf4j.LoggerFactory;
  */
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
-    static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
+    private static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
     private final static int SEARCH_TIME = 15;
 
-    private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
-    static boolean discoveryRunning = false;
+    protected static boolean discoveryRunning = false;
 
     /** The refresh interval for discovery of MAX! Cubes */
     private final static long SEARCH_INTERVAL = 600;
@@ -72,32 +72,22 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     @Override
     public void startScan() {
-        logger.debug("Start MAX! Cube discovery");
+        LOGGER.debug("Start MAX! Cube discovery");
         discoverCube();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#stopBackgroundDiscovery()
-     */
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Stop MAX! Cube background discovery");
+        LOGGER.debug("Stop MAX! Cube background discovery");
         if (cubeDiscoveryJob != null && !cubeDiscoveryJob.isCancelled()) {
             cubeDiscoveryJob.cancel(true);
             cubeDiscoveryJob = null;
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startBackgroundDiscovery()
-     */
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Start MAX! Cube background discovery");
+        LOGGER.debug("Start MAX! Cube background discovery");
         if (cubeDiscoveryJob == null || cubeDiscoveryJob.isCancelled()) {
             cubeDiscoveryJob = scheduler.scheduleWithFixedDelay(cubeDiscoveryRunnable, 0, SEARCH_INTERVAL,
                     TimeUnit.SECONDS);
@@ -105,20 +95,17 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     }
 
     private synchronized void discoverCube() {
-        logger.debug("Run MAX! Cube discovery");
+        LOGGER.debug("Run MAX! Cube discovery");
         sendDiscoveryMessage(MAXCUBE_DISCOVER_STRING);
-        logger.trace("Done sending broadcast discovery messages.");
+        LOGGER.trace("Done sending broadcast discovery messages.");
         receiveDiscoveryMessage();
-        logger.debug("Done receiving discovery messages.");
+        LOGGER.debug("Done receiving discovery messages.");
     }
 
     private void receiveDiscoveryMessage() {
 
-        DatagramSocket bcReceipt = null;
-
-        try {
+        try (DatagramSocket bcReceipt = new DatagramSocket(23272)) {
             discoveryRunning = true;
-            bcReceipt = new DatagramSocket(23272);
             bcReceipt.setReuseAddress(true);
             bcReceipt.setSoTimeout(5000);
 
@@ -132,7 +119,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                 byte[] messageBuf = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
                         receivePacket.getOffset() + receivePacket.getLength());
                 String message = new String(messageBuf);
-                logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
+                LOGGER.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
                         message);
 
                 // Check if the message is correct
@@ -143,43 +130,34 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                     String msgValidid = message.substring(18, 19);
                     String requestType = message.substring(19, 20);
                     String rfAddress = "";
-                    logger.debug("MAX! Cube found on network");
-                    logger.debug("Found at  : {}", maxCubeIP);
-                    logger.trace("Cube State: {}", maxCubeState);
-                    logger.debug("Serial    : {}", serialNumber);
-                    logger.trace("Msg Valid : {}", msgValidid);
-                    logger.trace("Msg Type  : {}", requestType);
+                    LOGGER.debug("MAX! Cube found on network");
+                    LOGGER.debug("Found at  : {}", maxCubeIP);
+                    LOGGER.trace("Cube State: {}", maxCubeState);
+                    LOGGER.debug("Serial    : {}", serialNumber);
+                    LOGGER.trace("Msg Valid : {}", msgValidid);
+                    LOGGER.trace("Msg Type  : {}", requestType);
 
                     if (requestType.equals("I")) {
                         rfAddress = Utils.getHex(Arrays.copyOfRange(messageBuf, 21, 24)).replace(" ", "").toLowerCase();
                         String firmwareVersion = Utils.getHex(Arrays.copyOfRange(messageBuf, 24, 26)).replace(" ", ".");
-                        logger.debug("RF Address: {}", rfAddress);
-                        logger.debug("Firmware  : {}", firmwareVersion);
+                        LOGGER.debug("RF Address: {}", rfAddress);
+                        LOGGER.debug("Firmware  : {}", firmwareVersion);
                     }
                     discoveryResultSubmission(maxCubeIP, serialNumber, rfAddress);
                 }
             }
         } catch (SocketTimeoutException e) {
-            logger.trace("No further response");
+            LOGGER.trace("No further response");
             discoveryRunning = false;
         } catch (IOException e) {
-            logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
+            LOGGER.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
             discoveryRunning = false;
-        } finally {
-            // Close the port!
-            try {
-                if (bcReceipt != null) {
-                    bcReceipt.close();
-                }
-            } catch (Exception e) {
-                logger.debug(e.toString());
-            }
         }
     }
 
     private void discoveryResultSubmission(String IpAddress, String cubeSerialNumber, String rfAddress) {
         if (cubeSerialNumber != null) {
-            logger.trace("Adding new MAX! Cube Lan Gateway on {} with id '{}' to Smarthome inbox", IpAddress,
+            LOGGER.trace("Adding new MAX! Cube Lan Gateway on {} with id '{}' to Smarthome inbox", IpAddress,
                     cubeSerialNumber);
             Map<String, Object> properties = new HashMap<>(2);
             properties.put(MaxBinding.PROPERTY_IP_ADDRESS, IpAddress);
@@ -202,10 +180,8 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
      *            String to be used for the discovery
      */
     private void sendDiscoveryMessage(String discoverString) {
-        DatagramSocket bcSend = null;
         // Find the MaxCube using UDP broadcast
-        try {
-            bcSend = new DatagramSocket();
+        try (DatagramSocket bcSend = new DatagramSocket()) {
             bcSend.setBroadcast(true);
 
             byte[] sendData = discoverString.getBytes();
@@ -229,30 +205,21 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, bc, 23272);
                                 bcSend.send(sendPacket);
                             } catch (IOException e) {
-                                logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
+                                LOGGER.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
                             } catch (Exception e) {
-                                logger.info(e.getMessage(), e);
+                                LOGGER.info(e.getMessage(), e);
                             }
-                            logger.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
+                            LOGGER.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
                                     networkInterface.getDisplayName());
                         }
                     }
                 }
             }
-            logger.trace("Done looping over all network interfaces. Now waiting for a reply!");
+            LOGGER.trace("Done looping over all network interfaces. Now waiting for a reply!");
 
         } catch (IOException e) {
-            logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
-        } finally {
-            try {
-                if (bcSend != null) {
-                    bcSend.close();
-                }
-            } catch (Exception e) {
-                // Ignore
-            }
+            LOGGER.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
         }
-
     }
 
 }

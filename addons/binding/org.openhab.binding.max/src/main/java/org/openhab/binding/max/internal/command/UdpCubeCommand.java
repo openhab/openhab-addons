@@ -17,6 +17,7 @@ import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
@@ -34,20 +35,24 @@ import com.google.common.base.Strings;
  */
 public class UdpCubeCommand {
 
-    static final String MAXCUBE_COMMAND_STRING = "eQ3Max*\0";
+    private static final String MAXCUBE_COMMAND_STRING = "eQ3Max*\0";
 
     private final Logger logger = LoggerFactory.getLogger(UdpCubeCommand.class);
 
-    static boolean commandRunning = false;
+    protected static boolean commandRunning = false;
 
-    private udpCommandType commandType;
-    private String serialNumber;
-    private HashMap<String, String> commandResponse = new HashMap<>();
+    private final udpCommandType commandType;
+    private final String serialNumber;
+    private Map<String, String> commandResponse = new HashMap<>();
     private String ipAddress = null;
 
     public UdpCubeCommand(udpCommandType commandType, String serialNumber) {
         this.commandType = commandType;
-        this.serialNumber = serialNumber;
+        if (serialNumber == null || serialNumber.isEmpty()) {
+            this.serialNumber = "**********";
+        } else {
+            this.serialNumber = serialNumber;
+        }
     }
 
     /**
@@ -71,9 +76,6 @@ public class UdpCubeCommand {
      */
     public synchronized boolean send() {
         String commandString;
-        if (serialNumber == null || serialNumber.isEmpty()) {
-            serialNumber = "**********";
-        }
         if (commandType.equals(udpCommandType.RESET)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "R";
         } else if (commandType.equals(udpCommandType.DISCOVERY)) {
@@ -99,11 +101,9 @@ public class UdpCubeCommand {
 
     private void receiveUdpCommandResponse() {
 
-        DatagramSocket bcReceipt = null;
+        commandRunning = true;
 
-        try {
-            commandRunning = true;
-            bcReceipt = new DatagramSocket(23272);
+        try (DatagramSocket bcReceipt = new DatagramSocket(23272)) {
             bcReceipt.setReuseAddress(true);
             bcReceipt.setSoTimeout(5000);
 
@@ -152,15 +152,6 @@ public class UdpCubeCommand {
         } catch (IOException e) {
             logger.debug("IO error during MAX! Cube response: {}", e.getMessage());
             commandRunning = false;
-        } finally {
-            // Close the port!
-            try {
-                if (bcReceipt != null) {
-                    bcReceipt.close();
-                }
-            } catch (Exception e) {
-                logger.debug(e.toString());
-            }
         }
     }
 
@@ -244,7 +235,7 @@ public class UdpCubeCommand {
      * Response of the MAX! Cube on the
      *
      */
-    public HashMap<String, String> getCommandResponse() {
+    public Map<String, String> getCommandResponse() {
         return commandResponse;
     }
 

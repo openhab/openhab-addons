@@ -35,15 +35,15 @@ public class M_Command extends CubeCommand {
     private static int MAX_DEVICES_COUNT = 140;
     private static int MAX_MSG_LENGTH = 1900;
 
-    private ArrayList<Device> devices = new ArrayList<Device>();
-    public ArrayList<RoomInformation> rooms = new ArrayList<RoomInformation>();
+    private List<Device> devices = new ArrayList<Device>();
+    public List<RoomInformation> rooms = new ArrayList<RoomInformation>();
 
-    public M_Command(ArrayList<Device> devices) {
+    public M_Command(List<Device> devices) {
         this.devices = new ArrayList<Device>(devices);
         roombuilder();
     }
 
-    public M_Command(ArrayList<Device> devices, ArrayList<RoomInformation> rooms) {
+    public M_Command(List<Device> devices, List<RoomInformation> rooms) {
         this.devices = new ArrayList<Device>(devices);
         this.rooms = new ArrayList<RoomInformation>(rooms);
         roombuilder();
@@ -55,7 +55,7 @@ public class M_Command extends CubeCommand {
         }
     }
 
-    public ArrayList<RoomInformation> getRooms() {
+    public List<RoomInformation> getRooms() {
         return rooms;
     }
 
