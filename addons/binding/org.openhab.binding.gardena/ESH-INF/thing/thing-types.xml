@@ -426,7 +426,7 @@
     </channel-type>
 
     <channel-type id="valveOpen">
-        <item-type>Switch</item-type>
+        <item-type>Contact</item-type>
         <label>Valve Open</label>
         <description>Valve Open</description>
         <state readOnly="true"/>
