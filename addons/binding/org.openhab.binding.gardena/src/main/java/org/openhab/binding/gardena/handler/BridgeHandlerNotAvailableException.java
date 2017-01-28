@@ -14,6 +14,7 @@ package org.openhab.binding.gardena.handler;
  * @author Gerhard Riegler - Initial contribution
  */
 public class BridgeHandlerNotAvailableException extends Exception {
+
     private static final long serialVersionUID = -1895774551653276530L;
 
     public BridgeHandlerNotAvailableException(String message) {

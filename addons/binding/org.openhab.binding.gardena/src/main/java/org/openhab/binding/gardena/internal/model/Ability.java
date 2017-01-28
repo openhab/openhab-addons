@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Gerhard Riegler - Initial contribution
  */
 public class Ability {
+
     private String name;
     private String type;
     @JsonIgnore

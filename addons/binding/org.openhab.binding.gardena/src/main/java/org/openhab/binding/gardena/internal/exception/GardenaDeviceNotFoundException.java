@@ -15,6 +15,7 @@ package org.openhab.binding.gardena.internal.exception;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaDeviceNotFoundException extends GardenaException {
+
     private static final long serialVersionUID = 2704767320916725490L;
 
     public GardenaDeviceNotFoundException(String message) {

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Gerhard Riegler - Initial contribution
  */
 public class Location {
+
     private String id;
     private String name;
     @JsonProperty("devices")

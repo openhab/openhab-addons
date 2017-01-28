@@ -16,8 +16,8 @@ import java.util.List;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
 public class Locations {
+
     private List<Location> locations = new ArrayList<Location>();
 
     /**

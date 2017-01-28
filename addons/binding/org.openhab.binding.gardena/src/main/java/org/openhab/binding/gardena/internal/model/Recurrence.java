@@ -15,8 +15,8 @@ import java.util.List;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
 public class Recurrence {
+
     private String type;
     private List<String> weekdays;
 

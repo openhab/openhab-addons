@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  * @author Gerhard Riegler - Initial contribution
  */
 public class Property {
+
     private String name;
     private String value;
     @JsonDeserialize(using = DateDeserializer.class)

@@ -15,8 +15,8 @@ import org.openhab.binding.gardena.internal.model.Device;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
 public interface GardenaSmartEventListener {
+
     /**
      * Called when a device has been updated.
      */

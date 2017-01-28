@@ -63,7 +63,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaSmartImpl implements GardenaSmart {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GardenaSmartImpl.class);
+
+    private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
 
     private static final String MOWER_COMMAND_PARK_UNTIL_NEXT_TIMER_COMMAND = "park_until_next_timer_command";
     private static final String MOWER_COMMAND_PARK_UNTIL_FURTHER_NOTICE = "park_until_further_notice_command";
@@ -331,10 +332,10 @@ public class GardenaSmartImpl implements GardenaSmart {
     private synchronized <T> T executeRequest(HttpMethod method, String url, Object contentObject, Class<T> result)
             throws GardenaException {
         try {
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("{} request:  {}", method, url);
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} request:  {}", method, url);
                 if (contentObject != null) {
-                    LOGGER.trace("{} data   :  {}", method, mapper.writeValueAsString(contentObject));
+                    logger.trace("{} data   :  {}", method, mapper.writeValueAsString(contentObject));
                 }
             }
 
@@ -355,9 +356,9 @@ public class GardenaSmartImpl implements GardenaSmart {
 
             ContentResponse contentResponse = request.send();
             int status = contentResponse.getStatus();
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("Status  : {}", status);
-                LOGGER.trace("Response: {}", contentResponse.getContentAsString());
+            if (logger.isTraceEnabled()) {
+                logger.trace("Status  : {}", status);
+                logger.trace("Response: {}", contentResponse.getContentAsString());
             }
 
             if (status == 500) {
@@ -393,7 +394,7 @@ public class GardenaSmartImpl implements GardenaSmart {
     private void verifySession() throws GardenaException {
         if (session == null
                 || session.getCreated() + (config.getSessionTimeout() * 60000) <= System.currentTimeMillis()) {
-            LOGGER.trace("(Re)logging in to Gardena Smart Home");
+            logger.trace("(Re)logging in to Gardena Smart Home");
             session = executeRequest(HttpMethod.POST, URL_LOGIN, config, Session.class);
         }
     }
@@ -410,7 +411,7 @@ public class GardenaSmartImpl implements GardenaSmart {
         @Override
         public void run() {
             try {
-                LOGGER.debug("Refreshing gardena device data");
+                logger.debug("Refreshing gardena device data");
                 Map<String, Device> newDevicesById = new HashMap<String, Device>();
 
                 for (Location location : allLocations) {
@@ -422,7 +423,7 @@ public class GardenaSmartImpl implements GardenaSmart {
 
                 if (connectionLost) {
                     connectionLost = false;
-                    LOGGER.info("Connection resumed to Gardena Smart Home with id '{}'", id);
+                    logger.info("Connection resumed to Gardena Smart Home with id '{}'", id);
                     eventListener.onConnectionResumed();
                 }
 
@@ -459,8 +460,8 @@ public class GardenaSmartImpl implements GardenaSmart {
             } catch (GardenaException ex) {
                 if (!connectionLost) {
                     connectionLost = true;
-                    LOGGER.warn("Connection lost to Gardena Smart Home with id '{}'", id);
-                    LOGGER.trace(ex.getMessage(), ex);
+                    logger.warn("Connection lost to Gardena Smart Home with id '{}'", id);
+                    logger.trace(ex.getMessage(), ex);
                     eventListener.onConnectionLost();
                 }
             }

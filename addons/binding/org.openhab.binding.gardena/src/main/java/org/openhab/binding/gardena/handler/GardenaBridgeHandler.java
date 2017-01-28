@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSmartEventListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GardenaBridgeHandler.class);
+
+    private final Logger logger = LoggerFactory.getLogger(GardenaBridgeHandler.class);
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
 
     private GardenaDeviceDiscoveryService discoveryService;
@@ -57,10 +58,10 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
     @Override
     public void initialize() {
         try {
-            LOGGER.debug("Initializing bridge '{}'", getThing().getUID().getId());
+            logger.debug("Initializing bridge '{}'", getThing().getUID().getId());
 
             GardenaConfig gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
-            LOGGER.debug(gardenaConfig.toString());
+            logger.debug(gardenaConfig.toString());
 
             String id = getThing().getUID().getId();
             gardenaSmart.init(id, gardenaConfig, this);
@@ -75,7 +76,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             dispose();
             scheduleReinitialize();
-            LOGGER.debug(ex.getMessage(), ex);
+            logger.debug(ex.getMessage(), ex);
         }
     }
 
@@ -97,7 +98,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
      */
     @Override
     public void dispose() {
-        LOGGER.debug("Disposing bridge '{}'", getThing().getUID().getId());
+        logger.debug("Disposing bridge '{}'", getThing().getUID().getId());
         super.dispose();
 
         if (discoveryService != null) {
@@ -146,7 +147,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
-            LOGGER.debug("Refreshing bridge '{}'", getThing().getUID().getId());
+            logger.debug("Refreshing bridge '{}'", getThing().getUID().getId());
             dispose();
             initialize();
         }
@@ -167,7 +168,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
                 }
             }
         } catch (GardenaException ex) {
-            LOGGER.error(ex.getMessage(), ex);
+            logger.error(ex.getMessage(), ex);
         } catch (BridgeHandlerNotAvailableException ex) {
             // ignore
         }
