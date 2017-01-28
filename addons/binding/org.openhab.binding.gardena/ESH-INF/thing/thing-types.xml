@@ -123,7 +123,7 @@
         <state readOnly="true"/>
     </channel-type>
 
-	<channel-type id="rechargableBatteryStatus">
+	<channel-type id="rechargableBatteryStatus" advanced="true">
 		<item-type>String</item-type>
 		<label>Rechargable Battery Status</label>
 		<description>The status of the rechargable battery</description>
@@ -136,14 +136,14 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="charging">
+	<channel-type id="charging" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Battery Charging</label>
 		<description>Battery Charging</description>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="radioQuality">
+	<channel-type id="radioQuality" advanced="true">
 		<item-type>Number</item-type>
 		<label>Radio Link Quality</label>
 		<description>Radio Link Quality</description>
@@ -163,7 +163,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="radioState">
+	<channel-type id="radioState" advanced="true">
 		<item-type>String</item-type>
 		<label>Connection State</label>
 		<description>Connection State</description>
@@ -177,7 +177,7 @@
 		</state>
 	</channel-type>
 
-    <channel-type id="manualOperation">
+    <channel-type id="manualOperation" advanced="true">
         <item-type>String</item-type>
         <label>Manual Operation</label>
         <description>The mower is controlled manually</description>
@@ -213,7 +213,7 @@
         </state>
     </channel-type>
 
-    <channel-type id="error">
+    <channel-type id="error" advanced="true">
         <item-type>String</item-type>
         <label>Mower Error</label>
         <description>Mower Error</description>
@@ -300,7 +300,7 @@
         <state readOnly="true"/>
     </channel-type>
 
-    <channel-type id="temperature">
+    <channel-type id="temperature" advanced="true">
         <item-type>Number</item-type>
         <label>Temperature</label>
         <description>Temperature</description>
@@ -347,7 +347,7 @@
         <state readOnly="true"/>
     </channel-type>
 
-    <channel-type id="timeZone">
+    <channel-type id="timeZone" advanced="true">
         <item-type>String</item-type>
         <label>Time Zone</label>
         <description>The time zone of the gateway</description>
@@ -410,7 +410,7 @@
         </channels>
     </channel-group-type>
 
-    <channel-type id="disposableBatteryStatus">
+    <channel-type id="disposableBatteryStatus" advanced="true">
         <item-type>String</item-type>
         <label>Disposable Battery Status</label>
         <description>The status of the disposable battery</description>
@@ -432,7 +432,7 @@
         <state readOnly="true"/>
     </channel-type>
 
-    <channel-type id="manualOverride">
+    <channel-type id="manualOverride" advanced="true">
         <item-type>String</item-type>
         <label>Manual Override</label>
         <description>Manual Override</description>
@@ -445,7 +445,7 @@
         </state>
     </channel-type>
 
-    <channel-type id="buttonManualOverrideTime">
+    <channel-type id="buttonManualOverrideTime" advanced="true">
         <item-type>Number</item-type>
         <label>Button Manual Override</label>
         <description>The time the valve is open when you press the button on the device</description>
@@ -458,7 +458,7 @@
         <description>Command to open and close the valve</description>
     </channel-type>
 
-    <channel-type id="frostWarning">
+    <channel-type id="frostWarning" advanced="true">
         <item-type>String</item-type>
         <label>Frost Warning</label>
         <description>Frost Warning</description>
