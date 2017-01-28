@@ -18,7 +18,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.gardena.handler.GardenaBridgeHandler;
+import org.openhab.binding.gardena.handler.GardenaAccountHandler;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.Device;
@@ -38,12 +38,12 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
     private static final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
-    private GardenaBridgeHandler bridgeHandler;
+    private GardenaAccountHandler accountHandler;
     private Future<?> scanFuture;
 
-    public GardenaDeviceDiscoveryService(GardenaBridgeHandler bridgeHandler) {
+    public GardenaDeviceDiscoveryService(GardenaAccountHandler accountHandler) {
         super(ImmutableSet.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
-        this.bridgeHandler = bridgeHandler;
+        this.accountHandler = accountHandler;
     }
 
     /**
@@ -92,7 +92,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
                 @Override
                 public void run() {
                     try {
-                        GardenaSmart gardena = bridgeHandler.getGardenaSmart();
+                        GardenaSmart gardena = accountHandler.getGardenaSmart();
                         gardena.loadAllDevices();
                         for (Location location : gardena.getLocations()) {
                             for (String deviceId : location.getDeviceIds()) {
@@ -100,7 +100,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
                             }
                         }
 
-                        for (Thing thing : bridgeHandler.getThing().getThings()) {
+                        for (Thing thing : accountHandler.getThing().getThings()) {
                             try {
                                 gardena.getDevice(UidUtils.getGardenaDeviceId(thing));
                             } catch (GardenaException ex) {
@@ -109,7 +109,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
                         }
 
                         logger.debug("Finished Gardena device discovery scan on gateway '{}'",
-                                bridgeHandler.getGardenaSmart().getId());
+                                accountHandler.getGardenaSmart().getId());
                     } catch (Throwable ex) {
                         logger.error(ex.getMessage(), ex);
                     } finally {
@@ -127,10 +127,10 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
      * Generates the DiscoveryResult from a Gardena device.
      */
     public void deviceDiscovered(Device device) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        ThingUID thingUID = UidUtils.generateThingUID(device, bridgeHandler.getThing());
+        ThingUID accountUID = accountHandler.getThing().getUID();
+        ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(accountUID)
                 .withLabel(device.getName()).build();
         thingDiscovered(discoveryResult);
     }
@@ -139,7 +139,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
      * Removes the Gardena device.
      */
     public void deviceRemoved(Device device) {
-        ThingUID thingUID = UidUtils.generateThingUID(device, bridgeHandler.getThing());
+        ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
         thingRemoved(thingUID);
     }
 

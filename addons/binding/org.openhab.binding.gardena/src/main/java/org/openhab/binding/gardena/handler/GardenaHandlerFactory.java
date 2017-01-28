@@ -36,8 +36,8 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     protected ThingHandler createHandler(Thing thing) {
-        if (THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())) {
-            return new GardenaBridgeHandler((Bridge) thing);
+        if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
+            return new GardenaAccountHandler((Bridge) thing);
         } else {
             return new GardenaThingHandler(thing);
         }

@@ -3,10 +3,10 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Gardena Smart Home Bridge -->
-	<bridge-type id="bridge">
-		<label>Gardena Smart Home Bridge</label>
-		<description>The Gardena Smart Home bridge represents a Gardena Smart Home access</description>
+	<!-- Gardena Smart Home Account -->
+	<bridge-type id="account">
+		<label>Gardena Smart Home Account</label>
+		<description>The Gardena Smart Home Account</description>
 
 		<config-description>
 			<parameter name="email" type="text" required="true">

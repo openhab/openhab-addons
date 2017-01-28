@@ -9,14 +9,14 @@
 package org.openhab.binding.gardena.handler;
 
 /**
- * Exception if the BridgeHandler is not available.
+ * Exception if the AccountHandler is not available.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class BridgeHandlerNotAvailableException extends Exception {
+public class AccountHandlerNotAvailableException extends Exception {
     private static final long serialVersionUID = -1895774551653276530L;
 
-    public BridgeHandlerNotAvailableException(String message) {
+    public AccountHandlerNotAvailableException(String message) {
         super(message);
     }
 

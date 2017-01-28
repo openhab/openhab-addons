@@ -34,12 +34,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GardenaBridgeHandler} is the handler for a Gardena Smart Home access and connects it to the framework.
+ * The {@link GardenaAccountHandler} is the handler for a Gardena Smart Home access and connects it to the framework.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSmartEventListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GardenaBridgeHandler.class);
+public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaSmartEventListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GardenaAccountHandler.class);
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
 
     private GardenaDeviceDiscoveryService discoveryService;
@@ -47,7 +47,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
 
     private GardenaSmart gardenaSmart = new GardenaSmartImpl();
 
-    public GardenaBridgeHandler(Bridge bridge) {
+    public GardenaAccountHandler(Bridge bridge) {
         super(bridge);
     }
 
@@ -57,7 +57,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
     @Override
     public void initialize() {
         try {
-            LOGGER.debug("Initializing bridge '{}'", getThing().getUID().getId());
+            LOGGER.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
 
             GardenaConfig gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
             LOGGER.debug(gardenaConfig.toString());
@@ -80,7 +80,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
     }
 
     /**
-     * Schedules a reinitialization, if Gardea Smart Home is not reachable at bridge startup.
+     * Schedules a reinitialization, if Gardea Smart Home account is not reachable at startup.
      */
     private void scheduleReinitialize() {
         scheduler.schedule(new Runnable() {
@@ -97,7 +97,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
      */
     @Override
     public void dispose() {
-        LOGGER.debug("Disposing bridge '{}'", getThing().getUID().getId());
+        LOGGER.debug("Disposing Gardena account '{}'", getThing().getUID().getId());
         super.dispose();
 
         if (discoveryService != null) {
@@ -146,7 +146,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
-            LOGGER.debug("Refreshing bridge '{}'", getThing().getUID().getId());
+            LOGGER.debug("Refreshing Gardena account '{}'", getThing().getUID().getId());
             dispose();
             initialize();
         }
@@ -168,7 +168,7 @@ public class GardenaBridgeHandler extends BaseBridgeHandler implements GardenaSm
             }
         } catch (GardenaException ex) {
             LOGGER.error(ex.getMessage(), ex);
-        } catch (BridgeHandlerNotAvailableException ex) {
+        } catch (AccountHandlerNotAvailableException ex) {
             // ignore
         }
     }

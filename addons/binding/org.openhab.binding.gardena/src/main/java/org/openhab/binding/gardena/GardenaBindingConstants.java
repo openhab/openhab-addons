@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class GardenaBindingConstants {
     public static final String BINDING_ID = "gardena";
 
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
 
     public static final String PROPERTY_MANUFACTURER = "manufacturer";
     public static final String PROPERTY_PRODUCT = "product";

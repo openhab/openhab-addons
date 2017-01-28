@@ -6,7 +6,7 @@
     <!-- ############################### Mower ############################### -->
 	<thing-type id="mower">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge"/>
+            <bridge-type-ref id="account"/>
         </supported-bridge-type-refs>
 	
 		<label>Gardena Smart Sileno mower</label>
@@ -310,7 +310,7 @@
     <!-- ############################### Gateway ############################### -->
     <thing-type id="gateway">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge"/>
+            <bridge-type-ref id="account"/>
         </supported-bridge-type-refs>
 
         <label>Gardena Smart Home Gateway</label>
@@ -357,7 +357,7 @@
     <!-- ############################### Watering Computer ############################### -->
     <thing-type id="watering_computer">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge"/>
+            <bridge-type-ref id="account"/>
         </supported-bridge-type-refs>
 
         <label>Gardena Smart Watering Computer</label>
@@ -474,7 +474,7 @@
     <!-- ############################### Sensor ############################### -->
     <thing-type id="sensor">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge"/>
+            <bridge-type-ref id="account"/>
         </supported-bridge-type-refs>
         
         <label>Gardena Smart Sensor</label>

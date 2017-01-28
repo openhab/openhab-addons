@@ -24,11 +24,11 @@ import org.openhab.binding.gardena.internal.model.Device;
 public class UidUtils {
 
     /**
-     * Generates the ThingUID for the given device in the given bridge.
+     * Generates the ThingUID for the given device in the given account.
      */
-    public static ThingUID generateThingUID(Device device, Bridge bridge) {
+    public static ThingUID generateThingUID(Device device, Bridge account) {
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.getCategory());
-        return new ThingUID(thingTypeUID, bridge.getUID(), device.getId());
+        return new ThingUID(thingTypeUID, account.getUID(), device.getId());
     }
 
     /**
