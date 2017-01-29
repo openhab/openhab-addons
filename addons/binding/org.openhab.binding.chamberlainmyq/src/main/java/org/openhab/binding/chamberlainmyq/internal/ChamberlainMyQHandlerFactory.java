@@ -33,8 +33,44 @@ public class ChamberlainMyQHandlerFactory extends BaseThingHandlerFactory {
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
     
     @Override
+    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
+            ThingUID bridgeUID) {
+        if (ChamberlainMyQBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            ThingUID ChamberlainMyQBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
+            return super.createThing(thingTypeUID, configuration, ChamberlainMyQBridgeUID, null);
+        }
+        if (ChamberlainMyQDoorOpenerHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            ThingUID ChamberlainMyQDoorOpenerUID = getDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
+            return super.createThing(thingTypeUID, configuration, ChamberlainMyQDoorOpenerUID, bridgeUID);
+        }
+        if (ChamberlainMyQLightHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            ThingUID ChamberlainMyQLightUID = getDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
+            return super.createThing(thingTypeUID, configuration, ChamberlainMyQLightUID, bridgeUID);
+        }
+        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the ChamberlainMyQ binding.");
+    }
+
+    @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
+
+    private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+        if (thingUID == null) {
+            String myqID = (String) configuration.get(MYQ_ID);
+            thingUID = new ThingUID(thingTypeUID, myqID);
+        }
+        return thingUID;
+    }
+
+    private ThingUID getDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
+            ThingUID bridgeUID) {
+        String myqID = (String) configuration.get(MYQ_ID);
+
+        if (thingUID == null) {
+            thingUID = new ThingUID(thingTypeUID, myqID, bridgeUID.getId());
+        }
+        return thingUID;
     }
 
     @Override
