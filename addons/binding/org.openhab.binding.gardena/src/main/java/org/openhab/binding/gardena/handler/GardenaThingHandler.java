@@ -59,7 +59,12 @@ public class GardenaThingHandler extends BaseThingHandler {
     public void initialize() {
         try {
             GardenaSmart gardena = getGardenaSmart();
-            Device device = gardena.getDevice(UidUtils.getGardenaDeviceId(getThing()));
+
+            String deviceId = getConfig().as(GardenaDeviceConfig.class).deviceId;
+            if (deviceId == null) {
+                deviceId = UidUtils.getGardenaDeviceId(getThing());
+            }
+            Device device = gardena.getDevice(deviceId);
 
             updateProperties(device);
             updateStatus(device);
