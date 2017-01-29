@@ -116,7 +116,7 @@
         <description>Starts the mower for the specified duration</description>
     </channel-type>
 
-    <channel-type id="lastTimeOnline">
+    <channel-type id="lastTimeOnline" advanced="true">
         <item-type>DateTime</item-type>
         <label>Last Time Online</label>
         <description>Last time the device was online</description>
