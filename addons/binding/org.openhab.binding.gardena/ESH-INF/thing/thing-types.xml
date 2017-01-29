@@ -44,7 +44,7 @@
         <description>Information about the rechargeable battery</description>
         <channels>
             <channel id="level" typeId="system.battery-level" />
-            <channel id="rechargable_battery_status" typeId="rechargableBatteryStatus" />
+            <channel id="rechargeable_battery_status" typeId="rechargeableBatteryStatus" />
             <channel id="charging" typeId="charging" />
         </channels>
     </channel-group-type>
@@ -124,10 +124,10 @@
         <state readOnly="true" />
     </channel-type>
 
-    <channel-type id="rechargableBatteryStatus" advanced="true">
+    <channel-type id="rechargeableBatteryStatus" advanced="true">
         <item-type>String</item-type>
-        <label>Rechargable Battery Status</label>
-        <description>The status of the rechargable battery</description>
+        <label>Rechargeable Battery Status</label>
+        <description>The status of the rechargeable battery</description>
         <state readOnly="true">
             <options>
                 <option value="weak">Weak</option>
