@@ -18,11 +18,26 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class ChamberlainMyQBindingConstants {
 
     public static final String BINDING_ID = "chamberlainmyq";
+
+    // bridge
+    public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "MyqGateway");
     
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public final static ThingTypeUID THING_TYPE_DOOR_OPENER = new ThingTypeUID(BINDING_ID, "DoorOpener");
+	public final static ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "Light");
 
     // List of all Channel ids
-    public final static String CHANNEL_1 = "channel1";
+    public static final String CHANNEL_LIGHT_STATE = "lightstate";
+	public static final String CHANNEL_DOOR_STATE = "doorstate";
+
+    // Bridge config properties
+    public static final String USER_NAME = "username";
+    public static final String PASSWORD = "password";
+    public static final String POLL_PERIOD = "pollPeriod";
+	public static final String QUICK_POLL_PERIOD = "quickPollPeriod";
+	public static final String TIME_OUT = "timeout";
+
+    // Door Opener/Light config properties
+    public static final String MYQ_ID = "MyQDeviceId";
 
 }
