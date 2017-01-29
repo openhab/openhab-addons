@@ -1,11 +1,11 @@
 # Gardena Binding
 
 This is the binding for [Gardena Smart Home](http://www.gardena.com/de/rasenpflege/smartsystem/).
-This binding allows you to integrate, view and control all Gardena Smart Home devices in the openHAB environment.
+This binding allows you to integrate, view and control Gardena Smart Home devices in the openHAB environment.
 
 ## Supported Things
 
-All devices connected to Gardena Smart Home, currently:
+Devices connected to Gardena Smart Home, currently:
 
 | Thing type | Name |
 |------------|------|
@@ -18,11 +18,11 @@ The schedules are not yet integrated!
 
 ## Discovery
 
-A bridge must be specified, all things for a bridge are discovered automatically.
+An account must be specified, all things for an account are discovered automatically.
 
-## Bridge Configuration
+## Account Configuration
 
-There are several settings for a bridge:
+There are several settings for an account:
 
 | Name | Required | Description |
 | --- | --- | --- |
@@ -39,28 +39,28 @@ There are several settings for a bridge:
 Minimal Thing configuration:
 
 ```
-Bridge gardena:bridge:home [ email="...", password="..." ]
+Bridge gardena:account:home [ email="...", password="..." ]
 ```
 
 Configuration with refresh:
 
 ```
-Bridge gardena:bridge:home [ email="...", password="...", refresh=30 ]
+Bridge gardena:account:home [ email="...", password="...", refresh=30 ]
 ```
 
 Configuration of multiple bridges:
 
 ```
-Bridge gardena:bridge:home1 [ email="...", password="..." ]
-Bridge gardena:bridge:home2 [ email="...", password="..." ]
+Bridge gardena:account:home1 [ email="...", password="..." ]
+Bridge gardena:account:home2 [ email="...", password="..." ]
 ```
 
-Once a bridge connection is established, connected Things are discovered automatically.
+Once a connection to an account is established, connected Things are discovered automatically.
 
 Alternatively, you can manually configure a Thing:
 
 ```
-Bridge gardena:bridge:home [ email="...", password="..." ]
+Bridge gardena:account:home [ email="...", password="..." ]
 {
   Thing mower myMower [ deviceId="c81ad682-6e45-42ce-bed1-6b4eff5620c8" ]
 }
@@ -72,4 +72,18 @@ In the items file, you can link items to channels of your Things:
 
 ```
 Number Battery_Level "Battery [%d %%]" {channel="gardena:mower:home:myMower:battery#level"}
+```
+
+### Debugging and Tracing
+
+If you want to see what's going on in the binding, switch the loglevel to TRACE in the Karaf console
+
+```
+log:set TRACE org.openhab.binding.gardena
+```
+
+Set the logging back to normal
+
+```
+log:set INFO org.openhab.binding.gardena
 ```
