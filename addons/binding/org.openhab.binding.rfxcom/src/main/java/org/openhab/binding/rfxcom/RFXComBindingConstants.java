@@ -8,14 +8,13 @@
  */
 package org.openhab.binding.rfxcom;
 
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The {@link RFXComBindingConstants} class defines common constants, which are
@@ -64,6 +63,8 @@ public class RFXComBindingConstants {
             BRIDGE_RFXTRX315, BRIDGE_RFXREC443);
 
     // List of all Channel ids
+    public final static String CHANNEL_RAW_MESSAGE = "rawMessage";
+    public final static String CHANNEL_RAW_PAYLOAD = "rawPayload";
     public final static String CHANNEL_SHUTTER = "shutter";
     public final static String CHANNEL_COMMAND = "command";
     public final static String CHANNEL_MOOD = "mood";
@@ -76,8 +77,8 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_LOW_BATTERY = "lowBattery";
     public final static String CHANNEL_PRESSURE = "pressure";
     public final static String CHANNEL_FORECAST = "forecast";
-    public final static String CHANNEL_RAIN_RATE = "rainrate";
-    public final static String CHANNEL_RAIN_TOTAL = "raintotal";
+    public final static String CHANNEL_RAIN_RATE = "rainRate";
+    public final static String CHANNEL_RAIN_TOTAL = "rainTotal";
     public final static String CHANNEL_WIND_DIRECTION = "windDirection";
     public final static String CHANNEL_WIND_SPEED = "windSpeed";
     public final static String CHANNEL_GUST = "gust";
@@ -86,13 +87,18 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_TOTAL_USAGE = "totalUsage";
     public final static String CHANNEL_INSTANT_AMPS = "instantAmp";
     public final static String CHANNEL_TOTAL_AMP_HOUR = "totalAmpHour";
+    public static final String CHANNEL_CHANNEL1_AMPS = "channel1Amps";
+    public static final String CHANNEL_CHANNEL2_AMPS = "channel2Amps";
+    public static final String CHANNEL_CHANNEL3_AMPS = "channel3Amps";
     public final static String CHANNEL_STATUS = "status";
     public final static String CHANNEL_MOTION = "motion";
     public final static String CHANNEL_CONTACT = "contact";
     public final static String CHANNEL_VOLTAGE = "voltage";
     public final static String CHANNEL_SET_POINT = "setpoint";
+    public static final String CHANNEL_DATE_TIME = "dateTime";
 
     // List of all Thing Type UIDs
+    public final static ThingTypeUID THING_TYPE_UNDECODED = new ThingTypeUID(BINDING_ID, "undecoded");
     public final static ThingTypeUID THING_TYPE_LIGHTNING1 = new ThingTypeUID(BINDING_ID, "lighting1");
     public final static ThingTypeUID THING_TYPE_LIGHTNING2 = new ThingTypeUID(BINDING_ID, "lighting2");
     public final static ThingTypeUID THING_TYPE_LIGHTNING3 = new ThingTypeUID(BINDING_ID, "lighting3");
@@ -137,22 +143,22 @@ public class RFXComBindingConstants {
     /**
      * Presents all supported Thing types by RFXCOM binding.
      */
-    public final static Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_LIGHTNING1,
-            THING_TYPE_LIGHTNING2, THING_TYPE_LIGHTNING3, THING_TYPE_LIGHTNING4, THING_TYPE_LIGHTNING5,
-            THING_TYPE_LIGHTNING6, THING_TYPE_CHIME, THING_TYPE_FAN, THING_TYPE_CURTAIN1, THING_TYPE_BLINDS1,
-            THING_TYPE_SECURITY1, THING_TYPE_CAMERA1, THING_TYPE_REMOTE_CONTROL, THING_TYPE_THERMOSTAT1,
-            THING_TYPE_THERMOSTAT2, THING_TYPE_THERMOSTAT3, THING_TYPE_BBQ_TEMPERATURE, THING_TYPE_TEMPERATURE_RAIN,
-            THING_TYPE_TEMPERATURE, THING_TYPE_HUMIDITY, THING_TYPE_TEMPERATURE_HUMIDITY, THING_TYPE_BAROMETRIC,
-            THING_TYPE_TEMPERATURE_HUMIDITY_BAROMETRIC, THING_TYPE_RAIN, THING_TYPE_WIND, THING_TYPE_UV,
-            THING_TYPE_DATE_TIME, THING_TYPE_CURRENT, THING_TYPE_ENERGY, THING_TYPE_CURRENT_ENERGY, THING_TYPE_POWER,
-            THING_TYPE_WEIGHTING_SCALE, THING_TYPE_GAS_USAGE, THING_TYPE_WATER_USAGE, THING_TYPE_RFX_SENSOR,
-            THING_TYPE_RFX_METER, THING_TYPE_FS20, THING_TYPE_RFY);
+    public final static Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_UNDECODED,
+            THING_TYPE_LIGHTNING1, THING_TYPE_LIGHTNING2, THING_TYPE_LIGHTNING3, THING_TYPE_LIGHTNING4,
+            THING_TYPE_LIGHTNING5, THING_TYPE_LIGHTNING6, THING_TYPE_CHIME, THING_TYPE_FAN, THING_TYPE_CURTAIN1,
+            THING_TYPE_BLINDS1, THING_TYPE_SECURITY1, THING_TYPE_CAMERA1, THING_TYPE_REMOTE_CONTROL,
+            THING_TYPE_THERMOSTAT1, THING_TYPE_THERMOSTAT2, THING_TYPE_THERMOSTAT3, THING_TYPE_BBQ_TEMPERATURE,
+            THING_TYPE_TEMPERATURE_RAIN, THING_TYPE_TEMPERATURE, THING_TYPE_HUMIDITY, THING_TYPE_TEMPERATURE_HUMIDITY,
+            THING_TYPE_BAROMETRIC, THING_TYPE_TEMPERATURE_HUMIDITY_BAROMETRIC, THING_TYPE_RAIN, THING_TYPE_WIND,
+            THING_TYPE_UV, THING_TYPE_DATE_TIME, THING_TYPE_CURRENT, THING_TYPE_ENERGY, THING_TYPE_CURRENT_ENERGY,
+            THING_TYPE_POWER, THING_TYPE_WEIGHTING_SCALE, THING_TYPE_GAS_USAGE, THING_TYPE_WATER_USAGE,
+            THING_TYPE_RFX_SENSOR, THING_TYPE_RFX_METER, THING_TYPE_FS20, THING_TYPE_RFY);
 
     /**
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
      */
     public final static Map<PacketType, ThingTypeUID> packetTypeThingMap = ImmutableMap
-            .<PacketType, ThingTypeUID> builder()
+            .<PacketType, ThingTypeUID>builder()
             .put(PacketType.BAROMETRIC, RFXComBindingConstants.THING_TYPE_BAROMETRIC)
             .put(PacketType.BBQ1, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
             .put(PacketType.BLINDS1, RFXComBindingConstants.THING_TYPE_BLINDS1)
@@ -187,6 +193,7 @@ public class RFXComBindingConstants {
             .put(PacketType.THERMOSTAT1, RFXComBindingConstants.THING_TYPE_THERMOSTAT1)
             .put(PacketType.THERMOSTAT2, RFXComBindingConstants.THING_TYPE_THERMOSTAT2)
             .put(PacketType.THERMOSTAT3, RFXComBindingConstants.THING_TYPE_THERMOSTAT3)
+            .put(PacketType.UNDECODED_RF_MESSAGE, RFXComBindingConstants.THING_TYPE_UNDECODED)
             .put(PacketType.UV, RFXComBindingConstants.THING_TYPE_UV)
             .put(PacketType.WATER, RFXComBindingConstants.THING_TYPE_WATER_USAGE)
             .put(PacketType.WEIGHT, RFXComBindingConstants.THING_TYPE_WEIGHTING_SCALE)

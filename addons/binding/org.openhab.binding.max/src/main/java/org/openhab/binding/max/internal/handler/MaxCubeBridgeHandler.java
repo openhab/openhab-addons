@@ -205,7 +205,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Exclusive mode  {}.", exclusive);
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
-        updateStatus(ThingStatus.OFFLINE);
+        previousOnline = true; // To trigger offline in case no connection @ startup
         startAutomaticRefresh();
     }
 
@@ -226,7 +226,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             }
             if (configurationParameter.getKey().startsWith("action-")) {
                 if (configurationParameter.getValue().toString().equals(BUTTON_ACTION_VALUE)) {
-                    configurationParameter.setValue(BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
                     if (configurationParameter.getKey().equals(ACTION_CUBE_REBOOT)) {
                         cubeReboot();
                     }
@@ -235,9 +234,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         refresh = false;
                     }
                 }
+                configuration.put(configurationParameter.getKey(), BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
+            } else {
+                configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
             }
-
-            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
         }
 
         // Persist changes and restart with new parameters
@@ -284,7 +284,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     }
 
     public void deviceInclusion() {
-        if (previousOnline) {
+        if (previousOnline && socket != null) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Inclusion");
             logger.info("Start MAX! inclusion mode for 60 seconds");
             try {
@@ -658,7 +658,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 freeMemorySlots = ((S_Message) message).getFreeMemorySlots();
                 updateCubeState();
                 if (((S_Message) message).isCommandDiscarded()) {
-                    logger.info("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
+                    logger.warn("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
                             freeMemorySlots);
                 } else {
                     logger.debug("S message. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle, freeMemorySlots);

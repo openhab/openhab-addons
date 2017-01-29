@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="globalcache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- GlobalCache Channel Groups -->
+
+	<channel-group-type id="sl-m1">
+		<label>Module 1</label>
+		<description>Serial Module</description>
+		<channels>
+			<channel id="c1" typeId="channel-type-sl">
+				<label>Connector 1 (mapped)</label>
+				<description>Mapped commands to serial port</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+
+			<channel id="c1-direct" typeId="channel-type-sl-direct">
+				<label>Connector 1 (direct)</label>
+				<description>Direct commands to serial port</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sl-m2">
+		<label>Module 2</label>
+		<description>Serial Module</description>
+		<channels>
+			<channel id="c1" typeId="channel-type-sl">
+				<label>Connector 1 (mapped)</label>
+				<description>Mapped commands to serial port</description>
+				<properties>
+					<property name="module">2</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+
+			<channel id="c1-direct" typeId="channel-type-sl-direct">
+				<label>Connector 1 (direct)</label>
+				<description>Direct commands to serial port</description>
+				<properties>
+					<property name="module">2</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ir-m1">
+		<label>Module 1</label>
+		<description>Infrared Module</description>
+		<channels>
+			<channel id="c1" typeId="channel-type-ir">
+				<label>Connector 1</label>
+				<description>Infrared emitter on connector 1.  Connector 1 is the connector closest to the power plug.</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+
+			<channel id="c2" typeId="channel-type-ir">
+				<label>Connector 2</label>
+				<description>Infrared emitter on connector 2.</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">2</property>
+				</properties>
+			</channel>
+
+			<channel id="c3" typeId="channel-type-ir">
+				<label>Connector 3</label>
+				<description>Infrared emitter/blaster on connector 3.</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">3</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ir-m2">
+		<label>Module 2</label>
+		<description>Infrared Module</description>
+		<channels>
+			<channel id="c1" typeId="channel-type-ir">
+				<label>Connector 1</label>
+				<description>Infrared emitter on connector 1.  Connector 1 is the connector closest to the power plug.</description>
+				<properties>
+					<property name="module">2</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+
+			<channel id="c2" typeId="channel-type-ir">
+				<label>Connector 2</label>
+				<description>Infrared emitter on connector 2.</description>
+				<properties>
+					<property name="module">2</property>
+					<property name="connector">2</property>
+				</properties>
+			</channel>
+
+			<channel id="c3" typeId="channel-type-ir">
+				<label>Connector 3</label>
+				<description>Infrared emitter/blaster on connector 3.</description>
+				<properties>
+					<property name="module">2</property>
+					<property name="connector">3</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ir-m4">
+		<label>Module 4</label>
+		<description>Infrared Module</description>
+		<channels>
+			<channel id="c1" typeId="channel-type-ir">
+				<label>Connector 1</label>
+				<description>Infrared emitter on connector 1.  Connector 1 is the connector closest to the power plug.</description>
+				<properties>
+					<property name="module">4</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+
+			<channel id="c2" typeId="channel-type-ir">
+				<label>Connector 2</label>
+				<description>Infrared emitter on connector 2.</description>
+				<properties>
+					<property name="module">4</property>
+					<property name="connector">2</property>
+				</properties>
+			</channel>
+
+			<channel id="c3" typeId="channel-type-ir">
+				<label>Connector 3</label>
+				<description>Infrared emitter/blaster on connector 3.</description>
+				<properties>
+					<property name="module">4</property>
+					<property name="connector">3</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ir-m5">
+		<label>Module 5</label>
+		<description>Infrared Module</description>
+		<channels>
+			<channel id="c1" typeId="channel-type-ir">
+				<label>Connector 1</label>
+				<description>Infrared emitter on connector 1.  Connector 1 is the connector closest to the power plug.</description>
+				<properties>
+					<property name="module">5</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+
+			<channel id="c2" typeId="channel-type-ir">
+				<label>Connector 2</label>
+				<description>Infrared emitter on connector 2.</description>
+				<properties>
+					<property name="module">5</property>
+					<property name="connector">2</property>
+				</properties>
+			</channel>
+
+			<channel id="c3" typeId="channel-type-ir">
+				<label>Connector 3</label>
+				<description>Infrared emitter/blaster on connector 3.</description>
+				<properties>
+					<property name="module">5</property>
+					<property name="connector">3</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cc-m1">
+		<label>Module 1</label>
+		<description>Contact Closure Module</description>
+		<channels>
+			<channel id="c1" typeId="channel-type-cc">
+				<label>Connector 1</label>
+				<description>Contact closure on connector 1.</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+
+			<channel id="c2" typeId="channel-type-cc">
+				<label>Connector 2</label>
+				<description>Contact closure on connector 2.</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">2</property>
+				</properties>
+			</channel>
+
+			<channel id="c3" typeId="channel-type-cc">
+				<label>Connector 3</label>
+				<description>Contact closure on connector 3.</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">3</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cc-m3">
+		<label>Module 3</label>
+		<description>Contact Closure Module</description>
+		<channels>
+			<channel id="c1" typeId="channel-type-cc">
+				<label>Connector 1</label>
+				<description>Contact closure on connector 1.</description>
+				<properties>
+					<property name="module">3</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+
+			<channel id="c2" typeId="channel-type-cc">
+				<label>Connector 2</label>
+				<description>Contact closure on connector 2.</description>
+				<properties>
+					<property name="module">3</property>
+					<property name="connector">2</property>
+				</properties>
+			</channel>
+
+			<channel id="c3" typeId="channel-type-cc">
+				<label>Connector 3</label>
+				<description>Contact closure on connector 3.</description>
+				<properties>
+					<property name="module">3</property>
+					<property name="connector">3</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

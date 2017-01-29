@@ -25,8 +25,8 @@ public class MeteostickBindingConstants {
     public final static ThingTypeUID THING_TYPE_DAVIS = new ThingTypeUID(BINDING_ID, "meteostick_davis_iss");
 
     // List of all Channel ids
-    public final static String CHANNEL_INDOOR_TEMPERATURE = "indoor_temperature";
-    public final static String CHANNEL_OUTDOOR_TEMPERATURE = "outdoor_temperature";
+    public final static String CHANNEL_INDOOR_TEMPERATURE = "indoor-temperature";
+    public final static String CHANNEL_OUTDOOR_TEMPERATURE = "outdoor-temperature";
     public final static String CHANNEL_HUMIDITY = "humidity";
     public final static String CHANNEL_PRESSURE = "pressure";
     public final static String CHANNEL_RAIN_RAW = "rain-raw";

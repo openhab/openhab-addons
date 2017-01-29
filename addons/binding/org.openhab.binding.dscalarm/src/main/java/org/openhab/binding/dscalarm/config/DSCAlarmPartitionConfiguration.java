@@ -10,7 +10,7 @@ package org.openhab.binding.dscalarm.config;
 
 /**
  * Configuration class for the DSC Alarm Partition Thing.
- * 
+ *
  * @author Russell Stephens - Initial contribution
  */
 

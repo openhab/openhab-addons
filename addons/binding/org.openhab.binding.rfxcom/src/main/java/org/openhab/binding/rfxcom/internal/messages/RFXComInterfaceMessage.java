@@ -8,13 +8,13 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
  * RFXCOM data class for interface message.
@@ -28,10 +28,9 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         UNKNOWN_RTS_REMOTE(1),
         NO_EXTENDED_HW_PRESENT(2),
         LIST_RFY_REMOTES(3),
-        NOT_USED_4(4),
-        NOT_USED_5(5),
-        NOT_USED_6(6),
+        LIST_ASA_REMOTES(4),
         START_RECEIVER(7),
+
         UNKNOWN(255);
 
         private final int subType;
@@ -47,11 +46,20 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) subType;
         }
+
+        public static SubType fromByte(int input) {
+            for (SubType subType : SubType.values()) {
+                if (subType.subType == input) {
+                    return subType;
+                }
+            }
+
+            return SubType.UNKNOWN;
+        }
     }
 
     public enum Commands {
         RESET(0), // Reset the receiver/transceiver. No answer is transmitted!
-        NOT_USED1(1), // Not used
         GET_STATUS(2), // Get Status, return firmware versions and configuration of the interface
         SET_MODE(3), // Set mode msg1-msg5, return firmware versions and configuration of the interface
         ENABLE_ALL(4), // Enable all receiving modes of the receiver/transceiver
@@ -76,13 +84,23 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) command;
         }
+
+        public static Commands fromByte(int input) {
+            for (Commands command : Commands.values()) {
+                if (command.command == input) {
+                    return command;
+                }
+            }
+
+            return Commands.UNKNOWN;
+        }
     }
 
     public enum TransceiverType {
         _310MHZ(80),
         _315MHZ(81),
-        _443_92MHZ_RECEIVER_ONLY(82),
-        _443_92MHZ_TRANSCEIVER(83),
+        _433_92MHZ_RECEIVER_ONLY(82),
+        _433_92MHZ_TRANSCEIVER(83),
         _868_00MHZ(85),
         _868_00MHZ_FSK(86),
         _868_30MHZ(87),
@@ -106,13 +124,23 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) type;
         }
+
+        public static TransceiverType fromByte(int input) {
+            for (TransceiverType type : TransceiverType.values()) {
+                if (type.type == input) {
+                    return type;
+                }
+            }
+
+            return TransceiverType.UNKNOWN;
+        }
     }
 
-    public SubType subType = SubType.RESPONSE;
+    public SubType subType = SubType.UNKNOWN;
     public Commands command = Commands.UNKNOWN;
     public String text = "";
 
-    public TransceiverType transceiverType = TransceiverType._443_92MHZ_TRANSCEIVER;
+    public TransceiverType transceiverType = TransceiverType.UNKNOWN;
     public int firmwareVersion = 0;
 
     public boolean enableUndecodedPackets = false; // 0x80 - Undecoded packets
@@ -204,26 +232,11 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
-        try {
-            command = Commands.values()[data[4]];
-        } catch (Exception e) {
-            command = Commands.UNKNOWN;
-        }
+        subType = SubType.fromByte(super.subType);
+        command = Commands.fromByte(data[4]);
 
         if (subType == SubType.RESPONSE) {
-            transceiverType = TransceiverType.UNKNOWN;
-
-            for (TransceiverType type : TransceiverType.values()) {
-                if (type.toByte() == data[5]) {
-                    transceiverType = type;
-                    break;
-                }
-            }
+            transceiverType = TransceiverType.fromByte(data[5]);
 
             firmwareVersion = data[6] & 0xFF;
 

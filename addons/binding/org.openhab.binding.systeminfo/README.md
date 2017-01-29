@@ -2,19 +2,19 @@
 
 System information Binding provides operating system and hardware information including:
 
- - Operating system name, version and manufacturer
- - CPU average recent load and load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime
- - Free, total and available memory
- - Free, total and available swap memory
- - Hard drive name, model and serial number
- - Free, total, available storage space and storage type (NTSFS, FAT32 ..)
- - Battery information - estimated remaining time, capacity, name
- - Sensors information - CPU voltage and temperature, fan speeds 
- - Display information
- - Network IP,name and adapter name, mac, data sent and received, packages sent and received
- - Process information - size of RAM memory used, CPU load, process name, path, number of threads 
+ - Operating system name, version and manufacturer;
+ - CPU average recent load and load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime;
+ - Free, total and available memory;
+ - Free, total and available swap memory;
+ - Hard drive name, model and serial number;
+ - Free, total, available storage space and storage type (NTSFS, FAT32 ..);
+ - Battery information - estimated remaining time, capacity, name;
+ - Sensors information - CPU voltage and temperature, fan speeds;
+ - Display information;
+ - Network IP,name and adapter name, mac, data sent and received, packages sent and received;
+ - Process information - size of RAM memory used, CPU load, process name, path, number of threads.
  
- The binding uses [oshi](https://github.com/dblock/oshi) API to access this information regardless of the underlying platform and does not need any native parts.
+ The binding uses [OSHI](https://github.com/oshi/oshi) API to access this information regardless of the underlying platform and does not need any native parts.
  
 ## Supported Things
 
@@ -142,6 +142,29 @@ Each of the channels has a default configuration parameter - priority. It has th
 Channels from group ''process'' have additional configuration parameter - PID (Process identifier). This parameter is used as 'deviceIndex' and defines which process is tracked from the channel. This makes the channels from this groups very flexible - they can change its PID dynamically.
  
 Parameter PID has a default value 0 - this is the PID of the System Idle process in Windows OS.
+
+## Reporting issues
+
+As already mentioned this binding depends heavily on the [OSHI](https://github.com/oshi/oshi) API to provide the operating system and hardware information.
+
+Take a look at the console for an ERROR log message.
+
+If you find an issue with a support for a specific hardware or software architecture please take a look at the [OSHI issues](https://github.com/oshi/oshi/issues), your problem might have be already reported and solved! Feel free to open a new issue there with the log message and the and information about your software or hardware configuration.
+
+After the issue is resolved the binding has to be [updated](#updating-this-binding).
+
+For a general problem with the binding report the issue directly to openHAB.
+
+## Updating this binding
+
+OSHI project has a good support and regularly updates the library with fixes to issues and new features. 
+
+In order to update the version used in the binding, follow these easy steps:
+
+- Go to the [OSHI github repo](https://github.com/oshi/oshi) and download the newest version available of the module oshi-core or download the jar from the [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Coshi-). Check if the versions of the OSHI dependencies as well (jna and jna-platform) are changed;
+- Replace the jars in lib folder;
+- Modify the .classpath file with the new versions of the jars;
+- Modify the header Bundle-ClassPath in the META-INF/MANIFEST.MF.
 
 ## Full example
 

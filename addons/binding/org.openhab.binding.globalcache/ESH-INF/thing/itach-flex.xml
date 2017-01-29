@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="globalcache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- GlobalCache iTach Flex device -->
+	<thing-type id="itachFlex">
+
+		<label>GlobalCache iTach Flex</label>
+		<description>iTach Flex Device</description>
+
+		<channel-groups>
+			<channel-group id="sl-m1" typeId="sl-m1" />
+			<channel-group id="ir-m1" typeId="ir-m1" />
+			<channel-group id="cc-m1" typeId="cc-m1" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>Network Address</label>
+				<description>Enter the IP address of the iTach Flex device</description>
+				<context>network-address</context>
+			</parameter>
+
+			<parameter name="mapFilename" type="text">
+				<label>Map File</label>
+				<description>Enter name of file containing mapping of commands to IR and Serial codes</description>
+			</parameter>
+
+			<parameter name="activeCable" type="text" required="true">
+				<label>Active Cable</label>
+				<description>This setting should match the Current Active Cable in the Flex configuration</description>
+				<options>
+					<option value="FLEX_INFRARED">Infrared</option>
+					<option value="FLEX_SERIAL">Serial</option>
+					<option value="FLEX_RELAY">Relay/Sensor</option>
+				</options>
+				<default>FLEX_INFRARED</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

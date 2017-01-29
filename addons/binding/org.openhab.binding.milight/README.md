@@ -3,14 +3,45 @@ The openHAB2 Milight binding allows to send commands to multiple Milight bridges
 
 [![openHAB Milight](http://img.youtube.com/vi/zNe9AkQbfmc/0.jpg)](http://www.youtube.com/watch?v=zNe9AkQbfmc)
 
-## Configuration
+## Supported Things
+The Milight Binding supports White, and RGB(W) bulbs.
 
-Just use the auto discovery feature or add a thing for the binding manually
-by providing host and port. Initially a thing for each detected bridge will be created.
+## Discovery
+Version 3+ bridges can be discovered by triggering a search in openHAB's inbox. Found bridges
+will show up an can easily be added as things.
 After a bridge has been added, all possible bridge supported devices will appear
 as new things. Unfortunatelly milight leds are only able to receive so there is
 no real auto detection for single milight leds but only for the briges possible.
 Add the leds you actually configured and hide the rest of the detected things.
+
+## Binding Configuration
+When manually adding an older bridge Type (3-), you have to add configuration information for
+the bridge IP-Address and the listening port.
+
+## Thing Configuration
+Besides adding bridges through Paper-UI, you can also add them manually in your Thing
+configuration file.
+
+    Bridge milight:bridge:ACCF23A6C0B4 [ ADDR="192.168.0.70", PORT=8899 ]
+    Thing whiteLed 0
+    Thing whiteLed 1
+    Thing rgbLed 5
+    Thing rgbLed 8
+    Thing rgbLed 9
+    Thing rgbLed 10
+    }
+
+The Thing configuration for the bridge uses the following syntax
+Bridge milight:bridge:<mac address of bridge> [ ADDR="<IP-Address of bridge>", PORT=<listening port> ]
+
+The Thing configuration for the bulbs uses the following syntax:
+[Thing] <type of bulb> <group number>
+
+The following bulb types are valid for configuration:
+whiteLed, rgbLed
+
+The group number corresponds to the bulbs/channels on your bridge, where 0 reflects all white bulbs,
+1-4 white bulb channels and 5 all rgb bulbs.
 
 ## Features
 For white bulbs these channels are supported:
@@ -35,20 +66,20 @@ The rgb bulbs do not support changing their saturation, so the colorpicker will 
 
 	.items 
 
-	Switch Light_Groundfloor    # Switch for all white bulbs
-	Switch Light_GroundfloorN   # Activate the NightMode for all bulbs 
-	Dimmer Light_LivingroomB    # Dimmer changing brightness for bulb1
-	Dimmer Light_LivingroomC    # Dimmer changing colorTemperature for bulb1 
-	Dimmer RGBW_LivingroomB     # Dimmer changing brightness for RGBW bulb1
-	Color Light_Party           # Colorpicker for rgb bulbs 
+	Switch Light_Groundfloor    {channel="milight:whiteLed:ACCF23A6C0B4:0:ledbrightness"} # Switch for all white bulbs
+	Switch Light_GroundfloorN   {channel="milight:whiteLed:ACCF23A6C0B4:0:nightMode"} # Activate the NightMode for all bulbs 
+	Dimmer Light_LivingroomB    {channel="milight:whiteLed:ACCF23A6C0B4:1:ledbrightness"} # Dimmer changing brightness for bulb1
+	Dimmer Light_LivingroomC    {channel="milight:whiteLed:ACCF23A6C0B4:1:colorTemperature"} # Dimmer changing colorTemperature for bulb1 
+	Dimmer RGBW_LivingroomB     {channel="milight:rgbLed:ACCF23A6C0B4:7:ledbrightness"} # Dimmer changing brightness for RGBW bulb1
+	Color Light_Party           {channel="milight:rgbLed:ACCF23A6C0B4:5:rgb"}# Colorpicker for rgb bulbs 
 
 	# You have to link the items to the channels of your prefered group e.g. in paperui after you've saved
 	# your items file.
 	
 	# The command types discomode and discoSpeed should be configured as pushbuttons as they only support INCREASE and DECREASE commands:
 
-    Dimmer DiscoMode		{milight="bridge1;5;discomode"}
-    Dimmer DiscoSpeed		{milight="bridge1;5;discospeed"}
+    Dimmer DiscoMode		{channel="milight:rgbLed:ACCF23A6C0B4:5:discoMode"}
+    Dimmer DiscoSpeed		{channel="milight:rgbLed:ACCF23A6C0B4:5:discoSpeed"}
 
 	.sitemap
 

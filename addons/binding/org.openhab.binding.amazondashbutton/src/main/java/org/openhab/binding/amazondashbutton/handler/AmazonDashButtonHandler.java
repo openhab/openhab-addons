@@ -16,14 +16,14 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestHandler;
-import org.openhab.binding.amazondashbutton.internal.arp.ArpRequestTracker;
+import org.openhab.binding.amazondashbutton.internal.capturing.PacketCapturingHandler;
+import org.openhab.binding.amazondashbutton.internal.capturing.PacketCapturingService;
 import org.openhab.binding.amazondashbutton.internal.config.AmazonDashButtonConfig;
-import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceListener;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceService;
+import org.openhab.binding.amazondashbutton.internal.pcap.PcapNetworkInterfaceWrapper;
 import org.openhab.binding.amazondashbutton.internal.pcap.PcapUtil;
-import org.pcap4j.packet.ArpPacket;
+import org.pcap4j.util.MacAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(AmazonDashButtonHandler.class);
 
-    private ArpRequestTracker arpRequestListener;
+    private PacketCapturingService packetCapturingService;
 
     private long lastCommandHandled = 0;
 
@@ -58,19 +58,18 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
         String pcapNetworkInterfaceName = dashButtonConfig.pcapNetworkInterfaceName;
         String macAddress = dashButtonConfig.macAddress;
         final Integer packetInterval = dashButtonConfig.packetInterval;
-        PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil
-                .getNetworkInterfaceByName(pcapNetworkInterfaceName);
+        PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil.getNetworkInterfaceByName(pcapNetworkInterfaceName);
         if (pcapNetworkInterface == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
             return;
         }
 
-        arpRequestListener = new ArpRequestTracker(pcapNetworkInterface);
-        arpRequestListener.startCapturing(new ArpRequestHandler() {
+        packetCapturingService = new PacketCapturingService(pcapNetworkInterface);
+        boolean capturingStarted = packetCapturingService.startCapturing(new PacketCapturingHandler() {
 
             @Override
-            public void handleArpRequest(ArpPacket arpPacket) {
+            public void packetCaptured(MacAddress macAddress) {
                 long now = System.currentTimeMillis();
                 if (lastCommandHandled + packetInterval < now) {
                     ChannelUID pressChannel = new ChannelUID(getThing().getUID(), PRESS);
@@ -79,23 +78,28 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
                 }
             }
         }, macAddress);
-        updateStatus(ThingStatus.ONLINE);
+        if (capturingStarted) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    "The capturing for " + pcapNetworkInterfaceName + " cannot be started.");
+        }
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        if (arpRequestListener != null) {
-            arpRequestListener.stopCapturing();
-            arpRequestListener = null;
+        if (packetCapturingService != null) {
+            packetCapturingService.stopCapturing();
+            packetCapturingService = null;
         }
         PcapNetworkInterfaceService.instance().unregisterListener(this);
     }
 
     @Override
     public void onPcapNetworkInterfaceAdded(PcapNetworkInterfaceWrapper newNetworkInterface) {
-        if (arpRequestListener != null) {
-            final PcapNetworkInterfaceWrapper trackedPcapNetworkInterface = arpRequestListener
+        if (packetCapturingService != null) {
+            final PcapNetworkInterfaceWrapper trackedPcapNetworkInterface = packetCapturingService
                     .getPcapNetworkInterface();
             if (trackedPcapNetworkInterface.equals(newNetworkInterface)) {
                 updateStatus(ThingStatus.ONLINE);
@@ -105,8 +109,8 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
 
     @Override
     public void onPcapNetworkInterfaceRemoved(PcapNetworkInterfaceWrapper removedNetworkInterface) {
-        if (arpRequestListener != null) {
-            final PcapNetworkInterfaceWrapper trackedPcapNetworkInterface = arpRequestListener
+        if (packetCapturingService != null) {
+            final PcapNetworkInterfaceWrapper trackedPcapNetworkInterface = packetCapturingService
                     .getPcapNetworkInterface();
             if (trackedPcapNetworkInterface.equals(removedNetworkInterface)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,

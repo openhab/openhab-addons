@@ -113,7 +113,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     void pollNow() {
-        if (thingIsInitialized()) {
+        if (isInitialized()) {
             schedulePoll();
         }
     }

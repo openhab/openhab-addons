@@ -16,25 +16,25 @@ import org.openhab.binding.astro.internal.model.Range;
 
 /**
  * Common used DateTime functions.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public class DateTimeUtils {
-	public static final double J1970 = 2440588.0;
-	public static final double MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+    public static final double J1970 = 2440588.0;
+    public static final double MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
-	/**
-	 * Truncates the time from the calendar object.
-	 */
-	public static Calendar truncateToMidnight(Calendar calendar) {
-		return DateUtils.truncate(calendar, Calendar.DAY_OF_MONTH);
-	}
+    /**
+     * Truncates the time from the calendar object.
+     */
+    public static Calendar truncateToMidnight(Calendar calendar) {
+        return DateUtils.truncate(calendar, Calendar.DAY_OF_MONTH);
+    }
 
-	/**
-	 * Creates a Range object within the specified months and days. The start
-	 * time is midnight, the end time is end of the day.
-	 */
-    public static Range getRange(int startYear, int startMonth, int startDay, int endYear,int endMonth, int endDay) {
+    /**
+     * Creates a Range object within the specified months and days. The start
+     * time is midnight, the end time is end of the day.
+     */
+    public static Range getRange(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay) {
         Calendar start = Calendar.getInstance();
         start.set(Calendar.YEAR, startYear);
         start.set(Calendar.MONTH, startMonth);
@@ -53,98 +53,120 @@ public class DateTimeUtils {
         return new Range(start, end);
     }
 
-	/**
-	 * Returns a calendar object from a julian date.
-	 */
-	public static Calendar toCalendar(double julianDate) {
-		if (Double.compare(julianDate, Double.NaN) == 0 || julianDate == 0) {
-			return null;
-		}
-		long millis = (long) ((julianDate + 0.5 - J1970) * MILLISECONDS_PER_DAY);
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(millis);
-		return DateUtils.round(cal, Calendar.MINUTE);
-	}
+    /**
+     * Returns a calendar object from a julian date.
+     */
+    public static Calendar toCalendar(double julianDate) {
+        if (Double.compare(julianDate, Double.NaN) == 0 || julianDate == 0) {
+            return null;
+        }
+        long millis = (long) ((julianDate + 0.5 - J1970) * MILLISECONDS_PER_DAY);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(millis);
+        return DateUtils.round(cal, Calendar.MINUTE);
+    }
 
-	/**
-	 * Returns the julian date from the calendar object.
-	 */
-	public static double dateToJulianDate(Calendar calendar) {
-		return calendar.getTimeInMillis() / MILLISECONDS_PER_DAY - 0.5 + J1970;
-	}
+    /**
+     * Returns the julian date from the calendar object.
+     */
+    public static double dateToJulianDate(Calendar calendar) {
+        return calendar.getTimeInMillis() / MILLISECONDS_PER_DAY - 0.5 + J1970;
+    }
 
-	/**
-	 * Returns the midnight julian date from the calendar object.
-	 */
-	public static double midnightDateToJulianDate(Calendar calendar) {
-		return dateToJulianDate(truncateToMidnight(calendar));
-	}
+    /**
+     * Returns the midnight julian date from the calendar object.
+     */
+    public static double midnightDateToJulianDate(Calendar calendar) {
+        return dateToJulianDate(truncateToMidnight(calendar));
+    }
 
-	/**
-	 * Returns the end of day julian date from the calendar object.
-	 */
-	public static double endOfDayDateToJulianDate(Calendar calendar) {
-		Calendar cal = (Calendar) calendar.clone();
-		cal = DateUtils.ceiling(cal, Calendar.DATE);
-		cal.add(Calendar.MILLISECOND, -1);
-		return dateToJulianDate(cal);
-	}
+    /**
+     * Returns the end of day julian date from the calendar object.
+     */
+    public static double endOfDayDateToJulianDate(Calendar calendar) {
+        Calendar cal = (Calendar) calendar.clone();
+        cal = DateUtils.ceiling(cal, Calendar.DATE);
+        cal.add(Calendar.MILLISECOND, -1);
+        return dateToJulianDate(cal);
+    }
 
-	/**
-	 * Returns the year of the calendar object as a decimal value.
-	 */
-	public static double getDecimalYear(Calendar calendar) {
-		return calendar.get(Calendar.YEAR) + (double) calendar.get(Calendar.DAY_OF_YEAR)
-				/ calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
-	}
+    /**
+     * Returns the year of the calendar object as a decimal value.
+     */
+    public static double getDecimalYear(Calendar calendar) {
+        return calendar.get(Calendar.YEAR)
+                + (double) calendar.get(Calendar.DAY_OF_YEAR) / calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
+    }
 
-	/**
-	 * Converts the time (hour.minute) to a calendar object.
-	 */
-	public static Calendar timeToCalendar(Calendar calendar, double time) {
-		if (time < 0.0) {
-			return null;
-		}
-		Calendar cal = (Calendar) calendar.clone();
-		int hour = 0;
-		int minute = 0;
-		if (time == 24.0) {
-			cal.add(Calendar.DAY_OF_MONTH, 1);
-		} else {
-			hour = (int) time;
-			minute = (int) ((time * 100) - (hour * 100));
-		}
-		cal.set(Calendar.HOUR_OF_DAY, hour);
-		cal.set(Calendar.MINUTE, minute);
-		return DateUtils.truncate(cal, Calendar.MINUTE);
-	}
+    /**
+     * Converts the time (hour.minute) to a calendar object.
+     */
+    public static Calendar timeToCalendar(Calendar calendar, double time) {
+        if (time < 0.0) {
+            return null;
+        }
+        Calendar cal = (Calendar) calendar.clone();
+        int hour = 0;
+        int minute = 0;
+        if (time == 24.0) {
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        } else {
+            hour = (int) time;
+            minute = (int) ((time * 100) - (hour * 100));
+        }
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minute);
+        return DateUtils.truncate(cal, Calendar.MINUTE);
+    }
 
-	/**
-	 * Returns true, if two calendar objects are on the same day ignoring time.
-	 */
-	public static boolean isSameDay(Calendar cal1, Calendar cal2) {
-		return cal1 != null && cal2 != null && DateUtils.isSameDay(cal1, cal2);
-	}
+    /**
+     * Returns true, if two calendar objects are on the same day ignoring time.
+     */
+    public static boolean isSameDay(Calendar cal1, Calendar cal2) {
+        return cal1 != null && cal2 != null && DateUtils.isSameDay(cal1, cal2);
+    }
 
-	/**
-	 * Returns a date object from a calendar.
-	 */
-	public static Date getDate(Calendar calendar) {
-		return calendar == null ? null : calendar.getTime();
-	}
+    /**
+     * Returns a date object from a calendar.
+     */
+    public static Date getDate(Calendar calendar) {
+        return calendar == null ? null : calendar.getTime();
+    }
 
-	/**
-	 * Returns the next Calendar from today.
-	 */
-	public static Calendar getNext(Calendar... calendars) {
-		Calendar now = Calendar.getInstance();
-		Calendar next = null;
-		for (Calendar calendar : calendars) {
-			if (calendar.after(now) && (next == null || calendar.before(next))) {
-				next = calendar;
-			}
-		}
-		return next;
-	}
-	
+    /**
+     * Returns the next Calendar from today.
+     */
+    public static Calendar getNext(Calendar... calendars) {
+        Calendar now = Calendar.getInstance();
+        Calendar next = null;
+        for (Calendar calendar : calendars) {
+            if (calendar.after(now) && (next == null || calendar.before(next))) {
+                next = calendar;
+            }
+        }
+        return next;
+    }
+
+    /**
+     * Returns true, if cal1 is greater or equal than cal2, ignoring seconds.
+     */
+    public static boolean isTimeGreaterEquals(Calendar cal1, Calendar cal2) {
+        Calendar truncCal1 = DateUtils.truncate(cal1, Calendar.MINUTE);
+        Calendar truncCal2 = DateUtils.truncate(cal2, Calendar.MINUTE);
+        return truncCal1.getTimeInMillis() >= truncCal2.getTimeInMillis();
+    }
+
+    /**
+     * Adds or subtracts the specified offset in minutes to the given calendar.
+     */
+    public static Calendar addOffset(Calendar cal, int offset) {
+        if (offset == 0) {
+            return cal;
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(cal.getTime());
+        c.add(Calendar.MINUTE, offset);
+        return c;
+    }
 }

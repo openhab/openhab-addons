@@ -34,7 +34,7 @@ public interface VirtualGateway extends HomematicGateway {
     /**
      * Returns the rpc client.
      */
-    public RpcClient getRpcClient(HmInterface hmInterface);
+    public RpcClient getRpcClient(HmInterface hmInterface) throws IOException;
 
     /**
      * Disables a boolean datapoint by setting the value to false after a given delay.

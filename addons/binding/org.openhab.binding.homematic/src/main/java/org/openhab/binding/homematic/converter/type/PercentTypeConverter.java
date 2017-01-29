@@ -17,6 +17,8 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Converts between a Homematic datapoint value and a openHab PercentType.
@@ -24,6 +26,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  * @author Gerhard Riegler - Initial contribution
  */
 public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
+    private static final Logger logger = LoggerFactory.getLogger(PercentTypeConverter.class);
 
     /**
      * {@inheritDoc}
@@ -71,6 +74,10 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
 
         if (isRollerShutter(dp)) {
             number = dp.getMaxValue().doubleValue() - number;
+        }
+        if (number < 0.0 || number > 100.0) {
+            logger.warn("Percent value '{}' out of range, truncating value for {}", number, dp);
+            number = number < 0.0 ? 0.0 : 100.0;
         }
         if (dp.isIntegerType()) {
             return number.intValue();

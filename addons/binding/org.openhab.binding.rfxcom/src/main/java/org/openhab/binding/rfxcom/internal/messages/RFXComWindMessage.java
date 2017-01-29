@@ -8,16 +8,15 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * RFXCOM data class for temperature and humidity message.
@@ -28,13 +27,13 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComWindMessage extends RFXComBaseMessage {
 
     public enum SubType {
-        UNDEF(0),
         WIND1(1),
         WIND2(2),
         WIND3(3),
         WIND4(4),
         WIND5(5),
         WIND6(6),
+        WIND7(7),
 
         UNKNOWN(255);
 
@@ -51,6 +50,16 @@ public class RFXComWindMessage extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) subType;
         }
+
+        public static SubType fromByte(int input) {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            return SubType.UNKNOWN;
+        }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
@@ -59,7 +68,7 @@ public class RFXComWindMessage extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.UNDEF;
+    public SubType subType = SubType.UNKNOWN;
     public int sensorId = 0;
     public double windDirection = 0;
     public double windSpeed = 0;
@@ -94,11 +103,7 @@ public class RFXComWindMessage extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         windDirection = (short) ((data[6] & 0xFF) << 8 | (data[7] & 0xFF));
@@ -109,10 +114,10 @@ public class RFXComWindMessage extends RFXComBaseMessage {
 
     @Override
     public byte[] decodeMessage() {
-        byte[] data = new byte[16];
+        byte[] data = new byte[17];
 
         data[0] = 0x10;
-        data[1] = RFXComBaseMessage.PacketType.WIND.toByte();
+        data[1] = PacketType.WIND.toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
         data[4] = (byte) ((sensorId & 0xFF00) >> 8);
@@ -139,7 +144,7 @@ public class RFXComWindMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        State state;
 
         if (valueSelector.getItemClass() == NumberItem.class) {
 

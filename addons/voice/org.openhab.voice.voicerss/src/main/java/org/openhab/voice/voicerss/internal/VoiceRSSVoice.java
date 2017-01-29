@@ -20,54 +20,54 @@ import org.eclipse.smarthome.core.voice.Voice;
  */
 public class VoiceRSSVoice implements Voice {
 
-	/**
-	 * Voice locale
-	 */
-	private final Locale locale;
+    /**
+     * Voice locale
+     */
+    private final Locale locale;
 
-	/**
-	 * Voice label
-	 */
-	private final String label;
+    /**
+     * Voice label
+     */
+    private final String label;
 
-	/**
-	 * Constructs a VoiceRSS Voice for the passed data
-	 *
-	 * @param locale
-	 *            The Locale of the voice
-	 * @param label
-	 *            The label of the voice
-	 */
-	public VoiceRSSVoice(Locale locale, String label) {
-		this.locale = locale;
-		this.label = label;
-	}
+    /**
+     * Constructs a VoiceRSS Voice for the passed data
+     *
+     * @param locale
+     *            The Locale of the voice
+     * @param label
+     *            The label of the voice
+     */
+    public VoiceRSSVoice(Locale locale, String label) {
+        this.locale = locale;
+        this.label = label;
+    }
 
-	/**
-	 * Globally unique identifier of the voice.
-	 *
-	 * @return A String uniquely identifying the voice globally
-	 */
-	@Override
-	public String getUID() {
-		return "voicerss:" + label.replaceAll("[^a-zA-Z0-9_]", "");
-	}
+    /**
+     * Globally unique identifier of the voice.
+     *
+     * @return A String uniquely identifying the voice globally
+     */
+    @Override
+    public String getUID() {
+        return "voicerss:" + locale.toLanguageTag().replaceAll("[^a-zA-Z0-9_]", "");
+    }
 
-	/**
-	 * The voice label, used for GUI's or VUI's
-	 *
-	 * @return The voice label, may not be globally unique
-	 */
-	@Override
-	public String getLabel() {
-		return this.label;
-	}
+    /**
+     * The voice label, used for GUI's or VUI's
+     *
+     * @return The voice label, may not be globally unique
+     */
+    @Override
+    public String getLabel() {
+        return this.label;
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	@Override
-	public Locale getLocale() {
-		return this.locale;
-	}
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public Locale getLocale() {
+        return this.locale;
+    }
 }

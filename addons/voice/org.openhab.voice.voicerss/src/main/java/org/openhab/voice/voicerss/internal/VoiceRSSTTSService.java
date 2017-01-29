@@ -33,176 +33,175 @@ import org.slf4j.LoggerFactory;
  */
 public class VoiceRSSTTSService implements TTSService {
 
-	/** Cache folder name is below userdata/voicerss/cache. */
-	private static final String CACHE_FOLDER_NAME = "voicerss/cache";
+    /** Cache folder name is below userdata/voicerss/cache. */
+    private static final String CACHE_FOLDER_NAME = "voicerss/cache";
 
-	// API Key comes from ConfigAdmin
-	private static final String CONFIG_API_KEY = "apiKey";
-	private String apiKey = null;
+    // API Key comes from ConfigAdmin
+    private static final String CONFIG_API_KEY = "apiKey";
+    private String apiKey = null;
 
-	private final Logger logger = LoggerFactory.getLogger(VoiceRSSTTSService.class);
+    private final Logger logger = LoggerFactory.getLogger(VoiceRSSTTSService.class);
 
-	/**
-	 * We need the cached implementation to allow for FixedLengthAudioStream.
-	 */
-	private CachedVoiceRSSCloudImplementation voiceRssImpl;
+    /**
+     * We need the cached implementation to allow for FixedLengthAudioStream.
+     */
+    private CachedVoiceRSSCloudImplementation voiceRssImpl;
 
-	/**
-	 * Set of supported voices
-	 */
-	private HashSet<Voice> voices;
+    /**
+     * Set of supported voices
+     */
+    private HashSet<Voice> voices;
 
-	/**
-	 * Set of supported audio formats
-	 */
-	private HashSet<AudioFormat> audioFormats;
+    /**
+     * Set of supported audio formats
+     */
+    private HashSet<AudioFormat> audioFormats;
 
-	/**
-	 * DS activate, with access to ConfigAdmin
-	 */
-	protected void activate(Map<String, Object> config) {
-		try {
-			modified(config);
-			voiceRssImpl = initVoiceImplementation();
-			voices = initVoices();
-			audioFormats = initAudioFormats();
+    /**
+     * DS activate, with access to ConfigAdmin
+     */
+    protected void activate(Map<String, Object> config) {
+        try {
+            modified(config);
+            voiceRssImpl = initVoiceImplementation();
+            voices = initVoices();
+            audioFormats = initAudioFormats();
 
-			logger.info("Using VoiceRSS cache folder {}", getCacheFolderName());
-		} catch (Throwable t) {
-			logger.error("Failed to activate VoiceRSS: {}", t.getMessage(), t);
-		}
-	}
+            logger.info("Using VoiceRSS cache folder {}", getCacheFolderName());
+        } catch (Throwable t) {
+            logger.error("Failed to activate VoiceRSS: {}", t.getMessage(), t);
+        }
+    }
 
-	protected void modified(Map<String, Object> config) {
-		if (config != null) {
-			this.apiKey = config.containsKey(CONFIG_API_KEY) ? config.get(CONFIG_API_KEY).toString() : null;
-			logger.info("API Key set to {}", apiKey);
-		}
-	}
+    protected void modified(Map<String, Object> config) {
+        if (config != null) {
+            this.apiKey = config.containsKey(CONFIG_API_KEY) ? config.get(CONFIG_API_KEY).toString() : null;
+        }
+    }
 
-	@Override
-	public Set<Voice> getAvailableVoices() {
-		return this.voices;
-	}
+    @Override
+    public Set<Voice> getAvailableVoices() {
+        return this.voices;
+    }
 
-	@Override
-	public Set<AudioFormat> getSupportedFormats() {
-		return this.audioFormats;
-	}
+    @Override
+    public Set<AudioFormat> getSupportedFormats() {
+        return this.audioFormats;
+    }
 
-	@Override
-	public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
-		logger.debug("Synthesize '{}' for voice '{}' in format {}", text, voice.getUID(), requestedFormat);
-		// Validate known api key
-		if (this.apiKey == null) {
-			throw new TTSException("Missing API key, configure it first before using");
-		}
-		// Validate arguments
-		// trim text
-		text = text.trim();
-		if ((null == text) || text.isEmpty()) {
-			throw new TTSException("The passed text is null or empty");
-		}
-		if (!this.voices.contains(voice)) {
-			throw new TTSException("The passed voice is unsupported");
-		}
-		boolean isAudioFormatSupported = false;
-		for (AudioFormat currentAudioFormat : this.audioFormats) {
-			if (currentAudioFormat.isCompatible(requestedFormat)) {
-				isAudioFormatSupported = true;
-				break;
-			}
-		}
-		if (!isAudioFormatSupported) {
-			throw new TTSException("The passed AudioFormat is unsupported");
-		}
+    @Override
+    public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
+        logger.debug("Synthesize '{}' for voice '{}' in format {}", text, voice.getUID(), requestedFormat);
+        // Validate known api key
+        if (this.apiKey == null) {
+            throw new TTSException("Missing API key, configure it first before using");
+        }
+        // Validate arguments
+        // trim text
+        text = text.trim();
+        if ((null == text) || text.isEmpty()) {
+            throw new TTSException("The passed text is null or empty");
+        }
+        if (!this.voices.contains(voice)) {
+            throw new TTSException("The passed voice is unsupported");
+        }
+        boolean isAudioFormatSupported = false;
+        for (AudioFormat currentAudioFormat : this.audioFormats) {
+            if (currentAudioFormat.isCompatible(requestedFormat)) {
+                isAudioFormatSupported = true;
+                break;
+            }
+        }
+        if (!isAudioFormatSupported) {
+            throw new TTSException("The passed AudioFormat is unsupported");
+        }
 
-		// now create the input stream for given text, locale, format. There is
-		// only a default voice
-		try {
-			File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(this.apiKey, text,
-					voice.getLocale().toLanguageTag(), requestedFormat.getCodec());
-			if (cacheAudioFile == null) {
-				throw new TTSException("Could not read from VoiceRSS service");
-			}
-			AudioStream audioStream = new VoiceRSSAudioStream(cacheAudioFile);
-			return audioStream;
-		} catch (AudioException ex) {
-			throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
-		} catch (IOException ex) {
-			throw new TTSException("Could not read from VoiceRSS service: " + ex.getMessage(), ex);
-		}
-	}
+        // now create the input stream for given text, locale, format. There is
+        // only a default voice
+        try {
+            File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(this.apiKey, text,
+                    voice.getLocale().toLanguageTag(), requestedFormat.getCodec());
+            if (cacheAudioFile == null) {
+                throw new TTSException("Could not read from VoiceRSS service");
+            }
+            AudioStream audioStream = new VoiceRSSAudioStream(cacheAudioFile);
+            return audioStream;
+        } catch (AudioException ex) {
+            throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
+        } catch (IOException ex) {
+            throw new TTSException("Could not read from VoiceRSS service: " + ex.getMessage(), ex);
+        }
+    }
 
-	/**
-	 * Initializes this.voices.
-	 *
-	 * @return The voices of this instance
-	 */
-	private final HashSet<Voice> initVoices() {
-		HashSet<Voice> voices = new HashSet<Voice>();
-		Set<Locale> locales = voiceRssImpl.getAvailableLocales();
-		for (Locale local : locales) {
-			Set<String> voiceLabels = voiceRssImpl.getAvailableVoices(local);
-			for (String voiceLabel : voiceLabels) {
-				voices.add(new VoiceRSSVoice(local, voiceLabel));
-			}
-		}
-		return voices;
-	}
+    /**
+     * Initializes this.voices.
+     *
+     * @return The voices of this instance
+     */
+    private final HashSet<Voice> initVoices() {
+        HashSet<Voice> voices = new HashSet<Voice>();
+        Set<Locale> locales = voiceRssImpl.getAvailableLocales();
+        for (Locale local : locales) {
+            Set<String> voiceLabels = voiceRssImpl.getAvailableVoices(local);
+            for (String voiceLabel : voiceLabels) {
+                voices.add(new VoiceRSSVoice(local, voiceLabel));
+            }
+        }
+        return voices;
+    }
 
-	/**
-	 * Initializes this.audioFormats
-	 *
-	 * @return The audio formats of this instance
-	 */
-	private final HashSet<AudioFormat> initAudioFormats() {
-		HashSet<AudioFormat> audioFormats = new HashSet<AudioFormat>();
-		Set<String> formats = voiceRssImpl.getAvailableAudioFormats();
-		for (String format : formats) {
-			audioFormats.add(getAudioFormat(format));
-		}
-		return audioFormats;
-	}
+    /**
+     * Initializes this.audioFormats
+     *
+     * @return The audio formats of this instance
+     */
+    private final HashSet<AudioFormat> initAudioFormats() {
+        HashSet<AudioFormat> audioFormats = new HashSet<AudioFormat>();
+        Set<String> formats = voiceRssImpl.getAvailableAudioFormats();
+        for (String format : formats) {
+            audioFormats.add(getAudioFormat(format));
+        }
+        return audioFormats;
+    }
 
-	/**
-	 * Up to now only MP3 supported.
-	 */
-	private final AudioFormat getAudioFormat(String format) {
-		// MP3 format
-		if (AudioFormat.CODEC_MP3.equals(format)) {
-			// we use by default: MP3, 44khz_16bit_mono
-			Boolean bigEndian = null; // not used here
-			Integer bitDepth = 16;
-			Integer bitRate = null;
-			Long frequency = 44000L;
+    /**
+     * Up to now only MP3 supported.
+     */
+    private final AudioFormat getAudioFormat(String format) {
+        // MP3 format
+        if (AudioFormat.CODEC_MP3.equals(format)) {
+            // we use by default: MP3, 44khz_16bit_mono
+            Boolean bigEndian = null; // not used here
+            Integer bitDepth = 16;
+            Integer bitRate = null;
+            Long frequency = 44000L;
 
-			return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, bigEndian, bitDepth, bitRate,
-					frequency);
-		} else {
-			throw new RuntimeException("Audio format " + format + "not yet supported");
-		}
-	}
+            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, bigEndian, bitDepth, bitRate,
+                    frequency);
+        } else {
+            throw new RuntimeException("Audio format " + format + "not yet supported");
+        }
+    }
 
-	private final CachedVoiceRSSCloudImplementation initVoiceImplementation() {
-		CachedVoiceRSSCloudImplementation apiImpl = new CachedVoiceRSSCloudImplementation(getCacheFolderName());
-		return apiImpl;
-	}
+    private final CachedVoiceRSSCloudImplementation initVoiceImplementation() {
+        CachedVoiceRSSCloudImplementation apiImpl = new CachedVoiceRSSCloudImplementation(getCacheFolderName());
+        return apiImpl;
+    }
 
-	String getCacheFolderName() {
-		String folderName = ConfigConstants.getUserDataFolder();
-		// we assume that this folder does NOT have a trailing separator
-		return folderName + File.separator + CACHE_FOLDER_NAME;
-	}
+    String getCacheFolderName() {
+        String folderName = ConfigConstants.getUserDataFolder();
+        // we assume that this folder does NOT have a trailing separator
+        return folderName + File.separator + CACHE_FOLDER_NAME;
+    }
 
-	@Override
-	public String getId() {
-		return "voicerss";
-	}
+    @Override
+    public String getId() {
+        return "voicerss";
+    }
 
-	@Override
-	public String getLabel(Locale locale) {
-		return "VoiceRSS Text-to-Speech Engine";
-	}
+    @Override
+    public String getLabel(Locale locale) {
+        return "VoiceRSS Text-to-Speech Engine";
+    }
 
 }

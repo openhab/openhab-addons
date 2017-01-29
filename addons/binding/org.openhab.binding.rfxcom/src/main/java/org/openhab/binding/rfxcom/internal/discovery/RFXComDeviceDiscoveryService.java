@@ -78,7 +78,7 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService imple
                 thingDiscovered(discoveryResult);
             }
         } catch (Exception e) {
-            logger.debug("Error occured during device discovery", e);
+            logger.debug("Error occurred during device discovery", e);
         }
     }
 }

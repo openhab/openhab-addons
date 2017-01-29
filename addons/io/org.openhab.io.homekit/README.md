@@ -39,7 +39,7 @@ A full list of supported accessory types can be found in the table below.
   <td>Lighting</td>
   <td>&nbsp;</td>
   <td>Switch, Dimmer, Color</td>
-  <td>A lightbulb, either switchable or dimmable</td>
+  <td>A lightbulb, switchable, dimmable or rgb</td>
  </tr>
  <tr>
   <td>Switchable</td>
