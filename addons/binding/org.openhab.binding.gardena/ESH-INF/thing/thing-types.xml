@@ -18,6 +18,7 @@
             <channel-group id="radio" typeId="radio" />
             <channel-group id="internal_temperature" typeId="internalTemperature" />
             <channel-group id="mower" typeId="mower" />
+            <channel-group id="firmware" typeId="firmware" />
         </channel-groups>
         <properties>
             <!-- device info -->
@@ -307,6 +308,37 @@
         <state pattern="%d °C" readOnly="true" />
     </channel-type>
 
+    <channel-group-type id="firmware">
+        <label>Firmware</label>
+        <description>Information about the firmware</description>
+        <channels>
+            <channel id="firmware_status" typeId="firmwareStatus" />
+            <channel id="firmware_upload_progress" typeId="firmwareUploadProgress" />
+            <channel id="firmware_available_version" typeId="firmwareAvailableVersion" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="firmwareStatus" advanced="true">
+        <item-type>String</item-type>
+        <label>Status</label>
+        <description>The firmware status</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="firmwareUploadProgress" advanced="true">
+        <item-type>Numper</item-type>
+        <label>Upload progress</label>
+        <description>Firmware upload in progress</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="firmwareAvailableVersion" advanced="true">
+        <item-type>String</item-type>
+        <label>Available version</label>
+        <description>Available firmware version</description>
+        <state readOnly="true" />
+    </channel-type>
+
     <!-- ############################### Gateway ############################### -->
     <thing-type id="gateway">
         <supported-bridge-type-refs>
@@ -369,6 +401,7 @@
             <channel-group id="radio" typeId="radio" />
             <channel-group id="outlet" typeId="outlet" />
             <channel-group id="ambient_temperature" typeId="ambientTemperature" />
+            <channel-group id="firmware" typeId="firmware" />
         </channel-groups>
         <properties>
             <!-- device info -->
@@ -488,6 +521,7 @@
             <channel-group id="soil_temperature" typeId="soilTemperature" />
             <channel-group id="humidity" typeId="humidity" />
             <channel-group id="light" typeId="light" />
+            <channel-group id="firmware" typeId="firmware" />
         </channel-groups>
         <properties>
             <!-- device info -->
