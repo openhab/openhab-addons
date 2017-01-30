@@ -33,7 +33,7 @@
 				<description>The name of the device (manually entered)</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="deviceId" type="integer">
+			<parameter name="deviceId" type="text">
 				<label>DeviceID</label>
 				<description>This function returns the unique id of a device with a specific index.</description>
 				<required>true</required>

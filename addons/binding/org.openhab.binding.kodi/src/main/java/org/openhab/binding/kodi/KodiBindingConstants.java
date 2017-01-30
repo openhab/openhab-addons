@@ -35,6 +35,7 @@ public class KodiBindingConstants {
     // List of all Channel ids
     public final static String CHANNEL_MUTE = "mute";
     public final static String CHANNEL_VOLUME = "volume";
+    public final static String CHANNEL_STOP = "stop";
     public final static String CHANNEL_CONTROL = "control";
     public final static String CHANNEL_PLAYURI = "playuri";
     public final static String CHANNEL_SHOWNOTIFICATION = "shownotification";

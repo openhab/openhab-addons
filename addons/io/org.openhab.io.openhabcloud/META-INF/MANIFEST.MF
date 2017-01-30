@@ -4,7 +4,7 @@ Ignore-Package: org.openhab.io.openhabcloud.internal
 Bundle-ManifestVersion: 2
 Bundle-Name: openHAB Cloud Connector Bundle
 Bundle-SymbolicName: org.openhab.io.openhabcloud
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Service-Component: OSGI-INF/*.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.net,
