@@ -175,32 +175,6 @@ public class ExecHandler extends BaseThingHandler {
                             new Object[] { commandLine.toString(), e.getMessage() });
                     updateState(RUN, OnOffType.OFF);
 
-                    if (e.getMessage().equals("OPEN")) {
-                        updateState(CONTACT_OUTPUT, OpenClosedType.OPEN);
-                    }
-
-                    if (e.getMessage().equals("CLOSED")) {
-                        updateState(CONTACT_OUTPUT, OpenClosedType.CLOSED);
-                    }
-
-                    if (e.getMessage().equals("ON")) {
-                        updateState(DIMMER_OUTPUT, OnOffType.ON);
-                        updateState(SWITCH_OUTPUT, OnOffType.ON);
-                    }
-
-                    if (e.getMessage().equals("OFF")) {
-                        updateState(DIMMER_OUTPUT, OnOffType.OFF);
-                        updateState(SWITCH_OUTPUT, OnOffType.OFF);
-                    }
-
-                    if (e.getMessage().equals("UP")) {
-                        updateState(ROLLERSHUTTER_OUTPUT, UpDownType.UP);
-                    }
-
-                    if (e.getMessage().equals("DOWN")) {
-                        updateState(ROLLERSHUTTER_OUTPUT, UpDownType.DOWN);
-                    }
-
                     updateState(STRING_OUTPUT, new StringType(e.getMessage()));
                     return;
                 }
@@ -263,6 +237,32 @@ public class ExecHandler extends BaseThingHandler {
                 }
 
                 updateState(STRING_OUTPUT, new StringType(transformedResponse));
+
+                if (transformedResponse.equals("OPEN")) {
+                    updateState(CONTACT_OUTPUT, OpenClosedType.OPEN);
+                }
+
+                if (transformedResponse.equals("CLOSED")) {
+                    updateState(CONTACT_OUTPUT, OpenClosedType.CLOSED);
+                }
+
+                if (transformedResponse.equals("ON")) {
+                    updateState(DIMMER_OUTPUT, OnOffType.ON);
+                    updateState(SWITCH_OUTPUT, OnOffType.ON);
+                }
+
+                if (transformedResponse.equals("OFF")) {
+                    updateState(DIMMER_OUTPUT, OnOffType.OFF);
+                    updateState(SWITCH_OUTPUT, OnOffType.OFF);
+                }
+
+                if (transformedResponse.equals("UP")) {
+                    updateState(ROLLERSHUTTER_OUTPUT, UpDownType.UP);
+                }
+
+                if (transformedResponse.equals("DOWN")) {
+                    updateState(ROLLERSHUTTER_OUTPUT, UpDownType.DOWN);
+                }
 
                 DateTimeType stampType = new DateTimeType(Calendar.getInstance());
                 updateState(LAST_EXECUTION, stampType);
