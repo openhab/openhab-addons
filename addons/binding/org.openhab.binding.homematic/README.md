@@ -8,7 +8,7 @@ This binding allows you to integrate, view, control and configure all Homematic 
 All gateways which provides the Homematic BIN- or XML-RPC API: 
 - CCU 1+2 
 - [Homegear](https://www.homegear.eu)
-- [LXCCU](http://www.lxccu.com)
+- [YAHM](https://github.com/leonsio/YAHM)
 - [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
 - [OCCU](https://github.com/eq-3/occu)
 

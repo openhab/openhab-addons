@@ -510,20 +510,26 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                     socket.close();
                     this.socketConnect();
                 }
+            }
 
-                if (requestCount == 0) {
-                    logger.debug("Connect to MAX! Cube");
-                    readLines("L:");
+            if (requestCount == 0) {
+                logger.debug("Connect to MAX! Cube");
+                readLines("L:");
+            }
+            if (!(requestCount == 0 && command instanceof L_Command)) {
+                logger.debug("Sending request #{} to MAX! Cube", this.requestCount);
+                if (writer == null) {
+                    logger.warn("Can't write to MAX! Cube");
+                    this.socketConnect();
                 }
-                if (!(requestCount == 0 && command instanceof L_Command)) {
 
-                    logger.debug("Sending request #{} to MAX! Cube", this.requestCount);
-                    writer.write(command.getCommandString());
-                    logger.trace("Write string to Max! Cube {}: {}", ipAddress, command.getCommandString());
-                    writer.flush();
-                    if (command.getReturnStrings() != null) {
-                        readLines(command.getReturnStrings());
-                    }
+                writer.write(command.getCommandString());
+                logger.trace("Write string to Max! Cube {}: {}", ipAddress, command.getCommandString());
+                writer.flush();
+                if (command.getReturnStrings() != null) {
+                    readLines(command.getReturnStrings());
+                } else {
+                    socketClose();
                 }
             }
 
