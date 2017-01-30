@@ -31,7 +31,7 @@ public final class M_Message extends Message {
     public ArrayList<RoomInformation> rooms;
     public ArrayList<DeviceInformation> devices;
     private Boolean hasConfiguration;
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxBinding.class);
 
     public M_Message(String raw) {
         super(raw);

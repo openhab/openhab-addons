@@ -8,9 +8,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import org.openhab.binding.max.MaxBinding;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link: F_Message} contains information about the Cube NTP Configuration
@@ -23,8 +21,6 @@ public final class F_Message extends Message {
 
     private String ntpServer1 = "";
     private String ntpServer2 = "";
-
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
 
     /**
      * The {@link: F_Message} contains information about the Cube NTP Configuration

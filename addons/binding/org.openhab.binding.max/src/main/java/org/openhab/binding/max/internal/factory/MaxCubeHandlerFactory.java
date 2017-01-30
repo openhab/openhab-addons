@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
@@ -110,7 +110,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
         } else if (supportsThingType(thing.getThingTypeUID())) {
             return new MaxDevicesHandler(thing);
         } else {
-            LOGGER.debug("ThingHandler not found for {}", thing.getThingTypeUID());
+            logger.debug("ThingHandler not found for {}", thing.getThingTypeUID());
             return null;
         }
     }

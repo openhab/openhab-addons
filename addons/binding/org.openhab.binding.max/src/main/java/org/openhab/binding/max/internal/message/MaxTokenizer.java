@@ -37,17 +37,11 @@ public final class MaxTokenizer implements Enumeration<byte[]> {
         this.decodedRawMessage = decodedRawMessage;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean hasMoreElements() {
         return offset < decodedRawMessage.length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte[] nextElement() {
         byte length = decodedRawMessage[offset++];

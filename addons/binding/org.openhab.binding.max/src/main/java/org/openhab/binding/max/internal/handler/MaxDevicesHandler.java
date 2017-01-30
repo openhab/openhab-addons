@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusListener {
 
-    private Logger logger = LoggerFactory.getLogger(MaxDevicesHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxDevicesHandler.class);
     private MaxCubeBridgeHandler bridgeHandler;
 
     private String maxDeviceSerial;
@@ -551,8 +551,12 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#bridgeStatusChanged(org.eclipse.smarthome.core.thing.ThingStatusInfo)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.eclipse.smarthome.core.thing.binding.BaseThingHandler#bridgeStatusChanged(org.eclipse.smarthome.core.thing.
+     * ThingStatusInfo)
      */
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {

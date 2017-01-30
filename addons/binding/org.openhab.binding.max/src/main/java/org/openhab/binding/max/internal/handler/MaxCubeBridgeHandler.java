@@ -96,7 +96,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         super(br);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
 
     /** The refresh interval which is used to poll given MAX! Cube */
     ScheduledFuture<?> refreshJob;

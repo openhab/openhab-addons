@@ -25,7 +25,7 @@ public final class S_Message extends Message {
     private int freeMemorySlots;
     private boolean commandDiscarded = false;
 
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxBinding.class);
 
     public S_Message(String raw) {
         super(raw);

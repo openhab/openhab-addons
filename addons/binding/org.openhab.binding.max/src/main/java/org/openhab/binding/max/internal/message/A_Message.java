@@ -8,9 +8,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import org.openhab.binding.max.MaxBinding;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link A_Message} Acknowledge the execution of a command
@@ -19,8 +17,6 @@ import org.slf4j.LoggerFactory;
  * @since 2.0.0
  */
 public final class A_Message extends Message {
-
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
 
     public A_Message(String raw) {
         super(raw);

@@ -29,7 +29,7 @@ public final class N_Message extends Message {
     private String rfAddress = null;
     private String serialnr = null;
 
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxBinding.class);
 
     /**
      * The {@link: N_Message} contains information about a newly discovered Device
