@@ -4,8 +4,8 @@
         xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>km200 Binding</name>
-    <description>This is the binding for km200.</description>
+    <name>KM200 Binding</name>
+    <description>This is the binding for KM50/100/200.</description>
     <author>Markus Eckhardt</author>
 
 </binding:binding>

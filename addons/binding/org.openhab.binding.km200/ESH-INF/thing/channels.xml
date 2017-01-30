@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="km200"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+    <channel-type id="floatValue">
+        <item-type>Number</item-type>
+        <label>Float value</label>
+        <description>Name of a float value service</description>
+        <state pattern="%.2f" readOnly="false" >
+        </state>
+    </channel-type>
+    <channel-type id="stringValue">
+        <item-type>String</item-type>
+        <label>String value</label>
+        <description>Name of a string value service</description>
+        <state pattern="%s" readOnly="false" >
+        </state>
+    </channel-type>
+ 
+</thing:thing-descriptions>
