@@ -127,6 +127,9 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     @Override
     public void dispose() {
         logger.debug("Disposing serial thing handler.");
+        if (serialPort != null) {
+            serialPort.removeEventListener();
+        }
         IOUtils.closeQuietly(inputStream);
         IOUtils.closeQuietly(outputStream);
         if (serialPort != null) {
