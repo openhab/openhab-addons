@@ -36,7 +36,7 @@ A device may not answer ping requests or requests on the specified port by defau
 This is the case with a lot of devices and operating system (e.g. Windows 10).
 
 Many devices provide services on other TCP ports (web-frontends, streaming servers, ...), which you can use to confirm reachability. Most operating systems have options to list open ports.
-From another linux-based system, you may use namp to discover all connectable TCP ports on the device with the specified IP adress:
+From another linux-based system, you may use nmap to discover all connectable TCP ports on the device with the specified IP address:
 
 ```
 $ sudo nmap -Pn -sT -p- 192.168.0.42
