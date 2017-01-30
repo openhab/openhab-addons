@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.8.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.8.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.8.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpclient-4.5.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpcore-4.4.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bosch-indego-controller-lib-0.8.jar"/>
