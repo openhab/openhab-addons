@@ -25,6 +25,7 @@ public abstract class AbstractBaseJob implements Job {
     public static final String KEY_THING_UID = "thingUid";
     public static final String KEY_CHANNEL_ID = "channelId";
     public static final String KEY_JOB_NAME = "jobName";
+    public static final String KEY_PHASE_NAME = "phaseName";
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {

@@ -14,6 +14,7 @@ import org.openhab.binding.astro.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunEclipse;
+import org.openhab.binding.astro.internal.model.SunPhaseName;
 
 /**
  * Schedules the events for the sun for the current day.
@@ -50,6 +51,19 @@ public class DailyJobSun extends AbstractDailyJob {
         // schedule republish jobs
         schedulePublishPlanet(thingUid, handler, "zodiac", sun.getZodiac().getEnd());
         schedulePublishPlanet(thingUid, handler, "season", sun.getSeason().getNextSeason());
+
+        // schedule phase jobs
+        scheduleSunPhase(thingUid, handler, SunPhaseName.SUN_RISE, sun.getRise().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.SUN_SET, sun.getSet().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.NOON, sun.getNoon().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.NIGHT, sun.getNight().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.DAYLIGHT, sun.getDaylight().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.ASTRO_DAWN, sun.getAstroDawn().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.NAUTIC_DAWN, sun.getNauticDawn().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.CIVIL_DAWN, sun.getCivilDawn().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.ASTRO_DUSK, sun.getAstroDusk().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.NAUTIC_DUSK, sun.getNauticDusk().getStart());
+        scheduleSunPhase(thingUid, handler, SunPhaseName.CIVIL_DUSK, sun.getCivilDusk().getStart());
     }
 
 }

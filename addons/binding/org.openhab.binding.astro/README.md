@@ -23,32 +23,57 @@ Optionally, a refresh interval (in seconds) can be defined to also calculate pos
 
 * **thing** `sun`
     * **group** `rise, set, noon, night, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
-        * **channel** `start, end` (DateTime), `duration` (Number)
+        * **channel** 
+            * `start, end` (DateTime)
+            * `duration` (Number)
     * **group** `position`
-        * **channel** `azimuth, elevation` (Number)
+        * **channel** 
+            * `azimuth, elevation` (Number)
     * **group** `zodiac`
-        * **channel** `start, end` (DateTime), `sign` (String)
+        * **channel** 
+            * `start, end` (DateTime) 
+            * `sign` (String), values: `ARIES, TAURUS, GEMINI, CANCER, LEO, VIRGO, LIBRA, SCORPIO, SAGITTARIUS, CAPRICORN, AQUARIUS, PISCES`
     * **group** `season`
-        * **channel**: `spring, summer, autumn, winter` (DateTime), `name` (String)
+        * **channel**: 
+            * `spring, summer, autumn, winter` (DateTime)
+            * `name` (String), values `SPRING, SUMMER, AUTUMN, WINTER`
     * **group** `eclipse`
-        * **channel**: `total, partial, ring` (DateTime)
+        * **channel**: 
+            * `total, partial, ring` (DateTime)
+    * **group** `phase`
+        * **channel** 
+            * `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NOON, NIGHT`
 * **thing** `moon`
     * **group** `rise, set`
-        * **channel** `start, end` (DateTime), `duration` (Number), **Note:** start and end is always equal, duration always 0.
+        * **channel** 
+            * `start, end` (DateTime)
+            * `duration` (Number), **Note:** start and end is always equal, duration always 0.
     * **group** `phase`
-        * **channel**: `firstQuarter, thirdQuarter, full, new` (DateTime), `age, illumination` (Number), `name` (String)
+        * **channel**: 
+            * `firstQuarter, thirdQuarter, full, new` (DateTime)
+            * `age, illumination` (Number)
+            * `name` (String), values: `NEW, WAXING_CRESCENT, FIRST_QUARTER, WAXING_GIBBOUS, FULL, WANING_GIBBOUS, THIRD_QUARTER, WANING_CRESCENT`
     * **group** `eclipse`
-        * **channel**: `total, partial` (DateTime)
+        * **channel**: 
+            * `total, partial` (DateTime)
     * **group** `distance`
-        * **channel**: `date` (DateTime), `kilometer, miles` (Number)
+        * **channel**: 
+            * `date` (DateTime)
+            * `kilometer, miles` (Number)
     * **group** `perigee`
-        * **channel**: `date` (DateTime), `kilometer, miles` (Number)
+        * **channel**: 
+            * `date` (DateTime), 
+            * `kilometer, miles` (Number)
     * **group** `apogee`
-        * **channel**: `date` (DateTime), `kilometer, miles` (Number)
+        * **channel**: 
+            * `date` (DateTime)
+            * `kilometer, miles` (Number)
     * **group** `zodiac`
-        * **channel** `sign` (String)
+        * **channel** 
+            * `sign` (String), values: `ARIES, TAURUS, GEMINI, CANCER, LEO, VIRGO, LIBRA, SCORPIO, SAGITTARIUS, CAPRICORN, AQUARIUS, PISCES`
     * **group** `position`
-        * **channel** `azimuth, elevation` (Number)
+        * **channel** 
+            * `azimuth, elevation` (Number)
 
 ### Trigger Channels
 * **thing** `sun`
