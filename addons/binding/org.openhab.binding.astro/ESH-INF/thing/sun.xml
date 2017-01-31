@@ -25,6 +25,7 @@
 			<channel-group id="zodiac" typeId="sunZodiac" />
 			<channel-group id="season" typeId="season" />
 			<channel-group id="eclipse" typeId="sunEclipse" />
+			<channel-group id="phase" typeId="sunPhase" />
 		</channel-groups>
 		<config-description-ref uri="thing-type:astro:config" />
 	</thing-type>
