@@ -7,11 +7,9 @@ Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
- com.fasterxml.jackson.annotation,
- com.fasterxml.jackson.core,
- com.fasterxml.jackson.databind,
- com.fasterxml.jackson.databind.annotation,
  com.google.common.collect,
+ com.google.gson,
+ com.google.gson.annotations,
  org.apache.commons.collections,
  org.apache.commons.lang,
  org.apache.commons.lang.builder,

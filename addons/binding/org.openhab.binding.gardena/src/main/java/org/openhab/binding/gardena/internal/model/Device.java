@@ -15,8 +15,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents a Gardena device.
@@ -29,13 +28,12 @@ public class Device {
     private String name;
     private String description;
     private String category;
-    @JsonProperty("configuration_synchronized")
+    @SerializedName("configuration_synchronized")
     private boolean configurationSynchronized;
     private List<Ability> abilities = new ArrayList<Ability>();
-    @JsonProperty("scheduled_events")
+    @SerializedName("scheduled_events")
     private List<ScheduledEvent> scheduledEvents = new ArrayList<ScheduledEvent>();
-    @JsonIgnore
-    private Location location;
+    private transient Location location;
 
     /**
      * Returns the id of the device.

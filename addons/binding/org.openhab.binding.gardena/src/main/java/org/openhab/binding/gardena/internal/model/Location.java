@@ -14,7 +14,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents a Gardena location.
@@ -25,7 +25,7 @@ public class Location {
 
     private String id;
     private String name;
-    @JsonProperty("devices")
+    @SerializedName("devices")
     public List<String> deviceIds = new ArrayList<String>();
 
     /**

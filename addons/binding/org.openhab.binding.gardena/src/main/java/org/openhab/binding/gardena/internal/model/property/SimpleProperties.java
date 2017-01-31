@@ -8,19 +8,11 @@
  */
 package org.openhab.binding.gardena.internal.model.property;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 /**
- * need Jackson >= 2.6
+ * Represents a simple Gardena property.
  *
  * @author Gerhard Riegler - Initial contribution
- *
  */
-@JsonTypeInfo(include = As.WRAPPER_OBJECT, use = Id.NAME)
-@JsonTypeName("properties")
 public class SimpleProperties {
 
     private String name;
@@ -31,10 +23,16 @@ public class SimpleProperties {
         this.value = value;
     }
 
+    /**
+     * Returns the property name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the property value.
+     */
     public String getValue() {
         return value;
     }

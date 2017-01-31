@@ -11,11 +11,7 @@ package org.openhab.binding.gardena.internal.model;
 import java.util.Date;
 import java.util.List;
 
-import org.openhab.binding.gardena.internal.model.deser.DateDeserializer;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents a Gardena property.
@@ -26,15 +22,13 @@ public class Property {
 
     private String name;
     private String value;
-    @JsonDeserialize(using = DateDeserializer.class)
     private Date timestamp;
     private String unit;
     private boolean writeable;
 
-    @JsonProperty("supported_values")
+    @SerializedName("supported_values")
     private List<String> supportedValues;
-    @JsonIgnore
-    private Ability ability;
+    private transient Ability ability;
 
     public Property() {
     }

@@ -8,21 +8,17 @@
  */
 package org.openhab.binding.gardena.internal.model.command;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Base class for a Gardena command with parameters.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@JsonInclude(Include.NON_NULL)
 public abstract class Command {
 
-    @JsonProperty(value = "name")
+    @SerializedName(value = "name")
     protected String command;
-    @JsonProperty
     protected CommandParameters parameters;
 
     /**
@@ -58,11 +54,9 @@ public abstract class Command {
      *
      * @author Gerhard Riegler - Initial contribution
      */
-    @JsonInclude(Include.NON_NULL)
     public class CommandParameters {
-        @JsonProperty
         private String duration;
-        @JsonProperty(value = "manual_override")
+        @SerializedName("manual_override")
         private String manualOverride;
 
         /**

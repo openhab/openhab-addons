@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.gardena.internal.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents a Gardena scheduled event.
@@ -19,9 +19,9 @@ public class ScheduledEvent {
 
     private String id;
     private String type;
-    @JsonProperty("start_at")
+    @SerializedName("start_at")
     private String start;
-    @JsonProperty("end_at")
+    @SerializedName("end_at")
     private String end;
     private String weekday;
 

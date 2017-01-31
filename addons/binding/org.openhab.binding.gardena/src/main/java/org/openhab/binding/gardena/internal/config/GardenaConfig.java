@@ -12,19 +12,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 /**
  * The main Gardena config class.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@JsonTypeInfo(include = As.WRAPPER_OBJECT, use = Id.NAME)
-@JsonTypeName("sessions")
 public class GardenaConfig {
 
     private static final Integer DEFAULT_SESSION_TIMEOUT = 30;
@@ -34,12 +26,9 @@ public class GardenaConfig {
     private String email;
     private String password;
 
-    @JsonIgnore
-    private Integer sessionTimeout = DEFAULT_SESSION_TIMEOUT;
-    @JsonIgnore
-    private Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-    @JsonIgnore
-    private Integer refresh = DEFAULT_REFRESH;
+    private transient Integer sessionTimeout = DEFAULT_SESSION_TIMEOUT;
+    private transient Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+    private transient Integer refresh = DEFAULT_REFRESH;
 
     public GardenaConfig() {
     }

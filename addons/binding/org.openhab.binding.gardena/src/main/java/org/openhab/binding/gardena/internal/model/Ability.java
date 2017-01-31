@@ -13,8 +13,6 @@ import java.util.List;
 
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * Represents a Gardena ability.
  *
@@ -24,8 +22,7 @@ public class Ability {
 
     private String name;
     private String type;
-    @JsonIgnore
-    private Device device;
+    private transient Device device;
 
     private List<Property> properties = new ArrayList<Property>();
 

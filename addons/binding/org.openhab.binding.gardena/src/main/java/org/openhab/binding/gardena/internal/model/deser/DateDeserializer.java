@@ -8,20 +8,28 @@
  */
 package org.openhab.binding.gardena.internal.model.deser;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Date;
 
 import org.openhab.binding.gardena.internal.util.DateUtils;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
-public class DateDeserializer extends JsonDeserializer<Date> {
+/**
+ * Custom deserializer for date types.
+ *
+ * @author Gerhard Riegler - Initial contribution
+ */
+public class DateDeserializer implements JsonDeserializer<Date> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Date deserialize(JsonParser parser, DeserializationContext ctx) throws IOException, JsonProcessingException {
-        return DateUtils.parseToDate(parser.getText());
+    public Date deserialize(JsonElement element, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+        return DateUtils.parseToDate(element.getAsString());
     }
 }

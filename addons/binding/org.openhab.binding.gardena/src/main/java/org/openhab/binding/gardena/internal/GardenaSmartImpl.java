@@ -9,6 +9,7 @@
 package org.openhab.binding.gardena.internal;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.gardena.internal.config.GardenaConfig;
+import org.openhab.binding.gardena.internal.config.GardenaConfigWrapper;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.exception.GardenaUnauthorizedException;
@@ -41,20 +43,21 @@ import org.openhab.binding.gardena.internal.model.Locations;
 import org.openhab.binding.gardena.internal.model.NoResult;
 import org.openhab.binding.gardena.internal.model.Property;
 import org.openhab.binding.gardena.internal.model.Session;
+import org.openhab.binding.gardena.internal.model.SessionWrapper;
 import org.openhab.binding.gardena.internal.model.command.MowerParkUntilFurtherNoticeCommand;
 import org.openhab.binding.gardena.internal.model.command.MowerParkUntilNextTimerCommand;
 import org.openhab.binding.gardena.internal.model.command.MowerStartOverrideTimerCommand;
 import org.openhab.binding.gardena.internal.model.command.MowerStartResumeScheduleCommand;
 import org.openhab.binding.gardena.internal.model.command.WateringCancelOverrideCommand;
 import org.openhab.binding.gardena.internal.model.command.WateringManualOverrideCommand;
+import org.openhab.binding.gardena.internal.model.deser.DateDeserializer;
 import org.openhab.binding.gardena.internal.model.property.SimpleProperties;
+import org.openhab.binding.gardena.internal.model.property.SimplePropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * {@link GardenaSmart} implementation to access Gardena Smart Home.
@@ -94,7 +97,7 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String URL_COMMAND = URL + "/sg-1/devices/%s/abilities/%s/command?locationId=%s";
     private static final String URL_PROPERTY = URL + "/sg-1/devices/%s/abilities/%s/properties/%s?locationId=%s";
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer()).create();
     private HttpClient httpClient;
 
     private String mowerDuration = DEFAULT_MOWER_DURATION;
@@ -125,10 +128,6 @@ public class GardenaSmartImpl implements GardenaSmart {
         if (!config.isValid()) {
             throw new GardenaException("Invalid config, no email or password specified");
         }
-
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
-        mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 
         httpClient = new HttpClient(new SslContextFactory(true));
         httpClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
@@ -306,7 +305,7 @@ public class GardenaSmartImpl implements GardenaSmart {
                 SimpleProperties prop = new SimpleProperties(property.getName(), ObjectUtils.toString(value));
                 String propertyUrl = String.format(URL_PROPERTY, device.getId(), property.getAbility().getName(),
                         property.getName(), device.getLocation().getId());
-                executeRequest(HttpMethod.PUT, propertyUrl, prop, NoResult.class);
+                executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
                 break;
             case WATERING_COMMAND_OUTLET:
                 if (value != null && value == Boolean.TRUE) {
@@ -334,7 +333,7 @@ public class GardenaSmartImpl implements GardenaSmart {
             if (logger.isTraceEnabled()) {
                 logger.trace("{} request:  {}", method, url);
                 if (contentObject != null) {
-                    logger.trace("{} data   :  {}", method, mapper.writeValueAsString(contentObject));
+                    logger.trace("{} data   :  {}", method, gson.toJson(contentObject));
                 }
             }
 
@@ -344,11 +343,11 @@ public class GardenaSmartImpl implements GardenaSmart {
                     .header(HttpHeader.ACCEPT_ENCODING, "gzip");
 
             if (contentObject != null) {
-                StringContentProvider content = new StringContentProvider(mapper.writeValueAsString(contentObject));
+                StringContentProvider content = new StringContentProvider(gson.toJson(contentObject));
                 request.content(content);
             }
 
-            if (!result.equals(Session.class)) {
+            if (!result.equals(SessionWrapper.class)) {
                 verifySession();
                 request.header("X-Session", session.getToken());
             }
@@ -362,7 +361,7 @@ public class GardenaSmartImpl implements GardenaSmart {
 
             if (status == 500) {
                 throw new GardenaException(
-                        mapper.readValue(contentResponse.getContentAsString(), Errors.class).toString());
+                        gson.fromJson(contentResponse.getContentAsString(), Errors.class).toString());
             } else if (status != 200 && status != 204) {
                 throw new GardenaException(String.format("Error %s %s", status, contentResponse.getReason()));
             }
@@ -371,7 +370,7 @@ public class GardenaSmartImpl implements GardenaSmart {
                 return null;
             }
 
-            return mapper.readValue(contentResponse.getContentAsString(), result);
+            return gson.fromJson(contentResponse.getContentAsString(), result);
         } catch (ExecutionException ex) {
             Throwable cause = ex.getCause();
             if (cause instanceof HttpResponseException) {
@@ -394,7 +393,8 @@ public class GardenaSmartImpl implements GardenaSmart {
         if (session == null
                 || session.getCreated() + (config.getSessionTimeout() * 60000) <= System.currentTimeMillis()) {
             logger.trace("(Re)logging in to Gardena Smart Home");
-            session = executeRequest(HttpMethod.POST, URL_LOGIN, config, Session.class);
+            session = executeRequest(HttpMethod.POST, URL_LOGIN, new GardenaConfigWrapper(config), SessionWrapper.class)
+                    .getSession();
         }
     }
 
