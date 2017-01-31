@@ -167,7 +167,19 @@ public class TeslaChannelSelectorProxy {
 
             }
         },
-        CHARGE_RATE("charge_rate", "chargerate", StringType.class, false),
+        CHARGE_RATE("charge_rate", "chargerate", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                State someState = super.getState(s);
+                double odo = ((DecimalType) someState).doubleValue();
+                if (properties.containsKey("chargerateunits") && properties.get("chargerateunits").equals("km/hr")) {
+                    return super.getState(String.valueOf(odo * 1.609344));
+                } else {
+                    return someState;
+                }
+
+            }
+        },
         CHARGE_STARTING_RANGE("charge_starting_range", "chargestartingrange", StringType.class, false),
         CHARGE_STARTING_SOC("charge_starting_soc", "chargestartingsoc", StringType.class, false),
         CHARGE_STATE("charging_state", "chargingstate", StringType.class, false),

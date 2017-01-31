@@ -137,35 +137,42 @@ public class TeslaHandler extends BaseThingHandler {
 
         logger.trace("Initializing the Tesla handler for {}", getThing().getUID());
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         lock = new ReentrantLock();
 
-        if (connectJob == null || connectJob.isCancelled()) {
-            connectJob = scheduler.scheduleWithFixedDelay(connectRunnable, 0, CONNECT_RETRY_INTERVAL,
-                    TimeUnit.MILLISECONDS);
-        }
+        lock.lock();
+        try {
+            if (connectJob == null || connectJob.isCancelled()) {
+                connectJob = scheduler.scheduleWithFixedDelay(connectRunnable, 0, CONNECT_RETRY_INTERVAL,
+                        TimeUnit.MILLISECONDS);
+            }
 
-        if (eventJob == null || eventJob.isCancelled()) {
-            eventJob = scheduler.scheduleWithFixedDelay(eventRunnable, 0, EVENT_REFRESH_INTERVAL,
-                    TimeUnit.MILLISECONDS);
-        }
+            if (eventJob == null || eventJob.isCancelled()) {
+                eventJob = scheduler.scheduleWithFixedDelay(eventRunnable, 0, EVENT_REFRESH_INTERVAL,
+                        TimeUnit.MILLISECONDS);
+            }
 
-        Map<Object, Rate> channels = new HashMap<Object, Rate>();
-        channels.put(TESLA_DATA_THROTTLE, new Rate(10, 10, TimeUnit.SECONDS));
-        channels.put(TESLA_COMMAND_THROTTLE, new Rate(20, 1, TimeUnit.MINUTES));
+            Map<Object, Rate> channels = new HashMap<Object, Rate>();
+            channels.put(TESLA_DATA_THROTTLE, new Rate(10, 10, TimeUnit.SECONDS));
+            channels.put(TESLA_COMMAND_THROTTLE, new Rate(20, 1, TimeUnit.MINUTES));
 
-        Rate firstRate = new Rate(20, 1, TimeUnit.MINUTES);
-        Rate secondRate = new Rate(200, 10, TimeUnit.MINUTES);
-        stateThrottler = new QueueChannelThrottler(firstRate, scheduler, channels);
-        stateThrottler.addRate(secondRate);
+            Rate firstRate = new Rate(20, 1, TimeUnit.MINUTES);
+            Rate secondRate = new Rate(200, 10, TimeUnit.MINUTES);
+            stateThrottler = new QueueChannelThrottler(firstRate, scheduler, channels);
+            stateThrottler.addRate(secondRate);
 
-        if (fastStateJob == null || fastStateJob.isCancelled()) {
-            fastStateJob = scheduler.scheduleWithFixedDelay(fastStateRunnable, 0, FAST_STATUS_REFRESH_INTERVAL,
-                    TimeUnit.MILLISECONDS);
-        }
+            if (fastStateJob == null || fastStateJob.isCancelled()) {
+                fastStateJob = scheduler.scheduleWithFixedDelay(fastStateRunnable, 0, FAST_STATUS_REFRESH_INTERVAL,
+                        TimeUnit.MILLISECONDS);
+            }
 
-        if (slowStateJob == null || slowStateJob.isCancelled()) {
-            slowStateJob = scheduler.scheduleWithFixedDelay(slowStateRunnable, 0, SLOW_STATUS_REFRESH_INTERVAL,
-                    TimeUnit.MILLISECONDS);
+            if (slowStateJob == null || slowStateJob.isCancelled()) {
+                slowStateJob = scheduler.scheduleWithFixedDelay(slowStateRunnable, 0, SLOW_STATUS_REFRESH_INTERVAL,
+                        TimeUnit.MILLISECONDS);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -174,20 +181,31 @@ public class TeslaHandler extends BaseThingHandler {
 
         logger.trace("Disposing the Tesla handler for {}", getThing().getUID());
 
-        if (eventJob != null && !eventJob.isCancelled()) {
-            eventJob.cancel(true);
-            eventJob = null;
+        lock.lock();
+        try {
+            if (fastStateJob != null && !fastStateJob.isCancelled()) {
+                fastStateJob.cancel(true);
+                fastStateJob = null;
+            }
+
+            if (slowStateJob != null && !slowStateJob.isCancelled()) {
+                slowStateJob.cancel(true);
+                slowStateJob = null;
+            }
+
+            if (eventJob != null && !eventJob.isCancelled()) {
+                eventJob.cancel(true);
+                eventJob = null;
+            }
+
+            if (connectJob != null && !connectJob.isCancelled()) {
+                connectJob.cancel(true);
+                connectJob = null;
+            }
+        } finally {
+            lock.unlock();
         }
 
-        if (fastStateJob != null && !fastStateJob.isCancelled()) {
-            fastStateJob.cancel(true);
-            fastStateJob = null;
-        }
-
-        if (slowStateJob != null && !slowStateJob.isCancelled()) {
-            slowStateJob.cancel(true);
-            slowStateJob = null;
-        }
     }
 
     @Override
