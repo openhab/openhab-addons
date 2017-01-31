@@ -45,8 +45,9 @@ public class HyperionConnection {
     private InetAddress address;
     private int port;
     private List<HyperionStateListener> listeners = new ArrayList<HyperionStateListener>();
-
     private double valueGain = Double.MIN_VALUE;
+
+    private Gson gson = new Gson();
 
     public final static String PROPERTY_VALUEGAIN = "valueGain";
     private final static String JSONPATH_VALUEGAIN = "$.info.transform[0].valueGain";
@@ -85,7 +86,6 @@ public class HyperionConnection {
     }
 
     public String send(HyperionCommand command) throws IOException {
-        Gson gson = new Gson();
         String sCommand = gson.toJson(command);
         String response = null;
         try (Socket hyperionServer = new Socket(address, port)) {
@@ -98,7 +98,7 @@ public class HyperionConnection {
         } catch (IOException e) {
             throw e;
         }
-        logger.debug(response);
+        logger.debug("Received: {}", response);
         return response;
     }
 
@@ -136,6 +136,7 @@ public class HyperionConnection {
         String info = serverInfo();
         double valueGain = JsonPath.read(info, JSONPATH_VALUEGAIN);
         valueGainChangeTo(valueGain);
+        // TODO: implement other values
     }
 
     protected void valueGainChangeTo(double newValueGain) {
@@ -149,5 +150,17 @@ public class HyperionConnection {
         for (HyperionStateListener listener : listeners) {
             listener.stateChanged(property, oldValue, newValue);
         }
+    }
+
+    public void connect() {
+
+    }
+
+    public void close() {
+
+    }
+
+    public boolean isConnected() {
+        return false;
     }
 }
