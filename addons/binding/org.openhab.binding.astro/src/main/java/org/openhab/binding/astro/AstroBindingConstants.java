@@ -65,4 +65,6 @@ public class AstroBindingConstants {
     public static final String EVENT_CHANNEL_ID_CIVIL_DUSK = "civilDusk#event";
     public static final String EVENT_CHANNEL_ID_EVENING_NIGHT = "eveningNight#event";
     public static final String EVENT_CHANNEL_ID_DAYLIGHT = "daylight#event";
+
+    public static final String CHANNEL_ID_SUN_PHASE_NAME = "phase#name";
 }
