@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.hyperion;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -23,6 +26,12 @@ public class HyperionBindingConstants {
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
 
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
+
+    static {
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER);
+    }
+
     // List of all Channel ids
     public final static String CHANNEL_BRIGHTNESS = "brightness";
     public final static String CHANNEL_COLOR = "color";
@@ -35,5 +44,9 @@ public class HyperionBindingConstants {
     public final static String PROP_PORT = "port";
     public final static String PROP_PRIORITY = "priority";
     public final static String PROP_POLL_FREQUENCY = "poll_frequency";
+
+    // config
+    public static final String HOST = "host";
+    public static final String PORT = "port";
 
 }

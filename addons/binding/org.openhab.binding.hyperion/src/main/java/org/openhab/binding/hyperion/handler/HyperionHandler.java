@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.hyperion.internal.protocol.HyperionConnection;
 import org.openhab.binding.hyperion.internal.protocol.HyperionStateListener;
 import org.slf4j.Logger;
@@ -40,7 +41,9 @@ import org.slf4j.LoggerFactory;
  */
 public class HyperionHandler extends BaseThingHandler implements HyperionStateListener {
 
-    private Logger logger = LoggerFactory.getLogger(HyperionHandler.class);
+    // private Logger logger = LoggerFactory.getLogger(HyperionHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private HyperionConnection server;
     private ScheduledFuture<?> refreshHandler;
 
@@ -58,6 +61,7 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
             int refreshInterval = ((BigDecimal) thing.getConfiguration().get(PROP_POLL_FREQUENCY)).intValue();
 
             server = new HyperionConnection(address, port);
+            server.connect();
             server.addListener(this);
             refreshHandler = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
@@ -82,12 +86,15 @@ public class HyperionHandler extends BaseThingHandler implements HyperionStateLi
         logger.debug("Disposing of Hyperion thing handler.");
         refreshHandler.cancel(true);
         server.removeListener(this);
+        server.close();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (channelUID.getId().equals(CHANNEL_BRIGHTNESS)) {
+            if (command instanceof RefreshType) {
+                server.synchronize();
+            } else if (channelUID.getId().equals(CHANNEL_BRIGHTNESS)) {
                 handleBrightness(command);
             } else if (channelUID.getId().equals(CHANNEL_COLOR)) {
                 handleColor(command);
