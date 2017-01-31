@@ -24,16 +24,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -98,9 +101,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
 
-    /** The refresh interval which is used to poll given MAX! Cube */
-    ScheduledFuture<?> refreshJob;
-
     /** timeout on network connection **/
     private static final int NETWORK_TIMEOUT = 10000;
 
@@ -118,7 +118,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     /** maximum queue size that we're allowing */
     private static final int MAX_COMMANDS = 50;
-    private Queue<SendCommand> commandQueue = new ArrayBlockingQueue<SendCommand>(MAX_COMMANDS);
+    private BlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<SendCommand>(MAX_COMMANDS);
 
     private SendCommand lastCommandId = null;
 
@@ -133,7 +133,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private boolean propertiesSet = false;
     private boolean roomPropertiesSet = false;
 
-    MessageProcessor messageProcessor = new MessageProcessor();
+    private final MessageProcessor messageProcessor = new MessageProcessor();
+
+    private ReentrantLock dutyCycleLock = new ReentrantLock();
+    private Condition excessDutyCycle = dutyCycleLock.newCondition();
 
     /**
      * Duty cycle of the cube
@@ -158,7 +161,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
     private final Lock pollingJobLock = new ReentrantLock();
-    private final Lock sendCommandJobLock = new ReentrantLock();
+    private final Lock queueConsumerLock = new ReentrantLock();
+
+    protected final ScheduledExecutorService bridgeScheduler = ThreadPoolManager.getScheduledPool("max-scheduler-pool");
 
     private ScheduledFuture<?> pollingJob;
     private final Runnable pollingRunnable = new Runnable() {
@@ -167,14 +172,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             refreshData();
         }
     };
-    private ScheduledFuture<?> sendCommandJob;
-    private long sendCommandInterval = 5;
-    private final Runnable sendCommandRunnable = new Runnable() {
-        @Override
-        public void run() {
-            sendCommands();
-        }
-    };
+
+    private Thread queueConsumerThread = null;
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -331,19 +330,21 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         pollingJobLock.tryLock(5, TimeUnit.SECONDS);
         try {
             if (pollingJob == null || pollingJob.isCancelled()) {
-                pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+                pollingJob = bridgeScheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval,
+                        TimeUnit.SECONDS);
             }
         } finally {
             pollingJobLock.unlock();
         }
-        sendCommandJobLock.tryLock(5, TimeUnit.SECONDS);
+        queueConsumerLock.tryLock(5, TimeUnit.SECONDS);
         try {
-            if (sendCommandJob == null || sendCommandJob.isCancelled()) {
-                sendCommandJob = scheduler.scheduleWithFixedDelay(sendCommandRunnable, 0, sendCommandInterval,
-                        TimeUnit.SECONDS);
+            if (queueConsumerThread == null || !queueConsumerThread.isAlive()) {
+                queueConsumerThread = new Thread(new QueueConsumer(commandQueue));
+                queueConsumerThread.setDaemon(true);
+                queueConsumerThread.start();
             }
         } finally {
-            sendCommandJobLock.unlock();
+            queueConsumerLock.unlock();
         }
     }
 
@@ -361,51 +362,140 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             pollingJobLock.unlock();
         }
 
-        sendCommandJobLock.tryLock(5, TimeUnit.SECONDS);
+        queueConsumerLock.tryLock(5, TimeUnit.SECONDS);
         try {
-            if (sendCommandJob != null && !sendCommandJob.isCancelled()) {
-                sendCommandJob.cancel(true);
-                sendCommandJob = null;
+            if (queueConsumerThread != null && queueConsumerThread.isAlive()) {
+                queueConsumerThread.interrupt();
+                queueConsumerThread.join(1000);
             }
         } finally {
-            sendCommandJobLock.unlock();
+            queueConsumerLock.unlock();
+        }
+    }
+
+    public class QueueConsumer implements Runnable {
+        private final BlockingQueue<SendCommand> commandQueue;
+
+        public QueueConsumer(final BlockingQueue<SendCommand> commandQueue) {
+            this.commandQueue = commandQueue;
+        }
+
+        /**
+         * Keeps taking commands from the command queue and send it to
+         * {@link sendCubeCommand} for execution.
+         */
+        @Override
+        public void run() {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    waitForNormalDutyCycle();
+                    final SendCommand sendCommand = commandQueue.take();
+                    if (sendCommand != null) {
+                        CubeCommand cmd = sendCommand.getCubeCommand();
+                        if (cmd == null) {
+                            cmd = getCommand(sendCommand);
+                        }
+                        if (cmd != null) {
+                            // Actual sending of the data to the Max! Cube Lan Gateway
+                            logger.debug("Command {} sent to MAX! Cube at IP: {}", sendCommand, ipAddress);
+
+                            if (sendCubeCommand(cmd)) {
+                                logger.trace("Command {} completed for MAX! Cube at IP: {}", sendCommand, ipAddress);
+                            } else {
+                                logger.warn("Error sending command {} to MAX! Cube at IP: {}", sendCommand, ipAddress);
+                            }
+                        }
+                    }
+                    Thread.sleep(50);
+                }
+            } catch (InterruptedException e) {
+                logger.info("Stopping queueConsumer");
+            } catch (Exception e) {
+                logger.error("Unexpected exception occurred during sendCommands", e);
+            }
+        }
+
+        private void waitForNormalDutyCycle() throws InterruptedException {
+            dutyCycleLock.lock();
+            try {
+                if (hasExcessDutyCycle()) {
+                    logger.debug("Found to have excess duty cycle, waiting for better times...");
+                    excessDutyCycle.await();
+                }
+            } finally {
+                dutyCycleLock.unlock();
+            }
         }
     }
 
     /**
-     * Takes a command from the command queue and send it to
-     * {@link executeCommand} for execution.
+     * Processes device command and sends it to the MAX! Cube Lan Gateway.
      *
+     * @param {@link SendCommand}
+     *            the SendCommand containing the serial number of the device as
+     *            String the channelUID used to send the command and the the
+     *            command data
      */
-    private void sendCommands() {
+    private CubeCommand getCommand(SendCommand sendCommand) {
 
-        SendCommand sendCommand = commandQueue.poll();
-        if (sendCommand != null) {
-            CubeCommand cmd = sendCommand.getCubeCommand();
-            if (cmd == null) {
-                cmd = getCommand(sendCommand);
+        String serialNumber = sendCommand.getDeviceSerial();
+        ChannelUID channelUID = sendCommand.getChannelUID();
+        Command command = sendCommand.getCommand();
+
+        // send command to MAX! Cube LAN Gateway
+        HeatingThermostat device = (HeatingThermostat) getDevice(serialNumber, devices);
+
+        if (device == null) {
+            logger.debug("Cannot send command to device with serial number {}, device not listed.", serialNumber);
+            return null;
+        }
+
+        String rfAddress = device.getRFAddress();
+        S_Command cmd = null;
+
+        // Temperature setting
+        if (channelUID.getId().equals(CHANNEL_SETTEMP)) {
+
+            if (command instanceof DecimalType || command instanceof OnOffType) {
+                DecimalType decimalType = DEFAULT_OFF_TEMPERATURE;
+                if (command instanceof DecimalType) {
+                    decimalType = (DecimalType) command;
+                } else if (command instanceof OnOffType) {
+                    decimalType = OnOffType.ON.equals(command) ? DEFAULT_ON_TEMPERATURE : DEFAULT_OFF_TEMPERATURE;
+                }
+
+                cmd = new S_Command(rfAddress, device.getRoomId(), device.getMode(), decimalType.doubleValue());
             }
-            if (cmd != null) {
-                // Actual sending of the data to the Max! Cube Lan Gateway
-                logger.debug("Command {} ({}:{}) sent to MAX! Cube at IP: {}", sendCommand.getId(),
-                        sendCommand.getKey(), sendCommand.getCommandText(), ipAddress);
-
-                if (sendCubeCommand(cmd)) {
-                    logger.trace("Command {} ({}:{}) completed for MAX! Cube at IP: {}", sendCommand.getId(),
-                            sendCommand.getKey(), sendCommand.getCommandText(), ipAddress);
+            // Mode setting
+        } else if (channelUID.getId().equals(CHANNEL_MODE)) {
+            if (command instanceof StringType) {
+                String commandContent = command.toString().trim().toUpperCase();
+                ThermostatModeType commandThermoType = null;
+                Double setTemp = Double.parseDouble(device.getTemperatureSetpoint().toString());
+                if (commandContent.contentEquals(ThermostatModeType.AUTOMATIC.toString())) {
+                    commandThermoType = ThermostatModeType.AUTOMATIC;
+                    cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, 0D);
+                } else if (commandContent.contentEquals(ThermostatModeType.BOOST.toString())) {
+                    commandThermoType = ThermostatModeType.BOOST;
+                    cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, setTemp);
+                } else if (commandContent.contentEquals(ThermostatModeType.MANUAL.toString())) {
+                    commandThermoType = ThermostatModeType.MANUAL;
+                    cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, setTemp);
+                    logger.debug("updates to MANUAL mode with temperature '{}'", setTemp);
                 } else {
-                    logger.warn("Error sending command {} ({}:{}) to MAX! Cube at IP: {}", sendCommand.getId(),
-                            sendCommand.getKey(), sendCommand.getCommandText(), ipAddress);
+                    logger.debug("Only updates to AUTOMATIC & BOOST & MANUAL supported, received value :'{}'",
+                            commandContent);
+                    return null;
                 }
             }
         }
+        return cmd;
     }
 
     /**
      * initiates read data from the MAX! Cube bridge
      */
     private void refreshData() {
-
         try {
             if (sendCubeCommand(new L_Command())) {
                 updateStatus(ThingStatus.ONLINE);
@@ -504,12 +594,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         try {
             if (socket == null || socket.isClosed()) {
                 this.socketConnect();
-            } else {
-                if (maxRequestsPerConnection > 0 && requestCount >= maxRequestsPerConnection) {
-                    logger.debug("maxRequestsPerConnection reached, reconnecting.");
-                    socket.close();
-                    this.socketConnect();
-                }
+            } else if (maxRequestsPerConnection > 0 && requestCount >= maxRequestsPerConnection) {
+                logger.debug("maxRequestsPerConnection reached, reconnecting.");
+                socket.close();
+                this.socketConnect();
             }
 
             if (requestCount == 0) {
@@ -617,7 +705,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             int dutyCycleMsg = ((H_Message) message).getDutyCycle();
             if (freeMemorySlotsMsg != freeMemorySlots || dutyCycleMsg != dutyCycle) {
                 freeMemorySlots = freeMemorySlotsMsg;
-                dutyCycle = dutyCycleMsg;
+                setDutyCycle(dutyCycleMsg);
+
                 updateCubeState();
             }
             if (!propertiesSet) {
@@ -712,6 +801,20 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             }
         } else if (message.getType() == MessageType.F) {
             setProperties((F_Message) message);
+        }
+    }
+
+    private void setDutyCycle(int dutyCycleMsg) {
+        dutyCycleLock.lock();
+        try {
+            dutyCycle = dutyCycleMsg;
+            if (!hasExcessDutyCycle()) {
+                excessDutyCycle.signalAll();
+            } else {
+                logger.debug("Duty cycle at {}, will not release other thread", dutyCycle);
+            }
+        } finally {
+            dutyCycleLock.unlock();
         }
     }
 
@@ -839,70 +942,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Processes device command and sends it to the MAX! Cube Lan Gateway.
-     *
-     * @param {@link SendCommand}
-     *            the SendCommand containing the serial number of the device as
-     *            String the channelUID used to send the command and the the
-     *            command data
-     */
-    private CubeCommand getCommand(SendCommand sendCommand) {
-
-        String serialNumber = sendCommand.getDeviceSerial();
-        ChannelUID channelUID = sendCommand.getChannelUID();
-        Command command = sendCommand.getCommand();
-
-        // send command to MAX! Cube LAN Gateway
-        HeatingThermostat device = (HeatingThermostat) getDevice(serialNumber, devices);
-
-        if (device == null) {
-            logger.debug("Cannot send command to device with serial number {}, device not listed.", serialNumber);
-            return null;
-        }
-
-        String rfAddress = device.getRFAddress();
-        S_Command cmd = null;
-
-        // Temperature setting
-        if (channelUID.getId().equals(CHANNEL_SETTEMP)) {
-
-            if (command instanceof DecimalType || command instanceof OnOffType) {
-                DecimalType decimalType = DEFAULT_OFF_TEMPERATURE;
-                if (command instanceof DecimalType) {
-                    decimalType = (DecimalType) command;
-                } else if (command instanceof OnOffType) {
-                    decimalType = OnOffType.ON.equals(command) ? DEFAULT_ON_TEMPERATURE : DEFAULT_OFF_TEMPERATURE;
-                }
-
-                cmd = new S_Command(rfAddress, device.getRoomId(), device.getMode(), decimalType.doubleValue());
-            }
-            // Mode setting
-        } else if (channelUID.getId().equals(CHANNEL_MODE)) {
-            if (command instanceof StringType) {
-                String commandContent = command.toString().trim().toUpperCase();
-                ThermostatModeType commandThermoType = null;
-                Double setTemp = Double.parseDouble(device.getTemperatureSetpoint().toString());
-                if (commandContent.contentEquals(ThermostatModeType.AUTOMATIC.toString())) {
-                    commandThermoType = ThermostatModeType.AUTOMATIC;
-                    cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, 0D);
-                } else if (commandContent.contentEquals(ThermostatModeType.BOOST.toString())) {
-                    commandThermoType = ThermostatModeType.BOOST;
-                    cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, setTemp);
-                } else if (commandContent.contentEquals(ThermostatModeType.MANUAL.toString())) {
-                    commandThermoType = ThermostatModeType.MANUAL;
-                    cmd = new S_Command(rfAddress, device.getRoomId(), commandThermoType, setTemp);
-                    logger.debug("updates to MANUAL mode with temperature '{}'", setTemp);
-                } else {
-                    logger.debug("Only updates to AUTOMATIC & BOOST & MANUAL supported, received value :'{}'",
-                            commandContent);
-                    return null;
-                }
-            }
-        }
-        return cmd;
-    }
-
-    /**
      * Updates the room information by sending M command
      */
     public void sendDeviceAndRoomNameUpdate(String comment) {
@@ -970,5 +1009,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private void updateCubeState() {
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_FREE_MEMORY), new DecimalType(freeMemorySlots));
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_DUTY_CYCLE), new DecimalType(dutyCycle));
+    }
+
+    private boolean hasExcessDutyCycle() {
+        return dutyCycle >= 80;
     }
 }

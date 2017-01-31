@@ -12,6 +12,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.max.internal.command.CubeCommand;
 
+import com.google.common.base.Objects;
+
 /**
  * Class for sending a command.
  *
@@ -145,6 +147,13 @@ public final class SendCommand {
      */
     public void setCommandText(String commandText) {
         this.commandText = commandText;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(SendCommand.class).add("id", id).add("channelUID", channelUID)
+                .add("command", command).add("cubeCommand", cubeCommand).add("serialNumber", serialNumber)
+                .add("key", key).add("commandText", commandText).toString();
     }
 
 }
