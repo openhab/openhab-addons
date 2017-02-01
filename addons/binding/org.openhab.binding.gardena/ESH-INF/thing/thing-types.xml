@@ -339,53 +339,6 @@
         <state readOnly="true" />
     </channel-type>
 
-    <!-- ############################### Gateway ############################### -->
-    <thing-type id="gateway">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="account" />
-        </supported-bridge-type-refs>
-
-        <label>Gardena Smart Home Gateway</label>
-        <description>Represents a Gardena Smart Home Gateway</description>
-
-        <channel-groups>
-            <channel-group id="gateway" typeId="gateway" />
-        </channel-groups>
-        <properties>
-            <!-- device info -->
-            <property name="manufacturer" />
-            <property name="product" />
-            <property name="serialNumber" />
-            <property name="sgtin" />
-            <property name="version" />
-            <property name="category" />
-        </properties>
-    </thing-type>
-
-    <channel-group-type id="gateway">
-        <label>Gateway Info</label>
-        <description>Gateway Info</description>
-        <channels>
-            <channel id="ip_address" typeId="ipAddress" />
-            <channel id="time_zone" typeId="timeZone" />
-            <channel id="connection_status" typeId="connectionStatus" />
-        </channels>
-    </channel-group-type>
-
-    <channel-type id="ipAddress">
-        <item-type>String</item-type>
-        <label>IP Address</label>
-        <description>The IP address of the gateway</description>
-        <state readOnly="true" />
-    </channel-type>
-
-    <channel-type id="timeZone" advanced="true">
-        <item-type>String</item-type>
-        <label>Time Zone</label>
-        <description>The time zone of the gateway</description>
-        <state readOnly="true" />
-    </channel-type>
-
     <!-- ############################### Watering Computer ############################### -->
     <thing-type id="watering_computer">
         <supported-bridge-type-refs>

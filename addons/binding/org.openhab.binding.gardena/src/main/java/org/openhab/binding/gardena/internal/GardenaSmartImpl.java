@@ -76,10 +76,7 @@ public class GardenaSmartImpl implements GardenaSmart {
 
     private static final String ABILITY_MOWER = "mower";
     private static final String ABILITY_OUTLET = "outlet";
-    private static final String ABILITY_GATEWAY = "gateway";
 
-    private static final String PROPERTY_CONNECTION_STATUS = "connection_status";
-    private static final String PROPERTY_CONNECTION_STATUS_VALUE_ALIVE = "status_device_alive";
     private static final String PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME = "button_manual_override_time";
     private static final String PROPERTY_VALVE_OPEN = "valve_open";
 
@@ -232,7 +229,11 @@ public class GardenaSmartImpl implements GardenaSmart {
                 allLocations.add(location);
                 Devices devices = loadDevices(location);
                 for (Device device : devices.getDevices()) {
-                    allDevicesById.put(device.getId(), device);
+                    if (DEVICE_CATEGORY_GATEWAY.equals(device.getCategory())) {
+                        location.getDeviceIds().remove(device.getId());
+                    } else {
+                        allDevicesById.put(device.getId(), device);
+                    }
                 }
             }
         } finally {
@@ -262,9 +263,6 @@ public class GardenaSmartImpl implements GardenaSmart {
                 mower.addProperty(new Property(MOWER_COMMAND_START_OVERRIDE_TIMER, "false"));
 
                 mower.addProperty(new Property(MOWER_COMMAND_DURATION, mowerDuration));
-            } else if (DEVICE_CATEGORY_GATEWAY.equals(device.getCategory())) {
-                Ability gateway = device.getAbility(ABILITY_GATEWAY);
-                gateway.addProperty(new Property(PROPERTY_CONNECTION_STATUS, PROPERTY_CONNECTION_STATUS_VALUE_ALIVE));
             }
         }
         return devices;
@@ -411,7 +409,11 @@ public class GardenaSmartImpl implements GardenaSmart {
                 for (Location location : allLocations) {
                     Devices devices = loadDevices(location);
                     for (Device device : devices.getDevices()) {
-                        newDevicesById.put(device.getId(), device);
+                        if (DEVICE_CATEGORY_GATEWAY.equals(device.getCategory())) {
+                            location.getDeviceIds().remove(device.getId());
+                        } else {
+                            newDevicesById.put(device.getId(), device);
+                        }
                     }
                 }
 
