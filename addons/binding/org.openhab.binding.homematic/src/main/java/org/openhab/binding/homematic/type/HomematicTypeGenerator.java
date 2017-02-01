@@ -13,6 +13,11 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
 public interface HomematicTypeGenerator {
 
     /**
+     * Initializes the type generator.
+     */
+    public void initialize();
+
+    /**
      * Generates the ThingType and ChannelTypes for the given device.
      */
     public void generate(HmDevice device);
