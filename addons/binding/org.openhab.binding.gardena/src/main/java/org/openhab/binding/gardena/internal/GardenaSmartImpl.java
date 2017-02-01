@@ -74,8 +74,6 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String MOWER_COMMAND_START_OVERRIDE_TIMER = "start_override_timer_command";
     private static final String MOWER_COMMAND_DURATION = "mower_command_duration";
 
-    private static final String WATERING_COMMAND_OUTLET = "outlet_command";
-
     private static final String ABILITY_MOWER = "mower";
     private static final String ABILITY_OUTLET = "outlet";
     private static final String ABILITY_GATEWAY = "gateway";
@@ -83,9 +81,9 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String PROPERTY_CONNECTION_STATUS = "connection_status";
     private static final String PROPERTY_CONNECTION_STATUS_VALUE_ALIVE = "status_device_alive";
     private static final String PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME = "button_manual_override_time";
+    private static final String PROPERTY_VALVE_OPEN = "valve_open";
 
     private static final String DEVICE_CATEGORY_MOWER = "mower";
-    private static final String DEVICE_CATEGORY_WATERING_COMPUTER = "watering_computer";
     private static final String DEVICE_CATEGORY_GATEWAY = "gateway";
 
     private static final String DEFAULT_MOWER_DURATION = "180";
@@ -264,9 +262,6 @@ public class GardenaSmartImpl implements GardenaSmart {
                 mower.addProperty(new Property(MOWER_COMMAND_START_OVERRIDE_TIMER, "false"));
 
                 mower.addProperty(new Property(MOWER_COMMAND_DURATION, mowerDuration));
-            } else if (DEVICE_CATEGORY_WATERING_COMPUTER.equals(device.getCategory())) {
-                Ability outlet = device.getAbility(ABILITY_OUTLET);
-                outlet.addProperty(new Property(WATERING_COMMAND_OUTLET, "false"));
             } else if (DEVICE_CATEGORY_GATEWAY.equals(device.getCategory())) {
                 Ability gateway = device.getAbility(ABILITY_GATEWAY);
                 gateway.addProperty(new Property(PROPERTY_CONNECTION_STATUS, PROPERTY_CONNECTION_STATUS_VALUE_ALIVE));
@@ -307,7 +302,7 @@ public class GardenaSmartImpl implements GardenaSmart {
                         property.getName(), device.getLocation().getId());
                 executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
                 break;
-            case WATERING_COMMAND_OUTLET:
+            case PROPERTY_VALVE_OPEN:
                 if (value != null && value == Boolean.TRUE) {
                     String wateringDuration = device.getAbility(ABILITY_OUTLET)
                             .getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME).getValue();

@@ -430,7 +430,6 @@
             <channel id="valve_open" typeId="valveOpen" />
             <channel id="manual_override" typeId="manualOverride" />
             <channel id="button_manual_override_time" typeId="buttonManualOverrideTime" />
-            <channel id="outlet_command" typeId="outletCommand" />
         </channels>
     </channel-group-type>
 
@@ -459,10 +458,9 @@
     </channel-type>
 
     <channel-type id="valveOpen">
-        <item-type>Contact</item-type>
+        <item-type>Switch</item-type>
         <label>Valve Open</label>
         <description>Valve Open</description>
-        <state readOnly="true" />
     </channel-type>
 
     <channel-type id="manualOverride" advanced="true">
@@ -483,12 +481,6 @@
         <label>Button Manual Override</label>
         <description>The time the valve is open when you press the button on the device</description>
         <state pattern="%d min" min="1" max="180" step="1" />
-    </channel-type>
-
-    <channel-type id="outletCommand">
-        <item-type>Switch</item-type>
-        <label>Valve command</label>
-        <description>Command to open and close the valve</description>
     </channel-type>
 
     <channel-type id="frostWarning" advanced="true">
