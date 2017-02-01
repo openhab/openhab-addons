@@ -289,7 +289,6 @@ public class HomematicThingHandler extends BaseThingHandler {
             newStatus = ThingStatus.OFFLINE;
             newDetail = ThingStatusDetail.COMMUNICATION_ERROR;
         } else if (device.isConfigPending() || device.isUpdatePending()) {
-            newStatus = thing.getStatus();
             newDetail = ThingStatusDetail.CONFIGURATION_PENDING;
         }
 
