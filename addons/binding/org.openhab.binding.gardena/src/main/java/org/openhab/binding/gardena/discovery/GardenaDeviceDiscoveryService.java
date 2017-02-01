@@ -10,6 +10,7 @@ package org.openhab.binding.gardena.discovery;
 
 import static org.openhab.binding.gardena.GardenaBindingConstants.BINDING_ID;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -121,6 +122,23 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
             });
         } else {
             logger.debug("Gardena device discovery scan in progress");
+        }
+    }
+
+    /**
+     * Waits for the discovery scan to finish and then returns.
+     */
+    public void waitForScanFinishing() {
+        if (scanFuture != null) {
+            logger.debug("Waiting for finishing Gardena device discovery scan");
+            try {
+                scanFuture.get();
+                logger.debug("Gardena device discovery scan finished");
+            } catch (CancellationException ex) {
+                // ignore
+            } catch (Exception ex) {
+                logger.error("Error waiting for device discovery scan: {}", ex.getMessage(), ex);
+            }
         }
     }
 

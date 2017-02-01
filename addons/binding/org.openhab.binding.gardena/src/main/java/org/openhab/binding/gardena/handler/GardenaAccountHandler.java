@@ -79,8 +79,9 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                     String id = getThing().getUID().getId();
                     gardenaSmart.init(id, gardenaConfig, instance, scheduler);
                     registerDeviceDiscoveryService();
-                    updateStatus(ThingStatus.ONLINE);
                     discoveryService.startScan(null);
+                    discoveryService.waitForScanFinishing();
+                    updateStatus(ThingStatus.ONLINE);
                 } catch (GardenaException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                     disposeGardena();
