@@ -18,9 +18,14 @@ No binding configuration required.
 
 ## Thing Configuration
 
+<<<<<<< HEAD
 A thing requires the geolocation (latitude, longitude) for which the calculation is done.
 Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
 An complementary altitude (optional) configuration item can also be specified to sharpen results provided by Radiation group.
+=======
+A thing requires the geolocation (latitude, longitude) for which the calculation is done. Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
+An optional altitude configuration item can also be specified to sharpen results provided by Radiation group.
+>>>>>>> eb2becbaeb3eb472ea6d87912083376ed791dc77
 
 ## Channels
 
@@ -30,11 +35,17 @@ An complementary altitude (optional) configuration item can also be specified to
             * `start, end` (DateTime)
             * `duration` (Number)
     * **group** `position`
+<<<<<<< HEAD
         * **channel** 
             * `azimuth, elevation` (Number)
     * **group** `radiation`
         * **channel** 
             * `direct, diffuse, total` (Number)
+=======
+        * **channel** `azimuth, elevation` (Number)
+    * **group** `radiation`
+        * **channel** `direct, diffuse, total` (Number)
+>>>>>>> eb2becbaeb3eb472ea6d87912083376ed791dc77
     * **group** `zodiac`
         * **channel** 
             * `start, end` (DateTime) 
