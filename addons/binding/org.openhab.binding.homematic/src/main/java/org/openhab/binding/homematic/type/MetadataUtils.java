@@ -45,7 +45,7 @@ public class MetadataUtils {
     private static Map<String, String> descriptions = new HashMap<String, String>();
     private static Map<String, Set<String>> standardDatapoints = new HashMap<String, Set<String>>();
 
-    static {
+    protected static void initialize() {
         // loads all Homematic device names
         loadBundle("homematic/generated-descriptions");
         loadBundle("homematic/extra-descriptions");
