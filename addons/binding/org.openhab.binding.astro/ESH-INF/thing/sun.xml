@@ -22,6 +22,7 @@
 			<channel-group id="eveningNight" typeId="sunRange" />
 			<channel-group id="daylight" typeId="sunRange" />
 			<channel-group id="position" typeId="position" />
+			<channel-group id="radiation" typeId="radiation" />
 			<channel-group id="zodiac" typeId="sunZodiac" />
 			<channel-group id="season" typeId="season" />
 			<channel-group id="eclipse" typeId="sunEclipse" />

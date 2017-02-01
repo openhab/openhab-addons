@@ -31,6 +31,8 @@ public class Sun extends RiseSet implements Planet {
 
     private SunEclipse eclipse = new SunEclipse();
 
+    private Radiation radiation = new Radiation();
+
     private SunPhase phase = new SunPhase();
 
     /**
@@ -195,6 +197,13 @@ public class Sun extends RiseSet implements Planet {
     }
 
     /**
+     * Returns the sun radiation
+     */
+    public Radiation getRadiation() {
+        return radiation;
+    }
+
+    /**
      * Sets the sun position.
      */
     public void setPosition(Position position) {
@@ -275,7 +284,8 @@ public class Sun extends RiseSet implements Planet {
                 .append("nauticDawn", getNauticDawn()).append("civilDawn", getCivilDawn())
                 .append("civilDusk", getCivilDusk()).append("nauticDusk", getNauticDawn())
                 .append("astroDusk", getAstroDusk()).append("daylight", getDaylight())
-                .append("eveningNight", getEveningNight()).append("eclipse", eclipse).append("phase", phase).toString();
+                .append("eveningNight", getEveningNight()).append("eclipse", eclipse).append("phase", phase)
+                .append("radiation", radiation).toString();
     }
 
 }
