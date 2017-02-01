@@ -9,6 +9,7 @@
 package org.openhab.binding.onkyo.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -158,15 +159,20 @@ public class OnkyoAlbumArt {
         throw new IllegalArgumentException("Illegal Album Art");
     }
 
-    private byte[] downloadAlbumArt(String coverArtUrl) {
+    private byte[] downloadAlbumArt(String albumArtUrl) {
         try {
-            URL url = new URL(coverArtUrl);
+            URL url = new URL(albumArtUrl);
             URLConnection connection = url.openConnection();
-            return IOUtils.toByteArray(connection.getInputStream());
+            InputStream inputStream = connection.getInputStream();
+            try {
+                return IOUtils.toByteArray(inputStream);
+            } finally {
+                IOUtils.closeQuietly(inputStream);
+            }
         } catch (MalformedURLException e) {
-            logger.warn("Album Art download failed from url '{}', reason {}", coverArtUrl, e.getMessage());
+            logger.warn("Album Art download failed from url '{}', reason {}", albumArtUrl, e.getMessage());
         } catch (IOException e) {
-            logger.warn("Album Art download failed from url '{}', reason {}", coverArtUrl, e.getMessage());
+            logger.warn("Album Art download failed from url '{}', reason {}", albumArtUrl, e.getMessage());
         }
 
         return null;
