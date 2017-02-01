@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2014-2016 by the respective copyright holders.
+
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+-->
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="require" immediate="true" name="binding.homie">
+
+   <implementation class="org.openhab.binding.homie.internal.HomieHandlerFactory"/>
+
+   <service>
+      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+   </service>
+   <reference bind="setChannelProvider" cardinality="1..1" interface="org.openhab.binding.homie.HomieChannelTypeProvider" name="HomieChannelTypeProvider" policy="static" unbind="unsetChannelProvider"/>
+
+</scr:component>

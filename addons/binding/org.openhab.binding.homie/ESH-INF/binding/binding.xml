@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="homie" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Homie Binding</name>
+	<description>This is the binding for Homie devices, using the Homie MQTT convention.</description>
+	<author>Michael Kolb</author>
+
+	<config-description>
+		<parameter name="mqttbrokerurl" type="text" required="true">
+			<label>MQTT Broker URL</label>
+			<description>MQTT Broker URL in the format "tcp://myBrokerHost:1883"</description>
+			<default>tcp://broker:1883</default>
+		</parameter>
+		
+		<parameter name="basetopic" type="text" required="true">
+            <label>MQTT base topic</label>
+            <description>topic under which all your devices are located. If e.g. your device sends to homie/mydevice-1/$online, your basetopic is "homie/"</description>
+            <default>homie</default>
+        </parameter>
+	</config-description>
+
+
+</binding:binding>
