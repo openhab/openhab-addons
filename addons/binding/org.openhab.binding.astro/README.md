@@ -18,14 +18,9 @@ No binding configuration required.
 
 ## Thing Configuration
 
-<<<<<<< HEAD
 A thing requires the geolocation (latitude, longitude) for which the calculation is done.
 Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
 An complementary altitude (optional) configuration item can also be specified to sharpen results provided by Radiation group.
-=======
-A thing requires the geolocation (latitude, longitude) for which the calculation is done. Optionally, a refresh interval (in seconds) can be defined to also calculate positional data like azimuth and elevation.
-An optional altitude configuration item can also be specified to sharpen results provided by Radiation group.
->>>>>>> eb2becbaeb3eb472ea6d87912083376ed791dc77
 
 ## Channels
 
@@ -35,17 +30,11 @@ An optional altitude configuration item can also be specified to sharpen results
             * `start, end` (DateTime)
             * `duration` (Number)
     * **group** `position`
-<<<<<<< HEAD
         * **channel** 
             * `azimuth, elevation` (Number)
     * **group** `radiation`
         * **channel** 
             * `direct, diffuse, total` (Number)
-=======
-        * **channel** `azimuth, elevation` (Number)
-    * **group** `radiation`
-        * **channel** `direct, diffuse, total` (Number)
->>>>>>> eb2becbaeb3eb472ea6d87912083376ed791dc77
     * **group** `zodiac`
         * **channel** 
             * `start, end` (DateTime) 
@@ -92,55 +81,7 @@ An optional altitude configuration item can also be specified to sharpen results
         * **channel** 
             * `azimuth, elevation` (Number)
 
-<<<<<<< Upstream, based on origin/master
 ### Trigger Channels
-=======
-## Full Example
-
-Things:
-
-```
-astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ]
-astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
-```
-
-or optionally with an offset
-
-```
-astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ] {
-    Channels:
-        Type rangeEvent : rise#event [
-            offset=-30
-        ]
-}
-astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
-```
-
-Items:
-
-```
-DateTime Sunrise_Time       "Sunrise [%1$tH:%1$tM]"  { channel="astro:sun:home:rise#start" }
-DateTime Sunset_Time        "Sunset [%1$tH:%1$tM]"   { channel="astro:sun:home:set#start" }
-Number   Azimuth            "Azimuth"                { channel="astro:sun:home:position#azimuth" }
-Number   Elevation          "Elevation"              { channel="astro:sun:home:position#elevation" }
-String   MoonPhase          "MoonPhase"              { channel="astro:moon:home:phase#name" }
-Number   Total_Radiation    "Radiation"              { channel="astro:sun:home:radiation#total" }
-Number   Total_Radiation    "Radiation"              { channel="astro:sun:home:radiation#total" }
-```
-
-Events:
-
-```
-rule "example trigger rule"
-when
-    Channel 'astro:sun:home:rise#event' triggered START 
-then
-    ...
-end
-```
-
-Available events:
->>>>>>> eb2becb Fixes merge conflict
 * **thing** `sun`
     * **group** `rise, set, noon, night, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
         * **event** `START, END`
