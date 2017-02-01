@@ -65,9 +65,8 @@ public class MetadataUtils {
      * Loads the standard datapoints for channel metadata generation.
      */
     private static void loadStandardDatapoints() {
-        try {
-            InputStream is = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("homematic/standard-datapoints.properties");
+        try (InputStream is = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("homematic/standard-datapoints.properties")) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
             String line;
