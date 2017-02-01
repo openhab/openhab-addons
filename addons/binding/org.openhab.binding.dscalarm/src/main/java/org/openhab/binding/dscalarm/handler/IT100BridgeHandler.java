@@ -105,8 +105,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
             serialPort = (SerialPort) commPort;
-            serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
+            serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialPort.enableReceiveThreshold(1);
             serialPort.disableReceiveTimeout();
 
@@ -118,21 +117,19 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             setConnected(true);
 
         } catch (NoSuchPortException noSuchPortException) {
-            logger.error("openConnection(): No Such Port Exception: {}", noSuchPortException.getMessage());
+            logger.error("openConnection(): No Such Port Exception: ", noSuchPortException);
             setConnected(false);
         } catch (PortInUseException portInUseException) {
-            logger.error("openConnection(): Port in Use Exception: {}", portInUseException.getMessage());
+            logger.error("openConnection(): Port in Use Exception: ", portInUseException);
             setConnected(false);
         } catch (UnsupportedCommOperationException unsupportedCommOperationException) {
-            logger.error("openConnection(): Unsupported Comm Operation Exception: {}",
-                    unsupportedCommOperationException.getMessage());
+            logger.error("openConnection(): Unsupported Comm Operation Exception: ", unsupportedCommOperationException);
             setConnected(false);
         } catch (UnsupportedEncodingException unsupportedEncodingException) {
-            logger.error("openConnection(): Unsupported Encoding Exception: {}",
-                    unsupportedEncodingException.getMessage());
+            logger.error("openConnection(): Unsupported Encoding Exception: ", unsupportedEncodingException);
             setConnected(false);
         } catch (IOException ioException) {
-            logger.error("openConnection(): IO Exception: {}", ioException.getMessage());
+            logger.error("openConnection(): IO Exception: ", ioException);
             setConnected(false);
         }
     }
@@ -147,10 +144,10 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             serialOutput.flush();
             logger.debug("write(): Message Sent: {}", writeString);
         } catch (IOException ioException) {
-            logger.error("write(): {}", ioException.getMessage());
+            logger.error("write(): {}", ioException);
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("write(): Unable to write to serial port: {} ", exception.getMessage(), exception);
+            logger.error("write(): Unable to write to serial port: {} ", exception);
             setConnected(false);
         }
     }
@@ -166,10 +163,10 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             message = readLine();
             logger.debug("read(): Message Received: {}", message);
         } catch (IOException ioException) {
-            logger.error("read(): IO Exception: {} ", ioException.getMessage());
+            logger.error("read(): IO Exception: ", ioException);
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("read(): Exception: {} ", exception.getMessage(), exception);
+            logger.error("read(): Exception: ", exception);
             setConnected(false);
         }
 
@@ -219,15 +216,6 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
     }
 
     /**
-     * Gets the Serial Port Name of the IT-100
-     *
-     * @return serialPortName
-     */
-    public String getSerialPortName() {
-        return serialPortName;
-    }
-
-    /**
      * Receives Serial Port Events and reads Serial Port Data.
      *
      * @param serialPortEvent
@@ -239,7 +227,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
                 String messageLine = serialInput.readLine();
                 handleIncomingMessage(messageLine);
             } catch (IOException ioException) {
-                logger.error("serialEvent(): IO Exception: {}", ioException.getMessage());
+                logger.error("serialEvent(): IO Exception: ", ioException);
             }
         }
     }
@@ -255,8 +243,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             serialPort.addEventListener(serialPortEventListenser);
             serialPort.notifyOnDataAvailable(true);
         } catch (TooManyListenersException tooManyListenersException) {
-            logger.error("setSerialEventHandler(): Too Many Listeners Exception: {}",
-                    tooManyListenersException.getMessage());
+            logger.error("setSerialEventHandler(): Too Many Listeners Exception: ", tooManyListenersException);
         }
     }
 }

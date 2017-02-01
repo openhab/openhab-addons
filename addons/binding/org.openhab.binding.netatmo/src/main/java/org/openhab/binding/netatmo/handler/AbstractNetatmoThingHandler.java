@@ -1,6 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
- *
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,26 +9,30 @@ package org.openhab.binding.netatmo.handler;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.netatmo.config.NetatmoThingConfiguration;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.client.model.NAMeasureResponse;
+import io.swagger.client.model.NADashboardData;
 
 /**
  * {@link AbstractNetatmoThingHandler} is the abstract class that handles
@@ -38,66 +41,32 @@ import io.swagger.client.model.NAMeasureResponse;
  * @author Gaël L'hopital - Initial contribution OH2 version
  *
  */
-abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> extends BaseThingHandler {
+abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     private static Logger logger = LoggerFactory.getLogger(AbstractNetatmoThingHandler.class);
-    private List<Integer> signalThresholds = null;
-    protected List<String> measuredChannels = new ArrayList<String>();
-    protected NAMeasureResponse measures = null;
+    private final List<Integer> signalThresholds = new ArrayList<Integer>();
+    protected final String actualApp;
 
-    final Class<X> configurationClass;
-    protected X configuration = null;
+    protected NetatmoBridgeHandler bridgeHandler;
+    protected NADashboardData dashboard;
 
-    AbstractNetatmoThingHandler(Thing thing, Class<X> configurationClass) {
+    AbstractNetatmoThingHandler(Thing thing) {
         super(thing);
-        this.configurationClass = configurationClass;
+        Map<String, String> properties = thing.getProperties();
+        List<String> thresholds = Arrays.asList(properties.get(PROPERTY_SIGNAL_LEVELS).split(","));
+        for (String threshold : thresholds) {
+            signalThresholds.add(Integer.parseInt(threshold));
+        }
+        actualApp = properties.get(PROPERTY_ACTUAL_APP);
     }
 
     @Override
-    public void initialize() {
-
-        buildMeasurableChannelList();
-        configuration = getConfigAs(configurationClass);
-
-        super.initialize();
-    }
-
-    private void buildMeasurableChannelList() {
-        List<Channel> channels = getThing().getChannels();
-        for (Channel channel : channels) {
-            addChannelToMeasures(channel.getUID());
-        }
-    }
-
-    // Protects property loading from missing entries Issue 1137
-    String getProperty(String propertyName) {
-        final Map<String, String> properties = thing.getProperties();
-        if (properties.containsKey(propertyName)) {
-            return properties.get(propertyName);
-        } else {
-            logger.warn("Unable to load property {}", propertyName);
-            return null;
-        }
-    }
-
-    private void initializeThresholds() {
-        signalThresholds = new ArrayList<Integer>();
-        String signalLevels = getProperty(PROPERTY_SIGNAL_LEVELS);
-        if (signalLevels != null) {
-            List<String> thresholds = Arrays.asList(signalLevels.split(","));
-            for (String threshold : thresholds) {
-                signalThresholds.add(Integer.parseInt(threshold));
-            }
-        }
-
+    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
+        super.bridgeHandlerInitialized(thingHandler, bridge);
+        bridgeHandler = (NetatmoBridgeHandler) thingHandler;
     }
 
     int getSignalStrength(int signalLevel) {
         // Take in account #3995
-
-        if (signalThresholds == null) {
-            initializeThresholds();
-        }
-
         int level;
         for (level = 0; level < signalThresholds.size(); level++) {
             if (signalLevel > signalThresholds.get(level)) {
@@ -107,72 +76,82 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
         return level;
     }
 
-    protected State getNAThingProperty(String channelId) {
-        return (measures != null) ? ChannelTypeUtils.toDecimalType(getMeasureValue(channelId)) : UnDefType.NULL;
+    protected State getNAThingProperty(String chanelId) {
+        switch (chanelId) {
+            case CHANNEL_TIMEUTC:
+                return new DateTimeType(timestampToCalendar(dashboard.getTimeUtc()));
+            case CHANNEL_TEMPERATURE:
+                return toDecimalType(dashboard.getTemperature());
+            case CHANNEL_DATE_MAX_TEMP:
+                return new DateTimeType(timestampToCalendar(dashboard.getDateMaxTemp()));
+            case CHANNEL_DATE_MIN_TEMP:
+                return new DateTimeType(timestampToCalendar(dashboard.getDateMinTemp()));
+            case CHANNEL_MAX_TEMP:
+                return toDecimalType(dashboard.getMaxTemp());
+            case CHANNEL_MIN_TEMP:
+                return toDecimalType(dashboard.getMinTemp());
+            case CHANNEL_HUMIDEX:
+                return toDecimalType(WeatherUtils.getHumidex(dashboard.getTemperature(), dashboard.getHumidity()));
+            case CHANNEL_DEWPOINT:
+                return toDecimalType(WeatherUtils.getDewPoint(dashboard.getTemperature(), dashboard.getHumidity()));
+            case CHANNEL_DEWPOINTDEP:
+                Double dewpoint = WeatherUtils.getDewPoint(dashboard.getTemperature(), dashboard.getHumidity());
+                return toDecimalType(WeatherUtils.getDewPointDep(dashboard.getTemperature(), dewpoint));
+            case CHANNEL_HEATINDEX:
+                return toDecimalType(WeatherUtils.getHeatIndex(dashboard.getTemperature(), dashboard.getHumidity()));
+            case CHANNEL_PRESSURE:
+                return toDecimalType(dashboard.getPressure());
+            case CHANNEL_ABSOLUTE_PRESSURE:
+                return toDecimalType(dashboard.getAbsolutePressure());
+            case CHANNEL_CO2:
+                return new DecimalType(dashboard.getCO2());
+            case CHANNEL_HUMIDITY:
+                return new PercentType(dashboard.getHumidity().intValue());
+            case CHANNEL_NOISE:
+                return new DecimalType(dashboard.getNoise());
 
+        }
+        return null;
     }
 
-    protected void updateChannels(String equipmentId) {
+    protected void updateChannels() {
         logger.debug("Updating device channels");
 
         for (Channel channel : getThing().getChannels()) {
-            String channelId = channel.getUID().getId();
-            State state = getNAThingProperty(channelId);
-            updateState(channel.getUID(), state);
+            String chanelId = channel.getUID().getId();
+            State state = getNAThingProperty(chanelId);
+            if (state != null) {
+                updateState(channel.getUID(), state);
+            }
         }
 
         updateStatus(ThingStatus.ONLINE);
     }
 
-    protected Float getMeasureValue(String channelId) {
-        int index = measuredChannels.indexOf(channelId);
-        return (index != -1) ? measures.getBody().get(0).getValue().get(0).get(index) : null;
-
+    protected Calendar timestampToCalendar(Integer netatmoTS) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(netatmoTS * 1000L);
+        return calendar;
     }
 
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
-        addChannelToMeasures(channelUID);
+    protected DecimalType toDecimalType(float value) {
+        BigDecimal decimal = new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return new DecimalType(decimal);
     }
 
-    /*
-     * If this channel value is provided as a measure, then add it
-     * in the getMeasure parameter list
-     */
-    protected void addChannelToMeasures(ChannelUID channelUID) {
-        String channel = channelUID.getId();
-        if (MEASURABLE_CHANNELS.contains(channel)) {
-            if (measuredChannels.indexOf(channel) == -1) {
-                measuredChannels.add(channel);
-            }
-        }
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        String channel = channelUID.getId();
-        if (MEASURABLE_CHANNELS.contains(channel)) {
-            if (measuredChannels.indexOf(channel) != -1) {
-                measuredChannels.remove(channel);
-            }
-        }
+    protected DecimalType toDecimalType(double value) {
+        BigDecimal decimal = new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return new DecimalType(decimal);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing {}", channelUID);
-            updateChannels(configuration.getEquipmentId());
+            updateChannels();
+        } else {
+            logger.warn("This Thing is read-only and can only handle REFRESH command");
         }
-    }
-
-    protected NetatmoBridgeHandler getBridgeHandler() {
-        return (NetatmoBridgeHandler) this.getBridge().getHandler();
-    }
-
-    public X getConfiguration() {
-        return configuration;
     }
 
 }

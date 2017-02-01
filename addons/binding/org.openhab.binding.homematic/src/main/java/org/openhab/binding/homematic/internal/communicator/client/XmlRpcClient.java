@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -68,7 +68,7 @@ public class XmlRpcClient extends RpcClient {
      */
     @Override
     protected String getRpcCallbackUrl() {
-        return "http://" + config.getCallbackHost() + ":" + config.getXmlCallbackPort();
+        return "http://" + config.getCallbackHost() + ":" + config.getCallbackPort();
     }
 
     /**
@@ -92,11 +92,8 @@ public class XmlRpcClient extends RpcClient {
                 logger.trace("Client XmlRpcResponse (port {}):\n{}", port, result);
             }
 
-            Object[] data = new XmlRpcResponse(new ByteArrayInputStream(result.getBytes(config.getEncoding())),
-                    config.getEncoding()).getResponseData();
+            Object[] data = new XmlRpcResponse(new ByteArrayInputStream(result.getBytes())).getResponseData();
             return new RpcResponseParser(request).parse(data);
-        } catch (UnknownRpcFailureException ex) {
-            throw ex;
         } catch (Exception ex) {
             throw new IOException(ex.getMessage(), ex);
         }

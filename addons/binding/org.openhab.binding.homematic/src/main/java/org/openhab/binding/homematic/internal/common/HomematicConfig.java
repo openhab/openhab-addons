@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,8 +40,7 @@ public class HomematicConfig {
     private int cuxdPort;
 
     private String callbackHost;
-    private int xmlCallbackPort;
-    private int binCallbackPort;
+    private int callbackPort;
 
     private Integer aliveInterval = 300;
     private int socketMaxAlive = 900;
@@ -80,50 +79,16 @@ public class HomematicConfig {
 
     /**
      * Returns the callback host port.
-     *
-     * @deprecated use getBinCallbackPort
      */
-    @Deprecated
     public int getCallbackPort() {
-        return binCallbackPort;
+        return callbackPort;
     }
 
     /**
      * Sets the callback host port.
-     *
-     * @deprecated use setBinCallbackPort
      */
-    @Deprecated
     public void setCallbackPort(int callbackPort) {
-        this.binCallbackPort = callbackPort;
-    }
-
-    /**
-     * Returns the XML-RPC callback host port.
-     */
-    public int getXmlCallbackPort() {
-        return xmlCallbackPort;
-    }
-
-    /**
-     * Sets the XML-RPC callback host port.
-     */
-    public void setXmlCallbackPort(int xmlCallbackPort) {
-        this.xmlCallbackPort = xmlCallbackPort;
-    }
-
-    /**
-     * Returns the BIN-RPC callback host port.
-     */
-    public int getBinCallbackPort() {
-        return binCallbackPort;
-    }
-
-    /**
-     * Sets the BIN-RPC callback host port.
-     */
-    public void setBinCallbackPort(int binCallbackPort) {
-        this.binCallbackPort = binCallbackPort;
+        this.callbackPort = callbackPort;
     }
 
     /**
@@ -228,15 +193,18 @@ public class HomematicConfig {
      * Returns the Homematic gateway port of the interfaces.
      */
     public int getRpcPort(HmInterface hmInterface) {
-        if (HmInterface.WIRED.equals(hmInterface)) {
-            return getWiredPort();
-        } else if (HmInterface.HMIP.equals(hmInterface)) {
-            return getHmIpPort();
-        } else if (HmInterface.CUXD.equals(hmInterface)) {
-            return getCuxdPort();
-        } else {
-            return getRfPort();
+        if (gatewayInfo != null) {
+            if (HmInterface.RF.equals(hmInterface)) {
+                return getRfPort();
+            } else if (HmInterface.WIRED.equals(hmInterface)) {
+                return getWiredPort();
+            } else if (HmInterface.HMIP.equals(hmInterface)) {
+                return getHmIpPort();
+            } else if (HmInterface.CUXD.equals(hmInterface)) {
+                return getCuxdPort();
+            }
         }
+        return getRfPort();
     }
 
     private int getRfPort() {
@@ -294,9 +262,8 @@ public class HomematicConfig {
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
         tsb.append("gatewayAddress", gatewayAddress).append("callbackHost", callbackHost)
-                .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
-                .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
-                .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort())
+                .append("callbackPort", callbackPort).append("gatewayType", gatewayType).append("rfPort", getRfPort())
+                .append("wiredPort", getWiredPort()).append("hmIpPort", hmIpPort).append("cuxdPort", getCuxdPort())
                 .append("aliveInterval", aliveInterval).append("reconnectInterval", reconnectInterval)
                 .append("timeout", timeout).append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();

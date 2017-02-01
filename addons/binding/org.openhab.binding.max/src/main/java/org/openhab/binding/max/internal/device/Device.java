@@ -9,7 +9,6 @@
 package org.openhab.binding.max.internal.device;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -32,8 +31,7 @@ public abstract class Device {
     private String serialNumber = "";
     private String rfAddress = "";
     private int roomId = -1;
-    private String roomName = "";
-    private String name = "";
+    private DeviceConfiguration config;
 
     private boolean updated;
     private boolean batteryLow;
@@ -46,25 +44,28 @@ public abstract class Device {
     private boolean gatewayKnown;
     private boolean panelLocked;
     private boolean linkStatusError;
-    private HashMap<String, Object> properties = new HashMap<>();
 
     public Device(DeviceConfiguration c) {
         this.serialNumber = c.getSerialNumber();
         this.rfAddress = c.getRFAddress();
         this.roomId = c.getRoomId();
-        this.roomName = c.getRoomName();
-        this.name = c.getName();
-        this.setProperties(new HashMap<>(c.getProperties()));
+        this.config = c;
     }
 
     public abstract DeviceType getType();
 
     public String getName() {
-        return name;
+        String deviceName = "";
+        if (config.getName() != null) {
+            deviceName = config.getName();
+        }
+        return deviceName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (config != null) {
+            config.setName(name);
+        }
     }
 
     public static Device create(String rfAddress, List<DeviceConfiguration> configurations) {
@@ -264,11 +265,11 @@ public abstract class Device {
     }
 
     public final String getRoomName() {
+        String roomName = "";
+        if (config.getRoomName() != null) {
+            roomName = config.getRoomName();
+        }
         return roomName;
-    }
-
-    public final void setRoomName(String roomName) {
-        this.roomName = roomName;
     }
 
     private void setLinkStatusError(boolean linkStatusError) {
@@ -370,20 +371,6 @@ public abstract class Device {
 
     public boolean isLinkStatusError() {
         return linkStatusError;
-    }
-
-    /**
-     * @return the properties
-     */
-    public HashMap<String, Object> getProperties() {
-        return properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(HashMap<String, Object> properties) {
-        this.properties = new HashMap<>(properties);
     }
 
     @Override

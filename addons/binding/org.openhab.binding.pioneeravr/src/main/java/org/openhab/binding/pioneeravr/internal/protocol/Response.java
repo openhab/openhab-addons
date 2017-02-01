@@ -17,7 +17,7 @@ import org.openhab.binding.pioneeravr.protocol.AvrResponse;
 
 /**
  * Represent an AVR response.
- *
+ * 
  * @author Antoine Besnard
  *
  */
@@ -25,89 +25,66 @@ public class Response implements AvrResponse {
 
     /**
      * List of all supported responses coming from AVR.
-     *
+     * 
      * @author Antoine Besnard
      *
      */
     public enum ResponseType implements AvrResponse.RepsonseType {
-        POWER_STATE("[0-2]", "PWR", "APR", "BPR"),
-        VOLUME_LEVEL("[0-9]{3}", "VOL", "ZV", "YV"),
-        MUTE_STATE("[0-1]", "MUT", "Z2MUT", "Z3MUT"),
-        INPUT_SOURCE_CHANNEL("[0-9]{2}", "FN", "Z2F", "Z3F"),
-        DISPLAY_INFORMATION("[0-9a-fA-F]{30}", "FL");
+        POWER_STATE("PWR", "[0-2]"),
+        VOLUME_LEVEL("VOL", "[0-9]{3}"),
+        MUTE_STATE("MUT", "[0-1]"),
+        INPUT_SOURCE_CHANNEL("FN", "[0-9]{2}"),
+        DISPLAY_INFORMATION("FL", "[0-9a-fA-F]{30}");
 
-        private String[] responsePrefixZone;
+        private String responsePrefix;
 
         private String parameterPattern;
 
-        private Pattern[] matchPatternZone;
+        private Pattern matchPattern;
 
-        private ResponseType(String parameterPattern, String... responsePrefixZone) {
-            this.responsePrefixZone = responsePrefixZone;
+        private ResponseType(String responsePrefix, String parameterPattern) {
+            this.responsePrefix = responsePrefix;
             this.parameterPattern = parameterPattern;
-
-            matchPatternZone = new Pattern[responsePrefixZone.length];
-
-            for (int zoneIndex = 0; zoneIndex < responsePrefixZone.length; zoneIndex++) {
-                String responsePrefix = responsePrefixZone[zoneIndex];
-                matchPatternZone[zoneIndex] = Pattern.compile(responsePrefix + "("
-                        + (StringUtils.isNotEmpty(parameterPattern) ? parameterPattern : "") + ")");
-            }
+            this.matchPattern = Pattern.compile(
+                    responsePrefix + "(" + (StringUtils.isNotEmpty(parameterPattern) ? parameterPattern : "") + ")");
         }
 
-        @Override
-        public String getResponsePrefix(int zone) {
-            return responsePrefixZone[zone - 1];
+        public String getResponsePrefix() {
+            return responsePrefix;
         }
 
-        @Override
         public boolean hasParameter() {
             return StringUtils.isNotEmpty(parameterPattern);
         }
 
-        @Override
         public String getParameterPattern() {
             return parameterPattern;
         }
 
-        @Override
-        public Integer match(String responseData) {
-            Integer zone = null;
-            // Check the response data against all zone prefixes.
-            for (int zoneIndex = 0; zoneIndex < matchPatternZone.length; zoneIndex++) {
-                if (matchPatternZone[zoneIndex].matcher(responseData).matches()) {
-                    zone = zoneIndex + 1;
-                    break;
-                }
-            }
-
-            return zone;
+        /**
+         * Return true if the responseData matches with this responseType
+         * 
+         * @param responseData
+         * @return
+         */
+        public boolean match(String responseData) {
+            return matchPattern.matcher(responseData).matches();
         }
 
         /**
          * Return the parameter value of the given responseData.
-         *
+         * 
          * @param responseData
          * @return
          */
-        @Override
         public String parseParameter(String responseData) {
-            String result = null;
-            // Check the response data against all zone prefixes.
-            for (int zoneIndex = 0; zoneIndex < matchPatternZone.length; zoneIndex++) {
-                Matcher matcher = matchPatternZone[zoneIndex].matcher(responseData);
-                if (matcher.find()) {
-                    result = matcher.group(1);
-                    break;
-                }
-            }
-            return result;
+            Matcher matcher = matchPattern.matcher(responseData);
+            matcher.find();
+            return matcher.group(1);
         }
     }
 
     private ResponseType responseType;
-
-    private Integer zone;
 
     private String parameter;
 
@@ -116,7 +93,7 @@ public class Response implements AvrResponse {
             throw new AvrConnectionException("responseData is empty. Cannot parse the response.");
         }
 
-        parseResponseType(responseData);
+        this.responseType = parseResponseType(responseData);
 
         if (this.responseType == null) {
             throw new AvrConnectionException("Cannot find the responseType of the responseData " + responseData);
@@ -128,39 +105,32 @@ public class Response implements AvrResponse {
     }
 
     /**
-     * Parse the given response data and fill the
-     *
+     * Return the responseType corresponding to the given responseData. Return
+     * null if no ResponseType can be matched.
+     * 
      * @param responseData
      * @return
      */
-    private void parseResponseType(String responseData) {
+    private ResponseType parseResponseType(String responseData) {
+        ResponseType result = null;
         for (ResponseType responseType : ResponseType.values()) {
-            zone = responseType.match(responseData);
-            if (zone != null) {
-                this.responseType = responseType;
-                break;
+            if (responseType.match(responseData)) {
+                result = responseType;
             }
         }
+        return result;
     }
 
-    @Override
     public ResponseType getResponseType() {
         return this.responseType;
     }
 
-    @Override
     public String getParameterValue() {
         return parameter;
     }
 
-    @Override
     public boolean hasParameter() {
         return responseType.hasParameter();
-    }
-
-    @Override
-    public Integer getZone() {
-        return this.zone;
     }
 
 }

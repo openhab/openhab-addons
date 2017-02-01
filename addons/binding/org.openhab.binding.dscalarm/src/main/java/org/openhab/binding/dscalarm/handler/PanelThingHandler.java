@@ -10,11 +10,7 @@ package org.openhab.binding.dscalarm.handler;
 
 import static org.openhab.binding.dscalarm.DSCAlarmBindingConstants.*;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.EventObject;
-import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -27,6 +23,8 @@ import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageInfoType;
+import org.openhab.binding.dscalarm.internal.DSCAlarmProperties.TriggerType;
+import org.openhab.binding.dscalarm.internal.DSCAlarmProperties.TroubleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +51,11 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
      * {@inheritDoc}
      */
     @Override
-    public void updateChannel(ChannelUID channelUID, int state, String description) {
+    public void updateChannel(ChannelUID channelUID) {
         logger.debug("updateChannel(): Panel Channel UID: {}", channelUID);
 
+        int state;
+        String str = "";
         boolean trigger;
         boolean trouble;
         boolean boolState;
@@ -64,112 +64,179 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         if (channelUID != null) {
             switch (channelUID.getId()) {
                 case PANEL_MESSAGE:
-                    updateState(channelUID, new StringType(description));
+                    str = properties.getSystemMessage();
+                    updateState(channelUID, new StringType(str));
                     break;
                 case PANEL_SYSTEM_ERROR:
-                    updateState(channelUID, new StringType(description));
+                    str = String.format("%03d", properties.getSystemErrorCode()) + ": " + properties.getSystemErrorDescription();
+                    updateState(channelUID, new StringType(str));
                     break;
                 case PANEL_TIME:
-                    Date date = null;
-                    SimpleDateFormat sdfReceived = new SimpleDateFormat("hhmmMMddyy");
-
-                    try {
-                        date = sdfReceived.parse(description);
-                    } catch (ParseException e) {
-                        logger.error("updateChannel(): Parse Exception occurred while trying to parse date string: {}. ",
-                                e.getMessage());
-                    }
-
-                    if (date != null) {
-                        SimpleDateFormat sdfUpdate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                        String systemTime = sdfUpdate.format(date);
-                        updateState(channelUID, new DateTimeType(systemTime));
-                    }
-
+                    str = properties.getSystemTime();
+                    updateState(channelUID, new DateTimeType(str));
                     break;
                 case PANEL_TIME_STAMP:
-                    boolState = state != 0;
+                    boolState = properties.getSystemTimeStamp();
                     onOffType = boolState ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_TIME_BROADCAST:
-                    boolState = state != 0;
+                    boolState = properties.getSystemTimeBroadcast();
                     onOffType = boolState ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_COMMAND:
+                    state = properties.getSystemCommand();
                     updateState(channelUID, new DecimalType(state));
                     break;
                 case PANEL_TROUBLE_MESSAGE:
-                    updateState(channelUID, new StringType(description));
+                    str = properties.getTroubleMessage();
+                    updateState(channelUID, new StringType(str));
                     break;
                 case PANEL_TROUBLE_LED:
-                    boolState = state != 0;
+                    boolState = properties.getTroubleLED();
                     onOffType = boolState ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_SERVICE_REQUIRED:
-                    trouble = state != 0;
+                    trouble = properties.getTrouble(TroubleType.SERVICE_REQUIRED);
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_AC_TROUBLE:
-                    trouble = state != 0;
+                    trouble = properties.getTrouble(TroubleType.AC_TROUBLE);
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_TELEPHONE_TROUBLE:
-                    trouble = state != 0;
+                    trouble = properties.getTrouble(TroubleType.TELEPHONE_LINE_TROUBLE);
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_FTC_TROUBLE:
-                    trouble = state != 0;
+                    trouble = properties.getTrouble(TroubleType.FAILURE_TO_COMMUNICATE);
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_ZONE_FAULT:
-                    trouble = state != 0;
+                    trouble = properties.getTrouble(TroubleType.ZONE_FAULT);
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_ZONE_TAMPER:
-                    trouble = state != 0;
+                    trouble = properties.getTrouble(TroubleType.ZONE_TAMPER);
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_ZONE_LOW_BATTERY:
-                    trouble = state != 0;
+                    trouble = properties.getTrouble(TroubleType.ZONE_LOW_BATTERY);
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_TIME_LOSS:
-                    trouble = state != 0;
+                    trouble = properties.getTrouble(TroubleType.LOSS_OF_TIME);
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_FIRE_KEY_ALARM:
-                    trigger = state != 0;
+                    trigger = properties.getTrigger(TriggerType.FIRE_KEY_ALARM);
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_PANIC_KEY_ALARM:
-                    trigger = state != 0;
+                    trigger = properties.getTrigger(TriggerType.PANIC_KEY_ALARM);
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_AUX_KEY_ALARM:
-                    trigger = state != 0;
+                    trigger = properties.getTrigger(TriggerType.AUX_KEY_ALARM);
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_AUX_INPUT_ALARM:
-                    trigger = state != 0;
+                    trigger = properties.getTrigger(TriggerType.AUX_KEY_ALARM);
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 default:
                     logger.debug("updateChannel(): Panel Channel not updated - {}.", channelUID);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateProperties(ChannelUID channelUID, int state, String description) {
+        logger.debug("updateProperties(): Panel Channel UID: {}", channelUID);
+
+        boolean trouble = state != 0 ? true : false;
+        boolean trigger = state != 0 ? true : false;
+        boolean boolState = state != 0 ? true : false;
+
+        if (channelUID != null) {
+            switch (channelUID.getId()) {
+                case PANEL_MESSAGE:
+                    properties.setSystemMessage(description);
+                    break;
+                case PANEL_TIME:
+                    properties.setSystemTime(description);
+                    break;
+                case PANEL_TIME_STAMP:
+                    properties.setSystemTimeStamp(state == 1 ? true : false);
+                    break;
+                case PANEL_TIME_BROADCAST:
+                    properties.setSystemTimeBroadcast(state == 1 ? true : false);
+                    break;
+                case PANEL_COMMAND:
+                    properties.setSystemCommand(state);
+                    break;
+                case PANEL_TROUBLE_MESSAGE:
+                    properties.setTroubleMessage(description);
+                    break;
+                case PANEL_TROUBLE_LED:
+                    properties.setTroubleLED(boolState);
+                    break;
+                case PANEL_SERVICE_REQUIRED:
+                    properties.setTrouble(TroubleType.SERVICE_REQUIRED, trouble);
+                    break;
+                case PANEL_AC_TROUBLE:
+                    properties.setTrouble(TroubleType.AC_TROUBLE, trouble);
+                    break;
+                case PANEL_TELEPHONE_TROUBLE:
+                    properties.setTrouble(TroubleType.TELEPHONE_LINE_TROUBLE, trouble);
+                    break;
+                case PANEL_FTC_TROUBLE:
+                    properties.setTrouble(TroubleType.FAILURE_TO_COMMUNICATE, trouble);
+                    break;
+                case PANEL_ZONE_FAULT:
+                    properties.setTrouble(TroubleType.ZONE_FAULT, trouble);
+                    break;
+                case PANEL_ZONE_TAMPER:
+                    properties.setTrouble(TroubleType.ZONE_TAMPER, trouble);
+                    break;
+                case PANEL_ZONE_LOW_BATTERY:
+                    properties.setTrouble(TroubleType.ZONE_LOW_BATTERY, trouble);
+                    break;
+                case PANEL_TIME_LOSS:
+                    properties.setTrouble(TroubleType.LOSS_OF_TIME, trouble);
+                    break;
+                case PANEL_FIRE_KEY_ALARM:
+                    properties.setTrigger(TriggerType.FIRE_KEY_ALARM, trigger);
+                    break;
+                case PANEL_PANIC_KEY_ALARM:
+                    properties.setTrigger(TriggerType.PANIC_KEY_ALARM, trigger);
+                    break;
+                case PANEL_AUX_KEY_ALARM:
+                    properties.setTrigger(TriggerType.AUX_KEY_ALARM, trigger);
+                    break;
+                case PANEL_AUX_INPUT_ALARM:
+                    properties.setTrigger(TriggerType.AUX_INPUT_ALARM, trigger);
+                    break;
+                default:
+                    logger.debug("updateProperties(): Panel property not updated.");
                     break;
             }
         }
@@ -223,6 +290,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     if (command instanceof OnOffType) {
                         cmd = command == OnOffType.ON ? 1 : 0;
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.TimeStampControl, String.valueOf(cmd));
+                        updateProperties(channelUID, cmd, "");
                         updateState(channelUID, (OnOffType) command);
                     }
                     break;
@@ -230,6 +298,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     if (command instanceof OnOffType) {
                         cmd = command == OnOffType.ON ? 1 : 0;
                         dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.TimeDateBroadcastControl, String.valueOf(cmd));
+                        updateProperties(channelUID, cmd, "");
                         updateState(channelUID, (OnOffType) command);
                     }
                     break;
@@ -246,7 +315,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
      */
     private void setPanelMessage(String message) {
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), PANEL_MESSAGE);
-        updateChannel(channelUID, 0, message);
+        updateProperties(channelUID, 0, message);
+        updateChannel(channelUID);
     }
 
     /**
@@ -258,7 +328,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         int state = 0;
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), PANEL_TIME_STAMP);
 
-        boolean isTimeStamp = timeStamp != "";
+        boolean isTimeStamp = properties.getSystemTimeStamp();
 
         if ((timeStamp == "" && isTimeStamp == false) || (timeStamp != "" && isTimeStamp == true)) {
             logger.debug("setTimeStampState(): Already Set!", timeStamp);
@@ -267,7 +337,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
             state = 1;
         }
 
-        updateChannel(channelUID, state, "");
+        updateProperties(channelUID, state, "");
+        updateChannel(channelUID);
     }
 
     /**
@@ -278,99 +349,100 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
      */
     private void panelSystemError(DSCAlarmMessage dscAlarmMessage) {
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), PANEL_SYSTEM_ERROR);
+        properties.setSystemError(1);
+        properties.setSystemErrorCode(0);
         int systemErrorCode = 0;
-        String systemErrorDescription = "";
 
         if (dscAlarmMessage != null) {
             systemErrorCode = Integer.parseInt(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA));
-            switch (systemErrorCode) {
-                case 1:
-                    systemErrorDescription = "Receive Buffer Overrun";
-                    break;
-                case 2:
-                    systemErrorDescription = "Receive Buffer Overflow";
-                    break;
-                case 3:
-                    systemErrorDescription = "Transmit Buffer Overflow";
-                    break;
-                case 10:
-                    systemErrorDescription = "Keybus Transmit Buffer Overrun";
-                    break;
-                case 11:
-                    systemErrorDescription = "Keybus Transmit Time Timeout";
-                    break;
-                case 12:
-                    systemErrorDescription = "Keybus Transmit Mode Timeout";
-                    break;
-                case 13:
-                    systemErrorDescription = "Keybus Transmit Keystring Timeout";
-                    break;
-                case 14:
-                    systemErrorDescription = "Keybus Interface Not Functioning";
-                    break;
-                case 15:
-                    systemErrorDescription = "Keybus Busy - Attempting to Disarm or Arm with user code";
-                    break;
-                case 16:
-                    systemErrorDescription = "Keybus Busy – Lockout";
-                    break;
-                case 17:
-                    systemErrorDescription = "Keybus Busy – Installers Mode";
-                    break;
-                case 18:
-                    systemErrorDescription = "Keybus Busy - General Busy";
-                    break;
-                case 20:
-                    systemErrorDescription = "API Command Syntax Error";
-                    break;
-                case 21:
-                    systemErrorDescription = "API Command Partition Error - Requested Partition is out of bounds";
-                    break;
-                case 22:
-                    systemErrorDescription = "API Command Not Supported";
-                    break;
-                case 23:
-                    systemErrorDescription = "API System Not Armed - Sent in response to a disarm command";
-                    break;
-                case 24:
-                    systemErrorDescription = "API System Not Ready to Arm - System is either not-secure, in exit-delay, or already armed";
-                    break;
-                case 25:
-                    systemErrorDescription = "API Command Invalid Length";
-                    break;
-                case 26:
-                    systemErrorDescription = "API User Code not Required";
-                    break;
-                case 27:
-                    systemErrorDescription = "API Invalid Characters in Command - No alpha characters are allowed except for checksum";
-                    break;
-                case 28:
-                    systemErrorDescription = "API Virtual Keypad is Disabled";
-                    break;
-                case 29:
-                    systemErrorDescription = "API Not Valid Parameter";
-                    break;
-                case 30:
-                    systemErrorDescription = "API Keypad Does Not Come Out of Blank Mode";
-                    break;
-                case 31:
-                    systemErrorDescription = "API IT-100 is Already in Thermostat Menu";
-                    break;
-                case 32:
-                    systemErrorDescription = "API IT-100 is NOT in Thermostat Menu";
-                    break;
-                case 33:
-                    systemErrorDescription = "API No Response From Thermostat or Escort Module";
-                    break;
-                case 0:
-                default:
-                    systemErrorDescription = "No Error";
-                    break;
-            }
-
+            properties.setSystemErrorCode(systemErrorCode);
+        }
+        switch (systemErrorCode) {
+            case 1:
+                properties.setSystemErrorDescription("Receive Buffer Overrun");
+                break;
+            case 2:
+                properties.setSystemErrorDescription("Receive Buffer Overflow");
+                break;
+            case 3:
+                properties.setSystemErrorDescription("Transmit Buffer Overflow");
+                break;
+            case 10:
+                properties.setSystemErrorDescription("Keybus Transmit Buffer Overrun");
+                break;
+            case 11:
+                properties.setSystemErrorDescription("Keybus Transmit Time Timeout");
+                break;
+            case 12:
+                properties.setSystemErrorDescription("Keybus Transmit Mode Timeout");
+                break;
+            case 13:
+                properties.setSystemErrorDescription("Keybus Transmit Keystring Timeout");
+                break;
+            case 14:
+                properties.setSystemErrorDescription("Keybus Interface Not Functioning");
+                break;
+            case 15:
+                properties.setSystemErrorDescription("Keybus Busy - Attempting to Disarm or Arm with user code");
+                break;
+            case 16:
+                properties.setSystemErrorDescription("Keybus Busy – Lockout");
+                break;
+            case 17:
+                properties.setSystemErrorDescription("Keybus Busy – Installers Mode");
+                break;
+            case 18:
+                properties.setSystemErrorDescription("Keybus Busy - General Busy");
+                break;
+            case 20:
+                properties.setSystemErrorDescription("API Command Syntax Error");
+                break;
+            case 21:
+                properties.setSystemErrorDescription("API Command Partition Error - Requested Partition is out of bounds");
+                break;
+            case 22:
+                properties.setSystemErrorDescription("API Command Not Supported");
+                break;
+            case 23:
+                properties.setSystemErrorDescription("API System Not Armed - Sent in response to a disarm command");
+                break;
+            case 24:
+                properties.setSystemErrorDescription("API System Not Ready to Arm - System is either not-secure, in exit-delay, or already armed");
+                break;
+            case 25:
+                properties.setSystemErrorDescription("API Command Invalid Length");
+                break;
+            case 26:
+                properties.setSystemErrorDescription("API User Code not Required");
+                break;
+            case 27:
+                properties.setSystemErrorDescription("API Invalid Characters in Command - No alpha characters are allowed except for checksum");
+                break;
+            case 28:
+                properties.setSystemErrorDescription("API Virtual Keypad is Disabled");
+                break;
+            case 29:
+                properties.setSystemErrorDescription("API Not Valid Parameter");
+                break;
+            case 30:
+                properties.setSystemErrorDescription("API Keypad Does Not Come Out of Blank Mode");
+                break;
+            case 31:
+                properties.setSystemErrorDescription("API IT-100 is Already in Thermostat Menu");
+                break;
+            case 32:
+                properties.setSystemErrorDescription("API IT-100 is NOT in Thermostat Menu");
+                break;
+            case 33:
+                properties.setSystemErrorDescription("API No Response From Thermostat or Escort Module");
+                break;
+            case 0:
+            default:
+                properties.setSystemErrorDescription("No Error");
+                break;
         }
 
-        String errorMessage = String.format("%03d", systemErrorCode) + ": " + systemErrorDescription;
+        String errorMessage = String.format("%03d", properties.getSystemErrorCode()) + ": " + properties.getSystemErrorDescription();
         channelUID = new ChannelUID(getThing().getUID(), PANEL_SYSTEM_ERROR);
         updateState(channelUID, new StringType(errorMessage));
     }
@@ -383,8 +455,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
     private void verboseTroubleStatusHandler(EventObject event) {
         DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
         DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
-        String[] channelTypes = { PANEL_SERVICE_REQUIRED, PANEL_AC_TROUBLE, PANEL_TELEPHONE_TROUBLE, PANEL_FTC_TROUBLE,
-                PANEL_ZONE_FAULT, PANEL_ZONE_TAMPER, PANEL_ZONE_LOW_BATTERY, PANEL_TIME_LOSS };
+        String[] channelTypes = { PANEL_SERVICE_REQUIRED, PANEL_AC_TROUBLE, PANEL_TELEPHONE_TROUBLE, PANEL_FTC_TROUBLE, PANEL_ZONE_FAULT, PANEL_ZONE_TAMPER, PANEL_ZONE_LOW_BATTERY, PANEL_TIME_LOSS };
 
         String channel;
         ChannelUID channelUID = null;
@@ -400,7 +471,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
 
             if (channel != "") {
                 channelUID = new ChannelUID(getThing().getUID(), channel);
-                updateChannel(channelUID, bits[i] != 0 ? 1 : 0, "");
+                updateProperties(channelUID, bits[i] != 0 ? 1 : 0, "");
+                updateChannel(channelUID);
             }
         }
     }
@@ -414,49 +486,34 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         if (thing != null) {
             DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
             DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
-            String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
             setTimeStampState(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.TIME_STAMP));
             boolean suppressPanelMsg = false;
 
             if (getThing() == thing) {
                 ChannelUID channelUID = null;
-                DSCAlarmCode dscAlarmCode = DSCAlarmCode
-                        .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
-                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
+                DSCAlarmCode apiCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), apiCode);
 
                 int state = 0;
 
-                switch (dscAlarmCode) {
+                switch (apiCode) {
                     case CommandAcknowledge: /* 500 */
                         if (getSuppressAcknowledgementMsgs()) {
                             suppressPanelMsg = true;
                         }
                         break;
                     case SystemError: /* 502 */
-                        int errorCode = Integer.parseInt(dscAlarmMessageData);
-
-                        if (errorCode == 23 || errorCode == 24) {
-                            List<Thing> things = dscAlarmBridgeHandler.getThing().getThings();
-                            for (Thing thg : things) {
-                                if (thg.getThingTypeUID().equals(PARTITION_THING_TYPE)) {
-                                    DSCAlarmBaseThingHandler handler = (DSCAlarmBaseThingHandler) thg.getHandler();
-                                    if (handler != null) {
-                                        channelUID = new ChannelUID(thg.getUID(), PARTITION_ARM_MODE);
-                                        handler.updateChannel(channelUID, 0, "");
-                                    }
-                                }
-                            }
-                        }
-
                         panelSystemError(dscAlarmMessage);
                         break;
                     case TimeDateBroadcast: /* 550 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TIME);
                         String panelTime = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
-                        updateChannel(channelUID, state, panelTime);
+                        updateProperties(channelUID, state, panelTime);
+                        updateChannel(channelUID);
 
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TIME_BROADCAST);
-                        updateChannel(channelUID, 1, "");
+                        updateProperties(channelUID, 1, "");
+                        updateChannel(channelUID);
 
                         if (getSuppressAcknowledgementMsgs()) {
                             suppressPanelMsg = true;
@@ -467,57 +524,71 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                         state = 1;
                     case FireKeyRestored: /* 622 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_FIRE_KEY_ALARM);
-                        updateChannel(channelUID, state, "");
+                        updateProperties(channelUID, state, "");
+                        updateChannel(channelUID);
                         break;
                     case AuxiliaryKeyAlarm: /* 623 */
                         state = 1;
                     case AuxiliaryKeyRestored: /* 624 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_AUX_KEY_ALARM);
-                        updateChannel(channelUID, state, "");
+                        updateProperties(channelUID, state, "");
+                        updateChannel(channelUID);
                         break;
                     case PanicKeyAlarm: /* 625 */
                         state = 1;
                     case PanicKeyRestored: /* 626 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_PANIC_KEY_ALARM);
-                        updateChannel(channelUID, state, "");
+                        updateProperties(channelUID, state, "");
+                        updateChannel(channelUID);
                         break;
                     case AuxiliaryInputAlarm: /* 631 */
                         state = 1;
                     case AuxiliaryInputAlarmRestored: /* 632 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_AUX_INPUT_ALARM);
-                        updateChannel(channelUID, state, "");
+                        updateProperties(channelUID, state, "");
+                        updateChannel(channelUID);
                         break;
                     case TroubleLEDOn: /* 840 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TROUBLE_LED);
-                        updateChannel(channelUID, 1, "");
+                        updateProperties(channelUID, 1, "");
+                        updateChannel(channelUID);
                         break;
                     case TroubleLEDOff: /* 841 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_SERVICE_REQUIRED);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
 
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_AC_TROUBLE);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
 
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TELEPHONE_TROUBLE);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
 
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_FTC_TROUBLE);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
 
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_ZONE_FAULT);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
 
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_ZONE_TAMPER);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
 
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_ZONE_LOW_BATTERY);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
 
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TIME_LOSS);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
 
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TROUBLE_LED);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
                         break;
                     case PanelBatteryTrouble: /* 800 */
                     case PanelACTrouble: /* 802 */
@@ -532,8 +603,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     case HomeAutomationTrouble: /* 831 */
                     case KeybusFault: /* 896 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TROUBLE_MESSAGE);
-                        updateChannel(channelUID, 0,
-                                dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DESCRIPTION));
+                        updateProperties(channelUID, 0, dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DESCRIPTION));
+                        updateChannel(channelUID);
                         break;
                     case PanelBatteryTroubleRestore: /* 801 */
                     case PanelACRestore: /* 803 */
@@ -547,7 +618,8 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     case HomeAutomationTroubleRestore: /* 832 */
                     case KeybusFaultRestore: /* 897 */
                         channelUID = new ChannelUID(getThing().getUID(), PANEL_TROUBLE_MESSAGE);
-                        updateChannel(channelUID, 0, "");
+                        updateProperties(channelUID, 0, "");
+                        updateChannel(channelUID);
                         break;
                     case VerboseTroubleStatus: /* 849 */
                         verboseTroubleStatusHandler(event);

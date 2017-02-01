@@ -21,11 +21,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -150,7 +150,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private boolean previousOnline = false;
 
-    private Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
+    private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
     private ScheduledFuture<?> pollingJob;
     private Runnable pollingRunnable = new Runnable() {
@@ -205,7 +205,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Exclusive mode  {}.", exclusive);
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
-        previousOnline = true; // To trigger offline in case no connection @ startup
+        updateStatus(ThingStatus.OFFLINE);
+        initializeMaxDevices();
         startAutomaticRefresh();
     }
 
@@ -226,6 +227,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             }
             if (configurationParameter.getKey().startsWith("action-")) {
                 if (configurationParameter.getValue().toString().equals(BUTTON_ACTION_VALUE)) {
+                    configurationParameter.setValue(BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
                     if (configurationParameter.getKey().equals(ACTION_CUBE_REBOOT)) {
                         cubeReboot();
                     }
@@ -234,10 +236,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         refresh = false;
                     }
                 }
-                configuration.put(configurationParameter.getKey(), BigDecimal.valueOf(BUTTON_NOACTION_VALUE));
-            } else {
-                configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
             }
+
+            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
         }
 
         // Persist changes and restart with new parameters
@@ -279,12 +280,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         UdpCubeCommand reset = new UdpCubeCommand(UdpCubeCommand.udpCommandType.RESET, maxConfiguration.serialNumber);
         reset.setIpAddress(maxConfiguration.ipAddress);
         reset.send();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Rebooting");
-
     }
 
     public void deviceInclusion() {
-        if (previousOnline && socket != null) {
+        if (previousOnline) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Inclusion");
             logger.info("Start MAX! inclusion mode for 60 seconds");
             try {
@@ -414,6 +413,19 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     public void onConnection() {
         logger.debug("Bridge connected. Updating thing status to ONLINE.");
         updateStatus(ThingStatus.ONLINE);
+        initializeMaxDevices();
+    }
+
+    /**
+     * Initializes the devices for this bridge
+     */
+    private void initializeMaxDevices() {
+        for (Thing thing : getThing().getThings()) {
+            ThingHandler handler = thing.getHandler();
+            if (handler != null) {
+                handler.initialize();
+            }
+        }
     }
 
     public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
@@ -455,35 +467,37 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             try {
                 if (socket == null || socket.isClosed()) {
                     this.socketConnect();
-                }
-
-                if (maxRequestsPerConnection > 0 && requestCount >= maxRequestsPerConnection) {
-                    logger.debug("maxRequestsPerConnection reached, reconnecting.");
-                    socket.close();
-                    this.socketConnect();
                 } else {
+                    if (maxRequestsPerConnection > 0 && requestCount >= maxRequestsPerConnection) {
+                        logger.debug("maxRequestsPerConnection reached, reconnecting.");
+                        socket.close();
+                        this.socketConnect();
+                    } else {
 
-                    if (requestCount == 0) {
-                        logger.debug("Connect to MAX! Cube");
-                        readliness("L:");
+                        if (requestCount == 0) {
+                            logger.debug("Connect to MAX! Cube");
+                            readliness("L:");
 
-                    }
-                    if (!(requestCount == 0 && command instanceof L_Command)) {
+                        }
+                        if (!(requestCount == 0 && command instanceof L_Command)) {
 
-                        logger.debug("Sending request #{} to MAX! Cube", this.requestCount);
-                        if (writer == null) {
-                            logger.warn("Can't write to MAX! Cube");
-                            this.socketConnect();
+                            logger.debug("Sending request #{} to MAX! Cube", this.requestCount);
+                            if (writer == null) {
+                                logger.warn("Can't write to MAX! Cube");
+                                this.socketConnect();
+                            }
+
+                            writer.write(command.getCommandString());
+                            logger.trace("Write string to Max! Cube {}: {}", ipAddress, command.getCommandString());
+                            writer.flush();
+                            if (command.getReturnStrings() != null) {
+                                readliness(command.getReturnStrings());
+                            } else {
+                                socketClose();
+                            }
+
                         }
 
-                        writer.write(command.getCommandString());
-                        logger.trace("Write string to Max! Cube {}: {}", ipAddress, command.getCommandString());
-                        writer.flush();
-                        if (command.getReturnStrings() != null) {
-                            readliness(command.getReturnStrings());
-                        } else {
-                            socketClose();
-                        }
                     }
                 }
 
@@ -629,26 +643,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                     configurations.add(DeviceConfiguration.create(message));
                 } else {
                     c.setValues((C_Message) message);
-                    Device di = getDevice(((C_Message) message).getSerialNumber());
-                    if (di != null) {
-                        di.setProperties(((C_Message) message).getProperties());
-                        ;
-                    }
-                }
-                if (exclusive == true) {
-                    for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-                        try {
-                            Device di = getDevice(((C_Message) message).getSerialNumber());
-                            if (di != null) {
-                                deviceStatusListener.onDeviceConfigUpdate(getThing(), di);
-                            }
-                        } catch (NullPointerException e) {
-                            // ignore
-                        } catch (Exception e) {
-                            logger.error("An exception occurred while calling the DeviceStatusListener", e);
-                            unregisterDeviceStatusListener(deviceStatusListener);
-                        }
-                    }
                 }
             } else if (message.getType() == MessageType.L) {
                 ((L_Message) message).updateDevices(devices, configurations);
@@ -658,7 +652,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 freeMemorySlots = ((S_Message) message).getFreeMemorySlots();
                 updateCubeState();
                 if (((S_Message) message).isCommandDiscarded()) {
-                    logger.warn("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
+                    logger.info("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
                             freeMemorySlots);
                 } else {
                     logger.debug("S message. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle, freeMemorySlots);

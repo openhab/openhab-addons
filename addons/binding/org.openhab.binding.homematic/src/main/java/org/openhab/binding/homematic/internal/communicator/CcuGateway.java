@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -68,8 +68,8 @@ public class CcuGateway extends AbstractHomematicGateway {
      * {@inheritDoc}
      */
     @Override
-    protected void startClients() throws IOException {
-        super.startClients();
+    protected void startClient() throws IOException {
+        super.startClient();
 
         tclregaScripts = loadTclRegaScripts();
 
@@ -86,8 +86,8 @@ public class CcuGateway extends AbstractHomematicGateway {
      * {@inheritDoc}
      */
     @Override
-    protected void stopClients() {
-        super.stopClients();
+    protected void stopClient() {
+        super.stopClient();
         tclregaScripts = null;
         if (httpClient != null) {
             try {
@@ -135,7 +135,7 @@ public class CcuGateway extends AbstractHomematicGateway {
             super.loadChannelValues(channel);
         } catch (UnknownRpcFailureException ex) {
             logger.debug(
-                    "RpcMessage unknown RPC failure (-1 Failure), fetching values with TclRega script for device '{}'",
+                    "BinRpcMessage unknown RPC failure (-1 Failure), fetching values with TclRega script for device '{}'",
                     channel.getDevice().getAddress());
 
             Collection<String> dpNames = new ArrayList<String>();

@@ -10,8 +10,8 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" modified="modified" name="org.openhab.binding.autelis.discovery.AutelisDiscoveryService">
-   <implementation class="org.openhab.binding.autelis.discovery.AutelisDiscoveryParticipant"/>
+   <implementation class="org.openhab.binding.autelis.discovery.AutelisDiscoveryService"/>
    <service>
-      <provide interface="org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant"/>
+      <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
    </service>
 </scr:component>

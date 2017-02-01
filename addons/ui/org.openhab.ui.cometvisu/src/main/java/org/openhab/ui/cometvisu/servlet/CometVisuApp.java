@@ -77,12 +77,12 @@ public class CometVisuApp {
 
     public void addPersistenceService(PersistenceService service) {
         if (service instanceof QueryablePersistenceService) {
-            persistenceServices.put(service.getId(), (QueryablePersistenceService) service);
+            persistenceServices.put(service.getName(), (QueryablePersistenceService) service);
         }
     }
 
     public void removePersistenceService(PersistenceService service) {
-        persistenceServices.remove(service.getId());
+        persistenceServices.remove(service.getName());
     }
 
     static public Map<String, QueryablePersistenceService> getPersistenceServices() {

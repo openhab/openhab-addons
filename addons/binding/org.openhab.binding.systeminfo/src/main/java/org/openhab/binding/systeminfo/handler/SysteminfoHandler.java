@@ -1,6 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
- *
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +12,6 @@ import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -94,36 +92,34 @@ public class SysteminfoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-
-        if (instantiateSysteminfoLibrary() && isConfigurationValid() && updateProperties()) {
+        try {
+            this.systeminfo = new OshiSysteminfo();
+        } catch (Exception e) {
+            logger.error("Can not instantate Systeminfo object", e);
+        }
+        if (isConfigurationValid()) {
             groupChannelsByPriority();
+            updateProperties();
             scheduleUpdates();
             logger.debug("Thing is successfully initialized!");
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Thing can not be initialized!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Thing can not be initialized! Configuration is invalid !");
         }
 
-    }
-
-    private boolean instantiateSysteminfoLibrary() {
-        try {
-            this.systeminfo = new OshiSysteminfo();
-            logger.debug("OSHI Systeminfo library is instatiated!");
-            return true;
-        } catch (Exception e) {
-            logger.error("Can not instantate Systeminfo object!", e);
-            return false;
-        }
     }
 
     private boolean isConfigurationValid() {
         logger.debug("Start reading Thing configuration.");
+        Configuration config = getConfig();
         try {
-            refreshIntervalMediumPriority = (BigDecimal) this.thing.getConfiguration()
-                    .get(MEDIUM_PRIORITY_REFRESH_TIME);
-            refreshIntervalHighPriority = (BigDecimal) this.thing.getConfiguration().get(HIGH_PRIORITY_REFRESH_TIME);
+            // When the Thing is created with ThingBuidler, calling config.get(String) throws an Exception. This is why
+            // this casting is needed
+            Object mediumRefreshTime = MEDIUM_PRIORITY_REFRESH_TIME;
+            Object highRefreshTime = HIGH_PRIORITY_REFRESH_TIME;
+            refreshIntervalMediumPriority = (BigDecimal) config.get(mediumRefreshTime);
+            refreshIntervalHighPriority = (BigDecimal) config.get(highRefreshTime);
 
             if (refreshIntervalHighPriority.intValue() <= 0 || refreshIntervalMediumPriority.intValue() <= 0) {
                 throw new IllegalArgumentException("Refresh time must be positive number!");
@@ -131,39 +127,25 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Refresh time for medium priority channels set to {} s", refreshIntervalMediumPriority);
             logger.debug("Refresh time for high priority channels set to {} s", refreshIntervalHighPriority);
             return true;
-        } catch (IllegalArgumentException e) {
-            logger.error("Refresh time value is invalid! Please change the thing configuration!", e);
-            return false;
-        } catch (ClassCastException e) {
-            logger.error("Channel configuration can not be read !");
+        } catch (Exception e) {
+            logger.error("Refresh time value is invalid!. Please change the thing configuration!", e);
             return false;
         }
     }
 
-    private boolean updateProperties() {
+    private void updateProperties() {
         Map<String, String> properties = editProperties();
-        try {
-            properties.put(PROPERTY_CPU_LOGICAL_CORES, systeminfo.getCpuLogicalCores().toString());
-            properties.put(PROPERTY_CPU_PHYSICAL_CORES, systeminfo.getCpuPhysicalCores().toString());
-            properties.put(PROPERTY_OS_FAMILY, systeminfo.getOsFamily().toString());
-            properties.put(PROPERTY_OS_MANUFACTURER, systeminfo.getOsManufacturer().toString());
-            properties.put(PROPERTY_OS_VERSION, systeminfo.getOsVersion().toString());
-            logger.debug("Properties updated!");
-            return true;
-        } catch (Exception e) {
-            logger.debug("Can not get system properties! Please try to restart the binding.", e);
-            return false;
-        }
+        properties.put(PROPERTY_CPU_LOGICAL_CORES, systeminfo.getCpuLogicalCores().toString());
+        properties.put(PROPERTY_CPU_PHYSICAL_CORES, systeminfo.getCpuPhysicalCores().toString());
+        properties.put(PROPERTY_OS_FAMILY, systeminfo.getOsFamily().toString());
+        properties.put(PROPERTY_OS_MANUFACTURER, systeminfo.getOsManufacturer().toString());
+        properties.put(PROPERTY_OS_VERSION, systeminfo.getOsVersion().toString());
 
     }
 
     private void groupChannelsByPriority() {
-        logger.trace("Grouping channels by priority.");
-        List<Channel> channels = this.thing.getChannels();
-
-        for (Channel channel : channels) {
-            Configuration properties = channel.getConfiguration();
-            String priority = (String) properties.get(PRIOIRITY_PARAM);
+        for (Channel channel : getThing().getChannels()) {
+            String priority = (String) channel.getConfiguration().get("priority");
             if (priority == null) {
                 logger.debug("Channel with id {} will not be updated. The channel has no priority set !",
                         channel.getUID());
@@ -182,28 +164,6 @@ public class SysteminfoHandler extends BaseThingHandler {
                 default:
                     logger.error("Invalid priority configuration parameter. Channel will not be updated !");
             }
-        }
-    }
-
-    private void changeChannelPriority(ChannelUID channelUID, String priority) {
-        switch (priority) {
-            case "High":
-                mediumPriorityChannels.remove(channelUID);
-                lowPriorityChannels.remove(channelUID);
-                highPriorityChannels.add(channelUID);
-                break;
-            case "Medium":
-                lowPriorityChannels.remove(channelUID);
-                highPriorityChannels.remove(channelUID);
-                mediumPriorityChannels.add(channelUID);
-                break;
-            case "Low":
-                highPriorityChannels.remove(channelUID);
-                mediumPriorityChannels.remove(channelUID);
-                lowPriorityChannels.add(channelUID);
-                break;
-            default:
-                logger.error("Invalid priority configuration parameter. Channel will not be updated !");
         }
     }
 
@@ -235,13 +195,11 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     private void publishData(Set<ChannelUID> channels) {
-        if (channels != null) {
-            Iterator<ChannelUID> iter = channels.iterator();
-            while (iter.hasNext()) {
-                ChannelUID channeUID = iter.next();
-                if (isLinked(channeUID.getId())) {
-                    publishDataForChannel(channeUID);
-                }
+        Iterator<ChannelUID> iter = channels.iterator();
+        while (iter.hasNext()) {
+            ChannelUID channeUID = iter.next();
+            if (isLinked(channeUID.getId())) {
+                publishDataForChannel(channeUID);
             }
         }
     }
@@ -268,16 +226,15 @@ public class SysteminfoHandler extends BaseThingHandler {
     private State getInfoForChannel(ChannelUID channelUID) {
         State state = null;
         String channelID = channelUID.getId();
-        String channelIDWithoutGroup = channelUID.getIdWithoutGroup();
         String channelGroupID = channelUID.getGroupId();
-
-        int deviceIndex = getDeviceIndex(channelUID);
-
-        // The channelGroup may contain deviceIndex. It must be deleted from the channelID, because otherwise the
-        // switch will not find the correct method below.
-        // All digits are deleted from the ID
-        channelID = channelGroupID.replaceAll("\\d+", "") + "#" + channelIDWithoutGroup;
-
+        int deviceIndex = getDeviceIndex(channelGroupID);
+        if (deviceIndex > 0) {
+            // The channelGroup contains deviceIndex. It must be deleted from the channelID, because otherwise the
+            // method
+            // will not find the correct method below.
+            // All digits are deleted from the ID
+            channelID = channelID.replaceAll("\\d+", "");
+        }
         try {
             switch (channelID) {
                 case CHANNEL_DISPLAY_INFORMATION:
@@ -403,30 +360,11 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_NETWORK_PACKAGES_SENT:
                     state = systeminfo.getNetworkPackageSent(deviceIndex);
                     break;
-                case CHANNEL_PROCESS_LOAD:
-                    state = systeminfo.getProcessCpuUsage(deviceIndex);
-                    break;
-                case CHANNEL_PROCESS_MEMORY:
-                    state = systeminfo.getProcessMemoryUsage(deviceIndex);
-                    break;
-                case CHANNEL_PROCESS_NAME:
-                    state = systeminfo.getProcessName(deviceIndex);
-                    break;
-                case CHANNEL_PROCESS_PATH:
-                    state = systeminfo.getProcessPath(deviceIndex);
-                    break;
-                case CHANNEL_PROCESS_THREADS:
-                    state = systeminfo.getProcessThreads(deviceIndex);
-                    break;
                 default:
                     logger.error("Channel with unknown ID: {} !", channelID);
             }
         } catch (DeviceNotFoundException e) {
             logger.error("No information for channel " + channelID + deviceIndex, e);
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred while getting system information!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Can not get system info as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
         }
         return state;
     }
@@ -440,129 +378,29 @@ public class SysteminfoHandler extends BaseThingHandler {
      * @param channelID - the ID of the channel
      * @return natural number (number >=0)
      */
-    private int getDeviceIndex(ChannelUID channelUID) {
+    private int getDeviceIndex(String channelID) {
         int deviceIndex = 0;
-        if (channelUID.getGroupId().contains(CHANNEL_GROUP_PROCESS)) {
-            // Only in this case the deviceIndex is part of the channel configuration - PID (Process Identifier)
-            int pid = getPID(channelUID);
-            deviceIndex = pid;
-            logger.debug("Channel with UID {} tracks process with PID: {}", channelUID.getAsString(), pid);
-        } else {
-            String channelGroupID = channelUID.getGroupId();
-            char lastChar = channelGroupID.charAt(channelGroupID.length() - 1);
-            if (Character.isDigit(lastChar)) {
-                // All non-digits are deleted from the ID
-                String deviceIndexPart = channelGroupID.replaceAll("\\D+", "");
-                deviceIndex = Integer.parseInt(deviceIndexPart);
-            }
+        char lastChar = channelID.charAt(channelID.length() - 1);
+        if (Character.isDigit(lastChar)) {
+            // All non-digits are deleted from the ID
+            String deviceIndexPart = channelID.replaceAll("\\D+", "");
+            deviceIndex = Integer.parseInt(deviceIndexPart);
         }
         return deviceIndex;
     }
 
-    /**
-     * This method gets the process identifier (PID) for specific process
-     *
-     * @param channelUID - channel unique identifier
-     * @return natural number
-     */
-    private int getPID(ChannelUID channelUID) {
-        int pid = 0;
-        try {
-            Configuration channelProperties = this.thing.getChannel(channelUID.getId()).getConfiguration();
-            BigDecimal pidValue = (BigDecimal) channelProperties.get(PID_PARAM);
-            if (pidValue.intValue() < 0) {
-                throw new IllegalArgumentException("Invalid value for Process Identifier.");
-            } else {
-                pid = pidValue.intValue();
-            }
-
-        } catch (ClassCastException e) {
-            logger.debug("Channel configuraiton can not be read ! Fall back to default value.", e);
-        } catch (IllegalArgumentException e) {
-            logger.debug("PID (Process Identifier) must be positive number. Fall back to default value. ", e);
-        }
-        return pid;
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (thing.getStatus().equals(ThingStatus.ONLINE)) {
-            if (command instanceof RefreshType) {
-                logger.debug("Refresh command received for channel {}!", channelUID);
-                publishDataForChannel(channelUID);
-            } else {
-                logger.debug("Unsupported command {}! Supported commands: REFRESH", command);
-            }
+        if (command instanceof RefreshType) {
+            logger.debug("Refresh command received for channel {}!", channelUID);
+            publishDataForChannel(channelUID);
         } else {
-            logger.debug("Cannot handle command. Thing is not ONLINE.");
+            logger.debug("Unsuported command {}! Supported commands: REFRESH", command);
         }
-    }
-
-    private boolean isConfigurationKeyChanged(Configuration currentConfig, Configuration newConfig, String key) {
-        if (currentConfig != null && newConfig != null) {
-            Object currentValue = currentConfig.get(key);
-            Object newValue = newConfig.get(key);
-
-            if (currentValue == null) {
-                return (newValue != null);
-            }
-
-            return !currentValue.equals(newValue);
-        }
-        return true;
     }
 
     @Override
-    public void thingUpdated(Thing thing) {
-        logger.trace("About to update thing.");
-        boolean isChannelConfigChanged = false;
-        List<Channel> channels = thing.getChannels();
-
-        for (Channel channel : channels) {
-            ChannelUID channelUID = channel.getUID();
-            Configuration newChannelConfig = channel.getConfiguration();
-            Channel oldChannel = this.thing.getChannel(channelUID.getId());
-
-            if (oldChannel == null) {
-                logger.warn("Channel with UID : {} can not be updated, as it can not be found !",
-                        channelUID.getAsString());
-                continue;
-            }
-            Configuration currentChannelConfig = oldChannel.getConfiguration();
-
-            if (isConfigurationKeyChanged(currentChannelConfig, newChannelConfig, PRIOIRITY_PARAM)) {
-                isChannelConfigChanged = true;
-
-                handleChannelConfigurationChange(oldChannel, newChannelConfig, PRIOIRITY_PARAM);
-
-                String newPriority = (String) newChannelConfig.get(PRIOIRITY_PARAM);
-                changeChannelPriority(channelUID, newPriority);
-            }
-
-            if (isConfigurationKeyChanged(currentChannelConfig, newChannelConfig, PID_PARAM)) {
-                isChannelConfigChanged = true;
-                handleChannelConfigurationChange(oldChannel, newChannelConfig, PID_PARAM);
-            }
-        }
-
-        if (!(isInitialized() && isChannelConfigChanged)) {
-            super.thingUpdated(thing);
-        }
-    }
-
-    private void handleChannelConfigurationChange(Channel channel, Configuration newConfig, String parameter) {
-        Configuration configuration = channel.getConfiguration();
-        Object oldValue = configuration.get(parameter);
-
-        configuration.put(parameter, newConfig.get(parameter));
-
-        Object newValue = newConfig.get(parameter);
-        logger.debug("Channel with UID : {} has changed its {} from {} to {}", channel.getUID(), parameter, oldValue,
-                newValue);
-        publishDataForChannel(channel.getUID());
-    }
-
-    private void stopScheduledUpdates() {
+    public void dispose() {
         if (highPriorityTasks != null) {
             logger.debug("High prioriy tasks will not be run anymore !");
             highPriorityTasks.cancel(true);
@@ -571,11 +409,6 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Medium prioriy tasks will not be run anymore !");
             mediumPriorityTasks.cancel(true);
         }
-    }
-
-    @Override
-    public void dispose() {
-        stopScheduledUpdates();
     }
 
 }

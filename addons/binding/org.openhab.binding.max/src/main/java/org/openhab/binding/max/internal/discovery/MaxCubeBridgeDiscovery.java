@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.max.internal.discovery;
 
-import static org.openhab.binding.max.MaxBinding.CUBEBRIDGE_THING_TYPE;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -47,7 +45,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
     private final static int SEARCH_TIME = 15;
 
-    private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
+    private final static Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
     static boolean discoveryRunning = false;
 
@@ -189,7 +187,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             if (uid != null) {
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                         .withRepresentationProperty(MaxBinding.PROPERTY_SERIAL_NUMBER)
-                        .withThingType(CUBEBRIDGE_THING_TYPE).withLabel("MAX! Cube LAN Gateway").build();
+                        .withLabel("MAX! Cube LAN Gateway").build();
                 thingDiscovered(result);
             }
         }

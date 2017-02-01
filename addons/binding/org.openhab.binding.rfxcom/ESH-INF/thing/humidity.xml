@@ -6,7 +6,6 @@
 	<thing-type id="humidity">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
-			<bridge-type-ref id="tcpbridge" />
 			<bridge-type-ref id="RFXtrx433" />
 			<bridge-type-ref id="RFXrec433" />
 		</supported-bridge-type-refs>

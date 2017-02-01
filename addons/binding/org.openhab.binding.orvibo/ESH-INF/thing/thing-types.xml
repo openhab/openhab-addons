@@ -1,29 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="orvibo"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="orvibo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="s20">
-        <label>Orvibo S20 Smart Wifi Socket</label>
-        <description>This is an Orvibo S20 Smart Wifi Socket</description>
-        <channels>
-            <channel id="power" typeId="power"/>
-        </channels>
-        <config-description>
-            <parameter name="deviceId" type="text" required="true">
-                <label>MAC Address</label>
-                <description>The MAC address identifies a specific S20 Socket.</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
-       
-    </thing-type>
-    
-    <channel-type id="power">
-        <item-type>Switch</item-type>
-        <label>Power</label>
-        <description>Switch on/off your S20 Socket.</description>
-    </channel-type>
-    
+	<thing-type id="s20">
+		<label>Orvibo S20 Smart Wifi Socket</label>
+		<description>An Orvibo S20 Smart Wifi Socket</description>
+		<channels>
+			<channel id="power" typeId="power" />
+		</channels>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>MAC Address</label>
+				<description>The MAC address identifies a specific S20 Socket.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="allone">
+		<label>Orvibo AllOne Smart Remote Control</label>
+		<description>An Orvibo AllOne Smart Remote Control</description>
+		<channels>
+			<channel id="learn" typeId="learn" />
+			<channel id="emit" typeId="emit" />
+		</channels>
+		<config-description>
+			<parameter name="rootFolder" type="text" required="true">
+				<label>Root Folder</label>
+				<description>Root Folder where  IR / RF433 Files will be searched and saved.</description>
+			</parameter>
+			<parameter name="deviceId" type="text" required="true">
+				<label>MAC Address</label>
+				<description>The MAC address identifies a specific AllOne device.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Switch on/off your Socket.</description>
+	</channel-type>
+
+	<channel-type id="learn">
+		<item-type>String</item-type>
+		<label>Learn signal</label>
+		<description>Saves a received IR / RF 433 Signal to the specified file.</description>
+	</channel-type>
+
+	<channel-type id="emit">
+		<item-type>String</item-type>
+		<label>Emit signal</label>
+		<description>Emit the given IR / RF433 Signal from the specified file.</description>
+	</channel-type>
+
 </thing:thing-descriptions>

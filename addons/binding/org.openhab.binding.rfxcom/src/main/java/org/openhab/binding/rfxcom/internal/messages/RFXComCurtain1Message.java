@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -19,9 +22,6 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * RFXCOM data class for curtain1 message. See Harrison.
@@ -49,16 +49,6 @@ public class RFXComCurtain1Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            return SubType.UNKNOWN;
-        }
     }
 
     public enum Commands {
@@ -82,16 +72,6 @@ public class RFXComCurtain1Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) command;
         }
-
-        public static Commands fromByte(int input) {
-            for (Commands c : Commands.values()) {
-                if (c.command == input) {
-                    return c;
-                }
-            }
-
-            return Commands.UNKNOWN;
-        }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays
@@ -100,10 +80,10 @@ public class RFXComCurtain1Message extends RFXComBaseMessage {
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
             .asList(RFXComValueSelector.SHUTTER);
 
-    public SubType subType = SubType.UNKNOWN;
+    public SubType subType = SubType.HARRISON;
     public char sensorId = 'A';
     public byte unitCode = 0;
-    public Commands command = Commands.UNKNOWN;
+    public Commands command = Commands.STOP;
     public byte signalLevel = 0;
     public byte batteryLevel = 0;
 
@@ -134,10 +114,19 @@ public class RFXComCurtain1Message extends RFXComBaseMessage {
 
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        try {
+            subType = SubType.values()[super.subType];
+        } catch (Exception e) {
+            subType = SubType.UNKNOWN;
+        }
         sensorId = (char) data[4];
         unitCode = data[5];
-        command = Commands.fromByte(data[6]);
+
+        try {
+            command = Commands.values()[data[6]];
+        } catch (Exception e) {
+            command = Commands.UNKNOWN;
+        }
 
         signalLevel = (byte) ((data[7] & 0xF0) >> 4);
         batteryLevel = (byte) ((data[7] & 0x0F));

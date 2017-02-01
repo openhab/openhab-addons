@@ -22,11 +22,17 @@ public class OrviboBindingConstants {
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_S20 = new ThingTypeUID(BINDING_ID, "s20");
+    public final static ThingTypeUID THING_TYPE_ALLONE = new ThingTypeUID(BINDING_ID, "allone");
 
     // List of all Channel ids
     public final static String CHANNEL_S20_SWITCH = "power";
+    public final static String CHANNEL_ALLONE_LEARN = "learn";
+    public final static String CHANNEL_ALLONE_LEARN_NAME = "learnname";
+    public final static String CHANNEL_ALLONE_EMIT = "emit";
+    public final static String CHANNEL_ALLONE_EMIT_NAME = "emitname";
 
     // List of all Config properties
     public static final String CONFIG_PROPERTY_DEVICE_ID = "deviceId";
+    public final static String CONFIG_PROPERTY_ROOT = "rootFolder";
 
 }

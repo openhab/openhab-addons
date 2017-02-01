@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.max.internal.device;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.openhab.binding.max.internal.message.C_Message;
 import org.openhab.binding.max.internal.message.Message;
 
@@ -28,9 +25,6 @@ public final class DeviceConfiguration {
     private String name = null;
     private int roomId = -1;
     private String roomName = null;
-
-    /** Extended configuration properties **/
-    private HashMap<String, Object> properties = new HashMap<>();
 
     private DeviceConfiguration() {
     }
@@ -51,7 +45,6 @@ public final class DeviceConfiguration {
 
     public void setValues(C_Message message) {
         setValues(message.getRFAddress(), message.getDeviceType(), message.getSerialNumber(), message.getRoomID());
-        properties = new HashMap<>(message.getProperties());
     }
 
     private void setValues(String rfAddress, DeviceType deviceType, String serialNumber, int roomId, String name) {
@@ -79,11 +72,7 @@ public final class DeviceConfiguration {
     }
 
     public String getName() {
-        if (name == null) {
-            return "";
-        } else {
-            return name;
-        }
+        return name;
     }
 
     public void setName(String name) {
@@ -99,29 +88,10 @@ public final class DeviceConfiguration {
     }
 
     public String getRoomName() {
-        if (roomName == null) {
-            return "";
-        } else {
-            return roomName;
-        }
+        return roomName;
     }
 
     public void setRoomName(String roomName) {
         this.roomName = roomName;
     }
-
-    /**
-     * @return the properties
-     */
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
-
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(HashMap<String, Object> properties) {
-        this.properties = properties;
-    }
-
 }

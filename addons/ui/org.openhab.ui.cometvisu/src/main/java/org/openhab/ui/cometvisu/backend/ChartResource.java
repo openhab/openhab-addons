@@ -87,13 +87,12 @@ public class ChartResource implements RESTResource {
     private UriInfo uriInfo;
 
     public void addPersistenceService(PersistenceService service) {
-        if (service instanceof QueryablePersistenceService) {
-            persistenceServices.put(service.getId(), (QueryablePersistenceService) service);
-        }
+        if (service instanceof QueryablePersistenceService)
+            persistenceServices.put(service.getName(), (QueryablePersistenceService) service);
     }
 
     public void removePersistenceService(PersistenceService service) {
-        persistenceServices.remove(service.getId());
+        persistenceServices.remove(service.getName());
     }
 
     static public Map<String, QueryablePersistenceService> getPersistenceServices() {
@@ -113,9 +112,8 @@ public class ChartResource implements RESTResource {
     public Response getChartSeries(@Context HttpHeaders headers, @QueryParam("rrd") String itemName,
             @QueryParam("ds") String consFunction, @QueryParam("start") String start, @QueryParam("end") String end,
             @QueryParam("res") long resolution) {
-        if (logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled())
             logger.debug("Received GET request at '{}' for rrd '{}'.", uriInfo.getPath(), itemName);
-        }
         String responseType = MediaType.APPLICATION_JSON;
 
         // RRD specific: no equivalent in PersistenceService known
@@ -129,9 +127,8 @@ public class ChartResource implements RESTResource {
         Date endTime = new Date();
         endTime.setTime(times[1] * 1000L);
 
-        if (itemName.endsWith(".rrd")) {
+        if (itemName.endsWith(".rrd"))
             itemName = itemName.substring(0, itemName.length() - 4);
-        }
         String[] parts = itemName.split(":");
         String service = "rrd4j";
 
@@ -158,7 +155,7 @@ public class ChartResource implements RESTResource {
                 }
             }
             Object data = null;
-            if (persistenceService.getId().equals("rrd4j")) {
+            if (persistenceService.getName().equals("rrd4j")) {
                 data = getRrdSeries(persistenceService, item, consilidationFunction, startTime, endTime, resolution);
             } else {
                 data = getPersistenceSeries(persistenceService, item, startTime, endTime, resolution);
@@ -198,7 +195,7 @@ public class ChartResource implements RESTResource {
                 data.put(historicItem.getTimestamp().getTime(), vals);
             }
         }
-        logger.debug("'{}' querying item '{}' from '{}' to '{}' => '{}' results", persistenceService.getId(),
+        logger.debug("'{}' querying item '{}' from '{}' to '{}' => '{}' results", persistenceService.getName(),
                 filter.getItemName(), filter.getBeginDate(), filter.getEndDate(), dataCounter);
         return convertToRrd(data);
     }
@@ -244,10 +241,8 @@ public class ChartResource implements RESTResource {
     }
 
     private ArrayList<Object> convertToRrd(Map<Long, ArrayList<String>> data) {
-        // sort data by key
-        Map<Long, ArrayList<String>> treeMap = new TreeMap<Long, ArrayList<String>>(data);
         ArrayList<Object> rrd = new ArrayList<Object>();
-        for (Long time : treeMap.keySet()) {
+        for (Long time : data.keySet()) {
             Object[] entry = new Object[2];
             entry[0] = time;
             entry[1] = data.get(time);

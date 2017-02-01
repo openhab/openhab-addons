@@ -27,8 +27,8 @@ public interface RFXComEventListener {
      * Procedure for receiving information fatal error.
      * 
      * @param error
-     *            Error occurred.
+     *            Error occured.
      */
-    void errorOccurred(String error);
+    void errorOccured(String error);
 
 }

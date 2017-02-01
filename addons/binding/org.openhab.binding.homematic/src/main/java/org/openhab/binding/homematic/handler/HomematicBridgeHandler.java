@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,6 @@ import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,6 +27,7 @@ import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayFactory;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayListener;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
+import org.openhab.binding.homematic.internal.misc.LocalNetworkInterface;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.type.HomematicTypeGenerator;
@@ -119,8 +119,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             gateway.dispose();
         }
         if (config != null) {
-            portPool.release(config.getXmlCallbackPort());
-            portPool.release(config.getBinCallbackPort());
+            portPool.release(config.getCallbackPort());
         }
     }
 
@@ -128,20 +127,18 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * Registers the DeviceDiscoveryService.
      */
     private void registerDeviceDiscoveryService() {
-        if (bundleContext != null) {
-            logger.trace("Registering HomematicDeviceDiscoveryService for bridge '{}'", getThing().getUID().getId());
-            discoveryService = new HomematicDeviceDiscoveryService(this);
-            discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                    discoveryService, new Hashtable<String, Object>());
-            discoveryService.activate();
-        }
+        logger.trace("Registering HomematicDeviceDiscoveryService for bridge '{}'", getThing().getUID().getId());
+        discoveryService = new HomematicDeviceDiscoveryService(this);
+        discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                new Hashtable<String, Object>());
+        discoveryService.activate();
     }
 
     /**
      * Unregisters the DeviceDisoveryService.
      */
     private void unregisterDeviceDiscoveryService() {
-        if (discoveryServiceRegistration != null && bundleContext != null) {
+        if (discoveryServiceRegistration != null) {
             HomematicDeviceDiscoveryService service = (HomematicDeviceDiscoveryService) bundleContext
                     .getService(discoveryServiceRegistration.getReference());
             service.deactivate();
@@ -171,17 +168,12 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     private HomematicConfig createHomematicConfig() {
         HomematicConfig homematicConfig = getThing().getConfiguration().as(HomematicConfig.class);
         if (homematicConfig.getCallbackHost() == null) {
-            homematicConfig.setCallbackHost(NetUtil.getLocalIpv4HostAddress());
+            homematicConfig.setCallbackHost(LocalNetworkInterface.getLocalNetworkInterface());
         }
-        if (homematicConfig.getXmlCallbackPort() == 0) {
-            homematicConfig.setXmlCallbackPort(portPool.getNextPort());
+        if (homematicConfig.getCallbackPort() == 0) {
+            homematicConfig.setCallbackPort(portPool.getNextPort());
         } else {
-            portPool.setInUse(homematicConfig.getXmlCallbackPort());
-        }
-        if (homematicConfig.getBinCallbackPort() == 0) {
-            homematicConfig.setBinCallbackPort(portPool.getNextPort());
-        } else {
-            portPool.setInUse(homematicConfig.getBinCallbackPort());
+            portPool.setInUse(homematicConfig.getCallbackPort());
         }
         logger.debug(homematicConfig.toString());
         return homematicConfig;

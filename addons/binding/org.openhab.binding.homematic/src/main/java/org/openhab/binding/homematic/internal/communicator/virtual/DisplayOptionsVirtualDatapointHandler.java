@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,7 +20,6 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
-import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
 /**
@@ -36,8 +35,7 @@ public class DisplayOptionsVirtualDatapointHandler extends AbstractVirtualDatapo
      */
     @Override
     public void add(HmDevice device) {
-        if (device.getType().startsWith(DEVICE_TYPE_19_REMOTE_CONTROL)
-                && !(device.getHmInterface() == HmInterface.CUXD)) {
+        if (device.getType().startsWith(DEVICE_TYPE_19_REMOTE_CONTROL)) {
             addDatapoint(device, 18, VIRTUAL_DATAPOINT_NAME_DISPLAY_OPTIONS, HmValueType.STRING, null, false);
         }
     }

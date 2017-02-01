@@ -10,8 +10,6 @@ package org.openhab.binding.max.internal.command;
 
 import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link S_ConfigCommand} for setting MAX! thermostat configuration.
@@ -19,6 +17,8 @@ import org.slf4j.LoggerFactory;
  * @author Marcel Verpaalen - Initial version
  * @since 2.0
  */
+
+// TODO: Fully test this
 public class S_ConfigCommand extends CubeCommand {
 
     private String baseString = null;
@@ -26,8 +26,6 @@ public class S_ConfigCommand extends CubeCommand {
     private int roomId = -1;
 
     private byte[] commandBytes;
-
-    private Logger logger = LoggerFactory.getLogger(S_ConfigCommand.class);
 
     public enum ConfigCommandType {
         Temperature,
@@ -66,20 +64,6 @@ public class S_ConfigCommand extends CubeCommand {
         }
     }
 
-    /**
-     *
-     * Set the Thermostat temperature configuration
-     *
-     * @param rfAddress
-     * @param roomId
-     * @param tempComfort
-     * @param tempEco
-     * @param tempSetpointMax
-     * @param tempSetpointMin
-     * @param tempOffset
-     * @param tempOpenWindow
-     * @param durationOpenWindow
-     */
     public S_ConfigCommand(String rfAddress, int roomId, double tempComfort, double tempEco, double tempSetpointMax,
             double tempSetpointMin, double tempOffset, double tempOpenWindow, int durationOpenWindow) {
         this.rfAddress = rfAddress;
@@ -89,9 +73,6 @@ public class S_ConfigCommand extends CubeCommand {
                 durationOpenWindow);
     }
 
-    /**
-     * Set the thermostat default temperature config.
-     */
     public void setTempConfigDefault() {
         double tempComfort = 21.0; // 0x2a
         double tempEco = 17.0; // 0x28
@@ -130,14 +111,11 @@ public class S_ConfigCommand extends CubeCommand {
         Byte tempEcoByte = (byte) (tempEco * 2);
         Byte tempSetpointMaxByte = (byte) (tempSetpointMax * 2);
         Byte tempSetpointMinByte = (byte) (tempSetpointMin * 2);
-        Byte tempOffsetByte = (byte) ((tempOffset + 3.5) * 2);
+        Byte tempOffsetByte = (byte) (tempOffset * 2);
         Byte tempOpenWindowByte = (byte) (tempOpenWindow * 2);
-        Byte durationOpenWindowByte = (byte) (durationOpenWindow / 5);
+        Byte durationOpenWindowByte = (byte) durationOpenWindow;
         commandBytes = new byte[] { tempComfortByte, tempEcoByte, tempSetpointMaxByte, tempSetpointMinByte,
                 tempOffsetByte, tempOpenWindowByte, durationOpenWindowByte };
-        logger.debug(
-                "Thermostat Config Command:  confTemp: {}, ecoTemp: {}, setMax: {}, setMin: {}, offset: {}, windowTemp: {}, windowDur:{}",
-                tempComfort, tempEco, tempSetpointMax, tempSetpointMin, tempOffset, tempOpenWindow, durationOpenWindow);
     }
 
     /**

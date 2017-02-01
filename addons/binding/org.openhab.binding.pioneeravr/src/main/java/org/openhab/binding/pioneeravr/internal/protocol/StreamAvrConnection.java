@@ -108,14 +108,14 @@ public abstract class StreamAvrConnection implements AvrConnection {
 
     /**
      * Open the connection to the AVR.
-     *
+     * 
      * @throws IOException
      */
     protected abstract void openConnection() throws IOException;
 
     /**
      * Return the inputStream to read responses.
-     *
+     * 
      * @return
      * @throws IOException
      */
@@ -123,7 +123,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
 
     /**
      * Return the outputStream to send commands.
-     *
+     * 
      * @return
      * @throws IOException
      */
@@ -141,7 +141,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
 
     /**
      * Sends to command to the receiver. It does not wait for a reply.
-     *
+     * 
      * @param ipControlCommand
      *            the command to send.
      **/
@@ -159,7 +159,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
                 isSent = true;
 
             } catch (IOException ioException) {
-                logger.error("Error occurred when sending command", ioException);
+                logger.error("Error occured when sending command", ioException);
                 // If an error occurs, close the connection
                 close();
             }
@@ -171,31 +171,31 @@ public abstract class StreamAvrConnection implements AvrConnection {
     }
 
     @Override
-    public boolean sendPowerQuery(int zone) {
-        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_QUERY, zone));
+    public boolean sendPowerQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_QUERY));
     }
 
     @Override
-    public boolean sendVolumeQuery(int zone) {
-        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_QUERY, zone));
+    public boolean sendVolumeQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_QUERY));
     }
 
     @Override
-    public boolean sendMuteQuery(int zone) {
-        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_QUERY, zone));
+    public boolean sendMuteQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_QUERY));
     }
 
     @Override
-    public boolean sendSourceInputQuery(int zone) {
-        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_QUERY, zone));
+    public boolean sendSourceInputQuery() {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_QUERY));
     }
 
     @Override
-    public boolean sendPowerCommand(Command command, int zone) throws CommandTypeNotSupportedException {
+    public boolean sendPowerCommand(Command command) throws CommandTypeNotSupportedException {
         AvrCommand commandToSend = null;
 
         if (command == OnOffType.ON) {
-            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_ON, zone);
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_ON);
             // Send the first Power ON command.
             sendCommand(commandToSend);
 
@@ -209,7 +209,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
             }
 
         } else if (command == OnOffType.OFF) {
-            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_OFF, zone);
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.POWER_OFF);
         } else {
             throw new CommandTypeNotSupportedException("Command type not supported.");
         }
@@ -218,28 +218,28 @@ public abstract class StreamAvrConnection implements AvrConnection {
     }
 
     @Override
-    public boolean sendVolumeCommand(Command command, int zone) throws CommandTypeNotSupportedException {
+    public boolean sendVolumeCommand(Command command) throws CommandTypeNotSupportedException {
         boolean commandSent = false;
 
         // The OnOffType for volume is equal to the Mute command
         if (command instanceof OnOffType) {
-            commandSent = sendMuteCommand(command, zone);
+            commandSent = sendMuteCommand(command);
         } else {
             AvrCommand commandToSend = null;
 
             if (command == IncreaseDecreaseType.DECREASE) {
-                commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_DOWN, zone);
+                commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_DOWN);
             } else if (command == IncreaseDecreaseType.INCREASE) {
-                commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_UP, zone);
+                commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.VOLUME_UP);
             } else if (command instanceof PercentType) {
                 String ipControlVolume = VolumeConverter
                         .convertFromPercentToIpControlVolume(((PercentType) command).doubleValue());
-                commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET, zone)
+                commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET)
                         .setParameter(ipControlVolume);
             } else if (command instanceof DecimalType) {
                 String ipControlVolume = VolumeConverter
                         .convertFromDbToIpControlVolume(((DecimalType) command).doubleValue());
-                commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET, zone)
+                commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.VOLUME_SET)
                         .setParameter(ipControlVolume);
             } else {
                 throw new CommandTypeNotSupportedException("Command type not supported.");
@@ -251,16 +251,16 @@ public abstract class StreamAvrConnection implements AvrConnection {
     }
 
     @Override
-    public boolean sendInputSourceCommand(Command command, int zone) throws CommandTypeNotSupportedException {
+    public boolean sendInputSourceCommand(Command command) throws CommandTypeNotSupportedException {
         AvrCommand commandToSend = null;
 
         if (command == IncreaseDecreaseType.INCREASE) {
-            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_CYCLIC, zone);
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_CYCLIC);
         } else if (command == IncreaseDecreaseType.DECREASE) {
-            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_REVERSE, zone);
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.INPUT_CHANGE_REVERSE);
         } else if (command instanceof StringType) {
             String inputSourceValue = ((StringType) command).toString();
-            commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.INPUT_CHANNEL_SET, zone)
+            commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.INPUT_CHANNEL_SET)
                     .setParameter(inputSourceValue);
         } else {
             throw new CommandTypeNotSupportedException("Command type not supported.");
@@ -270,13 +270,13 @@ public abstract class StreamAvrConnection implements AvrConnection {
     }
 
     @Override
-    public boolean sendMuteCommand(Command command, int zone) throws CommandTypeNotSupportedException {
+    public boolean sendMuteCommand(Command command) throws CommandTypeNotSupportedException {
         AvrCommand commandToSend = null;
 
         if (command == OnOffType.ON) {
-            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_ON, zone);
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_ON);
         } else if (command == OnOffType.OFF) {
-            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_OFF, zone);
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.MUTE_OFF);
         } else {
             throw new CommandTypeNotSupportedException("Command type not supported.");
         }
@@ -286,7 +286,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
 
     /**
      * Read incoming data from the AVR and notify listeners for dataReceived and disconnection.
-     *
+     * 
      * @author Antoine Besnard
      *
      */
@@ -301,7 +301,7 @@ public abstract class StreamAvrConnection implements AvrConnection {
 
         /**
          * Construct a reader that read the given inputStream
-         *
+         * 
          * @param ipControlSocket
          * @throws IOException
          */

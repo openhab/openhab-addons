@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -36,13 +35,8 @@ class HomekitDimmableLightbulbImpl extends AbstractHomekitLightbulbImpl<DimmerIt
 
     @Override
     public CompletableFuture<Integer> getBrightness() {
-        State state = getItem().getStateAs(PercentType.class);
-        if (state instanceof PercentType) {
-            PercentType brightness = (PercentType) state;
-            return CompletableFuture.completedFuture(brightness.intValue());
-        } else {
-            return CompletableFuture.completedFuture(null);
-        }
+        PercentType state = (PercentType) getItem().getStateAs(PercentType.class);
+        return CompletableFuture.completedFuture(state.intValue());
     }
 
     @Override

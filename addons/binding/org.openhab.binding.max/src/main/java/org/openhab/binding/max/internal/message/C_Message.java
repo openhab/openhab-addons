@@ -8,18 +8,14 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import static org.openhab.binding.max.MaxBinding.*;
-
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
@@ -37,28 +33,27 @@ import com.google.common.base.Strings;
  */
 public final class C_Message extends Message {
 
-    private final Logger logger = LoggerFactory.getLogger(C_Message.class);
+    private static final Logger logger = LoggerFactory.getLogger(C_Message.class);
 
     private String rfAddress = null;
     private int length = 0;
     private DeviceType deviceType = null;
     private int roomId = -1;
     private String serialNumber = null;
-    private BigDecimal tempComfort = null;
-    private BigDecimal tempEco = null;
-    private BigDecimal tempSetpointMax = null;
-    private BigDecimal tempSetpointMin = null;
-    private BigDecimal tempOffset = null;
-    private BigDecimal tempOpenWindow = null;
-    private BigDecimal durationOpenWindow = null;
-    private BigDecimal decalcification = null;
-    private BigDecimal valveMaximum = null;
-    private BigDecimal valveOffset = null;
-    private BigDecimal boostDuration = null;
-    private BigDecimal boostValve = null;
+    private String tempComfort = null;
+    private String tempEco = null;
+    private String tempSetpointMax = null;
+    private String tempSetpointMin = null;
+    private String tempOffset = null;
+    private String tempOpenWindow = null;
+    private String durationOpenWindow = null;
+    private String decalcification = null;
+    private String valveMaximum = null;
+    private String valveOffset = null;
     private String programData = null;
-
-    private HashMap<String, Object> properties = new HashMap<>();
+    private String boostDuration = null;
+    private String boostValve = null;
+    private Map<String, Object> properties = new HashMap<>();
 
     public C_Message(String raw) {
         super(raw);
@@ -155,16 +150,10 @@ public final class C_Message extends Message {
             properties.put("TimeZone (Daylight)",
                     new String(Arrays.copyOfRange(bytes, 0x00E2, 0x00E6), "UTF-8").trim());
 
-            properties.put("Unknown1", Utils.getHex(Arrays.copyOfRange(bytes, 0x13, 0x33))); // Pushbutton Up config
-                                                                                             // 0=auto, 1=eco, 2=comfort
-            properties.put("Unknown2", Utils.getHex(Arrays.copyOfRange(bytes, 0x34, 0x54))); // Pushbutton down config
-                                                                                             // 0=auto, 1=eco, 2=comfort
-            properties.put("Winter Time", parseTimeInfo(Arrays.copyOfRange(bytes, 0xDB, 0xE2), "Winter").toString()); // Date
-                                                                                                                      // of
-                                                                                                                      // wintertime
-            properties.put("Summer Time", parseTimeInfo(Arrays.copyOfRange(bytes, 0xE7, 0xEF), "Summer").toString()); // Date
-                                                                                                                      // of
-                                                                                                                      // summertime
+            properties.put("Unknown1", Utils.getHex(Arrays.copyOfRange(bytes, 0x13, 0x33))); // Pushbutton Up config 0=auto, 1=eco, 2=comfort
+            properties.put("Unknown2", Utils.getHex(Arrays.copyOfRange(bytes, 0x34, 0x54))); // Pushbutton down  config 0=auto, 1=eco, 2=comfort
+            properties.put("Winter Time", parseTimeInfo(Arrays.copyOfRange(bytes, 0xDB, 0xE2), "Winter").toString()); // Date of wintertime
+            properties.put("Summer Time", parseTimeInfo(Arrays.copyOfRange(bytes, 0xE7, 0xEF), "Summer").toString()); // Date of summertime
 
         } catch (UnsupportedEncodingException e) {
             logger.debug("Cannot encode device string from C message due to encoding issues.");
@@ -192,14 +181,14 @@ public final class C_Message extends Message {
 
             int plusDataStart = 18;
             int programDataStart = 11;
-            tempComfort = new BigDecimal((bytes[plusDataStart] & 0xFF) / 2D);
-            tempEco = new BigDecimal((bytes[plusDataStart + 1] & 0xFF) / 2D);
-            tempSetpointMax = new BigDecimal((bytes[plusDataStart + 2] & 0xFF) / 2D);
-            tempSetpointMin = new BigDecimal((bytes[plusDataStart + 3] & 0xFF) / 2D);
-            properties.put(PROPERTY_THERMO_COMFORT_TEMP, tempComfort.setScale(1, RoundingMode.HALF_DOWN));
-            properties.put(PROPERTY_THERMO_ECO_TEMP, tempEco.setScale(1, RoundingMode.HALF_DOWN));
-            properties.put(PROPERTY_THERMO_MAX_TEMP_SETPOINT, tempSetpointMax.setScale(1, RoundingMode.HALF_DOWN));
-            properties.put(PROPERTY_THERMO_MIN_TEMP_SETPOINT, tempSetpointMin.setScale(1, RoundingMode.HALF_DOWN));
+            tempComfort = Float.toString(bytes[plusDataStart] / 2);
+            tempEco = Float.toString(bytes[plusDataStart + 1] / 2);
+            tempSetpointMax = Float.toString(bytes[plusDataStart + 2] / 2);
+            tempSetpointMin = Float.toString(bytes[plusDataStart + 3] / 2);
+            properties.put("Temp Comfort", tempComfort);
+            properties.put("Temp Eco", tempEco);
+            properties.put("Temp Setpoint Max", tempSetpointMax);
+            properties.put("Temp Setpoint Min", tempSetpointMin);
             if (bytes.length < 211) {
                 // Device is a WallMountedThermostat
                 programDataStart = 4;
@@ -211,23 +200,22 @@ public final class C_Message extends Message {
                         Float.toString(bytes[bytes.length - 1] & 0xFF));
             } else {
                 // Device is a HeatingThermostat(+)
-                tempOffset = new BigDecimal((bytes[plusDataStart + 4] & 0xFF) / 2D - 3.5);
-                tempOpenWindow = new BigDecimal((bytes[plusDataStart + 5] & 0xFF) / 2D);
-                durationOpenWindow = new BigDecimal((bytes[plusDataStart + 6] & 0xFF) * 5);
-                boostDuration = new BigDecimal(bytes[plusDataStart + 7] & 0xFF >> 5);
-                boostValve = new BigDecimal((bytes[plusDataStart + 7] & 0x1F) * 5);
-                decalcification = new BigDecimal(bytes[plusDataStart + 8]);
-                valveMaximum = new BigDecimal((bytes[plusDataStart + 9] & 0xFF) * 100 / 255);
-                valveOffset = new BigDecimal((bytes[plusDataStart + 10] & 0xFF) * 100 / 255);
-                properties.put(PROPERTY_THERMO_OFFSET_TEMP, tempOffset.setScale(1, RoundingMode.HALF_DOWN));
-                properties.put(PROPERTY_THERMO_WINDOW_OPEN_TEMP, tempOpenWindow.setScale(1, RoundingMode.HALF_DOWN));
-                properties.put(PROPERTY_THERMO_WINDOW_OPEN_DURATION,
-                        durationOpenWindow.setScale(0, RoundingMode.HALF_DOWN));
-                properties.put(PROPERTY_THERMO_BOOST_DURATION, boostDuration.setScale(0, RoundingMode.HALF_DOWN));
-                properties.put(PROPERTY_THERMO_BOOST_VALVEPOS, boostValve.setScale(0, RoundingMode.HALF_DOWN));
-                properties.put(PROPERTY_THERMO_DECALCIFICATION, decalcification.setScale(0, RoundingMode.HALF_DOWN));
-                properties.put(PROPERTY_THERMO_VALVE_MAX, valveMaximum.setScale(0, RoundingMode.HALF_DOWN));
-                properties.put(PROPERTY_THERMO_VALVE_OFFSET, valveOffset.setScale(0, RoundingMode.HALF_DOWN));
+                tempOffset = Double.toString((bytes[plusDataStart + 4] / 2) - 3.5);
+                tempOpenWindow = Float.toString(bytes[plusDataStart + 5] / 2);
+                durationOpenWindow = Float.toString(bytes[plusDataStart + 6]);
+                boostDuration = Float.toString(bytes[plusDataStart + 7] & 0xFF >> 5);
+                boostValve = Float.toString((bytes[plusDataStart + 7] & 0x1F) * 5);
+                decalcification = Float.toString(bytes[plusDataStart + 8]);
+                valveMaximum = Float.toString(bytes[plusDataStart + 9] & 0xFF * 100 / 255);
+                valveOffset = Float.toString(bytes[plusDataStart + 10] & 0xFF * 100 / 255);
+                properties.put("Temp Offset", tempOffset);
+                properties.put("Temp Open Window", tempOpenWindow);
+                properties.put("Duration Open Windoww", durationOpenWindow);
+                properties.put("Duration Boost", boostDuration);
+                properties.put("Duration Boost", boostValve);
+                properties.put("Decalcification", decalcification);
+                properties.put("ValveMaximum", valveMaximum);
+                properties.put("ValveOffset", valveOffset);
             }
             programData = "";
             int ln = 13 * 6; // first day = Sat
@@ -271,7 +259,7 @@ public final class C_Message extends Message {
         return deviceType;
     }
 
-    public HashMap<String, Object> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
@@ -289,9 +277,7 @@ public final class C_Message extends Message {
         logger.debug("RoomID:                   {}", roomId);
         for (String key : properties.keySet()) {
             if (!key.startsWith("Unknown")) {
-                String propertyName = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), ' ');
-                logger.debug("{}:{}{}", propertyName, Strings.repeat(" ", 25 - propertyName.length()),
-                        properties.get(key));
+                logger.debug("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
             } else {
                 logger.debug("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), properties.get(key));
             }

@@ -127,9 +127,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     @Override
     public void dispose() {
         logger.debug("Disposing serial thing handler.");
-        if (serialPort != null) {
-            serialPort.removeEventListener();
-        }
         IOUtils.closeQuietly(inputStream);
         IOUtils.closeQuietly(outputStream);
         if (serialPort != null) {
@@ -164,7 +161,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                 } catch (PortInUseException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Could not open serial port " + serialPort + ": " + e.getMessage());
-                    return;
                 }
 
                 try {
@@ -172,7 +168,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Could not open serial port " + serialPort + ": " + e.getMessage());
-                    return;
                 }
 
                 try {
@@ -180,7 +175,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                 } catch (TooManyListenersException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Could not open serial port " + serialPort + ": " + e.getMessage());
-                    return;
                 }
 
                 // activate the DATA_AVAILABLE notifier
@@ -194,7 +188,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
 
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Could not configure serial port " + serialPort + ": " + e.getMessage());
-                    return;
                 }
 
                 try {
@@ -204,8 +197,9 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Could not communicate with the serial port " + serialPort + ": " + e.getMessage());
-                    return;
                 }
+
+                return;
 
             } else {
                 StringBuilder sb = new StringBuilder();

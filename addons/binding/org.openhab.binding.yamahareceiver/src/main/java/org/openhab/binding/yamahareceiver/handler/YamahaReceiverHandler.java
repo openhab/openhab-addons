@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -24,7 +23,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.discovery.ZoneDiscoveryService;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverState;
@@ -43,9 +41,8 @@ public class YamahaReceiverHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(YamahaReceiverHandler.class);
     private String host;
-    private int refrehInterval = 60; // Default: Every 1min
+    private int refrehInterval = 1; // Default: Every 1min
     private float relativeVolumeChangeFactor = 0.5f; // Default: 0.5 percent
-    private long lastRefreshInMS = 0;
     private YamahaReceiverState state = null;
     private ScheduledFuture<?> refreshTimer;
     private ZoneDiscoveryService zoneDiscoveryService;
@@ -167,7 +164,7 @@ public class YamahaReceiverHandler extends BaseThingHandler {
             public void run() {
                 updateReceiverState();
             }
-        }, initial_wait_time, interval_config, TimeUnit.SECONDS);
+        }, initial_wait_time, interval_config, TimeUnit.MINUTES);
 
         refrehInterval = interval_config;
     }
@@ -175,23 +172,15 @@ public class YamahaReceiverHandler extends BaseThingHandler {
     /**
      * All channels of this thing will be updated after a response from the Yamaha device.
      * If the device does not respond it be assumed to be offline.
-     * We cannot refresh just a single channel, but only all
-     * channels at a time. Because that is a costly operation, we only allow a refresh every
-     * 3 seconds.
      */
     private void updateReceiverState() {
-        if (lastRefreshInMS + 3000 > System.currentTimeMillis()) {
-            return;
-        }
-        lastRefreshInMS = System.currentTimeMillis();
-
         try {
             state.updateState();
             updateStatus(ThingStatus.ONLINE);
             updateState(YamahaReceiverBindingConstants.CHANNEL_POWER, state.isPower() ? OnOffType.ON : OnOffType.OFF);
             updateState(YamahaReceiverBindingConstants.CHANNEL_INPUT, new StringType(state.getInput()));
             updateState(YamahaReceiverBindingConstants.CHANNEL_SURROUND, new StringType(state.getSurroundProgram()));
-            updateState(YamahaReceiverBindingConstants.CHANNEL_VOLUME, new PercentType((int) state.getVolume()));
+            updateState(YamahaReceiverBindingConstants.CHANNEL_VOLUME, new DecimalType(state.getVolume()));
             updateState(YamahaReceiverBindingConstants.CHANNEL_MUTE, state.isMute() ? OnOffType.ON : OnOffType.OFF);
             updateState(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_TUNE, new DecimalType(state.netRadioChannel));
             logger.trace("State upddated!");
@@ -208,14 +197,6 @@ public class YamahaReceiverHandler extends BaseThingHandler {
         }
 
         String id = channelUID.getId();
-
-        // The user want to refresh a value. We cannot refresh just a single channel, but only all
-        // channels at a time. Because that is a costly operation, we only allow a user requested refresh every
-        // 3 seconds.
-        if (command instanceof RefreshType) {
-            updateReceiverState();
-            return;
-        }
 
         try {
             switch (id) {

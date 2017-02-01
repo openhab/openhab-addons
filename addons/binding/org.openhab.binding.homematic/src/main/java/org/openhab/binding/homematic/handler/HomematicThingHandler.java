@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -210,8 +210,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         try {
             if (HomematicTypeGeneratorImpl.isStatusDatapoint(dp)) {
                 updateStatus(dp.getChannel().getDevice());
-            }
-            if (dp.getParamsetType() == HmParamsetType.MASTER) {
+            } else if (dp.getParamsetType() == HmParamsetType.MASTER) {
                 // update configuration
                 Configuration config = editConfiguration();
                 config.put(MetadataUtils.getParameterName(dp), dp.getValue());

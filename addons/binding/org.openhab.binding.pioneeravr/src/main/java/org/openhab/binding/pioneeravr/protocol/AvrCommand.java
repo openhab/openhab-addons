@@ -10,7 +10,7 @@ package org.openhab.binding.pioneeravr.protocol;
 
 /**
  * The base interface for an AVR command.
- *
+ * 
  * @author Antoine Besnard
  *
  */
@@ -18,24 +18,22 @@ public interface AvrCommand {
 
     /**
      * Represent a CommandType of command requests
-     *
+     * 
      * @author Antoine Besnard
      *
      */
     public interface CommandType {
 
         /**
-         * Return the command of this command type for the given zone.
-         *
-         * The first zone number is 1.
-         *
+         * Return the command of this command type
+         * 
          * @return
          */
-        public String getCommand(int zone);
+        public String getCommand();
 
         /**
          * Return the name of the command type
-         *
+         * 
          * @return
          */
         public String name();
@@ -43,21 +41,14 @@ public interface AvrCommand {
 
     /**
      * Return the command to send to the AVR.
-     *
+     * 
      * @return
      */
     public String getCommand();
 
     /**
-     * Return the number of the zone this command will be sent to.
-     *
-     * @return
-     */
-    public int getZone();
-
-    /**
      * Return the the command type of this command.
-     *
+     * 
      * @return
      */
     public CommandType getCommandType();

@@ -8,20 +8,20 @@
  */
 package org.openhab.binding.orvibo.internal;
 
-import static org.openhab.binding.orvibo.OrviboBindingConstants.THING_TYPE_S20;
+import static org.openhab.binding.orvibo.OrviboBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Collection;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.orvibo.handler.AllOneHandler;
 import org.openhab.binding.orvibo.handler.S20Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.tavalin.s20.S20Client;
+import com.google.common.collect.Lists;
 
 /**
  * The {@link OrviboHandlerFactory} is responsible for creating things and thing
@@ -32,8 +32,8 @@ import com.github.tavalin.s20.S20Client;
 public class OrviboHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(OrviboHandlerFactory.class);
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_S20);
-    private S20Client s20Client;
+    private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(THING_TYPE_S20,
+            THING_TYPE_ALLONE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,6 +45,8 @@ public class OrviboHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_S20)) {
             return new S20Handler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ALLONE)) {
+            return new AllOneHandler(thing);
         }
         return null;
     }

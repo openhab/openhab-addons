@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
@@ -19,9 +22,6 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * RFXCOM data class for lighting6 message. See Blyss.
@@ -49,16 +49,6 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            return SubType.UNKNOWN;
-        }
     }
 
     public enum Commands {
@@ -82,16 +72,6 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
         public byte toByte() {
             return (byte) command;
         }
-
-        public static Commands fromByte(int input) {
-            for (Commands c : Commands.values()) {
-                if (c.command == input) {
-                    return c;
-                }
-            }
-
-            return Commands.UNKNOWN;
-        }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays
@@ -100,11 +80,11 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
             .asList(RFXComValueSelector.COMMAND);
 
-    public SubType subType = SubType.UNKNOWN;
+    public SubType subType = SubType.BLYSS;
     public int sensorId = 0;
     public char groupCode = 'A';
     public byte unitCode = 0;
-    public Commands command = Commands.UNKNOWN;
+    public Commands command = Commands.OFF;
     public byte signalLevel = 0;
 
     public RFXComLighting6Message() {
@@ -131,13 +111,24 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) {
+
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        try {
+            subType = SubType.values()[super.subType];
+        } catch (Exception e) {
+            subType = SubType.UNKNOWN;
+        }
+
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF) << 0;
         groupCode = (char) data[6];
         unitCode = data[7];
-        command = Commands.fromByte(data[8]);
+
+        try {
+            command = Commands.values()[data[8]];
+        } catch (Exception e) {
+            command = Commands.UNKNOWN;
+        }
 
         signalLevel = (byte) ((data[11] & 0xF0) >> 4);
     }

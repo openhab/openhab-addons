@@ -10,7 +10,6 @@ package org.openhab.binding.hdanywhere.handler;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +22,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.hdanywhere.HDanywhereBindingConstants.Port;
 import org.slf4j.Logger;
@@ -95,44 +93,35 @@ public class HDanywhereHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
-        if (command instanceof RefreshType) {
-            // Simply schedule a single run of the polling runnable to refresh all channels
-            scheduler.schedule(pollingRunnable, 0, TimeUnit.SECONDS);
+        String channelID = channelUID.getId();
+
+        String host = (String) getConfig().get(IP_ADDRESS);
+        int numberOfPorts = ((BigDecimal) getConfig().get(PORTS)).intValue();
+        int sourcePort = Integer.valueOf(command.toString());
+        int outputPort = Port.get(channelID).toNumber();
+
+        if (sourcePort > numberOfPorts) {
+            // nice try - we can switch to a port that does not physically exist
+            logger.warn("Source port {} goes beyond the physical number of {} ports available on the matrix {}",
+                    new Object[] { sourcePort, numberOfPorts, host });
+        } else if (outputPort > numberOfPorts) {
+            // nice try - we can switch to a port that does not physically exist
+            logger.warn("Output port {} goes beyond the physical number of {} ports available on the matrix {}",
+                    new Object[] { outputPort, numberOfPorts, host });
         } else {
 
-            String channelID = channelUID.getId();
+            String httpMethod = "GET";
+            String url = "http://" + host + "/switch.cgi?command=3&data0=";
 
-            String host = (String) getConfig().get(IP_ADDRESS);
-            int numberOfPorts = ((BigDecimal) getConfig().get(PORTS)).intValue();
-            int sourcePort = Integer.valueOf(command.toString());
-            int outputPort = Port.get(channelID).toNumber();
+            url = url + String.valueOf(outputPort) + "&data1=";
+            url = url + command.toString() + "&checksum=";
 
-            if (sourcePort > numberOfPorts) {
-                // nice try - we can switch to a port that does not physically exist
-                logger.warn("Source port {} goes beyond the physical number of {} ports available on the matrix {}",
-                        new Object[] { sourcePort, numberOfPorts, host });
-            } else if (outputPort > numberOfPorts) {
-                // nice try - we can switch to a port that does not physically exist
-                logger.warn("Output port {} goes beyond the physical number of {} ports available on the matrix {}",
-                        new Object[] { outputPort, numberOfPorts, host });
-            } else {
+            int checksum = 3 + outputPort + sourcePort;
+            url = url + String.valueOf(checksum);
 
-                String httpMethod = "GET";
-                String url = "http://" + host + "/switch.cgi?command=3&data0=";
-
-                url = url + String.valueOf(outputPort) + "&data1=";
-                url = url + command.toString() + "&checksum=";
-
-                int checksum = 3 + outputPort + sourcePort;
-                url = url + String.valueOf(checksum);
-
-                try {
-                    HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);
-                } catch (IOException e) {
-                    logger.error("Communication with device failed: {}", e);
-                }
-            }
+            HttpUtil.executeUrl(httpMethod, url, null, null, null, timeout);
         }
+
     }
 
     @Override

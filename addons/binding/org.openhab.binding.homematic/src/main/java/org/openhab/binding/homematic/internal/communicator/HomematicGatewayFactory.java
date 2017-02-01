@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,7 +26,7 @@ public class HomematicGatewayFactory {
      */
     public static HomematicGateway createGateway(String id, HomematicConfig config, HomematicGatewayListener listener)
             throws IOException {
-        loadGatewayInfo(config, id);
+        loadGatewayInfo(config);
         if (config.getGatewayInfo().isCCU()) {
             return new CcuGateway(id, config, listener);
         } else if (config.getGatewayInfo().isHomegear()) {
@@ -39,10 +39,10 @@ public class HomematicGatewayFactory {
     /**
      * Loads some metadata about the type of the Homematic gateway.
      */
-    private static void loadGatewayInfo(HomematicConfig config, String id) throws IOException {
+    private static void loadGatewayInfo(HomematicConfig config) throws IOException {
         RpcClient rpcClient = new XmlRpcClient(config);
         try {
-            config.setGatewayInfo(rpcClient.getGatewayInfo(id));
+            config.setGatewayInfo(rpcClient.getGatewayInfo());
         } finally {
             rpcClient.dispose();
         }

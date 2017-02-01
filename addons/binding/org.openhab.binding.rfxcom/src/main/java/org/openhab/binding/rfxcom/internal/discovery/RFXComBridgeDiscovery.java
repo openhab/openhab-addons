@@ -112,16 +112,16 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
             logger.debug("Discovery done");
 
         } catch (IOException e) {
-            logger.error("Error occurred during discovery", e);
+            logger.error("Error occured during discovery", e);
         } catch (UnsatisfiedLinkError e) {
             if (unsatisfiedLinkErrorLogged) {
                 logger.debug(
-                        "Error occurred when trying to load native library for OS '{}' version '{}', processor '{}'",
+                        "Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
                         System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"),
                         e);
             } else {
                 logger.error(
-                        "Error occurred when trying to load native library for OS '{}' version '{}', processor '{}'",
+                        "Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
                         System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"),
                         e);
                 unsatisfiedLinkErrorLogged = true;

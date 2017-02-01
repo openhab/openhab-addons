@@ -31,7 +31,7 @@ public class TemperatureModel {
 	private BigDecimal offset;
 
 	public BigDecimal getCelsius() {
-		return celsius != null ? celsius.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+		return celsius.multiply(TEMP_FACTOR);
 	}
 
 	public void setCelsius(BigDecimal celsius) {
@@ -39,7 +39,7 @@ public class TemperatureModel {
 	}
 
 	public BigDecimal getOffset() {
-		return offset != null ? offset.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+		return offset.multiply(TEMP_FACTOR);
 	}
 
 	public void setOffset(BigDecimal offset) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,8 +17,6 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Converts between a Homematic datapoint value and a openHab PercentType.
@@ -26,7 +24,6 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
-    private static final Logger logger = LoggerFactory.getLogger(PercentTypeConverter.class);
 
     /**
      * {@inheritDoc}
@@ -74,10 +71,6 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
 
         if (isRollerShutter(dp)) {
             number = dp.getMaxValue().doubleValue() - number;
-        }
-        if (number < 0.0 || number > 100.0) {
-            logger.warn("Percent value '{}' out of range, truncating value for {}", number, dp);
-            number = number < 0.0 ? 0.0 : 100.0;
         }
         if (dp.isIntegerType()) {
             return number.intValue();
