@@ -4,13 +4,14 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.isy.IsyBindingConstants;
+import org.openhab.binding.isy.config.IsyVariableConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class IsyVariableHandler extends BaseThingHandler implements IsyThingHandler {
+public class IsyVariableHandler extends AbtractIsyThingHandler implements IsyThingHandler {
     private static final Logger logger = LoggerFactory.getLogger(IsyVariableHandler.class);
 
     public IsyVariableHandler(Thing thing) {
@@ -20,7 +21,17 @@ public class IsyVariableHandler extends BaseThingHandler implements IsyThingHand
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO implement
-        logger.warn("Must handle command for program");
+        if (RefreshType.REFRESH.equals(command)) {
+            logger.debug("Must implement refresh for variables");
+        } else {
+            if (command instanceof DecimalType) {
+                IsyVariableConfiguration var_config = getThing().getConfiguration().as(IsyVariableConfiguration.class);
+                getBridgeHandler().getInsteonClient().changeVariableState(var_config.type, var_config.id,
+                        ((DecimalType) command).intValue());
+            } else {
+                logger.warn("Unsupported command for variable handleCommand");
+            }
+        }
 
     }
 

@@ -11,6 +11,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.isy.IsyBindingConstants;
 import org.openhab.binding.isy.config.IsyInsteonDeviceConfiguration;
+import org.openhab.binding.isy.config.IsyProgramConfiguratiuon;
+import org.openhab.binding.isy.config.IsyVariableConfiguration;
 import org.openhab.binding.isy.handler.IsyBridgeHandler;
 import org.openhab.binding.isy.internal.InsteonAddress;
 import org.openhab.binding.isy.internal.Node;
@@ -96,8 +98,8 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
         for (Program program : insteon.getPrograms()) {
             logger.debug("discovered program: " + program);
             properties = new HashMap<>(0);
-            properties.put(IsyInsteonDeviceConfiguration.ID, program.getId());
-            properties.put(IsyInsteonDeviceConfiguration.NAME, program.getName());
+            properties.put(IsyProgramConfiguratiuon.ID, program.getId());
+            properties.put(IsyProgramConfiguratiuon.NAME, program.getName());
 
             ThingTypeUID theThingTypeUid = IsyBindingConstants.PROGRAM_THING_TYPE;
             String thingID = program.getName().replace(" ", "").replaceAll("\\.", "");
@@ -139,8 +141,8 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
         for (Variable variable : insteon.getVariables()) {
             logger.debug("discovered program: " + variable);
             properties = new HashMap<>(0);
-            properties.put(IsyInsteonDeviceConfiguration.ID, variable.id);
-            properties.put(IsyInsteonDeviceConfiguration.TYPE, variable.type);
+            properties.put(IsyVariableConfiguration.ID, variable.id);
+            properties.put(IsyVariableConfiguration.TYPE, variable.type);
 
             String typeAsText;
             if ("1".equals(variable.type)) {

@@ -33,6 +33,7 @@ public class IsyRestClient implements OHIsyClient {
     private Logger logger = LoggerFactory.getLogger(IsyRestClient.class);
     public static final String NODES = "nodes";
     public static final String PROGRAMS = "programs";
+    public static final String VARIABLES_SET = "vars/set";
     public static final String VARIABLES = "vars/get";
     public static final String SCENES = "scenes";
     public static final String STATUS = "status";
@@ -361,9 +362,10 @@ public class IsyRestClient implements OHIsyClient {
 
     @Override
     public boolean changeVariableState(String type, String id, int value) {
-        // TODO Auto-generated method stub
-        logger.warn("Unimplemented change variable state");
-        return false;
+        Response result = isyTarget.path(VARIABLES_SET).path(type).path(id).path(Integer.toString(value)).request()
+                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).get();
+        // TODO implement return value
+        return result.getStatus() == 200;
     }
 
     @Override
