@@ -37,7 +37,7 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
 
     private Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryService.class);
 
-    private static int TIMEOUT = 5;
+    private static int TIMEOUT = 120;
 
     KM200GatewayHandler gateway;
 

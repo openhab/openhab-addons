@@ -449,6 +449,12 @@ public class KM200Comm<KM200BindingProvider> {
                     /* have to be completed */
                     break;
 
+                case "eMonitoringList":
+                    logger.debug("initDevice: type eMonitoringList: {}", decodedData);
+                    newObject.setJSONData(decodedData);
+                    /* have to be completed */
+                    break;
+
                 case "$$PROTECTED$$":
                     logger.debug("initDevice: readonly");
                     newObject.setJSONData(decodedData);
@@ -733,6 +739,11 @@ public class KM200Comm<KM200BindingProvider> {
 
                 case "arrayData": /* Check whether the type is a arrayData */
                     logger.info("state of: type arrayData is not supported yet: {}", decodedData);
+                    /* have to be completed */
+                    break;
+
+                case "eMonitoringList": /* Check whether the type is a eMonitoringList */
+                    logger.info("state of: type eMonitoringList is not supported yet: {}", decodedData);
                     /* have to be completed */
                     break;
             }
