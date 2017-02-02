@@ -23,7 +23,6 @@ public class SceneHandler extends AbtractIsyThingHandler {
         IsyBridgeHandler bridgeHandler = getBridgeHandler();
         IsyInsteonDeviceConfiguration test = getThing().getConfiguration().as(IsyInsteonDeviceConfiguration.class);
         String myAddress = test.address;
-        logger.warn("Must handle command for program");
         if (command.equals(RefreshType.REFRESH)) {
             // TODO implement
             logger.debug("need to implement refresh");
@@ -33,9 +32,9 @@ public class SceneHandler extends AbtractIsyThingHandler {
         } else if (OnOffType.OFF.equals(command)) {
             bridgeHandler.getInsteonClient().changeSceneState(myAddress, 0);
 
+        } else {
+            logger.warn("Unexpected command: " + command.toFullString());
         }
-        // bridgeHandler
-        // bridgeHandler.getInsteonClient().changeSceneState("address", value);
     }
 
     @Override
