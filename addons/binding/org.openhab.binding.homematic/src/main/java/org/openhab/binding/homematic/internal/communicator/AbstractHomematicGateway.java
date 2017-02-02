@@ -165,7 +165,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         if (sb.length() > 2) {
             sb.setLength(sb.length() - 2);
         }
-        logger.debug("Used Homematic transfer modes: " + sb.toString());
+        logger.debug("Used Homematic transfer modes: {}", sb.toString());
         startClients();
         startServers();
         startWatchdogs();
