@@ -6,11 +6,17 @@
 
     <thing-type id="gas_ace4000" listed="false">
         <label>Gas meter (ACE4000)</label>
-        <description>This is a gas meter that complies to the ACE4000 GTMM Mk3 specification</description>
+        <description>
+        <![CDATA[
+        This is a gas meter that complies to the ACE4000 GTMM Mk3 specification.<br><br>
+            Refresh rate: 24 hour
+        ]]>
+        </description>
 
         <channels>
-            <channel id="gmeter_equipment_identifier" typeId="equipmentIdType"/>
+            <channel id="meter_equipment_identifier" typeId="equipmentIdType"/>
             <channel id="gmeter_24h_delivery_v2" typeId="gasDelivery24HType"/>
+            <channel id="gmeter_24h_delivery_v2_timestamp" typeId="p1TimestampType"/>
             <channel id="gmeter_valve_position_v2_2" typeId="gasValvePositionType"/>
         </channels>
         <config-description-ref uri="binding:dsmr:meterdescriptor"/>

@@ -19,13 +19,7 @@
     <channel-type id="gasDeliveryType">
         <item-type>Number</item-type>
         <label>Gas delivery (m3)</label>
-        <description>The total amount used in the past hour in m3.</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="gasDeliveryType_V5">
-        <item-type>Number</item-type>
-        <label>Gas delivery (m3)</label>
-        <description>The total amount used in the past 5 minutes in  m3.</description>
+        <description>The total amount used in the past period.</description>
         <state readOnly="true"></state>
     </channel-type>
     <channel-type id="gasValvePositionType">

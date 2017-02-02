@@ -10,8 +10,8 @@
             <![CDATA[
                 This is the device meter that complies to the DSMR V4 specification.<br><br>
                 The channel p1_text_code and p1_text_string will be updated when the central system of the supplier company the device is communicating new values.<br>
-                The channel p1_version will never change.<br>
-                The channel p1_timestamp will change every 10 seconds.
+                The channel p1_version will never change.<br><br>
+                Refresh rate: 10 seconds
             ]]>
         </description>
         <channels>

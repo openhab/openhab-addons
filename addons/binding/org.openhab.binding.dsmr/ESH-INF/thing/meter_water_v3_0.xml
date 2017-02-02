@@ -6,7 +6,12 @@
 
     <thing-type id="water_v3_0" listed="false">
         <label>Water meter (DSMR V3.0)</label>
-        <description>This is a water meter that complies to the DSMR V3.0 specification</description>
+        <description>
+        <![CDATA[
+            This is a water meter that complies to the DSMR V3.0 specification.<br><br>
+                Refresh rate: 1 hour
+            ]]>
+        </description>
 
         <channels>
             <channel id="meter_device_type" typeId="deviceType"/>

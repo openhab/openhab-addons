@@ -9,13 +9,14 @@
         <description>
             <![CDATA[ 
                 This is a cooling meter that complies to the DSMR V2.2 specification.<br><br>
-                The meter readings are updated every hour in.
+                Refresh rate: 1 hour.
             ]]>
         </description>
 
         <channels>
-            <channel id="meter_equipment_identifier_v2_2" typeId="equipmentIdType"/>
+            <channel id="cmeter_equipment_identifier_v2_2" typeId="equipmentIdType"/>
             <channel id="cmeter_value_v2" typeId="coolingValueType"/>
+            <channel id="cmeter_value_v2_timestamp" typeId="p1TimestampType"/>
         </channels>
         <config-description-ref uri="binding:dsmr:meterdescriptor"/>
     </thing-type>

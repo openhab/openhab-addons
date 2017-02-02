@@ -6,7 +6,12 @@
 
     <thing-type id="heating_ace4000" listed="false">
         <label>Heating meter (ACE4000)</label>
-        <description>This is a heating meter that complies to the ACE4000 GTMM Mk3 specification</description>
+        <description>
+        <![CDATA[
+            This is a heating meter that complies to the ACE4000 GTMM Mk3 specification.<br><br>
+                Refresh rate: 1 hour
+            ]]>
+        </description>
 
         <channels>
             <channel id="meter_equipment_identifier" typeId="equipmentIdType"/>

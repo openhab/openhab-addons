@@ -7,13 +7,7 @@
     <channel-type id="gjValueType">
         <item-type>Number</item-type>
         <label>Delivery (GJ)</label>
-        <description>The total amount delivered in the past hour in GJ.</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="gjValueType_V5">
-        <item-type>Number</item-type>
-        <label>Delivery (GJ)</label>
-        <description>The total amount delivered in the 5 minutes in GJ.</description>
+        <description>The total amount delivered in the past period.</description>
         <state readOnly="true"></state>
     </channel-type>
     <channel-type id="gjValvePositionType">

@@ -9,7 +9,8 @@
         <description>
             <![CDATA[
                 This is the device meter that complies to the DSMR V2.x or V3 specification.<br><br>
-                The channnel values will be updated when the central system of the supplier company the device is communicating new values.
+                The channnel values will be updated when the central system of the supplier company the device is communicating new values.<br><br>
+                Refresh rate: 10 seconds
             ]]>
         </description>
 

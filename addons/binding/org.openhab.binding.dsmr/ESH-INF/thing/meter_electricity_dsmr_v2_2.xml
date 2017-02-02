@@ -6,7 +6,12 @@
 
     <thing-type id="electricity_v2_2" listed="false">
         <label>Electricity meter (DSMR V2.2)</label>
-        <description>This is an electricity meter that complies to the DSMR V2.2 specification</description>
+        <description>
+        <![CDATA[
+        This is an electricity meter that complies to the DSMR V2.2 specification.<br><br>
+            Refresh rate: 10 seconds
+        ]]>
+        </description>
 
         <channels>
             <channel id="emeter_equipment_identifier_v2_x" typeId="equipmentIdType"/>
@@ -16,7 +21,7 @@
             <channel id="emeter_production_tariff2" typeId="productionTariff2Type"/>
             <channel id="emeter_tariff_indicator" typeId="tariffIndicatorType"/>
             <channel id="emeter_treshold_a" typeId="actualTresholdAType"/>
-            <channel id="meter_valve_switch_position" typeId="switchPositionType"/>
+            <channel id="meter_switch_position" typeId="switchPositionType"/>
             <channel id="emeter_actual_delivery" typeId="actualDeliveryType"/>
         </channels>
         <config-description-ref uri="binding:dsmr:meterdescriptor"/>

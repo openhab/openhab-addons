@@ -12,14 +12,16 @@
                 It is not possible for the binding to detect if the m3-meter is a gas or a water meter.<br>
                 If you now on which M-Bus channel the gas / water meter is connected you can determine the channel from it's descriptor.
                 The descriptor has the following format 'dsmr:m3_v5_0:[M-Bus channel]_[identifier]:[channelname].<br>
-                If you don't know the M-Bus channel you can determine this by hand by comparing real meter values vs the reported values.
+                If you don't know the M-Bus channel you can determine this by hand by comparing real meter values vs the reported values.<br><br>
+                Refresh rate: 5 minutes
             ]]>
         </description>
 
         <channels>
             <channel id="meter_device_type" typeId="deviceType"/>
             <channel id="meter_equipment_identifier" typeId="equipmentIdType"/>
-            <channel id="m3meter_value" typeId="m3ValueType_V5"/>
+            <channel id="m3meter_value" typeId="m3ValueType"/>
+            <channel id="m3meter_value_timestamp" typeId="p1TimestampType"/>
         </channels>
         <config-description-ref uri="binding:dsmr:meterdescriptor"/>
     </thing-type>
