@@ -6,7 +6,12 @@
 
     <thing-type id="electricity_v2_1" listed="false">
         <label>Electricity meter (DSMR V2.1)</label>
-        <description>This is an electricity meter that complies to the DSMR V2.1 specification</description>
+        <description>
+        <![CDATA[
+        This is an electricity meter that complies to the DSMR V2.1 specification.<br><br>
+            Refresh rate: 10 seconds
+        ]]>
+        </description>
 
         <channels>
             <channel id="emeter_equipment_identifier_v2_x" typeId="equipmentIdType"/>

@@ -6,12 +6,18 @@
 
     <thing-type id="gas_v3_0" listed="false">
         <label>Gas meter (DSMR V3.0)</label>
-        <description>This is a gas meter that complies to the DSMR V3.0 specification</description>
+        <description>
+        <![CDATA[
+        This is a gas meter that complies to the DSMR V3.0 specification.<br><br>
+            Refresh rate: 1 hour
+        ]]>
+        </description>
 
         <channels>
             <channel id="meter_device_type" typeId="deviceType"/>
             <channel id="meter_equipment_identifier" typeId="equipmentIdType"/>
             <channel id="gmeter_value_v3" typeId="gasDeliveryType"/>
+            <channel id="gmeter_value_v3_timestamp" typeId="p1TimestampType"/>
             <channel id="meter_valve_switch_position" typeId="gasValvePositionType"/>
         </channels>
         <config-description-ref uri="binding:dsmr:meterdescriptor"/>

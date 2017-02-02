@@ -118,12 +118,27 @@
         <description>The number of long power failures.</description>
         <state readOnly="true"></state>
     </channel-type>
-    <channel-type id="powerFailureLogType">
-        <item-type>String</item-type>
-        <label>Power failures log</label>
-        <description>The power failure log.</description>
+    <channel-type id="powerFailureLogEntriesType">
+        <item-type>Number</item-type>
+        <label>Power failure log entries</label>
+        <description>Number of log entries.</description>
         <state readOnly="true"></state>
     </channel-type>
+    <channel-type id="powerFailureLogEndType">
+        <item-type>DateTime</item-type>
+        <label>Power failure end</label>
+        <description>Timestamp when the power failure ended. There can be multiple log entries. 
+                    Each entry has it's own channel (emeter_power_failure_log_timestamp*x*, *x* = 0 - 9)</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="powerFailureLogDurationType">
+        <item-type>Number</item-type>
+        <label>Power failure duration</label>
+        <description>Duration of the power failure in seconds. 
+                    Each entry has it's own channel (emeter_power_failure_log_duration*x*, *x* = 0 - 9)</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
     <channel-type id="voltageSagsL1Type">
         <item-type>Number</item-type>
         <label>Number of voltage sags L1</label>

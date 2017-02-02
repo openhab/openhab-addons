@@ -9,6 +9,7 @@
         <description>
             <![CDATA[
                 This is a generic meter that complies to the DSMR V3.0 specification.<br><br>
+                Refresh rate: 1 hour
             ]]>
         </description>
 

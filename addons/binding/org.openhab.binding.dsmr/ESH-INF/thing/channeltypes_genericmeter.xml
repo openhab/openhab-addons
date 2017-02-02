@@ -7,7 +7,7 @@
     <channel-type id="genValueType">
         <item-type>Number</item-type>
         <label>Delivery</label>
-        <description>The total amount delivered in the past hour.</description>
+        <description>The total amount delivered in the past period.</description>
         <state readOnly="true"></state>
     </channel-type>
     <channel-type id="genValvePositionType">

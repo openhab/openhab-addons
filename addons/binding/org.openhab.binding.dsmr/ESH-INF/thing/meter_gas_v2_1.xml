@@ -6,12 +6,19 @@
 
     <thing-type id="gas_v2_1" listed="false">
         <label>Gas meter (DSMR V2.1)</label>
-        <description>This is a gas meter that complies to the DSMR V2.1 specification</description>
+        <description>
+        <![CDATA[
+        This is a gas meter that complies to the DSMR V2.1 specification.<br><br>
+            Refresh rate: 1 hour
+        ]]>
+        </description>
 
         <channels>
             <channel id="gmeter_equipment_identifier_v2" typeId="equipmentIdType"/>
             <channel id="gmeter_24h_delivery_v2" typeId="gasDelivery24HType"/>
+            <channel id="gmeter_24h_delivery_v2_timestamp" typeId="p1TimestampType"/>
             <channel id="gmeter_24h_delivery_compensated_v2" typeId="gasCompensatedDelivery24HType"/>
+            <channel id="gmeter_24h_delivery_compensated_v2_timestamp" typeId="p1TimestampType"/>
             <channel id="gmeter_valve_position_v2_1" typeId="gasValvePositionType"/>
         </channels>
         <config-description-ref uri="binding:dsmr:meterdescriptor"/>

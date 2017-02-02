@@ -7,13 +7,7 @@
     <channel-type id="waterValueType">
         <item-type>Number</item-type>
         <label>Water delivery (m3)</label>
-        <description>The total amount of water used in the past hour in m3.</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="waterValueType_V5">
-        <item-type>Number</item-type>
-        <label>Water delivery (m3)</label>
-        <description>The total amount of water used in the 5 minutes in m3.</description>
+        <description>The total amount of water used in the past period.</description>
         <state readOnly="true"></state>
     </channel-type>
     <channel-type id="waterValvePositionType">

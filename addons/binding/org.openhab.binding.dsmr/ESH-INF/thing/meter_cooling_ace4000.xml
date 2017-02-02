@@ -9,7 +9,7 @@
         <description>
 	        <![CDATA[ 
 	            This is a cooling meter that complies to the ACE4000 GTMM Mk3 specification.<br><br>
-	            The meter readings are updated every hour.
+	            Refresh rate: 1 hour.
 	        ]]>
         </description>
         <channels>

@@ -7,13 +7,7 @@
     <channel-type id="m3ValueType">
         <item-type>Number</item-type>
         <label>Delivery (m3)</label>
-        <description>The total amount delivered in the past hour in m3.</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    <channel-type id="m3ValueType_V5">
-        <item-type>Number</item-type>
-        <label>Delivery (m3)</label>
-        <description>The total amount delivered in the 5 minutes in m3.</description>
+        <description>The total amount delivered in the past period.</description>
         <state readOnly="true"></state>
     </channel-type>
     <channel-type id="m3ValvePositionType">

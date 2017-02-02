@@ -6,13 +6,18 @@
 
     <thing-type id="slave_electricity_v5" listed="false">
         <label>Slave electricity meter (DSMR V5.x)</label>
-        <description>This is the slave electricity meter that complies to the DSMR 5.x specification</description>
+        <description>
+        <![CDATA[
+        This is the slave electricity meter that complies to the DSMR 5.x specification.<br><br>
+            Refresh rate: 5 minutes
+        ]]>
+        </description>
 
         <channels>
             <channel id="meter_device_type" typeId="deviceType"/>
             <channel id="meter_equipment_identifier" typeId="equipmentIdType"/>
             <channel id="emeter_value" typeId="deliveryType"/>
-            <channel id="emeter_switch_position" typeId="switchPositionType"/>
+            <channel id="emeter_value_timestamp" typeId="p1TimestampType"/>
         </channels>
         <config-description-ref uri="binding:dsmr:meterdescriptor"/>
     </thing-type>

@@ -6,11 +6,11 @@
 
   <config-description uri="binding:dsmr:bridgesettings">
     <parameter name="serialPort" type="text" required="true">
-      <default>/dev/ttyUSB0</default>
+      <default></default>
       <label>Serial Port</label>
       <description>The Serial Port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
     </parameter>
-    <parameter name="serialPortSettings" type="text" pattern="(\\d+)\\s+(\\d)([neoNEO])(1\\.5|1|2)" required="false">
+    <parameter name="serialPortSettings" type="text" pattern="\d+\s+\d[neoNEO](1\.5|1|2)" required="false">
       <default></default>
       <label>Serial Port Settings</label>
       <description><![CDATA[ In case autodetecting the Serial Port settings fails it is possible to specify the Serial Port Settings in this field.<br>
@@ -27,20 +27,10 @@
     
   </config-description>
   <config-description uri="binding:dsmr:meterdescriptor">
-    <parameter name="meterType" type="text" required="true" readOnly="true">
-        <advanced>true</advanced>
-        <label>Meter type</label>
-        <description>The meter type. This is a technical value filled by the binding. Users don't need to adapt this.</description>
-    </parameter>
     <parameter name="channel" type="decimal" required="true" readOnly="true">
         <advanced>true</advanced>
         <label>Channel</label>
         <description>The DSMR-device channel for this meter. This is a technical value filled by the binding. Users should not adapt this.</description>
-    </parameter>
-    <parameter name="idString" type="text" required="true" readOnly="true">
-        <advanced>true</advanced>
-        <label>Identification</label>
-        <description>The meter identification for this meter. This is a technical value filled by the binding. Users should not adapt this.</description>
     </parameter>
   </config-description>
 </config-description:config-descriptions>

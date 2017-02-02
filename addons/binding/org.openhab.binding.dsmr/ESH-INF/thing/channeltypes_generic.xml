@@ -37,7 +37,7 @@
     <channel-type id="p1TimestampType">
         <item-type>DateTime</item-type>
         <label>Timestamp</label>
-        <description>Timestamp of the last device read out.</description>
+        <description>Timestamp of the last meter reading.</description>
         <state readOnly="true"></state>
     </channel-type>
 </thing:thing-descriptions>

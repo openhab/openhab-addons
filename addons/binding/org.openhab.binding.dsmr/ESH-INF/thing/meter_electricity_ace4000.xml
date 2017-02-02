@@ -6,7 +6,12 @@
 
     <thing-type id="electricity_ace4000" listed="false">
         <label>Electricity meter (ACE4000)</label>
-        <description>This is an electricity meter that complies to the ACE4000 GTMM Mk3 specification</description>
+        <description>
+        <![CDATA[
+            This is an electricity meter that complies to the ACE4000 GTMM Mk3 specification.<br><br>
+            Refresh rate: 10 seconds
+        ]]>
+        </description>
 
         <channels>
             <channel id="emeter_equipment_identifier" typeId="equipmentIdType"/>
