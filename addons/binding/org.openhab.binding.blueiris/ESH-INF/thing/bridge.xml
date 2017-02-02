@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="blueiris" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- The bridge to handle talking to the elk -->
+	<bridge-type id="bridge">
+		<label>Blue Iris Connection</label>
+		<description>Connection to the blue iris camera system</description>
+
+		<channels>
+			<channel id="webArchive" typeId="webArchive" />
+			<channel id="globalSchedule" typeId="globalSchedule" />
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<label>Ip Address</label>
+				<description>The ip address of the blue iris system.</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>The port to connect to on the blue iris system.</description>
+			</parameter>
+			<parameter name="user" type="text">
+				<label>User</label>
+				<description>The user name for the blue iris system.</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>The password for the blue iris system.</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer">
+				<label>pollInterval</label>
+				<default>10</default>
+				<description>The number of seconds to poll the blue iris system for updated camera status.</description>
+			</parameter>
+            <parameter name="configPollInterval" type="integer">
+                <label>configPollInterval</label>
+                <default>14400</default>
+                <description>The number of minutes to poll the blue iris system for updated system config.</description>
+            </parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="webArchive">
+		<item-type>Switch</item-type>
+		<label>Web Archival</label>
+		<description>enable web archival</description>
+	</channel-type>
+	<channel-type id="globalSchedule">
+		<item-type>Switch</item-type>
+		<label>Global Schedule</label>
+		<description>enable or disable the global schedule</description>
+	</channel-type>
+</thing:thing-descriptions>
