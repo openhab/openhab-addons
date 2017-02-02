@@ -14,10 +14,12 @@
 			<label>Port</label>
 			<description>Port of the Onkyo to control</description>
 			<default>60128</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="udn" type="text">
 			<label>Unique Device Name</label>
 			<description>The UDN identifies the Onkyo AVR.</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="0">
 			<label>Refresh Interval</label>
