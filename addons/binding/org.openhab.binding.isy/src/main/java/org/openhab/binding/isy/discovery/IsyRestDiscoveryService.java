@@ -136,7 +136,6 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void discoverVariables() {
-        // TODO implement
         OHIsyClient insteon = this.bridgeHandler.getInsteonClient();
         Map<String, Object> properties = null;
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
