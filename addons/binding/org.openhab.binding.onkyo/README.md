@@ -38,7 +38,9 @@ This binding can discover the supported Onkyo AV Receivers. At the moment only t
 
 The binding can auto-discover the Onkyo AVRs present on your local network. The auto-discovery is enabled by default. To disable it, you can create a file in the services directory called onkyo.cfg with the following content:
 
-```org.openhab.onkyo:enableAutoDiscovery=false```
+```
+org.openhab.onkyo:enableAutoDiscovery=false
+```
 
 This configuration parameter only controls the Onkyo AVR auto-discovery process, not the openHAB auto-discovery. Moreover, if the openHAB auto-discovery is disabled, the Onkyo AVR auto-discovery is disabled too.
 
@@ -56,21 +58,29 @@ In the thing file, this looks e.g. like
 
 Model specific
 
-```onkyo:TX-NR818:myOnkyo [ipAddress="192.168.1.100", port="60128"]```
+```
+onkyo:TX-NR818:myOnkyo [ipAddress="192.168.1.100", port="60128"]
+```
 
 or
 
 Generic model
 
-```onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128"]```
+```
+onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128"]
+```
 
 Optionally you can specify the refresh interval by refreshInterval parameter.
 
-```onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128", refreshInterval=30]```
+```
+onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128", refreshInterval=30]
+```
 
 Maximum volume level can also be configured by volumeLimit parameter. This prevent setting receiver volume level too high, which could damage your speakers or receiver.
 
-```onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128", volumeLimit=50]```
+```
+onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128", volumeLimit=50]
+```
 
 Binding then automatically scale the volume level in both directions (100% = 50 = 100%).
 
