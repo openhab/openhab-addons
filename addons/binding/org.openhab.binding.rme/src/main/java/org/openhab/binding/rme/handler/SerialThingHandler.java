@@ -116,6 +116,10 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         if (serialPort != null) {
             serialPort.close();
         }
+
+        if (readerThread != null) {
+            readerThread.interrupt();
+        }
     }
 
     @Override
