@@ -36,6 +36,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openhab.binding.km200.KM200ServiceTypes;
 import org.openhab.binding.km200.internal.KM200Comm;
 import org.openhab.binding.km200.internal.KM200CommObject;
@@ -168,6 +170,18 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                 } else {
                     logger.info("Test of the communication to the gateway was successful..");
                 }
+                /* Testing the received data, is decryption working? */
+                try {
+                    JSONObject nodeRoot = new JSONObject(decodedData);
+                    String type = nodeRoot.getString("type");
+                    String id = nodeRoot.getString("id");
+                } catch (JSONException e) {
+                    logger.error("The data is not readable, check the key and password configuration!", e.getMessage(),
+                            decodedData);
+                    updateStatus(ThingStatus.OFFLINE);
+                    return;
+                }
+
                 logger.info("Init services..");
                 /* communication is working */
                 /* Checking of the device specific services and creating of a service list */
