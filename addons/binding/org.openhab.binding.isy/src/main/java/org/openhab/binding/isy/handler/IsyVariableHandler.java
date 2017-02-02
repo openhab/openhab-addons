@@ -29,7 +29,7 @@ public class IsyVariableHandler extends AbtractIsyThingHandler implements IsyThi
                 getBridgeHandler().getInsteonClient().changeVariableState(var_config.type, var_config.id,
                         ((DecimalType) command).intValue());
             } else {
-                logger.warn("Unsupported command for variable handleCommand");
+                logger.warn("Unsupported command for variable handleCommand: " + command.toFullString());
             }
         }
 
