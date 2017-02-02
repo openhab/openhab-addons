@@ -21,6 +21,7 @@
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.dscalarm</module>
