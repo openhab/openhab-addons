@@ -59,6 +59,8 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     protected int baud;
     protected String port;
     protected int bufferSize;
+    protected int sleep = 100;
+    Thread readerThread = null;
 
     public SerialThingHandler(Thing thing) {
         super(thing);
@@ -94,42 +96,21 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     }
 
     @Override
-    public void serialEvent(SerialPortEvent event) {
-
-        switch (event.getEventType()) {
-            case SerialPortEvent.BI:
-            case SerialPortEvent.OE:
-            case SerialPortEvent.FE:
-            case SerialPortEvent.PE:
-            case SerialPortEvent.CD:
-            case SerialPortEvent.CTS:
-            case SerialPortEvent.DSR:
-            case SerialPortEvent.RI:
-            case SerialPortEvent.OUTPUT_BUFFER_EMPTY:
-                break;
-            case SerialPortEvent.DATA_AVAILABLE:
-                try {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(inputStream), bufferSize);
-                    while (br.ready()) {
-                        String line = br.readLine();
-                        logger.debug("Receiving '{}' on '{}'", line, getConfig().get(PORT));
-                        onDataReceived(line);
-                    }
-                } catch (IOException e) {
-                    String port = (String) getConfig().get(PORT);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error receiving data on serial port " + port + " : " + e.getMessage());
-                }
-                break;
+    public void serialEvent(SerialPortEvent arg0) {
+        try {
+            /*
+             * See more details from
+             * https://github.com/NeuronRobotics/nrjavaserial/issues/22
+             */
+            logger.trace("RXTX library CPU load workaround, sleep forever");
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (InterruptedException e) {
         }
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing serial thing handler.");
-        if (serialPort != null) {
-            serialPort.removeEventListener();
-        }
         IOUtils.closeQuietly(inputStream);
         IOUtils.closeQuietly(outputStream);
         if (serialPort != null) {
@@ -160,7 +141,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
             if (portId != null) {
                 // initialize serial port
                 try {
-                    serialPort = portId.open(this.getThing().getUID().getBindingId(), 2000);
+                    serialPort = portId.open("openHAB", 2000);
                 } catch (PortInUseException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Could not open serial port " + serialPort + ": " + e.getMessage());
@@ -207,6 +188,9 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                     return;
                 }
 
+                readerThread = new SerialPortReader(inputStream);
+                readerThread.start();
+
             } else {
                 StringBuilder sb = new StringBuilder();
                 portList = CommPortIdentifier.getPortIdentifiers();
@@ -227,5 +211,54 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         // by default, we write anything we received as a string to the serial
         // port
         writeString(command.toString());
+    }
+
+    public class SerialPortReader extends Thread {
+
+        private boolean interrupted = false;
+        private InputStream inputStream;
+
+        public SerialPortReader(InputStream in) {
+            this.inputStream = in;
+            this.setName("SerialPortReader-" + getThing().getUID());
+        }
+
+        @Override
+        public void interrupt() {
+
+            interrupted = true;
+            super.interrupt();
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+            } // quietly close
+        }
+
+        @Override
+        public void run() {
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream), bufferSize);
+
+            try {
+                while (interrupted != true) {
+                    if (br.ready()) {
+                        String line = br.readLine();
+                        logger.debug("Receving '{}' on '{}'", line, getConfig().get(PORT));
+                        onDataReceived(line);
+                    }
+
+                    Thread.sleep(sleep);
+                }
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                String port = (String) getConfig().get(PORT);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Reception of data on serial port " + port + " has been interrupted : " + e.getMessage());
+            } catch (IOException e) {
+                String port = (String) getConfig().get(PORT);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error receiving data on serial port " + port + " : " + e.getMessage());
+            }
+        }
     }
 }
