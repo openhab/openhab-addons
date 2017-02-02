@@ -59,7 +59,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     protected int baud;
     protected String port;
     protected int bufferSize;
-    protected int sleep = 100;
+    protected long sleep = 100;
     Thread readerThread = null;
 
     public SerialThingHandler(Thing thing) {
@@ -255,9 +255,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                String port = (String) getConfig().get(PORT);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Reception of data on serial port " + port + " has been interrupted : " + e.getMessage());
             } catch (IOException e) {
                 String port = (String) getConfig().get(PORT);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

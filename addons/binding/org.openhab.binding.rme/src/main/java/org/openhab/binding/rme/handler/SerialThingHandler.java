@@ -255,9 +255,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                String port = (String) getConfig().get(PORT);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Reception of data on serial port " + port + " has been interrupted : " + e.getMessage());
             } catch (IOException e) {
                 String port = (String) getConfig().get(PORT);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
