@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="silvercrestwifisocket"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Socket Thing Type -->
+    <thing-type id="wifiSocket">
+        <label>Silvercrest Wifi Socket</label>
+        <description>Supports Silvercrest Wifi Socket SWS-A1.</description>
+
+        <channels>
+            <channel id="switch" typeId="switch"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="macAddress" type="text" required="true">
+                <label>MAC address</label>
+                <description>The socket MAC address.</description>
+            </parameter>
+            <parameter name="hostAddress" type="text">
+                <label>Host address</label>
+                <context>network-address</context>
+                <description>The socket Host address. The binding is able to discover the host address.</description>
+            </parameter>
+            <parameter name="updateInterval" type="integer" min="5">
+                <label>Update interval</label>
+                <description>Update time interval in seconds to request the status of the socket.</description>
+            </parameter>
+        </config-description>
+        
+    </thing-type>
+
+    <!-- Socket type Channel Type -->
+    <channel-type id="switch">
+        <item-type>Switch</item-type>
+        <label>Socket Switch</label>
+        <description>Silvercrest Wifi Socket Switch to turn on or off.</description>
+    </channel-type>
+
+</thing:thing-descriptions>

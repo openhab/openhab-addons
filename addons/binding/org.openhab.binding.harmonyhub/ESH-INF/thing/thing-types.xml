@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="harmonyhub"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="hub">
+        <label>Harmony Hub</label>
+        <description>A Logitech Harmony Hub</description>
+          <channels>
+            <channel id="currentActivity" typeId="currentActivity" />
+        </channels>
+        <properties>
+            <property name="host"></property>
+            <property name="accountId"></property>
+            <property name="sessionId"></property>
+            <property name="id"></property>
+        </properties>
+        <config-description>
+	        <parameter name="name" type="text" required="true">
+	                <label>Name</label>
+	                <description>The name given to the hub when first setup (case insensitive)
+	                </description>
+	        </parameter>
+            <parameter name="discoveryTimeout" type="integer" required="false">
+                <label>Discovery Timeout</label>
+                <description>How long in seconds to search the network for this hub.
+                </description>
+            </parameter>
+            <parameter name="heartBeatInterval" type="integer" required="false">
+                <label>Heart Beat Interval</label>
+                <description>Heart beat keep alive time in seconds.
+                </description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+    
+    <thing-type id="device">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="harmonyHub" />
+        </supported-bridge-type-refs>
+        <label>Harmony Device</label>
+        <description>Logitech Harmony Hub Device</description>
+        <channels>
+            <channel id="buttonPress" typeId="buttonPress" />
+        </channels>
+        <config-description>
+            <parameter name="id" type="integer" required="false">
+                <label>id</label>
+                <description>Numeric ID of the Harmony Device (id or name is required)</description>
+            </parameter>
+            <parameter name="name" type="text" required="false">
+                <label>id</label>
+                <description>Name of the Harmony Device (name or id is required)</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <channel-type id="currentActivity">
+        <item-type>String</item-type>
+        <label>Current Activity</label>
+        <description>The label/name of the current activity of a Harmony Hub</description>
+    </channel-type>
+    
+     <channel-type id="buttonPress">
+        <item-type>String</item-type>
+        <label>Button Press</label>
+        <description>The label/name of the button to press on a Harmony Hub device (write only)</description>
+    </channel-type>
+</thing:thing-descriptions>

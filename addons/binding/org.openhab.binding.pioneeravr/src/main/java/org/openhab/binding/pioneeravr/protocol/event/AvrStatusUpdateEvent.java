@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,6 @@ package org.openhab.binding.pioneeravr.protocol.event;
 
 import org.openhab.binding.pioneeravr.protocol.AvrConnection;
 
-
 /**
  * The event fired when a status is received from the AVR.
  * 
@@ -18,20 +17,20 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
  */
 public class AvrStatusUpdateEvent {
 
-	private AvrConnection connection;
-	private String data;
+    private AvrConnection connection;
+    private String data;
 
-	public AvrStatusUpdateEvent(AvrConnection connection, String data) {
-		this.connection = connection;
-		this.data = data;
-	}
+    public AvrStatusUpdateEvent(AvrConnection connection, String data) {
+        this.connection = connection;
+        this.data = data;
+    }
 
-	public AvrConnection getConnection() {
-		return connection;
-	}
+    public AvrConnection getConnection() {
+        return connection;
+    }
 
-	public String getData() {
-		return data;
-	}
+    public String getData() {
+        return data;
+    }
 
 }

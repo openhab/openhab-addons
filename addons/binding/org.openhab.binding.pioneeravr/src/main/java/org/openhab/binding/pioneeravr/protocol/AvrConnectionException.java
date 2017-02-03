@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,22 +16,22 @@ package org.openhab.binding.pioneeravr.protocol;
  */
 public class AvrConnectionException extends RuntimeException {
 
-	private static final long serialVersionUID = -7970958467980752003L;
+    private static final long serialVersionUID = -7970958467980752003L;
 
-	public AvrConnectionException() {
-		super();
-	}
+    public AvrConnectionException() {
+        super();
+    }
 
-	public AvrConnectionException(String message) {
-		super(message);
-	}
+    public AvrConnectionException(String message) {
+        super(message);
+    }
 
-	public AvrConnectionException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public AvrConnectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public AvrConnectionException(Throwable cause) {
-		super(cause);
-	}
+    public AvrConnectionException(Throwable cause) {
+        super(cause);
+    }
 
 }

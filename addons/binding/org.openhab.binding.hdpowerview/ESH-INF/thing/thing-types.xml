@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hdpowerview"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="hub">
+        <label>PowerView Hub</label>
+        <description>Hunter Douglas PowerView Hub</description>
+        
+        <config-description>
+            <parameter name="host" type="text" required="true">
+                <label>Host</label>
+                <description>The Host address of the PowerView Hub.</description>
+                <context>network_address</context>
+            </parameter>
+            <parameter name="refresh" type="integer" required="false">
+                <label>Refresh Interval</label>
+                <description>The number of milliseconds between fetches of the PowerView Hub shade state.</description>
+                <default>60000</default>
+            </parameter>
+        </config-description>
+    </bridge-type>
+    
+    <thing-type id="shade">
+        <label>PowerView Shade</label>
+        <description>Hunter Douglas PowerView Shade</description>
+        <channels>
+            <channel id="position" typeId="shade-position"/>
+            <channel id="vane" typeId="shade-vane"/>
+            <channel id="lowBattery" typeId="system.low-battery"/>
+        </channels>
+        <config-description>
+            <parameter name="id" type="text" required="true">
+                <label>ID</label>
+                <description>The ID of the PowerView Shade.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="shade-position">
+        <item-type>Rollershutter</item-type>
+        <label>Position</label>
+        <description>The vertical position of the shade</description>
+    </channel-type>
+    <channel-type id="shade-vane">
+        <item-type>Dimmer</item-type>
+        <label>Vane</label>
+        <description>The opening of the slats in the shade</description>
+    </channel-type>
+    
+    <channel-type id="scene-activate">
+        <item-type>Switch</item-type>
+        <label>Activate</label>
+        <description>Activates the scene</description>
+    </channel-type>
+
+</thing:thing-descriptions>

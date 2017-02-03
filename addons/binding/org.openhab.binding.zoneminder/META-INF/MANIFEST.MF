@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ZoneMinder Binding
+Bundle-SymbolicName: org.openhab.binding.zoneminder;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .,
+ lib/gson-2.7.jar,
+ lib/guava-17.0.jar,
+ lib/jersey-common-2.4.1.jar,
+ lib/javax.ws.rs-api-2.0.1.jar,
+ lib/jsoup-1.10.1.jar,
+ lib/zoneminder4j-0.9.7.jar 
+Import-Package: 
+ com.google.common.collect,
+ javax.ws.rs.client,
+ javax.ws.rs.core,
+ org.apache.commons.net.util,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.zoneminder,
+ org.openhab.binding.zoneminder.handler,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Export-Package: org.openhab.binding.zoneminder,
+ org.openhab.binding.zoneminder.handler
