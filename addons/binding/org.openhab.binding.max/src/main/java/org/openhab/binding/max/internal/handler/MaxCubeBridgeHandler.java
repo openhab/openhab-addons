@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -36,7 +35,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -162,8 +160,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private final Lock pollingJobLock = new ReentrantLock();
     private final Lock queueConsumerLock = new ReentrantLock();
-
-    protected final ScheduledExecutorService bridgeScheduler = ThreadPoolManager.getScheduledPool("max-scheduler-pool");
 
     private ScheduledFuture<?> pollingJob;
     private final Runnable pollingRunnable = new Runnable() {
@@ -330,8 +326,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         pollingJobLock.tryLock(5, TimeUnit.SECONDS);
         try {
             if (pollingJob == null || pollingJob.isCancelled()) {
-                pollingJob = bridgeScheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval,
-                        TimeUnit.SECONDS);
+                pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
             }
         } finally {
             pollingJobLock.unlock();
@@ -339,7 +334,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         queueConsumerLock.tryLock(5, TimeUnit.SECONDS);
         try {
             if (queueConsumerThread == null || !queueConsumerThread.isAlive()) {
-                queueConsumerThread = new Thread(new QueueConsumer(commandQueue));
+                queueConsumerThread = new Thread(new QueueConsumer(commandQueue), "max-queue-consumer");
                 queueConsumerThread.setDaemon(true);
                 queueConsumerThread.start();
             }
@@ -390,20 +385,18 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 while (!Thread.currentThread().isInterrupted()) {
                     waitForNormalDutyCycle();
                     final SendCommand sendCommand = commandQueue.take();
-                    if (sendCommand != null) {
-                        CubeCommand cmd = sendCommand.getCubeCommand();
-                        if (cmd == null) {
-                            cmd = getCommand(sendCommand);
-                        }
-                        if (cmd != null) {
-                            // Actual sending of the data to the Max! Cube Lan Gateway
-                            logger.debug("Command {} sent to MAX! Cube at IP: {}", sendCommand, ipAddress);
+                    CubeCommand cmd = sendCommand.getCubeCommand();
+                    if (cmd == null) {
+                        cmd = getCommand(sendCommand);
+                    }
+                    if (cmd != null) {
+                        // Actual sending of the data to the Max! Cube Lan Gateway
+                        logger.debug("Command {} sent to MAX! Cube at IP: {}", sendCommand, ipAddress);
 
-                            if (sendCubeCommand(cmd)) {
-                                logger.trace("Command {} completed for MAX! Cube at IP: {}", sendCommand, ipAddress);
-                            } else {
-                                logger.warn("Error sending command {} to MAX! Cube at IP: {}", sendCommand, ipAddress);
-                            }
+                        if (sendCubeCommand(cmd)) {
+                            logger.trace("Command {} completed for MAX! Cube at IP: {}", sendCommand, ipAddress);
+                        } else {
+                            logger.warn("Error sending command {} to MAX! Cube at IP: {}", sendCommand, ipAddress);
                         }
                     }
                     Thread.sleep(50);
@@ -418,9 +411,20 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         private void waitForNormalDutyCycle() throws InterruptedException {
             dutyCycleLock.lock();
             try {
-                if (hasExcessDutyCycle()) {
+                while (hasExcessDutyCycle()) {
+                    socketLock.lock();
+                    try {
+                        if (socket != null && !socket.isClosed()) {
+                            socket.close();
+                        }
+                    } catch (IOException e) {
+                        logger.warn("Could not close socket", e);
+                        e.printStackTrace();
+                    } finally {
+                        socketLock.unlock();
+                    }
                     logger.debug("Found to have excess duty cycle, waiting for better times...");
-                    excessDutyCycle.await();
+                    excessDutyCycle.await(1, TimeUnit.MINUTES);
                 }
             } finally {
                 dutyCycleLock.unlock();
@@ -587,7 +591,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      */
     private boolean sendCubeCommand(CubeCommand command) {
         try {
-            socketLock.tryLock(20, TimeUnit.SECONDS);
+            socketLock.tryLock(120, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.warn("Could not acquire lock to command to cube", e);
         }
