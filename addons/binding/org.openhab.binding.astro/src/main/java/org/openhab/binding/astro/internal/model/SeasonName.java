@@ -10,9 +10,12 @@ package org.openhab.binding.astro.internal.model;
 
 /**
  * All season names.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public enum SeasonName {
-    SPRING, SUMMER, AUTUMN, WINTER;
+    SPRING,
+    SUMMER,
+    AUTUMN,
+    WINTER;
 }

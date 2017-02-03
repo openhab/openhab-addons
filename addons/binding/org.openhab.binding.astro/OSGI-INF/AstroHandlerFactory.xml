@@ -10,11 +10,8 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.astro.internal.AstroHandlerFactory">
-
    <implementation class="org.openhab.binding.astro.internal.AstroHandlerFactory"/>
-
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
-
 </scr:component>

@@ -12,16 +12,16 @@
 			<channel id="elevation" typeId="elevation" />
 		</channels>
 	</channel-group-type>
-	
-    <channel-group-type id="radiation">
-        <label>Radiation</label>
-        <description>The radiation level of the sun</description>
-        <channels>
-            <channel id="direct" typeId="directRadiation" />
-            <channel id="diffuse" typeId="diffuseRadiation" />        
-            <channel id="total" typeId="totalRadiation" />
-        </channels>
-    </channel-group-type>
+
+	<channel-group-type id="radiation">
+		<label>Radiation</label>
+		<description>The radiation level of the sun</description>
+		<channels>
+			<channel id="direct" typeId="directRadiation" />
+			<channel id="diffuse" typeId="diffuseRadiation" />
+			<channel id="total" typeId="totalRadiation" />
+		</channels>
+	</channel-group-type>
 
 	<channel-type id="azimuth">
 		<item-type>Number</item-type>
@@ -37,26 +37,26 @@
 		<state readOnly="true" pattern="%.2f °" />
 	</channel-type>
 
-    <channel-type id="directRadiation">
-        <item-type>Number</item-type>
-        <label>Direct Radiation</label>
-        <description>Level of radiation after penetration of the atmospheric layer</description>
-        <state readOnly="true" pattern="%.2f W/m²" />
-    </channel-type>
-    
-    <channel-type id="diffuseRadiation">
-        <item-type>Number</item-type>
-        <label>Diffuse Radiation</label>
-        <description>Level of radiation diffracted by clouds and atmosphere</description>
-        <state readOnly="true" pattern="%.2f W/m²" />
-    </channel-type>
-    
-    <channel-type id="totalRadiation">
-        <item-type>Number</item-type>
-        <label>Total Radiation</label>
-        <description>Total quantity of radiation on the ground</description>
-        <state readOnly="true" pattern="%.2f W/m²" />
-    </channel-type>
+	<channel-type id="directRadiation">
+		<item-type>Number</item-type>
+		<label>Direct Radiation</label>
+		<description>Level of radiation after penetration of the atmospheric layer</description>
+		<state readOnly="true" pattern="%.2f W/m²" />
+	</channel-type>
+
+	<channel-type id="diffuseRadiation">
+		<item-type>Number</item-type>
+		<label>Diffuse Radiation</label>
+		<description>Level of radiation diffracted by clouds and atmosphere</description>
+		<state readOnly="true" pattern="%.2f W/m²" />
+	</channel-type>
+
+	<channel-type id="totalRadiation">
+		<item-type>Number</item-type>
+		<label>Total Radiation</label>
+		<description>Total quantity of radiation on the ground</description>
+		<state readOnly="true" pattern="%.2f W/m²" />
+	</channel-type>
 
 	<!-- sun range -->
 	<channel-group-type id="sunRange">
