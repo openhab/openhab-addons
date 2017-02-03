@@ -7,16 +7,26 @@
  */
 package org.openhab.binding.nest.internal;
 
-import static org.openhab.binding.nest.NestBindingConstants.THING_TYPE_THERMOSTAT;
+import static org.openhab.binding.nest.NestBindingConstants.*;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.nest.discovery.NestDiscoveryService;
+import org.openhab.binding.nest.handler.NestBridgeHandler;
+import org.openhab.binding.nest.handler.NestCameraHandler;
 import org.openhab.binding.nest.handler.NestThermostatHandler;
+import org.osgi.framework.ServiceRegistration;
+
+import com.google.common.collect.Sets;
 
 /**
  * The {@link NestHandlerFactory} is responsible for creating things and thing
@@ -26,7 +36,10 @@ import org.openhab.binding.nest.handler.NestThermostatHandler;
  */
 public class NestHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_THERMOSTAT);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_THERMOSTAT,
+            THING_TYPE_CAMERA, THING_TYPE_BRIDGE);
+
+    Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -42,6 +55,32 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
             return new NestThermostatHandler(thing);
         }
 
+        if (thingTypeUID.equals(THING_TYPE_CAMERA)) {
+            return new NestCameraHandler(thing);
+        }
+
+        if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
+            NestBridgeHandler handler = new NestBridgeHandler((Bridge) thing);
+            NestDiscoveryService service = new NestDiscoveryService(handler);
+            service.activate();
+            discoveryService.put(handler.getThing().getUID(), bundleContext
+                    .registerService(NestDiscoveryService.class.getName(), service, new Hashtable<String, Object>()));
+            return handler;
+        }
+
         return null;
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof NestBridgeHandler) {
+            ServiceRegistration<?> reg = discoveryService.get(thingHandler.getThing().getUID());
+            if (reg != null) {
+                NestDiscoveryService service = (NestDiscoveryService) bundleContext.getService(reg.getReference());
+                service.deactivate();
+                reg.unregister();
+                discoveryService.remove(thingHandler.getThing().getUID());
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.config.NestBridgeConfiguration;
+import org.openhab.binding.nest.discovery.NestDiscoveryService;
 import org.openhab.binding.nest.internal.NestAccessToken;
 import org.openhab.binding.nest.internal.NestDeviceAddedListener;
 import org.openhab.binding.nest.internal.data.Camera;
@@ -139,7 +140,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         for (Camera camera : devices.getCameras().values()) {
             Thing thingCamera = getDevice(camera.getDeviceId(), things);
             if (thingCamera != null) {
-                NestThermostatHandler handler = (NestCameraHandler) thingCamera.getHandler();
+                NestCameraHandler handler = (NestCameraHandler) thingCamera.getHandler();
                 handler.updateCamera(camera);
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
@@ -176,5 +177,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     public void addDeviceAddedListener(NestDeviceAddedListener nestDiscoveryService) {
         this.listeners.add(nestDiscoveryService);
+    }
+
+    public void removeDeviceAddedListener(NestDiscoveryService nestDiscoveryService) {
+        this.listeners.remove(nestDiscoveryService);
     }
 }

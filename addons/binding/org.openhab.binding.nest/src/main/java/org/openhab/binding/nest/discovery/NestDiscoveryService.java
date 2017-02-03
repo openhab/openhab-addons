@@ -20,7 +20,15 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
     public NestDiscoveryService(NestBridgeHandler bridge) throws IllegalArgumentException {
         super(60);
         this.bridge = bridge;
+    }
+
+    public void activate() {
         bridge.addDeviceAddedListener(this);
+    }
+
+    @Override
+    public void deactivate() {
+        bridge.removeDeviceAddedListener(this);
     }
 
     @Override
