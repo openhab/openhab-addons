@@ -10,9 +10,16 @@ package org.openhab.binding.astro.internal.model;
 
 /**
  * All moon phases.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public enum MoonPhaseName {
-	NEW, WAXING_CRESCENT, FIRST_QUARTER, WAXING_GIBBOUS, FULL, WANING_GIBBOUS, THIRD_QUARTER, WANING_CRESCENT;
+    NEW,
+    WAXING_CRESCENT,
+    FIRST_QUARTER,
+    WAXING_GIBBOUS,
+    FULL,
+    WANING_GIBBOUS,
+    THIRD_QUARTER,
+    WANING_CRESCENT;
 }

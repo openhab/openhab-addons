@@ -10,9 +10,20 @@ package org.openhab.binding.astro.internal.model;
 
 /**
  * All zodiac signs.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public enum ZodiacSign {
-    ARIES, TAURUS, GEMINI, CANCER, LEO, VIRGO, LIBRA, SCORPIO, SAGITTARIUS, CAPRICORN, AQUARIUS, PISCES;
+    ARIES,
+    TAURUS,
+    GEMINI,
+    CANCER,
+    LEO,
+    VIRGO,
+    LIBRA,
+    SCORPIO,
+    SAGITTARIUS,
+    CAPRICORN,
+    AQUARIUS,
+    PISCES;
 }
