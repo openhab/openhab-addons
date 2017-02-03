@@ -55,7 +55,7 @@
         <channels>
             <channel id="quality" typeId="radioQuality" />
             <channel id="connection_status" typeId="connectionStatus" />
-            <channel id="state" typeId="radioState" />
+            <channel id="state" typeId="system.signal-strength" />
         </channels>
     </channel-group-type>
 
@@ -160,20 +160,6 @@
                 <option value="status_device_unreachable">Device unreachable</option>
                 <option value="status_device_alive">Device alive</option>
                 <option value="unknown">Unknown</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <channel-type id="radioState" advanced="true">
-        <item-type>String</item-type>
-        <label>Connection State</label>
-        <description>Connection State</description>
-        <state readOnly="true">
-            <options>
-                <option value="poor">Poor</option>
-                <option value="good">Good</option>
-                <option value="excellent">Excellent</option>
-                <option value="undefined">Undefined</option>
             </options>
         </state>
     </channel-type>

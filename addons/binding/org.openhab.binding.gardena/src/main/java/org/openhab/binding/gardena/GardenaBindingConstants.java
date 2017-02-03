@@ -30,6 +30,7 @@ public class GardenaBindingConstants {
 
     public static final String PROPERTY_CONNECTION_STATUS = "connection_status";
     public static final String PROPERTY_CONNECTION_STATUS_UNREACH_VALUE = "status_device_unreachable";
+    public static final String PROPERTY_STATE = "state";
 
     public static final String ABILITY_DEVICE_INFO = "device_info";
     public static final String ABILITY_RADIO = "radio";

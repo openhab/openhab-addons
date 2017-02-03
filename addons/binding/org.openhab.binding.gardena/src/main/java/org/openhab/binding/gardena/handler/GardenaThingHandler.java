@@ -95,13 +95,8 @@ public class GardenaThingHandler extends BaseThingHandler {
      */
     protected void updateChannel(ChannelUID channelUID) throws GardenaException, AccountHandlerNotAvailableException {
         Device device = getDevice();
-        String abilityName = channelUID.getGroupId();
-        String propertyName = channelUID.getIdWithoutGroup();
-
-        String stringValue = device.getAbility(abilityName).getProperty(propertyName).getValue();
-        State value = convertToState(stringValue, channelUID);
-        updateState(channelUID, value);
-        if (PROPERTY_CONNECTION_STATUS.equals(propertyName)) {
+        updateState(channelUID, convertToState(device, channelUID));
+        if (PROPERTY_CONNECTION_STATUS.equals(channelUID.getIdWithoutGroup())) {
             updateStatus(device);
         }
     }
@@ -109,7 +104,11 @@ public class GardenaThingHandler extends BaseThingHandler {
     /**
      * Converts a Gardena property value to a openHab state.
      */
-    private State convertToState(String value, ChannelUID channelUID) {
+    private State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
+        String abilityName = channelUID.getGroupId();
+        String propertyName = channelUID.getIdWithoutGroup();
+        String value = device.getAbility(abilityName).getProperty(propertyName).getValue();
+
         if (StringUtils.trimToNull(value) == null || StringUtils.equals(value, "N/A")
                 || StringUtils.startsWith(value, "1970-01-01")) {
             return UnDefType.NULL;
@@ -119,6 +118,18 @@ public class GardenaThingHandler extends BaseThingHandler {
             case "String":
                 return new StringType(value);
             case "Number":
+                if (ABILITY_RADIO.equals(abilityName) && PROPERTY_STATE.equals(propertyName)) {
+                    switch (value) {
+                        case "poor":
+                            return new DecimalType(1);
+                        case "good":
+                            return new DecimalType(2);
+                        case "excellent":
+                            return new DecimalType(4);
+                        default:
+                            return UnDefType.NULL;
+                    }
+                }
                 return new DecimalType(value);
             case "Switch":
                 return Boolean.TRUE.toString().equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF;
