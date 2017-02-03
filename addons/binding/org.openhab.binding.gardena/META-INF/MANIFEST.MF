@@ -13,7 +13,6 @@ Import-Package:
  org.apache.commons.collections,
  org.apache.commons.lang,
  org.apache.commons.lang.builder,
- org.codehaus.jackson.annotate,
  org.eclipse.jetty.client,
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,
