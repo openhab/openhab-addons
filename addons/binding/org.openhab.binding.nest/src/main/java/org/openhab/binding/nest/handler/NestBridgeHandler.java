@@ -1,6 +1,8 @@
-package org.openhab.binding.nest.internal;
+package org.openhab.binding.nest.handler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -9,20 +11,32 @@ import org.apache.commons.httpclient.util.URIUtil;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.config.NestBridgeConfiguration;
-import org.openhab.binding.nest.handler.NestThermostatHandler;
+import org.openhab.binding.nest.internal.NestAccessToken;
+import org.openhab.binding.nest.internal.NestDeviceAddedListener;
+import org.openhab.binding.nest.internal.data.Camera;
+import org.openhab.binding.nest.internal.data.NestDevices;
+import org.openhab.binding.nest.internal.data.Thermostat;
+import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class NestBridgeHandler extends BaseBridgeHandler {
     /** The url to use to connect to nest with. */
     private final static String NEST_URL = "https://developer-api.nest.com/";
 
     private Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
+
+    private List<NestDeviceAddedListener> listeners = new ArrayList<NestDeviceAddedListener>();
 
     // Will refresh the data each time it runs.
     private Runnable pollingRunnable = new Runnable() {
@@ -33,6 +47,8 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     };
 
     private ScheduledFuture<?> pollingJob;
+    private NestAccessToken accessToken;
+    private GsonBuilder builder = new GsonBuilder();
 
     public NestBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -44,6 +60,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
         NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
         startAutomaticRefresh(config.refreshInterval);
+        accessToken = new NestAccessToken(config);
     }
 
     @Override
@@ -61,6 +78,16 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    @Override
+    public void childHandlerInitialized(ThingHandler handler, Thing thing) {
+        // Called when a new thing is created.
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler handler, Thing thing) {
+        // Called when a thing is disposed.
+    }
+
     /**
      * Read the data from nest and then parse it into something useful.
      */
@@ -70,7 +97,10 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             String uri = buildQueryString(config);
             String data = jsonFromGetUrl(uri);
             // Now convert the incoming data into something more useful.
-
+            Gson gson = builder.create();
+            TopLevelData newData = gson.fromJson(data, TopLevelData.class);
+            // Turn this new data into things and stuff.
+            compareThings(newData.getDevices());
         } catch (URIException e) {
             logger.error("Error parsing nest url", e);
         } catch (IOException e) {
@@ -80,10 +110,49 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     }
 
-    private String buildQueryString(NestBridgeConfiguration config) throws URIException {
+    private Thing getDevice(String deviceId, List<Thing> things) {
+        for (Thing thing : things) {
+            String thingDeviceId = thing.getProperties().get("deviceId");
+            if (thingDeviceId.equals(deviceId)) {
+                return thing;
+            }
+        }
+        return null;
+    }
+
+    private void compareThings(NestDevices devices) {
+        Bridge bridge = getThing();
+
+        List<Thing> things = bridge.getThings();
+
+        for (Thermostat thermostat : devices.getThermostats().values()) {
+            Thing thingThermostat = getDevice(thermostat.getDeviceId(), things);
+            if (thingThermostat != null) {
+                NestThermostatHandler handler = (NestThermostatHandler) thingThermostat.getHandler();
+                handler.updateThermostat(thermostat);
+            } else {
+                for (NestDeviceAddedListener listener : listeners) {
+                    listener.onThermostatAdded(thermostat);
+                }
+            }
+        }
+        for (Camera camera : devices.getCameras().values()) {
+            Thing thingCamera = getDevice(camera.getDeviceId(), things);
+            if (thingCamera != null) {
+                NestThermostatHandler handler = (NestCameraHandler) thingCamera.getHandler();
+                handler.updateCamera(camera);
+            } else {
+                for (NestDeviceAddedListener listener : listeners) {
+                    listener.onCameraAdded(camera);
+                }
+            }
+        }
+    }
+
+    private String buildQueryString(NestBridgeConfiguration config) throws URIException, IOException {
         StringBuilder urlBuilder = new StringBuilder(NEST_URL);
         urlBuilder.append("?auth=");
-        urlBuilder.append(config.pincode);
+        urlBuilder.append(accessToken.getAccessToken());
         return URIUtil.encodeQuery(urlBuilder.toString());
     }
 
@@ -103,5 +172,9 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
+    }
+
+    public void addDeviceAddedListener(NestDeviceAddedListener nestDiscoveryService) {
+        this.listeners.add(nestDiscoveryService);
     }
 }

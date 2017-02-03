@@ -35,4 +35,6 @@ Import-Package:
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.nest,
- org.openhab.binding.nest.handler
+ org.openhab.binding.nest.handler,
+ org.openhab.binding.nest.internal.data
+Require-Bundle: org.eclipse.smarthome.config.discovery

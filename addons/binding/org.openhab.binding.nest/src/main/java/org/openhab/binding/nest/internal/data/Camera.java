@@ -57,6 +57,10 @@ public class Camera extends BaseNestDevice {
         return snapshotUrl;
     }
 
+    public Event getLastEvent() {
+        return lastEvent;
+    }
+
     @SerializedName("is_audio_input_enabled")
     private boolean isAudioInputEnabled;
     @SerializedName("last_is_online_change")
@@ -76,7 +80,7 @@ public class Camera extends BaseNestDevice {
     @SerializedName("snapshot_url")
     private String snapshotUrl;
     @SerializedName("last_event")
-    private List<Event> lastEvent;
+    private Event lastEvent;
 
     public static class ActivityZone {
         public boolean isName() {
@@ -133,12 +137,110 @@ public class Camera extends BaseNestDevice {
             return imageUrl;
         }
 
-        public String getAnimated_image_url() {
-            return animated_image_url;
+        public String getAnimatedImageUrl() {
+            return animatedImageUrl;
         }
 
         public List<String> getActivityZones() {
             return activityZones;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((activityZones == null) ? 0 : activityZones.hashCode());
+            result = prime * result + ((animatedImageUrl == null) ? 0 : animatedImageUrl.hashCode());
+            result = prime * result + ((appUrl == null) ? 0 : appUrl.hashCode());
+            result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
+            result = prime * result + (hasMotion ? 1231 : 1237);
+            result = prime * result + (hasPerson ? 1231 : 1237);
+            result = prime * result + (hasSound ? 1231 : 1237);
+            result = prime * result + ((imageUrl == null) ? 0 : imageUrl.hashCode());
+            result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
+            result = prime * result + ((urlsExpireTime == null) ? 0 : urlsExpireTime.hashCode());
+            result = prime * result + ((webUrl == null) ? 0 : webUrl.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Event other = (Event) obj;
+            if (activityZones == null) {
+                if (other.activityZones != null) {
+                    return false;
+                }
+            } else if (!activityZones.equals(other.activityZones)) {
+                return false;
+            }
+            if (animatedImageUrl == null) {
+                if (other.animatedImageUrl != null) {
+                    return false;
+                }
+            } else if (!animatedImageUrl.equals(other.animatedImageUrl)) {
+                return false;
+            }
+            if (appUrl == null) {
+                if (other.appUrl != null) {
+                    return false;
+                }
+            } else if (!appUrl.equals(other.appUrl)) {
+                return false;
+            }
+            if (endTime == null) {
+                if (other.endTime != null) {
+                    return false;
+                }
+            } else if (!endTime.equals(other.endTime)) {
+                return false;
+            }
+            if (hasMotion != other.hasMotion) {
+                return false;
+            }
+            if (hasPerson != other.hasPerson) {
+                return false;
+            }
+            if (hasSound != other.hasSound) {
+                return false;
+            }
+            if (imageUrl == null) {
+                if (other.imageUrl != null) {
+                    return false;
+                }
+            } else if (!imageUrl.equals(other.imageUrl)) {
+                return false;
+            }
+            if (startTime == null) {
+                if (other.startTime != null) {
+                    return false;
+                }
+            } else if (!startTime.equals(other.startTime)) {
+                return false;
+            }
+            if (urlsExpireTime == null) {
+                if (other.urlsExpireTime != null) {
+                    return false;
+                }
+            } else if (!urlsExpireTime.equals(other.urlsExpireTime)) {
+                return false;
+            }
+            if (webUrl == null) {
+                if (other.webUrl != null) {
+                    return false;
+                }
+            } else if (!webUrl.equals(other.webUrl)) {
+                return false;
+            }
+            return true;
         }
 
         @SerializedName("has_motion")
@@ -158,8 +260,8 @@ public class Camera extends BaseNestDevice {
         @SerializedName("image_url")
         private String imageUrl;
         @SerializedName("animated_image_url")
-        private String animated_image_url;
-        @SerializedName("activity_zones")
+        private String animatedImageUrl;
+        @SerializedName("activity_zone_ids")
         private List<String> activityZones;
     }
 }
