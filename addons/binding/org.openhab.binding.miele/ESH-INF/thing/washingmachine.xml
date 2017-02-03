@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="miele" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Washing machine -->
+	<thing-type id="washingmachine">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="xgw3000" />
+		</supported-bridge-type-refs>
+
+		<label>Washing Machine</label>
+		<description>This is a Miele@home compatible washing machine</description>
+
+		<channels>
+			<channel id="state" typeId="state" />
+			<channel id="program" typeId="program" />
+			<channel id="type" typeId="type" />
+			<channel id="phase" typeId="phase" />
+			<channel id="start" typeId="start" />
+			<channel id="duration" typeId="duration" />
+			<channel id="elapsed" typeId="elapsed" />
+			<channel id="finish" typeId="finish" />
+			<channel id="door" typeId="door" />
+			<channel id="switch" typeId="switch" />
+			<channel id="target" typeId="target" />
+			<channel id="spinningspeed" typeId="spinningspeed" />
+		</channels>
+
+		<config-description>
+			<parameter name="uid" type="text">
+				<label>ID</label>
+				<description>The identifier identifies one certain appliance on the ZigBee network.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

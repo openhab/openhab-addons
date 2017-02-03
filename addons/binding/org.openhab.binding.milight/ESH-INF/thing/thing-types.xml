@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="milight"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+        <label>Milight Bridge</label>
+        <description>This bridge represents a Milight device.</description>
+        
+        <config-description>
+            <parameter name="ADDR" type="text" required="true">
+                <label>IP or Host Name</label>
+                <description>Will be resolved by discovery if auto configured
+                </description>
+            </parameter>
+            <parameter name="PORT" type="integer" required="true">
+                <label>Bridge port</label>
+                <description>This differs for different bridge devices. The newest ones use 8899. Older ones use 50000.
+                </description>
+                <default>8899</default>
+            </parameter>
+            <parameter name="ID" type="text" required="false">
+                <label>Bridge ID</label>
+                <description>The mac address in upper case letters without delimiter for Version 3+ bridges. Leave empty for Version 1/2 devices.
+                This is used to check if the given IP corresponds to the right device. The bridge is set offline if the device
+                does not respond with the correct Bride ID and a re-detection is started. Useful for DHCP environments where
+                IPs may change over time, after power outage etc.
+                </description>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="REFRESH" type="integer" min="1" max="60">
+                <label>Refresh interval</label>
+                <description>Interval in minutes to check for device presence. The Bridge ID is used to check if the IP is still the right one.
+                </description>
+                <default>2</default>
+                <advanced>true</advanced>
+            </parameter>
+        </config-description>
+	</bridge-type>
+	
+    <thing-type id="rgbLed">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+        <label>RGB Led</label>
+        <description>Milight RGB Led</description>
+
+        <channels>
+            <channel id="lednightmode" typeId="lednightmode"/>
+            <channel id="ledbrightness" typeId="ledbrightness"/>
+            <channel id="ledcolor" typeId="ledcolor"/>
+            <channel id="discospeed" typeId="discospeed"/>
+            <channel id="discomode" typeId="discomode"/>
+        </channels>
+    </thing-type>
+    
+    <thing-type id="whiteLed">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+        <label>White Led</label>
+        <description>Milight White Led</description>
+
+        <channels>
+            <channel id="lednightmode" typeId="lednightmode"/>
+            <channel id="ledbrightness" typeId="ledbrightness"/>
+            <channel id="ledtemperature" typeId="ledtemperature"/>
+            <channel id="discospeed" typeId="discospeed"/>
+            <channel id="discomode" typeId="discomode"/>
+        </channels>
+    </thing-type>
+
+    <channel-type id="lednightmode">
+        <item-type>Switch</item-type>
+        <label>Nightmode</label>
+        <description>Switch on/off night mode</description>
+    </channel-type>
+
+    <channel-type id="ledcolor">
+        <item-type>Color</item-type>
+        <label>Color</label>
+        <description>Color of the LED</description>
+        <category>ColorLight</category>
+    </channel-type>
+    
+    <channel-type id="ledbrightness">
+        <item-type>Dimmer</item-type>
+        <label>Brightness</label>
+        <description>The brightness can be set in 16 steps</description>
+        <category>DimmableLight</category>
+        <state min="0" max="30" step="1" pattern="%d"></state>
+    </channel-type>
+    
+    <channel-type id="ledtemperature">
+        <item-type>Dimmer</item-type>
+        <label>Color temperature</label>
+        <description>The "white" leds allow to change between a cold and a warm color temperature</description>
+        <category>DimmableLight</category>
+        <state min="0" max="30" step="1" pattern="%d"></state>
+    </channel-type>
+    
+    <channel-type id="discospeed">
+        <item-type>Number</item-type>
+        <label>Animation speed</label>
+        <description>The speed of some animations can be changed</description>
+        <category>Light</category>
+        <state min="1" max="299" step="1" pattern="%d ms"></state>
+    </channel-type>
+    
+    <channel-type id="discomode">
+        <item-type>String</item-type>
+        <label>Animation mode</label>
+        <description>Animation mode of your LED. The color leds supports more animations than the white ones</description>
+        <category>Light</category>
+        <state>
+            <options>
+                <option value="0">Suspended</option>
+                <option value="1">Idle</option>
+                <option value="2">Running</option>
+                <option value="3">Corked</option>
+                <option value="4">Drained</option>
+            </options>
+        </state>
+    </channel-type>
+</thing:thing-descriptions>

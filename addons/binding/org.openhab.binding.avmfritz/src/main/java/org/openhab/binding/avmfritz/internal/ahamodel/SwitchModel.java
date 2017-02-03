@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,8 +25,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @XmlRootElement(name = "switch")
 @XmlType(propOrder = { "state", "mode", "lock"})
 public class SwitchModel {
-	public static final BigDecimal ON = new BigDecimal("1");
-	public static final BigDecimal OFF = new BigDecimal("0");
+	public static final BigDecimal ON = BigDecimal.ONE;
+	public static final BigDecimal OFF = BigDecimal.ZERO;
 
 	private BigDecimal state;
 	private String mode;

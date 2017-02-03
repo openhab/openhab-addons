@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="chromecast"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Chromecast Audio Thing Type -->
+    <thing-type id="audio">
+        <label>Chromecast Audio</label>
+        <description>A Google Chromecast Audio device</description>
+
+        <channels>
+            <channel id="control" typeId="control"/>
+            <channel id="volume" typeId="volume"/>
+            <channel id="playuri" typeId="playuri"/>
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <context>network-address</context>
+                <label>Network Address</label>
+                <description>Network address of the Chromecast device.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <!-- Chromecast HDMI dongle Thing Type -->
+    <thing-type id="chromecast">
+        <label>Chromecast</label>
+        <description>A Google Chromecast streaming device</description>
+
+        <channels>
+            <channel id="control" typeId="control"/>
+            <channel id="volume" typeId="volume"/>
+            <channel id="playuri" typeId="playuri"/>
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <context>network-address</context>
+                <label>Network Address</label>
+                <description>Network address of the Chromecast device.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>the sound volume of the device</description>
+        <category>SoundVolume</category>
+    </channel-type>
+
+    <channel-type id="playuri" advanced="true">
+        <item-type>String</item-type>
+        <label>Play URI</label>
+        <description>Plays a given URI</description>
+    </channel-type>
+
+    <channel-type id="control">
+        <item-type>Player</item-type>
+        <label>Control</label>
+        <description>Player control</description>
+    </channel-type>
+
+</thing:thing-descriptions>

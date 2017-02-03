@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="pioneeravr"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="pioneeravr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -9,14 +8,12 @@
 		<label>Pioneer AVR over IP</label>
 		<description>Control a Pioneer AVR over IP </description>
 
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceChannel" />
-			<channel id="displayInformation" typeId="displayInformationChannel" />
-		</channels>
+		<channel-groups>
+			<channel-group typeId="displayInformationGroup" id="displayInformation" />
+			<channel-group typeId="zone1Controls" id="zone1" />
+			<channel-group typeId="zone2Controls" id="zone2" />
+			<channel-group typeId="zone3Controls" id="zone3" />
+		</channel-groups>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
@@ -24,7 +21,7 @@
 				<label>Address</label>
 				<description>The address of the Pioneer AVR to control.</description>
 			</parameter>
-			<parameter name="tcpPort" type="decimal" max="65535" min="1">
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="true">
 				<default>8102</default>
 				<label>TCP Port</label>
 				<description>The TCP port number used to connect to the AVR.</description>
@@ -37,14 +34,12 @@
 		<label>Pioneer AVR over IP (unsupported)</label>
 		<description>Control a Pioneer AVR over IP for models that are not officially supported. You may experience some odd behaviors.</description>
 
-		<channels>
-			<channel id="power" typeId="powerChannel" />
-			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
-			<channel id="volumeDb" typeId="volumeChannelDb" />
-			<channel id="mute" typeId="muteChannel" />
-			<channel id="setInputSource" typeId="setInputSourceChannel" />
-			<channel id="displayInformation" typeId="displayInformationChannel" />
-		</channels>
+		<channel-groups>
+			<channel-group typeId="displayInformationGroup" id="displayInformation" />
+			<channel-group typeId="zone1Controls" id="zone1" />
+			<channel-group typeId="zone2Controls" id="zone2" />
+			<channel-group typeId="zone3Controls" id="zone3" />
+		</channel-groups>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
@@ -52,7 +47,7 @@
 				<label>Address</label>
 				<description>The address of the Pioneer AVR to control.</description>
 			</parameter>
-			<parameter name="tcpPort" type="decimal" max="65535" min="1">
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="true">
 				<default>8102</default>
 				<label>TCP Port</label>
 				<description>The TCP port number used to connect to the AVR.</description>
@@ -63,24 +58,62 @@
 	<!-- AVR control over Serial -->
 	<thing-type id="serialAvr">
 		<label>Pioneer AVR over Serial</label>
-		<description>Control a Pioneer AVR over a Serial port (RS-232)</description>
+		<description>Control a Pioneer AVR over a Serial port (RS-232).</description>
 
+		<channel-groups>
+			<channel-group typeId="displayInformationGroup" id="displayInformation" />
+			<channel-group typeId="zone1Controls" id="zone1" />
+			<channel-group typeId="zone2Controls" id="zone2" />
+			<channel-group typeId="zone3Controls" id="zone3" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial Port name</label>
+				<description>The Serial port name to use to connect to the AVR.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="displayInformationGroup">
+		<label>Display</label>
+		<channels>
+			<channel id="displayInformation" typeId="displayInformationChannel" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone1Controls">
+		<label>Zone 1</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceChannel" />
-			<channel id="displayInformation" typeId="displayInformationChannel" />
 		</channels>
+	</channel-group-type>
 
-		<config-description>
-			<parameter name="serialPort" type="text" required="true">
-				<label>Serial Port name</label>
-				<description>The Serial port name to use to connect to the AVR (Mandatory if Serial Protocol)</description>
-			</parameter>
-		</config-description>
-	</thing-type>
+	<channel-group-type id="zone2Controls">
+		<label>Zone 2</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceChannel" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone3Controls">
+		<label>Zone 3</label>
+		<channels>
+			<channel id="power" typeId="powerChannel" />
+			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
+			<channel id="volumeDb" typeId="volumeChannelDb" />
+			<channel id="mute" typeId="muteChannel" />
+			<channel id="setInputSource" typeId="setInputSourceChannel" />
+		</channels>
+	</channel-group-type>
 
 	<channel-type id="powerChannel">
 		<item-type>Switch</item-type>

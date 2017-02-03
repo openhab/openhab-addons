@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,6 @@ package org.openhab.binding.max.internal.message;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openhab.binding.max.internal.exceptions.IncompleteMessageException;
 import org.openhab.binding.max.internal.exceptions.IncorrectMultilineIndexException;
@@ -46,12 +45,24 @@ public class MessageProcessorTest {
         }
     }
 
-    @Ignore
-    // Don't have an S_Message at the moment
     @Test
     public void testS_Message() {
-        String rawData = "";
+        String rawData = "S:03,0,30";
         S_Message expectedMessage = new S_Message(rawData);
+        commonMessageTest(rawData, expectedMessage);
+    }
+
+    @Test
+    public void testN_Message() {
+        String rawData = "N:Aw4VzExFUTAwMTUzNDD/";
+        N_Message expectedMessage = new N_Message(rawData);
+        commonMessageTest(rawData, expectedMessage);
+    }
+
+    @Test
+    public void testA_Message() {
+        String rawData = "A:";
+        A_Message expectedMessage = new A_Message(rawData);
         commonMessageTest(rawData, expectedMessage);
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,13 +32,13 @@ public class PowerMeterModel {
 	private BigDecimal energy;
 
 	public BigDecimal getPower() {
-		return power != null ? power.multiply(POWER_FACTOR) : new BigDecimal("0");
+		return power != null ? power.multiply(POWER_FACTOR) : BigDecimal.ZERO;
 	}
 	public void setPower(BigDecimal power) {
 		this.power = power;
 	}
 	public BigDecimal getEnergy() {
-		return energy != null ? energy.multiply(ENERGY_FACTOR) : new BigDecimal("0");
+		return energy != null ? energy.multiply(ENERGY_FACTOR) : BigDecimal.ZERO;
 	}
 	public void setEnergy(BigDecimal energy) {
 		this.energy = energy;

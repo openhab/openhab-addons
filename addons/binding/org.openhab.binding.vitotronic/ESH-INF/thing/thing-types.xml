@@ -385,7 +385,7 @@
         <label>Party</label>
         <description>Target temperature of party mode</description>
         <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="false"/>
+        <state min="4.5" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
     </channel-type>
     
      <channel-type id="save_temp" advanced="true">
@@ -393,7 +393,7 @@
         <label>Save</label>
         <description>Target temperature of save mode</description>
         <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="false"/>
+        <state  min="4.5" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
     </channel-type>
     
     <channel-type id="room_temp" advanced="true">
@@ -401,7 +401,7 @@
         <label>Room</label>
         <description>Target temperature of rooms</description>
         <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="false"/>
+        <state  min="4.5" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
     </channel-type>
     
     <channel-type id="gradient" advanced="true">

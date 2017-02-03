@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zoneminder"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+    <bridge-type id="server">
+        <label>ZoneMinder Server</label>
+        <description>ZoneMinder Server</description>
+        <channels>
+            <channel id="online" typeId="server_online" />
+            <channel id="cpu-load" typeId="server_cpu_load"/>
+            <channel id="disk-usage" typeId="server_disk_usage"/>
+        </channels>
+    
+        <config-description-ref uri="thing-type:zoneminderserver:config"/>
+    </bridge-type>
+  
+     <channel-type id="server_online">
+        <item-type>Switch</item-type>
+        <label>Online</label>
+        <description>ZoneMinder Server Online Status</description>
+        <state readOnly="true"/>
+    </channel-type>
+ 
+    <channel-type id="server_cpu_load">
+        <item-type>Number</item-type>
+        <label>CPU load</label>
+        <description>ZoneMinder Server CPU Load</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="server_disk_usage">    
+        <item-type>Number</item-type>
+        <label>Diskusage</label>
+        <description>ZoneMinder Server Disk Usage</description>
+        <state readOnly="true"/>
+    </channel-type>
+ 
+</thing:thing-descriptions>
