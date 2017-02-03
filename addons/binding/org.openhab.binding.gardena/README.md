@@ -88,6 +88,6 @@ Set the logging back to normal
 log:set INFO org.openhab.binding.gardena
 ```
 
-**Note:** The Online/Offline status is not always valid. I'm using the ```connection_status``` property Gardena sends for each device, but it seems not to be very reliable. My watering control for example shows offline, but it is still working. I have to press the button on the device, then the status changed to online. My mower always shows online, regardless of wheter it is switched on or off. This is not a binding issue, it must be fixed by Gardena.
+**Note:** The Online/Offline status is not always valid. I'm using the ```connection_status``` property Gardena sends for each device, but it seems not to be very reliable. My watering control for example shows offline, but it is still working. I have to press the button on the device, then the status changed to online. My mower always shows online, regardless of whether it is switched on or off. This is not a binding issue, it must be fixed by Gardena.
 
-When the binding sends a command to a device, it communicates only with the Gardena online service. It has not control, whether the command is sent from the online service via your gateway to the device. It's the same as if you send the command in the Gardena App.
+When the binding sends a command to a device, it communicates only with the Gardena online service. It has not control over, whether the command is sent from the online service via your gateway to the device. It's the same as if you send the command in the Gardena App.
