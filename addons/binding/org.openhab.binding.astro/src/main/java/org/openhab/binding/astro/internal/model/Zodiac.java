@@ -10,21 +10,21 @@ package org.openhab.binding.astro.internal.model;
 
 /**
  * Holds the sign of the zodiac.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public class Zodiac {
-	private ZodiacSign sign;
+    private ZodiacSign sign;
 
-	public Zodiac(ZodiacSign sign) {
-		this.sign = sign;
-	}
+    public Zodiac(ZodiacSign sign) {
+        this.sign = sign;
+    }
 
-	/**
-	 * Returns the sign of the zodiac.
-	 */
-	public ZodiacSign getSign() {
-		return sign;
-	}
+    /**
+     * Returns the sign of the zodiac.
+     */
+    public ZodiacSign getSign() {
+        return sign;
+    }
 
 }
