@@ -8,7 +8,7 @@ This binding allows you to integrate, view, control and configure all Homematic 
 All gateways which provides the Homematic BIN- or XML-RPC API: 
 - CCU 1+2 
 - [Homegear](https://www.homegear.eu)
-- [LXCCU](http://www.lxccu.com)
+- [YAHM](https://github.com/leonsio/YAHM)
 - [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
 - [OCCU](https://github.com/eq-3/occu)
 
@@ -20,6 +20,7 @@ These ports are used by the binding by default to communicate **TO** the gateway
 - HMIP components: 2010 
 - CUxD: 8701
 - TclRegaScript: 8181
+- Groups: 9292
 
 And **FROM** the gateway to openHab:
 - XML-RPC: 9125
@@ -32,6 +33,7 @@ And **FROM** the gateway to openHab:
     * **WIRED**: BIN-RPC
     * **HMIP**: XML-RPC
     * **CUxD**: BIN-RPC (CUxD version >= 1.6 required)
+    * **Groups**: XML-RPC
 * **Homegear**
     * BIN-RPC
 * **Other**
@@ -183,6 +185,12 @@ Address: fixed GWE00000000
 
 #### RELOAD_ALL_FROM_GATEWAY
 A virtual datapoint (Switch) to reload all values for all devices, available in channel 0 in GATEWAY-EXTRAS
+
+#### RELOAD_RSSI
+A virtual datapoint (Switch) to reload all rssi values for all devices, available in channel 0 in GATEWAY-EXTRAS
+
+#### RSSI
+A virtual datapoint (Number) with the unified RSSI value from RSSI_DEVICE and RSSI_PEER, available in channel 0 for all wireless devices
 
 #### INSTALL_MODE
 A virtual datapoint (Switch) to start the install mode on the gateway, available in channel 0 in GATEWAY-EXTRAS

@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.audio.AudioStream;
+import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -168,8 +169,13 @@ public abstract class UpnpAudioSinkHandler extends BaseThingHandler implements A
             url = urlAudioStream.getURL();
         } else {
             if (callbackUrl != null) {
-                // we serve it on our own HTTP server
-                String relativeUrl = audioHTTPServer.serve(audioStream);
+                String relativeUrl;
+                if (audioStream instanceof FixedLengthAudioStream) {
+                    // we serve it on our own HTTP server
+                    relativeUrl = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 20);
+                } else {
+                    relativeUrl = audioHTTPServer.serve(audioStream);
+                }
                 url = callbackUrl + relativeUrl;
             } else {
                 logger.warn("We do not have any callback url, so onkyo cannot play the audio stream!");

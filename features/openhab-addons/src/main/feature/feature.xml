@@ -40,6 +40,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.avmfritz/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-boschindego" description="Bosch Indego Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.boschindego/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-chromecast" description="Chromecast Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
@@ -76,18 +81,13 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.freebox/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-binding-gardena" description="Gardena Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gardena/${project.version}</bundle>
-    </feature>
-
-    <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
+     <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>esh-transform-map</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.globalcache/${project.version}</bundle>
     </feature>
     
-    <feature name="openhab-binding-harmonyhub" description="Harmony Hub Binding" version="${project.version}">
+     <feature name="openhab-binding-harmonyhub" description="Harmony Hub Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.harmonyhub/${project.version}</bundle>
     </feature>
@@ -284,8 +284,13 @@
         <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.yamahareceiver/${project.version}</bundle>
     </feature>
-    
-    <feature name="openhab-binding-zway" description="Z-Way Binding" version="${project.version}">
+
+    <feature name="openhab-binding-zoneminder" description="ZoneMinder Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zoneminder/${project.version}</bundle>
+    </feature>
+	
+	<feature name="openhab-binding-zway" description="Z-Way Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zway/${project.version}</bundle>
     </feature>

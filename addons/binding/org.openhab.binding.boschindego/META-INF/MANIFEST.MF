@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: BoschIndego Binding
+Bundle-SymbolicName: org.openhab.binding.boschindego;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .,
+ lib/bosch-indego-controller-lib-0.8.jar,
+ lib/httpclient-4.5.2.jar,
+ lib/httpcore-4.4.4.jar,
+ lib/jackson-annotations-2.8.6.jar,
+ lib/jackson-core-2.8.6.jar,
+ lib/jackson-databind-2.8.6.jar
+Import-Package: 
+ org.apache.commons.codec,
+ org.apache.commons.codec.binary,
+ org.apache.commons.logging,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.openhab.binding.boschindego,
+ org.openhab.binding.boschindego.handler,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Export-Package: org.openhab.binding.boschindego,
+ org.openhab.binding.boschindego.handler
+Bundle-ActivationPolicy: lazy

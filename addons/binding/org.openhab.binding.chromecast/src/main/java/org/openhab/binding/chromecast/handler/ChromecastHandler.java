@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.audio.AudioStream;
+import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -212,10 +213,12 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
     }
 
     private void handleCcStatus(final Status status) {
+        logger.debug("STATUS {}", status);
         handleCcVolume(status.volume);
     }
 
     private void handleCcMediaStatus(final MediaStatus mediaStatus) {
+        logger.debug("MEDIA_STATUS {}", mediaStatus);
         switch (mediaStatus.playerState) {
             case IDLE:
             case PAUSED:
@@ -279,7 +282,12 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         } else {
             if (callbackUrl != null) {
                 // we serve it on our own HTTP server
-                String relativeUrl = audioHTTPServer.serve(audioStream);
+                String relativeUrl;
+                if (audioStream instanceof FixedLengthAudioStream) {
+                    relativeUrl = audioHTTPServer.serve((FixedLengthAudioStream) audioStream, 10);
+                } else {
+                    relativeUrl = audioHTTPServer.serve(audioStream);
+                }
                 url = callbackUrl + relativeUrl;
             } else {
                 logger.warn("We do not have any callback url, so Chromecast cannot play the audio stream!");

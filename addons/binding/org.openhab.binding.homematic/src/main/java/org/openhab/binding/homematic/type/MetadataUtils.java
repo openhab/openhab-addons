@@ -45,7 +45,7 @@ public class MetadataUtils {
     private static Map<String, String> descriptions = new HashMap<String, String>();
     private static Map<String, Set<String>> standardDatapoints = new HashMap<String, Set<String>>();
 
-    static {
+    protected static void initialize() {
         // loads all Homematic device names
         loadBundle("homematic/generated-descriptions");
         loadBundle("homematic/extra-descriptions");
@@ -65,9 +65,8 @@ public class MetadataUtils {
      * Loads the standard datapoints for channel metadata generation.
      */
     private static void loadStandardDatapoints() {
-        try {
-            InputStream is = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("homematic/standard-datapoints.properties");
+        try (InputStream is = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("homematic/standard-datapoints.properties")) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
             String line;
@@ -264,7 +263,8 @@ public class MetadataUtils {
         String channelType = StringUtils.defaultString(dp.getChannel().getType());
 
         if (dp.isBooleanType()) {
-            if ((dpName.equals(DATAPOINT_NAME_STATE) && channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT))
+            if (((dpName.equals(DATAPOINT_NAME_STATE) || dpName.equals(VIRTUAL_DATAPOINT_NAME_STATE_CONTACT))
+                    && channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT))
                     || (dpName.equals(DATAPOINT_NAME_SENSOR) && channelType.equals(CHANNEL_TYPE_SENSOR))) {
                 return ITEM_TYPE_CONTACT;
             } else {
@@ -279,6 +279,8 @@ public class MetadataUtils {
             } else {
                 return ITEM_TYPE_NUMBER;
             }
+        } else if (dp.isDateTimeType()) {
+            return ITEM_TYPE_DATETIME;
         } else {
             return ITEM_TYPE_STRING;
         }

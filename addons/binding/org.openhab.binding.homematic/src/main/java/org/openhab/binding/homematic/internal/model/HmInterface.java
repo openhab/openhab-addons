@@ -17,7 +17,8 @@ public enum HmInterface {
     RF,
     WIRED,
     HMIP,
-    CUXD;
+    CUXD,
+    GROUP;
 
     /**
      * Returns the full name of the interface.
@@ -32,6 +33,8 @@ public enum HmInterface {
                 return "HmIP-RF";
             case CUXD:
                 return "CUxD";
+            case GROUP:
+                return "Group";
         }
         return null;
     }
