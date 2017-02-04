@@ -6,7 +6,7 @@
     <channel id="temperature" typeId="temperature" />
     <channel id="humidity" typeId="percentage" />
     <channel id="mode" typeId="mode" />
-    <channel id="previous_hvac_mode" typeId="mode" />
+    <channel id="previous_mode" typeId="mode" />
     <channel id="max_set_point" typeId="setpoint" />
     <channel id="min_set_point" typeId="setpoint" />
     <channel id="can_heat" typeId="readonlyswitch" />
@@ -15,8 +15,8 @@
     <channel id="has_leaf" typeId="readonlyswitch" />
     <channel id="sunlight_correction_enabled" typeId="readonlyswitch" />
     <channel id="sunlight_correction_active" typeId="readonlyswitch" />
-    <channel id="is_using_emergency_heat" typeId="readonlyswitch" />
-    <channel id="is_locked" typeId="readonlyswitch" />
+    <channel id="using_emergency_heat" typeId="readonlyswitch" />
+    <channel id="locked" typeId="readonlyswitch" />
     <channel id="locked_max_set_point" typeId="setpoint" />
     <channel id="locked_min_set_point" typeId="setpoint" />
     <channel id="time_to_target_mins" typeId="number" />

@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.AccessTokenData;
 
@@ -21,8 +22,6 @@ public class NestAccessToken {
     private NestBridgeConfiguration config;
     private String access_token;
     private LocalTime expirationTime;
-
-    private final static String NEST_URL = "https://developer-api.nest.com/oauth2/access_token";
 
     public NestAccessToken(NestBridgeConfiguration config) {
         this.config = config;
@@ -42,7 +41,8 @@ public class NestAccessToken {
         httpHeader.setProperty("client_secret", config.clientSecret);
         httpHeader.setProperty("code", config.pincode);
         httpHeader.setProperty("grant_type", "authorization_code");
-        String result = HttpUtil.executeUrl(HttpMethod.POST.toString(), NEST_URL, httpHeader, null, "text/plain", 120);
+        String result = HttpUtil.executeUrl(HttpMethod.POST.toString(), NestBindingConstants.NEST_ACCESS_TOKEN_URL,
+                httpHeader, null, "text/plain", 120);
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         AccessTokenData data = gson.fromJson(result, AccessTokenData.class);

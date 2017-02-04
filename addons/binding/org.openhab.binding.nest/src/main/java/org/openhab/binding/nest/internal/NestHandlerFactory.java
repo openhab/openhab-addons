@@ -30,7 +30,8 @@ import com.google.common.collect.Sets;
 
 /**
  * The {@link NestHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * handlers. It also sets up the discovery service to track things from the bridge
+ * when the bridge is created.
  *
  * @author David Bennett - Initial contribution
  */
@@ -63,6 +64,7 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
             NestBridgeHandler handler = new NestBridgeHandler((Bridge) thing);
             NestDiscoveryService service = new NestDiscoveryService(handler);
             service.activate();
+            // Register the discovery service.
             discoveryService.put(handler.getThing().getUID(), bundleContext
                     .registerService(NestDiscoveryService.class.getName(), service, new Hashtable<String, Object>()));
             return handler;
@@ -76,6 +78,7 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof NestBridgeHandler) {
             ServiceRegistration<?> reg = discoveryService.get(thingHandler.getThing().getUID());
             if (reg != null) {
+                // Unregister the discovery service.
                 NestDiscoveryService service = (NestDiscoveryService) bundleContext.getService(reg.getReference());
                 service.deactivate();
                 reg.unregister();

@@ -17,10 +17,12 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.discovery.NestDiscoveryService;
 import org.openhab.binding.nest.internal.NestAccessToken;
 import org.openhab.binding.nest.internal.NestDeviceAddedListener;
+import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.NestDevices;
 import org.openhab.binding.nest.internal.data.Thermostat;
@@ -32,8 +34,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class NestBridgeHandler extends BaseBridgeHandler {
-    /** The url to use to connect to nest with. */
-    private final static String NEST_URL = "https://developer-api.nest.com/";
 
     private Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
 
@@ -50,6 +50,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> pollingJob;
     private NestAccessToken accessToken;
     private GsonBuilder builder = new GsonBuilder();
+    private List<NestUpdateRequest> nestUpdateRequests = new ArrayList<>();
 
     public NestBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -113,7 +114,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private Thing getDevice(String deviceId, List<Thing> things) {
         for (Thing thing : things) {
-            String thingDeviceId = thing.getProperties().get("deviceId");
+            String thingDeviceId = thing.getProperties().get(NestBindingConstants.PROPERTY_ID);
             if (thingDeviceId.equals(deviceId)) {
                 return thing;
             }
@@ -151,7 +152,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     private String buildQueryString(NestBridgeConfiguration config) throws URIException, IOException {
-        StringBuilder urlBuilder = new StringBuilder(NEST_URL);
+        StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL);
         urlBuilder.append("?auth=");
         urlBuilder.append(accessToken.getAccessToken());
         return URIUtil.encodeQuery(urlBuilder.toString());
@@ -181,5 +182,10 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     public void removeDeviceAddedListener(NestDiscoveryService nestDiscoveryService) {
         this.listeners.remove(nestDiscoveryService);
+    }
+
+    /** Adds the update request into the queue for doing something with, send immedigately if the queue is empty. */
+    public void addUpdateRequest(NestUpdateRequest request) {
+        nestUpdateRequests.add(request);
     }
 }

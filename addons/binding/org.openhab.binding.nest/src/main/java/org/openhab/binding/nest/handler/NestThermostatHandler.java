@@ -19,6 +19,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.nest.NestBindingConstants;
+import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.data.Thermostat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +43,27 @@ public class NestThermostatHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_MODE)) {
+            // Change the mode.
+            if (command instanceof StringType) {
+                StringType cmd = (StringType) command;
+                // Set the mode to be the cmd value.
+                addUpdateRequest("hvac_mode", cmd.toString());
+            }
         }
         if (channelUID.getId().equals(CHANNEL_MAX_SET_POINT)) {
+            // Change the set point (celcius).
+            if (command instanceof DecimalType) {
+                DecimalType cmd = (DecimalType) command;
+                // Set the setpoint to be the cmd value.
+                addUpdateRequest("hvac_mode", cmd.toString());
+            }
         }
         if (channelUID.getId().equals(CHANNEL_MIN_SET_POINT)) {
+            // Change the set point (celcius).
+            if (command instanceof DecimalType) {
+                DecimalType cmd = (DecimalType) command;
+                // Set the setpoint to be the cmd value.
+            }
         }
     }
 
@@ -62,7 +81,7 @@ public class NestThermostatHandler extends BaseThingHandler {
             updateState(chan.getUID(), new DecimalType(thermostat.getAmbientTemperature()));
             chan = getThing().getChannel("humidity");
             updateState(chan.getUID(), new PercentType(thermostat.getHumidity()));
-            chan = getThing().getChannel("mode");
+            chan = getThing().getChannel(CHANNEL_MODE);
             updateState(chan.getUID(), new StringType(thermostat.getMode()));
             chan = getThing().getChannel("previous_hvac_mode");
             String previousMode = thermostat.getPreviousMode();
@@ -70,9 +89,9 @@ public class NestThermostatHandler extends BaseThingHandler {
                 previousMode = thermostat.getMode();
             }
             updateState(chan.getUID(), new StringType(previousMode));
-            chan = getThing().getChannel("min_set_point");
+            chan = getThing().getChannel(CHANNEL_MIN_SET_POINT);
             updateState(chan.getUID(), new DecimalType(thermostat.getTargetTemperatureLow()));
-            chan = getThing().getChannel("max_set_point");
+            chan = getThing().getChannel(CHANNEL_MAX_SET_POINT);
             updateState(chan.getUID(), new DecimalType(thermostat.getTargetTemperatureHigh()));
             chan = getThing().getChannel("can_heat");
             updateState(chan.getUID(), thermostat.isCanHeat() ? OnOffType.ON : OnOffType.OFF);
@@ -105,5 +124,17 @@ public class NestThermostatHandler extends BaseThingHandler {
         } else {
             logger.debug("Nothing to update, same as before.");
         }
+    }
+
+    /** Creates the url to set a specific value on the thermostat. */
+    private void addUpdateRequest(String field, Object value) {
+        String deviceId = getThing().getProperties().get(NestBindingConstants.PROPERTY_ID);
+        StringBuilder builder = new StringBuilder().append(NestBindingConstants.NEST_THERMOSTAT_UPDATE_URL)
+                .append(deviceId);
+        NestUpdateRequest request = new NestUpdateRequest();
+        request.setUpdateUrl(builder.toString());
+        request.addValue(field, value);
+        NestBridgeHandler bridge = (NestBridgeHandler) getBridge();
+        bridge.addUpdateRequest(request);
     }
 }
