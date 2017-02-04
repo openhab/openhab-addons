@@ -18,11 +18,14 @@ This binding supports the following thing types:
 
 * *Dimmable Device* - Usually for controlling lamps.  `dimmer`
 * *Switchable Device* - On/Off only could be lamps or other electronic equipment. `switch`
-* *Sensors* - Often temperature-, barometic- and humidity-sensors. `sensor`
+* *Sensors* - Temperature- and humidity-sensors. `sensor`
 
 Additionally the binding have two types of bridge things which correspond to available API types:
+
 * *Telldus Core Bridge* - Oldest API, used by USB devices. `telldus-core`
 * *Telldus Live Bridge* - Telldus Cloud service, all devices with online access. `telldus-live`
+
+The attentive reader discovers that there is many missing sensor types; `UV`, `Luminance`, `Dew point`, `Barometic pressure` `Rainrate`, `Raintotal`, `Winddirection`, `Windaverage` and `Windgust` which is supported by the Tellstick devices. Support have not been implemented on the openhab side yet, contributions are welcome.  
 
 ***Switchbased sensors workaround*** <br>
 *Some 433MHz magnetic & PIR sensors for example magnetic door sensors are detected as a regular `switch` things instead of a separate type. There is technically no way of distinguish them apart from regulur `switch` things. For using them as sensors only (not paired to a lamp) please consult the workaround in the channel section.*
@@ -33,6 +36,7 @@ Devices which is added to *Telldus Core* and *Telldus Live* can be discovered by
 
 When you add this binding it will try to discover the *Telldus Core Bridge*. If it's installed correct its devices will show up.
 If you want to use the *Telldus Live* its bridge, *Telldus Live bridge* need to be added manually.
+
 ## Binding Configuration
 
 ***For USB connected tellsticks only, eg. Basic and DUO*** <br>
@@ -101,16 +105,18 @@ Optional:
 
 ## Channels
 
+Actuators ([dimmer]/[switch]) support the following channels:
+
 <table>
-<tr><td colspan="3">Actuators ([dimmer]/[switch]) support the following channels:</td></tr>
 <tr><td><b>Channel Type ID</b></td> <td><b>Item Type</b></td> <td><b>Description</b></td> </tr>
 <tr><td>dimmer</td><td>Number</td><td>This channel indicates the current dim level</td></tr>
 <tr><td>state</td><td>Switch</td><td>This channel indicates whether a device is turned on or off.</td></tr>
 <tr><td>timestamp</td><td>DateTime</td><td>This channel reports the last time this device state changed.</td></tr>
 </table>
 
+Sensors ([sensor]) support the following channels:
+
 <table>
-<tr><td colspan="3">Sensors ([sensor]) support the following channels:</td></tr>
 <tr><td><b>Channel Type ID</b></td> <td><b>Item Type</b></td> <td><b>Description</b></td> </tr>
 <tr><td>humidity</td><td>Number</td><td>This channel reports the current humidity in percentage.</td></tr>
 <tr><td>temperature</td><td>Number</td><td>This channel reports the current temperature in celsius.</td></tr>
