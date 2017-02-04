@@ -28,6 +28,7 @@ public class KM200BindingConstants {
     public final static ThingTypeUID THING_TYPE_HEATING_CIRCUIT = new ThingTypeUID(BINDING_ID, "heatingCircuit");
     public final static ThingTypeUID THING_TYPE_SOLAR_CIRCUIT = new ThingTypeUID(BINDING_ID, "solarCircuit");
     public final static ThingTypeUID THING_TYPE_HEAT_SOURCE = new ThingTypeUID(BINDING_ID, "heatSource");
+    public final static ThingTypeUID THING_TYPE_SYSTEM = new ThingTypeUID(BINDING_ID, "system");
     public final static ThingTypeUID THING_TYPE_SYSTEM_APPLIANCE = new ThingTypeUID(BINDING_ID, "appliance");
     public final static ThingTypeUID THING_TYPE_SYSTEM_SENSOR = new ThingTypeUID(BINDING_ID, "sensor");
     public final static ThingTypeUID THING_TYPE_NOTIFICATION = new ThingTypeUID(BINDING_ID, "notification");

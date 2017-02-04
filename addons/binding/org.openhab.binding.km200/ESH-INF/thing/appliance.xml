@@ -8,15 +8,15 @@
         <supported-bridge-type-refs>
             <bridge-type-ref id="kmdevice" />
         </supported-bridge-type-refs>
-        <label>System</label>
-        <description>This thing is representing the system.</description>
+        <label>Appliance</label>
+        <description>This thing is representing the appliance.</description>
           <channels>
               <!-- Channels for gateway informations -->
              <channel id="stringValue" typeId="stringValue" />
              <channel id="floatValue" typeId="floatValue" />
         </channels>
         <properties>
-            <property name="root">#system_appliance</property>
+            <property name="root">#system#appliance</property>
         </properties>
     </thing-type>
  </thing:thing-descriptions>

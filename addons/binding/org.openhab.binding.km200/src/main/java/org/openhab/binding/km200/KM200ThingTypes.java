@@ -200,6 +200,30 @@ public enum KM200ThingTypes {
             return null;
         }
     },
+    SYSTEM {
+        @Override
+        public String getRootPath() {
+            return "/system";
+        }
+
+        @Override
+        public ThingTypeUID getThingTypeUID() {
+            return KM200BindingConstants.THING_TYPE_SYSTEM;
+        }
+
+        @Override
+        public List<String> ignoreSubService() {
+            List<String> subServices = new ArrayList<String>();
+            subServices.add("sensors");
+            subServices.add("appliance");
+            return subServices;
+        }
+
+        @Override
+        public String getActiveCheckSubPath() {
+            return null;
+        }
+    },
     SWITCHPROGRAM {
         @Override
         public String getRootPath() {
