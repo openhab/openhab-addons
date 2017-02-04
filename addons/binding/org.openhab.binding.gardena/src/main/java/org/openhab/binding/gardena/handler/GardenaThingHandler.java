@@ -96,9 +96,6 @@ public class GardenaThingHandler extends BaseThingHandler {
     protected void updateChannel(ChannelUID channelUID) throws GardenaException, AccountHandlerNotAvailableException {
         Device device = getDevice();
         updateState(channelUID, convertToState(device, channelUID));
-        if (PROPERTY_CONNECTION_STATUS.equals(channelUID.getIdWithoutGroup())) {
-            updateStatus(device);
-        }
     }
 
     /**
@@ -180,17 +177,12 @@ public class GardenaThingHandler extends BaseThingHandler {
     /**
      * Updates the thing status based on the Gardena device status.
      */
-    private void updateStatus(Device device) {
+    protected void updateStatus(Device device) {
         String connectionStatus = "";
         try {
             connectionStatus = device.getAbility(ABILITY_RADIO).getProperty(PROPERTY_CONNECTION_STATUS).getValue();
         } catch (GardenaException ex) {
-            try {
-                connectionStatus = device.getAbility(ABILITY_GATEWAY).getProperty(PROPERTY_CONNECTION_STATUS)
-                        .getValue();
-            } catch (GardenaException ex2) {
-                // ignore, device has no connection status property
-            }
+            // ignore, device has no connection status property
         }
 
         boolean isUnreach = PROPERTY_CONNECTION_STATUS_UNREACH_VALUE.equals(connectionStatus);

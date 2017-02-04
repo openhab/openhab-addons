@@ -54,7 +54,6 @@
         <description>Information about the radio link</description>
         <channels>
             <channel id="quality" typeId="radioQuality" />
-            <channel id="connection_status" typeId="connectionStatus" />
             <channel id="state" typeId="system.signal-strength" />
         </channels>
     </channel-group-type>
@@ -149,19 +148,6 @@
         <label>Radio Link Quality</label>
         <description>Radio Link Quality</description>
         <state pattern="%d %%" readOnly="true" />
-    </channel-type>
-
-    <channel-type id="connectionStatus">
-        <item-type>String</item-type>
-        <label>Connection Status</label>
-        <description>Connection Status</description>
-        <state readOnly="true">
-            <options>
-                <option value="status_device_unreachable">Device unreachable</option>
-                <option value="status_device_alive">Device alive</option>
-                <option value="unknown">Unknown</option>
-            </options>
-        </state>
     </channel-type>
 
     <channel-type id="manualOperation" advanced="true">

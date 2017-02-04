@@ -34,5 +34,4 @@ public class GardenaBindingConstants {
 
     public static final String ABILITY_DEVICE_INFO = "device_info";
     public static final String ABILITY_RADIO = "radio";
-    public static final String ABILITY_GATEWAY = "gateway";
 }

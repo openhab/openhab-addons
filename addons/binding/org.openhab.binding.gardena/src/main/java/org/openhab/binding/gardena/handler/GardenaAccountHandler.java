@@ -186,6 +186,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 for (Channel channel : gardenaThing.getChannels()) {
                     gardenaThingHandler.updateChannel(channel.getUID());
                 }
+                gardenaThingHandler.updateStatus(device);
             }
         } catch (GardenaException ex) {
             logger.error(ex.getMessage(), ex);
