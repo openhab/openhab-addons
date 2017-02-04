@@ -1,4 +1,4 @@
-<thing-type id="thermostat">
+<thing-type id="smoke_detector">
   <label>Nest Protect</label>
   <description>Provides the nest protect layer to talk to nest</description>
 
