@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wifiled"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="wifiled">
+		<label>WiFi LED</label>
+		<description>WiFi LED Device</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="color" typeId="color" />
+			<channel id="white" typeId="white" />
+			<channel id="white2" typeId="white2" />
+			<channel id="program" typeId="program" />
+			<channel id="programSpeed" typeId="programSpeed" />
+		</channels>
+
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<label>IP</label>
+				<description>IP address or host name of the WIFI LED Controller</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false" min="1024"
+				max="49151">
+				<label>Port</label>
+				<description>Used Port of the device</description>
+				<default>5577</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingPeriod" type="integer" required="false">
+				<label>Polling period</label>
+				<description>Polling period for refreshing the data in s</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="protocol" type="text" required="false">
+				<label>Device protocol</label>
+				<description>The protocol used for communication with the device</description>
+				<default>LD382A</default>
+				<options>
+					<option value="LD382A">LD382A</option>
+					<option value="LD382">LD382</option>
+					<option value="LD686">LD686</option>
+				</options>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="driver" type="text" required="false">
+				<label>Device driver</label>
+				<description>The driver used to control the device</description>
+				<default>CLASSIC</default>
+				<options>
+					<option value="CLASSIC">CLASSIC</option>
+					<option value="FADING">FADING</option>
+				</options>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="fadeDurationInMs" type="integer" required="false" min="0" max="10000">
+				<label>Fading duration</label>
+				<description>The duration for the color fading in milliseconds</description>
+				<default>1000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="fadeSteps" type="integer" required="false" min="1" max="256">
+				<label>Fading steps</label>
+				<description>The number of steps used to fade over to the new color</description>
+				<default>100</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power state</description>
+	</channel-type>
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<category>ColorLight</category>
+	</channel-type>
+	<channel-type id="white">
+		<item-type>Dimmer</item-type>
+		<label>White</label>
+	</channel-type>
+	<channel-type id="white2">
+		<item-type>Dimmer</item-type>
+		<label>White 2</label>
+		<config-description>Only available for device LD686</config-description>
+	</channel-type>
+	<channel-type id="program" advanced="true">
+		<item-type>String</item-type>
+		<label>Program</label>
+		<state readOnly="false">
+			<options>
+				<option value="97">NONE</option>
+				<option value="37">Seven Colors Cross Fade</option>
+				<option value="38">Red Gradual Change</option>
+				<option value="39">Green Gradual Change</option>
+				<option value="40">Blue Gradual Change</option>
+				<option value="41">Yellow Gradual Change</option>
+				<option value="42">Cyan Gradual Change</option>
+				<option value="43">Purple Gradual Change</option>
+				<option value="44">White Gradual Change</option>
+				<option value="45">Red,Green Cross Fade</option>
+				<option value="46">Red, Blue Cross Fade</option>
+				<option value="47">Green, Blue Cross Fade</option>
+				<option value="48">Seven Colors Strobe Flash</option>
+				<option value="49">Red Strobe Flash</option>
+				<option value="50">Green Strobe Flash</option>
+				<option value="51">Blue Strobe Flash</option>
+				<option value="52">Yellow Strobe Flash</option>
+				<option value="53">Cyan Strobe Flash</option>
+				<option value="54">Purple Strobe Flash</option>
+				<option value="55">White Strobe Flash</option>
+				<option value="56">Seven Colors Jumping Change</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="programSpeed" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Program speed</label>
+	</channel-type>
+
+</thing:thing-descriptions>

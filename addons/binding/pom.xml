@@ -14,7 +14,7 @@
   <name>openHAB Bindings</name>
 
   <packaging>pom</packaging>
- 
+
   <modules>
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
@@ -68,6 +68,7 @@
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
+    <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
