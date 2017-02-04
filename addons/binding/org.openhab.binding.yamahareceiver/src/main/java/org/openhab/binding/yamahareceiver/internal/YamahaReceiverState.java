@@ -58,8 +58,17 @@ public class YamahaReceiverState {
      *
      * @throws IOException
      */
-    public void updateState(boolean includeNetradioStation) throws IOException {
-        com.updateState(this, includeNetradioStation);
+    public void updateState() throws IOException {
+        com.updateState(this);
+    }
+
+    /**
+     * Update net radio station
+     *
+     * @throws IOException
+     */
+    public void updateNetRadioState() throws IOException {
+        com.updateNetRadioState(this);
     }
 
     public Zone getZone() {

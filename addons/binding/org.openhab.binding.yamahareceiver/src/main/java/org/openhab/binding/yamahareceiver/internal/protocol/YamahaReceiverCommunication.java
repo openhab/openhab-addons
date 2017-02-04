@@ -185,7 +185,7 @@ public class YamahaReceiverCommunication {
         menu.selectItem(stationName);
     }
 
-    public void updateState(YamahaReceiverState state, boolean includeNetradioStation) throws IOException {
+    public void updateState(YamahaReceiverState state) throws IOException {
         Document doc = postAndGetXmlResponse("<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\"><" + zone
                 + "><Basic_Status>GetParam</Basic_Status></" + zone + "></YAMAHA_AV>");
         Node basicStatus = getNode(doc.getFirstChild(), "" + zone + "/Basic_Status");
@@ -218,16 +218,14 @@ public class YamahaReceiverCommunication {
         node = getNode(basicStatus, "Input/Input_Sel_Item_Info/Src_Number");
         value = node != null ? node.getTextContent() : "0";
         state.netRadioChannel = Integer.parseInt(value);
+    }
 
+    public void updateNetRadioState(YamahaReceiverState state) throws IOException {
         // Get currently playing net radio station for menu based receivers
-        if (includeNetradioStation) {
-            doc = postAndGetXmlResponse(
-                    "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\"><NET_RADIO><Play_Info>GetParam</Play_Info></NET_RADIO></YAMAHA_AV>");
-            node = getNode(doc.getFirstChild(), "NET_RADIO/Play_Info/Meta_Info/Station");
-            state.netRadioStation = node != null ? node.getTextContent() : "";
-        } else {
-            state.netRadioStation = "";
-        }
+        Document doc = postAndGetXmlResponse(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\"><NET_RADIO><Play_Info>GetParam</Play_Info></NET_RADIO></YAMAHA_AV>");
+        Node node = getNode(doc.getFirstChild(), "NET_RADIO/Play_Info/Meta_Info/Station");
+        state.netRadioStation = node != null ? node.getTextContent() : "";
     }
 
     public void updateInputsList(YamahaReceiverState state) throws IOException {

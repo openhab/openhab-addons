@@ -195,10 +195,14 @@ public class YamahaReceiverHandler extends BaseThingHandler {
         }
         lastRefreshInMS = System.currentTimeMillis();
 
-        boolean includeNetradioStation = isLinked(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_STATION);
+        boolean hasNetradioStationChannel = isLinked(YamahaReceiverBindingConstants.CHANNEL_NETRADIO_STATION);
 
         try {
-            state.updateState(includeNetradioStation);
+            state.updateState();
+            if (hasNetradioStationChannel) {
+                state.updateNetRadioState();
+            }
+
             updateStatus(ThingStatus.ONLINE);
             updateState(YamahaReceiverBindingConstants.CHANNEL_POWER, state.isPower() ? OnOffType.ON : OnOffType.OFF);
             updateState(YamahaReceiverBindingConstants.CHANNEL_INPUT, new StringType(state.getInput()));
