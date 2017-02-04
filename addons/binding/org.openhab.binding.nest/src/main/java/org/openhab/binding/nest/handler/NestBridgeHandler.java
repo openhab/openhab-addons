@@ -3,6 +3,7 @@ package org.openhab.binding.nest.handler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -63,6 +64,26 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
         startAutomaticRefresh(config.refreshInterval);
         accessToken = new NestAccessToken(config);
+        logger.debug("Client Id       {}.", config.clientId);
+        logger.debug("Client Secret   {}.", config.clientSecret);
+        logger.debug("Pincode         {}.", config.pincode);
+        try {
+            logger.debug("Access Token    {}.", accessToken.getAccessToken());
+        } catch (IOException e) {
+            logger.debug("Error getting Access Token.", e);
+        }
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        accessToken = new NestAccessToken(getConfigAs(NestBridgeConfiguration.class));
+
+        try {
+            logger.debug("New Access Token {}.", accessToken.getAccessToken());
+        } catch (IOException e) {
+            logger.debug("Error getting Access Token.", e);
+        }
     }
 
     @Override
@@ -114,7 +135,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private Thing getDevice(String deviceId, List<Thing> things) {
         for (Thing thing : things) {
-            String thingDeviceId = thing.getProperties().get(NestBindingConstants.PROPERTY_ID);
+            String thingDeviceId = thing.getUID().getId();
             if (thingDeviceId.equals(deviceId)) {
                 return thing;
             }

@@ -55,7 +55,7 @@ public class NestThermostatHandler extends BaseThingHandler {
             if (command instanceof DecimalType) {
                 DecimalType cmd = (DecimalType) command;
                 // Set the setpoint to be the cmd value.
-                addUpdateRequest("hvac_mode", cmd.toString());
+                addUpdateRequest("target_temperature_high_c", cmd.floatValue());
             }
         }
         if (channelUID.getId().equals(CHANNEL_MIN_SET_POINT)) {
@@ -63,6 +63,23 @@ public class NestThermostatHandler extends BaseThingHandler {
             if (command instanceof DecimalType) {
                 DecimalType cmd = (DecimalType) command;
                 // Set the setpoint to be the cmd value.
+                addUpdateRequest("target_temperature_low_c", cmd.floatValue());
+            }
+        }
+        if (channelUID.getId().equals(CHANNEL_FAN_TIMER_ACTIVE)) {
+            // Change the set point (celcius).
+            if (command instanceof DecimalType) {
+                DecimalType cmd = (DecimalType) command;
+                // Set the setpoint to be the cmd value.
+                addUpdateRequest("fan_timer_active", cmd.intValue() == 0 ? "false" : "true");
+            }
+        }
+        if (channelUID.getId().equals(CHANNEL_FAN_TIMER_DURATION)) {
+            // Change the set point (celcius).
+            if (command instanceof DecimalType) {
+                DecimalType cmd = (DecimalType) command;
+                // Set the setpoint to be the cmd value.
+                addUpdateRequest("fan_timer_duration", cmd.intValue());
             }
         }
     }
@@ -77,13 +94,13 @@ public class NestThermostatHandler extends BaseThingHandler {
     public void updateThermostat(Thermostat thermostat) {
         logger.debug("Updating thermostat " + thermostat.getDeviceId());
         if (lastData == null || !lastData.equals(thermostat)) {
-            Channel chan = getThing().getChannel("temperature");
+            Channel chan = getThing().getChannel(CHANNEL_TEMPERATURE);
             updateState(chan.getUID(), new DecimalType(thermostat.getAmbientTemperature()));
-            chan = getThing().getChannel("humidity");
+            chan = getThing().getChannel(CHANNEL_HUMIDITY);
             updateState(chan.getUID(), new PercentType(thermostat.getHumidity()));
             chan = getThing().getChannel(CHANNEL_MODE);
             updateState(chan.getUID(), new StringType(thermostat.getMode()));
-            chan = getThing().getChannel("previous_hvac_mode");
+            chan = getThing().getChannel(CHANNEL_PREVIOUS_MODE);
             String previousMode = thermostat.getPreviousMode();
             if (previousMode.equals("")) {
                 previousMode = thermostat.getMode();
@@ -93,23 +110,23 @@ public class NestThermostatHandler extends BaseThingHandler {
             updateState(chan.getUID(), new DecimalType(thermostat.getTargetTemperatureLow()));
             chan = getThing().getChannel(CHANNEL_MAX_SET_POINT);
             updateState(chan.getUID(), new DecimalType(thermostat.getTargetTemperatureHigh()));
-            chan = getThing().getChannel("can_heat");
+            chan = getThing().getChannel(CHANNEL_CAN_HEAT);
             updateState(chan.getUID(), thermostat.isCanHeat() ? OnOffType.ON : OnOffType.OFF);
-            chan = getThing().getChannel("can_cool");
+            chan = getThing().getChannel(CHANNEL_CAN_COOL);
             updateState(chan.getUID(), thermostat.isCanCool() ? OnOffType.ON : OnOffType.OFF);
-            chan = getThing().getChannel("has_fan");
+            chan = getThing().getChannel(CHANNEL_HAS_FAN);
             updateState(chan.getUID(), thermostat.isHasFan() ? OnOffType.ON : OnOffType.OFF);
-            chan = getThing().getChannel("has_leaf");
+            chan = getThing().getChannel(CHANNEL_HAS_LEAF);
             updateState(chan.getUID(), thermostat.isHasLeaf() ? OnOffType.ON : OnOffType.OFF);
-            chan = getThing().getChannel("is_using_emergency_heat");
+            chan = getThing().getChannel(CHANNEL_USING_EMERGENCY_HEAT);
             updateState(chan.getUID(), thermostat.isUsingEmergencyHeat() ? OnOffType.ON : OnOffType.OFF);
-            chan = getThing().getChannel("is_locked");
+            chan = getThing().getChannel(CHANNEL_LOCKED);
             updateState(chan.getUID(), thermostat.isLocked() ? OnOffType.ON : OnOffType.OFF);
-            chan = getThing().getChannel("locked_max_set_point");
+            chan = getThing().getChannel(CHANNEL_LOCKED_MAX_SET_POINT);
             updateState(chan.getUID(), new DecimalType(thermostat.getLockedTemperatureHigh()));
-            chan = getThing().getChannel("locked_min_set_point");
+            chan = getThing().getChannel(CHANNEL_LOCKED_MIN_SET_POINT);
             updateState(chan.getUID(), new DecimalType(thermostat.getLockedTemperatureLow()));
-            chan = getThing().getChannel("time_to_target_mins");
+            chan = getThing().getChannel(CHANNEL_TIME_TO_TARGET_MINS);
             updateState(chan.getUID(), new DecimalType(thermostat.getTimeToTarget()));
 
             if (thermostat.isOnline()) {
@@ -119,8 +136,8 @@ public class NestThermostatHandler extends BaseThingHandler {
             }
 
             // Setup the properties for this device.
-            updateProperty("id", thermostat.getDeviceId());
-            updateProperty("firmware", thermostat.getSoftwareVersion());
+            updateProperty(PROPERTY_ID, thermostat.getDeviceId());
+            updateProperty(PROPERTY_FIRMWARE_VERSION, thermostat.getSoftwareVersion());
         } else {
             logger.debug("Nothing to update, same as before.");
         }

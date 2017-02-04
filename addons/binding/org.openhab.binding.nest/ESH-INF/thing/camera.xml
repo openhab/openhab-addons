@@ -5,6 +5,7 @@
   <channels>
     <channel id="audio_input_enabled" typeId="switch" />
     <channel id="video_history_enabled" typeId="switch" />
+    <channel id="streaming" typeId="switch" />
     <channel id="web_url" typeId="string" />
     <channel id="app_url" typeId="string" />
     <channel id="public_share_enabled" typeId="switch" />
