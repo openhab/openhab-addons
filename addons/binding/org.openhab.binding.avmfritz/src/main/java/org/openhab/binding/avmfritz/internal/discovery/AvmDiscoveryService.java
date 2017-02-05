@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * device.
  *
  * @author Robert Bausdorf
+ * @author Christoph Weitkamp
  * 
  */
 public class AvmDiscoveryService extends AbstractDiscoveryService {
@@ -49,7 +50,7 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
 	 * Initial delay in s for scanning job.
 	 */
 	private final static int INITIAL_DELAY = 5;
-	
+
 	/**
 	 * Scan interval in s for scanning job.
 	 */
@@ -83,10 +84,8 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
 	 */
 	@Override
 	public void startScan() {
-		logger.debug("starting scan on bridge "
-				+ bridgeHandler.getThing().getUID());
-		FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(
-				bridgeHandler.getWebInterface(), this);
+		logger.debug("starting scan on bridge {}", bridgeHandler.getThing().getUID());
+		FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(), this);
 		bridgeHandler.getWebInterface().asyncGet(callback);
 	}
 
@@ -95,13 +94,16 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
 	 */
 	@Override
 	protected synchronized void stopScan() {
+		logger.debug("stop scan on bridge {}", bridgeHandler.getThing().getUID());
 		super.stopScan();
 		removeOlderResults(getTimestampOfLastScan());
 	}
 
 	/**
 	 * Add one discovered AHA device to inbox.
-	 * @param device Device model received from a FRITZ!Box
+	 * 
+	 * @param device
+	 *            Device model received from a FRITZ!Box
 	 */
 	public void onDeviceAddedInternal(DeviceModel device) {
 		ThingUID thingUID = this.bridgeHandler.getThingUID(device);
@@ -110,16 +112,14 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
 			Map<String, Object> properties = new HashMap<>(1);
 			properties.put(THING_AIN, device.getIdentifier());
 			properties.put(SERIAL_NUMBER, device.getIdentifier());
-			
-			DiscoveryResult discoveryResult = DiscoveryResultBuilder
-					.create(thingUID).withProperties(properties)
-					.withRepresentationProperty(device.getIdentifier())
-					.withBridge(bridgeUID).withLabel(device.getName()).build();
+
+			DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+					.withRepresentationProperty(device.getIdentifier()).withBridge(bridgeUID)
+					.withLabel(device.getName()).build();
 
 			thingDiscovered(discoveryResult);
 		} else {
-			logger.debug("discovered unsupported device with id {}",
-					device.getIdentifier());
+			logger.debug("discovered unsupported device with id {}", device.getIdentifier());
 		}
 	}
 
@@ -130,9 +130,8 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
 	protected void startBackgroundDiscovery() {
 		if (scanningJob == null || scanningJob.isCancelled()) {
 			logger.debug("start background scanning job");
-			this.scanningJob = AvmDiscoveryService.scheduler
-					.scheduleWithFixedDelay(this.scanningRunnable, 
-							INITIAL_DELAY, SCAN_INTERVAL, TimeUnit.SECONDS);
+			this.scanningJob = scheduler.scheduleWithFixedDelay(this.scanningRunnable, INITIAL_DELAY, SCAN_INTERVAL,
+					TimeUnit.SECONDS);
 		} else {
 			logger.debug("scanningJob active");
 		}
@@ -144,7 +143,8 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
 	@Override
 	protected void stopBackgroundDiscovery() {
 		if (scanningJob != null && !scanningJob.isCancelled()) {
-			scanningJob.cancel(false);
+			logger.debug("stop background scanning job");
+			scanningJob.cancel(true);
 			scanningJob = null;
 		}
 	}
@@ -157,22 +157,24 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
 		 * Handler for delegation to callbacks.
 		 */
 		private AvmDiscoveryService service;
+
 		/**
 		 * Constructor.
+		 * 
 		 * @param handler
 		 */
 		public FritzScan(AvmDiscoveryService service) {
 			this.service = service;
 		}
+
 		/**
-		 * Poll the FRITZ!Box websevice one time. 
+		 * Poll the FRITZ!Box websevice one time.
 		 */
 		@Override
 		public void run() {
-			logger.debug("starting scan on bridge "
-					+ bridgeHandler.getThing().getUID());
-			FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(
-					bridgeHandler.getWebInterface(), service);
+			logger.debug("starting scan on bridge {}", bridgeHandler.getThing().getUID());
+			FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),
+					service);
 			bridgeHandler.getWebInterface().asyncGet(callback);
 		}
 	}
