@@ -30,7 +30,7 @@ import gnu.io.NRSerialPort;
  * The {@link LgTvSerialHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Famake - Initial contribution
+ * @author Marius Bjoernstad - Initial contribution
  */
 public class LgTvSerialHandler extends BaseThingHandler {
 

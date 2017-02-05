@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  * The {@link LgTvSerialHandlerFactory} is responsible for creating things and thing 
  * handlers.
  * 
- * @author Famake - Initial contribution
+ * @author Marius Bjoernstad - Initial contribution
  */
 public class LgTvSerialHandlerFactory extends BaseThingHandlerFactory {
     
