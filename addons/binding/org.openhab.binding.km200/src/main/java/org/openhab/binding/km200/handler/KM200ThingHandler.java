@@ -55,10 +55,11 @@ public class KM200ThingHandler extends BaseThingHandler {
             THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR_CIRCUIT, THING_TYPE_HEAT_SOURCE, THING_TYPE_SYSTEM_APPLIANCE,
             THING_TYPE_SYSTEM_SENSOR, THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION, THING_TYPE_SYSTEM);
 
+    Boolean isInited = false;
+
     public KM200ThingHandler(Thing thing) {
         super(thing);
         thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
-
     }
 
     @Override
@@ -80,10 +81,19 @@ public class KM200ThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        if (isInited) {
+            return;
+        }
         logger.debug("initialize, Bridge: {}", this.getBridge());
         KM200GatewayHandler gateway = (KM200GatewayHandler) this.getBridge().getHandler();
         String service = KM200GatewayHandler.translatesNameToPath(thing.getProperties().get("root"));
         synchronized (gateway.device) {
+            if (!gateway.device.getInited()) {
+                logger.debug("Bridge: not inited");
+                isInited = false;
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            }
             List<Channel> subChannels = new ArrayList<Channel>();
             if (gateway.device.containsService(service)) {
                 KM200CommObject serObj = gateway.device.getServiceObject(service);
@@ -151,13 +161,21 @@ public class KM200ThingHandler extends BaseThingHandler {
             thingBuilder.withChannels(subChannels);
             updateThing(thingBuilder.build());
         }
+        isInited = true;
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void handleRemoval() {
-        logger.info("Handle removed");
+        logger.debug("Handle removed");
         this.updateStatus(ThingStatus.REMOVED);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
+            initialize();
+        }
     }
 
     /**
@@ -270,5 +288,4 @@ public class KM200ThingHandler extends BaseThingHandler {
             }
         }
     }
-
 }
