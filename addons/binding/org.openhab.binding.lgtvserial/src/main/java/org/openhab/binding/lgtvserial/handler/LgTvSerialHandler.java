@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory;
 import gnu.io.NRSerialPort;
 
 /**
- * The {@link LgTvSerialHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link LgTvSerialHandler} contains all the logic of this simple binding. It
+ * is responsible for handling commands and sending them to the serial port.
  *
  * @author Marius Bjoernstad - Initial contribution
  */
@@ -53,8 +53,9 @@ public class LgTvSerialHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 output = new OutputStreamWriter(serialPort.getOutputStream());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                logger.error("Failed to connect to serial port " + portName);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to connect to serial port " + portName);
+                logger.debug("Failed to connect to serial port " + portName);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port name not configured");
@@ -73,7 +74,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            return; // Don't support refreshing
+            return; // Protocol doesn't support refreshing
         }
         try {
             if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_POWER) && (command instanceof OnOffType)) {
@@ -88,7 +89,6 @@ public class LgTvSerialHandler extends BaseThingHandler {
                 updateState(channelUID, new StringType(command.toString()));
             } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_VOLUME)
                     && command instanceof PercentType) {
-                // TODO: Implement increase/decrease
                 PercentType vol = (PercentType) command;
                 output.write(String.format("kf 0 %x\r", vol.intValue()));
                 updateState(channelUID, (PercentType) command);
