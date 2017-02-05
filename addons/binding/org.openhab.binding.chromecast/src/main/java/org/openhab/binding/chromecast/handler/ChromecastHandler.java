@@ -184,12 +184,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
     private void handlePlayUri(Command command) {
         if (command instanceof StringType) {
             String url = command.toString();
-            String mimeType = null;
-            try {
-                mimeType = getMimeType(url);
-            } catch (IOException e) {
-                // we couldn't establish mime type
-            }
+            String mimeType = getMimeType(url);
             playMedia(null, null, url, mimeType);
         }
     }
@@ -271,12 +266,18 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         }
     }
 
-    String getMimeType(String urlname) throws IOException {
-        URL url = new URL(urlname);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.connect();
-        String mimeType = connection.getContentType();
-        connection.disconnect();
+    String getMimeType(String urlname) {
+        URL url = null;
+        String mimeType = null;
+        try {
+            url = new URL(urlname);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+            mimeType = connection.getContentType();
+            connection.disconnect();
+        } catch (IOException e) {
+            // we couldn't establish mime type
+        }
         return mimeType;
     }
 
