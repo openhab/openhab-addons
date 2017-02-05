@@ -4,17 +4,12 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="gateway">
+    <thing-type id="gateway" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="kmdevice" />
         </supported-bridge-type-refs>
-        <label>System</label>
-        <description>This thing is representing the system.</description>
-          <channels>
-              <!-- Channels for gateway informations -->
-             <channel id="stringValue" typeId="stringValue" />
-             <channel id="floatValue" typeId="floatValue" />
-        </channels>
+        <label>Gateway</label>
+        <description>This thing is representing the gateway.</description>
         <properties>
             <property name="root">#gateway</property>
         </properties>

@@ -4,17 +4,12 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="dhwCircuit">
+    <thing-type id="dhwCircuit" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="kmdevice" />
         </supported-bridge-type-refs>
         <label>Hot water circuit</label>
         <description>This thing is representing a hot water circuit.</description>
-        <channels>
-              <!-- Channels for gateway informations -->
-             <channel id="stringValue" typeId="stringValue" />
-             <channel id="floatValue" typeId="floatValue" />
-        </channels>
         <properties>
             <property name="root">#dhwCircuits</property>
         </properties>
