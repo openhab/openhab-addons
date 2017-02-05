@@ -1031,6 +1031,12 @@ public class KM200Comm<KM200BindingProvider> {
                     } else if (command == OnOffType.ON) {
                         val = switchNames.get("on");
                     }
+                    @SuppressWarnings("unchecked")
+                    List<String> valParas = (List<String>) object.getValueParameter();
+                    if (!valParas.contains(val)) {
+                        logger.warn("Parameter is not in the service parameterlist: {}", val);
+                        return null;
+                    }
                 } else if (switchNames.isEmpty()) {
                     logger.debug("No switch item configuration");
                     return null;
