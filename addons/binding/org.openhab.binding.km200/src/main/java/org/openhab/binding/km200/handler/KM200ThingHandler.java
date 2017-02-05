@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -69,7 +70,7 @@ public class KM200ThingHandler extends BaseThingHandler {
         Class<?> commandType = command.getClass();
 
         if (commandType.isAssignableFrom(DateTimeType.class) || commandType.isAssignableFrom(DecimalType.class)
-                || commandType.isAssignableFrom(StringType.class)) {
+                || commandType.isAssignableFrom(StringType.class) || commandType.isAssignableFrom(OnOffType.class)) {
             gateway.prepareMessage(this.getThing(), channel, command);
 
         } else if (commandType.isAssignableFrom(RefreshType.class)) {
@@ -213,6 +214,17 @@ public class KM200ThingHandler extends BaseThingHandler {
                 if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
                     @SuppressWarnings("unchecked")
                     List<String> subValParas = (List<String>) serObj.serviceTreeMap.get(subKey).getValueParameter();
+                    if (serObj.serviceTreeMap.get(subKey).getWriteable() > 0) {
+                        Map<String, String> switchProperties = new HashMap<>(1);
+                        switchProperties.put("root", KM200GatewayHandler.translatesPathToName(root));
+                        Channel newChannel = ChannelBuilder
+                                .create(new ChannelUID(thing.getUID(), subNameAddon + subKey + "Switch"), "Switch")
+                                .withType(
+                                        new ChannelTypeUID(thing.getUID().getBindingId(), CHANNEL_SWITCH_STRING_VALUE))
+                                .withDescription(subKey).withLabel(subKey + " Switch").withKind(ChannelKind.STATE)
+                                .withProperties(switchProperties).build();
+                        subChannels.add(newChannel);
+                    }
                 }
                 Channel newChannel = ChannelBuilder
                         .create(new ChannelUID(thing.getUID(), subNameAddon + subKey), "String")

@@ -38,6 +38,7 @@ public class KM200BindingConstants {
 
     public final static String CHANNEL_STRING_VALUE = "stringValue";
     public final static String CHANNEL_FLOAT_VALUE = "floatValue";
+    public final static String CHANNEL_SWITCH_STRING_VALUE = "switchStringValue";
 
     // Other constants
 

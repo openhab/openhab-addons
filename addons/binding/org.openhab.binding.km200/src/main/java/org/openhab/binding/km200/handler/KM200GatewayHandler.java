@@ -10,6 +10,7 @@ package org.openhab.binding.km200.handler;
 import static org.openhab.binding.km200.KM200BindingConstants.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -173,7 +174,9 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                 /* Testing the received data, is decryption working? */
                 try {
                     JSONObject nodeRoot = new JSONObject(decodedData);
+                    @SuppressWarnings("unused")
                     String type = nodeRoot.getString("type");
+                    @SuppressWarnings("unused")
                     String id = nodeRoot.getString("id");
                 } catch (JSONException e) {
                     logger.error("The data is not readable, check the key and password configuration!", e.getMessage(),
@@ -331,6 +334,30 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     }
 
     /**
+     * This function checks whether the channel has channel parameters
+     *
+     * @param channel
+     */
+    public static HashMap<String, String> getChannelConfigurationStrings(Channel channel) {
+
+        HashMap<String, String> paraNames = new HashMap<String, String>();
+        if (channel.getConfiguration() != null) {
+            if (channel.getConfiguration().containsKey("on")) {
+                paraNames.put("on", channel.getConfiguration().get("on").toString());
+                logger.debug("Added ON: " + channel.getConfiguration().get("on").toString());
+            }
+        }
+
+        if (channel.getConfiguration() != null) {
+            if (channel.getConfiguration().containsKey("off")) {
+                paraNames.put("off", channel.getConfiguration().get("off").toString());
+                logger.debug("Added OFF: " + channel.getConfiguration().get("off").toString());
+            }
+        }
+        return paraNames;
+    }
+
+    /**
      * Prepares a message for sending
      *
      * @param thing
@@ -345,7 +372,8 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
             logger.debug("handleCommand channel: {} service: {}", channel.getLabel(), service);
             try {
-                sendData = comm.sendProvidersState(service, command, channel.getAcceptedItemType());
+                sendData = comm.sendProvidersState(service, command, channel.getAcceptedItemType(),
+                        getChannelConfigurationStrings(channel));
             } catch (Exception e) {
                 logger.error("Could not send item state {}", e);
             }
@@ -364,7 +392,8 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                                 String tmpParent = device.getServiceObject(tmpService).getParent();
                                 if (tmpParent != null && tmpParent.equals(parent)) {
                                     try {
-                                        state = comm.getProvidersState(tmpService, tmpChannel.getAcceptedItemType());
+                                        state = comm.getProvidersState(tmpService, tmpChannel.getAcceptedItemType(),
+                                                getChannelConfigurationStrings(tmpChannel));
                                         if (state != null) {
                                             updateState(tmpChannel.getUID(), state);
                                         }
@@ -407,7 +436,8 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                     String tmpService = checkParameterReplacement(tmpChannel, device);
                     if (parent == null || parent.equals(device.getServiceObject(tmpService).getParent())) {
                         try {
-                            state = comm.getProvidersState(tmpService, tmpChannel.getAcceptedItemType());
+                            state = comm.getProvidersState(tmpService, tmpChannel.getAcceptedItemType(),
+                                    getChannelConfigurationStrings(tmpChannel));
                             if (state != null) {
                                 gatewayHandler.updateState(tmpChannel.getUID(), state);
                             }
@@ -494,7 +524,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                     } else {
                         object.setUpdated(false);
                         state = comm.getProvidersState(checkParameterReplacement(channel, device),
-                                channel.getAcceptedItemType());
+                                channel.getAcceptedItemType(), getChannelConfigurationStrings(channel));
                         if (state != null) {
                             gatewayHandler.updateState(channel.getUID(), state);
                         }
@@ -575,7 +605,8 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                         } else {
                             try {
                                 object.setUpdated(false);
-                                state = comm.getProvidersState(service, channel.getAcceptedItemType());
+                                state = comm.getProvidersState(service, channel.getAcceptedItemType(),
+                                        getChannelConfigurationStrings(channel));
                                 if (state != null) {
                                     gatewayHandler.updateState(channel.getUID(), state);
                                 }
@@ -584,17 +615,23 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                                         if (!((KM200ThingHandler) tmpThing.getHandler()).checkLinked(tmpChannel)) {
                                             continue;
                                         }
-                                        if (tmpChannel.getProperties() != null && tmpChannel.getProperties()
-                                                .get(SWITCH_PROGRAM_CURRENT_PATH_NAME).equals(service)) {
+                                        if (tmpChannel.getProperties() != null) {
+                                            String tempPName = tmpChannel.getProperties()
+                                                    .get(SWITCH_PROGRAM_CURRENT_PATH_NAME);
                                             String tmpService = checkParameterReplacement(tmpChannel, device);
-                                            try {
-                                                state = comm.getProvidersState(tmpService,
-                                                        tmpChannel.getAcceptedItemType());
-                                                if (state != null) {
-                                                    gatewayHandler.updateState(tmpChannel.getUID(), state);
+
+                                            if ((tempPName != null && tempPName.equals(service))
+                                                    || tmpService.equals(service)) {
+                                                try {
+                                                    state = comm.getProvidersState(tmpService,
+                                                            tmpChannel.getAcceptedItemType(),
+                                                            getChannelConfigurationStrings(tmpChannel));
+                                                    if (state != null) {
+                                                        gatewayHandler.updateState(tmpChannel.getUID(), state);
+                                                    }
+                                                } catch (Exception e) {
+                                                    logger.error("Could not get updated item state, Error: {}", e);
                                                 }
-                                            } catch (Exception e) {
-                                                logger.error("Could not get updated item state, Error: {}", e);
                                             }
                                         }
                                     }

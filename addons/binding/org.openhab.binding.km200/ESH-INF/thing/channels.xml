@@ -18,5 +18,24 @@
         <state pattern="%s" readOnly="false" >
         </state>
     </channel-type>
+    <channel-type id="switchStringValue">
+        <item-type>Switch</item-type>
+        <label>Switch string value</label>
+        <description>Name of switch for a string value service</description>
+        <state pattern="%s" readOnly="false" >
+        </state>
+        <config-description>
+            <parameter name="on" type="text" required="true">
+                <label>ON string</label>
+                <context>text</context>
+                <description>ON string for this service</description>
+            </parameter>
+            <parameter name="off" type="text" required="true">
+               <label>OFF string</label>
+               <context>text</context>
+               <description>OFF string for this service</description>
+             </parameter>
+        </config-description>
+    </channel-type>
  
 </thing:thing-descriptions>

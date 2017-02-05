@@ -16,6 +16,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.crypto.Cipher;
@@ -32,6 +33,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -524,7 +526,7 @@ public class KM200Comm<KM200BindingProvider> {
      * This function checks the state of a service on the device
      *
      */
-    public State getProvidersState(String service, String itemType) {
+    public State getProvidersState(String service, String itemType, Object itemPara) {
         synchronized (device) {
             String decodedData = null;
             String type = null;
@@ -594,7 +596,7 @@ public class KM200Comm<KM200BindingProvider> {
                 }
             }
             /* Data is received, now parsing it */
-            return parseJSONData(decodedData, type, service, itemType);
+            return parseJSONData(decodedData, type, service, itemType, itemPara);
         }
     }
 
@@ -602,7 +604,7 @@ public class KM200Comm<KM200BindingProvider> {
      * This function parses the receviced JSON Data and return the right state
      *
      */
-    public State parseJSONData(String decodedData, String type, String service, String itemType) {
+    public State parseJSONData(String decodedData, String type, String service, String itemType, Object itemPara) {
         JSONObject nodeRoot = null;
         State state = null;
         KM200CommObject object = device.getServiceObject(service);
@@ -618,11 +620,29 @@ public class KM200Comm<KM200BindingProvider> {
 
             switch (type) {
                 case "stringValue": /* Check whether the type is a single value containing a string value */
-                    logger.debug("initDevice: type string value: {}", decodedData);
+                    logger.debug("parseJSONData type string value: {} Type: {}", decodedData, itemType.toString());
                     String sVal = nodeRoot.getString("value");
                     object.setValue(sVal);
-                    /* NumberItem Binding */
-                    if (itemType.equals("Number")) {
+                    /* Switch Binding */
+                    if (itemType.equals("Switch")) {
+                        @SuppressWarnings("unchecked")
+                        HashMap<String, String> switchNames = (HashMap<String, String>) itemPara;
+                        if (switchNames.containsKey("on")) {
+                            if (sVal.equals(switchNames.get("off"))) {
+                                state = OnOffType.OFF;
+                            } else if (sVal.equals(switchNames.get("on"))) {
+                                state = OnOffType.ON;
+                            }
+                        } else if (switchNames.isEmpty()) {
+                            logger.debug("No switch item configuration");
+                            return null;
+                        } else {
+                            logger.warn("Switch-Item only on configured on/off string values: {}", decodedData);
+                            return null;
+                        }
+
+                        /* NumberItem Binding */
+                    } else if (itemType.equals("Number")) {
                         try {
                             state = new DecimalType(Float.parseFloat(sVal));
                         } catch (NumberFormatException e) {
@@ -901,7 +921,7 @@ public class KM200Comm<KM200BindingProvider> {
      * This function sets the state of a service on the device
      *
      */
-    public byte[] sendProvidersState(String service, Command command, String itemType) {
+    public byte[] sendProvidersState(String service, Command command, String itemType, Object itemPara) {
         synchronized (device) {
             String type = null;
             String dataToSend = null;
@@ -1001,6 +1021,28 @@ public class KM200Comm<KM200BindingProvider> {
                     logger.warn("Not supported type for dateTimeItem: {}", type);
                 }
 
+            } else if (itemType.equals("Switch")) {
+                String val = null;
+                @SuppressWarnings("unchecked")
+                HashMap<String, String> switchNames = (HashMap<String, String>) itemPara;
+                if (switchNames.containsKey("on")) {
+                    if (command == OnOffType.OFF) {
+                        val = switchNames.get("off");
+                    } else if (command == OnOffType.ON) {
+                        val = switchNames.get("on");
+                    }
+                } else if (switchNames.isEmpty()) {
+                    logger.debug("No switch item configuration");
+                    return null;
+                } else {
+                    logger.warn("Switch-Item only on configured on/off string values {}", command);
+                    return null;
+                }
+                if (type.equals("stringValue")) {
+                    dataToSend = new JSONObject().put("value", val).toString();
+                } else {
+                    logger.warn("Not supported type for SwitchItem:{}", type);
+                }
             } else {
                 logger.warn("Bindingtype not supported: {}", itemType.getClass());
                 return null;
