@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="allplay" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing Type -->
+	<thing-type id="speaker">
+		<label>AllPlay Speaker</label>
+
+		<channels>
+			<channel id="control" typeId="control" />
+			<channel id="coverart" typeId="coverart" />
+			<channel id="coverarturl" typeId="coverarturl" />
+			<channel id="currentalbum" typeId="currentalbum" />
+			<channel id="currentartist" typeId="currentartist" />
+			<channel id="currentduration" typeId="currentduration" />
+			<channel id="currentgenre" typeId="currentgenre" />
+			<channel id="currenttitle" typeId="currenttitle" />
+			<channel id="currenturl" typeId="currenturl" />
+			<channel id="currentuserdata" typeId="currentuserdata" />
+			<channel id="loopmode" typeId="loopmode" />
+			<channel id="mute" typeId="mute" />
+			<channel id="playstate" typeId="playstate" />
+			<channel id="shufflemode" typeId="shufflemode" />
+			<channel id="stop" typeId="stop" />
+			<channel id="stream" typeId="stream" />
+			<channel id="volume" typeId="volume" />
+			<channel id="volumecontrol" typeId="volumecontrol" />
+			<channel id="zoneid" typeId="zoneid" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text">
+				<label>Device ID</label>
+				<description>The device identifier identifies one certain speaker.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="deviceName" type="text">
+				<label>Device Name</label>
+				<description>The device name of the speaker.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="volumeStepSize" type="integer">
+				<label>Volume step size</label>
+				<description>Step size to use if the volume is changed using the increase/decrease command.</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Type -->
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Control the AllPlay speaker, e.g. start/pause/next/previous/ffward/rewind</description>
+		<category>Player</category>
+	</channel-type>
+	<channel-type id="coverart">
+		<item-type>Image</item-type>
+		<label>Cover Art</label>
+		<description>Cover art image of the track currently playing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="coverarturl" advanced="true">
+		<item-type>String</item-type>
+		<label>Cover Art URL</label>
+		<description>Cover art URL of the track currently playing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentalbum">
+		<item-type>String</item-type>
+		<label>Current Album</label>
+		<description>Album of the track currently playing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentartist">
+		<item-type>String</item-type>
+		<label>Current Artist</label>
+		<description>Artist of the track currently playing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentduration" advanced="true">
+		<item-type>Number</item-type>
+		<label>Current Duration</label>
+		<description>Duration in seconds of the track currently playing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentgenre" advanced="true">
+		<item-type>String</item-type>
+		<label>Current Genre</label>
+		<description>Genre of the track currently playing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currenttitle">
+		<item-type>String</item-type>
+		<label>Current Title</label>
+		<description>Title of the track currently playing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currentuserdata" advanced="true">
+		<item-type>String</item-type>
+		<label>Current User Data</label>
+		<description>Custom user data (e.g. name of radio station) of the track currently playing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currenturl" advanced="true">
+		<item-type>String</item-type>
+		<label>Current URL</label>
+		<description>URL of the track or radio station currently playing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="loopmode" advanced="true">
+		<item-type>String</item-type>
+		<label>Loop Mode</label>
+		<description>Loop mode of the speaker (ONE, ALL, NONE)</description>
+		<state>
+			<options>
+				<option value="NONE">No Repeat</option>
+				<option value="ONE">Repeat Track</option>
+				<option value="ALL">Repeat Playlist</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="mute" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Set or get the mute state of the speaker</description>
+	</channel-type>
+	<channel-type id="playstate" advanced="true">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>The State channel contains state of the Speaker, e.g. BUFFERING, PLAYING, STOPPED,...</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="shufflemode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Shuffle Mode</label>
+		<description>Toggle the shuffle mode of the speaker</description>
+	</channel-type>
+	<channel-type id="stop" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stop the current playback</description>
+	</channel-type>
+	<channel-type id="stream" advanced="true">
+		<item-type>String</item-type>
+		<label>Stream URL</label>
+		<description>Play the given HTTP or file stream (file:// or http://)</description>
+	</channel-type>
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Set or get the master volume</description>
+		<category>SoundVolume</category>
+	</channel-type>
+	<channel-type id="volumecontrol" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Volume Control</label>
+		<description>Flag if the volume control is enabled (might be disabled if speaker is not master of the zone)</description>
+		<category>SoundVolume</category>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="zoneid" advanced="true">
+		<item-type>String</item-type>
+		<label>Zone ID</label>
+		<description>Id of the Zone the speaker belongs to</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

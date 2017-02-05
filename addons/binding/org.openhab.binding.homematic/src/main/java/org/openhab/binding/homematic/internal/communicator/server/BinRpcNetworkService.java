@@ -37,7 +37,7 @@ public class BinRpcNetworkService implements Runnable {
 
         serverSocket = new ServerSocket();
         serverSocket.setReuseAddress(true);
-        serverSocket.bind(new InetSocketAddress(config.getCallbackPort()));
+        serverSocket.bind(new InetSocketAddress(config.getBinCallbackPort()));
     }
 
     /**

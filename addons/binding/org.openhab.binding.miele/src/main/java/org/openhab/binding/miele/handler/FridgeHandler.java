@@ -42,7 +42,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        FridgeFreezerChannelSelector selector = (FridgeFreezerChannelSelector) getValueSelectorFromChannelID(channelID);
+        FridgeChannelSelector selector = (FridgeChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
 
         try {

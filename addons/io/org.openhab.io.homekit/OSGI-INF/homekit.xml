@@ -21,6 +21,6 @@
    <property name="port" type="Integer" value="9123" />
    <property name="service.config.description.uri" type="String" value="io:homekit"/>
    <property name="service.config.label" type="String" value="HomeKit Integration"/>
-   <property name="service.config.category" type="String" value="misc"/>
+   <property name="service.config.category" type="String" value="io"/>
 
 </scr:component>

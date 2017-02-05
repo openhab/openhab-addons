@@ -10,14 +10,13 @@ package org.openhab.binding.milight.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.milight.MilightBindingConstants;
 import org.openhab.binding.milight.internal.MilightThingState;
@@ -64,6 +63,9 @@ public class MilightLedHandler extends BaseThingHandler {
                     } else {
                         state.setOn();
                     }
+                } else if (command instanceof PercentType) {
+                    PercentType p = (PercentType) command;
+                    state.setBrightness(p.intValue());
                 }
                 break;
             }
@@ -72,23 +74,63 @@ public class MilightLedHandler extends BaseThingHandler {
                 break;
             }
             case MilightBindingConstants.CHANNEL_BRIGHTNESS: {
-                DecimalType d = (DecimalType) command;
-                state.setBrightness(d.intValue());
+                if (command instanceof OnOffType) {
+                    OnOffType s = (OnOffType) command;
+                    if (s == OnOffType.OFF) {
+                        state.setOff();
+                    } else {
+                        state.setOn();
+                    }
+                } else if (command instanceof PercentType) {
+                    PercentType p = (PercentType) command;
+                    state.setBrightness(p.intValue());
+                }
+
                 break;
             }
             case MilightBindingConstants.CHANNEL_TEMP: {
-                DecimalType d = (DecimalType) command;
-                state.setColorTemperature(d.intValue());
+                if (command instanceof IncreaseDecreaseType) {
+                    IncreaseDecreaseType id = (IncreaseDecreaseType) command;
+                    if (id == IncreaseDecreaseType.INCREASE) {
+                        state.warmer();
+                    } else if (id == IncreaseDecreaseType.DECREASE) {
+                        state.cooler();
+                    }
+                } else if (command instanceof DecimalType) {
+                    DecimalType d = (DecimalType) command;
+                    state.setColorTemperature(d.intValue());
+                }
                 break;
             }
             case MilightBindingConstants.CHANNEL_SPEED: {
-                DecimalType d = (DecimalType) command;
-                state.setDiscoSpeed(d.intValue());
+                if (command instanceof IncreaseDecreaseType) {
+                    IncreaseDecreaseType id = (IncreaseDecreaseType) command;
+                    if (id == IncreaseDecreaseType.INCREASE) {
+                        state.increaseSpeed();
+                    } else if (id == IncreaseDecreaseType.DECREASE) {
+                        state.decreaseSpeed();
+                    }
+                } else if (command instanceof DecimalType) {
+                    DecimalType d = (DecimalType) command;
+                    state.setDiscoSpeed(d.intValue());
+                }
                 break;
             }
             case MilightBindingConstants.CHANNEL_MODE: {
-                StringType d = (StringType) command;
-                state.setDiscoMode(Integer.valueOf(d.toString()));
+                if (command instanceof IncreaseDecreaseType) {
+                    IncreaseDecreaseType id = (IncreaseDecreaseType) command;
+                    if (id == IncreaseDecreaseType.INCREASE) {
+                        state.nextDiscoMode();
+                    } else if (id == IncreaseDecreaseType.DECREASE) {
+                        state.previousDiscoMode();
+                    }
+                } else if (command instanceof DecimalType) {
+                    DecimalType d = (DecimalType) command;
+                    state.setDiscoMode(d.intValue());
+                } else if (command instanceof StringType) {
+                    StringType d = (StringType) command;
+                    state.setDiscoMode(Integer.valueOf(d.toString()));
+                }
                 break;
             }
             default:
@@ -100,20 +142,9 @@ public class MilightLedHandler extends BaseThingHandler {
     public void initialize() {
         bulbid = Integer.valueOf(thing.getUID().getId());
         if (getBridge() != null) {
-            bridgeHandlerInitialized(null, getBridge());
+            MilightBridgeHandler brHandler = (MilightBridgeHandler) getBridge().getHandler();
+            state = new MilightThingState(bulbid, brHandler.getCommunication());
+            updateStatus(brHandler.getThing().getStatus());
         }
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        MilightBridgeHandler brHandler = (MilightBridgeHandler) bridge.getHandler();
-        state = new MilightThingState(bulbid, brHandler.getCommunication());
-        updateStatus(brHandler.getThing().getStatus());
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        updateStatus(bridgeStatusInfo.getStatus());
-        state = new MilightThingState(bulbid, ((MilightBridgeHandler) getBridge().getHandler()).getCommunication());
     }
 }

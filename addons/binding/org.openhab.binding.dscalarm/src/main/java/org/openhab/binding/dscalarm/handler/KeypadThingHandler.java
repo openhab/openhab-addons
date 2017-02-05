@@ -13,6 +13,7 @@ import static org.openhab.binding.dscalarm.DSCAlarmBindingConstants.*;
 import java.util.EventObject;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -81,6 +82,10 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
                 case KEYPAD_AC_LED:
                     updateState(channelUID, new DecimalType(state));
                     break;
+                case KEYPAD_LCD_UPDATE:
+                case KEYPAD_LCD_CURSOR:
+                    updateState(channelUID, new StringType(description));
+                    break;
                 default:
                     logger.debug("updateChannel(): Keypad Channel not updated - {}.", channelUID);
                     break;
@@ -104,11 +109,13 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
     private void keypadLEDStateEventHandler(EventObject event) {
         DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;
         DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
-        String[] channelTypes = { KEYPAD_READY_LED, KEYPAD_ARMED_LED, KEYPAD_MEMORY_LED, KEYPAD_BYPASS_LED, KEYPAD_TROUBLE_LED, KEYPAD_PROGRAM_LED, KEYPAD_FIRE_LED, KEYPAD_BACKLIGHT_LED };
+        String[] channelTypes = { KEYPAD_READY_LED, KEYPAD_ARMED_LED, KEYPAD_MEMORY_LED, KEYPAD_BYPASS_LED,
+                KEYPAD_TROUBLE_LED, KEYPAD_PROGRAM_LED, KEYPAD_FIRE_LED, KEYPAD_BACKLIGHT_LED };
 
         String channel;
         ChannelUID channelUID = null;
-        DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+        DSCAlarmCode dscAlarmCode = DSCAlarmCode
+                .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
 
         int bitField = Integer.decode("0x" + dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA));
         int[] masks = { 1, 2, 4, 8, 16, 32, 64, 128 };
@@ -151,7 +158,8 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
                 DSCAlarmMessage dscAlarmMessage = dscAlarmEvent.getDSCAlarmMessage();
 
                 ChannelUID channelUID = null;
-                DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+                DSCAlarmCode dscAlarmCode = DSCAlarmCode
+                        .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
                 String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
 
                 logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
@@ -161,9 +169,14 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
                     case KeypadLEDFlashState: /* 511 */
                         keypadLEDStateEventHandler(event);
                         break;
+                    case LCDUpdate:
+                    case LCDCursor:
+                        updateChannel(channelUID, 0, dscAlarmMessageData);
+                        break;
                     case LEDStatus: /* 903 */
                         int data = Integer.parseInt(dscAlarmMessageData.substring(0, 1));
-                        int state = Integer.parseInt(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA).substring(1));
+                        int state = Integer
+                                .parseInt(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA).substring(1));
                         switch (data) {
                             case 1:
                                 channelUID = new ChannelUID(getThing().getUID(), KEYPAD_READY_LED);

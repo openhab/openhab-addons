@@ -32,7 +32,7 @@ public class HomegearGateway extends AbstractHomematicGateway {
      */
     @Override
     protected void loadVariables(HmChannel channel) throws IOException {
-        rpcClient.getAllSystemVariables(channel);
+        getRpcClient(getDefaultInterface()).getAllSystemVariables(channel);
     }
 
     /**
@@ -40,7 +40,7 @@ public class HomegearGateway extends AbstractHomematicGateway {
      */
     @Override
     protected void loadScripts(HmChannel channel) throws IOException {
-        rpcClient.getAllScripts(channel);
+        getRpcClient(getDefaultInterface()).getAllScripts(channel);
     }
 
     /**
@@ -48,7 +48,7 @@ public class HomegearGateway extends AbstractHomematicGateway {
      */
     @Override
     protected void setVariable(HmDatapoint dp, Object value) throws IOException {
-        rpcClient.setSystemVariable(dp, value);
+        getRpcClient(getDefaultInterface()).setSystemVariable(dp, value);
     }
 
     /**
@@ -56,7 +56,7 @@ public class HomegearGateway extends AbstractHomematicGateway {
      */
     @Override
     protected void executeScript(HmDatapoint dp) throws IOException {
-        rpcClient.executeScript(dp);
+        getRpcClient(getDefaultInterface()).executeScript(dp);
     }
 
     /**
@@ -64,7 +64,7 @@ public class HomegearGateway extends AbstractHomematicGateway {
      */
     @Override
     protected void loadDeviceNames(Collection<HmDevice> devices) throws IOException {
-        rpcClient.loadDeviceNames(getDefaultInterface(), devices);
+        getRpcClient(getDefaultInterface()).loadDeviceNames(getDefaultInterface(), devices);
     }
 
 }

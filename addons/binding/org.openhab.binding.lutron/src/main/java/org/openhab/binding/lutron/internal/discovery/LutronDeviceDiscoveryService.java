@@ -52,7 +52,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
     private ScheduledFuture<?> scanTask;
 
     public LutronDeviceDiscoveryService(IPBridgeHandler bridgeHandler) throws IllegalArgumentException {
-        super(LutronHandlerFactory.DEVICE_TYPES_UIDS, 10);
+        super(LutronHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
 
         this.bridgeHandler = bridgeHandler;
     }

@@ -293,7 +293,7 @@ public class PulseaudioClient {
 	/**
 	 * changes the <code>mute</code> state of the corresponding {@link Sink}
 	 * 
-	 * @param sink the {@link Sink} to handle
+	 * @param item the {@link Sink} to handle
 	 * @param mute mutes the sink if true, unmutes if false
 	 */
 	public void setMute(AbstractAudioDeviceConfig item, boolean mute) {
@@ -447,7 +447,7 @@ public class PulseaudioClient {
 	/**
 	 * changes the combined sinks slaves to the given <code>sinks</code>
 	 * 
-	 * @param combinedSink the combined sink which slaves should be changed
+	 * @param combinedSinkName the combined sink which slaves should be changed
 	 * @param sinks the list of new slaves
 	 */
 	public void setCombinedSinkSlaves(String combinedSinkName, List<Sink>sinks) {
@@ -503,8 +503,8 @@ public class PulseaudioClient {
 					}
 				} while (ret_read > 0);
 			} catch (SocketTimeoutException e) {
-				// Timeout -> no response
-				return "";
+				// Timeout -> as newer PA versions (>=5.0) do not send the >>> we have no chance
+				// to detect the end of the answer, except by this timeout
 			} catch (IOException e) {
 				System.err.println("Exception while reading socket:"
 						+ e.getMessage());

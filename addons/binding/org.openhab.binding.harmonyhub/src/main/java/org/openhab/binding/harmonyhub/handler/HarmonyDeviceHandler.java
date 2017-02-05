@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -26,12 +25,12 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -81,8 +80,13 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             return;
         }
 
+        if (command instanceof RefreshType) {
+            // nothing to refresh
+            return;
+        }
+
         if (!(command instanceof StringType)) {
-            logger.warn("Command {} is not a String type for channel {] for device {}", command, channelUID,
+            logger.warn("Command {} is not a String type for channel {} for device {}", command, channelUID,
                     getThing());
             return;
         }
@@ -109,48 +113,18 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         } else {
             logName = id > 0 ? String.valueOf(id) : name;
             logger.debug("initializing {}", logName);
-            updateDeviceStatus(getBridge().getStatus());
+            updateBridgeStatus();
         }
     };
 
     @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        updateBridgeStatus();
+    }
+
+    @Override
     public void dispose() {
         factory.removeChannelTypesForThing(getThing().getUID());
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        if (thingHandler instanceof HarmonyHubHandler) {
-            logger.trace("bridgeHandlerInitialized for device {}", logName);
-            this.bridge = (HarmonyHubHandler) thingHandler;
-        }
-    }
-
-    @Override
-    public void bridgeHandlerDisposed(ThingHandler thingHandler, Bridge bridge) {
-        logger.debug("bridgeHandlerDisposed for device {}", logName);
-        this.bridge = null;
-        super.bridgeHandlerDisposed(thingHandler, bridge);
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo statusInfo) {
-        ThingStatus status = statusInfo.getStatus();
-        logger.debug("hubStatusChanged {}  {}", logName, status);
-        updateDeviceStatus(status);
-    }
-
-    /**
-     * updates our local status to online if our bridge is online and we
-     * have a valid configuration.
-     *
-     * @param status
-     */
-    private void updateDeviceStatus(ThingStatus status) {
-        if (checkConfig() && status.equals(ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.ONLINE);
-            updateChannel();
-        }
     }
 
     /**
@@ -163,15 +137,27 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
     }
 
     /**
+     * Updates our state based on the bridge/hub
+     */
+    private void updateBridgeStatus() {
+        ThingStatus bridgeStatus = getBridge().getStatus();
+        if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
+            bridge = (HarmonyHubHandler) getBridge().getHandler();
+            updateStatus(ThingStatus.ONLINE);
+            updateChannel();
+        } else if (bridgeStatus == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else if (bridgeStatus == ThingStatus.UNKNOWN) {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
+    }
+
+    /**
      * Updates our channel with the available buttons as option states
      */
     private void updateChannel() {
         try {
             logger.debug("updateChannel for device {}", logName);
-            if (bridge == null) {
-                logger.debug("updateChannel: no bridge for device {}", logName);
-                return;
-            }
 
             HarmonyConfig config = bridge.getCachedConfig();
             if (config == null) {

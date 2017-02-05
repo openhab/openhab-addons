@@ -20,6 +20,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +37,17 @@ public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapoin
      * {@inheritDoc}
      */
     @Override
-    public void add(HmDevice device) {
-        if (!device.isGatewayExtras()) {
-            addDatapoint(device, 0, VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE, HmValueType.BOOL, Boolean.FALSE, false);
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(HmDevice device) {
+        if (!device.isGatewayExtras() && !(device.getHmInterface() == HmInterface.CUXD)) {
+            addDatapoint(device, 0, getName(), HmValueType.BOOL, Boolean.FALSE, false);
         }
     }
 
@@ -46,22 +55,22 @@ public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapoin
      * {@inheritDoc}
      */
     @Override
-    public boolean canHandle(HmDatapoint dp, Object value) {
-        return VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE.equals(dp.getName());
+    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+        return getName().equals(dp.getName());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handle(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
+    public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
         if (MiscUtils.isTrueValue(dp.getValue())) {
             try {
                 HmDatapoint deleteMode = dp.getChannel().getDatapoint(
                         HmDatapointInfo.createValuesInfo(dp.getChannel(), VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE_MODE));
-
+                HmDevice device = dp.getChannel().getDevice();
                 int flag = -1;
                 switch (deleteMode.getOptionValue()) {
                     case MODE_RESET:
@@ -75,9 +84,9 @@ public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapoin
                 }
                 if (flag == -1) {
                     logger.info("Can't delete device '{}' from gateway '{}', DELETE_MODE is LOCKED",
-                            dp.getChannel().getDevice().getAddress(), gateway.getId());
+                            device.getAddress(), gateway.getId());
                 } else {
-                    gateway.getRpcClient().deleteDevice(dp.getChannel().getDevice(), flag);
+                    gateway.getRpcClient(device.getHmInterface()).deleteDevice(device, flag);
                 }
             } finally {
                 gateway.disableDatapoint(dp, AbstractHomematicGateway.DEFAULT_DISABLE_DELAY);

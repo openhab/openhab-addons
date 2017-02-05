@@ -10,16 +10,17 @@ package org.openhab.binding.astro.internal.job;
 
 import org.openhab.binding.astro.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
+import org.quartz.JobDataMap;
 
 /**
  * Calculates and publishes astro positional data.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public class PositionalJob extends AbstractBaseJob {
 
     @Override
-    protected void executeJob(String thingUid) {
+    protected void executeJob(String thingUid, JobDataMap jobDataMap) {
         AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(thingUid);
         if (astroHandler != null) {
             astroHandler.publishPositionalInfo();

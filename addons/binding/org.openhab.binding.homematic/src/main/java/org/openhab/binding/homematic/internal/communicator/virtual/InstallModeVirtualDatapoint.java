@@ -19,6 +19,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
 /**
@@ -32,9 +33,17 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
      * {@inheritDoc}
      */
     @Override
-    public void add(HmDevice device) {
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_INSTALL_MODE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(HmDevice device) {
         if (device.isGatewayExtras()) {
-            addDatapoint(device, 0, VIRTUAL_DATAPOINT_NAME_INSTALL_MODE, HmValueType.BOOL, Boolean.FALSE, false);
+            addDatapoint(device, 0, getName(), HmValueType.BOOL, Boolean.FALSE, false);
         }
     }
 
@@ -42,15 +51,15 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
      * {@inheritDoc}
      */
     @Override
-    public boolean canHandle(HmDatapoint dp, Object value) {
-        return VIRTUAL_DATAPOINT_NAME_INSTALL_MODE.equals(dp.getName());
+    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+        return getName().equals(dp.getName());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handle(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
+    public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
         boolean enable = MiscUtils.isTrueValue(value);
@@ -58,7 +67,8 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
         if (enable) {
             gateway.disableDatapoint(dp, duration);
         }
-        gateway.getRpcClient().setInstallMode(dp.getChannel().getDevice().getHmInterface(), enable, duration);
+        HmInterface hmInterface = dp.getChannel().getDevice().getHmInterface();
+        gateway.getRpcClient(hmInterface).setInstallMode(hmInterface, enable, duration);
     }
 
     /**

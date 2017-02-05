@@ -9,8 +9,8 @@
 package org.openhab.binding.netatmo.config;
 
 /**
- * The {@link NetatmoBridgeConfiguration} is responsible for holding configuration
- * informations needed to access Netatmo API
+ * The {@link NetatmoBridgeConfiguration} is responsible for holding
+ * configuration informations needed to access Netatmo API
  *
  * @author Gaël L'hopital - Initial contribution
  */

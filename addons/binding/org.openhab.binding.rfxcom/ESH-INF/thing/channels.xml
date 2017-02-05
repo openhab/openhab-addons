@@ -5,6 +5,18 @@
 
 	<!-- Channel definitions -->
 
+	<channel-type id="rawmessage">
+		<item-type>String</item-type>
+		<label>Raw Message</label>
+		<description>Hexadecimal representation of undecoded RFXCOM messages including header and payload</description>
+	</channel-type>
+
+	<channel-type id="rawpayload">
+		<item-type>String</item-type>
+		<label>Raw Payload</label>
+		<description>Hexadecimal representation of payload of undecoded RFXCOM messages</description>
+	</channel-type>
+
 	<channel-type id="command">
 		<item-type>Switch</item-type>
 		<label>Command</label>
@@ -15,6 +27,12 @@
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Contact channel</description>
+	</channel-type>
+
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>DateTime</label>
+		<description>DateTime channel</description>
 	</channel-type>
 
 	<channel-type id="dimminglevel">
@@ -104,13 +122,15 @@
 		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<description>Current temperature in degree Celsius</description>
-		<state pattern="%d °C" readOnly="true"></state>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity level in percentages</description>
+		<category>Humidity</category>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 

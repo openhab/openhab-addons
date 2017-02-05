@@ -30,6 +30,7 @@ public class HomematicConfig {
     private static final int DEFAULT_PORT_WIRED = 2000;
     private static final int DEFAULT_PORT_HMIP = 2010;
     private static final int DEFAULT_PORT_CUXD = 8701;
+    private static final int DEFAULT_PORT_GROUP = 9292;
 
     private String gatewayAddress;
     private String gatewayType = GATEWAY_TYPE_AUTO;
@@ -38,9 +39,11 @@ public class HomematicConfig {
     private int wiredPort;
     private int hmIpPort;
     private int cuxdPort;
+    private int groupPort;
 
     private String callbackHost;
-    private int callbackPort;
+    private int xmlCallbackPort;
+    private int binCallbackPort;
 
     private Integer aliveInterval = 300;
     private int socketMaxAlive = 900;
@@ -79,16 +82,50 @@ public class HomematicConfig {
 
     /**
      * Returns the callback host port.
+     *
+     * @deprecated use getBinCallbackPort
      */
+    @Deprecated
     public int getCallbackPort() {
-        return callbackPort;
+        return binCallbackPort;
     }
 
     /**
      * Sets the callback host port.
+     *
+     * @deprecated use setBinCallbackPort
      */
+    @Deprecated
     public void setCallbackPort(int callbackPort) {
-        this.callbackPort = callbackPort;
+        this.binCallbackPort = callbackPort;
+    }
+
+    /**
+     * Returns the XML-RPC callback host port.
+     */
+    public int getXmlCallbackPort() {
+        return xmlCallbackPort;
+    }
+
+    /**
+     * Sets the XML-RPC callback host port.
+     */
+    public void setXmlCallbackPort(int xmlCallbackPort) {
+        this.xmlCallbackPort = xmlCallbackPort;
+    }
+
+    /**
+     * Returns the BIN-RPC callback host port.
+     */
+    public int getBinCallbackPort() {
+        return binCallbackPort;
+    }
+
+    /**
+     * Sets the BIN-RPC callback host port.
+     */
+    public void setBinCallbackPort(int binCallbackPort) {
+        this.binCallbackPort = binCallbackPort;
     }
 
     /**
@@ -193,34 +230,52 @@ public class HomematicConfig {
      * Returns the Homematic gateway port of the interfaces.
      */
     public int getRpcPort(HmInterface hmInterface) {
-        if (gatewayInfo != null) {
-            if (HmInterface.RF.equals(hmInterface)) {
-                return getRfPort();
-            } else if (HmInterface.WIRED.equals(hmInterface)) {
-                return getWiredPort();
-            } else if (HmInterface.HMIP.equals(hmInterface)) {
-                return getHmIpPort();
-            } else if (HmInterface.CUXD.equals(hmInterface)) {
-                return getCuxdPort();
-            }
+        if (HmInterface.WIRED.equals(hmInterface)) {
+            return getWiredPort();
+        } else if (HmInterface.HMIP.equals(hmInterface)) {
+            return getHmIpPort();
+        } else if (HmInterface.CUXD.equals(hmInterface)) {
+            return getCuxdPort();
+        } else if (HmInterface.GROUP.equals(hmInterface)) {
+            return getGroupPort();
+        } else {
+            return getRfPort();
         }
-        return getRfPort();
     }
 
+    /**
+     * Returns the port of the RF daemon.
+     */
     private int getRfPort() {
         return rfPort == 0 ? DEFAULT_PORT_RF : rfPort;
     }
 
+    /**
+     * Returns the port of the wired daemon.
+     */
     private int getWiredPort() {
         return wiredPort == 0 ? DEFAULT_PORT_WIRED : wiredPort;
     }
 
+    /**
+     * Returns the port of the HmIp daemon.
+     */
     private int getHmIpPort() {
         return hmIpPort == 0 ? DEFAULT_PORT_HMIP : hmIpPort;
     }
 
+    /**
+     * Returns the port of the CUxD daemon.
+     */
     private int getCuxdPort() {
         return cuxdPort == 0 ? DEFAULT_PORT_CUXD : cuxdPort;
+    }
+
+    /**
+     * Returns the port of the group daemon.
+     */
+    public int getGroupPort() {
+        return groupPort == 0 ? DEFAULT_PORT_GROUP : groupPort;
     }
 
     /**
@@ -245,6 +300,13 @@ public class HomematicConfig {
     }
 
     /**
+     * Returns true, if a group port is configured.
+     */
+    public boolean hasGroupPort() {
+        return groupPort != 0;
+    }
+
+    /**
      * Returns the encoding of a Homematic gateway.
      */
     public String getEncoding() {
@@ -262,8 +324,9 @@ public class HomematicConfig {
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
         tsb.append("gatewayAddress", gatewayAddress).append("callbackHost", callbackHost)
-                .append("callbackPort", callbackPort).append("gatewayType", gatewayType).append("rfPort", getRfPort())
-                .append("wiredPort", getWiredPort()).append("hmIpPort", hmIpPort).append("cuxdPort", getCuxdPort())
+                .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
+                .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
+                .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort()).append("groupPort", getGroupPort())
                 .append("aliveInterval", aliveInterval).append("reconnectInterval", reconnectInterval)
                 .append("timeout", timeout).append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();

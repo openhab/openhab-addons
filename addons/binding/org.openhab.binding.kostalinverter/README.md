@@ -20,10 +20,10 @@ None
 
 ## Channels
 
-acPower
-totalEnergy
-dayEnergy
-status
+- acPower
+- totalEnergy
+- dayEnergy
+- status
 
 ## Thing Configuration
 

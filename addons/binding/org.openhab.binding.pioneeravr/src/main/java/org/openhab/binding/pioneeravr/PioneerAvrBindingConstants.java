@@ -9,6 +9,7 @@
 package org.openhab.binding.pioneeravr;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -16,7 +17,7 @@ import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link PioneerAvrBinding} class defines common constants, which are used across the whole binding.
- * 
+ *
  * @author Antoine Besnard - Initial contribution
  */
 public class PioneerAvrBindingConstants {
@@ -41,13 +42,16 @@ public class PioneerAvrBindingConstants {
     public final static String IP_PROTOCOL_NAME = "IP";
     public final static String SERIAL_PROTOCOL_NAME = "serial";
 
-    // List of all Channel ids
+    // List of all Channel names
     public final static String POWER_CHANNEL = "power";
     public final static String VOLUME_DIMMER_CHANNEL = "volumeDimmer";
     public final static String VOLUME_DB_CHANNEL = "volumeDb";
     public final static String MUTE_CHANNEL = "mute";
     public final static String SET_INPUT_SOURCE_CHANNEL = "setInputSource";
-    public final static String DISPLAY_INFORMATION_CHANNEL = "displayInformation";
+    public final static String DISPLAY_INFORMATION_CHANNEL = "displayInformation#displayInformation";
+
+    public final static String GROUP_CHANNEL_PATTERN = "zone%s#%s";
+    public final static Pattern GROUP_CHANNEL_ZONE_PATTERN = Pattern.compile("zone([0-1])#.*");
 
     // Used for Discovery service
     public final static String MANUFACTURER = "PIONEER";

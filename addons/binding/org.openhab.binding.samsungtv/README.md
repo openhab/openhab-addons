@@ -42,13 +42,22 @@ TV's support the following channels:
 | brightness | Dimmer | Brightness of the TV picture. |
 | contrast | Dimmer | Contrast of the TV picture. |
 | sharpness | Dimmer | Sharpness of the TV picture. |
-| colortemperature | Number | Color temperature of the TV picture. Minimum value is 0 and maximum 4. |
-| sourcename | String | Name of the current source. |
-| sourceid | Number | Id of the current source. |
+| colorTemperature | Number | Color temperature of the TV picture. Minimum value is 0 and maximum 4. |
+| sourceName | String | Name of the current source. |
+| sourceId | Number | Id of the current source. |
 | channel | Number | Selected TV channel number. |
-| programtitle | String | Program title of the current channel. |
-| channelname | String | Name of the current TV channel. |
+| programTitle | String | Program title of the current channel. |
+| channelName | String | Name of the current TV channel. |
 | url | String | Start TV web browser and go the given web page. |
-| stopbrowser | Switch | Stop TV's web browser and go back to TV mode. |
+| stopBrowser | Switch | Stop TV's web browser and go back to TV mode. |
 | power | Switch | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely. |
-| keycode | String | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
+| keyCode | String | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
+
+
+E.g.
+
+```
+Dimmer  TV_Volume   { channel="samsungtv:tv:livingroom:volume" }
+Switch  TV_Mute     { channel="samsungtv:tv:livingroom:mute" }
+String  TV_KeyCode  { channel="samsungtv:tv:livingroom:keyCode" }
+```

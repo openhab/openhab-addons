@@ -12,9 +12,11 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.onkyo.internal.OnkyoHandlerFactory">
 
    <implementation class="org.openhab.binding.onkyo.internal.OnkyoHandlerFactory"/>
+   <reference bind="setUpnpIOService" cardinality="1..1" interface="org.eclipse.smarthome.io.transport.upnp.UpnpIOService" name="UpnpIOService" policy="static" unbind="unsetUpnpIOService"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
+  <reference bind="setAudioHTTPServer" cardinality="1..1" interface="org.eclipse.smarthome.core.audio.AudioHTTPServer" name="AudioHTTPServer" policy="static" unbind="unsetAudioHTTPServer"/>
 
 </scr:component>

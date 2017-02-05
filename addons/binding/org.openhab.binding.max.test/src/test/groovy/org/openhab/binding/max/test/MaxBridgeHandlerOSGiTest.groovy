@@ -14,15 +14,17 @@ import static org.junit.matchers.JUnitMatchers.*
 import org.eclipse.smarthome.config.core.Configuration
 import org.eclipse.smarthome.core.thing.Bridge
 import org.eclipse.smarthome.core.thing.ThingRegistry
+import org.eclipse.smarthome.core.thing.ThingTypeMigrationService
 import org.eclipse.smarthome.core.thing.ThingTypeUID
 import org.eclipse.smarthome.core.thing.ThingUID
 import org.eclipse.smarthome.core.thing.binding.ThingHandler
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory
 import org.eclipse.smarthome.test.OSGiTest
 import org.eclipse.smarthome.test.storage.VolatileStorageService
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.openhab.binding.max.MaxBinding
+import org.openhab.binding.max.internal.factory.MaxCubeHandlerFactory
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler
 
 /**
@@ -46,7 +48,7 @@ class MaxBridgeHandlerOSGiTest extends OSGiTest {
     }
 
     @Test
-    void maxCubeBridgeHandlerRegisteredAndUnregister() {
+    void maxCubeBridgeHandlerIsCreated() {
 
         MaxCubeBridgeHandler maxBridgeHandler = getService(ThingHandler, MaxCubeBridgeHandler)
         assertThat maxBridgeHandler, is(nullValue())
@@ -71,15 +73,38 @@ class MaxBridgeHandlerOSGiTest extends OSGiTest {
 
         // wait for MaxCubeBridgeHandler to be registered
         waitForAssert({
-            assertThat getService(ThingHandler, MaxCubeBridgeHandler), is(notNullValue())
+            MaxCubeBridgeHandler handler = getThingHandler(MaxCubeBridgeHandler.class)
+            assertThat handler, is(notNullValue())
         },  10000)
-
-        thingRegistry.forceRemove(cubeUid)
-
-        // wait for MaxCubeBridgeHandler to be unregistered
-        waitForAssert({
-            assertThat getService(ThingHandler, MaxCubeBridgeHandler), is(nullValue())
-        }, 10000)
     }
 
+
+    /**
+     * Gets a thing handler of a specific type.
+     *
+     * @param clazz type of thing handler
+     *
+     * @return the thing handler
+     */
+    protected <T extends ThingHandler> T getThingHandler(Class<T> clazz){
+        MaxCubeHandlerFactory factory
+        waitForAssert{
+            factory = getService(ThingHandlerFactory, MaxCubeHandlerFactory)
+            assertThat factory, is(notNullValue())
+        }
+        def handlers = getThingHandlers(factory)
+
+        for(ThingHandler handler : handlers) {
+            if(clazz.isInstance(handler)) {
+                return handler
+            }
+        }
+        return null
+    }
+
+    private Set<ThingHandler> getThingHandlers(MaxCubeHandlerFactory factory) {
+        def thingManager = getService(ThingTypeMigrationService.class, { "org.eclipse.smarthome.core.thing.internal.ThingManager" } )
+        assertThat thingManager, not(null)
+        thingManager.thingHandlersByFactory.get(factory)
+    }
 }

@@ -105,6 +105,7 @@ public class VisuConfig {
      */
     public String getConfigXml(HttpServletRequest req) {
         SchemaPages pagesBean = new SchemaPages();
+        pagesBean.setBackend("oh2");
         pagesBean.setDesign("metal");
         pagesBean.setMaxMobileScreenWidth(new BigDecimal(480));
         pagesBean.setBindClickToWidget(true);

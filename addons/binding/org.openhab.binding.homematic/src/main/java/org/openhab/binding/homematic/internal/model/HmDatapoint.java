@@ -351,6 +351,13 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
+     * Returns true, if the datapoint is a datetime (only for virtual datapoints).
+     */
+    public boolean isDateTimeType() {
+        return type == HmValueType.DATETIME;
+    }
+
+    /**
      * Returns true, if the datapoint is a variable.
      */
     public boolean isVariable() {
