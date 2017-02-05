@@ -4,10 +4,9 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Sample Thing Type -->
     <thing-type id="lgtv">
         <label>LG TV</label>
-        <description>LG TV.</description>
+        <description>LG television connected through a serial interface.</description>
 
         <channels>
             <channel id="power" typeId="power"/>
@@ -22,7 +21,6 @@
             <parameter name="port" type="text">
                 <label>Serial port</label>
                 <description>Select serial port (COM1, /dev/ttyS0, ...)</description>
-                <default>COM1</default>
                 <required>true</required>
             </parameter>
          </config-description>
