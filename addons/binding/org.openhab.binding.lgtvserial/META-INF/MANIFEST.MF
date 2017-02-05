@@ -21,4 +21,3 @@ Import-Package:
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.lgtvserial,
  org.openhab.binding.lgtvserial.handler
-Require-Bundle: org.openhab.io.transport.serial
