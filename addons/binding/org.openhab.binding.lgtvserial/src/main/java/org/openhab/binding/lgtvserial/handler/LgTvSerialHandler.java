@@ -39,6 +39,9 @@ public class LgTvSerialHandler extends BaseThingHandler {
     private NRSerialPort serialPort;
     private OutputStreamWriter output;
     private String portName;
+    long lastCommandTime = System.currentTimeMillis();
+    boolean lastCommandWasPower = false;
+    private static final long POWER_COMMAND_DELAY_MS = 500;
 
     public LgTvSerialHandler(Thing thing) {
         super(thing);
@@ -72,17 +75,37 @@ public class LgTvSerialHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             return; // Protocol doesn't support refreshing
         }
         try {
+            long now = System.currentTimeMillis();
+
+            if (lastCommandWasPower && now - lastCommandTime < POWER_COMMAND_DELAY_MS) {
+                try {
+                    Thread.sleep(POWER_COMMAND_DELAY_MS - (now - lastCommandTime));
+                    now += POWER_COMMAND_DELAY_MS - (now - lastCommandTime);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+            lastCommandWasPower = false;
             if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_POWER) && (command instanceof OnOffType)) {
+
+                if (now - lastCommandTime < POWER_COMMAND_DELAY_MS) {
+                    try {
+                        Thread.sleep(POWER_COMMAND_DELAY_MS - (now - lastCommandTime));
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+                }
                 if (command == OnOffType.ON) {
                     output.write("ka 0 1\r");
                 } else if (command == OnOffType.OFF) {
                     output.write("ka 0 0\r");
                 }
+                lastCommandWasPower = true;
                 updateState(channelUID, (OnOffType) command);
             } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_INPUT)) {
                 output.write(String.format("xb 0 %x\r", Integer.parseInt(command.toString())));
@@ -110,6 +133,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
                 updateState(channelUID, new StringType(command.toString()));
             }
             output.flush();
+            lastCommandTime = now;
         } catch (IOException e) {
             logger.error("Serial port write error", e);
         }
