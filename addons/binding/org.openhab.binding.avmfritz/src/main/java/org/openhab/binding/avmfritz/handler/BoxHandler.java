@@ -109,6 +109,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     public void dispose() {
         logger.debug("Handler disposed.");
         if (pollingJob != null && !pollingJob.isCancelled()) {
+        	logger.debug("stop polling job");
             pollingJob.cancel(true);
             pollingJob = null;
         }
