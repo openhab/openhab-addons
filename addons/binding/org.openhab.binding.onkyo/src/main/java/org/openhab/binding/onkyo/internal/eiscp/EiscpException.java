@@ -12,7 +12,6 @@ package org.openhab.binding.onkyo.internal.eiscp;
  * Exception for eISCP errors.
  *
  * @author Pauli Anttila
- * @since 1.3.0
  */
 public class EiscpException extends Exception {
 
