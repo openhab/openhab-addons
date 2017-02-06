@@ -29,13 +29,13 @@
     <channel-type id="power">
         <item-type>Switch</item-type>
         <label>Power</label>
-        <description>Power on/off.</description>
+        <description>Power on/off</description>
     </channel-type>
 
     <channel-type id="input">
         <item-type>String</item-type>
         <label>Input</label>
-        <description>Input select.</description>
+        <description>Input select</description>
         <state>
             <options>
                 <option value="144">HDMI1</option>
@@ -60,20 +60,20 @@
     <channel-type id="mute">
         <item-type>Switch</item-type>
         <label>Mute</label>
-        <description>Mute on/off.</description>
+        <description>Mute on/off</description>
         <category>Mute</category>
     </channel-type>
     
     <channel-type id="backlight">
         <item-type>Dimmer</item-type>
         <label>Backlight</label>
-        <description>Display backlight brightness.</description>
+        <description>Display backlight brightness</description>
     </channel-type>
     
     <channel-type id="color-temperature">
         <item-type>String</item-type>
         <label>Color temperature</label>
-        <description>Color temperature of the display.</description>
+        <description>Color temperature of the display</description>
         <state>
 	        <options>
 	            <option value="0">Cool</option>
