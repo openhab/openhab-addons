@@ -214,7 +214,7 @@ public class HomematicThingHandler extends BaseThingHandler {
             if (dp.getParamsetType() == HmParamsetType.MASTER) {
                 // update configuration
                 Configuration config = editConfiguration();
-                config.put(MetadataUtils.getParameterName(dp), dp.getValue());
+                config.put(MetadataUtils.getParameterName(dp), dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
                 updateConfiguration(config);
             } else if (!HomematicTypeGeneratorImpl.isIgnoredDatapoint(dp)) {
                 // update channel
