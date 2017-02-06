@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:onkyo:config">
+		<parameter name="ipAddress" type="text" required="true">
+			<label>Network Address</label>
+			<description>The IP or host name of the Onkyo Receiver</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65335">
+			<label>Port</label>
+			<description>Port of the Onkyo to control</description>
+			<default>60128</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="udn" type="text">
+			<label>Unique Device Name</label>
+			<description>The UDN identifies the Onkyo AVR.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="0">
+			<label>Refresh Interval</label>
+			<description>The refresh interval in seconds for polling the receiver (0=disable). Binding receive automatically updates from </description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="volumeLimit" type="integer" min="0" max="100">
+			<label>Volume Limit</label>
+			<description>Limit maximum volume level to defined value.</description>
+			<default>100</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
