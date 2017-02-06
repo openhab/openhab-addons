@@ -15,6 +15,7 @@
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
+				<context>password</context>
 				<description>Password for logging in to Gardena Smart Home</description>
 			</parameter>
 			<parameter name="sessionTimeout" type="integer">
