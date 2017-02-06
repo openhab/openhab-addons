@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
+ * Copyright (c) 2017 by the respective copyright holders.
  * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,21 +8,20 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.HOME_CONFORT;
+
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
-import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
 /**
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 1.9.0
+ * @since 2.0.0
  */
-public class RFXComBarometricMessageTest {
-
+public class RFXComHomeConfortTest {
     @Test(expected = RFXComMessageNotImplementedException.class)
     public void checkNotImplemented() throws Exception {
-        RFXComMessageFactory.createMessage(PacketType.BAROMETRIC);
+        RFXComMessageFactory.createMessage(HOME_CONFORT);
     }
-
 }
