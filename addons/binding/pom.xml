@@ -29,6 +29,7 @@
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feed.test</module>
     <module>org.openhab.binding.freebox</module>
+    <module>org.openhab.binding.gardena</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.hdpowerview</module>
