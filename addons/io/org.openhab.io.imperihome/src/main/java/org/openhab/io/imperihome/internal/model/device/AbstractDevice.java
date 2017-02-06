@@ -38,9 +38,10 @@ public abstract class AbstractDevice implements StateChangeListener {
     private String name;
     private String room;
     private DeviceType type;
-    private boolean inverted;
+    private String defaultIcon;
     private final DeviceParameters params;
 
+    private transient boolean inverted;
     private transient String roomName;
     private transient Item item;
 
@@ -117,6 +118,14 @@ public abstract class AbstractDevice implements StateChangeListener {
 
     public void setInverted(boolean inverted) {
         this.inverted = inverted;
+    }
+
+    public String getDefaultIcon() {
+        return defaultIcon;
+    }
+
+    public void setDefaultIcon(String defaultIcon) {
+        this.defaultIcon = defaultIcon;
     }
 
     public DeviceParameters getParams() {
@@ -218,7 +227,7 @@ public abstract class AbstractDevice implements StateChangeListener {
     @Override
     public String toString() {
         return "AbstractDevice{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", room='" + room + '\'' + ", type="
-                + type + ", invert=" + inverted + ", links=" + links + '}';
+                + type + ", invert=" + inverted + ", icon=" + defaultIcon + ", links=" + links + '}';
     }
 
 }
