@@ -377,11 +377,9 @@ public class OnkyoConnection {
         class Task extends TimerTask {
             @Override
             public void run() {
-                if (connected) {
-                    logger.debug("Test connection to {}:{}", ip, port);
-                    sendCommand(new EiscpMessage.MessageBuilder().command(EiscpCommand.POWER_QUERY.getCommand())
-                            .value(EiscpCommand.POWER_QUERY.getValue()).build());
-                }
+                logger.debug("Test connection to {}:{}", ip, port);
+                sendCommand(new EiscpMessage.MessageBuilder().command(EiscpCommand.POWER_QUERY.getCommand())
+                        .value(EiscpCommand.POWER_QUERY.getValue()).build());
             }
         }
     }
