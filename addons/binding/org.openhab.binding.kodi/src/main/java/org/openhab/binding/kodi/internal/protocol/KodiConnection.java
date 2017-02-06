@@ -443,7 +443,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void close() {
-        listener.updateConnectionState(false);
         socket = null;
     }
 

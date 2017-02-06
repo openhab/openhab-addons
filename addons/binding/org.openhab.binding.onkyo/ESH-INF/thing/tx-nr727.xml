@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onkyo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="TX-NR727">
+		<label>Onkyo TX-NR727 AV Receiver</label>
+		<description>Network enabled Onkyo AV Receivers</description>
+
+		<channel-groups>
+			<channel-group typeId="zone1Controls" id="zone1" />
+			<channel-group typeId="zone2Controls" id="zone2" />
+			<channel-group typeId="zone3Controls" id="zone3" />
+			<channel-group typeId="playerControls" id="player" />
+			<channel-group typeId="netMenuControls" id="netmenu" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:onkyo:config" />
+	</thing-type>
+
+</thing:thing-descriptions>
