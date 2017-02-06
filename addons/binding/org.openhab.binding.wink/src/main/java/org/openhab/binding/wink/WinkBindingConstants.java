@@ -23,12 +23,6 @@ public class WinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_WINK_HUB_2 = new ThingTypeUID(BINDING_ID, "wink_hub_2");
     public final static ThingTypeUID THING_TYPE_LIGHT_BULB = new ThingTypeUID(BINDING_ID, "light_bulb");
 
-    // List of all Channel ids for the common stuffs
-    public final static String CHANNEL_NAME = "name";
-    public final static String CHANNEL_MODEL_NAME = "model_name";
-    public final static String CHANNEL_PUBNUB_SUBSCRIBE_KEY = "pubnub_subscribe_key";
-    public final static String CHANNEL_PUBNUB_CHANNEL = "pubnub_channel";
-
     // List of all Channel ids for a light bulb
     public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
 
@@ -42,6 +36,4 @@ public class WinkBindingConstants {
     public static final String WINK_DEVICE_CONFIG = "device_config_string";
 
     public static final String WINK_DEVICE_ID = "device_id";
-    public static final String WINK_PUBNUB_SUBSCRIBE_KEY = "pubnub_subscribe_key";
-    public static final String WINK_PUBNUB_CHANNEL = "pubnub_channel";
 }
