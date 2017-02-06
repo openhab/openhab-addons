@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.zway.handler;
 
-import static org.openhab.binding.zway.ZWayBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.zway.ZWayBindingConstants.*;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -106,7 +109,7 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                             addCommandClassThermostatModeAsChannel(modes, mConfig.getNodeId());
                         }
 
-                        // starts polling job and register all linked items
+                        // Starts polling job and register all linked items
                         completeInitialization();
                     } catch (Throwable t) {
                         if (t instanceof Exception) {
@@ -183,5 +186,34 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
         }
 
         super.dispose();
+    }
+
+    @Override
+    protected void refreshLastUpdate() {
+        logger.debug("Refresh last update for Z-Wave device");
+
+        // Check Z-Way bridge handler
+        ZWayBridgeHandler zwayBridgeHandler = getZWayBridgeHandler();
+        if (zwayBridgeHandler == null || !zwayBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.debug("Z-Way bridge handler not found or not ONLINE.");
+            return;
+        }
+
+        // Load and check Z-Wave device from Z-Way server (Z-Wave API)
+        ZWaveDevice zwaveDevice = zwayBridgeHandler.getZWayApi().getZWaveDevice(mConfig.getNodeId());
+        if (zwaveDevice == null) {
+            logger.debug("Z-Wave device not found.");
+            return;
+        }
+
+        Calendar lastUpdateOfDevice = Calendar.getInstance();
+        lastUpdateOfDevice.setTimeInMillis(new Long(zwaveDevice.getData().getLastReceived().getUpdateTime()) * 1000);
+
+        if (lastUpdate == null || (lastUpdate != null && lastUpdateOfDevice.after(lastUpdate))) {
+            lastUpdate = lastUpdateOfDevice;
+        }
+
+        DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+        updateProperty(DEVICE_PROP_LAST_UPDATE, formatter.format(lastUpdate.getTime()));
     }
 }

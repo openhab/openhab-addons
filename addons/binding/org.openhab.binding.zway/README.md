@@ -114,7 +114,6 @@ The following channels are currently supported.
 
 Currently unsupported Z-Way probe types:
 
-- SwitchMultilevel: motor (selection criterion for rollershutter - will be implemented soon)
 - SensorBinary: cooling, all alarm types (resulting from Z-Wave command class AlarmSensor(deprecated) and Alarm)
 - SensorMultilevel: meterElectric_pulse_count, meterElectric_voltage, meterElectric_ampere, meterElectric_power_factor
 
