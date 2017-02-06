@@ -23,6 +23,7 @@ public class PlayerData {
     protected double health;
     protected float walkSpeed;
     protected LocationData location;
+    protected String gameMode;
 
     /**
      * Get the display name of player.
@@ -79,9 +80,9 @@ public class PlayerData {
     }
 
     /**
-     * Get the walkspeed of player
+     * Get the walk speed of player.
      *
-     * @return walkspeed of player.
+     * @return walk speed of player
      */
     public float getWalkSpeed() {
         return walkSpeed;
@@ -94,6 +95,15 @@ public class PlayerData {
      */
     public LocationData getLocation() {
         return location;
+    }
+
+    /**
+     * Get the players game mode.
+     *
+     * @return game mode
+     */
+    public String getGameMode() {
+        return gameMode;
     }
 
     @Override

@@ -40,6 +40,7 @@ public class MinecraftBindingConstants {
     public final static String CHANNEL_PLAYER_HEALTH = "playerHealth";
     public final static String CHANNEL_PLAYER_WALK_SPEED = "playerWalkSpeed";
     public final static String CHANNEL_PLAYER_LOCATION = "playerLocation";
+    public final static String CHANNEL_PLAYER_GAME_MODE = "playerGameMode";
 
     public final static String CHANNEL_SIGN_ACTIVE = "signActive";
 
