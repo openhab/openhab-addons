@@ -10,7 +10,6 @@ package org.openhab.binding.wink.handler;
 import static org.openhab.binding.wink.WinkBindingConstants.CHANNEL_LIGHTLEVEL;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -21,13 +20,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pubnub.api.PNConfiguration;
-import com.pubnub.api.PubNub;
-import com.pubnub.api.callbacks.SubscribeCallback;
-import com.pubnub.api.models.consumer.PNStatus;
-import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
-import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
 /**
  * TODO: The {@link LightBulbHandler} is responsible for handling commands, which are
@@ -47,7 +41,6 @@ public class LightBulbHandler extends WinkHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid config.");
             return;
         }
-        test();
         // TODO: Update status.
         updateStatus(ThingStatus.ONLINE);
     }
@@ -94,12 +87,33 @@ public class LightBulbHandler extends WinkHandler {
     }
 
     private void updateState(JsonObject jsonDataBlob) {
-        int brightnessLastReading = Math
-                .round(jsonDataBlob.get("last_reading").getAsJsonObject().get("brightness").getAsFloat() * 100);
-        int brightnessDesiredState = Math
-                .round(jsonDataBlob.get("desired_state").getAsJsonObject().get("brightness").getAsFloat() * 100);
-        if (brightnessDesiredState == brightnessLastReading) {
-            updateState(CHANNEL_LIGHTLEVEL, new PercentType(brightnessDesiredState));
+        int brightnessLastReading = -1;
+        JsonElement lastReadingBlob = jsonDataBlob.get("last_reading");
+        if (lastReadingBlob != null) {
+            JsonElement brightnessBlob = lastReadingBlob.getAsJsonObject().get("brightness");
+            if (brightnessBlob != null) {
+                brightnessLastReading = Math.round(brightnessBlob.getAsFloat() * 100);
+            }
+            JsonElement poweredBlob = lastReadingBlob.getAsJsonObject().get("powered");
+            if (poweredBlob != null && poweredBlob.getAsBoolean() == false) {
+                brightnessLastReading = 0;
+            }
+        }
+        int brightnessDesiredState = -1;
+        JsonElement desiredStateBlob = jsonDataBlob.get("desired_state");
+        if (desiredStateBlob != null) {
+            JsonElement brightnessBlob = desiredStateBlob.getAsJsonObject().get("brightness");
+            if (brightnessBlob != null) {
+                brightnessDesiredState = Math.round(brightnessBlob.getAsFloat() * 100);
+            }
+            JsonElement poweredBlob = desiredStateBlob.getAsJsonObject().get("powered");
+            if (poweredBlob != null && poweredBlob.getAsBoolean() == false) {
+                brightnessDesiredState = 0;
+            }
+        }
+        // Don't update the state during a transition.
+        if (brightnessDesiredState == brightnessLastReading || brightnessDesiredState == -1) {
+            updateState(CHANNEL_LIGHTLEVEL, new PercentType(brightnessLastReading));
         }
     }
 
@@ -110,47 +124,12 @@ public class LightBulbHandler extends WinkHandler {
     }
 
     @Override
-    public void updateDeviceStateCallback(JsonObject jsonDataBlob) {
+    protected void updateDeviceStateCallback(JsonObject jsonDataBlob) {
         updateState(jsonDataBlob);
     }
 
-    private void test() {
-        PNConfiguration pnConfiguration = new PNConfiguration();
-        pnConfiguration.setSubscribeKey(this.deviceConfig.getPubnubSubscribeKey());
-
-        PubNub pubnub = new PubNub(pnConfiguration);
-        pubnub.addListener(new SubscribeCallback() {
-            @Override
-            public void message(PubNub pubnub, PNMessageResult message) {
-                updateDeviceState(message.getMessage().getAsString());
-                // Handle new message stored in message.message
-                if (message.getChannel() != null) {
-                    // Message has been received on channel group stored in
-                    // message.getChannel()
-                } else {
-                    // Message has been received on channel stored in
-                    // message.getSubscription()
-                }
-
-                /*
-                 * log the following items with your favorite logger
-                 * - message.getMessage()
-                 * - message.getSubscription()
-                 * - message.getTimetoken()
-                 */
-            }
-
-            @Override
-            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
-                logger.info("PRESENCE");
-            }
-
-            @Override
-            public void status(PubNub arg0, PNStatus arg1) {
-                logger.info("STATUS");
-            }
-        });
-
-        pubnub.subscribe().channels(Arrays.asList(this.deviceConfig.getPubnubChannel())).execute();
+    @Override
+    protected void pubNubMessageCallback(JsonObject jsonDataBlob) {
+        updateState(jsonDataBlob);
     }
 }
