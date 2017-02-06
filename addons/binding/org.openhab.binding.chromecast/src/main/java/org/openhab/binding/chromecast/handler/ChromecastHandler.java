@@ -266,11 +266,11 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         }
     }
 
-    String getMimeType(String urlname) {
+    String getMimeType(String mediaUrl) {
         URL url = null;
         String mimeType = null;
         try {
-            url = new URL(urlname);
+            url = new URL(mediaUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
             mimeType = connection.getContentType();
