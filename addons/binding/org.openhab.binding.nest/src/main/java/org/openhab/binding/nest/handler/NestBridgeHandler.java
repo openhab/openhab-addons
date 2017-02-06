@@ -209,4 +209,8 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     public void addUpdateRequest(NestUpdateRequest request) {
         nestUpdateRequests.add(request);
     }
+
+    public void startDiscoveryScan() {
+        refreshData();
+    }
 }

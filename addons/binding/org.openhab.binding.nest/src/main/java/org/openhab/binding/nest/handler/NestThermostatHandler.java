@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Bennett - Initial contribution
  */
-public class NestThermostatHandler extends BaseThingHandler {
+public class NestThermostatHandler extends BaseNestHandler {
 
     private Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
     private Thermostat lastData;

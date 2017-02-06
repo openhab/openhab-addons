@@ -33,6 +33,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
 
     @Override
     protected void startScan() {
+        this.bridge.startDiscoveryScan();
     }
 
     @Override
