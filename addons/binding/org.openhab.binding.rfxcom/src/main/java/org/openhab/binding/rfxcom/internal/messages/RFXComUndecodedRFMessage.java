@@ -97,7 +97,7 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         packetType = UNDECODED_RF_MESSAGE;
     }
 
-    public RFXComUndecodedRFMessage(byte[] message) {
+    public RFXComUndecodedRFMessage(byte[] message) throws RFXComException {
         encodeMessage(message);
     }
 
@@ -115,7 +115,7 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] message) {
+    public void encodeMessage(byte[] message) throws RFXComException {
 
         super.encodeMessage(message);
 

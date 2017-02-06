@@ -8,9 +8,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.THERMOSTAT4;
+
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
-import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
 /**
  * Test for RFXCom-binding
@@ -18,11 +19,9 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
  * @author Martin van Wingerden
  * @since 1.9.0
  */
-public class RFXComBarometricMessageTest {
-
+public class RFXComThermostat4MessageTest {
     @Test(expected = RFXComMessageNotImplementedException.class)
     public void checkNotImplemented() throws Exception {
-        RFXComMessageFactory.createMessage(PacketType.BAROMETRIC);
+        RFXComMessageFactory.createMessage(THERMOSTAT4);
     }
-
 }
