@@ -63,18 +63,18 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      */
     @Override
     public void initialize() {
-        try {
-            String id = getThing().getUID().getId();
-            config = createHomematicConfig();
+        config = createHomematicConfig();
+        registerDeviceDiscoveryService();
+        final HomematicBridgeHandler instance = this;
+        scheduler.submit(new Runnable() {
 
-            gateway = HomematicGatewayFactory.createGateway(id, config, this);
-            gateway.initialize();
+            @Override
+            public void run() {
+                try {
+                    String id = getThing().getUID().getId();
+                    gateway = HomematicGatewayFactory.createGateway(id, config, instance);
+                    gateway.initialize();
 
-            registerDeviceDiscoveryService();
-            scheduler.submit(new Runnable() {
-
-                @Override
-                public void run() {
                     discoveryService.startScan(null);
                     discoveryService.waitForScanFinishing();
                     updateStatus(ThingStatus.ONLINE);
@@ -85,14 +85,15 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                             logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
                         }
                     }
-                }
-            });
 
-        } catch (IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-            dispose();
-            scheduleReinitialize();
-        }
+                } catch (IOException ex) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                    dispose();
+                    scheduleReinitialize();
+                }
+            }
+        });
+
     }
 
     /**
