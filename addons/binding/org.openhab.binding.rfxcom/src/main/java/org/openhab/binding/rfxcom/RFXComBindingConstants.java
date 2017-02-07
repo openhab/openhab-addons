@@ -200,7 +200,7 @@ public class RFXComBindingConstants {
             .put(PacketType.TEMPERATURE_HUMIDITY, RFXComBindingConstants.THING_TYPE_TEMPERATURE_HUMIDITY)
             .put(PacketType.TEMPERATURE_HUMIDITY_BAROMETRIC,
                     RFXComBindingConstants.THING_TYPE_TEMPERATURE_HUMIDITY_BAROMETRIC)
-            .put(PacketType.TEMPERATURE_RAIN, RFXComBindingConstants.THING_TYPE_RAIN)
+            .put(PacketType.TEMPERATURE_RAIN, RFXComBindingConstants.THING_TYPE_TEMPERATURE_RAIN)
             .put(PacketType.THERMOSTAT1, RFXComBindingConstants.THING_TYPE_THERMOSTAT1)
             .put(PacketType.THERMOSTAT2, RFXComBindingConstants.THING_TYPE_THERMOSTAT2)
             .put(PacketType.THERMOSTAT3, RFXComBindingConstants.THING_TYPE_THERMOSTAT3)

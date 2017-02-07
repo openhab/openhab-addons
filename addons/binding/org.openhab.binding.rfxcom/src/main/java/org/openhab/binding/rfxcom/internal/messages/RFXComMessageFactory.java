@@ -20,8 +20,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
 
 public class RFXComMessageFactory {
 
-    final static String classUrl = "org.openhab.binding.rfxcom.internal.messages.";
-
     @SuppressWarnings("serial")
     private static final Map<PacketType, Class<? extends RFXComMessage>> messageClasses = Collections
             .unmodifiableMap(new HashMap<PacketType, Class<? extends RFXComMessage>>() {
@@ -51,7 +49,7 @@ public class RFXComMessageFactory {
                     // put(PacketType.THERMOSTAT3, RFXComThermostat3Message.class);
                     // put(PacketType.RADIATOR1, RFXComRadiator1Message.class);
                     // put(PacketType.BBQ1, RFXComBBQMessage.class);
-                    // put(PacketType.TEMPERATURE_RAIN, RFXComTemperatureRainMessage.class);
+                    put(PacketType.TEMPERATURE_RAIN, RFXComTemperatureRainMessage.class);
                     put(PacketType.TEMPERATURE, RFXComTemperatureMessage.class);
                     put(PacketType.HUMIDITY, RFXComHumidityMessage.class);
                     put(PacketType.TEMPERATURE_HUMIDITY, RFXComTemperatureHumidityMessage.class);
