@@ -54,8 +54,7 @@ public class RFXComMessageFactory {
                     put(PacketType.HUMIDITY, RFXComHumidityMessage.class);
                     put(PacketType.TEMPERATURE_HUMIDITY, RFXComTemperatureHumidityMessage.class);
                     // put(PacketType.BAROMETRIC, RFXComBarometricMessage.class);
-                    // put(PacketType.TEMPERATURE_HUMIDITY_BAROMETRIC,
-                    // RFXComTemperatureHumidityBarometricMessage.class);
+                    put(PacketType.TEMPERATURE_HUMIDITY_BAROMETRIC, RFXComTemperatureHumidityBarometricMessage.class);
                     put(PacketType.RAIN, RFXComRainMessage.class);
                     put(PacketType.WIND, RFXComWindMessage.class);
                     // put(PacketType.UV, RFXComUVMessage.class);
