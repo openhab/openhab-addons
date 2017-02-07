@@ -326,7 +326,6 @@
             <channel-group id="radio" typeId="radio" />
             <channel-group id="outlet" typeId="outlet" />
             <channel-group id="ambient_temperature" typeId="ambientTemperature" />
-            <channel-group id="firmware" typeId="firmware" />
         </channel-groups>
         <properties>
             <!-- device info -->
@@ -362,7 +361,9 @@
         <label>Ambient Temperature</label>
         <description>Ambient Temperature</description>
         <channels>
-            <channel id="temperature" typeId="temperature" />
+            <channel id="temperature" typeId="temperature">
+                <label>Ambient Temperature</label>
+            </channel>
             <channel id="frost_warning" typeId="frostWarning" />
         </channels>
     </channel-group-type>
@@ -438,7 +439,6 @@
             <channel-group id="soil_temperature" typeId="soilTemperature" />
             <channel-group id="humidity" typeId="humidity" />
             <channel-group id="light" typeId="light" />
-            <channel-group id="firmware" typeId="firmware" />
         </channel-groups>
         <properties>
             <!-- device info -->
@@ -455,7 +455,9 @@
         <label>Soil Temperature</label>
         <description>The soil temperature</description>
         <channels>
-            <channel id="temperature" typeId="temperature" />
+            <channel id="temperature" typeId="temperature">
+                <label>Soil Temperature</label>
+            </channel>
         </channels>
     </channel-group-type>
 
@@ -488,6 +490,5 @@
         <description>The brightness</description>
         <state pattern="%d lx" readOnly="true" />
     </channel-type>
-
 
 </thing:thing-descriptions>
