@@ -345,10 +345,10 @@ public class HomematicThingHandler extends BaseThingHandler {
             throws ConfigValidationException {
         validateConfigurationParameters(configurationParameters);
 
-        Configuration newConfig = editConfiguration();
-        newConfig.setProperties(configurationParameters);
-
         try {
+            HomematicGateway gateway = getHomematicGateway();
+            HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
+
             for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
                 String key = configurationParmeter.getKey();
                 Object newValue = configurationParmeter.getValue();
@@ -358,8 +358,6 @@ public class HomematicThingHandler extends BaseThingHandler {
                     Integer channelNumber = NumberUtils.toInt(StringUtils.substringBefore(key, "_"));
                     String dpName = StringUtils.substringAfter(key, "_");
 
-                    HomematicGateway gateway = getHomematicGateway();
-                    HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
                     HmDatapointInfo dpInfo = new HmDatapointInfo(device.getAddress(), HmParamsetType.MASTER,
                             channelNumber, dpName);
                     HmDatapoint dp = device.getChannel(channelNumber).getDatapoint(dpInfo);
@@ -381,15 +379,13 @@ public class HomematicThingHandler extends BaseThingHandler {
                             }
                         } catch (IOException ex) {
                             logger.error("Error setting thing property {}: {}", dpInfo, ex.getMessage());
-                            newConfig.put(key, getConfig().get(key));
                         }
                     } else {
                         logger.error("Can't find datapoint for thing property {}", dpInfo);
-                        newConfig.put(key, getConfig().get(key));
                     }
                 }
             }
-            updateConfiguration(newConfig);
+            gateway.triggerDeviceValuesReload(device);
         } catch (HomematicClientException | BridgeHandlerNotAvailableException ex) {
             logger.error("Error setting thing properties: " + ex.getMessage(), ex);
         }
