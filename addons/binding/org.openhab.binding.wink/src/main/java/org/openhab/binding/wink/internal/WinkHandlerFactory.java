@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.wink.handler.LightBulbHandler;
+import org.openhab.binding.wink.handler.RemoteHandler;
 import org.openhab.binding.wink.handler.WinkHub2Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +34,14 @@ public class WinkHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(WinkHandlerFactory.class);
 
-    public final static Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_LIGHT_BULB);
+    public final static Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_LIGHT_BULB,
+            THING_TYPE_REMOTE);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WINK_HUB_2);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        logger.info("Checking if the factory supports " + THING_TYPE_LIGHT_BULB.toString());
+        logger.info("Checking if the factory supports " + thingTypeUID.toString());
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
                 || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
@@ -52,6 +54,8 @@ public class WinkHandlerFactory extends BaseThingHandlerFactory {
             return new WinkHub2Handler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_LIGHT_BULB)) {
             return new LightBulbHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_REMOTE)) {
+            return new RemoteHandler(thing);
         }
 
         return null;

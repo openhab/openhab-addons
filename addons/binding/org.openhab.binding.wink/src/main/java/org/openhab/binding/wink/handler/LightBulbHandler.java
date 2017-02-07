@@ -30,7 +30,6 @@ import com.google.gson.JsonObject;
  * @author Sebastien Marchand - Initial contribution
  */
 public class LightBulbHandler extends WinkHandler {
-
     public LightBulbHandler(Thing thing) {
         super(thing);
     }
