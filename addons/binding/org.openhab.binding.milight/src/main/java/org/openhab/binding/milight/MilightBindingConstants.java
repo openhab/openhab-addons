@@ -67,6 +67,8 @@ public class MilightBindingConstants {
     public static final String CONFIG_REPEAT = "REPEAT";
     public static final String CONFIG_WAIT_BETWEEN_COMMANDS = "WAIT_BETWEEN_COMMANDS";
 
+    public static final String CONFIG_ANIMATE_BR_COLOR = "ANIMATE_BR_COLOR";
+
     public static final String PROPERTY_SESSIONID = "sessionid";
     public static final String PROPERTY_SESSIONCONFIRMED = "sessionid_last_refresh";
 }

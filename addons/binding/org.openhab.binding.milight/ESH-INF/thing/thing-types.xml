@@ -160,6 +160,15 @@
             <channel id="animation_mode" typeId="animation_mode"/>
             <channel id="animation_mode_relative" typeId="animation_mode_relative"/>
         </channels>
+        
+        <config-description>
+            <parameter name="ANIMATE_BR_COLOR" type="integer" min="0" max="1200">
+                <label>Fade to destination value for brightness and colour</label>
+                <description>Set a time in milliseconds that it should take for fading to the destination brightness or colour value. 0 means no animation. A too short value may result in no visible animation, because the minimum of time between commands is 50ms. 
+                </description>
+                <default>0</default>
+            </parameter>
+        </config-description>
     </thing-type>
     
     <thing-type id="rgbwLed">
@@ -180,6 +189,15 @@
             <channel id="animation_mode" typeId="animation_mode"/>
             <channel id="animation_mode_relative" typeId="animation_mode_relative"/>
         </channels>
+        
+        <config-description>
+            <parameter name="ANIMATE_BR_COLOR" type="integer" min="0" max="1200">
+                <label>Fade to destination value for brightness and colour</label>
+                <description>Set a time in milliseconds that it should take for fading to the destination brightness or colour value. 0 means no animation. A too short value may result in no visible animation, because the minimum of time between commands is 50ms. 
+                </description>
+                <default>0</default>
+            </parameter>
+        </config-description>
     </thing-type>
     
     <thing-type id="rgbwwLed">
@@ -202,6 +220,15 @@
             <channel id="animation_mode" typeId="animation_mode"/>
             <channel id="animation_mode_relative" typeId="animation_mode_relative"/>
         </channels>
+        
+        <config-description>
+            <parameter name="ANIMATE_BR_COLOR" type="integer" min="0" max="1200">
+                <label>Fade to destination value for brightness and colour</label>
+                <description>Set a time in milliseconds that it should take for fading to the destination brightness or colour value. 0 means no animation. A too short value may result in no visible animation, because the minimum of time between commands is 50ms. 
+                </description>
+                <default>0</default>
+            </parameter>
+        </config-description>
     </thing-type>
     
     <thing-type id="whiteLed">

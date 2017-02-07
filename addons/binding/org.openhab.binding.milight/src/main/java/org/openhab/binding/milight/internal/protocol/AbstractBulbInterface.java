@@ -88,7 +88,9 @@ public abstract class AbstractBulbInterface {
     protected final int zone;
     // Each bulb type including zone has to be unique. To realise this, each type has an offset.
     protected final int type_offset;
-
+    protected int animationTimeMS = 0;
+    protected final static int MIN_DELAY_BETWEEN_ANIM_STEPS = 50;
+    
     /**
      * A bulb always belongs to a zone in the milight universe and we need a way to queue commands for being send.
      *
@@ -106,11 +108,22 @@ public abstract class AbstractBulbInterface {
     /**
      * Generates a unique command id for the {@see QueuedSend}. It incorporates the zone, bulb type and command
      * category.
+     *
      * @param command_category The category of the command.
      *
      * @return
      */
     protected int uidc(int command_category) {
         return (zone + type_offset + 1) * 64 + command_category;
+    }
+
+    /**
+     * Set an animation time. If the specific bulb implementation supports it, some or all
+     * absolute value changes will be faded instead of applied immediately.
+     *
+     * @param animationTimeMS The time that the animation should last for. 0 means no animation.
+     */
+    public void setAnimationTime(int animationTimeMS) {
+        this.animationTimeMS = animationTimeMS;
     }
 }

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.milight.handler;
 
+import java.math.BigDecimal;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -50,6 +52,17 @@ public class MilightLedHandler extends BaseThingHandler {
 
     public MilightLedHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void thingUpdated(Thing thing) {
+        this.thing = thing;
+
+        BigDecimal animate_time_ms = (BigDecimal) thing.getConfiguration()
+                .get(MilightBindingConstants.CONFIG_ANIMATE_BR_COLOR);
+        if (animate_time_ms != null && animate_time_ms.intValue() >= 0 && animate_time_ms.intValue() <= 1200) {
+            bulbCom.setAnimationTime(animate_time_ms.intValue());
+        }
     }
 
     @Override
@@ -239,8 +252,14 @@ public class MilightLedHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bulb type not supported!");
             }
-            updateStatus(brHandler.getThing().getStatus());
 
+            BigDecimal animate_time_ms = (BigDecimal) thing.getConfiguration()
+                    .get(MilightBindingConstants.CONFIG_ANIMATE_BR_COLOR);
+            if (animate_time_ms != null && animate_time_ms.intValue() >= 0 && animate_time_ms.intValue() <= 1200) {
+                bulbCom.setAnimationTime(animate_time_ms.intValue());
+            }
+
+            updateStatus(brHandler.getThing().getStatus());
         }
     }
 }
