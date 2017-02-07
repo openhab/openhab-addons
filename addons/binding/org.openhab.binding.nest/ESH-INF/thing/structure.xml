@@ -1,0 +1,15 @@
+<thing-type id="structure">
+  <label>Nest Structure</label>
+  <description>The details about the nest structures</description>
+
+  <channels>
+    <channel id="home_away" typeId="text" />
+    <channel id="video_history_enabled" typeId="switch" />
+    <channel id="streaming" typeId="switch" />
+    <channel id="web_url" typeId="string" />
+    <channel id="app_url" typeId="string" />
+    <channel id="public_share_enabled" typeId="switch" />
+    <channel id="public_share_url" typeId="string" />
+    <channel id="snapshot_url" typeId="string" />
+  </channels>
+</thing-type>
