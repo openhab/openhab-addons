@@ -305,7 +305,6 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 
-                    builder.withPattern(MetadataUtils.getPattern(dp));
                     builder.withGroupName(groupName);
                     parms.add(builder.build());
                 }
