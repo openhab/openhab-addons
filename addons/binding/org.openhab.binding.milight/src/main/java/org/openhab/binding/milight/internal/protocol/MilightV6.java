@@ -87,6 +87,56 @@ public abstract class MilightV6 extends AbstractBulbInterface {
         return t;
     }
 
+    private void copy(byte[] dest, byte[] orig) {
+        for (int i = 0; i < orig.length; ++i) {
+            dest[i] = orig[i];
+        }
+    }
+
+    /**
+     * This method will directly call make_command if the animation time is 0 or too short (less than 100ms) or the
+     * change is to small. In all other cases it will generate intermediate commands before queueing the final command.
+     *
+     * @param start The start value
+     * @param end The final value
+     * @param command_bytes The command bytes you would usually use for make_command(). We assume that the first byte is
+     *            always fixed and all further bytes are the to be animated and will be changed.
+     * @return
+     */
+    private byte[][] animate_command(int start, int end, int... command_bytes) {
+        int rel_change = Math.abs(start - end);
+        int animation_steps = animationTimeMS / MIN_DELAY_BETWEEN_ANIM_STEPS; // every 50ms a command
+
+        // Apply immediately if animation time is too small (less than 100ms) or
+        // if the change is too small to be animated.
+        if (animation_steps < 2 || rel_change < 10) {
+            byte[][] data = new byte[1][21];
+            byte[] command = make_command(command_bytes);
+            copy(data[0], command);
+            return data;
+        }
+
+        byte[][] data = new byte[animation_steps][21];
+
+        // Add last step with the final end value
+        copy(data[animation_steps - 1], make_command(command_bytes));
+
+        // Add intermediate steps
+        for (int step = 1; step < animation_steps; ++step) {
+            int change_v = ((start < end) ? 1 : -1) * (step * rel_change / animation_steps);
+            change_v = step + change_v;
+
+            // Manipulate the command bytes except the first one which is considered fixed
+            for (int i = 1; i < command_bytes.length; ++i) {
+                command_bytes[i] = change_v;
+            }
+            // Add step
+            copy(data[step - 1], make_command(command_bytes));
+        }
+        return data;
+
+    }
+
     @Override
     public void setHSB(int hue, int saturation, int brightness, MilightThingState state) {
         if (!session.isValid()) {
@@ -104,9 +154,10 @@ public abstract class MilightV6 extends AbstractBulbInterface {
         // Integer milightColorNo = (256 + 0xFF - (int) (hue / 360.0 * 255.0)) % 256;
 
         // Compute destination hue and current hue value, each mapped to 256 values.
-        // int cHue = state.hue360 * 255 / 360; // map to 256 values
+        int cHue = state.hue360 * 255 / 360; // map to 256 values
         int dHue = hue * 255 / 360; // map to 256 values
-        sendQueue.queueRepeatable(uidc(CAT_COLOR_SET), make_command(1, dHue, dHue, dHue, dHue));
+        sendQueue.queueRepeatable(uidc(CAT_COLOR_SET), MIN_DELAY_BETWEEN_ANIM_STEPS,
+                animate_command(cHue, dHue, 1, dHue, dHue, dHue, dHue));
 
         state.hue360 = hue;
 
@@ -136,7 +187,8 @@ public abstract class MilightV6 extends AbstractBulbInterface {
         int br = (value * MAX_BR) / 100;
         br = Math.min(br, MAX_BR);
         br = Math.max(br, 0);
-        sendQueue.queueRepeatable(uidc(CAT_BRIGHTNESS_SET), make_command(getBrCmd(), br));
+        sendQueue.queueRepeatable(uidc(CAT_BRIGHTNESS_SET), MIN_DELAY_BETWEEN_ANIM_STEPS,
+                animate_command(state.brightness, br, getBrCmd(), br));
 
         state.brightness = value;
     }
