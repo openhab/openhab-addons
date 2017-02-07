@@ -140,7 +140,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Converts a openHab type to a Gardena command property.
+     * Converts an openHAB type to a Gardena command property.
      */
     private Object convertFromType(Type type) {
         if (type instanceof OnOffType) {
