@@ -1,0 +1,29 @@
+<thing-type id="camera">
+  <label>Nest API Source</label>
+  <description>Provides the layer to talk to the nest apis</description>
+
+    <config-description>
+       <parameter name="client_id" type="text">
+           <label>Client id</label>
+           <description>The client id from the nest product page</description>
+           <required>true</required>
+       </parameter>
+       <parameter name="client_secret" type="text">
+           <label>Client secret</label>
+           <description>The client secret from the nest product page</description>
+           <required>true</required>
+       </parameter>
+       <parameter name="pincode" type="text">
+           <label>Pincode</label>
+           <description>The pincode to use after clicking on the authorization url</description>
+           <required>true</required>
+       </parameter>
+       <parameter name="refresh_interval" type="text">
+           <label>Refresh Interval</label>
+           <description>How often to refresh the data from nest (in seconds).  Don't make this too often or nest will throttle your account.</description>
+           <required>true</required>
+           <default>120</default>
+       </parameter>
+   </config-description>
+    
+</thing-type>
