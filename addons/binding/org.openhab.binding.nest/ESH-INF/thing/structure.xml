@@ -1,15 +1,26 @@
-<thing-type id="structure">
-  <label>Nest Structure</label>
-  <description>The details about the nest structures</description>
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="max" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	
+	<thing-type id="structure">
+		<label>Nest Structure</label>
+		<description>The details about the nest structures</description>
 
-  <channels>
-    <channel id="home_away" typeId="text" />
-    <channel id="video_history_enabled" typeId="switch" />
-    <channel id="streaming" typeId="switch" />
-    <channel id="web_url" typeId="string" />
-    <channel id="app_url" typeId="string" />
-    <channel id="public_share_enabled" typeId="switch" />
-    <channel id="public_share_url" typeId="string" />
-    <channel id="snapshot_url" typeId="string" />
-  </channels>
-</thing-type>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+
+		<channels>
+			<channel id="home_away" typeId="text" />
+			<channel id="video_history_enabled" typeId="switch" />
+			<channel id="streaming" typeId="switch" />
+			<channel id="web_url" typeId="string" />
+			<channel id="app_url" typeId="string" />
+			<channel id="public_share_enabled" typeId="switch" />
+			<channel id="public_share_url" typeId="string" />
+			<channel id="snapshot_url" typeId="string" />
+		</channels>
+	</thing-type>
+</thing:thing-descriptions>
