@@ -66,7 +66,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         config = createHomematicConfig();
         registerDeviceDiscoveryService();
         final HomematicBridgeHandler instance = this;
-        scheduler.submit(new Runnable() {
+        scheduler.execute(new Runnable() {
 
             @Override
             public void run() {
