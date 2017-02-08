@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials

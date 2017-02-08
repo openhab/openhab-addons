@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
@@ -289,7 +289,7 @@ public class LightifyLink {
         }
     }
 
-    private void handleLightResponse(ByteBuffer buffer, Command command, Consumer consumer) {
+    private void handleLightResponse(ByteBuffer buffer, Command command, Consumer<? super LightifyLuminary> consumer) {
         // skip header
         buffer.get();
         if (command.getId() != buffer.get()) {
@@ -312,7 +312,7 @@ public class LightifyLink {
         }
     }
 
-    private void handleStatusAll(ByteBuffer buffer, Consumer consumer) {
+    private void handleStatusAll(ByteBuffer buffer, Consumer<? super LightifyLuminary> consumer) {
         // skip header
         buffer.get();
         if (STATUS_ALL.getId() != buffer.get()) {
@@ -346,7 +346,7 @@ public class LightifyLink {
             byte r = buffer.get();
             byte g = buffer.get();
             byte b = buffer.get();
-            byte a = buffer.get();
+            byte a = buffer.get(); // alpha (seems to be always 0xff)
             // Stats
 
             // Name (24)
@@ -399,7 +399,7 @@ public class LightifyLink {
     }
 
     public void disconnect() {
-        exceptional(() -> socket.close());
+        exceptional(socket::close);
     }
 
     private String getZoneUID(int zoneId) {
