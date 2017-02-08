@@ -31,11 +31,13 @@
 		<label>Program</label>
 		<description>Program</description>
 		<channels>
-			<channel id="runIf" typeId="runIf" />
-			<channel id="runThen" typeId="runThen" />
+			<channel id="run" typeId="runIf_switch" />
+			<channel id="runThen" typeId="runThen_switch" />
+			<channel id="runElse" typeId="runElse_switch" />
+            <channel id="stop" typeId="stop_switch" />
 		</channels>
 		<config-description>
-			<parameter name="ID" type="text" required="true">
+			<parameter name="id" type="text" required="true">
 				<label>Program Id</label>
 				<description>Program's Id.</description>
 			</parameter>
@@ -507,18 +509,30 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="runIf">
-		<item-type>Run If</item-type>
-		<label>Off/On</label>
+	<channel-type id="runIf_switch">
+		<item-type>Switch</item-type>
+		<label>Run</label>
 		<description>Run If Clause for Program</description>
 		<category>Switch</category>
 	</channel-type>
-	<channel-type id="runThen">
-		<item-type>Run Then</item-type>
-		<label>Off/On</label>
-		<description>Run If Clause for Program</description>
+	<channel-type id="runThen_switch">
+		<item-type>Switch</item-type>
+		<label>Run Then</label>
+		<description>Run Then Clause for Program</description>
 		<category>Switch</category>
 	</channel-type>
+	<channel-type id="runElse_switch">
+        <item-type>Switch</item-type>
+        <label>Run Else</label>
+        <description>Run Else Clause for Program</description>
+        <category>Switch</category>
+    </channel-type>
+    <channel-type id="stop_switch">
+        <item-type>Switch</item-type>
+        <label>Stop</label>
+        <description>Stop the Program</description>
+        <category>Switch</category>
+    </channel-type>
 	<channel-type id="variable_value">
     <item-type>Number</item-type>
     <label>Value</label>

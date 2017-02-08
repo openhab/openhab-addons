@@ -10,6 +10,22 @@ public class Program {
 
     protected String status;
 
+    public enum ProgramCommand {
+        RUN_IF("run"),
+        RUN_THEN("runThen");
+
+        private String _cmdCode;
+
+        ProgramCommand(String cmdCode) {
+            this._cmdCode = cmdCode;
+
+        }
+
+        public String getCommandCode() {
+            return _cmdCode;
+        }
+    }
+
     public Program() {
 
     }

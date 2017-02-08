@@ -73,6 +73,14 @@ public class IsyRestClient implements OHIsyClient {
     }
 
     @Override
+    public boolean changeProgramState(String programId, String command) {
+        Builder changeNodeTarget = programsTarget.path(programId).path(command).request()
+                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue);
+        Response result = changeNodeTarget.get();
+        return result.getStatus() == 200;
+    }
+
+    @Override
     public boolean changeNodeState(String command, String value, String address) {
         Builder changeNodeTarget = nodesTarget.path(address).path("cmd").path(command).path(value).request()
                 .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue);
@@ -87,8 +95,8 @@ public class IsyRestClient implements OHIsyClient {
     @Override
     public Collection<Program> getPrograms() {
         List<Program> returnValue = new ArrayList<Program>();
-        String variables = programsTarget.request().header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue)
-                .accept(MediaType.TEXT_XML).get(String.class);
+        String variables = programsTarget.queryParam("subfolders", true).request()
+                .header(AUTHORIZATIONHEADERNAME, authorizationHeaderValue).accept(MediaType.TEXT_XML).get(String.class);
         System.out.println("nodes xml: " + variables);
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true);

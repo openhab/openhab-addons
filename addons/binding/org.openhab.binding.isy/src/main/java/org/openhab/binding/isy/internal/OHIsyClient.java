@@ -11,6 +11,8 @@ public interface OHIsyClient {
 
     public boolean changeSceneState(String address, int value);
 
+    public boolean changeProgramState(String programId, String command);
+
     public List<Node> getNodes();
 
     public Collection<Program> getPrograms();

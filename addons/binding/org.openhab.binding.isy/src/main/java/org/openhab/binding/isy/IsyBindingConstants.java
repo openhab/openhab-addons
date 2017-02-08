@@ -65,9 +65,10 @@ public class IsyBindingConstants {
     public final static String CHANNEL_KEYPAD_LINC_H = "button_h";
 
     // program
-    public final static String CHANNEL_PROGRAM_RUN_IF = "runIf";
+    public final static String CHANNEL_PROGRAM_RUN_IF = "run";
     public final static String CHANNEL_PROGRAM_RUN_THEN = "runThen";
-
+    public final static String CHANNEL_PROGRAM_RUN_ELSE = "runElse";
+    public final static String CHANNEL_PROGRAM_STOP = "stop";
     // variables
     public final static String CHANNEL_VARIABLE_VALUE = "value";
 

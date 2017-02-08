@@ -11,7 +11,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.isy.IsyBindingConstants;
 import org.openhab.binding.isy.config.IsyInsteonDeviceConfiguration;
-import org.openhab.binding.isy.config.IsyProgramConfiguratiuon;
+import org.openhab.binding.isy.config.IsyProgramConfiguration;
 import org.openhab.binding.isy.config.IsyVariableConfiguration;
 import org.openhab.binding.isy.handler.IsyBridgeHandler;
 import org.openhab.binding.isy.internal.InsteonAddress;
@@ -100,19 +100,18 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
         for (Program program : insteon.getPrograms()) {
             logger.debug("discovered program: " + program);
             properties = new HashMap<>(0);
-            properties.put(IsyProgramConfiguratiuon.ID, program.getId());
-            properties.put(IsyProgramConfiguratiuon.NAME, program.getName());
+            properties.put(IsyProgramConfiguration.ID, program.getId());
+            properties.put(IsyProgramConfiguration.NAME, program.getName());
 
             ThingTypeUID theThingTypeUid = IsyBindingConstants.PROGRAM_THING_TYPE;
-            String thingID = program.getName().replace(" ", "").replaceAll("\\.", "");
+            String thingID = program.getName().replace(" ", "").replaceAll("\\.", "").replaceAll("-", "_");
             ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withProperties(properties).withBridge(bridgeUID).withLabel(program.getName()).build();
             thingDiscovered(discoveryResult);
 
             // TODO remove
-            logger.warn("Only discovering 1 program per scan for now, until more program functionality exists");
-            break;
+            // logger.warn("Only discovering 1 program per scan for now, until more program functionality exists");
         }
     }
 
