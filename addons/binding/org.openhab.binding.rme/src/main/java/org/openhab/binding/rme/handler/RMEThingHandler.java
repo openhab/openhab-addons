@@ -59,6 +59,8 @@ public class RMEThingHandler extends SerialThingHandler {
 
         port = (String) getConfig().get(PORT);
 
+        sleep = 250;
+
         super.initialize();
     }
 
