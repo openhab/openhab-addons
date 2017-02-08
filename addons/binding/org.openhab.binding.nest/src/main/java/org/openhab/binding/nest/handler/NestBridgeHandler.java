@@ -181,7 +181,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         for (Structure struct : structures) {
             Thing thingStructure = getDevice(struct.getStructureId(), things);
             if (thingStructure != null) {
-                StructureHandler handler = (StructureHandler) thingStructure.getHandler();
+                NestStructureHandler handler = (NestStructureHandler) thingStructure.getHandler();
                 handler.updateStructure(struct);
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
@@ -225,7 +225,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         this.listeners.remove(nestDiscoveryService);
     }
 
-    /** Adds the update request into the queue for doing something with, send immedigately if the queue is empty. */
+    /** Adds the update request into the queue for doing something with, send immediately if the queue is empty. */
     public void addUpdateRequest(NestUpdateRequest request) {
         nestUpdateRequests.add(request);
     }
