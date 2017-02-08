@@ -81,7 +81,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
     @Override
     public void onStructureAdded(Structure struct) {
         ThingUID bridgeUID = bridge.getThing().getUID();
-        ThingUID thingUID = new ThingUID(NestBindingConstants.THING_TYPE_STRUCTURE, bridgeUID, struct.getStructureId();
+        ThingUID thingUID = new ThingUID(NestBindingConstants.THING_TYPE_STRUCTURE, bridgeUID, struct.getStructureId());
         Map<String, Object> properties = new HashMap<>(2);
         properties.put(NestBindingConstants.PROPERTY_ID, struct.getStructureId());
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
