@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="max" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="nest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-	
+
 	<thing-type id="thermostat">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
 		<label>Nest Thermostat</label>
 		<description>Provides the nest thermostat layer to talk to nest</description>
-
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-		</supported-bridge-type-refs>
 
 		<channels>
 			<channel id="temperature" typeId="temperature" />
@@ -34,43 +34,43 @@
 		<properties>
 			<property name="vendor">Nest</property>
 		</properties>
-
-		<channel-type id="temperature">
-			<item-type>Number</item-type>
-			<label>Temperature</label>
-			<description>Current temperature in degrees Celsius</description>
-			<category>Temperature</category>
-			<state readOnly="true" />
-		</channel-type>
-
-		<channel-type id="setpoint">
-			<item-type>Number</item-type>
-			<label>Temperature</label>
-			<description>Set point in degrees Celsius</description>
-			<category>Temperature</category>
-			<state readOnly="false" min="18" max="42" default="20" />
-		</channel-type>
-
-		<channel-type id="readonlyswitch">
-			<item-type>Switch</item-type>
-			<label>readonly switch</label>
-			<description>on/off setup</description>
-			<state readOnly="true" default="false" />
-		</channel-type>
-
-		<channel-type id="mode">
-			<item-type>String</item-type>
-			<label>Mode</label>
-			<description>Current mode of the nest thermostat</description>
-			<state readOnly="false">
-				<options>
-					<option value="OFF">off</option>
-					<option value="HEATING">heating</option>
-					<option value="COOLING">cooling</option>
-					<option value="ECO">eco</option>
-					<option value="HEATCOOL">heat/cool</option>
-				</options>
-			</state>
-		</channel-type>
 	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current temperature in degrees Celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="setpoint">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Set point in degrees Celsius</description>
+		<category>Temperature</category>
+		<state readOnly="false" min="18" max="42" default="20" />
+	</channel-type>
+
+	<channel-type id="readonlyswitch">
+		<item-type>Switch</item-type>
+		<label>readonly switch</label>
+		<description>on/off setup</description>
+		<state readOnly="true" default="false" />
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Current mode of the nest thermostat</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">off</option>
+				<option value="HEATING">heating</option>
+				<option value="COOLING">cooling</option>
+				<option value="ECO">eco</option>
+				<option value="HEATCOOL">heat/cool</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

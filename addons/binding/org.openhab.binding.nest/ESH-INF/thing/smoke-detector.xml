@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="max" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="nest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-	
+
 	<thing-type id="smoke_detector">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
 		<label>Nest Protect</label>
 		<description>Provides the nest protect layer to talk to nest</description>
-
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
-		</supported-bridge-type-refs>
 
 		<channels>
 			<channel id="ui_color_state" typeId="uicolorstate" />
@@ -18,44 +18,44 @@
 			<channel id="smoke_alarm_state" typeId="alarmstate" />
 			<channel id="manual_test_active" typeId="switch" />
 		</channels>
-
-		<channel-type id="uicolorstate">
-			<item-type>String</item-type>
-			<label>Mode</label>
-			<description>Current color state of the protect</description>
-			<state readOnly="true">
-				<options>
-					<option value="GRAY">gray</option>
-					<option value="GREEN">green</option>
-					<option value="YELLOW">yellow</option>
-					<option value="RED">red</option>
-				</options>
-			</state>
-		</channel-type>
-
-		<channel-type id="alarmstate">
-			<item-type>String</item-type>
-			<label>Alarm State</label>
-			<description>State of the alarm</description>
-			<state readOnly="false">
-				<options>
-					<option value="OK">ok</option>
-					<option value="EMERGENCY">emergency</option>
-					<option value="WARNING">warning</option>
-				</options>
-			</state>
-		</channel-type>
-
-		<channel-type id="battery">
-			<item-type>String</item-type>
-			<label>Battery</label>
-			<description>Battery state</description>
-			<state readOnly="false">
-				<options>
-					<option value="OK">ok</option>
-					<option value="REPLACE">replace</option>
-				</options>
-			</state>
-		</channel-type>
 	</thing-type>
+
+	<channel-type id="uicolorstate">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Current color state of the protect</description>
+		<state readOnly="true">
+			<options>
+				<option value="GRAY">gray</option>
+				<option value="GREEN">green</option>
+				<option value="YELLOW">yellow</option>
+				<option value="RED">red</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarmstate">
+		<item-type>String</item-type>
+		<label>Alarm State</label>
+		<description>State of the alarm</description>
+		<state readOnly="false">
+			<options>
+				<option value="OK">ok</option>
+				<option value="EMERGENCY">emergency</option>
+				<option value="WARNING">warning</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="battery">
+		<item-type>String</item-type>
+		<label>Battery</label>
+		<description>Battery state</description>
+		<state readOnly="false">
+			<options>
+				<option value="OK">ok</option>
+				<option value="REPLACE">replace</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>
