@@ -24,8 +24,7 @@ public class SceneHandler extends AbtractIsyThingHandler {
         IsyInsteonDeviceConfiguration test = getThing().getConfiguration().as(IsyInsteonDeviceConfiguration.class);
         String myAddress = test.address;
         if (command.equals(RefreshType.REFRESH)) {
-            // TODO implement
-            logger.debug("need to implement refresh");
+            logger.debug("Refresh not implemented for scenes");
         } else if (OnOffType.ON.equals(command)) {
             bridgeHandler.getInsteonClient().changeSceneState(myAddress, 255);
 

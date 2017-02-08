@@ -20,7 +20,7 @@ public class IsyProgramHandler extends AbtractIsyThingHandler implements IsyThin
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH.equals(command)) {
-            logger.debug("Must implement refresh for programs");
+            logger.debug("Refresh not implemented for programs");
         } else {
             if (command instanceof OnOffType) {
                 IsyProgramConfiguration var_config = getThing().getConfiguration().as(IsyProgramConfiguration.class);
