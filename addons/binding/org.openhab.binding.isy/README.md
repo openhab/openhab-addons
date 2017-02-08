@@ -128,5 +128,8 @@ then
 ```
 Switch  isy_dimmer_isybridge_kitchenlightsfan_lightlevel  "Kitchen Fan" [ "Switchable" ]
 Switch  isy_scene_isybridge_kitchenlightscooking_onoff  "Cooking Lights" [ "Switchable" ]
+Switch  isy_program_isybridge_garage_s_garbage_start_run "Take Out Garbage" [ "Switchable" ]
 ```
 
+"Alexa turn on cooking lights." - sends on to the isy scene for kitchen lights cooking
+Alexa turn on take out garbage" - runs the take out garbage program on the isy
