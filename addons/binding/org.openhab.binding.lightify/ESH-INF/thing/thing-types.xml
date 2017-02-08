@@ -72,7 +72,7 @@
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Switch State</label>
-		<description>On/off status of the switch</description>
+		<description>On/off status of the light</description>
 		<category>Switch</category>
 	</channel-type>
 
