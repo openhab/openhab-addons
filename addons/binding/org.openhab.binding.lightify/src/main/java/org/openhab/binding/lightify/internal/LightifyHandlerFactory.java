@@ -21,6 +21,10 @@ import org.slf4j.LoggerFactory;
 import static org.openhab.binding.lightify.internal.LightifyConstants.SUPPORTED_THING_TYPES_UIDS;
 
 /**
+ * The {@link org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory} implementation
+ * to create new instances of the {@link GatewayHandler} or {@link DeviceHandler} based on
+ * the requested {@link Thing} type.
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class LightifyHandlerFactory extends BaseThingHandlerFactory {

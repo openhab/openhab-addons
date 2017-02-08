@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * This class represents a Lightify collection of devices.
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class LightifyZone extends LightifyLuminary {

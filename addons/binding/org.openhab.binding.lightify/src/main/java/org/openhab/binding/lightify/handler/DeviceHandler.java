@@ -36,10 +36,18 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_ZONE;
 
 /**
+ * <p>The {@link org.eclipse.smarthome.core.thing.binding.ThingHandler} implementation to handle commands
+ * for a OSRAM Lightify light bulb / stripe or zone (group of lights).</p>
+ * <p>Commands are sent through the Lightify gateway the device is paired to. The connection link, managed
+ * by the assigned {@link GatewayHandler} will be used to forward the command to.</p>
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class DeviceHandler extends BaseThingHandler {
 
+    /**
+     * Supported {@link ThingTypeUID}s for this handler
+     */
     public static final Set<ThingTypeUID> SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet<ThingTypeUID>() {
         {
             add(THING_TYPE_LIGHTIFY_BULB);

@@ -35,6 +35,9 @@ import static org.openhab.binding.lightify.internal.link.Command.ZONE_INFO;
 import static org.openhab.binding.lightify.internal.link.Command.ZONE_LIST;
 
 /**
+ * This class implements the binary uplink and communication with the Lightify gateway
+ * device as well as handling commands and status for paired devices.
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class LightifyLink {

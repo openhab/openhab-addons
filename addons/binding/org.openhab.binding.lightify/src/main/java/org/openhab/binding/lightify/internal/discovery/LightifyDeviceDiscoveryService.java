@@ -36,6 +36,10 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE
 import static org.openhab.binding.lightify.internal.LightifyUtils.exceptional;
 
 /**
+ * The {@link org.eclipse.smarthome.config.discovery.DiscoveryService} implementation used by the
+ * {@link GatewayHandler} to auto-discover devices and zones configured with the corresponding
+ * Lightify gateway.
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService implements Consumer<LightifyLuminary> {

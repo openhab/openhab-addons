@@ -11,6 +11,8 @@ package org.openhab.binding.lightify.internal.link;
 import java.util.Arrays;
 
 /**
+ * This class represents a Lightify light bulb or stripe.
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class LightifyLight extends LightifyLuminary {

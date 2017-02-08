@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 /**
+ * Superclass of lights, zones and possibly further pairable devices.
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public abstract class LightifyLuminary {

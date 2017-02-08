@@ -29,10 +29,18 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_A
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_GATEWAY;
 
 /**
+ * The {@link org.eclipse.smarthome.core.thing.binding.BridgeHandler} implementation to handle commands
+ * and status of the OSRAM Lightify gateway device. This handler uses a native implementation of the
+ * Lightify proprietary protocol to communicate with the Lightify gateway, therefore no internet connection
+ * is necessary to utilize the OSRAM public API.
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class GatewayHandler extends BaseBridgeHandler {
 
+    /**
+     * Supported {@link ThingTypeUID}s for this handler
+     */
     public static final Set<ThingTypeUID> SUPPORTED_TYPES = Collections.singleton(THING_TYPE_LIGHTIFY_GATEWAY);
 
     private LightifyDeviceDiscoveryService discoveryService;
@@ -71,6 +79,11 @@ public class GatewayHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Provides access to the {@link LightifyLink} used to communicate with the Lightify gateway
+     *
+     * @return the current communication link
+     */
     public LightifyLink getLightifyLink() {
         return lightifyLink;
     }

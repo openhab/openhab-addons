@@ -9,6 +9,9 @@
 package org.openhab.binding.lightify.internal.link;
 
 /**
+ * Not used in production code, simple class to quickly test / play around
+ * with the protocol.
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class Test {

@@ -13,6 +13,11 @@ import java.nio.ByteOrder;
 import java.util.Objects;
 
 /**
+ * Helper class to easily build binary packets which correspond to the OSRAM Lightify proprietary
+ * binary protocol.
+ *
+ * Thanks to rainlake (https://github.com/rainlake/node-lightify) for the first steps into the protocol.
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 final class PacketBuilder {

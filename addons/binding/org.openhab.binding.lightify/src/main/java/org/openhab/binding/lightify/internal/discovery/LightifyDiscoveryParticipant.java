@@ -28,20 +28,27 @@ import static org.openhab.binding.lightify.internal.LightifyUtils.extractLightif
 import static org.openhab.binding.lightify.internal.LightifyUtils.isLightifyGateway;
 
 /**
+ * The auto-discovery implementation to find Lightify gateway devices on the local network.
+ * Devices are discovered using mDNS with looking for _http._tcp.local services with a
+ * service name starting with "Lightify-".
+ *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class LightifyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_http._tcp.local.";
 
+    @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return SUPPORTED_THING_TYPES_UIDS;
     }
 
+    @Override
     public String getServiceType() {
         return SERVICE_TYPE;
     }
 
+    @Override
     public DiscoveryResult createResult(ServiceInfo serviceInfo) {
         if (!isLightifyGateway(serviceInfo)) {
             return null;
