@@ -31,7 +31,7 @@ The OSRAM Lightify supports the following channels:
 
 | Channel Type ID         | Item Type    | Description  |
 |-------------------------|--------------|--------------|
-| rgbw#power                    | Switch        | Switch the bulb / group on/off |
-| rgbw#dimmer                   | Dimmer        | Control the luminance |
-| rgbw#temperature              | Number        | Set the white temperature between 2,000 and 6,500 Kelvin |
-| rgbw#color                    | ColorIrlight  | Changes the color of the RGB LEDs |
+| rgbw#power              | Switch       | Switch the bulb / group on/off |
+| rgbw#dimmer             | Dimmer       | Control the luminance |
+| rgbw#temperature        | Number       | Set the white temperature between 2,000 and 6,500 Kelvin |
+| rgbw#color              | Color        | Changes the color of the RGB LEDs |

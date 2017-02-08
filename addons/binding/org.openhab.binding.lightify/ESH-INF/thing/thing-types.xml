@@ -58,7 +58,7 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<description>Color of the LED</description>
-		<category>ColorIrlight</category>
+		<category>Color</category>
 	</channel-type>
 
 	<channel-type id="dimmer">
