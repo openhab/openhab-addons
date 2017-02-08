@@ -161,6 +161,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lgtvserial/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-lightify" description="OSRAM Lightify Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lightify/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-lutron" description="Lutron Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lutron/${project.version}</bundle>

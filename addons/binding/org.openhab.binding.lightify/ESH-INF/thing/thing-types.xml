@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lightify" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="gateway">
+		<label>OSRAM Lightify IP Gateway</label>
+		<description>Ethernet access point to Lightify gateway</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the Lightify gateway device.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Lightify Thing Type -->
+	<thing-type id="bulb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>OSRAM Lightify Bulb</label>
+		<description>OSRAM Lightify Bulb</description>
+
+    <channel-groups>
+      <channel-group typeId="lightify-rgbw" id="rgbw" />
+    </channel-groups>
+	</thing-type>
+
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>OSRAM Lightify Zone</label>
+		<description>OSRAM Lightify Zone</description>
+
+    <channel-groups>
+      <channel-group typeId="lightify-rgbw" id="rgbw" />
+    </channel-groups>
+	</thing-type>
+
+  <channel-group-type id="lightify-rgbw">
+    <label>RGBW Lightify Device</label>
+    <channels>
+      <channel id="power" typeId="power" />
+      <channel id="dimmer" typeId="dimmer" />
+      <channel id="temperature" typeId="temperature" />
+			<channel id="color" typeId="color" />
+    </channels>
+  </channel-group-type>
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color of the LED</description>
+		<category>ColorIrlight</category>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Light Level</label>
+		<description>Increase/decrease the light level</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Switch State</label>
+		<description>On/off status of the switch</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>White Temperature</label>
+		<description>White level from 2,000 Kelvin to 6,500 Kelvin</description>
+		<category>Temperature</category>
+		<state min="2000" max="6500" pattern="%d %%"/>
+	</channel-type>
+</thing:thing-descriptions>
