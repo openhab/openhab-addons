@@ -5,32 +5,8 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Nest Binding</name>
-    <description>This is the binding for Nest connects to the nest
-      cloud and allows control of the various nest devices.</description>
+    <description>This is the binding for Nest connects to the nest cloud and allows control of the various nest devices.  Create a bridge thing
+    to setup the connection to nest.</description>
     <author>David Bennett</author>
     
-     <config-description>
-        <parameter name="client_id" type="text">
-            <label>Client id</label>
-            <description>The client id from the nest product page</description>
-            <required>true</required>
-        </parameter>
-        <parameter name="client_secret" type="text">
-            <label>Client secret</label>
-            <description>The client secret from the nest product page</description>
-            <required>true</required>
-        </parameter>
-        <parameter name="pincode" type="text">
-            <label>Pincode</label>
-            <description>The pincode to use after clicking on the authorization url</description>
-            <required>true</required>
-        </parameter>
-        <parameter name="refresh_interval" type="text">
-            <label>Refresh Interval</label>
-            <description>How often to refresh the data from nest (in seconds).  Don't make this too often or nest will throttle your account.</description>
-            <required>true</required>
-            <default>120</default>
-        </parameter>
-    </config-description>
-
 </binding:binding>

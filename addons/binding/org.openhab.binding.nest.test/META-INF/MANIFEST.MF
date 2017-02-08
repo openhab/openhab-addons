@@ -19,5 +19,4 @@ Import-Package: org.openhab.binding.nest,
  org.slf4j
 Require-Bundle: org.junit;bundle-version="4.11.0",
  com.google.gson
-Export-Package: org.openhab.binding.nest.internal.data;x-internal:=true,
- org.openhab.binding.nest;uses:="org.eclipse.smarthome.test"
+Export-Package: org.openhab.binding.nest;uses:="org.eclipse.smarthome.test"

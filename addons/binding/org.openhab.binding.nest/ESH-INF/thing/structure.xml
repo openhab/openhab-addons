@@ -3,16 +3,16 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	
-	<thing-type id="camera">
+	<thing-type id="structure">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 
-		<label>Nest Cam</label>
-		<description>Provides the nestcam layer to talk to nest</description>
+		<label>Nest Structure</label>
+		<description>The details about the nest structures</description>
 
 		<channels>
-			<channel id="audio_input_enabled" typeId="switch" />
+			<channel id="home_away" typeId="text" />
 			<channel id="video_history_enabled" typeId="switch" />
 			<channel id="streaming" typeId="switch" />
 			<channel id="web_url" typeId="string" />
