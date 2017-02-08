@@ -22,7 +22,7 @@ public class IsyProgramHandler extends AbtractIsyThingHandler implements IsyThin
         if (RefreshType.REFRESH.equals(command)) {
             logger.debug("Must implement refresh for programs");
         } else {
-            if (command instanceof OnOffType && (OnOffType.ON.equals(command))) {
+            if (command instanceof OnOffType) {
                 IsyProgramConfiguration var_config = getThing().getConfiguration().as(IsyProgramConfiguration.class);
                 getBridgeHandler().getInsteonClient().changeProgramState(var_config.id, channelUID.getId());
             } else {
