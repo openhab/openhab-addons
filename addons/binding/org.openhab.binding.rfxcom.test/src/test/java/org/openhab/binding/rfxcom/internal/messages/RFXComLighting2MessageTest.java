@@ -8,13 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import static org.junit.Assert.assertEquals;
 
 import javax.xml.bind.DatatypeConverter;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
  * Test for RFXCom-binding
@@ -25,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class RFXComLighting2MessageTest {
 
     @Test
-    public void testSomeMessages() throws RFXComException, RFXComNotImpException {
+    public void testSomeMessages() throws RFXComException {
         String hexMessage = "0B11000600109B520B000080";
         byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
         RFXComLighting2Message msg = (RFXComLighting2Message) RFXComMessageFactory.createMessage(message);

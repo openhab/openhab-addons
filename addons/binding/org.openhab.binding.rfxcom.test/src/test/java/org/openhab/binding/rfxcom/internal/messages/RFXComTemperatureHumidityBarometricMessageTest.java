@@ -11,7 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.TEMPERATURE_HUMIDITY_BAROMETRIC;
 
 import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 
 /**
  * Test for RFXCom-binding
@@ -20,7 +20,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
  * @since 1.9.0
  */
 public class RFXComTemperatureHumidityBarometricMessageTest {
-    @Test(expected = RFXComNotImpException.class)
+    @Test(expected = RFXComMessageNotImplementedException.class)
     public void checkNotImplemented() throws Exception {
         // TODO Note that this message is supported in the 1.9 binding
         RFXComMessageFactory.createMessage(TEMPERATURE_HUMIDITY_BAROMETRIC);

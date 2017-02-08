@@ -21,7 +21,8 @@ public enum TagType {
     MAPPING("mapping", false),
     LINK("link", true),
     UNIT("unit", false),
-    INVERT("invert", false);
+    INVERT("invert", false),
+    ICON("icon", false);
 
     private final String prefix;
     private final boolean multiValue;

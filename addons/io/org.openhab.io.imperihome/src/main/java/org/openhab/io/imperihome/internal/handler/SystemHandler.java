@@ -10,7 +10,7 @@ package org.openhab.io.imperihome.internal.handler;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.smarthome.core.id.InstanceUUID;
+import org.openhab.io.imperihome.internal.ImperiHomeConfig;
 import org.openhab.io.imperihome.internal.model.System;
 
 /**
@@ -20,9 +20,15 @@ import org.openhab.io.imperihome.internal.model.System;
  */
 public class SystemHandler {
 
+    private ImperiHomeConfig config;
+
+    public SystemHandler(ImperiHomeConfig imperiHomeConfig) {
+        config = imperiHomeConfig;
+    }
+
     public System handle(HttpServletRequest req) {
         System system = new System();
-        system.setId(InstanceUUID.get());
+        system.setId(config.getSystemId());
         system.setApiVersion(1);
         return system;
     }

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.rfxcom;
 
+import java.io.InvalidClassException;
+
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.DateTimeItem;
@@ -16,8 +18,6 @@ import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
-
-import java.io.InvalidClassException;
 
 /**
  * Represents all valid value selectors which could be processed by RFXCOM

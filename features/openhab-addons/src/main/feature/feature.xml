@@ -81,6 +81,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.freebox/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-gardena" description="Gardena Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gardena/${project.version}</bundle>
+    </feature>
+
      <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>esh-transform-map</feature>
@@ -133,6 +138,12 @@
         <feature>openhab-runtime-base</feature>
         <bundle
             start-level="80">mvn:org.openhab.binding/org.openhab.binding.kostalinverter/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-lgtvserial" description="LG TV Serial Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lgtvserial/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-lutron" description="Lutron Binding" version="${project.version}">

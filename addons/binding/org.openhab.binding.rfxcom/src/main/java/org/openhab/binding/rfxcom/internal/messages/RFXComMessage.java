@@ -36,7 +36,7 @@ public interface RFXComMessage {
      * @param data
      *            Raw data.
      */
-    void encodeMessage(byte[] data);
+    void encodeMessage(byte[] data) throws RFXComException;
 
     /**
      * Procedure for decode object to raw data.
