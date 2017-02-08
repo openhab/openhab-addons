@@ -25,7 +25,7 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.SUPPORTED_
  */
 public class LightifyHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightifyHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(LightifyHandlerFactory.class);
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
@@ -41,7 +41,7 @@ public class LightifyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         boolean supported = SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-        LOGGER.debug("Will handle: {}[{}]", thingTypeUID, supported);
+        logger.debug("Will handle: {}[{}]", thingTypeUID, supported);
         return supported;
     }
 }

@@ -18,8 +18,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lightify.internal.discovery.LightifyDeviceDiscoveryService;
 import org.openhab.binding.lightify.internal.link.LightifyLink;
 import org.osgi.framework.ServiceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Hashtable;
@@ -36,8 +34,6 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE
 public class GatewayHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_TYPES = Collections.singleton(THING_TYPE_LIGHTIFY_GATEWAY);
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GatewayHandler.class);
 
     private LightifyDeviceDiscoveryService discoveryService;
     private ServiceRegistration<?> serviceRegistration;

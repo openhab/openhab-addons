@@ -13,8 +13,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jmdns.ServiceInfo;
 import java.net.InetAddress;
@@ -33,8 +31,6 @@ import static org.openhab.binding.lightify.internal.LightifyUtils.isLightifyGate
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public class LightifyDiscoveryParticipant implements MDNSDiscoveryParticipant {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightifyDiscoveryParticipant.class);
 
     private static final String SERVICE_TYPE = "_http._tcp.local.";
 
@@ -63,9 +59,8 @@ public class LightifyDiscoveryParticipant implements MDNSDiscoveryParticipant {
         properties.put(PROPERTY_ID, thingUID.getId());
         properties.put(PROPERTY_ADDRESS, inetAddresses[0].getHostAddress());
 
-        return DiscoveryResultBuilder.create(thingUID) //
-                                     .withThingType(THING_TYPE_LIGHTIFY_GATEWAY) //
-                                     .withProperties(properties).build();
+        return DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_LIGHTIFY_GATEWAY).withProperties(properties)
+                                     .build();
     }
 
     @Override

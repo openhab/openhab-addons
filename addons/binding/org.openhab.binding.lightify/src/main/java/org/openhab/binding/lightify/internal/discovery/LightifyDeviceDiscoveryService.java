@@ -40,7 +40,7 @@ import static org.openhab.binding.lightify.internal.LightifyUtils.exceptional;
  */
 public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService implements Consumer<LightifyLuminary> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightifyDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(LightifyDeviceDiscoveryService.class);
 
     private final static int SEARCH_TIME = 60;
 
@@ -54,7 +54,7 @@ public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService imp
     @Override
     protected void startScan() {
         exceptional(() -> {
-            LOGGER.info("Start scanning for paired devices");
+            logger.debug("Start scanning for paired devices");
             LightifyLink lightifyLink = gatewayHandler.getLightifyLink();
             lightifyLink.performSearch(this);
         });
@@ -63,7 +63,7 @@ public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService imp
     @Override
     public void accept(LightifyLuminary luminary) {
         exceptional(() -> {
-            LOGGER.debug("Found device: {}", luminary);
+            logger.debug("Found device: {}", luminary);
             DiscoveryResult discoveryResult = discoveryResult(luminary);
             thingDiscovered(discoveryResult);
         });
@@ -75,6 +75,15 @@ public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService imp
     public void deactivate() {
     }
 
+    /**
+     * Returns a {@link DiscoveryResult} based on the type of the {@link LightifyLuminary}
+     * passed. The discovery result instance contains properties like the device name as
+     * known to the Lightify app, the internal address of the bulb or zone and the unique
+     * device id generated as hex representation of the internal address.
+     *
+     * @param luminary the discovered luminary device
+     * @return the DiscoveryResult instance to represent the Lightify device to OpenHAB2
+     */
     private DiscoveryResult discoveryResult(LightifyLuminary luminary) {
         ThingTypeUID thingTypeUID = getThingTypeUID(luminary);
         String deviceName = getDeviceName(luminary);
@@ -92,11 +101,8 @@ public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService imp
             properties.put(PROPERTY_ZONE_ID, ((LightifyZone) luminary).getZoneId());
         }
 
-        return DiscoveryResultBuilder.create(thingUID) //
-                                     .withBridge(bridgeUID) //
-                                     .withLabel(luminary.getName()) //
-                                     .withThingType(thingTypeUID) //
-                                     .withRepresentationProperty(PROPERTY_DEVICE_NAME) //
+        return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(luminary.getName())
+                                     .withThingType(thingTypeUID).withRepresentationProperty(PROPERTY_DEVICE_NAME)
                                      .withProperties(properties).build();
     }
 

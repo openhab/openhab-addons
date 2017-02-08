@@ -39,9 +39,9 @@ import static org.openhab.binding.lightify.internal.link.Command.ZONE_LIST;
  */
 public class LightifyLink {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightifyLink.class);
-
     private static final Charset CP437 = Charset.forName("cp437");
+
+    private final Logger logger = LoggerFactory.getLogger(LightifyLink.class);
 
     private final AtomicInteger sequencer = new AtomicInteger();
     private final Map<String, LightifyLuminary> devices = new ConcurrentHashMap<>();
@@ -69,38 +69,26 @@ public class LightifyLink {
     }
 
     public void performSearch(Consumer<LightifyLuminary> consumer) {
-        byte[] packet = new PacketBuilder(this) //
-                                                .on(STATUS_ALL) //
-                                                .data(new byte[]{0x01}) //
-                                                .build();
+        byte[] packet = new PacketBuilder(this).on(STATUS_ALL).data(new byte[]{0x01}).build();
         sendPacket(packet);
         readPacket(STATUS_ALL, consumer);
 
-        packet = new PacketBuilder(this) //
-                                         .on(ZONE_LIST) //
-                                         .build();
+        packet = new PacketBuilder(this).on(ZONE_LIST).build();
 
-        LOGGER.debug("Searching Zones...");
+        logger.debug("Searching Zones...");
         sendPacket(packet);
         readPacket(ZONE_LIST, consumer);
     }
 
     public void performStatusUpdate(LightifyLuminary luminary, Consumer<LightifyLuminary> consumer) {
-        byte[] packet = new PacketBuilder(this) //
-                                                .on(STATUS_SINGLE) //
-                                                .with(luminary) //
-                                                .build();
+        byte[] packet = new PacketBuilder(this).on(STATUS_SINGLE).with(luminary).build();
 
         sendPacket(packet);
         readPacket(STATUS_SINGLE, consumer);
     }
 
     void performSwitch(LightifyLuminary lightifyLuminary, boolean activate, Consumer<LightifyLuminary> consumer) {
-        byte[] packet = new PacketBuilder(this) //
-                                                .on(LIGHT_SWITCH) //
-                                                .with(lightifyLuminary) //
-                                                .switching(activate) //
-                                                .build();
+        byte[] packet = new PacketBuilder(this).on(LIGHT_SWITCH).with(lightifyLuminary).switching(activate).build();
 
         sendPacket(packet);
         readPacket(LIGHT_SWITCH, light -> {
@@ -111,15 +99,9 @@ public class LightifyLink {
         });
     }
 
-    void performLuminance(LightifyLuminary lightifyLuminary, byte luminance, //
-                          short millis, Consumer<LightifyLuminary> consumer) {
-
-        byte[] packet = new PacketBuilder(this) //
-                                                .on(LIGHT_LUMINANCE) //
-                                                .with(lightifyLuminary) //
-                                                .luminance(luminance) //
-                                                .millis(millis) //
-                                                .build();
+    void performLuminance(LightifyLuminary lightifyLuminary, byte luminance, short millis, Consumer<LightifyLuminary> consumer) {
+        byte[] packet = new PacketBuilder(this).on(LIGHT_LUMINANCE).with(lightifyLuminary).luminance(luminance)
+                                               .millis(millis).build();
 
         sendPacket(packet);
         readPacket(LIGHT_LUMINANCE, light -> {
@@ -131,15 +113,11 @@ public class LightifyLink {
         });
     }
 
-    void performRGB(LightifyLuminary lightifyLuminary, byte r, byte g, byte b, //
-                    short millis, Consumer<LightifyLuminary> consumer) {
+    void performRGB(LightifyLuminary lightifyLuminary, byte r, byte g, byte b, short millis,
+                    Consumer<LightifyLuminary> consumer) {
 
-        byte[] packet = new PacketBuilder(this) //
-                                                .on(LIGHT_COLOR) //
-                                                .with(lightifyLuminary) //
-                                                .rgb(r, g, b) //
-                                                .millis(millis) //
-                                                .build();
+        byte[] packet = new PacketBuilder(this).on(LIGHT_COLOR).with(lightifyLuminary).rgb(r, g, b).millis(millis)
+                                               .build();
 
         sendPacket(packet);
         readPacket(LIGHT_COLOR, light -> {
@@ -151,15 +129,11 @@ public class LightifyLink {
         });
     }
 
-    void performTemperature(LightifyLuminary lightifyLuminary, short temperature, //
-                            short millis, Consumer<LightifyLuminary> consumer) {
+    void performTemperature(LightifyLuminary lightifyLuminary, short temperature, short millis,
+                            Consumer<LightifyLuminary> consumer) {
 
-        byte[] packet = new PacketBuilder(this) //
-                                                .on(LIGHT_TEMPERATURE) //
-                                                .with(lightifyLuminary) //
-                                                .temperature(temperature) //
-                                                .millis(millis) //
-                                                .build();
+        byte[] packet = new PacketBuilder(this).on(LIGHT_TEMPERATURE).with(lightifyLuminary).temperature(temperature)
+                                               .millis(millis).build();
 
         sendPacket(packet);
         readPacket(LIGHT_TEMPERATURE, light -> {
@@ -172,10 +146,7 @@ public class LightifyLink {
     }
 
     void performZoneInfo(LightifyZone lightifyZone, Consumer<LightifyLuminary> consumer) {
-        byte[] packet = new PacketBuilder(this) //
-                                                .on(ZONE_INFO) //
-                                                .with(lightifyZone) //
-                                                .build();
+        byte[] packet = new PacketBuilder(this).on(ZONE_INFO).with(lightifyZone).build();
 
         sendPacket(packet);
         readPacket(ZONE_INFO, consumer);
@@ -266,7 +237,7 @@ public class LightifyLink {
         buffer.get(); // always 0
 
         int numOfZones = buffer.getShort();
-        LOGGER.info("Found {} zones...", numOfZones);
+        logger.info("Found {} zones...", numOfZones);
         for (int i = 0; i < numOfZones; i++) {
             int zoneId = buffer.getShort();
 
@@ -354,7 +325,7 @@ public class LightifyLink {
         buffer.get(); // always 0
 
         int numOfLights = buffer.getShort();
-        LOGGER.debug("Found {} devices...", numOfLights);
+        logger.debug("Found {} devices...", numOfLights);
         for (int i = 0; i < numOfLights; i++) {
             int id = buffer.getShort();
 

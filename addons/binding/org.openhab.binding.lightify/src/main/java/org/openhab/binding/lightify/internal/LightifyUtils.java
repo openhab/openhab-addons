@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.lightify.internal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.jmdns.ServiceInfo;
 import java.util.concurrent.Callable;
 
@@ -18,8 +15,6 @@ import java.util.concurrent.Callable;
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
 public final class LightifyUtils {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightifyUtils.class);
 
     private LightifyUtils() {
     }
@@ -36,7 +31,6 @@ public final class LightifyUtils {
         try {
             return callable.call();
         } catch (Exception e) {
-            LOGGER.error("Error on execution", e);
             throw new RuntimeException(e);
         }
     }
@@ -45,7 +39,6 @@ public final class LightifyUtils {
         try {
             exceptional.call();
         } catch (Exception e) {
-            LOGGER.error("Error on execution", e);
             throw new RuntimeException(e);
         }
     }

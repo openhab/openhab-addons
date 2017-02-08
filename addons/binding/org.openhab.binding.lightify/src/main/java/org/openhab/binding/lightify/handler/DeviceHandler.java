@@ -47,7 +47,7 @@ public class DeviceHandler extends BaseThingHandler {
         }
     });
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
 
     public DeviceHandler(Thing thing) {
         super(thing);
@@ -71,7 +71,7 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        LOGGER.debug("Command: {}", command);
+        logger.debug("Command: {}", command);
         switch (channelUID.getId()) {
             case CHANNEL_ID_POWER:
                 handlePowerSwitch(command);
