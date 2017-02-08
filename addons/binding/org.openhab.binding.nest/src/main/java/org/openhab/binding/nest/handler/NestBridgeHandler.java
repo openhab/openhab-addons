@@ -225,7 +225,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         this.listeners.remove(nestDiscoveryService);
     }
 
-    /** Adds the update request into the queue for doing something with, send immedigately if the queue is empty. */
+    /** Adds the update request into the queue for doing something with, send immediately if the queue is empty. */
     public void addUpdateRequest(NestUpdateRequest request) {
         nestUpdateRequests.add(request);
     }
