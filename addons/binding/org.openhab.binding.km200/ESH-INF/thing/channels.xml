@@ -8,14 +8,14 @@
         <item-type>Number</item-type>
         <label>Float value</label>
         <description>Name of a float value service</description>
-        <state pattern="%.2f" readOnly="false" >
+        <state pattern="%.2f" readOnly="true" >
         </state>
     </channel-type>
     <channel-type id="stringValue">
         <item-type>String</item-type>
         <label>String value</label>
         <description>Name of a string value service</description>
-        <state pattern="%s" readOnly="false" >
+        <state pattern="%s" readOnly="true" >
         </state>
     </channel-type>
     <channel-type id="switchStringValue">
@@ -36,6 +36,16 @@
                <description>OFF string for this service</description>
              </parameter>
         </config-description>
+    </channel-type>
+    <channel-type id="dynamicString">
+        <item-type>String</item-type>
+        <label>dynamic</label>
+        <description>Dummy for auto-created channels</description>
+    </channel-type>
+    <channel-type id="dynamicNumber">
+        <item-type>Number</item-type>
+        <label>dynamic</label>
+        <description>Dummy for auto-created channels</description>
     </channel-type>
  
 </thing:thing-descriptions>

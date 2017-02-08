@@ -32,11 +32,15 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
+import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.km200.KM200ThingTypes;
 import org.openhab.binding.km200.internal.KM200CommObject;
+import org.openhab.binding.km200.internal.KM200HandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +62,11 @@ public class KM200ThingHandler extends BaseThingHandler {
 
     Boolean isInited = false;
 
-    public KM200ThingHandler(Thing thing) {
+    KM200HandlerFactory factory;
+
+    public KM200ThingHandler(Thing thing, KM200HandlerFactory factory) {
         super(thing);
+        this.factory = factory;
         thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
     }
 
@@ -176,7 +183,16 @@ public class KM200ThingHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             initialize();
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
+            updateStatus(ThingStatus.UNKNOWN);
         }
+    }
+
+    @Override
+    public void dispose() {
+        factory.removeChannelTypesForThing(getThing().getUID());
     }
 
     /**
@@ -192,6 +208,7 @@ public class KM200ThingHandler extends BaseThingHandler {
      * Search for services and add them to a list
      *
      * @param serObj
+     * @param thing
      * @param subChannels
      * @param subNameAddon
      */
@@ -204,99 +221,145 @@ public class KM200ThingHandler extends BaseThingHandler {
         final BigDecimal maxInt16AsInt = new BigDecimal(3200).setScale(4, RoundingMode.HALF_UP);
 
         for (String subKey : subKeys) {
+            List<StateOption> options = new ArrayList<StateOption>();
             Map<String, String> properties = new HashMap<>(1);
             String root = service + "/" + subKey;
             properties.put("root", KM200GatewayHandler.translatesPathToName(root));
             String subKeyType = serObj.serviceTreeMap.get(subKey).getServiceType();
             logger.debug("Create things: {} channel: {}", thing.getUID(), subKey);
-            if (subKeyType.equals("stringValue")) {
-                /* We cannot add this limits to the channels yet, only on xml files possible */
-                if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
-                    @SuppressWarnings("unchecked")
-                    List<String> subValParas = (List<String>) serObj.serviceTreeMap.get(subKey).getValueParameter();
-                    if (serObj.serviceTreeMap.get(subKey).getWriteable() > 0) {
-                        Map<String, String> switchProperties = new HashMap<>(1);
-                        switchProperties.put("root", KM200GatewayHandler.translatesPathToName(root));
-                        Channel newChannel = ChannelBuilder
-                                .create(new ChannelUID(thing.getUID(), subNameAddon + subKey + "Switch"), "Switch")
-                                .withType(
-                                        new ChannelTypeUID(thing.getUID().getBindingId(), CHANNEL_SWITCH_STRING_VALUE))
-                                .withDescription(subKey).withLabel(subKey + " Switch").withKind(ChannelKind.STATE)
-                                .withProperties(switchProperties).build();
-                        subChannels.add(newChannel);
-                    }
-                }
-                Channel newChannel = ChannelBuilder
-                        .create(new ChannelUID(thing.getUID(), subNameAddon + subKey), "String")
-                        .withType(new ChannelTypeUID(thing.getUID().getBindingId(), CHANNEL_STRING_VALUE))
-                        .withDescription(subKey).withLabel(subKey).withKind(ChannelKind.STATE)
-                        .withProperties(properties).build();
-                subChannels.add(newChannel);
-
-            } else if (subKeyType.equals("floatValue")) {
-                /* Check whether the value is a dummy (e.g. not connected sensor) */
-                BigDecimal val = (BigDecimal) serObj.serviceTreeMap.get(subKey).getValue();
-                if (val != null) {
-                    if (val.setScale(6, RoundingMode.HALF_UP).equals(maxInt16AsFloat)
-                            || val.setScale(6, RoundingMode.HALF_UP).equals(minInt16AsFloat)
-                            || val.setScale(4, RoundingMode.HALF_UP).equals(maxInt16AsInt)) {
-                        continue;
-                    }
-                }
-                /* Check the capabilities of this service */
-                if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
-                    /* We cannot add this limits to the channels yet, only on xml files possible */
-                    @SuppressWarnings("unchecked")
-                    List<BigDecimal> subValParas = (List<BigDecimal>) serObj.serviceTreeMap.get(subKey)
-                            .getValueParameter();
-                    BigDecimal minVal = subValParas.get(0);
-                    BigDecimal maxVal = subValParas.get(1);
-
-                }
-                Channel newChannel = ChannelBuilder
-                        .create(new ChannelUID(thing.getUID(), subNameAddon + subKey), "Number")
-                        .withType(new ChannelTypeUID(thing.getUID().getBindingId(), CHANNEL_FLOAT_VALUE))
-                        .withDescription(subKey).withLabel(subKey).withKind(ChannelKind.STATE)
-                        .withProperties(properties).build();
-                subChannels.add(newChannel);
-            } else if (subKeyType.equals("refEnum")) {
-                /* Check whether the subelement should be ignored */
-                Boolean ignoreIt = false;
-                for (KM200ThingTypes tType : KM200ThingTypes.values()) {
-                    if (tType.getThingTypeUID().equals(thing.getThingTypeUID())) {
-                        for (String ignore : tType.ignoreSubService()) {
-                            if (ignore.equals(subKey)) {
-                                ignoreIt = true;
-                            }
+            switch (subKeyType) {
+                case "stringValue":
+                    /* Creating an new channel type with capabilities from service */
+                    if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
+                        @SuppressWarnings("unchecked")
+                        List<String> subValParas = (List<String>) serObj.serviceTreeMap.get(subKey).getValueParameter();
+                        for (String para : subValParas) {
+                            StateOption stateOption = new StateOption(para, para);
+                            options.add(stateOption);
                         }
+                        if (serObj.serviceTreeMap.get(subKey).getWriteable() > 0) {
+                            Map<String, String> switchProperties = new HashMap<>(1);
+                            switchProperties.put("root", KM200GatewayHandler.translatesPathToName(root));
+                            Channel newChannel = ChannelBuilder
+                                    .create(new ChannelUID(thing.getUID(), subNameAddon + subKey + "Switch"), "Switch")
+                                    .withType(new ChannelTypeUID(thing.getUID().getBindingId(),
+                                            CHANNEL_SWITCH_STRING_VALUE))
+                                    .withDescription(subKey).withLabel(subKey + " Switch").withKind(ChannelKind.STATE)
+                                    .withProperties(switchProperties).build();
+                            subChannels.add(newChannel);
+                        }
+                        StateDescription state = new StateDescription(null, null, null, "%s", false, options);
+
+                        ChannelTypeUID channelTypeUID = new ChannelTypeUID(thing.getUID().getBindingId(),
+                                CHANNEL_DYNAMIC_STRING);
+
+                        ChannelType channelType = new ChannelType(channelTypeUID, false, "StringType", subKey, subKey,
+                                null, null, state, null);
+
+                        factory.addChannelType(channelType);
+
+                        Channel newChannel = ChannelBuilder
+                                .create(new ChannelUID(getThing().getUID(), subNameAddon + subKey), "String")
+                                .withType(channelTypeUID).withLabel(subKey).withKind(ChannelKind.STATE)
+                                .withProperties(properties).build();
+                        subChannels.add(newChannel);
+                    } else {
+                        Channel newChannel = ChannelBuilder
+                                .create(new ChannelUID(thing.getUID(), subNameAddon + subKey), "String")
+                                .withType(new ChannelTypeUID(thing.getUID().getBindingId(), CHANNEL_STRING_VALUE))
+                                .withDescription(subKey).withLabel(subKey).withKind(ChannelKind.STATE)
+                                .withProperties(properties).build();
+                        subChannels.add(newChannel);
 
                     }
-                }
-                if (ignoreIt) {
-                    continue;
-                }
-                /* Search for new services in subpath */
-                addChannels(serObj.serviceTreeMap.get(subKey), thing, subChannels, subKey + "#");
-            } else if (subKeyType.equals("errorList")) {
-                Channel newChannel = null;
-                switch (subKey) {
-                    case "nbrErrors":
-                    case "error":
-                        newChannel = ChannelBuilder
+                    break;
+
+                case "floatValue":
+                    /* Check whether the value is a dummy (e.g. not connected sensor) */
+                    BigDecimal val = (BigDecimal) serObj.serviceTreeMap.get(subKey).getValue();
+                    if (val != null) {
+                        if (val.setScale(6, RoundingMode.HALF_UP).equals(maxInt16AsFloat)
+                                || val.setScale(6, RoundingMode.HALF_UP).equals(minInt16AsFloat)
+                                || val.setScale(4, RoundingMode.HALF_UP).equals(maxInt16AsInt)) {
+                            continue;
+                        }
+                    }
+                    /* Check the capabilities of this service */
+                    if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
+                        /* Creating an new channel type with capabilities from service */
+                        @SuppressWarnings("unchecked")
+                        List<BigDecimal> subValParas = (List<BigDecimal>) serObj.serviceTreeMap.get(subKey)
+                                .getValueParameter();
+                        BigDecimal minVal = subValParas.get(0);
+                        BigDecimal maxVal = subValParas.get(1);
+
+                        StateDescription state = new StateDescription(minVal, maxVal, null, "%.2f", false, null);
+
+                        ChannelTypeUID channelTypeUID = new ChannelTypeUID(thing.getUID().getBindingId(),
+                                CHANNEL_DYNAMIC_NUMBER);
+
+                        ChannelType channelType = new ChannelType(channelTypeUID, false, "NumberType", subKey, subKey,
+                                null, null, state, null);
+
+                        factory.addChannelType(channelType);
+
+                        Channel newChannel = ChannelBuilder
+                                .create(new ChannelUID(getThing().getUID(), subNameAddon + subKey), "Number")
+                                .withType(channelTypeUID).withLabel(subKey).withKind(ChannelKind.STATE)
+                                .withProperties(properties).build();
+                        subChannels.add(newChannel);
+
+                    } else {
+                        Channel newChannel = ChannelBuilder
                                 .create(new ChannelUID(thing.getUID(), subNameAddon + subKey), "Number")
                                 .withType(new ChannelTypeUID(thing.getUID().getBindingId(), CHANNEL_FLOAT_VALUE))
                                 .withDescription(subKey).withLabel(subKey).withKind(ChannelKind.STATE)
                                 .withProperties(properties).build();
-                        break;
-                    case "errorString":
-                        newChannel = ChannelBuilder
-                                .create(new ChannelUID(thing.getUID(), subNameAddon + subKey), "String")
-                                .withType(new ChannelTypeUID(thing.getUID().getBindingId(), CHANNEL_STRING_VALUE))
-                                .withDescription("Error message").withLabel("Text").withKind(ChannelKind.STATE)
-                                .withProperties(properties).build();
-                        break;
-                }
-                subChannels.add(newChannel);
+                        subChannels.add(newChannel);
+                    }
+                    break;
+
+                case "refEnum":
+                    /* Check whether the sub service should be ignored */
+                    Boolean ignoreIt = false;
+                    for (KM200ThingTypes tType : KM200ThingTypes.values()) {
+                        if (tType.getThingTypeUID().equals(thing.getThingTypeUID())) {
+                            for (String ignore : tType.ignoreSubService()) {
+                                if (ignore.equals(subKey)) {
+                                    ignoreIt = true;
+                                }
+                            }
+
+                        }
+                    }
+                    if (ignoreIt) {
+                        continue;
+                    }
+                    /* Search for new services in sub path */
+                    addChannels(serObj.serviceTreeMap.get(subKey), thing, subChannels, subKey + "#");
+                    break;
+
+                case "errorList":
+                    Channel newChannel = null;
+                    switch (subKey) {
+                        case "nbrErrors":
+                        case "error":
+                            newChannel = ChannelBuilder
+                                    .create(new ChannelUID(thing.getUID(), subNameAddon + subKey), "Number")
+                                    .withType(new ChannelTypeUID(thing.getUID().getBindingId(), CHANNEL_FLOAT_VALUE))
+                                    .withDescription(subKey).withLabel(subKey).withKind(ChannelKind.STATE)
+                                    .withProperties(properties).build();
+                            break;
+                        case "errorString":
+                            newChannel = ChannelBuilder
+                                    .create(new ChannelUID(thing.getUID(), subNameAddon + subKey), "String")
+                                    .withType(new ChannelTypeUID(thing.getUID().getBindingId(), CHANNEL_STRING_VALUE))
+                                    .withDescription("Error message").withLabel("Text").withKind(ChannelKind.STATE)
+                                    .withProperties(properties).build();
+                            break;
+                    }
+                    subChannels.add(newChannel);
+                    break;
             }
         }
     }
