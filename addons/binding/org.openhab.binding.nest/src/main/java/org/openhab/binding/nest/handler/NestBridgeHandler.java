@@ -181,7 +181,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         for (Structure struct : structures) {
             Thing thingStructure = getDevice(struct.getStructureId(), things);
             if (thingStructure != null) {
-                StructureHandler handler = (StructureHandler) thingStructure.getHandler();
+                NestStructureHandler handler = (NestStructureHandler) thingStructure.getHandler();
                 handler.updateStructure(struct);
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
