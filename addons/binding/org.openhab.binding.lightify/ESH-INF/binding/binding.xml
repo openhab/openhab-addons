@@ -4,7 +4,7 @@
         xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>Lightify Binding</name>
+    <name>OSRAM Lightify Binding</name>
     <description>This is the binding for the OSRAM Lightify lightning system.</description>
     <author>Christoph Engelbert</author>
 </binding:binding>

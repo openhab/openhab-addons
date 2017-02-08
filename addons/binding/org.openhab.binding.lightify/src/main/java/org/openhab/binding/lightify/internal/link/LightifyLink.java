@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.lightify.internal.link;
 
 import org.slf4j.Logger;
@@ -26,6 +34,9 @@ import static org.openhab.binding.lightify.internal.link.Command.STATUS_SINGLE;
 import static org.openhab.binding.lightify.internal.link.Command.ZONE_INFO;
 import static org.openhab.binding.lightify.internal.link.Command.ZONE_LIST;
 
+/**
+ * @author Christoph Engelbert (@noctarius2k) - Initial contribution
+ */
 public class LightifyLink {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LightifyLink.class);
@@ -69,7 +80,7 @@ public class LightifyLink {
                                          .on(ZONE_LIST) //
                                          .build();
 
-        LOGGER.info("Searching Zones...");
+        LOGGER.debug("Searching Zones...");
         sendPacket(packet);
         readPacket(ZONE_LIST, consumer);
     }
@@ -255,7 +266,7 @@ public class LightifyLink {
         buffer.get(); // always 0
 
         int numOfZones = buffer.getShort();
-        LOGGER.info("Found " + numOfZones + " zones...");
+        LOGGER.info("Found {} zones...", numOfZones);
         for (int i = 0; i < numOfZones; i++) {
             int zoneId = buffer.getShort();
 
@@ -343,7 +354,7 @@ public class LightifyLink {
         buffer.get(); // always 0
 
         int numOfLights = buffer.getShort();
-        LOGGER.info("Found " + numOfLights + " devices...");
+        LOGGER.debug("Found {} devices...", numOfLights);
         for (int i = 0; i < numOfLights; i++) {
             int id = buffer.getShort();
 

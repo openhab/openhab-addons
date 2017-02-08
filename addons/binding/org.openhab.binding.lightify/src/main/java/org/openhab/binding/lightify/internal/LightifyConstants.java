@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.lightify.internal;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -5,12 +13,15 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author Christoph Engelbert (@noctarius2k) - Initial contribution
+ */
 public final class LightifyConstants {
 
     private LightifyConstants() {
     }
 
-    public static final String BINDING_ID = "lightify";
+    private static final String BINDING_ID = "lightify";
 
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB = new ThingTypeUID(BINDING_ID, "bulb");

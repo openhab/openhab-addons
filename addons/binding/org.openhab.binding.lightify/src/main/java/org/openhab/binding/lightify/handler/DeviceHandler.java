@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.lightify.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -6,7 +14,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -28,6 +35,9 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_Z
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_ZONE;
 
+/**
+ * @author Christoph Engelbert (@noctarius2k) - Initial contribution
+ */
 public class DeviceHandler extends BaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet<ThingTypeUID>() {
@@ -61,8 +71,7 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        LOGGER.info(channelUID.toString());
-        LOGGER.info("Command: " + command);
+        LOGGER.debug("Command: {}", command);
         switch (channelUID.getId()) {
             case CHANNEL_ID_POWER:
                 handlePowerSwitch(command);

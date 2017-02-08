@@ -26,9 +26,9 @@
 		<label>OSRAM Lightify Bulb</label>
 		<description>OSRAM Lightify Bulb</description>
 
-    <channel-groups>
-      <channel-group typeId="lightify-rgbw" id="rgbw" />
-    </channel-groups>
+		<channel-groups>
+			<channel-group typeId="lightify-rgbw" id="rgbw" />
+		</channel-groups>
 	</thing-type>
 
 	<thing-type id="zone">
@@ -39,20 +39,20 @@
 		<label>OSRAM Lightify Zone</label>
 		<description>OSRAM Lightify Zone</description>
 
-    <channel-groups>
-      <channel-group typeId="lightify-rgbw" id="rgbw" />
-    </channel-groups>
+		<channel-groups>
+			<channel-group typeId="lightify-rgbw" id="rgbw" />
+		</channel-groups>
 	</thing-type>
 
-  <channel-group-type id="lightify-rgbw">
-    <label>RGBW Lightify Device</label>
-    <channels>
-      <channel id="power" typeId="power" />
-      <channel id="dimmer" typeId="dimmer" />
-      <channel id="temperature" typeId="temperature" />
+	<channel-group-type id="lightify-rgbw">
+		<label>RGBW Lightify Device</label>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="dimmer" typeId="dimmer" />
+			<channel id="temperature" typeId="temperature" />
 			<channel id="color" typeId="color" />
-    </channels>
-  </channel-group-type>
+		</channels>
+	</channel-group-type>
 
 	<channel-type id="color">
 		<item-type>Color</item-type>
