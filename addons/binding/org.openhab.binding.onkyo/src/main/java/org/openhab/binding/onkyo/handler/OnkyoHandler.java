@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -84,7 +85,8 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         configuration = getConfigAs(OnkyoDeviceConfiguration.class);
         logger.info("Using configuration: {}", configuration.toString());
 
-        connection = new OnkyoConnection(configuration.ipAddress, configuration.port);
+        connection = new OnkyoConnection(configuration.ipAddress, configuration.port,
+                configuration.connectionErrorLogging);
         connection.addEventListener(this);
 
         scheduler.execute(new Runnable() {
@@ -446,7 +448,14 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     @Override
     public void connectionError(String ip) {
         logger.debug("Connection error occured to Onkyo Receiver @{}", ip);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+
+        // prevent flooding, if receiver is fully powered off
+        ThingStatusInfo status = getThing().getStatusInfo();
+        if (!(status.getStatus() == ThingStatus.OFFLINE
+                && status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
+
     }
 
     private State convertDeviceValueToOpenHabState(String data, Class<?> classToConvert) {
