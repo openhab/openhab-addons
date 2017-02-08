@@ -170,7 +170,7 @@
                         </excludes>
                         <useDefaultExcludes>true</useDefaultExcludes>
                         <properties>
-                            <year>2016</year>
+                            <year>2017</year>
                         </properties>
                         <encoding>UTF-8</encoding>
                     </configuration>
