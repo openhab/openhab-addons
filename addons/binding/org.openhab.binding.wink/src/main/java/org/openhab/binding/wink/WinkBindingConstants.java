@@ -10,8 +10,7 @@ package org.openhab.binding.wink;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link WinkBinding} class defines common constants, which are
- * used across the whole binding.
+ * The {@link WinkBinding} class defines common constants, which are used across the whole binding.
  *
  * @author Sebastien Marchand - Initial contribution
  */
