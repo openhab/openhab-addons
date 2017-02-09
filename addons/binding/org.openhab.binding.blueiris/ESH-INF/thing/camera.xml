@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="blueiris" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Blue Iris Thing Type -->
+	<thing-type id="camera" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Camera</label>
+		<description>Blue Iris Camera</description>
+		<channels>
+			<channel id="enabled" typeId="cameraEnabled" />
+			<channel id="fps" typeId="fps" />
+			<channel id="color" typeId="color" />
+			<channel id="clipsCreated" typeId="clipsCreated" />
+			<channel id="alerting" typeId="isAlerting" />
+			<channel id="motion" typeId="isMotion" />
+			<channel id="noSignal" typeId="isNoSignal" />
+			<channel id="webCast" typeId="webCast" />
+			<channel id="paused" typeId="isPaused" />
+			<channel id="pausedType" typeId="pausedType" />
+			<channel id="triggered" typeId="isTriggered" />
+			<channel id="recording" typeId="isRecording" />
+			<channel id="cautionIcon" typeId="cautionIcon" />
+			<channel id="profile" typeId="profile" />
+			<channel id="ptzSupported" typeId="ptzSupported" />
+			<channel id="audioSupported" typeId="audioSupported" />
+			<channel id="width" typeId="width" />
+			<channel id="height" typeId="height" />
+			<channel id="numberOfTriggers" typeId="triggers" />
+			<channel id="numberOfNoSignal" typeId="nosignal" />
+			<channel id="numberOfClips" typeId="clips" />
+			<channel id="numberOfAlerts" typeId="numAlerts" />
+			<channel id="lastAlert" typeId="lastAlert" />
+			<channel id="newAlerts" typeId="newAlerts" />
+
+			<!-- From the camconfig call -->
+			<channel id="motionEnabled" typeId="motionEnabled" />
+			<channel id="scheduleEnabled" typeId="scheduleEnabled" />
+			<channel id="ptzCycle" typeId="ptzCycle" />
+			<channel id="ptzEvents" typeId="ptzEvents" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Blue Iris</property>
+		</properties>
+
+		<config-description>
+			<parameter name="pollingTime" type="integer">
+				<description>The amount of time between refreshes of the config of the camera from blue iris in minutes.</description>
+				<default>14400</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="color" advanced="true">
+		<item-type>Colorpicker</item-type>
+		<label>Color</label>
+		<description>Color of the camera icon in the blue iris software</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fps">
+		<item-type>Number</item-type>
+		<label>FPS</label>
+		<description>Current frames per second</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="profile">
+		<item-type>String</item-type>
+		<label>Profile</label>
+		<description>Profile associated with this camera</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="cameraEnabled">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>Camera is enabled</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="webCast">
+		<item-type>Switch</item-type>
+		<label>Webcast</label>
+		<description>Webcast is enabled</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="isAlerting">
+		<item-type>Switch</item-type>
+		<label>Alerting</label>
+		<description>Camera is alerting</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="isMotion">
+		<item-type>Switch</item-type>
+		<label>Motion</label>
+		<description>Camera has motion detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="isNoSignal">
+		<item-type>Switch</item-type>
+		<label>No Signal</label>
+		<description>Camera has no signal</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="isPaused">
+		<item-type>Switch</item-type>
+		<label>Paused</label>
+		<description>Is paused</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pausedType">
+		<item-type>Number</item-type>
+		<label>Paused Type</label>
+		<description>Type of pausing</description>
+		<state>
+			<options>
+				<option value="-1">Pause Indefinitely</option>
+				<option value="0">No Pause</option>
+				<option value="1">30 second pause</option>
+				<option value="2">1 minute pause</option>
+				<option value="3">1 hour pause</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="isTriggered">
+		<item-type>Switch</item-type>
+		<label>Triggered</label>
+		<description>Is camera triggered</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="isRecording">
+		<item-type>Switch</item-type>
+		<label>Recording</label>
+		<description>Is the camera recording</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="cautionIcon" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Caution Icon</label>
+		<description>Is caution icon on</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="ptzSupported">
+		<item-type>Switch</item-type>
+		<label>PTZ</label>
+		<description>Is Pan/Tilt/Zoom supported</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="audioSupported">
+		<item-type>Switch</item-type>
+		<label>Audio</label>
+		<description>Is Audio supported</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="width" advanced="true">
+		<item-type>Number</item-type>
+		<label>Width</label>
+		<description>Width of the standard video frame</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="height" advanced="true">
+		<item-type>Number</item-type>
+		<label>Height</label>
+		<description>Height of the standard video frame</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="clipsCreated" advanced="true">
+		<item-type>Number</item-type>
+		<label>No Clips</label>
+		<description>Number of no recording events since last reset</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="triggers" advanced="true">
+		<item-type>Number</item-type>
+		<label>Num Triggers</label>
+		<description>Number of trigger events since last reset.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="clips" advanced="true">
+		<item-type>Number</item-type>
+		<label>Num Clips</label>
+		<description>Number of no recording events since last reset</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="numNoSignal" advanced="true">
+		<item-type>Number</item-type>
+		<label>Num No Signal</label>
+		<description>number of no signal events since last reset</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="numAlerts" advanced="true">
+		<item-type>Number</item-type>
+		<label>Num Alerts</label>
+		<description>number of alert events since last reset</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="newAlerts" advanced="true">
+		<item-type>Number</item-type>
+		<label>New Alerts</label>
+		<description>number of mew alert events since last reset</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lastAlert">
+		<item-type>Date</item-type>
+		<label>Last Alerts</label>
+		<description>The date of the last alert</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="motionEnabled">
+		<item-type>Switch</item-type>
+		<label>Motion Enabled</label>
+		<description>Is Motion sensing enabled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="scheduleEnabled">
+		<item-type>Switch</item-type>
+		<label>Schedule Enabled</label>
+		<description>Is Schedule enabled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ptzCycle">
+		<item-type>Switch</item-type>
+		<label>PTZ Cycle</label>
+		<description>If the preset ptz cycle is enabled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ptzCycle">
+		<item-type>Switch</item-type>
+		<label>PTZ Events</label>
+		<description>Enable the ptz event schedule</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>
