@@ -77,8 +77,9 @@ The following channels are supported:
 sitemap testing label="Main Menu"
 {
     Frame {
-        Switch item=isy_program_isybridge_shower_preheat_run
-        Switch item=isy_program_isybridge_shower_preheat_stop 
+        Switch item=isy_program_isybridge_shower_preheat_run mappings=["ON"="On"] label="Preheat Shower - Run"
+        Switch item=isy_program_isybridge_shower_preheat_runThen mappings=["ON"="On"] label="Preheat Shower - Run Then"
+        Switch item=isy_program_isybridge_shower_preheat_stop  mappings=["ON"="On"] label="Preheat Shower - Stop"
     }
 }
 ```
