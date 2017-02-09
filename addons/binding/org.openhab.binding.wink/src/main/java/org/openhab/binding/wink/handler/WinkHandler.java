@@ -214,7 +214,6 @@ public abstract class WinkHandler extends BaseThingHandler {
         this.pubnub.addListener(new SubscribeCallback() {
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
-                logger.info("MESSAGE");
                 JsonParser parser = new JsonParser();
                 JsonObject jsonMessage = parser.parse(message.getMessage().getAsString()).getAsJsonObject();
                 pubNubMessageCallback(jsonMessage);
@@ -222,12 +221,10 @@ public abstract class WinkHandler extends BaseThingHandler {
 
             @Override
             public void presence(PubNub pubnub, PNPresenceEventResult presence) {
-                logger.info("PRESENCE");
             }
 
             @Override
             public void status(PubNub arg0, PNStatus arg1) {
-                logger.info("STATUS: " + arg0.toString() + "   " + arg1.toString());
             }
         });
 
