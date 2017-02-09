@@ -43,13 +43,15 @@ public class NestBindingConstants {
     // List of all Channel ids
     // read/write channels (thermostat)
     public final static String CHANNEL_MODE = "mode";
-    public final static String CHANNEL_LOCKED = "locked";
     public final static String CHANNEL_MAX_SET_POINT = "max_set_point";
     public final static String CHANNEL_MIN_SET_POINT = "min_set_point";
-    public final static String CHANNEL_LOCKED_MAX_SET_POINT = "locked_max_set_point";
-    public final static String CHANNEL_LOCKED_MIN_SET_POINT = "locked_min_set_point";
+    public final static String CHANNEL_FAN_TIMER_ACTIVE = "fan_timer_active";
+    public final static String CHANNEL_FAN_TIMER_DURATION = "fan_timer_duration";
 
     // read only channels (thermostat)
+    public final static String CHANNEL_LOCKED = "locked";
+    public final static String CHANNEL_LOCKED_MAX_SET_POINT = "locked_max_set_point";
+    public final static String CHANNEL_LOCKED_MIN_SET_POINT = "locked_min_set_point";
     public final static String CHANNEL_TEMPERATURE = "temperature";
     public final static String CHANNEL_HUMIDITY = "humidity";
     public final static String CHANNEL_PREVIOUS_MODE = "previous_mode";
@@ -60,11 +62,30 @@ public class NestBindingConstants {
     public final static String CHANNEL_SUNLIGHT_CORRECTION_ENABLED = "sunlight_correction_enabled";
     public final static String CHANNEL_SUNLIGHT_CORRECTION_ACTIVE = "sunlight_correction_active";
     public final static String CHANNEL_TIME_TO_TARGET_MINS = "time_to_target_mins";
+    public final static String CHANNEL_USING_EMERGENCY_HEAT = "using_emergency_heat";
 
     // read/write channels (camera)
+    public final static String CHANNEL_STREAMING = "streaming";
+
+    // read only channels (camera)
+    public final static String CHANNEL_AUDIO_INPUT_ENABLED = "audio_input_enabled";
+    public final static String CHANNEL_VIDEO_HISTORY_ENABLED = "video_history_enabled";
+    public final static String CHANNEL_WEB_URL = "web_url";
+    public final static String CHANNEL_APP_URL = "app_url";
+    public final static String CHANNEL_PUBLIC_SHARE_ENABLED = "public_share_enabled";
+    public final static String CHANNEL_PUBLIC_SHARE_URL = "public_share_url";
+    public final static String CHANNEL_SNAPSHOT_URL = "snapshot_url";
 
     // read/write channels (smoke detector)
 
+    // readonly channels (smoke detector)
+    public final static String CHANNEL_UI_COLOR_STATE = "ui_color_state";
+    public final static String CHANNEL_BATTERY = "battery";
+    public final static String CHANNEL_CO_ALARM_STATE = "co_alarm_state";
+    public final static String CHANNEL_SMOKE_ALARM_STATE = "smoke_alarm_state";
+    public final static String CHANNEL_MANUAL_TEST_ACTIVE = "manual_test_active";
+
     // Properties on things that are fixed.
     public final static String PROPERTY_ID = "deviceId";
+    public final static String PROPERTY_FIRMWARE_VERSION = "firmware";
 }
