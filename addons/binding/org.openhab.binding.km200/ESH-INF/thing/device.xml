@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="km200" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="kmdevice">
+		<label>KM200/100/50</label>
+		<description>The KM200 binding is communicating with a Buderus Logamatic web KM200 / KM100 / KM50. It is possible to receive and send parameters like string or float values.</description>
+
+		<config-description>
+			<parameter name="ip4Address" type="text" required="true">
+				<label>IP4 address</label>
+				<context>network-address</context>
+				<description>IP4 Address of the KMXXX device</description>
+			</parameter>
+			<parameter name="privateKey" type="text" required="false">
+				<label>Private key</label>
+				<description>Option 1:Private en-/decryption key built from MD5Salt, GatewayPassword and PrivatePassword</description>
+			</parameter>
+			<parameter name="md5Salt" type="text" required="false">
+				<label>MD5 salt</label>
+				<description>Option 2: MD5Salt for the building of the private key</description>
+			</parameter>
+			<parameter name="gatewayPassword" type="text" required="false">
+				<label>Gateway password</label>
+				<context>password</context>
+				<description>Option 2: GatewayPassword for the building of the private key (Sticker on the device without '-')</description>
+			</parameter>
+			<parameter name="privatePassword" type="text" required="false">
+				<label>Private password</label>
+				<context>password</context>
+				<description>Option 2: Private Password for the building of the private key (Set in the App)</description>
+			</parameter>
+			<parameter name="refreshinterval" type="integer" required="true">
+				<label>Auto refresh interval</label>
+				<description>Auto refresh interval in seconds</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="readdelay" type="integer" required="true">
+				<label>Read delay</label>
+				<description>Delay between two read attempts in ms</description>
+				<default>100</default>
+			</parameter>
+			<parameter name="maxnbrrepeats" type="integer" required="true">
+				<label>Maximum number of repeats</label>
+				<description>Maximum number of repeats in case of a communication error (like HTTP 500 error)</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
