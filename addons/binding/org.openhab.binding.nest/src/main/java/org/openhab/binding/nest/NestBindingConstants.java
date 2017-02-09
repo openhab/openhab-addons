@@ -47,15 +47,15 @@ public class NestBindingConstants {
     // List of all Channel ids
     // read/write channels (thermostat)
     public final static String CHANNEL_MODE = "mode";
-    public final static String CHANNEL_LOCKED = "locked";
     public final static String CHANNEL_MAX_SET_POINT = "max_set_point";
     public final static String CHANNEL_MIN_SET_POINT = "min_set_point";
-    public final static String CHANNEL_LOCKED_MAX_SET_POINT = "locked_max_set_point";
-    public final static String CHANNEL_LOCKED_MIN_SET_POINT = "locked_min_set_point";
     public final static String CHANNEL_FAN_TIMER_ACTIVE = "fan_timer_active";
     public final static String CHANNEL_FAN_TIMER_DURATION = "fan_timer_duration";
 
     // read only channels (thermostat)
+    public final static String CHANNEL_LOCKED = "locked";
+    public final static String CHANNEL_LOCKED_MAX_SET_POINT = "locked_max_set_point";
+    public final static String CHANNEL_LOCKED_MIN_SET_POINT = "locked_min_set_point";
     public final static String CHANNEL_TEMPERATURE = "temperature";
     public final static String CHANNEL_HUMIDITY = "humidity";
     public final static String CHANNEL_PREVIOUS_MODE = "previous_mode";
@@ -82,6 +82,13 @@ public class NestBindingConstants {
 
     // read/write channels (smoke detector)
 
+    // readonly channels (smoke detector)
+    public final static String CHANNEL_UI_COLOR_STATE = "ui_color_state";
+    public final static String CHANNEL_BATTERY = "battery";
+    public final static String CHANNEL_CO_ALARM_STATE = "co_alarm_state"; // Also in structure
+    public final static String CHANNEL_SMOKE_ALARM_STATE = "smoke_alarm_state"; // Also in structure
+    public final static String CHANNEL_MANUAL_TEST_ACTIVE = "manual_test_active";
+
     // read only channels (structure)
     public final static String CHANNEL_COUNTRY_CODE = "country_code";
     public final static String CHANNEL_POSTAL_CODE = "postal_code";
@@ -89,8 +96,6 @@ public class NestBindingConstants {
     public final static String CHANNEL_PEAK_PERIOD_END_TIME = "peak_period_end_time";
     public final static String CHANNEL_TIME_ZONE = "time_zone";
     public final static String CHANNEL_ETA_BEGIN = "eta_being";
-    public final static String CHANNEL_CO_ALARM_STATE = "co_alarm_state";
-    public final static String CHANNEL_SMOKE_ALARM_STATE = "smoke_alarm_state";
     public final static String CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT = "rush_hour_rewards_enrollment";
     public final static String CHANNEL_AWAY = "away";
 
