@@ -28,6 +28,9 @@ public class NestBindingConstants {
     /** The url to get set values on the thermostat when talking to nest. */
     public final static String NEST_THERMOSTAT_UPDATE_URL = "https://developer-api.nest.com/devices/thermostats/";
 
+    /** The url to get set values on the structure when talking to nest. */
+    public static final Object NEST_STRUCTURE_UPDATE_URL = "https://developer-api.nest.com/structures/";
+
     /** The url to get set values on the camera when talking to nest. */
     public final static String NEST_CAMERA_UPDATE_URL = "https://developer-api.nest.com/devices/camera/";
 
@@ -39,12 +42,18 @@ public class NestBindingConstants {
     public final static ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID(BINDING_ID, "camera");
     public final static ThingTypeUID THING_TYPE_SMOKE_DETECTOR = new ThingTypeUID(BINDING_ID, "smoke_detector");
     public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public final static ThingTypeUID THING_TYPE_STRUCTURE = new ThingTypeUID(BINDING_ID, "structure");
 
     // List of all Channel ids
     // read/write channels (thermostat)
     public final static String CHANNEL_MODE = "mode";
     public final static String CHANNEL_MAX_SET_POINT = "max_set_point";
     public final static String CHANNEL_MIN_SET_POINT = "min_set_point";
+<<<<<<< HEAD
+=======
+    public final static String CHANNEL_LOCKED_MAX_SET_POINT = "locked_max_set_point";
+    public final static String CHANNEL_LOCKED_MIN_SET_POINT = "locked_min_set_point";
+>>>>>>> refs/remotes/origin/master
     public final static String CHANNEL_FAN_TIMER_ACTIVE = "fan_timer_active";
     public final static String CHANNEL_FAN_TIMER_DURATION = "fan_timer_duration";
 
@@ -78,12 +87,26 @@ public class NestBindingConstants {
 
     // read/write channels (smoke detector)
 
+<<<<<<< HEAD
     // readonly channels (smoke detector)
     public final static String CHANNEL_UI_COLOR_STATE = "ui_color_state";
     public final static String CHANNEL_BATTERY = "battery";
     public final static String CHANNEL_CO_ALARM_STATE = "co_alarm_state";
     public final static String CHANNEL_SMOKE_ALARM_STATE = "smoke_alarm_state";
     public final static String CHANNEL_MANUAL_TEST_ACTIVE = "manual_test_active";
+=======
+    // read only channels (structure)
+    public final static String CHANNEL_COUNTRY_CODE = "country_code";
+    public final static String CHANNEL_POSTAL_CODE = "postal_code";
+    public final static String CHANNEL_PEAK_PERIOD_START_TIME = "peak_period_start_time";
+    public final static String CHANNEL_PEAK_PERIOD_END_TIME = "peak_period_end_time";
+    public final static String CHANNEL_TIME_ZONE = "time_zone";
+    public final static String CHANNEL_ETA_BEGIN = "eta_being";
+    public final static String CHANNEL_CO_ALARM_STATE = "co_alarm_state";
+    public final static String CHANNEL_SMOKE_ALARM_STATE = "smoke_alarm_state";
+    public final static String CHANNEL_RUSH_HOUR_REWARDS_ENROLLMENT = "rush_hour_rewards_enrollment";
+    public final static String CHANNEL_AWAY = "away";
+>>>>>>> refs/remotes/origin/master
 
     // Properties on things that are fixed.
     public final static String PROPERTY_ID = "deviceId";

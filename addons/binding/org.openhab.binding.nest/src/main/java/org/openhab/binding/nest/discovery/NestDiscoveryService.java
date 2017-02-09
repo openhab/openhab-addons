@@ -12,6 +12,7 @@ import org.openhab.binding.nest.handler.NestBridgeHandler;
 import org.openhab.binding.nest.internal.NestDeviceAddedListener;
 import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
+import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 
 public class NestDiscoveryService extends AbstractDiscoveryService implements NestDeviceAddedListener {
@@ -33,6 +34,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
 
     @Override
     protected void startScan() {
+        this.bridge.startDiscoveryScan();
     }
 
     @Override
@@ -41,8 +43,8 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
         ThingUID thingUID = new ThingUID(NestBindingConstants.THING_TYPE_THERMOSTAT, bridgeUID,
                 thermostat.getDeviceId());
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put("id", thermostat.getDeviceId());
-        properties.put("firmware", thermostat.getSoftwareVersion());
+        properties.put(NestBindingConstants.PROPERTY_ID, thermostat.getDeviceId());
+        properties.put(NestBindingConstants.PROPERTY_FIRMWARE_VERSION, thermostat.getSoftwareVersion());
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withThingType(NestBindingConstants.THING_TYPE_THERMOSTAT).withLabel(thermostat.getNameLong())
                 .withBridge(bridgeUID).withProperties(properties).build();
@@ -54,8 +56,8 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
         ThingUID bridgeUID = bridge.getThing().getUID();
         ThingUID thingUID = new ThingUID(NestBindingConstants.THING_TYPE_CAMERA, bridgeUID, camera.getDeviceId());
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put("id", camera.getDeviceId());
-        properties.put("firmware", camera.getSoftwareVersion());
+        properties.put(NestBindingConstants.PROPERTY_ID, camera.getDeviceId());
+        properties.put(NestBindingConstants.PROPERTY_FIRMWARE_VERSION, camera.getSoftwareVersion());
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withThingType(NestBindingConstants.THING_TYPE_CAMERA).withLabel(camera.getNameLong())
                 .withBridge(bridgeUID).withProperties(properties).build();
@@ -68,10 +70,22 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
         ThingUID thingUID = new ThingUID(NestBindingConstants.THING_TYPE_SMOKE_DETECTOR, bridgeUID,
                 smoke.getDeviceId());
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put("id", smoke.getDeviceId());
-        properties.put("firmware", smoke.getSoftwareVersion());
+        properties.put(NestBindingConstants.PROPERTY_ID, smoke.getDeviceId());
+        properties.put(NestBindingConstants.PROPERTY_FIRMWARE_VERSION, smoke.getSoftwareVersion());
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withThingType(NestBindingConstants.THING_TYPE_SMOKE_DETECTOR).withLabel(smoke.getNameLong())
+                .withBridge(bridgeUID).withProperties(properties).build();
+        thingDiscovered(discoveryResult);
+    }
+
+    @Override
+    public void onStructureAdded(Structure struct) {
+        ThingUID bridgeUID = bridge.getThing().getUID();
+        ThingUID thingUID = new ThingUID(NestBindingConstants.THING_TYPE_STRUCTURE, bridgeUID, struct.getStructureId());
+        Map<String, Object> properties = new HashMap<>(2);
+        properties.put(NestBindingConstants.PROPERTY_ID, struct.getStructureId());
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                .withThingType(NestBindingConstants.THING_TYPE_STRUCTURE).withLabel(struct.getName())
                 .withBridge(bridgeUID).withProperties(properties).build();
         thingDiscovered(discoveryResult);
     }

@@ -5,8 +5,8 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Nest Binding</name>
-    <description>This is the binding for Nest connects to the nest
-      cloud and allows control of the various nest devices.</description>
+    <description>This is the binding for Nest connects to the nest cloud and allows control of the various nest devices.  Create a bridge thing
+    to setup the connection to nest.</description>
     <author>David Bennett</author>
-
+    
 </binding:binding>

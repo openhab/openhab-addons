@@ -74,7 +74,8 @@ public class MinecraftMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
-        if (isMinecraftServer(service)) {
+
+        if (isMinecraftServer(service) && service.getInetAddresses().length > 0) {
             String host = service.getInetAddresses()[0].getHostAddress();
             host = host.replace('.', '_');
 

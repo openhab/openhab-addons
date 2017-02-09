@@ -2,6 +2,7 @@ package org.openhab.binding.nest.handler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -26,6 +27,7 @@ import org.openhab.binding.nest.internal.NestDeviceAddedListener;
 import org.openhab.binding.nest.internal.NestUpdateRequest;
 import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.NestDevices;
+import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 import org.openhab.binding.nest.internal.data.TopLevelData;
 import org.slf4j.Logger;
@@ -124,6 +126,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             TopLevelData newData = gson.fromJson(data, TopLevelData.class);
             // Turn this new data into things and stuff.
             compareThings(newData.getDevices());
+            compareStructure(newData.getStructures().values());
         } catch (URIException e) {
             logger.error("Error parsing nest url", e);
         } catch (IOException e) {
@@ -145,7 +148,6 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private void compareThings(NestDevices devices) {
         Bridge bridge = getThing();
-
         List<Thing> things = bridge.getThings();
 
         for (Thermostat thermostat : devices.getThermostats().values()) {
@@ -169,6 +171,24 @@ public class NestBridgeHandler extends BaseBridgeHandler {
                     listener.onCameraAdded(camera);
                 }
             }
+        }
+    }
+
+    private void compareStructure(Collection<Structure> structures) {
+        Bridge bridge = getThing();
+        List<Thing> things = bridge.getThings();
+
+        for (Structure struct : structures) {
+            Thing thingStructure = getDevice(struct.getStructureId(), things);
+            if (thingStructure != null) {
+                NestStructureHandler handler = (NestStructureHandler) thingStructure.getHandler();
+                handler.updateStructure(struct);
+            } else {
+                for (NestDeviceAddedListener listener : listeners) {
+                    listener.onStructureAdded(struct);
+                }
+            }
+
         }
     }
 
@@ -205,8 +225,12 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         this.listeners.remove(nestDiscoveryService);
     }
 
-    /** Adds the update request into the queue for doing something with, send immedigately if the queue is empty. */
+    /** Adds the update request into the queue for doing something with, send immediately if the queue is empty. */
     public void addUpdateRequest(NestUpdateRequest request) {
         nestUpdateRequests.add(request);
+    }
+
+    public void startDiscoveryScan() {
+        refreshData();
     }
 }
