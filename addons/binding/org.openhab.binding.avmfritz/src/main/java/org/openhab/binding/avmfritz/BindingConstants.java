@@ -47,6 +47,7 @@ public class BindingConstants {
     
     // List of all Thing Type UIDs
     public final static ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_FRITZBOX);
+    public final static ThingTypeUID POWERLINE_THING_TYPE = new ThingTypeUID(BINDING_ID, "Powerline_Solo");
 
     public final static ThingTypeUID DECT210_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT210);
     public final static ThingTypeUID DECT200_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT200);

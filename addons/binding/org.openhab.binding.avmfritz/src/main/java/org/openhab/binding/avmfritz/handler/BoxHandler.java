@@ -199,6 +199,10 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             String thingName = device.getIdentifier().replaceAll("[^a-zA-Z0-9_]", "_");
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingName);
             return thingUID;
+        } else if (BindingConstants.SUPPORTED_POWERLINE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            String thingName = device.getIdentifier().replaceAll("[^a-zA-Z0-9_]", "_");
+            ThingUID thingUID = new ThingUID(POWERLINE_THING_TYPE, thingName);
+            return thingUID;
         } else {
             return null;
         }

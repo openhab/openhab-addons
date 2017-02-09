@@ -236,8 +236,8 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
             return thingUID;
         //} else if (thingTypeUID.equals(PL546E_STANDALONE_THING_TYPE)) {
         } else if (BindingConstants.SUPPORTED_POWERLINE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            String thingName = this.soloIp.replaceAll("[^a-zA-Z0-9_]", "_");
-            ThingUID thingUID = new ThingUID(thingTypeUID, thingName);
+            String thingName = device.getIdentifier().replaceAll("[^a-zA-Z0-9_]", "_");
+            ThingUID thingUID = new ThingUID(POWERLINE_THING_TYPE, thingName);
             return thingUID;
         } else {
             return null;

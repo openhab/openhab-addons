@@ -94,10 +94,7 @@ public class AvmUpnpDiscoveryParticipant implements
 					//} else if (modelName.startsWith(PL546E_MODEL_NAME)) {
 					} else if (modelName.startsWith(POWERLINE_MODEL_NAME)) {
 						logger.debug("discovered on " + device.getIdentity().getDiscoveredOnLocalAddress());
-						//return new ThingUID(PL546E_STANDALONE_THING_TYPE, device
-			            String thingName = modelName.replaceAll("[^a-zA-Z0-9_]", "_");
-				        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, thingName);
-						return new ThingUID(thingTypeUID, device
+						return new ThingUID(POWERLINE_THING_TYPE, device
 								.getIdentity().getDescriptorURL().getHost()
 //	It world be better to use udn but in my case PL546E is discovered twice
 //								.getIdentity().getUdn().getIdentifierString()
