@@ -7,22 +7,35 @@
 		<label>Nest API Source</label>
 		<description>Provides the layer to talk to the nest apis</description>
 		<config-description>
-			<parameter name="client_id" type="text">
+		    <parameter-group name="nest">
+			    <advanced>false</advanced>
+			    <description>The pieces for talking to nest</description>
+			    <label>Nest Connection</label>
+			    <context></context>
+		    </parameter-group>
+            <parameter-group name="binding">
+                <advanced>false</advanced>
+                <description>Local settings</description>
+                <label>Binding settings</label>
+                <context></context>
+            </parameter-group>
+            
+			<parameter name="clientId" type="text" groupName="nest">
 				<label>Client id</label>
 				<description>The client id from the nest product page</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="client_secret" type="text">
+			<parameter name="clientSecret" type="text" groupName="nest">
 				<label>Client secret</label>
 				<description>The client secret from the nest product page</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="pincode" type="text">
+			<parameter name="pincode" type="text" groupName="nest">
 				<label>Pincode</label>
 				<description>The pincode to use after clicking on the authorization url</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="refresh_interval" type="text">
+			<parameter name="refreshInterval" type="integer" groupName="binding">
 				<label>Refresh Interval</label>
 				<description>How often to refresh the data from nest (in seconds). Don't make this too often or nest will throttle
 				your account.</description>

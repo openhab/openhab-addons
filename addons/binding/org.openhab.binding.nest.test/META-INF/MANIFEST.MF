@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nest.Test Binding
 Bundle-SymbolicName: org.openhab.binding.nest.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Fragment-Host: org.openhab.binding.nest
@@ -15,8 +15,10 @@ Import-Package: org.openhab.binding.nest,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.nest,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.storage,
  org.slf4j
 Require-Bundle: org.junit;bundle-version="4.11.0",
- com.google.gson
-Export-Package: org.openhab.binding.nest;uses:="org.eclipse.smarthome.test"
+ com.google.gson,
+ org.mockito
+Export-Package: org.openhab.binding.nest.test;uses:="org.eclipse.smarthome.test"
