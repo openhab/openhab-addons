@@ -118,7 +118,7 @@ public class FritzahaWebInterface {
 		sid = sidmatch.group(1);
 		Matcher accmatch = ACCESS_PATTERN.matcher(loginXml);
 		if (accmatch.find()) {
-			if (accmatch.group(1) == "2") {
+			if ("2".equals(accmatch.group(1))) {
 				this.fbHandler.setStatusInfo(
 						ThingStatus.ONLINE, 
 						ThingStatusDetail.NONE, 
@@ -165,7 +165,7 @@ public class FritzahaWebInterface {
 		sid = sidmatch.group(1);
 		accmatch = ACCESS_PATTERN.matcher(loginXml);
 		if (accmatch.find()) {
-			if (accmatch.group(1) == "2") {
+			if ("2".equals(accmatch.group(1))) {
 				this.fbHandler.setStatusInfo(
 						ThingStatus.ONLINE, 
 						ThingStatusDetail.NONE, 
