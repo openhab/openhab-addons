@@ -10,17 +10,17 @@ package org.openhab.binding.insteonplm;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link InsteonPLMBinding} class defines common constants, which are 
+ * The {@link InsteonPLMBinding} class defines common constants, which are
  * used across the whole binding.
- * 
+ *
  * @author David Bennett - Initial contribution
  */
 public class InsteonPLMBindingConstants {
 
     public static final String BINDING_ID = "insteonplm";
-    
+
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
     // List of all Channel ids
     public final static String CHANNEL_1 = "channel1";

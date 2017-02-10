@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.insteonplm.handler;
 
-import static org.openhab.binding.insteonplm.InsteonPLMBindingConstants.*;
+import static org.openhab.binding.insteonplm.InsteonPLMBindingConstants.CHANNEL_1;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -18,22 +18,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link InsteonPLMHandler} is responsible for handling commands, which are
- * sent to one of the channels.
- * 
+ * The {@link InsteonPLMBridgeHandler} is responsible for dealing with talking to the serial
+ * port, finding the insteon devices and co-ordinating calls with the internal things.
+ *
  * @author David Bennett - Initial contribution
  */
-public class InsteonPLMHandler extends BaseThingHandler {
+public class InsteonPLMBridgeHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(InsteonPLMHandler.class);
+    private Logger logger = LoggerFactory.getLogger(InsteonPLMBridgeHandler.class);
 
-	public InsteonPLMHandler(Thing thing) {
-		super(thing);
-	}
+    public InsteonPLMBridgeHandler(Thing thing) {
+        super(thing);
+    }
 
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-        if(channelUID.getId().equals(CHANNEL_1)) {
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (channelUID.getId().equals(CHANNEL_1)) {
             // TODO: handle command
 
             // Note: if communication with thing fails for some reason,
@@ -41,7 +41,7 @@ public class InsteonPLMHandler extends BaseThingHandler {
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
             // "Could not control device at IP address x.x.x.x");
         }
-	}
+    }
 
     @Override
     public void initialize() {
