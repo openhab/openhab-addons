@@ -55,6 +55,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> pollingJob;
     private NestAccessToken accessToken;
     private List<NestUpdateRequest> nestUpdateRequests = new ArrayList<>();
+    private TopLevelData lastDataQuery;
 
     public NestBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -131,6 +132,11 @@ public class NestBridgeHandler extends BaseBridgeHandler {
             GsonBuilder builder = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             Gson gson = builder.create();
             TopLevelData newData = gson.fromJson(data, TopLevelData.class);
+            if (newData != null) {
+                lastDataQuery = newData;
+            } else {
+                newData = lastDataQuery;
+            }
             // Turn this new data into things and stuff.
             compareThings(newData.getDevices());
             compareStructure(newData.getStructures().values());
@@ -213,7 +219,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         String stringAccessToken;
         if (config.accessToken == null) {
             stringAccessToken = accessToken.getAccessToken();
-            // Update the configuration
+            // Update the configuration and persist to the database.
             Configuration configuration = editConfiguration();
             configuration.put("accessToken", stringAccessToken);
             updateConfiguration(configuration);
