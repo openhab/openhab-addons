@@ -73,10 +73,13 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
         HmDatapoint dpRssiDevice = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_RSSI_DEVICE);
         HmDatapoint dpRssiPeer = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_RSSI_PEER);
 
-        if (getDatapointValue(dpRssiDevice) == null && getDatapointValue(dpRssiPeer) != null) {
-            return getDatapointValue(dpRssiPeer);
+        Integer deviceValue = getDatapointValue(dpRssiDevice);
+        Integer peerValue = getDatapointValue(dpRssiPeer);
+
+        if ((deviceValue == null || (deviceValue != null && deviceValue == 0)) && peerValue != null) {
+            return peerValue;
         }
-        return getDatapointValue(dpRssiDevice);
+        return deviceValue;
     }
 
     private Integer getDatapointValue(HmDatapoint dp) {
