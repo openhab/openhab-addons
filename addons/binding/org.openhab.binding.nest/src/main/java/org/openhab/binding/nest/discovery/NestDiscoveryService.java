@@ -16,10 +16,17 @@ import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
 
 public class NestDiscoveryService extends AbstractDiscoveryService implements NestDeviceAddedListener {
+    private final Logger logger = LoggerFactory.getLogger(NestDiscoveryService.class);
     private NestBridgeHandler bridge;
+    private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES = 
+        Lists.newArrayList(NestBindingConstants.THING_TYPE_THERMOSTAT,
+            NestBindingConstants.THING_TYPE_SMOKE_DETECTOR,
+            NestBindingConstants.THING_TYPE_STRUCTURE,
+            NestBindingConstants.THING_TYPE_CAMERA);
+
 
     public NestDiscoveryService(NestBridgeHandler bridge) throws IllegalArgumentException {
-        super(60);
+        super(SUPPORTED_THING_TYPES, 60, true);
         this.bridge = bridge;
     }
 
@@ -49,6 +56,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withThingType(NestBindingConstants.THING_TYPE_THERMOSTAT).withLabel(thermostat.getNameLong())
                 .withBridge(bridgeUID).withProperties(properties).build();
         thingDiscovered(discoveryResult);
+        logger.info("thingDiscovered called for thermostat");
     }
 
     @Override
@@ -62,6 +70,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withThingType(NestBindingConstants.THING_TYPE_CAMERA).withLabel(camera.getNameLong())
                 .withBridge(bridgeUID).withProperties(properties).build();
         thingDiscovered(discoveryResult);
+        logger.info("thingDiscovered called for camera");
     }
 
     @Override
@@ -76,6 +85,7 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withThingType(NestBindingConstants.THING_TYPE_SMOKE_DETECTOR).withLabel(smoke.getNameLong())
                 .withBridge(bridgeUID).withProperties(properties).build();
         thingDiscovered(discoveryResult);
+        logger.info("thingDiscovered called for smoke detector");
     }
 
     @Override
@@ -88,5 +98,6 @@ public class NestDiscoveryService extends AbstractDiscoveryService implements Ne
                 .withThingType(NestBindingConstants.THING_TYPE_STRUCTURE).withLabel(struct.getName())
                 .withBridge(bridgeUID).withProperties(properties).build();
         thingDiscovered(discoveryResult);
+        logger.info("thingDiscovered called for structure");
     }
 }
