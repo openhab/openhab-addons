@@ -1,14 +1,17 @@
 package org.openhab.binding.nest.internal;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.time.LocalTime;
-import java.util.Properties;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
-import org.eclipse.jetty.http.HttpMethod;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.nest.NestBindingConstants;
 import org.openhab.binding.nest.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.AccessTokenData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,9 +22,9 @@ import com.google.gson.GsonBuilder;
  * @author David Bennett
  */
 public class NestAccessToken {
+    private Logger logger = LoggerFactory.getLogger(NestAccessToken.class);
     private NestBridgeConfiguration config;
-    private String access_token;
-    private LocalTime expirationTime;
+    private String accessToken;
 
     public NestAccessToken(NestBridgeConfiguration config) {
         this.config = config;
@@ -29,26 +32,34 @@ public class NestAccessToken {
 
     /** Get the current access token, refreshing if needed. */
     public String getAccessToken() throws IOException {
-        if (expirationTime == null || expirationTime.isAfter(LocalTime.now())) {
+        if (config.accessToken == null) {
             refreshAccessToken();
+        } else {
+            accessToken = config.accessToken;
         }
-        return access_token;
+        return accessToken;
     }
 
     private void refreshAccessToken() throws IOException {
-        Properties httpHeader = new Properties();
-        httpHeader.setProperty("client_id", config.clientId);
-        httpHeader.setProperty("client_secret", config.clientSecret);
-        httpHeader.setProperty("code", config.pincode);
-        httpHeader.setProperty("grant_type", "authorization_code");
-        String result = HttpUtil.executeUrl(HttpMethod.POST.toString(), NestBindingConstants.NEST_ACCESS_TOKEN_URL,
-                httpHeader, null, "text/plain", 120);
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        AccessTokenData data = gson.fromJson(result, AccessTokenData.class);
-        access_token = data.getAccessToken();
-        // Update the expiration Code.
-        expirationTime = LocalTime.now();
-        expirationTime.plusSeconds(data.getExpiresIn());
+
+        try {
+            StringBuilder stuff = new StringBuilder().append("client_id=").append(URIUtil.encodeQuery(config.clientId))
+                    .append("&client_secret=").append(URIUtil.encodeQuery(config.clientSecret)).append("&code=")
+                    .append(config.pincode).append("&grant_type=authorization_code");
+            logger.info("Result " + stuff.toString());
+            InputStream stream = new ByteArrayInputStream(stuff.toString().getBytes(StandardCharsets.UTF_8));
+            String result = HttpUtil.executeUrl("POST", NestBindingConstants.NEST_ACCESS_TOKEN_URL, stream,
+                    "application/x-www-form-urlencoded", 10000);
+            logger.info("Result " + result);
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            AccessTokenData data = gson.fromJson(result, AccessTokenData.class);
+            accessToken = data.getAccessToken();
+            logger.info("Access token " + accessToken);
+            logger.info("Expiration Time " + data.getExpiresIn());
+        } catch (IOException e) {
+            logger.error("Unable to get the nest access token ", e);
+            throw e;
+        }
     }
 }

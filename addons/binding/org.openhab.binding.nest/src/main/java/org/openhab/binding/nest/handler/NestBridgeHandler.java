@@ -10,10 +10,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
-import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -38,7 +40,7 @@ import com.google.gson.GsonBuilder;
 
 public class NestBridgeHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
+    private Logger logger = LoggerFactory.getLogger(NestBridgeHandler.class);
 
     private List<NestDeviceAddedListener> listeners = new ArrayList<NestDeviceAddedListener>();
 
@@ -52,8 +54,8 @@ public class NestBridgeHandler extends BaseBridgeHandler {
 
     private ScheduledFuture<?> pollingJob;
     private NestAccessToken accessToken;
-    private GsonBuilder builder = new GsonBuilder();
     private List<NestUpdateRequest> nestUpdateRequests = new ArrayList<>();
+    private TopLevelData lastDataQuery;
 
     public NestBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -74,10 +76,12 @@ public class NestBridgeHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             logger.debug("Error getting Access Token.", e);
         }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting poll query");
     }
 
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        logger.info("Config update");
         super.handleConfigurationUpdate(configurationParameters);
         accessToken = new NestAccessToken(getConfigAs(NestBridgeConfiguration.class));
 
@@ -117,21 +121,34 @@ public class NestBridgeHandler extends BaseBridgeHandler {
      * Read the data from nest and then parse it into something useful.
      */
     private void refreshData() {
+        String uri = "unknown";
+        logger.debug("starting refreshData");
         NestBridgeConfiguration config = getConfigAs(NestBridgeConfiguration.class);
         try {
-            String uri = buildQueryString(config);
-            String data = jsonFromGetUrl(uri);
+            uri = buildQueryString(config);
+            String data = jsonFromGetUrl(uri, config);
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Received update from nest");
             // Now convert the incoming data into something more useful.
+            GsonBuilder builder = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             Gson gson = builder.create();
             TopLevelData newData = gson.fromJson(data, TopLevelData.class);
+            if (newData != null) {
+                lastDataQuery = newData;
+            } else {
+                newData = lastDataQuery;
+            }
             // Turn this new data into things and stuff.
             compareThings(newData.getDevices());
             compareStructure(newData.getStructures().values());
         } catch (URIException e) {
             logger.error("Error parsing nest url", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error parsing nest url");
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            logger.error("Error connecting to nest", e);
+            logger.error("Error connecting to nest " + uri, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error connecting to nest");
+        } catch (Exception e) {
+            logger.error("Error parsing data " + uri, e);
         }
 
     }
@@ -157,6 +174,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
                 handler.updateThermostat(thermostat);
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
+                    logger.info("Found new thermostat " + thermostat.getDeviceId());
                     listener.onThermostatAdded(thermostat);
                 }
             }
@@ -168,6 +186,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
                 handler.updateCamera(camera);
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
+                    logger.info("Found new camera." + camera.getDeviceId());
                     listener.onCameraAdded(camera);
                 }
             }
@@ -185,6 +204,7 @@ public class NestBridgeHandler extends BaseBridgeHandler {
                 handler.updateStructure(struct);
             } else {
                 for (NestDeviceAddedListener listener : listeners) {
+                    logger.info("Found new structure " + struct.getStructureId());
                     listener.onStructureAdded(struct);
                 }
             }
@@ -193,15 +213,27 @@ public class NestBridgeHandler extends BaseBridgeHandler {
     }
 
     private String buildQueryString(NestBridgeConfiguration config) throws URIException, IOException {
+        logger.info("Making url " + config.accessToken == null ? "null" : config.accessToken);
         StringBuilder urlBuilder = new StringBuilder(NestBindingConstants.NEST_URL);
         urlBuilder.append("?auth=");
-        urlBuilder.append(accessToken.getAccessToken());
+        String stringAccessToken;
+        if (config.accessToken == null) {
+            stringAccessToken = accessToken.getAccessToken();
+            // Update the configuration and persist to the database.
+            Configuration configuration = editConfiguration();
+            configuration.put("accessToken", stringAccessToken);
+            updateConfiguration(configuration);
+        } else {
+            stringAccessToken = config.accessToken;
+        }
+        urlBuilder.append(stringAccessToken);
+        logger.info("Made url " + urlBuilder.toString());
         return URIUtil.encodeQuery(urlBuilder.toString());
     }
 
-    private String jsonFromGetUrl(final String url) throws IOException {
-        logger.debug("connecting to " + url);
-        return HttpUtil.executeUrl(HttpMethod.GET.toString(), url, 120);
+    private String jsonFromGetUrl(final String url, NestBridgeConfiguration config) throws IOException {
+        logger.info("connecting to " + url);
+        return HttpUtil.executeUrl("GET", url, 30000 /* (config.refreshInterval - 10) * 1000 */);
     }
 
     private synchronized void startAutomaticRefresh(int refreshInterval) {

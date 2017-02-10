@@ -3,7 +3,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="thermostat">
+	<thing-type id="thermostat" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
@@ -49,14 +49,14 @@
 		<label>Temperature</label>
 		<description>Set point in degrees Celsius</description>
 		<category>Temperature</category>
-		<state readOnly="false" min="18" max="42" default="20" />
+		<state readOnly="false" min="18" max="42" />
 	</channel-type>
 
 	<channel-type id="readonlyswitch">
 		<item-type>Switch</item-type>
 		<label>readonly switch</label>
 		<description>on/off setup</description>
-		<state readOnly="true" default="false" />
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="mode">
