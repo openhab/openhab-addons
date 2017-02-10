@@ -25,4 +25,8 @@ public class InsteonPLMBindingConstants {
     // List of all Channel ids
     public final static String CHANNEL_1 = "channel1";
 
+    // Properties to track information about the thing.
+    public final static String PROPERTY_INSTEON_ADDRESS = "address";
+    public final static String PROPERTY_INSTEON_FEATURE = "feature";
+    public final static String PROPERTY_INSTEON_PRODUCT_KEY = "productkey";
 }
