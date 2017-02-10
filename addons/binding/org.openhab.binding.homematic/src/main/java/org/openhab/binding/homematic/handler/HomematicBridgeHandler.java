@@ -81,7 +81,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                     if (!config.getGatewayInfo().isHomegear()) {
                         try {
                             gateway.loadRssiValues();
-                        } catch (Exception ex) {
+                        } catch (IOException ex) {
                             logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
                             logger.error(ex.getMessage(), ex);
                         }
