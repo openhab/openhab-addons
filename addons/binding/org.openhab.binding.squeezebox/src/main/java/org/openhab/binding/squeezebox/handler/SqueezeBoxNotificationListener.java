@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Implement AudioSink and notifications
  */
-public class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEventListener {
+public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEventListener {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationListener.class);
 
     private final String playerMAC;

@@ -65,18 +65,11 @@ All devices support some of the following channels:
 
 ## Notifications
 
-Squeeze Players can be set up as audio sinks in openHAB
-
 ### How To Set Up
 
-- Set up a TTS service. If you use VoiceRSS, it requires an API key from VoiceRSS that goes in conf/services/voicerss.cfg.  See here.
-http://docs.openhab.org/addons/voice/voicerss/readme.html
+Squeeze Players can be set up as audio sinks in openHAB.  Please follow the [openHAB multimedia documentation](http://docs.openhab.org/configuration/multimedia.html) for setup guidance. 
 
-- If you are upgrading from an earlier snapshot build, delete and re-add your Squeeze Player thing(s) in order to pick up the new notificationSoundVolume channel
-
-- In PaperUI, under "Configuration > System", select a Squeeze Player as the "Default Sink" (optional)
-
-- Create items and sitemap entries for the notification volume (optional).  If a notification volume is not specified, it will use the Squeeze Player's current volume setting.
+You can create an item and sitemap entry in order to set the notification volume independently from the Squeeze Player's current volume setting. If the notification volume is not specified, it will use the Player's current volume setting.
 
 Item for setting notification volume.
 ```
@@ -88,32 +81,18 @@ Sitemap entry for setting notification volume.
 Slider item=NotificationVolume label="Notification Volume"
 ```
 
-### How To Use
-
-To test your setup, you can play notifications from the Karaf console.
-
-This will use the TTS service to send a notification to the default audio sink.
-```
-smarthome:voice say put your own words here
-```
-
-This will play a sound in the conf/sounds directory.
-```
-smarthome:audio play doorbell.mp3
-```
-
 You can play notifications from within rules.
 ```
-rule "Squeezebox Notification"
+rule "Garage Door Open Notification"
 when
-    Item TestSqueezeboxNotification received command ON
+    Item GarageDoorOpenNotification received command ON
 then
-    val string playerAudioSink = "squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510"
-    say("Say something on this Squeeze Player!", "voicerss:enUS", playerAudioSink)
+    say("The garage door is open!", "voicerss:enUS", "squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510")
 end
 ```
 
 ### Known Issues
-- There are versions of squeezelite that will not correctly play TTS mp3 files (or potentially other mp3 files of very short duration).  Anything after squeezelite v1.7 and before v1.8.XXX will NOT play the TTS mp3 file.  If you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite.
 
-- When streaming from a service (such as Pandora), after the notification plays, it starts playing a new track, instead of picking up from where it left off on the currently playing track.
+- There are some versions of squeezelite that will not correctly play very short duration mp3 files.  Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably.  For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications. This bug has been reported on the squeezelite forum.
+
+- When streaming from a remote service (such as Pandora or Spotify), after the notification plays, the Squeezebox Server starts playing a new track, instead of picking up from where it left off on the currently playing track.
