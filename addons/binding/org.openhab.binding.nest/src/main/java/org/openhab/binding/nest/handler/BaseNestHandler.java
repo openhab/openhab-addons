@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 abstract class BaseNestHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
+    private Logger logger = LoggerFactory.getLogger(BaseNestHandler.class);
 
     BaseNestHandler(Thing thing) {
         super(thing);

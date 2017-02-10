@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class NestCameraHandler extends BaseNestHandler {
 
-    private Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
+    private Logger logger = LoggerFactory.getLogger(NestCameraHandler.class);
     private Camera lastData;
 
     public NestCameraHandler(Thing thing) {

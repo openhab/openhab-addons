@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /** Deals with the structures on the nest api, turning them into a thing in openhab. */
 public class NestStructureHandler extends BaseNestHandler {
-    private Logger logger = LoggerFactory.getLogger(NestThermostatHandler.class);
+    private Logger logger = LoggerFactory.getLogger(NestStructureHandler.class);
     private Structure lastData;
 
     NestStructureHandler(Thing thing) {

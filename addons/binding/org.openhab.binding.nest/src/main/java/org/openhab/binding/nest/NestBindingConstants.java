@@ -23,7 +23,7 @@ public class NestBindingConstants {
     public final static String NEST_URL = "https://developer-api.nest.com/";
 
     /** The url to get the access token when talking to nest. */
-    public final static String NEST_ACCESS_TOKEN_URL = "https://developer-api.nest.com/oauth2/access_token";
+    public final static String NEST_ACCESS_TOKEN_URL = "https://api.home.nest.com/oauth2/access_token";
 
     /** The url to get set values on the thermostat when talking to nest. */
     public final static String NEST_THERMOSTAT_UPDATE_URL = "https://developer-api.nest.com/devices/thermostats/";
