@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.converter.ConverterFactory;
+import org.openhab.binding.homematic.converter.ConverterTypeException;
 import org.openhab.binding.homematic.converter.TypeConverter;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
@@ -193,6 +194,8 @@ public class HomematicThingHandler extends BaseThingHandler {
             } else {
                 logger.error(ex.getMessage(), ex);
             }
+        } catch (ConverterTypeException ex) {
+            logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
         }
