@@ -9,6 +9,7 @@
 package org.openhab.binding.chromecast.handler;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -148,21 +149,26 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
                     "Cannot connect to Chromecast. IP address is invalid.");
             return;
         }
-        final Object portnumber = getConfig().get(ChromecastBindingConstants.PORT);
-        if (!(portnumber instanceof Integer)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot connect to Chromecast. port is invalid.");
-            return;
-        }
+
         final String host = (String) ipAddress;
         if (StringUtils.isBlank(host)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Chromecast. IP address is not set.");
             return;
         }
-        final int port = (Integer) portnumber;
 
-        if (chromecast != null && !chromecast.getAddress().equals(host) && !(chromecast.getPort() == port)) {
+        final Object portnumber = getConfig().get(ChromecastBindingConstants.PORT);
+        logger.debug("Variable Type is {}", portnumber.getClass().getTypeName());
+        final int port;
+        if (portnumber instanceof BigDecimal) {
+            port = ((BigDecimal) portnumber).intValue();
+        } else if (portnumber instanceof Integer) {
+            port = (Integer) portnumber;
+        } else {
+            port = 8009;
+        }
+
+        if (chromecast != null && (!chromecast.getAddress().equals(host) || (chromecast.getPort() != port))) {
             destroyChromecast();
         }
         if (chromecast == null) {

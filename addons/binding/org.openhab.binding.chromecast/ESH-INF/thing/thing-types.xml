@@ -24,10 +24,10 @@
                 <required>true</required>
             </parameter>
             <parameter name="port" type="integer">
-                <context>network-port</context>
                 <label>Network Port</label>
                 <description>Network port of the Chromecast device.</description>
-                <required>true</required>
+                <advanced>true</advanced>
+                <default>8009</default>
             </parameter>
         </config-description>
     </thing-type>
@@ -52,10 +52,10 @@
                 <required>true</required>
             </parameter>
             <parameter name="port" type="integer">
-                <context>network-port</context>
                 <label>Network Port</label>
                 <description>Network port of the Chromecast device.</description>
-                <required>true</required>
+                <advanced>true</advanced>
+                <default>8009</default>
             </parameter>
         </config-description>
     </thing-type>
@@ -79,10 +79,10 @@
                 <required>true</required>
             </parameter>
             <parameter name="port" type="integer">
-                <context>network-port</context>
                 <label>Network Port</label>
                 <description>Network port of the Chromecast device.</description>
-                <required>true</required>
+                <advanced>true</advanced>
+                <default>8009</default>
             </parameter>
         </config-description>
     </thing-type>
