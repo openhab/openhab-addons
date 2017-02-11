@@ -95,9 +95,10 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         this.callbackUrl = callbackUrl;
     }
 
-    private void createChromecast(final String address) {
+    private void createChromecast(final String address, final int port) {
         try {
-            chromecast = new ChromeCast(address);
+            logger.debug("Connecting to Chromecast: {} {}", address, port);
+            chromecast = new ChromeCast(address, port);
             chromecast.registerListener(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,24 +142,31 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
 
     @Override
     public void initialize() {
-        final Object obj = getConfig().get(ChromecastBindingConstants.HOST);
-        if (!(obj instanceof String)) {
+        final Object ipAddress = getConfig().get(ChromecastBindingConstants.HOST);
+        if (!(ipAddress instanceof String)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Chromecast. IP address is invalid.");
             return;
         }
-        final String host = (String) obj;
+        final Object portnumber = getConfig().get(ChromecastBindingConstants.PORT);
+        if (!(portnumber instanceof Integer)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Cannot connect to Chromecast. port is invalid.");
+            return;
+        }
+        final String host = (String) ipAddress;
         if (StringUtils.isBlank(host)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Chromecast. IP address is not set.");
             return;
         }
+        final int port = (Integer) portnumber;
 
-        if (chromecast != null && !chromecast.getAddress().equals(host)) {
+        if (chromecast != null && !chromecast.getAddress().equals(host) && !(chromecast.getPort() == port)) {
             destroyChromecast();
         }
         if (chromecast == null) {
-            createChromecast(host);
+            createChromecast(host, port);
         }
 
         scheduleConnect(true);
