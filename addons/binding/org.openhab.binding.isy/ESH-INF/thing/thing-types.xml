@@ -31,10 +31,10 @@
 		<label>Program</label>
 		<description>Program</description>
 		<channels>
-			<channel id="run" typeId="runIf_switch" />
-			<channel id="runThen" typeId="runThen_switch" />
+			<channel id="control" typeId="program_control" />
+			<!--  <channel id="runThen" typeId="runThen_switch" />
 			<channel id="runElse" typeId="runElse_switch" />
-            <channel id="stop" typeId="stop_switch" />
+            <channel id="stop" typeId="stop_switch" /> -->
 		</channels>
 		<config-description>
 			<parameter name="id" type="text" required="true">
@@ -126,6 +126,7 @@
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="paddleaction" typeId="paddleAction" />
 		</channels>
 
 		<config-description>
@@ -172,6 +173,7 @@
 		<description>Controls non-dimmable loads</description>
 		<channels>
 			<channel id="state" typeId="switchState" />
+			<channel id="paddleaction" typeId="paddleAction" />
 		</channels>
 		<config-description>
 			<parameter name="address" type="text" required="true">
@@ -233,6 +235,7 @@
 		<description>KeyPadLinc Dimmer 6</description>
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="paddleaction" typeId="paddleAction" />
 			<channel id="button_a" typeId="keylinc_btn_a" />
 			<channel id="button_b" typeId="keylinc_btn_b" />
 			<channel id="button_c" typeId="keylinc_btn_c" />
@@ -257,6 +260,7 @@
 		<description>KeyPadLinc Dimmer 5</description>
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="paddleaction" typeId="paddleAction" />
 			<channel id="button_a" typeId="keylinc_btn_a" />
 			<channel id="button_b" typeId="keylinc_btn_b" />
 			<channel id="button_c" typeId="keylinc_btn_c" />
@@ -509,6 +513,12 @@
 		<state readOnly="true" />
 	</channel-type>
 
+    <channel-type id="program_control">
+        <item-type>Switch</item-type>
+        <label>Run</label>
+        <description>Run If Clause for Program</description>
+        <category>Program Control</category>
+    </channel-type>
 	<channel-type id="runIf_switch">
 		<item-type>Switch</item-type>
 		<label>Run</label>
@@ -539,5 +549,12 @@
     <description>Current value of variable</description>
     <category>Variables</category>
     <state readOnly="false" />
-</channel-type>
+    </channel-type>
+    
+    <channel-type id="paddleAction">
+        <item-type>String</item-type>
+        <label>Paddle Action</label>
+        <description>Represents most recent paddle action</description>
+        <category>Program Control</category>
+    </channel-type>
 </thing:thing-descriptions>

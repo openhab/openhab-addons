@@ -14,8 +14,13 @@ public class IsyHandlerBuilder {
         return new IsyHandlerBuilder(thing);
     }
 
-    public IsyHandlerBuilder forChannel(String channel, int deviceId) {
+    public IsyHandlerBuilder addChannelforDeviceId(String channel, int deviceId) {
         this.handler.addChannelToDevice(channel, deviceId);
+        return this;
+    }
+
+    public IsyHandlerBuilder addControlChannel(String channel) {
+        this.handler.setControlChannel(channel);
         return this;
     }
 

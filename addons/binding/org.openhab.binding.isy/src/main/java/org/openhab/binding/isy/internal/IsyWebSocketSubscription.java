@@ -57,7 +57,7 @@ public class IsyWebSocketSubscription implements WebSocketListener {
             logger.info("Connecting to :" + echoUri);
 
         } catch (Throwable t) {
-            t.printStackTrace();
+            logger.error("Connect error", t);
         } finally {
             try {
                 // client.stop();
@@ -84,8 +84,7 @@ public class IsyWebSocketSubscription implements WebSocketListener {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Socket Interrupted", e);
         }
         logger.info("Reconnecting via Websocket to Isy.");
         if (this.future != null) {
@@ -117,6 +116,7 @@ public class IsyWebSocketSubscription implements WebSocketListener {
     }
 
     private void parseXml(String message) {
+        logger.debug("Parsing message: " + message);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -132,10 +132,8 @@ public class IsyWebSocketSubscription implements WebSocketListener {
                 String control = (String) controlExpr.evaluate(doc, XPathConstants.STRING);
                 String action = (String) actionExpr.evaluate(doc, XPathConstants.STRING);
                 String node = (String) nodeExpr.evaluate(doc, XPathConstants.STRING);
-                if ("ST".equals(control)) {
-                    logger.debug("[status change]Control: " + control + ", Action: " + action + ", Node: " + node);
-                    listener.onModelChanged(control, action, node);
-                } else if ("_1".equals(control) && "6".equals(action)) {
+                logger.debug("Control: " + control + ", Action: " + action + ", Node: " + node);
+                if ("_1".equals(control) && "6".equals(action)) {
                     logger.debug("Possible variable event: " + message);
                     XPathExpression valueExp = xpath.compile("//Event/eventInfo/var/val");
                     String value = (String) valueExp.evaluate(doc, XPathConstants.STRING);
@@ -146,6 +144,8 @@ public class IsyWebSocketSubscription implements WebSocketListener {
                     logger.debug("Variable with id: " + id + " type: " + type + ", value:" + value);
                     String theEvent = type + " " + id + " " + value;
                     listener.onModelChanged(control, action, theEvent);
+                } else if (!"".equals(control)) {
+                    listener.onModelChanged(control, action, node);
                 }
             } catch (SAXException | IOException e) {
                 logger.error("parse exception", e);

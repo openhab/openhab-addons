@@ -41,6 +41,7 @@ public class IsyBindingConstants {
     // List of all Channel ids
     // public final static String CHANNEL_ONOFFSENSOR = "OL";
     public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
+    public final static String CHANNEL_PADDLEACTION = "paddleaction";
 
     public final static String CHANNEL_SWITCH = "state";
     // motion
@@ -65,6 +66,7 @@ public class IsyBindingConstants {
     public final static String CHANNEL_KEYPAD_LINC_H = "button_h";
 
     // program
+    public final static String CHANNEL_PROGRAM_CONTROL = "control";
     public final static String CHANNEL_PROGRAM_RUN_IF = "run";
     public final static String CHANNEL_PROGRAM_RUN_THEN = "runThen";
     public final static String CHANNEL_PROGRAM_RUN_ELSE = "runElse";

@@ -2,6 +2,22 @@ package org.openhab.binding.isy.internal;
 
 public class Node {
 
+    enum MessageTypes {
+        STATUS("ST"),
+        DOF("DOF"),
+        DON("DON");
+
+        private String mCode;
+
+        MessageTypes(String code) {
+            this.mCode = code;
+        }
+
+        public String getCode() {
+            return this.mCode;
+        }
+    }
+
     protected String flag;
     protected String name;
     protected String address;

@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -35,6 +36,8 @@ public class IsyInsteonDeviceHandler extends AbtractIsyThingHandler {
 
     protected Map<Integer, String> mDeviceidToChannelMap = new HashMap<Integer, String>();
 
+    private String mControlUID = null;
+
     // most devices only have one device id, which is 1. so if map is empty, we'll return 1
     protected int getDeviceIdForChannel(String channel) {
         if (mDeviceidToChannelMap.size() == 0) {
@@ -55,6 +58,9 @@ public class IsyInsteonDeviceHandler extends AbtractIsyThingHandler {
         if ("ST".equals(parameters[0])) {
             updateState(mDeviceidToChannelMap.get(deviceId),
                     IsyInsteonDeviceHandler.statusValuetoState(Integer.parseInt((String) parameters[1])));
+        } else if (mControlUID != null && ("DOF".equals(parameters[0]) || "DFOF".equals(parameters[0])
+                || "DON".equals(parameters[0]) || "DFON".equals(parameters[0]))) {
+            updateState(mControlUID, new StringType((String) parameters[0]));
         }
     }
 
@@ -64,12 +70,14 @@ public class IsyInsteonDeviceHandler extends AbtractIsyThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("handle command, channel: " + channelUID + ", command: " + command);
         IsyBridgeHandler bridgeHandler = getBridgeHandler();
         IsyInsteonDeviceConfiguration test = getThing().getConfiguration().as(IsyInsteonDeviceConfiguration.class);
-        // isy needs device id appended to address
-        String isyAddress = new InsteonAddress(test.address, getDeviceIdForChannel(channelUID.getId())).toString();
-        logger.debug("insteon address for command is: " + isyAddress);
+
         if (command instanceof OnOffType) {
+            // isy needs device id appended to address
+            String isyAddress = new InsteonAddress(test.address, getDeviceIdForChannel(channelUID.getId())).toString();
+            logger.debug("insteon address for command is: " + isyAddress);
             if (command.equals(OnOffType.ON)) {
                 boolean result = bridgeHandler.getInsteonClient().changeNodeState("DON", "0", isyAddress);
                 logger.debug("result: " + result);
@@ -79,6 +87,9 @@ public class IsyInsteonDeviceHandler extends AbtractIsyThingHandler {
                 logger.debug("should retrieve state");
             }
         } else if (command instanceof PercentType) {
+            // isy needs device id appended to address
+            String isyAddress = new InsteonAddress(test.address, getDeviceIdForChannel(channelUID.getId())).toString();
+            logger.debug("insteon address for command is: " + isyAddress);
             int commandValue = ((PercentType) command).intValue() * 255 / 100;
             if (commandValue == 0) {
                 bridgeHandler.getInsteonClient().changeNodeState("DOF", Integer.toString(0), isyAddress);
@@ -106,6 +117,10 @@ public class IsyInsteonDeviceHandler extends AbtractIsyThingHandler {
 
     protected void addChannelToDevice(String channel, int deviceId) {
         this.mDeviceidToChannelMap.put(deviceId, channel);
+    }
+
+    protected void setControlChannel(String channelId) {
+        mControlUID = channelId;
     }
 
     public static State statusValuetoState(int updateValue) {

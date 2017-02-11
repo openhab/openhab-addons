@@ -65,10 +65,10 @@ public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClient
 
                     @Override
                     public void onModelChanged(String control, String action, String node) {
-                        IsyThingHandler handler;
+                        IsyThingHandler handler = null;
                         if ("_1".equals(control) && "6".equals(action)) {
                             handler = getVariableHandler(node);
-                        } else {
+                        } else if (!"".equals(node)) {
                             handler = getThingHandler(node);
                         }
                         if (handler != null) {
