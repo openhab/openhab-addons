@@ -10,16 +10,10 @@ package org.openhab.binding.insteonplm.internal.driver;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.openhab.binding.insteonplm.internal.device.DeviceType;
-import org.openhab.binding.insteonplm.internal.device.DeviceTypeLoader;
-import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
-import org.openhab.binding.insteonplm.internal.device.InsteonDevice;
 import org.openhab.binding.insteonplm.internal.device.ModemDBBuilder;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Msg;
 import org.openhab.binding.insteonplm.internal.message.MsgFactory;
 import org.openhab.binding.insteonplm.internal.message.MsgListener;
@@ -60,7 +54,6 @@ public class Port {
     private IOStream m_ioStream = null;
     private String m_devName = "INVALID";
     private String m_logName = "INVALID";
-    private Modem m_modem = null;
     private IOStreamReader m_reader = null;
     private IOStreamWriter m_writer = null;
     private final int m_readSize = 1024; // read buffer size
@@ -69,24 +62,18 @@ public class Port {
     private boolean m_running = false;
     private boolean m_modemDBComplete = false;
     private MsgFactory m_msgFactory = new MsgFactory();
-    private Driver m_driver = null;
     private ModemDBBuilder m_mdbb = null;
     private ArrayList<MsgListener> m_listeners = new ArrayList<MsgListener>();
     private LinkedBlockingQueue<Msg> m_writeQueue = new LinkedBlockingQueue<Msg>();
 
     /**
      * Constructor
-     * 
+     *
      * @param devName the name of the port, i.e. '/dev/insteon'
      * @param d The Driver object that manages this port
      */
-    public Port(String devName, Driver d) {
-        m_devName = devName;
-        m_driver = d;
-        m_logName = devName;
-        m_modem = new Modem();
-        addListener(m_modem);
-        m_ioStream = IOStream.s_create(devName);
+    public Port(IOStream stream) {
+        m_ioStream = stream;
         m_reader = new IOStreamReader();
         m_writer = new IOStreamWriter();
         m_mdbb = new ModemDBBuilder(this);
@@ -100,16 +87,8 @@ public class Port {
         return m_running;
     }
 
-    public InsteonAddress getAddress() {
-        return m_modem.getAddress();
-    }
-
     public String getDeviceName() {
         return m_devName;
-    }
-
-    public Driver getDriver() {
-        return m_driver;
     }
 
     public void setModemDBRetryTimeout(int timeout) {
@@ -133,16 +112,6 @@ public class Port {
     }
 
     /**
-     * Clear modem database that has been queried so far.
-     */
-    public void clearModemDB() {
-        logger.debug("clearing modem db!");
-        HashMap<InsteonAddress, ModemDBEntry> dbes = getDriver().lockModemDBEntries();
-        dbes.clear();
-        getDriver().unlockModemDBEntries();
-    }
-
-    /**
      * Starts threads necessary for reading and writing
      */
     public void start() {
@@ -160,7 +129,6 @@ public class Port {
         m_writeThread.setName(m_logName + " Writer");
         m_readThread.start();
         m_writeThread.start();
-        m_modem.initialize();
         m_mdbb.start(); // start downloading the device list
         m_running = true;
     }
@@ -208,7 +176,7 @@ public class Port {
 
     /**
      * Adds message to the write queue
-     * 
+     *
      * @param m message to be added to the write queue
      * @throws IOException
      */
@@ -231,21 +199,11 @@ public class Port {
     }
 
     /**
-     * Gets called by the modem database builder when the modem database is complete
-     */
-    public void modemDBComplete() {
-        synchronized (this) {
-            m_modemDBComplete = true;
-        }
-        m_driver.modemDBComplete(this);
-    }
-
-    /**
      * The IOStreamReader uses the MsgFactory to turn the incoming bytes into
      * Msgs for the listeners. It also communicates with the IOStreamWriter
      * to implement flow control (tell the IOStreamWriter that it needs to retransmit,
      * or the reply message has been received correctly).
-     * 
+     *
      * @author Bernd Pfrommer
      */
     class IOStreamReader implements Runnable {
@@ -256,7 +214,7 @@ public class Port {
 
         /**
          * Helper function for implementing synchronization between reader and writer
-         * 
+         *
          * @return reference to the RequesReplyLock
          */
         public Object getRequestReplyLock() {
@@ -324,7 +282,7 @@ public class Port {
         /**
          * Drops bytes randomly from buffer to simulate errors seen
          * from the InsteonHub using the raw interface
-         * 
+         *
          * @param buffer byte buffer from which to drop bytes
          * @param len original number of valid bytes in buffer
          * @return length of byte buffer after dropping from it
@@ -363,7 +321,7 @@ public class Port {
         /**
          * Blocking wait for ack or nack from modem.
          * Called by IOStreamWriter for flow control.
-         * 
+         *
          * @return true if retransmission is necessary
          */
         public boolean waitForReply() {
@@ -395,7 +353,7 @@ public class Port {
     /**
      * Writes messages to the port. Flow control is implemented following Insteon
      * documents to avoid over running the modem.
-     * 
+     *
      * @author Bernd Pfrommer
      */
     class IOStreamWriter implements Runnable {
@@ -444,56 +402,57 @@ public class Port {
 
     /**
      * Class to get info about the modem
+     * class Modem implements MsgListener {
+     * private InsteonDevice m_device = null;
+     *
+     * InsteonAddress getAddress() {
+     * return (m_device == null) ? new InsteonAddress() : (m_device.getAddress());
+     * }
+     *
+     * InsteonDevice getDevice() {
+     * return m_device;
+     * }
+     *
+     * @Override
+     *           public void msg(Msg msg, String fromPort) {
+     *           try {
+     *           if (msg.isPureNack()) {
+     *           return;
+     *           }
+     *           if (msg.getByte("Cmd") == 0x60) {
+     *           // add the modem to the device list
+     *           InsteonAddress a = new InsteonAddress(msg.getAddress("IMAddress"));
+     *           String prodKey = "0x000045";
+     *           DeviceType dt = DeviceTypeFactory.s_instance().getDeviceType(prodKey);
+     *           if (dt == null) {
+     *           logger.error("unknown modem product key: {} for modem: {}.", prodKey, a);
+     *           } else {
+     *           m_device = InsteonDevice.s_makeDevice(dt);
+     *           m_device.setAddress(a);
+     *           m_device.setProductKey(prodKey);
+     *           m_device.setDriver(m_driver);
+     *           m_device.setIsModem(true);
+     *           m_device.addPort(fromPort);
+     *           logger.debug("found modem {} in device_types: {}", a, m_device.toString());
+     *           m_mdbb.updateModemDB(a, Port.this, null);
+     *           }
+     *           // can unsubscribe now
+     *           removeListener(this);
+     *           }
+     *           } catch (FieldException e) {
+     *           logger.error("error parsing im info reply field: ", e);
+     *           }
+     *           }
+     *
+     *           public void initialize() {
+     *           try {
+     *           Msg m = Msg.s_makeMessage("GetIMInfo");
+     *           writeMessage(m);
+     *           } catch (IOException e) {
+     *           logger.error("modem init failed!", e);
+     *           }
+     *           }
+     *           }
      */
-    class Modem implements MsgListener {
-        private InsteonDevice m_device = null;
 
-        InsteonAddress getAddress() {
-            return (m_device == null) ? new InsteonAddress() : (m_device.getAddress());
-        }
-
-        InsteonDevice getDevice() {
-            return m_device;
-        }
-
-        @Override
-        public void msg(Msg msg, String fromPort) {
-            try {
-                if (msg.isPureNack()) {
-                    return;
-                }
-                if (msg.getByte("Cmd") == 0x60) {
-                    // add the modem to the device list
-                    InsteonAddress a = new InsteonAddress(msg.getAddress("IMAddress"));
-                    String prodKey = "0x000045";
-                    DeviceType dt = DeviceTypeLoader.s_instance().getDeviceType(prodKey);
-                    if (dt == null) {
-                        logger.error("unknown modem product key: {} for modem: {}.", prodKey, a);
-                    } else {
-                        m_device = InsteonDevice.s_makeDevice(dt);
-                        m_device.setAddress(a);
-                        m_device.setProductKey(prodKey);
-                        m_device.setDriver(m_driver);
-                        m_device.setIsModem(true);
-                        m_device.addPort(fromPort);
-                        logger.debug("found modem {} in device_types: {}", a, m_device.toString());
-                        m_mdbb.updateModemDB(a, Port.this, null);
-                    }
-                    // can unsubscribe now
-                    removeListener(this);
-                }
-            } catch (FieldException e) {
-                logger.error("error parsing im info reply field: ", e);
-            }
-        }
-
-        public void initialize() {
-            try {
-                Msg m = Msg.s_makeMessage("GetIMInfo");
-                writeMessage(m);
-            } catch (IOException e) {
-                logger.error("modem init failed!", e);
-            }
-        }
-    }
 }

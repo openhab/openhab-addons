@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.insteonplm.config.InsteonPLMBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ import gnu.io.UnsupportedCommOperationException;
 
 /**
  * Implements IOStream for serial devices.
- * 
+ *
  * @author Bernd Pfrommer
  * @author Daniel Pfrommer
  * @since 1.7.0
@@ -38,8 +39,8 @@ public class SerialIOStream extends IOStream {
     private final int m_speed = 19200; // baud rate
     private String m_devName = null;
 
-    public SerialIOStream(String devName) {
-        m_devName = devName;
+    public SerialIOStream(InsteonPLMBridgeConfiguration config) {
+        m_devName = config.serialPort;
     }
 
     @Override

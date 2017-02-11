@@ -8,20 +8,15 @@
  */
 package org.openhab.binding.insteonplm.internal.device;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.openhab.binding.insteonplm.InsteonPLMBindingConfig;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeatureListener.StateChangeType;
 import org.openhab.binding.insteonplm.internal.message.Msg;
-import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +78,7 @@ public class DeviceFeature {
 
     /**
      * Constructor
-     * 
+     *
      * @param device Insteon device to which this feature belongs
      * @param name descriptive name for that feature
      */
@@ -94,7 +89,7 @@ public class DeviceFeature {
 
     /**
      * Constructor
-     * 
+     *
      * @param name descriptive name of the feature
      */
     public DeviceFeature(String name) {
@@ -181,7 +176,7 @@ public class DeviceFeature {
 
     /**
      * Add a listener (item) to a device feature
-     * 
+     *
      * @param l the listener
      */
     public void addListener(DeviceFeatureListener l) {
@@ -198,7 +193,7 @@ public class DeviceFeature {
     /**
      * Adds a connected feature such that this DeviceFeature can
      * act as a feature group
-     * 
+     *
      * @param f the device feature related to this feature
      */
     public void addConnectedFeature(DeviceFeature f) {
@@ -219,7 +214,7 @@ public class DeviceFeature {
 
     /**
      * removes a DeviceFeatureListener from this feature
-     * 
+     *
      * @param aItemName name of the item to remove as listener
      * @return true if a listener was removed
      */
@@ -250,7 +245,7 @@ public class DeviceFeature {
 
     /**
      * Called when message is incoming. Dispatches message according to message dispatcher
-     * 
+     *
      * @param msg The message to dispatch
      * @param port the port from which the message came
      * @return true if dispatch successful
@@ -265,11 +260,11 @@ public class DeviceFeature {
 
     /**
      * Called when an openhab command arrives for this device feature
-     * 
+     *
      * @param c the binding config of the item which sends the command
      * @param cmd the command to be exectued
      */
-    public void handleCommand(InsteonPLMBindingConfig c, Command cmd) {
+    public void handleCommand(InsteonThingHandler c, Command cmd) {
         Class<? extends Command> key = cmd.getClass();
         CommandHandler h = m_commandHandlers.containsKey(key) ? m_commandHandlers.get(key) : m_defaultCommandHandler;
         logger.trace("{} uses {} to handle command {} for {}", getName(), h.getClass().getSimpleName(),
@@ -279,7 +274,7 @@ public class DeviceFeature {
 
     /**
      * Make a poll message using the configured poll message handler
-     * 
+     *
      * @return the poll message
      */
     public Msg makePollMsg() {
@@ -296,7 +291,7 @@ public class DeviceFeature {
      * Publish new state to all device feature listeners, but give them
      * additional dataKey and dataValue information so they can decide
      * whether to publish the data to the bus.
-     * 
+     *
      * @param newState state to be published
      * @param changeType what kind of changes to publish
      * @param dataKey the key on which to filter
@@ -313,7 +308,7 @@ public class DeviceFeature {
 
     /**
      * Publish new state to all device feature listeners
-     * 
+     *
      * @param newState state to be published
      * @param changeType what kind of changes to publish
      */
@@ -328,7 +323,7 @@ public class DeviceFeature {
 
     /**
      * Adds a message handler to this device feature.
-     * 
+     *
      * @param cm1 The insteon cmd1 of the incoming message for which the handler should be used
      * @param handler the handler to invoke
      */
@@ -340,7 +335,7 @@ public class DeviceFeature {
 
     /**
      * Adds a command handler to this device feature
-     * 
+     *
      * @param c the command for which this handler is invoked
      * @param handler the handler to call
      */
@@ -356,66 +351,5 @@ public class DeviceFeature {
     @Override
     public String toString() {
         return m_name + "(" + m_listeners.size() + ":" + m_commandHandlers.size() + ":" + m_msgHandlers.size() + ")";
-    }
-
-    /**
-     * Factory method for creating DeviceFeatures.
-     * 
-     * @param s The name of the device feature to create.
-     * @return The newly created DeviceFeature, or null if requested DeviceFeature does not exist.
-     */
-    public static DeviceFeature s_makeDeviceFeature(String s) {
-        DeviceFeature f = null;
-        synchronized (s_features) {
-            if (s_features.containsKey(s)) {
-                f = s_features.get(s).build();
-            } else {
-                logger.error("unimplemented feature requested: {}", s);
-            }
-        }
-        return f;
-    }
-
-    /**
-     * Reads the features templates from an input stream and puts them in global map
-     * 
-     * @param input the input stream from which to read the feature templates
-     */
-    public static void s_readFeatureTemplates(InputStream input) {
-        try {
-            ArrayList<FeatureTemplate> features = FeatureTemplateLoader.s_readTemplates(input);
-            synchronized (s_features) {
-                for (FeatureTemplate f : features) {
-                    s_features.put(f.getName(), f);
-                }
-            }
-        } catch (IOException e) {
-            logger.error("IOException while reading device features", e);
-        } catch (ParsingException e) {
-            logger.error("Parsing exception while reading device features", e);
-        }
-    }
-
-    /**
-     * Reads the feature templates from a file and adds them to a global map
-     * 
-     * @param file name of the file to read from
-     */
-    public static void s_readFeatureTemplates(String file) {
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            s_readFeatureTemplates(fis);
-        } catch (FileNotFoundException e) {
-            logger.error("cannot read feature templates from file {} ", file, e);
-        }
-    }
-
-    /**
-     * static initializer
-     */
-    static {
-        // read features from xml file and store them in a map
-        InputStream input = DeviceFeature.class.getResourceAsStream("/device_features.xml");
-        s_readFeatureTemplates(input);
     }
 }

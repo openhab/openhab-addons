@@ -9,6 +9,7 @@
 package org.openhab.binding.insteonplm.internal.device;
 
 import java.io.IOException;
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,10 +18,9 @@ import java.util.PriorityQueue;
 
 import org.openhab.binding.insteonplm.InsteonPLMBindingConfig;
 import org.openhab.binding.insteonplm.internal.device.DeviceType.FeatureGroup;
-import org.openhab.binding.insteonplm.internal.driver.Driver;
+import org.openhab.binding.insteonplm.internal.device.InsteonDevice.QEntry;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Msg;
-import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,10 +54,6 @@ public class InsteonDevice {
     private boolean m_isModem = false;
     private PriorityQueue<QEntry> m_requestQueue = new PriorityQueue<QEntry>();
     private DeviceFeature m_featureQueried = null;
-    /** need to wait after query to avoid misinterpretation of duplicate replies */
-    private static final int QUIET_TIME_DIRECT_MESSAGE = 2000;
-    /** how far to space out poll messages */
-    private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
     private long m_lastQueryTime = 0L;
     private boolean m_hasModemDBEntry = false;
     private DeviceStatus m_status = DeviceStatus.INITIALIZED;
@@ -199,7 +195,7 @@ public class InsteonDevice {
 
     /**
      * Add a port. Currently only a single port is being used.
-     * 
+     *
      * @param p the port to add
      */
     public void addPort(String p) {
@@ -213,7 +209,7 @@ public class InsteonDevice {
 
     /**
      * Removes feature listener from this device
-     * 
+     *
      * @param aItemName name of the feature listener to remove
      * @return true if a feature listener was successfully removed
      */
@@ -232,7 +228,7 @@ public class InsteonDevice {
 
     /**
      * Invoked to process an openHAB command
-     * 
+     *
      * @param driver The driver to use
      * @param c The item configuration
      * @param command The actual command to execute
@@ -249,48 +245,9 @@ public class InsteonDevice {
     }
 
     /**
-     * Execute poll on this device: create an array of messages,
-     * add them to the request queue, and schedule the queue
-     * for processing.
-     * 
-     * @param delay scheduling delay (in milliseconds)
-     */
-    public void doPoll(long delay) {
-        long now = System.currentTimeMillis();
-        ArrayList<QEntry> l = new ArrayList<QEntry>();
-        synchronized (m_features) {
-            int spacing = 0;
-            for (DeviceFeature i : m_features.values()) {
-                if (i.hasListeners()) {
-                    Msg m = i.makePollMsg();
-                    if (m != null) {
-                        l.add(new QEntry(i, m, now + delay + spacing));
-                        spacing += TIME_BETWEEN_POLL_MESSAGES;
-                    }
-                }
-            }
-        }
-        if (l.isEmpty()) {
-            return;
-        }
-        synchronized (m_requestQueue) {
-            for (QEntry e : l) {
-                m_requestQueue.add(e);
-            }
-        }
-        RequestQueueManager.s_instance().addQueue(this, now + delay);
-
-        if (!l.isEmpty()) {
-            synchronized (m_lastTimePolled) {
-                m_lastTimePolled = now;
-            }
-        }
-    }
-
-    /**
      * Handle incoming message for this device by forwarding
      * it to all features that this device supports
-     * 
+     *
      * @param fromPort port from which the message come in
      * @param msg the incoming message
      */
@@ -324,7 +281,7 @@ public class InsteonDevice {
 
     /**
      * Helper method to make standard message
-     * 
+     *
      * @param flags
      * @param cmd1
      * @param cmd2
@@ -338,7 +295,7 @@ public class InsteonDevice {
 
     /**
      * Helper method to make standard message, possibly with group
-     * 
+     *
      * @param flags
      * @param cmd1
      * @param cmd2
@@ -374,7 +331,7 @@ public class InsteonDevice {
 
     /**
      * Helper method to make extended message
-     * 
+     *
      * @param flags
      * @param cmd1
      * @param cmd2
@@ -388,7 +345,7 @@ public class InsteonDevice {
 
     /**
      * Helper method to make extended message
-     * 
+     *
      * @param flags
      * @param cmd1
      * @param cmd2
@@ -410,7 +367,7 @@ public class InsteonDevice {
 
     /**
      * Helper method to make extended message, but with different CRC calculation
-     * 
+     *
      * @param flags
      * @param cmd1
      * @param cmd2
@@ -433,7 +390,7 @@ public class InsteonDevice {
 
     /**
      * Called by the RequestQueueManager when the queue has expired
-     * 
+     *
      * @param timeNow
      * @return time when to schedule the next message (timeNow + quietTime)
      */
@@ -483,7 +440,7 @@ public class InsteonDevice {
 
     /**
      * Enqueues message to be sent at the next possible time
-     * 
+     *
      * @param m message to be sent
      * @param f device feature that sent this message (so we can associate the response message with it)
      */
@@ -493,7 +450,7 @@ public class InsteonDevice {
 
     /**
      * Enqueues message to be sent after a delay
-     * 
+     *
      * @param m message to be sent
      * @param f device feature that sent this message (so we can associate the response message with it)
      * @param d time (in milliseconds)to delay before enqueuing message
@@ -551,61 +508,6 @@ public class InsteonDevice {
         f.setDevice(this);
         synchronized (m_features) {
             m_features.put(name, f);
-        }
-    }
-
-    @Override
-    public String toString() {
-        String s = m_address.toString();
-        for (Entry<String, DeviceFeature> f : m_features.entrySet()) {
-            s += "|" + f.getKey() + "->" + f.getValue().toString();
-        }
-        return s;
-    }
-
-    /**
-     * Factory method
-     * 
-     * @param dt device type after which to model the device
-     * @return newly created device
-     */
-    public static InsteonDevice s_makeDevice(DeviceType dt) {
-        InsteonDevice dev = new InsteonDevice();
-        dev.instantiateFeatures(dt);
-        return dev;
-    }
-
-    /**
-     * Queue entry helper class
-     * 
-     * @author Bernd Pfrommer
-     */
-    public static class QEntry implements Comparable<QEntry> {
-        private DeviceFeature m_feature = null;
-        private Msg m_msg = null;
-        private long m_expirationTime = 0L;
-
-        public DeviceFeature getFeature() {
-            return m_feature;
-        }
-
-        public Msg getMsg() {
-            return m_msg;
-        }
-
-        public long getExpirationTime() {
-            return m_expirationTime;
-        }
-
-        QEntry(DeviceFeature f, Msg m, long t) {
-            m_feature = f;
-            m_msg = m;
-            m_expirationTime = t;
-        }
-
-        @Override
-        public int compareTo(QEntry a) {
-            return (int) (m_expirationTime - a.m_expirationTime);
         }
     }
 }

@@ -14,6 +14,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.insteonplm.config.InsteonPLMBridgeConfiguration;
+import org.openhab.binding.insteonplm.internal.device.DeviceFeatureFactory;
+import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
+import org.openhab.binding.insteonplm.internal.device.RequestQueueManager;
+import org.openhab.binding.insteonplm.internal.driver.Port;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +29,10 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial contribution
  */
 public class InsteonPLMBridgeHandler extends BaseThingHandler {
-
     private Logger logger = LoggerFactory.getLogger(InsteonPLMBridgeHandler.class);
+    private RequestQueueManager requestQueueManager;
+    private DeviceFeatureFactory deviceFeatureFactory;
+    private Port port;
 
     public InsteonPLMBridgeHandler(Thing thing) {
         super(thing);
@@ -45,15 +52,36 @@ public class InsteonPLMBridgeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
+        InsteonPLMBridgeConfiguration config = getConfigAs(InsteonPLMBridgeConfiguration.class);
+        // Connect to the port.
+        requestQueueManager = new RequestQueueManager();
+        deviceFeatureFactory = new DeviceFeatureFactory();
         updateStatus(ThingStatus.ONLINE);
+        port = new Port(config.serialPort, driver);
+    }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+    /** Gets the thing associated with this address. */
+    public Thing getDevice(InsteonAddress a) {
+        return null;
+    }
+
+    public void addQueue(InsteonThingHandler insteonThingHandler, long l) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void startScan() {
+        // TODO Auto-generated method stub
+
+    }
+
+    /** The factory to make device features. */
+    public DeviceFeatureFactory getDeviceFeatureFactory() {
+        return deviceFeatureFactory;
+    }
+
+    /** The queue to handle talking to the devices. */
+    public RequestQueueManager getRequestQueueManager() {
+        return requestQueueManager;
     }
 }

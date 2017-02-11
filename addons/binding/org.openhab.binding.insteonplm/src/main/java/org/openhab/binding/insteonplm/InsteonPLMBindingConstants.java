@@ -27,6 +27,9 @@ public class InsteonPLMBindingConstants {
 
     // Properties to track information about the thing.
     public final static String PROPERTY_INSTEON_ADDRESS = "address";
-    public final static String PROPERTY_INSTEON_FEATURE = "feature";
+    // This is a comma delimited string.
+    public final static String PROPERTY_INSTEON_FEATURES = "feature";
+    // This is a comma delimited string.
+    public final static String PROPERTY_INSTEON_FEATURE_GROUPS = "featureGroups";
     public final static String PROPERTY_INSTEON_PRODUCT_KEY = "productkey";
 }

@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
+
 /*
  * The DeviceType class holds device type definitions that are read from
  * an xml file.
@@ -25,10 +28,11 @@ public class DeviceType {
     private String m_description = "";
     private HashMap<String, String> m_features = new HashMap<String, String>();
     private HashMap<String, FeatureGroup> m_featureGroups = new HashMap<String, FeatureGroup>();
+    ThingTypeUID m_thingType;
 
     /**
      * Constructor
-     * 
+     *
      * @param aProductKey the product key for this device type
      */
     public DeviceType(String aProductKey) {
@@ -37,7 +41,7 @@ public class DeviceType {
 
     /**
      * Get supported features
-     * 
+     *
      * @return all features that this device type supports
      */
     public HashMap<String, String> getFeatures() {
@@ -46,7 +50,7 @@ public class DeviceType {
 
     /**
      * Get all feature groups
-     * 
+     *
      * @return all feature groups of this device type
      */
     public HashMap<String, FeatureGroup> getFeatureGroups() {
@@ -55,7 +59,7 @@ public class DeviceType {
 
     /**
      * Sets the descriptive model string
-     * 
+     *
      * @param aModel descriptive model string
      */
     public void setModel(String aModel) {
@@ -64,7 +68,7 @@ public class DeviceType {
 
     /**
      * Sets free text description
-     * 
+     *
      * @param aDesc free text description
      */
     public void setDescription(String aDesc) {
@@ -72,8 +76,17 @@ public class DeviceType {
     }
 
     /**
+     * The default name to use for the device.
+     *
+     * @return the default name
+     */
+    public String getDefaultLabel(InsteonAddress address) {
+        return m_description + " [" + address.toString() + "]";
+    }
+
+    /**
      * Adds feature to this device type
-     * 
+     *
      * @param aKey the key (e.g. "switch") under which this feature can be referenced in the item binding config
      * @param aFeatureName the name (e.g. "GenericSwitch") under which the feature has been defined
      * @return false if feature was already there
@@ -88,7 +101,7 @@ public class DeviceType {
 
     /**
      * Adds feature group to device type
-     * 
+     *
      * @param aKey name of the feature group, which acts as key for lookup later
      * @param fg feature group to add
      * @return true if add succeeded, false if group was already there
@@ -116,7 +129,7 @@ public class DeviceType {
 
     /**
      * Class that reflects feature group association
-     * 
+     *
      * @author Bernd Pfrommer
      */
     public static class FeatureGroup {
@@ -153,6 +166,16 @@ public class DeviceType {
             }
             return (s.replaceAll(",$", ""));
         }
+    }
+
+    /** The thing type for this device. */
+    public ThingTypeUID getThingType() {
+        return m_thingType;
+    }
+
+    /** Set the thing type for this device. */
+    public void setThingType(String thingType) {
+        m_thingType = new ThingTypeUID(InsteonPLMBindingConstants.BINDING_ID, thingType);
     }
 
 }

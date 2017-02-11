@@ -11,7 +11,7 @@ package org.openhab.binding.insteonplm.internal.device;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.openhab.core.types.Command;
+import org.eclipse.smarthome.core.types.Command;
 
 /**
  * A simple class which contains the basic info needed to create a device feature.
@@ -63,7 +63,7 @@ public class FeatureTemplate {
 
     /**
      * Retrieves a hashmap of message command code to command handler name
-     * 
+     *
      * @return a Hashmap from Integer to String representing the command codes and the associated message handlers
      */
     public HashMap<Integer, HandlerEntry> getMessageHandlers() {
@@ -73,7 +73,7 @@ public class FeatureTemplate {
     /**
      * Similar to getMessageHandlers(), but for command handlers
      * Instead of Integers it uses the class of the Command as a key
-     * 
+     *
      * @see #getMessageHandlers()
      * @return a HashMap from Command Classes to CommandHandler names
      */
@@ -113,7 +113,7 @@ public class FeatureTemplate {
     /**
      * Adds a message handler mapped from the command which this handler should be invoked for
      * to the name of the handler to be created
-     * 
+     *
      * @param cmd command to be mapped
      * @param he handler entry to map to
      */
@@ -131,7 +131,7 @@ public class FeatureTemplate {
 
     /**
      * Builds the actual feature
-     * 
+     *
      * @return the feature which this template describes
      */
     public DeviceFeature build() {

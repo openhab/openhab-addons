@@ -36,14 +36,14 @@ public class RequestQueueManager {
     private HashMap<InsteonDevice, RequestQueue> m_requestQueueHash = new HashMap<InsteonDevice, RequestQueue>();
     private boolean m_keepRunning = true;
 
-    private RequestQueueManager() {
+    public RequestQueueManager() {
         m_queueThread = new Thread(new RequestQueueReader());
         m_queueThread.start();
     }
 
     /**
      * Add device to global request queue.
-     * 
+     *
      * @param dev the device to add
      * @param time the time when the queue should be processed
      */
@@ -173,20 +173,6 @@ public class RequestQueueManager {
         @Override
         public int compareTo(RequestQueue a) {
             return (int) (m_expirationTime - a.m_expirationTime);
-        }
-    }
-
-    public static synchronized RequestQueueManager s_instance() {
-        if (s_instance == null) {
-            s_instance = new RequestQueueManager();
-        }
-        return (s_instance);
-    }
-
-    public static void s_destroyInstance() {
-        if (s_instance != null) {
-            s_instance.stopThread();
-            s_instance = null;
         }
     }
 }

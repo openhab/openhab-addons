@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+    <thing-type id="countdowntimer" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>IO Link</label>
+        <description>The IO Link device</description>
+
+        <channels>
+            <channel id="dimmer" typeId="dimmer" />
+            <channel id="manualChange" typeId="switch" />
+            <channel id="fastOnOff" typeId="switch" />
+            <channel id="lastHeardFrom" typeId="lastHeardFrom" />
+        </channels>
+    </thing-type>
+</thing:thing-descriptions>

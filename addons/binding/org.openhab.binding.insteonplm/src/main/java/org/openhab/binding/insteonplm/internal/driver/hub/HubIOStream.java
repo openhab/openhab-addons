@@ -16,19 +16,19 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.util.EntityUtils;
+import org.openhab.binding.insteonplm.config.InsteonPLMBridgeConfiguration;
 import org.openhab.binding.insteonplm.internal.driver.IOStream;
+import org.openhab.binding.insteonplm.internal.driver.hub.HubIOStream.HubInputStream;
+import org.openhab.binding.insteonplm.internal.driver.hub.HubIOStream.HubOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Implements IOStream for a Hub 2014 device
- * 
+ *
  * @author Daniel Pfrommer
  * @since 1.7.0
  *
@@ -44,27 +44,28 @@ public class HubIOStream extends IOStream implements Runnable {
     private String m_user = null;
     private String m_pass = null;
 
-    private DefaultHttpClient m_client = null;
     private Thread m_pollThread = null;
 
     // index of the last byte we have read in the buffer
     private int m_bufferIdx = -1;
 
+    private DefaultHttpClient m_client;
+
     /**
      * Constructor for HubIOStream
-     * 
+     *
      * @param host host name of hub device
      * @param port port to connect to
      * @param pollTime time between polls (in milliseconds)
      * @param user hub user name
      * @param pass hub password
      */
-    public HubIOStream(String host, int port, int pollTime, String user, String pass) {
-        m_host = host;
-        m_port = port;
-        m_pollTime = pollTime;
-        m_user = user;
-        m_pass = pass;
+    public HubIOStream(InsteonPLMBridgeConfiguration config) {
+        m_host = config.host;
+        m_port = config.port;
+        m_pollTime = config.pollTime;
+        m_user = config.user;
+        m_pass = config.password;
     }
 
     @Override
@@ -100,7 +101,7 @@ public class HubIOStream extends IOStream implements Runnable {
 
     /**
      * Fetches the latest status buffer from the Hub
-     * 
+     *
      * @return string with status buffer
      * @throws IOException
      */
@@ -121,7 +122,7 @@ public class HubIOStream extends IOStream implements Runnable {
 
     /**
      * Sends command to Hub to clear the status buffer
-     * 
+     *
      * @throws IOException
      */
     private synchronized void clearBuffer() throws IOException {
@@ -131,7 +132,7 @@ public class HubIOStream extends IOStream implements Runnable {
 
     /**
      * Sends Insteon message (byte array) as a readable ascii string to the Hub
-     * 
+     *
      * @param msg byte array representing the Insteon message
      * @throws IOException in case of I/O error
      */
@@ -149,7 +150,7 @@ public class HubIOStream extends IOStream implements Runnable {
 
     /**
      * Polls the Hub web interface to fetch the status buffer
-     * 
+     *
      * @throws IOException if something goes wrong with I/O
      */
     public synchronized void poll() throws IOException {
@@ -194,7 +195,7 @@ public class HubIOStream extends IOStream implements Runnable {
 
     /**
      * Helper method to fetch url from http server
-     * 
+     *
      * @param resource the url
      * @return contents returned by http server
      * @throws IOException
@@ -238,7 +239,7 @@ public class HubIOStream extends IOStream implements Runnable {
     /**
      * Helper function to convert an ascii hex string (received from hub)
      * into a byte array
-     * 
+     *
      * @param s string received from hub
      * @return simple byte array
      */
@@ -248,7 +249,7 @@ public class HubIOStream extends IOStream implements Runnable {
 
     /**
      * Implements an InputStream for the Hub 2014
-     * 
+     *
      * @author Daniel Pfrommer
      *
      */
@@ -283,7 +284,7 @@ public class HubIOStream extends IOStream implements Runnable {
 
     /**
      * Implements an OutputStream for the Hub 2014
-     * 
+     *
      * @author Daniel Pfrommer
      *
      */
@@ -310,6 +311,23 @@ public class HubIOStream extends IOStream implements Runnable {
                 logger.error("failed to write to hub: {}", e.toString());
             }
             m_out.reset();
+        }
+    }
+
+    private static class HostPort {
+        public String host = "localhost";
+        public int port = -1;
+
+        HostPort(String[] hostPort, int defaultPort) {
+            port = defaultPort;
+            host = hostPort[0];
+            try {
+                if (hostPort.length > 1) {
+                    port = Integer.parseInt(hostPort[1]);
+                }
+            } catch (NumberFormatException e) {
+                logger.error("bad format for port {} ", hostPort[1], e);
+            }
         }
     }
 }

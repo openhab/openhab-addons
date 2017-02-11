@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.openhab.binding.insteonplm.internal.driver.hub.HubIOStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,57 +124,7 @@ public abstract class IOStream {
         }
     }
 
-    private static HubIOStream makeHub2014Stream(String config) {
-        config = config.substring(6); // Get rid of the /hub2/ part
-        String user = null;
-        String pass = null;
-        int pollTime = 1000; // poll time in milliseconds
-
-        String[] parts = config.split(","); // split off options at the end
-
-        // Parse the first part, the address
-        String[] adr = parts[0].split("@");
-        String[] hostPort;
-        if (adr.length > 1) {
-            String[] userPass = adr[0].split(":");
-            user = userPass[0];
-            pass = userPass[1];
-            hostPort = adr[1].split(":");
-        } else {
-            hostPort = parts[0].split(":");
-        }
-        HostPort hp = new HostPort(hostPort, 25105);
-        // check if additional options are given
-        if (parts.length > 1) {
-            if (parts[1].trim().startsWith("poll_time")) {
-                pollTime = Integer.parseInt(parts[1].split("=")[1].trim());
-            }
-        }
-        return new HubIOStream(hp.host, hp.port, pollTime, user, pass);
-    }
-
     private static TcpIOStream makeTCPStream(String config) {
-        config = config.substring(5); // Get rid of the /hub/ part
-        String[] parts = config.split(","); // split off options at the end, if any
-        String[] hostPort = parts[0].split(":");
-        HostPort hp = new HostPort(hostPort, 9761);
-        return new TcpIOStream(hp.host, hp.port);
     }
 
-    private static class HostPort {
-        public String host = "localhost";
-        public int port = -1;
-
-        HostPort(String[] hostPort, int defaultPort) {
-            port = defaultPort;
-            host = hostPort[0];
-            try {
-                if (hostPort.length > 1) {
-                    port = Integer.parseInt(hostPort[1]);
-                }
-            } catch (NumberFormatException e) {
-                logger.error("bad format for port {} ", hostPort[1], e);
-            }
-        }
-    }
 }

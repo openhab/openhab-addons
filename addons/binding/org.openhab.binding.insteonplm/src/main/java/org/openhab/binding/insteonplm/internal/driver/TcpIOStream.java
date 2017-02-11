@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.openhab.binding.insteonplm.config.InsteonPLMBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +37,9 @@ public class TcpIOStream extends IOStream {
      * @param host host name of hub device
      * @param port port to connect to
      */
-    public TcpIOStream(String host, int port) {
-        m_host = host;
-        m_port = port;
+    public TcpIOStream(InsteonPLMBridgeConfiguration config) {
+        m_host = config.host;
+        m_port = config.port;
     }
 
     @Override
@@ -75,6 +76,23 @@ public class TcpIOStream extends IOStream {
             }
         } catch (IOException e) {
             logger.error("failed to close streams", e);
+        }
+    }
+
+    private static class HostPort {
+        public String host = "localhost";
+        public int port = -1;
+
+        HostPort(String[] hostPort, int defaultPort) {
+            port = defaultPort;
+            host = hostPort[0];
+            try {
+                if (hostPort.length > 1) {
+                    port = Integer.parseInt(hostPort[1]);
+                }
+            } catch (NumberFormatException e) {
+                logger.error("bad format for port {} ", hostPort[1], e);
+            }
         }
     }
 }

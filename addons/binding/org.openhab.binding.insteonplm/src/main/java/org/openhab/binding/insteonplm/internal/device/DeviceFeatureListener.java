@@ -11,18 +11,20 @@ package org.openhab.binding.insteonplm.internal.device;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openhab.binding.insteonplm.InsteonPLMActiveBinding;
-import org.openhab.core.events.EventPublisher;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.types.State;
+import org.eclipse.smarthome.core.events.EventPublisher;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.insteonplm.handler.InsteonPLMBridgeHandler;
+import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A DeviceFeatureListener essentially represents an OpenHAB item that
  * listens to a particular feature of an Insteon device
- * 
+ *
  * @author Daniel Pfrommer
  * @author Bernd Pfrommer
  * @since 1.6.0
@@ -41,24 +43,24 @@ public class DeviceFeatureListener {
     private HashMap<String, String> m_parameters = new HashMap<String, String>();
     private HashMap<Class<?>, State> m_state = new HashMap<Class<?>, State>();
     private ArrayList<InsteonAddress> m_relatedDevices = new ArrayList<InsteonAddress>();
-    private InsteonPLMActiveBinding m_binding = null;
+    private InsteonPLMBridgeHandler m_bridge = null;
     private final static int TIME_DELAY_POLL_RELATED_MSEC = 5000;
 
     /**
      * Constructor
-     * 
+     *
      * @param item name of the item that is listening
      * @param eventPublisher the publisher to use for publishing on the openhab bus
      */
-    public DeviceFeatureListener(InsteonPLMActiveBinding binding, String item, EventPublisher eventPublisher) {
-        m_binding = binding;
+    public DeviceFeatureListener(InsteonPLMBridgeHandler binding, String item, EventPublisher eventPublisher) {
+        m_bridge = binding;
         m_itemName = item;
         m_eventPublisher = eventPublisher;
     }
 
     /**
      * Gets item name
-     * 
+     *
      * @return item name
      */
     public String getItemName() {
@@ -67,7 +69,7 @@ public class DeviceFeatureListener {
 
     /**
      * Test if string parameter is present and has a given value
-     * 
+     *
      * @param key key to match
      * @param value value to match
      * @return true if key exists and value matches
@@ -82,7 +84,7 @@ public class DeviceFeatureListener {
 
     /**
      * Set parameters for this feature listener
-     * 
+     *
      * @param p the parameters to set
      */
     public void setParameters(HashMap<String, String> p) {
@@ -92,7 +94,7 @@ public class DeviceFeatureListener {
 
     /**
      * Publishes a state change on the openhab bus
-     * 
+     *
      * @param state the new state to publish on the openhab bus
      * @param changeType whether to always publish or not
      */
@@ -116,7 +118,7 @@ public class DeviceFeatureListener {
      * Call this function to inform about a state change for a given
      * parameter key and value. If dataKey and dataValue don't match,
      * the state change will be ignored.
-     * 
+     *
      * @param state the new state to which the feature has changed
      * @param changeType how to process the state change (always, or only when changed)
      * @param dataKey the data key on which to filter
@@ -179,9 +181,13 @@ public class DeviceFeatureListener {
     private void pollRelatedDevices() {
         for (InsteonAddress a : m_relatedDevices) {
             logger.debug("polling related device {} in {} ms", a, TIME_DELAY_POLL_RELATED_MSEC);
-            InsteonDevice d = m_binding.getDevice(a);
+            Thing d = m_bridge.getDevice(a);
             if (d != null) {
-                d.doPoll(TIME_DELAY_POLL_RELATED_MSEC);
+                // Poll the device.
+                if (d.getHandler() instanceof InsteonThingHandler) {
+                    InsteonThingHandler handler = (InsteonThingHandler) d.getHandler();
+                    handler.doPoll(TIME_DELAY_POLL_RELATED_MSEC);
+                }
             } else {
                 logger.warn("device {} related to item {} is not configured!", a, m_itemName);
             }

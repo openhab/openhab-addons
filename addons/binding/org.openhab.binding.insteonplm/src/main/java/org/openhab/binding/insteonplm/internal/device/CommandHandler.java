@@ -11,25 +11,26 @@ package org.openhab.binding.insteonplm.internal.device;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.openhab.binding.insteonplm.InsteonPLMBindingConfig;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeatureListener.StateChangeType;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Msg;
 import org.openhab.binding.insteonplm.internal.utils.Utils;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.IncreaseDecreaseType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A command handler translates an openHAB command into a insteon message
- * 
+ *
  * @author Daniel Pfrommer
  * @author Bernd Pfrommer
  */
@@ -40,7 +41,7 @@ public abstract class CommandHandler {
 
     /**
      * Constructor
-     * 
+     *
      * @param feature The DeviceFeature for which this command was intended.
      *            The openHAB commands are issued on an openhab item. The .items files bind
      *            an openHAB item to a DeviceFeature.
@@ -51,16 +52,16 @@ public abstract class CommandHandler {
 
     /**
      * Implements what to do when an openHAB command is received
-     * 
+     *
      * @param config the configuration for the item that generated the command
      * @param cmd the openhab command issued
      * @param device the Insteon device to which this command applies
      */
-    public abstract void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice device);
+    public abstract void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice device);
 
     /**
      * Returns parameter as integer
-     * 
+     *
      * @param key key of parameter
      * @param def default
      * @return value of parameter
@@ -81,7 +82,7 @@ public abstract class CommandHandler {
 
     /**
      * Returns parameter as String
-     * 
+     *
      * @param key key of parameter
      * @param def default
      * @return value of parameter
@@ -92,17 +93,17 @@ public abstract class CommandHandler {
 
     /**
      * Shorthand to return class name for logging purposes
-     * 
+     *
      * @return name of the class
      */
     protected String nm() {
         return (this.getClass().getSimpleName());
     }
 
-    protected int getMaxLightLevel(InsteonPLMBindingConfig conf, int defaultLevel) {
-        HashMap<String, String> params = conf.getParameters();
+    protected int getMaxLightLevel(InsteonThingHandler conf, int defaultLevel) {
+        Map<String, String> params = conf.getThing().getProperties();
         if (conf.getFeature().contains("dimmer") && params.containsKey("dimmermax")) {
-            String item = conf.getItemName();
+            String item = conf.getThing().getLabel();
             String dimmerMax = params.get("dimmermax");
             try {
                 int i = Integer.parseInt(dimmerMax);
@@ -129,17 +130,17 @@ public abstract class CommandHandler {
 
     /**
      * Helper function to extract the group parameter from the binding config,
-     * 
+     *
      * @param c the binding configuration to test
      * @return the value of the "group" parameter, or -1 if none
      */
-    protected static int s_getGroup(InsteonPLMBindingConfig c) {
-        String v = c.getParameters().get("group");
+    protected static int s_getGroup(InsteonThingHandler c) {
+        String v = c.getThing().getProperties().get("group");
         int iv = -1;
         try {
             iv = (v == null) ? -1 : Utils.strToInt(v);
         } catch (NumberFormatException e) {
-            logger.error("malformed int parameter in for item {}", c.getItemName());
+            logger.error("malformed int parameter in for item {}", c.getThing().getLabel());
         }
         return iv;
     }
@@ -150,7 +151,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             logger.warn("{}: command {} is not implemented yet!", nm(), cmd);
         }
     }
@@ -161,7 +162,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             // do nothing, not even log
         }
     }
@@ -172,7 +173,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 int ext = getIntParameter("ext", 0);
                 int direc = 0x00;
@@ -217,7 +218,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
                     int level = getMaxLightLevel(conf, 0xff);
@@ -245,7 +246,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
                     double ramptime = getRampTime(conf, 0);
@@ -272,7 +273,7 @@ public abstract class CommandHandler {
             }
         }
 
-        private int getRampLevel(InsteonPLMBindingConfig conf, int defaultValue) {
+        private int getRampLevel(InsteonThingDetails conf, int defaultValue) {
             HashMap<String, String> params = conf.getParameters();
             return params.containsKey("ramplevel") ? Integer.parseInt(params.get("ramplevel")) : defaultValue;
         }
@@ -284,7 +285,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 if (cmd instanceof DecimalType) {
                     int v = ((DecimalType) cmd).intValue();
@@ -314,7 +315,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 if (cmd == OnOffType.ON || cmd == OnOffType.OFF) {
                     byte cmd1 = (byte) ((cmd == OnOffType.ON) ? 0x11 : 0x13);
@@ -341,10 +342,10 @@ public abstract class CommandHandler {
      * This Handler was supposed to set the LEDs of the 2487S, but it doesn't work.
      * The parameters were modeled after the 2486D, it may work for that one,
      * leaving it in for now.
-     * 
+     *
      * From the HouseLinc PLM traffic log, the following commands (in the D2 data field)
      * of the 2486D are supported:
-     * 
+     *
      * 0x02: LED follow mask may work or not
      * 0x03: LED OFF mask
      * 0x04: X10 addr setting
@@ -354,7 +355,7 @@ public abstract class CommandHandler {
      * 0x0B: set nontoggle on/off command
      *
      * crucially, the 0x09 command does not work (NACK from device)
-     * 
+     *
      * @author Bernd Pfrommer
      */
     public static class LEDOnOffCommandHandler extends CommandHandler {
@@ -363,7 +364,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 int button = this.getIntParameter("button", -1);
                 if (cmd == OnOffType.ON) {
@@ -391,7 +392,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 byte houseCode = dev.getX10HouseCode();
                 byte houseUnitCode = (byte) (houseCode << 4 | dev.getX10UnitCode());
@@ -419,7 +420,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 //
                 // I did not have hardware that would respond to the PRESET_DIM codes.
@@ -457,7 +458,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 byte houseCode = dev.getX10HouseCode();
                 byte houseUnitCode = (byte) (houseCode << 4 | dev.getX10UnitCode());
@@ -485,7 +486,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
                     Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x11, (byte) 0xff);
@@ -526,7 +527,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 if (cmd == IncreaseDecreaseType.INCREASE) {
                     Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x15, (byte) 0x00);
@@ -551,7 +552,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 PercentType pc = (PercentType) cmd;
                 logger.debug("changing level of {} to {}", dev.getAddress(), pc.intValue());
@@ -634,8 +635,8 @@ public abstract class CommandHandler {
             return (byte) (((ramplevel & 0x0f) << 4) | (ramptime & 0xf));
         }
 
-        protected double getRampTime(InsteonPLMBindingConfig conf, double defaultValue) {
-            HashMap<String, String> params = conf.getParameters();
+        protected double getRampTime(InsteonThingHandler conf, double defaultValue) {
+            Map<String, String> params = conf.getThing().getProperties();
             return params.containsKey("ramptime") ? Double.parseDouble(params.get("ramptime")) : defaultValue;
         }
     }
@@ -647,7 +648,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 PercentType pc = (PercentType) cmd;
                 double ramptime = getRampTime(conf, 0);
@@ -679,8 +680,8 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
-            String cmdParam = conf.getParameter("cmd");
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
+            String cmdParam = conf.getThing().getProperties().get("cmd");
             if (cmdParam == null) {
                 logger.error("{} ignoring cmd {} because no cmd= is configured!", nm(), cmd);
                 return;
@@ -728,7 +729,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonPLMBindingConfig conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonDevice dev) {
             try {
                 int dc = transform(((DecimalType) cmd).intValue());
                 int intFactor = getIntParameter("factor", 1);
@@ -856,7 +857,7 @@ public abstract class CommandHandler {
 
     /**
      * Factory method for creating handlers of a given name using java reflection
-     * 
+     *
      * @param name the name of the handler to create
      * @param params
      * @param f the feature for which to create the handler

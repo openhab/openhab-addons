@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+    <thing-type id="keypadlinc6button" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>KeypadLinc 6 Button</label>
+        <description>KeypadLinc 6 Button</description>
+
+        <channels>
+            <channel id="loadDimmer" typeId="dimmer" />
+            <channel id="rampDimmer" typeId="number" />
+            <channel id="manualChange" typeId="switch" />
+            <channel id="fastOnOff" typeId="switch" />
+            <channel id="buttonA" typeId="switch" />
+            <channel id="buttonB" typeId="switch" />
+            <channel id="buttonC" typeId="switch" />
+            <channel id="buttonD" typeId="switch" />
+            <channel id="lastHeardFrom" typeId="lastHeardFrom" />
+        </channels>
+    </thing-type>
+</thing:thing-descriptions>

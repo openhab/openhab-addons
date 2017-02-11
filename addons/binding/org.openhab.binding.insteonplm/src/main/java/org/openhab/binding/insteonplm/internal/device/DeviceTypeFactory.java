@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.insteonplm.internal.device;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -36,17 +34,30 @@ import org.xml.sax.SAXException;
  * @since 1.5.0
  */
 
-public class DeviceTypeLoader {
-    private static final Logger logger = LoggerFactory.getLogger(DeviceTypeLoader.class);
+public class DeviceTypeFactory {
+    private final Logger logger = LoggerFactory.getLogger(DeviceTypeFactory.class);
     private HashMap<String, DeviceType> m_deviceTypes = new HashMap<String, DeviceType>();
-    private static DeviceTypeLoader s_deviceTypeLoader = null;
 
-    private DeviceTypeLoader() {
-    } // private so nobody can call it
+    /**
+     * Creates DeviceTypeLoader
+     */
+    public DeviceTypeFactory(InputStream input) {
+        try {
+            loadDeviceTypesXML(input);
+        } catch (ParserConfigurationException e) {
+            logger.error("parser config error when reading device types xml file: ", e);
+        } catch (SAXException e) {
+            logger.error("SAX exception when reading device types xml file: ", e);
+        } catch (IOException e) {
+            logger.error("I/O exception when reading device types xml file: ", e);
+        }
+        logger.debug("loaded {} devices: ", getDeviceTypes().size());
+        logDeviceTypes();
+    }
 
     /**
      * Finds the device type for a given product key
-     * 
+     *
      * @param aProdKey product key to search for
      * @return the device type, or null if not found
      */
@@ -56,7 +67,7 @@ public class DeviceTypeLoader {
 
     /**
      * Must call loadDeviceTypesXML() before calling this function!
-     * 
+     *
      * @return currently known device types
      */
     public HashMap<String, DeviceType> getDeviceTypes() {
@@ -66,10 +77,10 @@ public class DeviceTypeLoader {
     /**
      * Reads the device types from input stream and stores them in memory for
      * later access.
-     * 
+     *
      * @param is the input stream from which to read
      */
-    public void loadDeviceTypesXML(InputStream in) throws ParserConfigurationException, SAXException, IOException {
+    private void loadDeviceTypesXML(InputStream in) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(in);
@@ -85,22 +96,8 @@ public class DeviceTypeLoader {
     }
 
     /**
-     * Reads the device types from file and stores them in memory for later access.
-     * 
-     * @param aFileName The name of the file to read from
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     */
-    public void loadDeviceTypesXML(String aFileName) throws ParserConfigurationException, SAXException, IOException {
-        File file = new File(aFileName);
-        InputStream in = new FileInputStream(file);
-        loadDeviceTypesXML(in);
-    }
-
-    /**
      * Process device node
-     * 
+     *
      * @param e name of the element to process
      * @throws SAXException
      */
@@ -126,6 +123,8 @@ public class DeviceTypeLoader {
                 devType.setModel(subElement.getTextContent());
             } else if (subElement.getNodeName().equals("description")) {
                 devType.setDescription(subElement.getTextContent());
+            } else if (subElement.getNodeName().equals("thing_type")) {
+                devType.setThingType(subElement.getTextContent());
             } else if (subElement.getNodeName().equals("feature")) {
                 processFeature(devType, subElement);
             } else if (subElement.getNodeName().equals("feature_group")) {
@@ -184,44 +183,4 @@ public class DeviceTypeLoader {
         }
     }
 
-    /**
-     * Singleton instance function, creates DeviceTypeLoader
-     * 
-     * @return DeviceTypeLoader singleton reference
-     */
-    public static synchronized DeviceTypeLoader s_instance() {
-        if (s_deviceTypeLoader == null) {
-            s_deviceTypeLoader = new DeviceTypeLoader();
-            InputStream input = DeviceTypeLoader.class.getResourceAsStream("/device_types.xml");
-            try {
-                s_deviceTypeLoader.loadDeviceTypesXML(input);
-            } catch (ParserConfigurationException e) {
-                logger.error("parser config error when reading device types xml file: ", e);
-            } catch (SAXException e) {
-                logger.error("SAX exception when reading device types xml file: ", e);
-            } catch (IOException e) {
-                logger.error("I/O exception when reading device types xml file: ", e);
-            }
-            logger.debug("loaded {} devices: ", s_deviceTypeLoader.getDeviceTypes().size());
-            s_deviceTypeLoader.logDeviceTypes();
-        }
-        return s_deviceTypeLoader;
-    }
-
-    /**
-     * Test function for debugging
-     */
-    public static void main(String[] arg) throws Exception {
-        String fileName = System.getProperty("user.home")
-                + "/workspace/openhab/bundles/binding/org.openhab.binding.insteonplm/target/classes/device_types.xml";
-        try {
-            DeviceTypeLoader dtl = s_instance();
-            dtl.loadDeviceTypesXML(fileName);
-            for (Entry<String, DeviceType> dt : dtl.getDeviceTypes().entrySet()) {
-                System.out.println(String.format("%-10s ->", dt.getKey()) + dt.getValue());
-            }
-        } catch (SAXException e) {
-            System.out.println("got exception: " + e);
-        }
-    }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-type id="lastHeardFrom">
+        <item-type>String</item-type>
+        <label>Last Event</label>
+        <description>Last time the device was heard from.</description>
+        <category>lastEvent</category>
+        <state >
+        </state>
+    </channel-type>
+
+    <channel-type id="battery">
+        <item-type>Number</item-type>
+        <label>Battery</label>
+        <description>The battery level of the device (percentage)</description>
+        <category>battery</category>
+        <state  min="0" max="100" />
+    </channel-type>
+</thing:thing-descriptions>
