@@ -19,8 +19,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
+import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -129,11 +131,6 @@ public class CamelService implements PersistenceService, ActionService, EventSub
         activate(context, config);
     }
 
-    @Override
-    public String getName() {
-        return "camel";
-    }
-
     public void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
@@ -148,6 +145,16 @@ public class CamelService implements PersistenceService, ActionService, EventSub
 
     public void unsetEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = null;
+    }
+
+    @Override
+    public String getId() {
+        return "camel";
+    }
+
+    @Override
+    public String getLabel(Locale locale) {
+        return "Camel persistence";
     }
 
     @Override
@@ -228,6 +235,7 @@ public class CamelService implements PersistenceService, ActionService, EventSub
     private void startFolderWatcher() {
         String pathToWatch = getFolder();
         Path toWatch = Paths.get(pathToWatch);
+        logger.debug("Start folder wacther for folder {}", pathToWatch);
 
         try {
             watchService = toWatch.getFileSystem().newWatchService();
@@ -235,14 +243,22 @@ public class CamelService implements PersistenceService, ActionService, EventSub
             logger.error("Error occured during folder watcher initialization", e.getMessage());
         }
 
+        final Map<WatchKey, Path> registeredWatchKeys = new HashMap<>();
+
         try {
-            toWatch.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            WatchKey registrationKey = toWatch.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+            if (registrationKey != null) {
+                registeredWatchKeys.put(registrationKey, toWatch);
+            } else {
+                logger.info("The directory '{}' was not registered in the watch service", toWatch);
+            }
         } catch (NoSuchFileException e) {
             logger.error("Can't register folder watcher as folder '{}' doesn't exixts", pathToWatch);
         } catch (IOException e) {
             logger.error("Error occured during folder watcher register", e);
         }
-        AbstractWatchQueueReader reader = new WatchQueueReader(watchService, toWatch);
+
+        AbstractWatchQueueReader reader = new WatchQueueReader(watchService, toWatch, registeredWatchKeys);
         Thread folderWatcher = new Thread(reader, "Camel Folder Watcher");
         folderWatcher.start();
     }
@@ -485,8 +501,8 @@ public class CamelService implements PersistenceService, ActionService, EventSub
      */
     private class WatchQueueReader extends AbstractWatchQueueReader {
 
-        public WatchQueueReader(WatchService watchService, Path dir) {
-            super(watchService, dir);
+        public WatchQueueReader(WatchService watchService, Path dir, Map<WatchKey, Path> registeredKeys) {
+            super(watchService, dir, registeredKeys);
         }
 
         @Override
