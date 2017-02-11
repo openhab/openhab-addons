@@ -3,18 +3,16 @@
     xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
     
-    <thing-type id="onoffoutlet" listed="false">
+    <thing-type id="switch" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 
-        <label>Outlet Dimmer</label>
-        <description>The Outletlinc dimmer device</description>
+        <label>KeypadLinc Dimmer</label>
+        <description>A wall switch that supports dimming</description>
 
         <channels>
-            <channel id="dimmer" typeId="dimmer" />
-            <channel id="manualChange" typeId="switch" />
-            <channel id="fastOnOff" typeId="switch" />
+            <channel id="switch" typeId="switch" />
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
         </channels>
     </thing-type>

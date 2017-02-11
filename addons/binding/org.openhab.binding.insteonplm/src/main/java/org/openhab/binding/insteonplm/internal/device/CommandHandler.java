@@ -273,8 +273,8 @@ public abstract class CommandHandler {
             }
         }
 
-        private int getRampLevel(InsteonThingDetails conf, int defaultValue) {
-            HashMap<String, String> params = conf.getParameters();
+        private int getRampLevel(InsteonThingHandler conf, int defaultValue) {
+            Map<String, String> params = conf.getThing().getProperties();
             return params.containsKey("ramplevel") ? Integer.parseInt(params.get("ramplevel")) : defaultValue;
         }
     }
@@ -322,7 +322,7 @@ public abstract class CommandHandler {
                     byte value = (byte) ((cmd == OnOffType.ON) ? 0xFF : 0x00);
                     int group = s_getGroup(conf);
                     if (group == -1) {
-                        logger.error("no group=xx specified in item {}", conf.getItemName());
+                        logger.error("no group=xx specified in item {}", conf.getThing().getLabel());
                         return;
                     }
                     logger.info("{}: sending {} broadcast to group {}", nm(), (cmd1 == 0x11) ? "ON" : "OFF",
