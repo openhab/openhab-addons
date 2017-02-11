@@ -14,6 +14,7 @@
     <properties>
         <bundle.symbolicName>org.openhab.io.camel</bundle.symbolicName>
         <bundle.namespace>org.openhab.io.camel</bundle.namespace>
+        <camel.version>2.18.1</camel.version>
     </properties>
 
     <artifactId>org.openhab.io.camel</artifactId>
@@ -22,11 +23,39 @@
     <packaging>eclipse-plugin</packaging>
 	
     <dependencies>
+        <!--
+        <dependency>
+            <groupId>org.apache.camel.karaf</groupId>
+            <artifactId>apache-camel</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        -->
+        <!--
+        <dependency>
+            <groupId>org.apache.camel.karaf</groupId>
+            <artifactId>features</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        -->
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
-            <version>2.17.1</version>
+            <version>${camel.version}</version>
         </dependency>
+        
+        <!--
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core-osgi</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-context</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        -->
     </dependencies>
     
     <build>
