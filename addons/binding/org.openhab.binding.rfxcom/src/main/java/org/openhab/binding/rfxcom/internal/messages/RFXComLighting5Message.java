@@ -40,7 +40,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
 public class RFXComLighting5Message extends RFXComBaseMessage {
 
     public enum SubType {
-        // TODO more subtypes are supported here, but a pull request is pending for that one
         LIGHTWAVERF(0),
         EMW100(1),
         BBSB_NEW(2),
@@ -55,7 +54,8 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
         MDREMOTE_107(12),
         AVANTEK(14),
         IT(15),
-        MDREMOTE_108(16);
+        MDREMOTE_108(16),
+        KANGTAI(17);
 
         private final int subType;
 
@@ -92,9 +92,9 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
     public enum Commands {
         OFF(0x00),
         ON(0x01),
-        GROUP_OFF(0x02, LIGHTWAVERF, BBSB_NEW, CONRAD_RSL2, EURODOMEST, AVANTEK, IT),
+        GROUP_OFF(0x02, LIGHTWAVERF, BBSB_NEW, CONRAD_RSL2, EURODOMEST, AVANTEK, IT, KANGTAI),
         LEARN(0x02, EMW100),
-        GROUP_ON(0x03, BBSB_NEW, CONRAD_RSL2, EURODOMEST, AVANTEK, IT),
+        GROUP_ON(0x03, BBSB_NEW, CONRAD_RSL2, EURODOMEST, AVANTEK, IT, KANGTAI),
         MOOD1(0x03, LIGHTWAVERF),
         MOOD2(0x04, LIGHTWAVERF),
         MOOD3(0x05, LIGHTWAVERF),
@@ -302,6 +302,7 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
                         break;
 
                     case ON:
+                    case GROUP_ON:
                         state = OnOffType.ON;
                         break;
 
@@ -326,6 +327,7 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
                         break;
 
                     case ON:
+                    case GROUP_ON:
                         state = OpenClosedType.OPEN;
                         break;
 
