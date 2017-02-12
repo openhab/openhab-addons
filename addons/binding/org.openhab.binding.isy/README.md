@@ -116,7 +116,8 @@ end
 
 rule "Turn of music if lights turned off in bathroom"
 when
-    Item isy_dimmer_isybridge_masterbathlightsrecessed_lightlevel changed to 0
+    Item isy_dimmer_isybridge_masterbathlightsrecessed_lightlevel changed to 0 or
+    Item isy_dimmer_isybridge_masterbathlightsrecessed_paddleaction received update DOF 
 then
     logDebug("Master bath", "Pausing music because lights turned off")
     sendCommand("sonos_PLAY1_RINCON_B8E93759C82601400_control", "PAUSE")

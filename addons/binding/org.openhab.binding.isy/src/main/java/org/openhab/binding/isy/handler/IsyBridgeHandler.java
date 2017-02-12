@@ -122,6 +122,7 @@ public class IsyBridgeHandler extends BaseBridgeHandler implements InsteonClient
                 }
             }
         }
+        logger.debug("No thing discovered for address: " + address);
         return null;
     }
 
