@@ -23,8 +23,10 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
+import org.openhab.binding.homematic.internal.communicator.client.UnknownParameterSetException;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownRpcFailureException;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuLoadDeviceNamesParser;
+import org.openhab.binding.homematic.internal.communicator.parser.CcuParamsetDescriptionParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuValueParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuVariablesAndScriptsParser;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -154,6 +156,25 @@ public class CcuGateway extends AbstractHomematicGateway {
                 new CcuValueParser(channel).parse(resultList);
                 channel.setInitialized(true);
             }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChannelDatapoints(HmChannel channel, HmParamsetType paramsetType) throws IOException {
+        try {
+            super.addChannelDatapoints(channel, paramsetType);
+        } catch (UnknownParameterSetException ex) {
+            logger.debug(
+                    "RpcMessage RPC failure (-3 Unknown paramset), fetching metadata with TclRega script for device '{}' and channel {}",
+                    channel.getDevice().getAddress(), channel.getNumber());
+
+            TclScriptDataList resultList = sendScriptByName("getParamsetDescription", TclScriptDataList.class,
+                    new String[] { "device_address", "channel_number" },
+                    new String[] { channel.getDevice().getAddress(), channel.getNumber().toString() });
+            new CcuParamsetDescriptionParser(channel, paramsetType).parse(resultList);
         }
     }
 

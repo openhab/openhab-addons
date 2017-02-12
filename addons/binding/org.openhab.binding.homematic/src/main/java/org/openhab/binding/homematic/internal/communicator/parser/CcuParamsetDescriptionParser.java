@@ -13,21 +13,25 @@ import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.model.HmValueType;
 import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
 import org.openhab.binding.homematic.internal.model.TclScriptDataList;
 
 /**
- * Parses a TclRega script result containing variables and scripts.
+ * Parses parameter descriptions from a CCU script and extracts datapoint metadata.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataList, Void> {
+public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataList, Void> {
+    private HmParamsetType paramsetType;
     private HmChannel channel;
+    private boolean isHmIpDevice;
 
-    public CcuVariablesAndScriptsParser(HmChannel channel) {
+    public CcuParamsetDescriptionParser(HmChannel channel, HmParamsetType paramsetType) {
         this.channel = channel;
+        this.paramsetType = paramsetType;
+        this.isHmIpDevice = channel.getDevice().getHmInterface() == HmInterface.HMIP;
     }
 
     /**
@@ -37,29 +41,18 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
     public Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {
             for (TclScriptDataEntry entry : resultList.getEntries()) {
-                HmDatapoint dp = new HmDatapoint();
-                dp.setName(entry.name);
-                dp.setInfo(entry.name);
-                dp.setDescription(entry.description);
-                dp.setValue(convertToType(entry.value));
-                dp.setMinValue((Number) convertToType(entry.minValue));
-                dp.setMaxValue((Number) convertToType(entry.maxValue));
-                dp.setReadOnly(entry.readOnly);
-                dp.setUnit(entry.unit);
-
-                String[] result = StringUtils.splitByWholeSeparatorPreserveAllTokens(entry.options, ";");
-                dp.setOptions(result == null || result.length == 0 ? null : result);
-
-                if (dp.getOptions() != null) {
-                    dp.setMinValue(0);
-                    dp.setMaxValue(dp.getOptions().length - 1);
-                }
-
-                dp.setType(HmValueType.parse(entry.valueType));
-                dp.setParamsetType(HmParamsetType.VALUES);
+                HmDatapoint dp = assembleDatapoint(entry.name, entry.unit, entry.valueType,
+                        this.toOptionList(entry.options), convertToType(entry.minValue), convertToType(entry.maxValue),
+                        toInteger(entry.operations), convertToType(entry.value), paramsetType, isHmIpDevice);
                 channel.addDatapoint(dp);
             }
         }
         return null;
     }
+
+    private String[] toOptionList(String options) {
+        String[] result = StringUtils.splitByWholeSeparatorPreserveAllTokens(options, ";");
+        return result == null || result.length == 0 ? null : result;
+    }
+
 }
