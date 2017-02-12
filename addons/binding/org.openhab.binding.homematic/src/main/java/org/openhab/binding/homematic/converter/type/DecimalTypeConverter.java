@@ -11,6 +11,7 @@ package org.openhab.binding.homematic.converter.type;
 import java.math.BigDecimal;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 
@@ -25,8 +26,8 @@ public class DecimalTypeConverter extends AbstractTypeConverter<DecimalType> {
      * {@inheritDoc}
      */
     @Override
-    protected boolean toBindingValidation(HmDatapoint dp) {
-        return dp.isNumberType();
+    protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
+        return dp.isNumberType() && typeClass.isAssignableFrom(DecimalType.class);
     }
 
     /**

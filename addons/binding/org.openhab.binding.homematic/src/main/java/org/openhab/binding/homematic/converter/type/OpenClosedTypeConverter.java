@@ -11,6 +11,7 @@ package org.openhab.binding.homematic.converter.type;
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.DATAPOINT_NAME_SENSOR;
 
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 
@@ -25,8 +26,8 @@ public class OpenClosedTypeConverter extends AbstractTypeConverter<OpenClosedTyp
      * {@inheritDoc}
      */
     @Override
-    protected boolean toBindingValidation(HmDatapoint dp) {
-        return dp.isBooleanType();
+    protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
+        return dp.isBooleanType() && typeClass.isAssignableFrom(OpenClosedType.class);
     }
 
     /**
