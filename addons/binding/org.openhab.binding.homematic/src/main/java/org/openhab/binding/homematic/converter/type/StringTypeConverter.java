@@ -9,6 +9,7 @@
 package org.openhab.binding.homematic.converter.type;
 
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -24,8 +25,8 @@ public class StringTypeConverter extends AbstractTypeConverter<StringType> {
      * {@inheritDoc}
      */
     @Override
-    protected boolean toBindingValidation(HmDatapoint dp) {
-        return dp.isStringType() || dp.isEnumType();
+    protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
+        return (dp.isStringType() || dp.isEnumType()) && typeClass.isAssignableFrom(StringType.class);
     }
 
     /**
