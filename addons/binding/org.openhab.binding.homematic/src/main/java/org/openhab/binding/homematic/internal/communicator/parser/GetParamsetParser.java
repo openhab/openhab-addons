@@ -49,7 +49,13 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
                 adjustRssiValue(dp);
             } else {
                 // should never happen, but in case ...
-                logger.warn("Can't set value for datapoint '{}'", dpInfo);
+
+                // suppress warning for this datapoint due wrong CCU metadata
+                boolean isHmSenMdirNextTrans = channel.getDevice().getType().startsWith("HM-Sen-MDIR-O")
+                        && dpInfo.getName().equals("NEXT_TRANSMISSION");
+                if (!isHmSenMdirNextTrans) {
+                    logger.warn("Can't set value for datapoint '{}'", dpInfo);
+                }
             }
         }
         return null;

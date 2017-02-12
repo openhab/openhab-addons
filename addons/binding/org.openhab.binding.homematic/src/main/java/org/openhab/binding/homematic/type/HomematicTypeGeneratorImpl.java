@@ -234,7 +234,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         ChannelType channelType;
         if (dp.getName().equals(DATAPOINT_NAME_LOWBAT)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY;
-        } else if (dp.getName().equals(VIRTUAL_DATAPOINT_NAME_RSSI)) {
+        } else if (dp.getName().equals(VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_SIGNAL_STRENGTH;
         } else {
             String itemType = MetadataUtils.getItemType(dp);
@@ -305,7 +305,6 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 
-                    builder.withPattern(MetadataUtils.getPattern(dp));
                     builder.withGroupName(groupName);
                     parms.add(builder.build());
                 }
