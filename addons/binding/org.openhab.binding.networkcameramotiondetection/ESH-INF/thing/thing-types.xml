@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="networkcameramotiondetection" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="NetworkCamera">
+		<label>NetworkCameraMotionDetection Binding Thing</label>
+		<description>NetworkCameraMotionDetection Binding</description>
+
+		<channels>
+			<channel id="image" typeId="image-channel" />
+			<channel id="motion" typeId="motion-channel" />
+			<channel id="motion-trigger" typeId="motion-trigger" />
+		</channels>
+
+		<config-description>
+			<parameter name="userName" type="text" required="true">
+				<label>User Name</label>
+				<description>Username</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="image-channel">
+		<item-type>Image</item-type>
+		<label>Camera image</label>
+		<description>Image from network camera</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="motion-channel">
+		<item-type>Switch</item-type>
+		<label>Motion detected channel</label>
+		<description>Motion detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="motion-trigger">
+		<kind>trigger</kind>
+		<label>Motion detected trigger channel</label>
+		<event>
+			<options>
+				<option value="MOTION_DETECTED">Motion detected</option>
+			</options>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>
