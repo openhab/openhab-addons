@@ -110,13 +110,13 @@ public abstract class MilightV6 extends AbstractBulbInterface {
         // Apply immediately if animation time is too small (less than 100ms) or
         // if the change is too small to be animated.
         if (animation_steps < 2 || rel_change < 10) {
-            byte[][] data = new byte[1][21];
+            byte[][] data = new byte[1][22];
             byte[] command = make_command(command_bytes);
             copy(data[0], command);
             return data;
         }
 
-        byte[][] data = new byte[animation_steps][21];
+        byte[][] data = new byte[animation_steps][22];
 
         // Add last step with the final end value
         copy(data[animation_steps - 1], make_command(command_bytes));
