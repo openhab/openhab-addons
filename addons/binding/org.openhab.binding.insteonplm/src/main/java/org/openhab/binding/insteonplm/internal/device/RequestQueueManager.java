@@ -33,7 +33,7 @@ public class RequestQueueManager {
     private static final Logger logger = LoggerFactory.getLogger(RequestQueueManager.class);
     private Thread m_queueThread = null;
     private PriorityQueue<RequestQueue> m_requestQueues = new PriorityQueue<RequestQueue>();
-    private HashMap<InsteonDevice, RequestQueue> m_requestQueueHash = new HashMap<InsteonDevice, RequestQueue>();
+    private HashMap<InsteonThing, RequestQueue> m_requestQueueHash = new HashMap<InsteonThing, RequestQueue>();
     private boolean m_keepRunning = true;
 
     public RequestQueueManager() {
@@ -47,7 +47,7 @@ public class RequestQueueManager {
      * @param dev the device to add
      * @param time the time when the queue should be processed
      */
-    public void addQueue(InsteonDevice dev, long time) {
+    public void addQueue(InsteonThing dev, long time) {
         synchronized (m_requestQueues) {
             RequestQueue q = m_requestQueueHash.get(dev);
             if (q == null) {
@@ -106,7 +106,7 @@ public class RequestQueueManager {
                             RequestQueue q = m_requestQueues.peek();
                             long now = System.currentTimeMillis();
                             long expTime = q.getExpirationTime();
-                            InsteonDevice dev = q.getDevice();
+                            InsteonThing dev = q.getDevice();
                             if (expTime > now) {
                                 //
                                 // The head of the queue is not up for processing yet, wait().
@@ -150,15 +150,15 @@ public class RequestQueueManager {
     }
 
     public static class RequestQueue implements Comparable<RequestQueue> {
-        private InsteonDevice m_device = null;
+        private InsteonThing m_device = null;
         private long m_expirationTime = 0L;
 
-        RequestQueue(InsteonDevice dev, long expirationTime) {
+        RequestQueue(InsteonThing dev, long expirationTime) {
             m_device = dev;
             m_expirationTime = expirationTime;
         }
 
-        public InsteonDevice getDevice() {
+        public InsteonThing getDevice() {
             return m_device;
         }
 

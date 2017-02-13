@@ -42,8 +42,8 @@ import org.xml.sax.SAXException;
  */
 
 public class FeatureTemplateLoader {
-    public static ArrayList<FeatureTemplate> s_readTemplates(InputStream input) throws IOException, ParsingException {
-        ArrayList<FeatureTemplate> features = new ArrayList<FeatureTemplate>();
+    public static ArrayList<DeviceFeatureBuilder> s_readTemplates(InputStream input) throws IOException, ParsingException {
+        ArrayList<DeviceFeatureBuilder> features = new ArrayList<DeviceFeatureBuilder>();
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -72,10 +72,10 @@ public class FeatureTemplateLoader {
         return features;
     }
 
-    private static FeatureTemplate s_parseFeature(Element e) throws ParsingException {
+    private static DeviceFeatureBuilder s_parseFeature(Element e) throws ParsingException {
         String name = e.getAttribute("name");
         boolean statusFeature = e.getAttribute("statusFeature").equals("true");
-        FeatureTemplate feature = new FeatureTemplate();
+        DeviceFeatureBuilder feature = new DeviceFeatureBuilder();
         feature.setName(name);
         feature.setStatusFeature(statusFeature);
         feature.setTimeout(e.getAttribute("timeout"));
@@ -116,7 +116,7 @@ public class FeatureTemplateLoader {
         return new HandlerEntry(handler, params);
     }
 
-    private static void s_parseMessageHandler(Element e, FeatureTemplate f) throws DOMException, ParsingException {
+    private static void s_parseMessageHandler(Element e, DeviceFeatureBuilder f) throws DOMException, ParsingException {
         HandlerEntry he = s_makeHandlerEntry(e);
         if (e.getAttribute("default").equals("true")) {
             f.setDefaultMessageHandler(he);
@@ -127,7 +127,7 @@ public class FeatureTemplateLoader {
         }
     }
 
-    private static void s_parseCommandHandler(Element e, FeatureTemplate f) throws ParsingException {
+    private static void s_parseCommandHandler(Element e, DeviceFeatureBuilder f) throws ParsingException {
         HandlerEntry he = s_makeHandlerEntry(e);
         if (e.getAttribute("default").equals("true")) {
             f.setDefaultCommandHandler(he);
@@ -137,7 +137,7 @@ public class FeatureTemplateLoader {
         }
     }
 
-    private static void s_parseMessageDispatcher(Element e, FeatureTemplate f) throws DOMException, ParsingException {
+    private static void s_parseMessageDispatcher(Element e, DeviceFeatureBuilder f) throws DOMException, ParsingException {
         HandlerEntry he = s_makeHandlerEntry(e);
         f.setMessageDispatcher(he);
         if (he.getName() == null) {
@@ -145,7 +145,7 @@ public class FeatureTemplateLoader {
         }
     }
 
-    private static void s_parsePollHandler(Element e, FeatureTemplate f) throws ParsingException {
+    private static void s_parsePollHandler(Element e, DeviceFeatureBuilder f) throws ParsingException {
         HandlerEntry he = s_makeHandlerEntry(e);
         f.setPollHandler(he);
     }
@@ -168,8 +168,8 @@ public class FeatureTemplateLoader {
         File f = new File(System.getProperty("user.home")
                 + "/workspace/openhab/bundles/binding/org.openhab.binding.insteonplm/src/main/resources/device_features.xml");
         InputStream s = new FileInputStream(f);
-        ArrayList<FeatureTemplate> features = s_readTemplates(s);
-        for (FeatureTemplate feature : features) {
+        ArrayList<DeviceFeatureBuilder> features = s_readTemplates(s);
+        for (DeviceFeatureBuilder feature : features) {
             System.out.println(feature);
             System.out.println(
                     "\tPOLL: " + feature.getPollHandler() + "\n\tDISPATCH: " + feature.getDispatcher().getName());

@@ -11,6 +11,7 @@ package org.openhab.binding.insteonplm.internal.device;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Msg;
 import org.openhab.binding.insteonplm.internal.utils.Utils;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A PollHandler creates an Insteon message to query a particular
  * DeviceFeature of an Insteon device.
- * 
+ *
  * @author Bernd Pfrommer
  * @since 1.5.0
  */
@@ -31,7 +32,7 @@ public abstract class PollHandler {
 
     /**
      * Constructor
-     * 
+     *
      * @param feature The device feature being polled
      */
     PollHandler(DeviceFeature feature) {
@@ -41,11 +42,11 @@ public abstract class PollHandler {
     /**
      * Creates Insteon message that can be used to poll a feature
      * via the Insteon network.
-     * 
+     *
      * @param device reference to the insteon device to be polled
      * @return Insteon query message or null if creation failed
      */
-    public abstract Msg makeMsg(InsteonDevice device);
+    public abstract Msg makeMsg(InsteonThingHandler device);
 
     public void setParameters(HashMap<String, String> hm) {
         m_parameters = hm;
@@ -53,7 +54,7 @@ public abstract class PollHandler {
 
     /**
      * Returns parameter as integer
-     * 
+     *
      * @param key key of parameter
      * @param def default
      * @return value of parameter
@@ -84,7 +85,7 @@ public abstract class PollHandler {
         }
 
         @Override
-        public Msg makeMsg(InsteonDevice d) {
+        public Msg makeMsg(InsteonThingHandler d) {
             Msg m = null;
             int cmd1 = getIntParameter("cmd1", 0);
             int cmd2 = getIntParameter("cmd2", 0);
@@ -120,14 +121,14 @@ public abstract class PollHandler {
         }
 
         @Override
-        public Msg makeMsg(InsteonDevice d) {
+        public Msg makeMsg(InsteonThing d) {
             return null;
         }
     }
 
     /**
      * Factory method for creating handlers of a given name using java reflection
-     * 
+     *
      * @param ph the name of the handler to create
      * @param f the feature for which to create the handler
      * @return the handler which was created

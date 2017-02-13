@@ -16,17 +16,14 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
-import org.openhab.binding.insteonplm.InsteonPLMBindingConfig;
 import org.openhab.binding.insteonplm.internal.device.DeviceType.FeatureGroup;
-import org.openhab.binding.insteonplm.internal.device.InsteonDevice.QEntry;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.device.InsteonThing.QEntry;
 import org.openhab.binding.insteonplm.internal.message.Msg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
- * The InsteonDevice class holds known per-device state of a single Insteon device,
- * including the address, what port(modem) to reach it on etc.
+ * The InsteonDevice class holds known per-device state of a single Insteon thing,
  * Note that some Insteon devices de facto consist of two devices (let's say
  * a relay and a sensor), but operate under the same address. Such devices will
  * be represented just by a single InsteonDevice. Their different personalities
@@ -35,8 +32,8 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Pfrommer
  * @since 1.5.0
  */
-public class InsteonDevice {
-    private static final Logger logger = LoggerFactory.getLogger(InsteonDevice.class);
+public class InsteonThing {
+    private static final Logger logger = LoggerFactory.getLogger(InsteonThing.class);
 
     public static enum DeviceStatus {
         INITIALIZED,
@@ -44,9 +41,6 @@ public class InsteonDevice {
     }
 
     private InsteonAddress m_address = new InsteonAddress();
-    private ArrayList<String> m_ports = new ArrayList<String>();
-    private long m_pollInterval = -1L; // in milliseconds
-    private Driver m_driver = null;
     private HashMap<String, DeviceFeature> m_features = new HashMap<String, DeviceFeature>();
     private String m_productKey = null;
     private Long m_lastTimePolled = 0L;
@@ -61,7 +55,7 @@ public class InsteonDevice {
     /**
      * Constructor
      */
-    public InsteonDevice() {
+    public InsteonThing() {
         m_lastMsgReceived = System.currentTimeMillis();
     }
 
@@ -85,18 +79,6 @@ public class InsteonDevice {
 
     public InsteonAddress getAddress() {
         return (m_address);
-    }
-
-    public Driver getDriver() {
-        return m_driver;
-    }
-
-    public boolean hasValidPorts() {
-        return (!m_ports.isEmpty());
-    }
-
-    public long getPollInterval() {
-        return m_pollInterval;
     }
 
     public boolean isModem() {
@@ -123,19 +105,8 @@ public class InsteonDevice {
         return m_productKey != null && m_productKey.equals(key);
     }
 
-    public boolean hasValidPollingInterval() {
-        return (m_pollInterval > 0);
-    }
-
     public long getPollOverDueTime() {
         return (m_lastTimePolled - m_lastMsgReceived);
-    }
-
-    public String getPort() throws IOException {
-        if (m_ports.isEmpty()) {
-            throw new IOException("no ports configured for instrument " + getAddress());
-        }
-        return (m_ports.iterator().next());
     }
 
     public boolean hasAnyListeners() {
@@ -154,16 +125,8 @@ public class InsteonDevice {
         m_status = aI;
     }
 
-    public void setHasModemDBEntry(boolean b) {
-        m_hasModemDBEntry = b;
-    }
-
     public void setAddress(InsteonAddress ia) {
         m_address = ia;
-    }
-
-    public void setDriver(Driver d) {
-        m_driver = d;
     }
 
     public void setIsModem(boolean f) {
@@ -182,30 +145,12 @@ public class InsteonDevice {
     }
 
     public void setFeatureQueried(DeviceFeature f) {
-        synchronized (m_requestQueue) {
-            m_featureQueried = f;
-        }
+        m_featureQueried = f;
     };
 
     public DeviceFeature getFeatureQueried() {
-        synchronized (m_requestQueue) {
-            return (m_featureQueried);
-        }
+        return (m_featureQueried);
     };
-
-    /**
-     * Add a port. Currently only a single port is being used.
-     *
-     * @param p the port to add
-     */
-    public void addPort(String p) {
-        if (p == null) {
-            return;
-        }
-        if (!m_ports.contains(p)) {
-            m_ports.add(p);
-        }
-    }
 
     /**
      * Removes feature listener from this device
@@ -277,115 +222,6 @@ public class InsteonDevice {
                 }
             }
         }
-    }
-
-    /**
-     * Helper method to make standard message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @return standard message
-     * @throws FieldException
-     * @throws IOException
-     */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2) throws FieldException, IOException {
-        return (makeStandardMessage(flags, cmd1, cmd2, -1));
-    }
-
-    /**
-     * Helper method to make standard message, possibly with group
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param group (-1 if not a group message)
-     * @return standard message
-     * @throws FieldException
-     * @throws IOException
-     */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group) throws FieldException, IOException {
-        Msg m = Msg.s_makeMessage("SendStandardMessage");
-        InsteonAddress addr = null;
-        if (group != -1) {
-            flags |= 0xc0; // mark message as group message
-            // and stash the group number into the address
-            addr = new InsteonAddress((byte) 0, (byte) 0, (byte) (group & 0xff));
-        } else {
-            addr = getAddress();
-        }
-        m.setAddress("toAddress", addr);
-        m.setByte("messageFlags", flags);
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        return m;
-    }
-
-    public Msg makeX10Message(byte rawX10, byte X10Flag) throws FieldException, IOException {
-        Msg m = Msg.s_makeMessage("SendX10Message");
-        m.setByte("rawX10", rawX10);
-        m.setByte("X10Flag", X10Flag);
-        m.setQuietTime(300L);
-        return m;
-    }
-
-    /**
-     * Helper method to make extended message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @return extended message
-     * @throws FieldException
-     * @throws IOException
-     */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2) throws FieldException, IOException {
-        return makeExtendedMessage(flags, cmd1, cmd2, new byte[] {});
-    }
-
-    /**
-     * Helper method to make extended message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param data array with userdata
-     * @return extended message
-     * @throws FieldException
-     * @throws IOException
-     */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data) throws FieldException, IOException {
-        Msg m = Msg.s_makeMessage("SendExtendedMessage");
-        m.setAddress("toAddress", getAddress());
-        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        m.setUserData(data);
-        m.setCRC();
-        return m;
-    }
-
-    /**
-     * Helper method to make extended message, but with different CRC calculation
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param data array with user data
-     * @return extended message
-     * @throws FieldException
-     * @throws IOException
-     */
-    public Msg makeExtendedMessageCRC2(byte flags, byte cmd1, byte cmd2, byte[] data)
-            throws FieldException, IOException {
-        Msg m = Msg.s_makeMessage("SendExtendedMessage");
-        m.setAddress("toAddress", getAddress());
-        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        m.setUserData(data);
-        m.setCRC2();
-        return m;
     }
 
     /**

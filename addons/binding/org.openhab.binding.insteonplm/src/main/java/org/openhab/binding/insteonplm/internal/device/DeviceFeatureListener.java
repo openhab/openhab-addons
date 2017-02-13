@@ -14,6 +14,7 @@ import java.util.HashMap;
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.insteonplm.handler.InsteonPLMBridgeHandler;
@@ -38,12 +39,11 @@ public class DeviceFeatureListener {
         CHANGED
     };
 
-    private String m_itemName = null;
-    private EventPublisher m_eventPublisher = null;
+    private ChannelUID m_channelId = null;
     private HashMap<String, String> m_parameters = new HashMap<String, String>();
     private HashMap<Class<?>, State> m_state = new HashMap<Class<?>, State>();
     private ArrayList<InsteonAddress> m_relatedDevices = new ArrayList<InsteonAddress>();
-    private InsteonPLMBridgeHandler m_bridge = null;
+    private InsteonPLMBridgeHandler m_thing = null;
     private final static int TIME_DELAY_POLL_RELATED_MSEC = 5000;
 
     /**
@@ -52,10 +52,9 @@ public class DeviceFeatureListener {
      * @param item name of the item that is listening
      * @param eventPublisher the publisher to use for publishing on the openhab bus
      */
-    public DeviceFeatureListener(InsteonPLMBridgeHandler binding, String item, EventPublisher eventPublisher) {
-        m_bridge = binding;
-        m_itemName = item;
-        m_eventPublisher = eventPublisher;
+    public DeviceFeatureListener(InsteonPLMBridgeHandler thing, ChannelUID channelId, EventPublisher eventPublisher) {
+        m_thing = thing;
+        m_channelId = channelId;
     }
 
     /**
@@ -63,8 +62,8 @@ public class DeviceFeatureListener {
      *
      * @return item name
      */
-    public String getItemName() {
-        return m_itemName;
+    public ChannelUID getChanelId() {
+        return m_channelId;
     }
 
     /**
@@ -150,7 +149,7 @@ public class DeviceFeatureListener {
             }
         }
         pollRelatedDevices();
-        m_eventPublisher.postUpdate(m_itemName, publishState);
+        m_thing.handleUpdate(m_channelId, state);
     }
 
     /**
@@ -181,7 +180,7 @@ public class DeviceFeatureListener {
     private void pollRelatedDevices() {
         for (InsteonAddress a : m_relatedDevices) {
             logger.debug("polling related device {} in {} ms", a, TIME_DELAY_POLL_RELATED_MSEC);
-            Thing d = m_bridge.getDevice(a);
+            Thing d = m_thing.getDevice(a);
             if (d != null) {
                 // Poll the device.
                 if (d.getHandler() instanceof InsteonThingHandler) {
@@ -189,7 +188,7 @@ public class DeviceFeatureListener {
                     handler.doPoll(TIME_DELAY_POLL_RELATED_MSEC);
                 }
             } else {
-                logger.warn("device {} related to item {} is not configured!", a, m_itemName);
+                logger.warn("device {} related to channel {} is not configured!", a, m_channelId.toString());
             }
         }
     }

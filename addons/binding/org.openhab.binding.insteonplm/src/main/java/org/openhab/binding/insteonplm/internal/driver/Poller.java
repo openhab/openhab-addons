@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.openhab.binding.insteonplm.internal.device.InsteonDevice;
+import org.openhab.binding.insteonplm.internal.device.InsteonThing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ public class Poller {
      * @param d device to register for polling
      * @param aNumDev approximate number of total devices
      */
-    public void startPolling(InsteonDevice d, int aNumDev) {
+    public void startPolling(InsteonThing d, int aNumDev) {
         logger.debug("start polling device {}", d);
         synchronized (m_pollQueue) {
             // try to spread out the scheduling when
@@ -82,7 +82,7 @@ public class Poller {
      * 
      * @param d reference to the device to be polled
      */
-    public void stopPolling(InsteonDevice d) {
+    public void stopPolling(InsteonThing d) {
         synchronized (m_pollQueue) {
             for (Iterator<PQEntry> i = m_pollQueue.iterator(); i.hasNext();) {
                 if (i.next().getDevice().getAddress().equals(d.getAddress())) {
@@ -131,7 +131,7 @@ public class Poller {
      *            a suggestion, and may be adjusted, because there must be at least a minimum gap in polling.
      */
 
-    private void addToPollQueue(InsteonDevice d, long time) {
+    private void addToPollQueue(InsteonThing d, long time) {
         long texp = findNextExpirationTime(d, time);
         PQEntry ne = new PQEntry(d, texp);
         logger.trace("added entry {} originally aimed at time {}", ne, String.format("%tc", new Date(time)));
@@ -148,7 +148,7 @@ public class Poller {
      * @return the suggested time to poll
      */
 
-    private long findNextExpirationTime(InsteonDevice d, long aTime) {
+    private long findNextExpirationTime(InsteonThing d, long aTime) {
         long expTime = aTime;
         // tailSet finds all those that expire after aTime - buffer
         SortedSet<PQEntry> ts = m_pollQueue.tailSet(new PQEntry(d, aTime - MIN_MSEC_BETWEEN_POLLS));
@@ -247,10 +247,10 @@ public class Poller {
      *
      */
     private static class PQEntry implements Comparable<PQEntry> {
-        private InsteonDevice m_dev = null;
+        private InsteonThing m_dev = null;
         private long m_expirationTime = 0L;
 
-        PQEntry(InsteonDevice dev, long time) {
+        PQEntry(InsteonThing dev, long time) {
             m_dev = dev;
             m_expirationTime = time;
         }
@@ -259,7 +259,7 @@ public class Poller {
             return m_expirationTime;
         }
 
-        InsteonDevice getDevice() {
+        InsteonThing getDevice() {
             return m_dev;
         }
 

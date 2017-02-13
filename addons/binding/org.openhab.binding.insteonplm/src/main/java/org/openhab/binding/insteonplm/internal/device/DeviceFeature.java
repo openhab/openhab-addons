@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeatureListener.StateChangeType;
+import org.openhab.binding.insteonplm.internal.device.commands.NoOpCommandHandler;
 import org.openhab.binding.insteonplm.internal.message.Msg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,16 +60,14 @@ public class DeviceFeature {
 
     private static final Logger logger = LoggerFactory.getLogger(DeviceFeature.class);
 
-    private static HashMap<String, FeatureTemplate> s_features = new HashMap<String, FeatureTemplate>();
-
-    private InsteonDevice m_device = null;
+    private InsteonThingHandler m_device = null;
     private String m_name = "INVALID_FEATURE_NAME";
     private boolean m_isStatus = false;
     private int m_directAckTimeout = 6000;
     private QueryStatus m_queryStatus = QueryStatus.NEVER_QUERIED;
 
     private MessageHandler m_defaultMsgHandler = new MessageHandler.DefaultMsgHandler(this);
-    private CommandHandler m_defaultCommandHandler = new CommandHandler.WarnCommandHandler(this);
+    private CommandHandler m_defaultCommandHandler = new NoOpCommandHandler(this);
     private PollHandler m_pollHandler = null;
     private MessageDispatcher m_dispatcher = null;
 
@@ -82,7 +82,7 @@ public class DeviceFeature {
      * @param device Insteon device to which this feature belongs
      * @param name descriptive name for that feature
      */
-    public DeviceFeature(InsteonDevice device, String name) {
+    public DeviceFeature(InsteonThingHandler device, String name) {
         m_name = name;
         setDevice(device);
     }
@@ -105,7 +105,7 @@ public class DeviceFeature {
         return m_queryStatus;
     }
 
-    public InsteonDevice getDevice() {
+    public InsteonThingHandler getDevice() {
         return m_device;
     }
 
@@ -142,7 +142,7 @@ public class DeviceFeature {
         m_pollHandler = h;
     }
 
-    public void setDevice(InsteonDevice d) {
+    public void setDevice(InsteonThingHandler d) {
         m_device = d;
     }
 
@@ -182,7 +182,7 @@ public class DeviceFeature {
     public void addListener(DeviceFeatureListener l) {
         synchronized (m_listeners) {
             for (DeviceFeatureListener m : m_listeners) {
-                if (m.getItemName().equals(l.getItemName())) {
+                if (m.getChanelId().equals(l.getChanelId())) {
                     return;
                 }
             }
@@ -223,7 +223,7 @@ public class DeviceFeature {
         synchronized (m_listeners) {
             for (Iterator<DeviceFeatureListener> it = m_listeners.iterator(); it.hasNext();) {
                 DeviceFeatureListener fl = it.next();
-                if (fl.getItemName().equals(aItemName)) {
+                if (fl.getChanelId().equals(aItemName)) {
                     it.remove();
                     listenerRemoved = true;
                 }
@@ -235,7 +235,7 @@ public class DeviceFeature {
     public boolean isReferencedByItem(String aItemName) {
         synchronized (m_listeners) {
             for (DeviceFeatureListener fl : m_listeners) {
-                if (fl.getItemName().equals(aItemName)) {
+                if (fl.getChanelId().equals(aItemName)) {
                     return true;
                 }
             }
@@ -261,10 +261,10 @@ public class DeviceFeature {
     /**
      * Called when an openhab command arrives for this device feature
      *
-     * @param c the binding config of the item which sends the command
+     * @param c the channel the command is on
      * @param cmd the command to be exectued
      */
-    public void handleCommand(InsteonThingHandler c, Command cmd) {
+    public void handleCommand(ChannelUID c, Command cmd) {
         Class<? extends Command> key = cmd.getClass();
         CommandHandler h = m_commandHandlers.containsKey(key) ? m_commandHandlers.get(key) : m_defaultCommandHandler;
         logger.trace("{} uses {} to handle command {} for {}", getName(), h.getClass().getSimpleName(),

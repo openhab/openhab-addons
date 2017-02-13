@@ -10,11 +10,15 @@ import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Methods for creating DeviceFeature classes from the resource xml file. */
+/**
+ * Methods for creating DeviceFeature classes from the resource xml file.
+ * 
+ * @author David Bennett - Initial contribution
+ */
 public class DeviceFeatureFactory {
     private Logger logger = LoggerFactory.getLogger(InsteonPLMBridgeHandler.class);
 
-    Map<String, FeatureTemplate> m_features;
+    Map<String, DeviceFeatureBuilder> m_features;
 
     public DeviceFeatureFactory() {
         // read features from xml file and store them in a map
@@ -45,8 +49,8 @@ public class DeviceFeatureFactory {
      */
     private void readFeatureTemplates(InputStream input) {
         try {
-            ArrayList<FeatureTemplate> features = FeatureTemplateLoader.s_readTemplates(input);
-            for (FeatureTemplate f : features) {
+            ArrayList<DeviceFeatureBuilder> features = FeatureTemplateLoader.s_readTemplates(input);
+            for (DeviceFeatureBuilder f : features) {
                 m_features.put(f.getName(), f);
             }
         } catch (IOException e) {

@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.eclipse.smarthome.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple class which contains the basic info needed to create a device feature.
@@ -21,7 +23,10 @@ import org.eclipse.smarthome.core.types.Command;
  * @author Daniel Pfrommer
  * @since 1.5.0
  */
-public class FeatureTemplate {
+public class DeviceFeatureBuilder {
+    private static final Logger logger = LoggerFactory.getLogger(DeviceFeatureBuilder.class);
+    private static final String COMMAND_HANDLER_PACKAGE = "org.openhab.binding.insteonplm.internal.device.commands";
+    private static final String MESSAGE_HANDLER_PACKAGE = "org.openhab.binding.insteonplm.internal.device.commands.MessageHandler";
     private String m_name = null;
     private String m_timeout = null;
     private boolean m_isStatus = false;
@@ -130,6 +135,54 @@ public class FeatureTemplate {
     }
 
     /**
+     * Method for creating handlers of a given name using java reflection
+     *
+     * @param name the name of the handler to create
+     * @param params
+     * @param f the feature for which to create the handler
+     * @return the handler which was created
+     */
+    private <T extends CommandHandler> T makeCommandHandler(String name, HashMap<String, String> params,
+            DeviceFeature f) {
+        String cname = COMMAND_HANDLER_PACKAGE + "$" + name;
+        try {
+            Class<?> c = Class.forName(cname);
+            @SuppressWarnings("unchecked")
+            Class<? extends T> dc = (Class<? extends T>) c;
+            T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
+            ch.setParameters(params);
+            return ch;
+        } catch (Exception e) {
+            logger.error("error trying to create message handler: {}", name, e);
+        }
+        return null;
+    }
+
+    /**
+     * Factory method for creating handlers of a given name using java reflection
+     *
+     * @param name the name of the handler to create
+     * @param params
+     * @param f the feature for which to create the handler
+     * @return the handler which was created
+     */
+    private <T extends MessageHandler> T makeMessageHandler(String name, HashMap<String, String> params,
+            DeviceFeature f) {
+        String cname = MESSAGE_HANDLER_PACKAGE + "$" + name;
+        try {
+            Class<?> c = Class.forName(cname);
+            @SuppressWarnings("unchecked")
+            Class<? extends T> dc = (Class<? extends T>) c;
+            T mh = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
+            mh.setParameters(params);
+            return mh;
+        } catch (Exception e) {
+            logger.error("error trying to create message handler: {}", name, e);
+        }
+        return null;
+    }
+
+    /**
      * Builds the actual feature
      *
      * @return the feature which this template describes
@@ -147,19 +200,17 @@ public class FeatureTemplate {
         }
         if (m_defaultCmdHandler != null) {
             f.setDefaultCommandHandler(
-                    CommandHandler.s_makeHandler(m_defaultCmdHandler.getName(), m_defaultCmdHandler.getParams(), f));
+                    makeCommandHandler(m_defaultCmdHandler.getName(), m_defaultCmdHandler.getParams(), f));
         }
         if (m_defaultMsgHandler != null) {
             f.setDefaultMsgHandler(
-                    MessageHandler.s_makeHandler(m_defaultMsgHandler.getName(), m_defaultMsgHandler.getParams(), f));
+                    makeMessageHandler(m_defaultMsgHandler.getName(), m_defaultMsgHandler.getParams(), f));
         }
         for (Entry<Integer, HandlerEntry> mH : m_messageHandlers.entrySet()) {
-            f.addMessageHandler(mH.getKey(),
-                    MessageHandler.s_makeHandler(mH.getValue().getName(), mH.getValue().getParams(), f));
+            f.addMessageHandler(mH.getKey(), makeMessageHandler(mH.getValue().getName(), mH.getValue().getParams(), f));
         }
         for (Entry<Class<? extends Command>, HandlerEntry> cH : m_commandHandlers.entrySet()) {
-            f.addCommandHandler(cH.getKey(),
-                    CommandHandler.s_makeHandler(cH.getValue().getName(), cH.getValue().getParams(), f));
+            f.addCommandHandler(cH.getKey(), makeCommandHandler(cH.getValue().getName(), cH.getValue().getParams(), f));
         }
         return f;
     }
