@@ -31,6 +31,7 @@ import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.BinRpcClient;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
 import org.openhab.binding.homematic.internal.communicator.client.TransferMode;
+import org.openhab.binding.homematic.internal.communicator.client.UnknownParameterSetException;
 import org.openhab.binding.homematic.internal.communicator.client.XmlRpcClient;
 import org.openhab.binding.homematic.internal.communicator.server.BinRpcServer;
 import org.openhab.binding.homematic.internal.communicator.server.RpcEventListener;
@@ -424,7 +425,13 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * Loads all datapoints from the gateway.
      */
     protected void addChannelDatapoints(HmChannel channel, HmParamsetType paramsetType) throws IOException {
-        getRpcClient(channel.getDevice().getHmInterface()).addChannelDatapoints(channel, paramsetType);
+        try {
+            getRpcClient(channel.getDevice().getHmInterface()).addChannelDatapoints(channel, paramsetType);
+        } catch (UnknownParameterSetException ex) {
+            logger.info(
+                    "Can not load metadata for device: {}, channel: {}, paramset: {}, maybe there are no channels available",
+                    channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
+        }
     }
 
     /**
@@ -474,11 +481,23 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             }
         } else {
             logger.debug("Loading values for channel {} of device '{}'", channel, channel.getDevice().getAddress());
-            HmInterface hmInterface = channel.getDevice().getHmInterface();
-            getRpcClient(hmInterface).setChannelDatapointValues(channel, HmParamsetType.MASTER);
-            getRpcClient(hmInterface).setChannelDatapointValues(channel, HmParamsetType.VALUES);
+            setChannelDatapointValues(channel, HmParamsetType.MASTER);
+            setChannelDatapointValues(channel, HmParamsetType.VALUES);
         }
         channel.setInitialized(true);
+    }
+
+    /**
+     * Sets all datapoint values for the given channel.
+     */
+    protected void setChannelDatapointValues(HmChannel channel, HmParamsetType paramsetType) throws IOException {
+        try {
+            getRpcClient(channel.getDevice().getHmInterface()).setChannelDatapointValues(channel, paramsetType);
+        } catch (UnknownParameterSetException ex) {
+            logger.info(
+                    "Can not load values for device: {}, channel: {}, paramset: {}, maybe there are no values available",
+                    channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
+        }
     }
 
     /**

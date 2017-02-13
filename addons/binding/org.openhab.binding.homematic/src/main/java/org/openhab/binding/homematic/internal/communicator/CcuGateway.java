@@ -131,13 +131,13 @@ public class CcuGateway extends AbstractHomematicGateway {
      * {@inheritDoc}
      */
     @Override
-    public void loadChannelValues(HmChannel channel) throws IOException {
+    protected void setChannelDatapointValues(HmChannel channel, HmParamsetType paramsetType) throws IOException {
         try {
-            super.loadChannelValues(channel);
+            super.setChannelDatapointValues(channel, paramsetType);
         } catch (UnknownRpcFailureException ex) {
             logger.debug(
-                    "RpcMessage unknown RPC failure (-1 Failure), fetching values with TclRega script for device '{}'",
-                    channel.getDevice().getAddress());
+                    "RpcMessage unknown RPC failure (-1 Failure), fetching values with TclRega script for device {}, channel: {}, paramset: {}",
+                    channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
 
             Collection<String> dpNames = new ArrayList<String>();
             for (HmDatapoint dp : channel.getDatapoints().values()) {
@@ -165,11 +165,11 @@ public class CcuGateway extends AbstractHomematicGateway {
     @Override
     protected void addChannelDatapoints(HmChannel channel, HmParamsetType paramsetType) throws IOException {
         try {
-            super.addChannelDatapoints(channel, paramsetType);
+            getRpcClient(channel.getDevice().getHmInterface()).addChannelDatapoints(channel, paramsetType);
         } catch (UnknownParameterSetException ex) {
             logger.debug(
-                    "RpcMessage RPC failure (-3 Unknown paramset), fetching metadata with TclRega script for device '{}' and channel {}",
-                    channel.getDevice().getAddress(), channel.getNumber());
+                    "RpcMessage RPC failure (-3 Unknown paramset), fetching metadata with TclRega script for device: {}, channel: {}, paramset: {}",
+                    channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
 
             TclScriptDataList resultList = sendScriptByName("getParamsetDescription", TclScriptDataList.class,
                     new String[] { "device_address", "channel_number" },
