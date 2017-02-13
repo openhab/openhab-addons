@@ -39,16 +39,15 @@ public class OpenSprinklerHTTPHandler extends OpenSprinklerHandler {
     public void initialize() {
         openSprinklerConfig = getConfig().as(OpenSprinklerConfig.class);
 
-        logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Password: {}, Refresh: {}).",
-                openSprinklerConfig.hostname, openSprinklerConfig.port, openSprinklerConfig.password,
-                openSprinklerConfig.refresh);
-
         if (openSprinklerConfig == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Could not parse the config for the OpenSprinkler.");
-
             return;
         }
+
+        logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Password: {}, Refresh: {}).",
+                openSprinklerConfig.hostname, openSprinklerConfig.port, openSprinklerConfig.password,
+                openSprinklerConfig.refresh);
 
         try {
             openSprinklerDevice = OpenSprinklerApiFactory.getHttpApi(openSprinklerConfig.hostname,
