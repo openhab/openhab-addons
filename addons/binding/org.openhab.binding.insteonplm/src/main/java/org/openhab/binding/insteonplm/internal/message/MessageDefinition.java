@@ -19,10 +19,10 @@ import java.util.HashMap;
  * @since 1.5.0
  */
 
-public class MsgDefinition {
+public class MessageDefinition {
     private HashMap<String, Field> m_fields = new HashMap<String, Field>();
 
-    MsgDefinition() {
+    MessageDefinition() {
     }
 
     /*
@@ -30,7 +30,7 @@ public class MsgDefinition {
      * 
      * @param m the definition to copy
      */
-    MsgDefinition(MsgDefinition m) {
+    MessageDefinition(MessageDefinition m) {
         m_fields = new HashMap<String, Field>(m.m_fields);
     }
 

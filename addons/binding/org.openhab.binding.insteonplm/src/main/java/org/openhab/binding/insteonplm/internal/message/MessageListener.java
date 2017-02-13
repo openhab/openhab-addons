@@ -14,12 +14,12 @@ package org.openhab.binding.insteonplm.internal.message;
  * @author Bernd Pfrommer
  * @since 1.5.0
  */
-public interface MsgListener {
+public interface MessageListener {
     /**
      * Invoked whenever a valid message comes in from the modem
-     * 
+     *
      * @param msg the message received
      * @param fromPort on which port (e.g. '/dev/ttyUSB0') this message arrived
      */
-    public abstract void msg(Msg msg, String fromPort);
+    public abstract void msg(Message msg, String fromPort);
 }

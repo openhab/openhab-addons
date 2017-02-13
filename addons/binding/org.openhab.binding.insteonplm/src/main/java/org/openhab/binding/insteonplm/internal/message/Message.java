@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.insteonplm.internal.message;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,7 +15,6 @@ import java.util.TreeSet;
 
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.utils.Utils;
-import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +28,8 @@ import org.slf4j.LoggerFactory;
  * @since 1.5.0
  */
 
-public class Msg {
-    private static final Logger logger = LoggerFactory.getLogger(Msg.class);
+public class Message {
+    private static final Logger logger = LoggerFactory.getLogger(Message.class);
 
     /**
      * Represents the direction of the message from the host's view.
@@ -64,28 +61,21 @@ public class Msg {
         }
     }
 
-    // has the structure of all known messages
-    private static final HashMap<String, Msg> s_msgMap = new HashMap<String, Msg>();
-    // maps between command number and the length of the header
-    private static final HashMap<Integer, Integer> s_headerMap = new HashMap<Integer, Integer>();
-    // has templates for all message from modem to host
-    private static final HashMap<Integer, Msg> s_replyMap = new HashMap<Integer, Msg>();
-
     private int m_headerLength = -1;
     private byte[] m_data = null;
-    private MsgDefinition m_definition = new MsgDefinition();
+    private MessageDefinition m_definition = new MessageDefinition();
     private Direction m_direction = Direction.TO_MODEM;
     private long m_quietTime = 0;
 
     /**
      * Constructor
-     * 
+     *
      * @param headerLength length of message header (in bytes)
      * @param data byte array with message
      * @param dataLength length of byte array data (in bytes)
      * @param dir direction of the message (from/to modem)
      */
-    public Msg(int headerLength, byte[] data, int dataLength, Direction dir) {
+    public Message(int headerLength, byte[] data, int dataLength, Direction dir) {
         m_headerLength = headerLength;
         m_direction = dir;
         initialize(data, 0, dataLength);
@@ -94,37 +84,15 @@ public class Msg {
     /**
      * Copy constructor, needed to make a copy of the templates when
      * generating messages from them.
-     * 
+     *
      * @param m the message to make a copy of
      */
-    public Msg(Msg m) {
+    public Message(Message m) {
         m_headerLength = m.m_headerLength;
         m_data = m.m_data.clone();
         // the message definition usually doesn't change, but just to be sure...
-        m_definition = new MsgDefinition(m.m_definition);
+        m_definition = new MessageDefinition(m.m_definition);
         m_direction = m.m_direction;
-    }
-
-    static {
-        // Use xml msg loader to load configs
-        try {
-            InputStream stream = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("msg_definitions.xml");
-            if (stream != null) {
-                HashMap<String, Msg> msgs = XMLMessageReader.s_readMessageDefinitions(stream);
-                s_msgMap.putAll(msgs);
-            } else {
-                logger.error("could not get message definition resource!");
-            }
-        } catch (IOException e) {
-            logger.error("i/o error parsing xml insteon message definitions", e);
-        } catch (ParsingException e) {
-            logger.error("parse error parsing xml insteon message definitions", e);
-        } catch (FieldException e) {
-            logger.error("got field exception while parsing xml insteon message definitions", e);
-        }
-        s_buildHeaderMap();
-        s_buildLengthMap();
     }
 
     //
@@ -135,7 +103,7 @@ public class Msg {
      * Experience has shown that if Insteon messages are sent in close succession,
      * only the first one will make it. The quiet time parameter says how long to
      * wait after a message before the next one can be sent.
-     * 
+     *
      * @return the time (in milliseconds) to pause after message has been sent
      */
     public long getQuietTime() {
@@ -158,7 +126,7 @@ public class Msg {
         return m_direction;
     }
 
-    public MsgDefinition getDefinition() {
+    public MessageDefinition getDefinition() {
         return m_definition;
     }
 
@@ -239,7 +207,7 @@ public class Msg {
         return false;
     }
 
-    public void setDefinition(MsgDefinition d) {
+    public void setDefinition(MessageDefinition d) {
         m_definition = d;
     }
 
@@ -274,7 +242,7 @@ public class Msg {
 
     /**
      * Will initialize the message with a byte[], an offset, and a length
-     * 
+     *
      * @param data the src byte array
      * @param offset the offset in the src byte array
      * @param len the length to copy from the src byte array
@@ -290,7 +258,7 @@ public class Msg {
 
     /**
      * Will put a byte at the specified key
-     * 
+     *
      * @param key the string key in the message definition
      * @param value the byte to put
      */
@@ -301,7 +269,7 @@ public class Msg {
 
     /**
      * Will put an int at the specified field key
-     * 
+     *
      * @param key the name of the field
      * @param value the int to put
      */
@@ -312,7 +280,7 @@ public class Msg {
 
     /**
      * Will put address bytes at the field
-     * 
+     *
      * @param key the name of the field
      * @param adr the address to put
      */
@@ -323,7 +291,7 @@ public class Msg {
 
     /**
      * Will fetch a byte
-     * 
+     *
      * @param key the name of the field
      * @return the byte
      */
@@ -336,7 +304,7 @@ public class Msg {
 
     /**
      * Will fetch a byte array starting at a certain field
-     * 
+     *
      * @param key the name of the first field
      * @param number of bytes to get
      * @return the byte array
@@ -356,7 +324,7 @@ public class Msg {
 
     /**
      * Will fetch address from field
-     * 
+     *
      * @param field the filed name to fetch
      * @return the address
      */
@@ -369,7 +337,7 @@ public class Msg {
 
     /**
      * Fetch 3-byte (24bit) from message
-     * 
+     *
      * @param key1 the key of the msb
      * @param key2 the key of the second msb
      * @param key3 the key of the lsb
@@ -393,7 +361,7 @@ public class Msg {
 
     /**
      * Sets the userData fields from a byte array
-     * 
+     *
      * @param data
      */
     public void setUserData(byte[] arg) {
@@ -420,7 +388,7 @@ public class Msg {
 
     /**
      * Calculate and set the CRC with the older 1-byte method
-     * 
+     *
      * @return the calculated crc
      */
     public int setCRC() {
@@ -442,7 +410,7 @@ public class Msg {
 
     /**
      * Calculate and set the CRC with the newer 2-byte method
-     * 
+     *
      * @return the calculated crc
      */
     public int setCRC2() {
@@ -512,119 +480,5 @@ public class Msg {
             }
         }
         return s;
-    }
-
-    /**
-     * Factory method to create Msg from raw byte stream received from the
-     * serial port.
-     * 
-     * @param m_buf the raw received bytes
-     * @param msgLen length of received buffer
-     * @param isExtended whether it is an extended message or not
-     * @return message, or null if the Msg cannot be created
-     */
-    public static Msg s_createMessage(byte[] m_buf, int msgLen, boolean isExtended) {
-        if (m_buf == null || m_buf.length < 2) {
-            return null;
-        }
-        Msg template = s_replyMap.get(s_cmdToKey(m_buf[1], isExtended));
-        if (template == null) {
-            return null; // cannot find lookup map
-        }
-        if (msgLen != template.getLength()) {
-            logger.error("expected msg {} len {}, got {}", template.getCommandNumber(), template.getLength(), msgLen);
-            return null;
-        }
-        Msg msg = new Msg(template.getHeaderLength(), m_buf, msgLen, Direction.FROM_MODEM);
-        msg.setDefinition(template.getDefinition());
-        return (msg);
-    }
-
-    /**
-     * Finds the header length from the insteon command in the received message
-     * 
-     * @param cmd the insteon command received in the message
-     * @return the length of the header to expect
-     */
-    public static int s_getHeaderLength(byte cmd) {
-        Integer len = s_headerMap.get(new Integer(cmd));
-        if (len == null) {
-            return (-1); // not found
-        }
-        return len;
-    }
-
-    /**
-     * Tries to determine the length of a received Insteon message.
-     * 
-     * @param b Insteon message command received
-     * @param isExtended flag indicating if it is an extended message
-     * @return message length, or -1 if length cannot be determined
-     */
-    public static int s_getMessageLength(byte b, boolean isExtended) {
-        int key = s_cmdToKey(b, isExtended);
-        Msg msg = s_replyMap.get(key);
-        if (msg == null) {
-            return -1;
-        }
-        return msg.getLength();
-    }
-
-    /**
-     * From bytes received thus far, tries to determine if an Insteon
-     * message is extended or standard.
-     * 
-     * @param buf the received bytes
-     * @param len the number of bytes received so far
-     * @param headerLength the known length of the header
-     * @return true if it is definitely extended, false if cannot be
-     *         determined or if it is a standard message
-     */
-    public static boolean s_isExtended(byte[] buf, int len, int headerLength) {
-        if (headerLength <= 2) {
-            return false;
-        } // extended messages are longer
-        if (len < headerLength) {
-            return false;
-        } // not enough data to tell if extended
-        byte flags = buf[headerLength - 1]; // last byte says flags
-        boolean isExtended = (flags & 0x10) == 0x10; // bit 4 is the message
-        return (isExtended);
-    }
-
-    /**
-     * Creates Insteon message (for sending) of a given type
-     * 
-     * @param type the type of message to create, as defined in the xml file
-     * @return reference to message created
-     * @throws IOException if there is no such message type known
-     */
-    public static Msg s_makeMessage(String type) throws IOException {
-        Msg m = s_msgMap.get(type);
-        if (m == null) {
-            throw new IOException("unknown message type: " + type);
-        }
-        return new Msg(m);
-    }
-
-    private static int s_cmdToKey(byte cmd, boolean isExtended) {
-        return (cmd + (isExtended ? 256 : 0));
-    }
-
-    private static void s_buildHeaderMap() {
-        for (Msg m : s_msgMap.values()) {
-            if (m.getDirection() == Direction.FROM_MODEM) {
-                s_headerMap.put(new Integer(m.getCommandNumber()), m.getHeaderLength());
-            }
-        }
-    }
-
-    private static void s_buildLengthMap() {
-        for (Msg m : s_msgMap.values()) {
-            if (m.getDirection() == Direction.FROM_MODEM) {
-                Integer key = new Integer(s_cmdToKey(m.getCommandNumber(), m.isExtended()));
-                s_replyMap.put(key, m);
-            }
-        }
     }
 }

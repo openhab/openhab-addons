@@ -9,6 +9,8 @@ package org.openhab.binding.insteonplm.handler;
 
 import static org.openhab.binding.insteonplm.InsteonPLMBindingConstants.CHANNEL_1;
 
+import java.io.IOException;
+
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -19,6 +21,9 @@ import org.openhab.binding.insteonplm.internal.device.DeviceFeatureFactory;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.device.RequestQueueManager;
 import org.openhab.binding.insteonplm.internal.driver.Port;
+import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.MessageFactory;
+import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +37,7 @@ public class InsteonPLMBridgeHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(InsteonPLMBridgeHandler.class);
     private RequestQueueManager requestQueueManager;
     private DeviceFeatureFactory deviceFeatureFactory;
+    private MessageFactory messageFactory;
     private Port port;
 
     public InsteonPLMBridgeHandler(Thing thing) {
@@ -54,8 +60,16 @@ public class InsteonPLMBridgeHandler extends BaseThingHandler {
     public void initialize() {
         InsteonPLMBridgeConfiguration config = getConfigAs(InsteonPLMBridgeConfiguration.class);
         // Connect to the port.
-        requestQueueManager = new RequestQueueManager();
-        deviceFeatureFactory = new DeviceFeatureFactory();
+        try {
+            requestQueueManager = new RequestQueueManager();
+            deviceFeatureFactory = new DeviceFeatureFactory();
+            messageFactory = new MessageFactory();
+        } catch (IOException e) {
+
+        } catch (FieldException f) {
+        } catch (ParsingException p) {
+        }
+
         updateStatus(ThingStatus.ONLINE);
         port = new Port(config.serialPort, driver);
     }

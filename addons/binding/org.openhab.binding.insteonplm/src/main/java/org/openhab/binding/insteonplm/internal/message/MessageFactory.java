@@ -9,8 +9,10 @@
 package org.openhab.binding.insteonplm.internal.message;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.openhab.binding.insteonplm.internal.utils.Utils;
+import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,23 +28,37 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Pfrommer
  * @since 1.5.0
  */
-public class MsgFactory {
-    private static final Logger logger = LoggerFactory.getLogger(MsgFactory.class);
+public class MessageFactory {
+    private static final Logger logger = LoggerFactory.getLogger(MessageFactory.class);
     // no idea what the max msg length could be, but
     // I doubt it'll ever be larger than 4k
     private final static int MAX_MSG_LEN = 4096;
     private byte[] m_buf = new byte[MAX_MSG_LEN];
     private int m_end = 0; // offset of end of buffer
 
+    private final XMLMessageReader m_messages;
+
     /**
      * Constructor
+     * 
+     * @throws FieldException
+     * @throws ParsingException
+     * @throws IOException
      */
-    public MsgFactory() {
+    public MessageFactory() throws IOException, ParsingException, FieldException {
+        // Use xml msg loader to load configs
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("msg_definitions.xml");
+        if (stream != null) {
+            m_messages = new XMLMessageReader(stream);
+        } else {
+            logger.error("could not get message definition resource!");
+            m_messages = null;
+        }
     }
 
     /**
      * Adds incoming data to the data buffer. First call addData(), then call processData()
-     * 
+     *
      * @param data data to be added
      * @param len length of data to be added
      */
@@ -62,17 +78,17 @@ public class MsgFactory {
      * After data has been added, this method processes it.
      * processData() needs to be called until it returns null, indicating that no
      * more messages can be formed from the data buffer.
-     * 
+     *
      * @return a valid message, or null if the message is not complete
      * @throws IOException if data was received with unknown command codes
      */
-    public Msg processData() throws IOException {
+    public Message processData() throws IOException {
         // handle the case where we get a pure nack
         if (m_end > 0 && m_buf[0] == 0x15) {
             logger.trace("got pure nack!");
             removeFromBuffer(1);
             try {
-                Msg m = Msg.s_makeMessage("PureNACK");
+                Message m = makeMessage("PureNACK");
                 return m;
             } catch (IOException e) {
                 return null;
@@ -89,8 +105,8 @@ public class MsgFactory {
         boolean isExtended = false;
         if (m_end > 1) {
             // we have some data, but do we have enough to read the entire header?
-            int headerLength = Msg.s_getHeaderLength(m_buf[1]);
-            isExtended = Msg.s_isExtended(m_buf, m_end, headerLength);
+            int headerLength = m_messages.getHeaderLength(m_buf[1]);
+            isExtended = m_messages.isExtended(m_buf, m_end, headerLength);
             logger.trace("header length expected: {} extended: {}", headerLength, isExtended);
             if (headerLength < 0) {
                 removeFromBuffer(1); // get rid of the leading 0x02 so draining works
@@ -98,7 +114,7 @@ public class MsgFactory {
             } else if (headerLength >= 2) {
                 if (m_end >= headerLength) {
                     // only when the header is complete do we know that isExtended is correct!
-                    msgLen = Msg.s_getMessageLength(m_buf[1], isExtended);
+                    msgLen = m_messages.getMessageLength(m_buf[1], isExtended);
                     if (msgLen < 0) {
                         // Cannot make sense out of the combined command code & isExtended flag.
                         removeFromBuffer(1);
@@ -111,9 +127,9 @@ public class MsgFactory {
             }
         }
         logger.trace("msgLen expected: {}", msgLen);
-        Msg msg = null;
+        Message msg = null;
         if (msgLen > 0 && m_end >= msgLen) {
-            msg = Msg.s_createMessage(m_buf, msgLen, isExtended);
+            msg = m_messages.createMessage(m_buf, msgLen, isExtended);
             removeFromBuffer(msgLen);
         }
         logger.trace("keeping buffer len {} data: {}", m_end, Utils.getHexString(m_buf, m_end));
@@ -138,5 +154,20 @@ public class MsgFactory {
         }
         System.arraycopy(m_buf, len, m_buf, 0, m_end + 1 - len);
         m_end -= len;
+    }
+
+    /**
+     * Creates Insteon message (for sending) of a given type
+     *
+     * @param type the type of message to create, as defined in the xml file
+     * @return reference to message created
+     * @throws IOException if there is no such message type known
+     */
+    public Message makeMessage(String type) throws IOException {
+        Message m = m_messages.getMessage(type);
+        if (m == null) {
+            throw new IOException("unknown message type: " + type);
+        }
+        return new Message(m);
     }
 }

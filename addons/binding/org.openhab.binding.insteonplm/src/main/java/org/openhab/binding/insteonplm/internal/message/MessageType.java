@@ -16,10 +16,10 @@ import java.util.HashMap;
  * @author Daniel Pfrommer
  * @since 1.5.0
  */
-public enum MsgType {
+public enum MessageType {
     /*
      * From the official Insteon docs: the message flags are as follows:
-     * 
+     *
      * Bit 0 max hops low bit
      * Bit 1 max hops high bit
      * Bit 2 hops left low bit
@@ -39,21 +39,21 @@ public enum MsgType {
     ALL_LINK_CLEANUP_NACK(0xe0),
     INVALID(0xff); // should never happen
 
-    private static HashMap<Integer, MsgType> s_hash = new HashMap<Integer, MsgType>();
+    private static HashMap<Integer, MessageType> s_hash = new HashMap<Integer, MessageType>();
 
     private byte m_byteValue = 0;
 
     /**
      * Constructor
-     * 
+     *
      * @param b byte with insteon message type flags set
      */
-    MsgType(int b) {
+    MessageType(int b) {
         m_byteValue = (byte) b;
     }
 
     static {
-        for (MsgType t : MsgType.values()) {
+        for (MessageType t : MessageType.values()) {
             Integer i = new Integer(t.getByteValue() & 0xff);
             s_hash.put(i, t);
         }
@@ -63,9 +63,9 @@ public enum MsgType {
         return m_byteValue;
     }
 
-    public static MsgType s_fromValue(byte b) throws IllegalArgumentException {
+    public static MessageType s_fromValue(byte b) throws IllegalArgumentException {
         Integer i = new Integer((b & 0xe0));
-        MsgType mt = s_hash.get(i);
+        MessageType mt = s_hash.get(i);
         if (mt == null) {
             throw new IllegalArgumentException("msg type of byte value " + i + " not found");
         }
