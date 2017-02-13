@@ -6,25 +6,25 @@ This binding allows you to integrate, view, control and configure all Homematic 
 ## Supported Bridges
 
 All gateways which provides the Homematic BIN- or XML-RPC API: 
-- CCU 1+2 
-- [Homegear](https://www.homegear.eu)
-- [YAHM](https://github.com/leonsio/YAHM)
-- [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
-- [OCCU](https://github.com/eq-3/occu)
+* CCU 1+2 
+* [Homegear](https://www.homegear.eu)
+* [YAHM](https://github.com/leonsio/YAHM)
+* [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
+* [OCCU](https://github.com/eq-3/occu)
 
 The Homematic IP Access Point does not support this API and can't be used with this binding. But you can control Homematic IP devices with a CCU2 with at least firmware 2.17.15.
 
 These ports are used by the binding by default to communicate **TO** the gateway:  
-- RF components: 2001
-- WIRED components: 2000
-- HMIP components: 2010 
-- CUxD: 8701
-- TclRegaScript: 8181
-- Groups: 9292
+* RF components: 2001
+* WIRED components: 2000
+* HMIP components: 2010 
+* CUxD: 8701
+* TclRegaScript: 8181
+* Groups: 9292
 
 And **FROM** the gateway to openHab:
-- XML-RPC: 9125
-- BIN-RPC: 9126
+* XML-RPC: 9125
+* BIN-RPC: 9126
 
 **Note:** The binding tries to identify the gateway with XML-RPC and uses henceforth:
 
@@ -288,7 +288,20 @@ The gateway autodetection of the binding can not clearly identify the gateway an
 
 **Variables out of sync**  
 
-The CCU only sends a event if a datapoint of a device has changed. There is (currently) no way to receive a event automatically when a variable has changed. To reload all variables, send a REFRESH command to any variable.
+The CCU only sends a event if a datapoint of a device has changed. There is (currently) no way to receive a event automatically when a variable has changed. To reload all variable values, send a REFRESH command to any variable.  
+e.g you have a item linked to a variable with the name Var_1  
+In the console:
+```
+smarthome send Var_1 REFRESH
+```
+In scripts:
+```
+import org.eclipse.smarthome.core.types.RefreshType
+...
+sendCommand(Var_1, RefreshType.REFRESH)
+```
+
+**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported. You have to delete the Thing, start a scan and add it again. 
 
 ### Debugging and Tracing
 
