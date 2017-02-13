@@ -96,6 +96,9 @@ For rgbwLed/rgbwwLed bulbs these channels are supported:
     ledlink             Sync bulb to this zone within 3 seconds of light bulb socket power on
     ledunlink           Clear bulb from this zone within 3 seconds of light bulb socket power on
 
+You can set up a fading time from 200ms to 1200ms in the configuration of a rgbwLed/rgbwwLed (iBox) bulb. Intermediate steps
+will be computed and applied every 50ms to the bulb until the final value has been reached.
+
 [(See the API)](http://www.limitlessled.com/dev/). 
 
 Limitations:
