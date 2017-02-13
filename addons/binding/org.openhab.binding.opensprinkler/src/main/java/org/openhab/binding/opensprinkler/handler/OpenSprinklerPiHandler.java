@@ -38,14 +38,14 @@ public class OpenSprinklerPiHandler extends OpenSprinklerHandler {
     public void initialize() {
         openSprinklerConfig = getConfig().as(OpenSprinklerPiConfig.class);
 
-        logger.debug("Initializing OpenSprinkler with config (Refresh: {}).", openSprinklerConfig.refresh);
-
         if (openSprinklerConfig == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Could not parse the config for the OpenSprinkler.");
 
             return;
         }
+
+        logger.debug("Initializing OpenSprinkler with config (Refresh: {}).", openSprinklerConfig.refresh);
 
         try {
             openSprinklerDevice = OpenSprinklerApiFactory.getGpioApi(openSprinklerConfig.stations);
