@@ -165,8 +165,8 @@ public abstract class RpcClient {
             } catch (UnknownRpcFailureException ex) {
                 if (paramsetType == HmParamsetType.VALUES) {
                     logger.debug(
-                            "RpcResponse unknown RPC failure (-1 Failure), fetching values with another API method for device '{}'",
-                            channel.getDevice().getAddress());
+                            "RpcResponse unknown RPC failure (-1 Failure), fetching values with another API method for device: {}, channel: {}, paramset: {}",
+                            channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
                     setChannelDatapointValues(channel);
                 } else {
                     throw ex;
