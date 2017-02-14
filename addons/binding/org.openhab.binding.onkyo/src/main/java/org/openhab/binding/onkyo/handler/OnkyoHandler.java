@@ -263,6 +263,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 handlePlayUri(command);
                 break;
             case CHANNEL_ALBUM_ART:
+            case CHANNEL_ALBUM_ART_URL:
                 if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommand.NETUSB_ALBUM_ART_QUERY);
                 }
