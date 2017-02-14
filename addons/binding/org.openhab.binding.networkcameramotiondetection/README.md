@@ -64,3 +64,17 @@ then
     NetworkCamera_Motion.postUpdate(OFF)
 end
 ```
+
+## Logging
+
+For problem solving, if binding logging is not enough, Apache FTP server logging can also be enabled by the following command in the karaf console:
+
+```
+log:set DEBUG org.apache.ftpserver
+```
+
+and set back to default level:
+
+```
+log:set DEFAULT org.apache.ftpserver
+```
