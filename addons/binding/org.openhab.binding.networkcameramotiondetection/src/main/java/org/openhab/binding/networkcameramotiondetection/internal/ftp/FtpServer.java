@@ -213,7 +213,7 @@ public class FtpServer {
 
         @Override
         public FtpletResult onConnect(FtpSession session) throws FtpException, IOException {
-            System.out.println("User connected to FtpServer");
+            logger.debug("User connected to FtpServer");
             return super.onConnect(session);
         }
 
