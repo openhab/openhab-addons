@@ -539,6 +539,12 @@ public class FtpServer {
             return false;
         }
 
+        @Override
+        public Object getPhysicalFile() {
+            logger.trace("getPhysicalFile");
+            return null;
+        }
+
     }
 
     private class MyOutputStream extends OutputStream {

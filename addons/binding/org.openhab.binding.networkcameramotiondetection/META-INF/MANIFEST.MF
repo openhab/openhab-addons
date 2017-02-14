@@ -6,9 +6,9 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
- lib/ftplet-api-1.0.6.jar,
- lib/ftpserver-core-1.0.6.jar,
- lib/mina-core-2.0.9.jar
+ lib/ftplet-api-1.1.0.jar,
+ lib/ftpserver-core-1.1.0.jar,
+ lib/mina-core-2.0.16.jar
 Import-Package: 
  com.google.common.io,
  org.apache.commons.io,
