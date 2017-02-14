@@ -134,7 +134,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         HmDatapoint dp = new HmDatapoint();
         dp.setName(name);
         dp.setDescription(name);
-        dp.setUnit(StringUtils.replace(StringUtils.trimToNull(unit), "�", "°"));
+        dp.setUnit(StringUtils.replace(StringUtils.trimToNull(unit), "\ufffd", "°"));
         if (dp.getUnit() == null && StringUtils.startsWith(dp.getName(), "RSSI_")) {
             dp.setUnit("dBm");
         }
