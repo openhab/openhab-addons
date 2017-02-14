@@ -21,7 +21,7 @@ public class NetworkCameraMotionDetectionBindingConstants {
     public static final String BINDING_ID = "networkcameramotiondetection";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "NetworkCamera");
+    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "networkcamera");
 
     // List of all Channel ids
     public final static String IMAGE = "image";
