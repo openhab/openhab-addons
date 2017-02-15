@@ -8,12 +8,18 @@
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 
-        <label>2413U</label>
+        <label>PowerLinc modem</label>
         <description>PowerLinc 2413U USB modem</description>
 
         <channels>
             <channel id="broadcastOnOff" typeId="switch" />
             <channel id="pendingWrite" typeId="decimal" />
         </channels>
+        
+        <properties>
+            <property name="productKey">0x000045</property>
+            <property name="model">2413U</property>
+        </properties>
+        
     </thing-type>
 </thing:thing-descriptions>

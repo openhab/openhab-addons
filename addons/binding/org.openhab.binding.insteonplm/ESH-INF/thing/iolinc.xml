@@ -1,21 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-    
-    <thing-type id="iolinc" listed="false">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-        <label>IO Link</label>
-        <description>The IO Link device</description>
+	<thing-type id="iolinc" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
 
-        <channels>
-            <channel id="contact" typeId="switch" />
-            <channel id="lastHeardFrom" typeId="lastHeardFrom" />
-            <channel id="switch" typeId="switch" />
-            <channel id="pendingWrite" typeId="decimal" />
-        </channels>
-    </thing-type>
+		<label>IO Link</label>
+		<description>The IO Link device</description>
+
+		<channels>
+			<channel id="contact" typeId="switch">
+				<properties>
+					<property name="feature">IOLincContact</property>
+				</properties>
+			</channel>
+			<channel id="switch" typeId="switch">
+				<properties>
+					<property name="feature">IOLincSwitch</property>
+				</properties>
+			</channel>
+			<channel id="lastHeardFrom" typeId="lastHeardFrom" />
+			<channel id="pendingWrite" typeId="decimal" />
+		</channels>
+		
+		<properties>
+			<property name="productKey">0x00001A</property>
+			<property name="model">2450</property>
+		</properties>
+	</thing-type>
 </thing:thing-descriptions>

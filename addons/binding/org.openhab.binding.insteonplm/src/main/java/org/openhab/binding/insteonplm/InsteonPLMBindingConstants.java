@@ -27,15 +27,13 @@ public class InsteonPLMBindingConstants {
 
     // Properties to track information about the thing.
     public final static String PROPERTY_INSTEON_ADDRESS = "address";
-    // This is a comma delimited string.
-    public final static String PROPERTY_INSTEON_FEATURES = "feature";
-    // This is a comma delimited string.
-    public final static String PROPERTY_INSTEON_FEATURE_GROUPS = "featureGroups";
     public final static String PROPERTY_INSTEON_PRODUCT_KEY = "productkey";
+    public static final Object PROPERTY_INSTEON_MODEL = "model";
 
     // Properties for channels to help configure them.
     public final static String PROPERTY_ONOFF_EXTENDED_NEEDED = "ext";
     public final static String PROPERTY_ONOFF_EXTENDED_DATA1 = "d1";
     public final static String PROPERTY_ONOFF_EXTENDED_DATA2 = "d2";
     public final static String PROPERTY_ONOFF_EXTENDED_DATA3 = "d3";
+
 }

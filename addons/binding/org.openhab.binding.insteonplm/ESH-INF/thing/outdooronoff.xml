@@ -3,28 +3,27 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="countdowntimer" listed="false">
+	<thing-type id="outdooronoff" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Keypadlinc Countdown Timer</label>
-		<description>Keypadlinc Countdown Timer</description>
+		<label>Outdoor Switch</label>
+		<description>An outdoor appliance connection that supports on/off</description>
 
 		<channels>
-			<channel id="dimmer" typeId="dimmer">
+			<channel id="switch" typeId="switch">
 				<properties>
-					<property name="message">GenericDimmer</property>
+					<property name="feature">GenericSwitch</property>
 				</properties>
 			</channel>
 			<channel id="lastHeardFrom" typeId="lastHeardFrom" />
 			<channel id="pendingWrite" typeId="decimal" />
 		</channels>
-		
+
 		<properties>
-            <property name="productKey">0x000041</property>
-            <property name="model">2484DWH8</property>
-        </properties>
-		
+			<property name="productKey">F00.00.0D</property>
+			<property name="model">2634-222</property>
+		</properties>
 	</thing-type>
 </thing:thing-descriptions>

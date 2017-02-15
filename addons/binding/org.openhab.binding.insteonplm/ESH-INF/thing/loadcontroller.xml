@@ -3,18 +3,18 @@
     xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="smokebridge" listed="false">
+    <thing-type id="loadcontroller" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 
-        <label>Smoke Bridge</label>
-        <description>Insteon Smoke Bridge</description>
+        <label>220V on/off</label>
+        <description>220V 30-amp load controller n/o</description>
 
         <channels>
-            <channel id="smokeDetected" typeId="switch">
+            <channel id="switch" typeId="switch">
                 <properties>
-                    <property name="feature">ReceiveBroadcast</property>
+                    <property name="feature">GenericSwitch</property>
                 </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
@@ -22,8 +22,8 @@
         </channels>
 
         <properties>
-            <property name="productKey">F00.00.22</property>
-            <property name="model">2982-222</property>
+            <property name="productKey">F00.00.1F</property>
+            <property name="model">2477SA1</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

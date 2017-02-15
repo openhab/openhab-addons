@@ -9,13 +9,27 @@
         </supported-bridge-type-refs>
 
         <label>Open/Close Sensor</label>
-        <description>The open/close sensor</description>
+        <description>Wireless open/close sensor</description>
 
         <channels>
-            <channel id="contact" typeId="contact" />
-            <channel id="batteryLevel" typeId="battery" />
+            <channel id="contact" typeId="contact">
+                <properties>
+                    <property name="message">GenericContact</property>
+                </properties>
+            </channel>
+            <channel id="batteryLevel" typeId="battery">
+                <properties>
+                    <property name="message">GenericBatteryLevel</property>
+                </properties>
+            </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
             <channel id="pendingWrite" typeId="decimal" />
         </channels>
+        
+        <properties>
+            <property name="productKey">0x000049</property>
+            <property name="model">2843-222</property>
+        </properties>
+        
     </thing-type>
 </thing:thing-descriptions>

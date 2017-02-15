@@ -2,63 +2,62 @@
 <thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
-    <thing-type id="miniremote8" listed="false">
+    
+    <thing-type id="keypadlinc8button2" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 
-        <label>Mini Remote 8 button</label>
-        <description>8 button mini-remote</description>
+        <label>KeypadLinc Dimmer 8 Button</label>
+        <description>KeypadLinc 8 Button</description>
 
         <channels>
-            <channel id="button1" typeId="switch">
+            <channel id="loadDimmer" typeId="dimmer">
+            </channel>
+            <channel id="rampDimmer" typeId="number">
+            </channel>
+            <channel id="buttonB" typeId="switch">
                 <properties>
-                    <property name="feature">RemoteButton1</property>
+                    <property name="message">KeyPadButton2</property>
                 </properties>
             </channel>
-            <channel id="button2" typeId="switch">
+            <channel id="buttonC" typeId="switch">
                 <properties>
-                    <property name="feature">RemoteButton2</property>
+                    <property name="message">KeyPadButton3</property>
                 </properties>
             </channel>
-            <channel id="button3" typeId="switch">
+            <channel id="buttonD" typeId="switch">
                 <properties>
-                    <property name="feature">RemoteButton3</property>
+                    <property name="message">KeyPadButton4</property>
                 </properties>
             </channel>
-            <channel id="button4" typeId="switch">
+            <channel id="buttonE" typeId="switch">
                 <properties>
-                    <property name="feature">RemoteButton4</property>
+                    <property name="message">KeyPadButton5</property>
                 </properties>
             </channel>
-            <channel id="button5" typeId="switch">
+            <channel id="buttonF" typeId="switch">
                 <properties>
-                    <property name="feature">RemoteButton5</property>
+                    <property name="message">KeyPadButton6</property>
                 </properties>
             </channel>
-            <channel id="button6" typeId="switch">
+            <channel id="buttonG" typeId="switch">
                 <properties>
-                    <property name="feature">RemoteButton6</property>
+                    <property name="message">KeyPadButton7</property>
                 </properties>
             </channel>
-            <channel id="button7" typeId="switch">
+            <channel id="buttonH" typeId="switch">
                 <properties>
-                    <property name="feature">RemoteButton7</property>
-                </properties>
-            </channel>
-            <channel id="button8" typeId="switch">
-                <properties>
-                    <property name="feature">RemoteButton8</property>
+                    <property name="message">KeyPadButton8</property>
                 </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
             <channel id="pendingWrite" typeId="decimal" />
         </channels>
-
+        
         <properties>
-            <property name="productKey">F00.00.20</property>
-            <property name="model">2342-222</property>
+            <property name="productKey">F00.00.16</property>
+            <property name="model">2334-232</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

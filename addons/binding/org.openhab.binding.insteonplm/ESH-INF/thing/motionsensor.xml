@@ -12,11 +12,29 @@
         <description>The 2841-222 motion sensor</description>
 
         <channels>
-            <channel id="contact" typeId="contact" />
-            <channel id="batteryLevel" typeId="battery" />
-            <channel id="lightLevel" typeId="integer" />
+            <channel id="contact" typeId="contact">
+                <properties>
+                    <property name="message">WirelessMotionSensorContact</property>
+                </properties>
+            </channel>
+            <channel id="batteryLevel" typeId="battery">
+                <properties>
+                    <property name="message">MotionSensorBattery</property>
+                </properties>
+            </channel>
+            <channel id="lightLevel" typeId="integer">
+                <properties>
+                    <property name="message">MotionSensorLightLevel</property>
+                </properties>
+            </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
             <channel id="pendingWrite" typeId="decimal" />
         </channels>
+        
+        <properties>
+            <property name="productKey">0x00004A</property>
+            <property name="model">2842-222</property>
+        </properties>
+        
     </thing-type>
 </thing:thing-descriptions>

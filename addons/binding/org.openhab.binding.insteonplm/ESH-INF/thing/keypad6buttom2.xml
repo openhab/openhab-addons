@@ -3,52 +3,43 @@
     xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
     
-    <thing-type id="keypadlinc8button" listed="false">
+    <thing-type id="keypadlinc6button2" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 
-        <label>KeypadLinc Dimmer 8 Button</label>
-        <description>KeypadLinc 8 Button</description>
+        <label>KeypadLinc dimmer 6 Button</label>
+        <description>KeypadLinc dimmer 6 Button</description>
 
         <channels>
             <channel id="loadDimmer" typeId="dimmer">
-            </channel>
-            <channel id="rampDimmer" typeId="number">
-            </channel>
-            <channel id="buttonB" typeId="switch">
                 <properties>
-                    <property name="message">KeyPadButton2</property>
+                    <property name="message">LoadDimmerButton</property>
                 </properties>
             </channel>
-            <channel id="buttonC" typeId="switch">
+            <channel id="rampDimmer" typeId="number">
+                <properties>
+                    <property name="message">LoadDimmerRamp</property>
+                </properties>
+            </channel>
+            <channel id="buttonA" typeId="switch">
                 <properties>
                     <property name="message">KeyPadButton3</property>
                 </properties>
             </channel>
-            <channel id="buttonD" typeId="switch">
+            <channel id="buttonB" typeId="switch">
                 <properties>
                     <property name="message">KeyPadButton4</property>
                 </properties>
             </channel>
-            <channel id="buttonE" typeId="switch">
+            <channel id="buttonC" typeId="switch">
                 <properties>
                     <property name="message">KeyPadButton5</property>
                 </properties>
             </channel>
-            <channel id="buttonF" typeId="switch">
+            <channel id="buttonD" typeId="switch">
                 <properties>
                     <property name="message">KeyPadButton6</property>
-                </properties>
-            </channel>
-            <channel id="buttonG" typeId="switch">
-                <properties>
-                    <property name="message">KeyPadButton7</property>
-                </properties>
-            </channel>
-            <channel id="buttonH" typeId="switch">
-                <properties>
-                    <property name="message">KeyPadButton8</property>
                 </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
@@ -56,8 +47,8 @@
         </channels>
         
         <properties>
-            <property name="productKey">0x000051</property>
-            <property name="model">2486DWH8</property>
+            <property name="productKey">F00.00.15</property>
+            <property name="model">2334-232</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

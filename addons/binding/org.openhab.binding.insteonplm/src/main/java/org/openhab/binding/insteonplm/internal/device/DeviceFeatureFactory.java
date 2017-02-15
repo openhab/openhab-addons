@@ -3,16 +3,34 @@ package org.openhab.binding.insteonplm.internal.device;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonPLMBridgeHandler;
+import org.openhab.binding.insteonplm.internal.utils.Utils;
 import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Methods for creating DeviceFeature classes from the resource xml file.
- * 
+ *
  * @author David Bennett - Initial contribution
  */
 public class DeviceFeatureFactory {
@@ -49,7 +67,7 @@ public class DeviceFeatureFactory {
      */
     private void readFeatureTemplates(InputStream input) {
         try {
-            ArrayList<DeviceFeatureBuilder> features = FeatureTemplateLoader.s_readTemplates(input);
+            ArrayList<DeviceFeatureBuilder> features = readTemplates(input);
             for (DeviceFeatureBuilder f : features) {
                 m_features.put(f.getName(), f);
             }
@@ -69,4 +87,135 @@ public class DeviceFeatureFactory {
     public boolean isDeviceFeature(String value) {
         return m_features.containsKey(value);
     }
+
+    /**
+     * Reads in the xml file for the templates into this factory.
+     *
+     * @param input The input file to read from
+     * @return the array of device feature builders
+     * @throws IOException
+     * @throws ParsingException
+     */
+    private ArrayList<DeviceFeatureBuilder> readTemplates(InputStream input) throws IOException, ParsingException {
+        ArrayList<DeviceFeatureBuilder> features = new ArrayList<DeviceFeatureBuilder>();
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            // Parse it!
+            Document doc = dBuilder.parse(input);
+            doc.getDocumentElement().normalize();
+
+            Element root = doc.getDocumentElement();
+
+            NodeList nodes = root.getChildNodes();
+
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element e = (Element) node;
+                    if (e.getTagName().equals("feature")) {
+                        features.add(parseFeature(e));
+                    }
+                }
+            }
+        } catch (SAXException e) {
+            throw new ParsingException("Failed to parse XML!", e);
+        } catch (ParserConfigurationException e) {
+            throw new ParsingException("Got parser config exception! ", e);
+        }
+        return features;
+    }
+
+    private DeviceFeatureBuilder parseFeature(Element e) throws ParsingException {
+        String name = e.getAttribute("name");
+        boolean statusFeature = e.getAttribute("statusFeature").equals("true");
+        DeviceFeatureBuilder feature = new DeviceFeatureBuilder();
+        feature.setName(name);
+        feature.setStatusFeature(statusFeature);
+        feature.setTimeout(e.getAttribute("timeout"));
+
+        NodeList nodes = e.getChildNodes();
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element child = (Element) node;
+                if (child.getTagName().equals("message-handler")) {
+                    parseMessageHandler(child, feature);
+                } else if (child.getTagName().equals("command-handler")) {
+                    parseCommandHandler(child, feature);
+                } else if (child.getTagName().equals("message-dispatcher")) {
+                    parseMessageDispatcher(child, feature);
+                } else if (child.getTagName().equals("poll-handler")) {
+                    parsePollHandler(child, feature);
+                }
+            }
+        }
+
+        return feature;
+    }
+
+    private HandlerEntry makeHandlerEntry(Element e) throws ParsingException {
+        String handler = e.getTextContent();
+        if (handler == null) {
+            throw new ParsingException("Could not find Handler for: " + e.getTextContent());
+        }
+
+        NamedNodeMap attributes = e.getAttributes();
+        HashMap<String, String> params = new HashMap<String, String>();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Node n = attributes.item(i);
+            params.put(n.getNodeName(), n.getNodeValue());
+        }
+        return new HandlerEntry(handler, params);
+    }
+
+    private void parseMessageHandler(Element e, DeviceFeatureBuilder f) throws DOMException, ParsingException {
+        HandlerEntry he = makeHandlerEntry(e);
+        if (e.getAttribute("default").equals("true")) {
+            f.setDefaultMessageHandler(he);
+        } else {
+            String attr = e.getAttribute("cmd");
+            int command = (attr == null) ? 0 : Utils.from0xHexString(attr);
+            f.addMessageHandler(command, he);
+        }
+    }
+
+    private void parseCommandHandler(Element e, DeviceFeatureBuilder f) throws ParsingException {
+        HandlerEntry he = makeHandlerEntry(e);
+        if (e.getAttribute("default").equals("true")) {
+            f.setDefaultCommandHandler(he);
+        } else {
+            Class<? extends Command> command = parseCommandClass(e.getAttribute("command"));
+            f.addCommandHandler(command, he);
+        }
+    }
+
+    private void parseMessageDispatcher(Element e, DeviceFeatureBuilder f) throws DOMException, ParsingException {
+        HandlerEntry he = makeHandlerEntry(e);
+        f.setMessageDispatcher(he);
+        if (he.getHandlerName() == null) {
+            throw new ParsingException("Could not find MessageDispatcher for: " + e.getTextContent());
+        }
+    }
+
+    private void parsePollHandler(Element e, DeviceFeatureBuilder f) throws ParsingException {
+        HandlerEntry he = makeHandlerEntry(e);
+        f.setPollHandler(he);
+    }
+
+    private Class<? extends Command> parseCommandClass(String c) throws ParsingException {
+        if (c.equals("OnOffType")) {
+            return OnOffType.class;
+        } else if (c.equals("PercentType")) {
+            return PercentType.class;
+        } else if (c.equals("DecimalType")) {
+            return DecimalType.class;
+        } else if (c.equals("IncreaseDecreaseType")) {
+            return IncreaseDecreaseType.class;
+        } else {
+            throw new ParsingException("Unknown Command Type");
+        }
+    }
+
 }

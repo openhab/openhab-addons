@@ -258,14 +258,4 @@ public class InsteonThingHandler extends BaseThingHandler {
             }
         }
     }
-
-    /**
-     * Make an id for a channel based on the feature
-     *
-     * @param f The feature to turn into a channel id
-     * @return the channel id
-     */
-    private String makeChannelId(DeviceFeature f) {
-        return f.getName();
-    }
 }

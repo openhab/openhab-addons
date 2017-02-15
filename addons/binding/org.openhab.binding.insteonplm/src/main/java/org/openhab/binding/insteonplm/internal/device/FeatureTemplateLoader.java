@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.insteonplm.internal.device;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -42,7 +40,8 @@ import org.xml.sax.SAXException;
  */
 
 public class FeatureTemplateLoader {
-    public static ArrayList<DeviceFeatureBuilder> s_readTemplates(InputStream input) throws IOException, ParsingException {
+    public static ArrayList<DeviceFeatureBuilder> s_readTemplates(InputStream input)
+            throws IOException, ParsingException {
         ArrayList<DeviceFeatureBuilder> features = new ArrayList<DeviceFeatureBuilder>();
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -137,7 +136,8 @@ public class FeatureTemplateLoader {
         }
     }
 
-    private static void s_parseMessageDispatcher(Element e, DeviceFeatureBuilder f) throws DOMException, ParsingException {
+    private static void s_parseMessageDispatcher(Element e, DeviceFeatureBuilder f)
+            throws DOMException, ParsingException {
         HandlerEntry he = s_makeHandlerEntry(e);
         f.setMessageDispatcher(he);
         if (he.getName() == null) {
@@ -161,22 +161,6 @@ public class FeatureTemplateLoader {
             return IncreaseDecreaseType.class;
         } else {
             throw new ParsingException("Unknown Command Type");
-        }
-    }
-
-    public static void main(String[] args) throws Exception {
-        File f = new File(System.getProperty("user.home")
-                + "/workspace/openhab/bundles/binding/org.openhab.binding.insteonplm/src/main/resources/device_features.xml");
-        InputStream s = new FileInputStream(f);
-        ArrayList<DeviceFeatureBuilder> features = s_readTemplates(s);
-        for (DeviceFeatureBuilder feature : features) {
-            System.out.println(feature);
-            System.out.println(
-                    "\tPOLL: " + feature.getPollHandler() + "\n\tDISPATCH: " + feature.getDispatcher().getName());
-            System.out.println(
-                    "\tDCH: " + feature.getDefaultCommandHandler() + "\n\tDMH: " + feature.getDefaultMessageHandler());
-            System.out.println("\tMSG HANDLERS: " + feature.getMessageHandlers().size());
-            System.out.println("\tCMD HANDLERS: " + feature.getCommandHandlers());
         }
     }
 }

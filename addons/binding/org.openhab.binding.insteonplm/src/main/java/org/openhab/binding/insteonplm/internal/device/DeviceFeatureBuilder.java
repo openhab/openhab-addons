@@ -10,6 +10,7 @@ package org.openhab.binding.insteonplm.internal.device;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.smarthome.core.types.Command;
@@ -143,8 +144,7 @@ public class DeviceFeatureBuilder {
      * @param f the feature for which to create the handler
      * @return the handler which was created
      */
-    private <T extends CommandHandler> T makeCommandHandler(String name, HashMap<String, String> params,
-            DeviceFeature f) {
+    private <T extends CommandHandler> T makeCommandHandler(String name, Map<String, String> params, DeviceFeature f) {
         String cname = COMMAND_HANDLER_PACKAGE + "$" + name;
         try {
             Class<?> c = Class.forName(cname);
@@ -177,8 +177,7 @@ public class DeviceFeatureBuilder {
      * @param f the feature for which to create the handler
      * @return the handler which was created
      */
-    private <T extends MessageHandler> T makeMessageHandler(String name, HashMap<String, String> params,
-            DeviceFeature f) {
+    private <T extends MessageHandler> T makeMessageHandler(String name, Map<String, String> params, DeviceFeature f) {
         String cname = MESSAGE_HANDLER_PACKAGE + "$" + name;
         try {
             Class<?> c = Class.forName(cname);
@@ -210,26 +209,25 @@ public class DeviceFeatureBuilder {
      * @return the handler which was created
      */
     private <T extends PollHandler> T makePollHandler(HandlerEntry ph, DeviceFeature f) {
-        String cname = PollHandler.class.getName() + "$" + ph.getName();
+        String cname = PollHandler.class.getName() + "$" + ph.getHandlerName();
         try {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
             T phc = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
-            phc.setParameters(ph.getParams());
             // Call sets for the properties out of the parameters.
-            for (String paramName : ph.getParams().keySet()) {
+            for (String paramName : ph.getParameters().keySet()) {
                 Method method = dc.getMethod(
                         "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1), String.class);
                 if (method == null) {
-                    logger.error("Unable to find method {} on {}", "set" + paramName, ph.getName());
+                    logger.error("Unable to find method {} on {}", "set" + paramName, ph.getHandlerName());
                 } else {
-                    method.invoke(phc, ph.getParams().get(paramName));
+                    method.invoke(phc, ph.getParameters().get(paramName));
                 }
             }
             return phc;
         } catch (Exception e) {
-            logger.error("error trying to create message handler: {}", ph.getName(), e);
+            logger.error("error trying to create message handler: {}", ph.getHandlerName(), e);
         }
         return null;
     }
@@ -248,17 +246,19 @@ public class DeviceFeatureBuilder {
         }
         if (m_defaultCmdHandler != null) {
             f.setDefaultCommandHandler(
-                    makeCommandHandler(m_defaultCmdHandler.getName(), m_defaultCmdHandler.getParams(), f));
+                    makeCommandHandler(m_defaultCmdHandler.getHandlerName(), m_defaultCmdHandler.getParameters(), f));
         }
         if (m_defaultMsgHandler != null) {
             f.setDefaultMsgHandler(
-                    makeMessageHandler(m_defaultMsgHandler.getName(), m_defaultMsgHandler.getParams(), f));
+                    makeMessageHandler(m_defaultMsgHandler.getHandlerName(), m_defaultMsgHandler.getParameters(), f));
         }
         for (Entry<Integer, HandlerEntry> mH : m_messageHandlers.entrySet()) {
-            f.addMessageHandler(mH.getKey(), makeMessageHandler(mH.getValue().getName(), mH.getValue().getParams(), f));
+            f.addMessageHandler(mH.getKey(),
+                    makeMessageHandler(mH.getValue().getHandlerName(), mH.getValue().getParameters(), f));
         }
         for (Entry<Class<? extends Command>, HandlerEntry> cH : m_commandHandlers.entrySet()) {
-            f.addCommandHandler(cH.getKey(), makeCommandHandler(cH.getValue().getName(), cH.getValue().getParams(), f));
+            f.addCommandHandler(cH.getKey(),
+                    makeCommandHandler(cH.getValue().getHandlerName(), cH.getValue().getParameters(), f));
         }
         return f;
     }

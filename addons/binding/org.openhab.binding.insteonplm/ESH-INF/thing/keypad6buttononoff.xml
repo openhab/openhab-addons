@@ -12,13 +12,38 @@
         <description>KeypadLinc 6 Button on off</description>
 
         <channels>
-            <channel id="switch" typeId="switch" />
-            <channel id="buttonA" typeId="switch" />
-            <channel id="buttonB" typeId="switch" />
-            <channel id="buttonC" typeId="switch" />
-            <channel id="buttonD" typeId="switch" />
+            <channel id="switch" typeId="switch">
+                <properties>
+                    <property name="message">LoadSwitchButton</property>
+                </properties>
+            </channel>
+            <channel id="buttonA" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton3</property>
+                </properties>
+            </channel>
+            <channel id="buttonB" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton4</property>
+                </properties>
+            </channel>
+            <channel id="buttonC" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton5</property>
+                </properties>
+            </channel>
+            <channel id="buttonD" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton6</property>
+                </properties>
+            </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
             <channel id="pendingWrite" typeId="decimal" />
         </channels>
+        
+        <properties>
+            <property name="productKey">F00.00.14</property>
+            <property name="model">2487S</property>
+        </properties>
     </thing-type>
 </thing:thing-descriptions>

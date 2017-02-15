@@ -2,28 +2,28 @@
 <thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
-    <thing-type id="smokebridge" listed="false">
+    
+    <thing-type id="x10motion" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 
-        <label>Smoke Bridge</label>
-        <description>Insteon Smoke Bridge</description>
+        <label>x10 motion</label>
+        <description>A x10 motion sensor</description>
 
         <channels>
-            <channel id="smokeDetected" typeId="switch">
-                <properties>
-                    <property name="feature">ReceiveBroadcast</property>
-                </properties>
+            <channel id="contact" typeId="switch">
+            <properties>
+                <property name="feature">X10Contact</property>
+            </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
             <channel id="pendingWrite" typeId="decimal" />
         </channels>
-
+        
         <properties>
-            <property name="productKey">F00.00.22</property>
-            <property name="model">2982-222</property>
+            <property name="productKey">X00.00.03</property>
+            <property name="model">X10 motion</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

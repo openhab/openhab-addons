@@ -3,32 +3,37 @@
     xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
     
-    <thing-type id="onoffoutlet" listed="false">
+    <thing-type id="doorsensor" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 
-        <label>On/Off Outlet</label>
-        <description>On/Off Outlet</description>
+        <label>Door Sensor</label>
+        <description>Hidden door sensor</description>
 
         <channels>
-            <channel id="topOutlet" typeId="switch">
+            <channel id="contact" typeId="switch">
 	            <properties>
-	                <property name="feature">GenericSwitch</property>
+	                <property name="feature">WirelessMotionSensorContact</property>
 	            </properties>
             </channel>
-            <channel id="bottomOutlet" typeId="switch">
-	            <properties>
-	                <property name="feature">BottomOutlet</property>
-	            </properties>
+            <channel id="batteryLevel" typeId="decimal">
+                <properties>
+                    <property name="feature">WirelessMotionSensorDataBatteryLevel</property>
+                </properties>
+            </channel>
+            <channel id="batteryWatermark" typeId="decimal">
+                <properties>
+                    <property name="feature">WirelessMotionSensorDataBatteryWatermark</property>
+                </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
             <channel id="pendingWrite" typeId="decimal" />
         </channels>
         
         <properties>
-            <property name="productKey">0x000039</property>
-            <property name="model">2663-222</property>
+            <property name="productKey">F00.00.03</property>
+            <property name="model">2845-222</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

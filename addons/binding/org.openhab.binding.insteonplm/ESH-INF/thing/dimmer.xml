@@ -12,11 +12,18 @@
         <description>A wall switch that supports dimming</description>
 
         <channels>
-            <channel id="dimmer" typeId="percent" />
-            <channel id="manualChange" typeId="switch" />
-            <channel id="fastOnOff" typeId="switch" />
+            <channel id="dimmer" typeId="percent">
+            <properties>
+	            <property name="feature">GenericDimmer</property>
+            </properties>
+            </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
             <channel id="pendingWrite" typeId="decimal" />
         </channels>
+        
+        <properties>
+	        <property name="productKey">0x000037</property>
+	        <property name="model">2486D</property>
+        </properties>
     </thing-type>
 </thing:thing-descriptions>

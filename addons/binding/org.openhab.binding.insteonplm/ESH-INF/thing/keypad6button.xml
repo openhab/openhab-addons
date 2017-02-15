@@ -8,20 +8,47 @@
             <bridge-type-ref id="bridge" />
         </supported-bridge-type-refs>
 
-        <label>KeypadLinc 6 Button</label>
-        <description>KeypadLinc 6 Button</description>
+        <label>KeypadLinc dimmer 6 Button</label>
+        <description>KeypadLinc dimmer 6 Button</description>
 
         <channels>
-            <channel id="loadDimmer" typeId="dimmer" />
-            <channel id="rampDimmer" typeId="number" />
-            <channel id="manualChange" typeId="switch" />
-            <channel id="fastOnOff" typeId="switch" />
-            <channel id="buttonA" typeId="switch" />
-            <channel id="buttonB" typeId="switch" />
-            <channel id="buttonC" typeId="switch" />
-            <channel id="buttonD" typeId="switch" />
+            <channel id="loadDimmer" typeId="dimmer">
+                <properties>
+                    <property name="message">LoadDimmerButton</property>
+                </properties>
+            </channel>
+            <channel id="rampDimmer" typeId="number">
+                <properties>
+                    <property name="message">LoadDimmerRamp</property>
+                </properties>
+            </channel>
+            <channel id="buttonA" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton3</property>
+                </properties>
+            </channel>
+            <channel id="buttonB" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton4</property>
+                </properties>
+            </channel>
+            <channel id="buttonC" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton5</property>
+                </properties>
+            </channel>
+            <channel id="buttonD" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton6</property>
+                </properties>
+            </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
             <channel id="pendingWrite" typeId="decimal" />
         </channels>
+        
+        <properties>
+            <property name="productKey">0x000050</property>
+            <property name="model">2486DWH6</property>
+        </properties>
     </thing-type>
 </thing:thing-descriptions>
