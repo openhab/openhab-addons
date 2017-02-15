@@ -260,7 +260,7 @@
 		<state pattern="%d km|miles" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargerate" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Charge Rate</label>
 		<description>Not documented / To be defined (-1 if not charging)</description>
 		<state readOnly="true"></state>
