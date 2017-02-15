@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Traunbauer - Initial contribution
  */
 public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandExecutorListener {
-
     private Logger logger = LoggerFactory.getLogger(Enigma2Handler.class);
 
     private ChannelUID channelPowerUID;
@@ -53,8 +52,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     private ChannelUID channelNowPlaylingDescriptionExtendedUID;
 
     private Enigma2CommandExecutor commandExecutor;
-
-    private Refresher refresher;
+    private Enigma2Refresher refresher;
 
     public Enigma2Handler(Thing thing) {
         super(thing);
@@ -80,9 +78,8 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
 
         commandExecutor = new Enigma2CommandExecutor(
                 Enigma2Util.createUserPasswordHostnamePrefix(getHostName(), getUserName(), getPassword()));
-        commandExecutor.initialize();
 
-        refresher = new Refresher();
+        refresher = new Enigma2Refresher();
         refresher.addListener(this);
         refresher.start();
 
@@ -146,15 +143,15 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     }
 
     private ChannelUID getChannelUID(String channelId) {
-        Channel chann = thing.getChannel(channelId);
-        if (chann == null) {
+        Channel channel = thing.getChannel(channelId);
+        if (channel == null) {
             // refresh thing...
             Thing newThing = ThingFactory.createThing(TypeResolver.resolve(thing.getThingTypeUID()), thing.getUID(),
                     thing.getConfiguration());
             updateThing(newThing);
-            chann = thing.getChannel(channelId);
+            channel = thing.getChannel(channelId);
         }
-        return chann.getUID();
+        return channel.getUID();
     }
 
     private void updateCurrentStates() {
@@ -178,7 +175,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 if (commandExecutor.getAnswerState() != null) {
                     updateState(channelGetAnswerUID, commandExecutor.getAnswerState());
                 }
-
                 if (commandExecutor.getNowPlayingTitle() != null) {
                     updateState(channelNowPlaylingTitleUID, commandExecutor.getNowPlayingTitle());
                 }
@@ -199,7 +195,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 updateState(channelSendWarningUID, new StringType(""));
                 updateState(channelSendQuestionUID, new StringType(""));
                 updateState(channelGetAnswerUID, new StringType(""));
-
                 updateState(channelNowPlaylingTitleUID, new StringType(""));
                 updateState(channelNowPlaylingDescriptionUID, new StringType(""));
                 updateState(channelNowPlaylingDescriptionExtendedUID, new StringType(""));
@@ -212,10 +207,10 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         updateCurrentStates();
     }
 
-    private class Refresher extends Thread {
+    private class Enigma2Refresher extends Thread {
         private ArrayList<Enigma2CommandExecutorListener> listOfListener;
 
-        public Refresher() {
+        public Enigma2Refresher() {
             listOfListener = new ArrayList<Enigma2CommandExecutorListener>();
         }
 
@@ -232,7 +227,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
             listOfListener.add(listener);
         }
 
-        public void callAllListener() {
+        public void callListener() {
             for (int i = 0; i < listOfListener.size(); i++) {
                 listOfListener.get(i).getUpdate();
             }
@@ -241,16 +236,13 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         @Override
         public void run() {
             while (true) {
-                callAllListener();
-
+                callListener();
                 try {
                     Thread.sleep(getRefreshInterval());
                 } catch (InterruptedException e) {
-                    logger.error(thing + ": Error during operation on database ", e);
+                    logger.error(thing + ": Error during refresh channels: {}", e);
                 }
             }
         }
-
     }
-
 }

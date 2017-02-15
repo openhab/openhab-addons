@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Thomas Traunbauer - Initial contribution
  */
 public class Enigma2BindingConstants {
-
     public static final String BINDING_ID = "enigma2";
 
     // List of all Thing Type UIDs
@@ -51,5 +50,4 @@ public class Enigma2BindingConstants {
     public final static String DEVICE_PARAMETER_USER = "USER";
     public final static String DEVICE_PARAMETER_PASSWORD = "PASSWORD";
     public final static String DEVICE_PARAMETER_REFRESH = "REFRESH";
-
 }

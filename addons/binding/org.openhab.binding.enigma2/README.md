@@ -1,6 +1,6 @@
-# openHAB2 binding for Enigma2 STB
+# openHAB2 binding for an Enigma2 device
 
-This is the openHAB2 binding for an Enigma2 STB
+This is the openHAB2 binding for an Enigma2 device
 Here you can find a precompiled [Binding](https://github.com/tratho/org.openhab.binding.enigma2-dist)
 
 After installing the binding into the your openHAB2 distribution, you can start discovering your devices through the PaperUI GUI (btw: see discovery hints on the bottom of this document).

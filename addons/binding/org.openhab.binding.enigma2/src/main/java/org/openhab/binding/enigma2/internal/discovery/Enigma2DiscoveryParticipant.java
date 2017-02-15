@@ -46,18 +46,16 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         DiscoveryResult result = null;
         ThingUID uid = getThingUID(info);
         if (uid != null) {
-
             Map<String, Object> properties = new HashMap<>(4);
-            String label = "unnamed enigma2 device";
+            String label;
             try {
                 label = info.getName();
             } catch (Exception e) {
-                // ignore and use default label
+                label = "unnamed enigma2 device";
             }
             // remove the domain from the name
             InetAddress[] addrs = info.getInetAddresses();
 
-            // we expect only one address per device..
             if (addrs.length > 1) {
                 logger.warn("Enigma2 device {} ({}) reports multiple addresses - using the first one! {}",
                         info.getName(), label, Arrays.toString(addrs));
@@ -78,7 +76,7 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.debug("ServiceInfo: {}", info);
             if (info.getType() != null) {
                 if (info.getType().equals(getServiceType())) {
-                    logger.trace("Discovered a Enigma2 STB thing with name '{}'", info.getName());
+                    logger.trace("Discovered a Enigma2 device thing with name '{}'", info.getName());
                     String formatedIP = getFormattedIPAddress(info);
                     if (formatedIP != null) {
                         return new ThingUID(Enigma2BindingConstants.THING_TYPE_DEVICE, new String(formatedIP));

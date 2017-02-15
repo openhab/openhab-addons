@@ -41,29 +41,24 @@ public class Enigma2CommandExecutor {
     private static final String SUFFIX_SET_VOLUME = "/web/vol?set=set";
     private static final String SUFFIX_DOWNMIX = "/web/downmix";
     private static final String SUFFIX_SET_DOWNMIX = "/web/downmix?enable=";
-
     private static final String SUFFIX_ZAP = "/web/zap?sRef=";
     private static final String SUFFIX_CHANNEL = "/web/subservices";
     private static final String SUFFIX_EPG = "/web/epgservice?sRef=";
     private static final String SUFFIX_TOGGLE_POWERSTATE = "/web/powerstate?newstate=0";
-
     private static final String SUFFIX_MESSAGE = "/web/message?type=1&TIMEOUT=10&text=";
     private static final String SUFFIX_WARNING = "/web/message?type=2&TIMEOUT=30&text=";
     private static final String SUFFIX_QUESTION = "/web/message?type=0&text=";
     private static final String SUFFIX_ANSWER = "/web/messageanswer?getanswer=now";
 
     private Enigma2ServiceContainer serviceContainer;
-
     private String deviceURL;
-    // private String hostName;
-    // private String userName;
-    // private String password;
 
     public Enigma2CommandExecutor(String deviceURL) {
         this.deviceURL = deviceURL;
+        this.initialize();
     }
 
-    public void initialize() {
+    private void initialize() {
         try {
             serviceContainer = Enigma2Util.generateServiceMaps(deviceURL);
         } catch (IOException | ParserConfigurationException | SAXException e) {
@@ -288,7 +283,6 @@ public class Enigma2CommandExecutor {
             logger.warn("Error during send Command: {}", e);
             return null;
         }
-
     }
 
     /**

@@ -25,17 +25,6 @@ public class Enigma2ServiceContainer {
         }
     }
 
-    static String cleanString(String string) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(string);
-        for (int i = buffer.length() - 1; i >= 0; i--) {
-            if (!isValidChar(buffer.charAt(i))) {
-                buffer.deleteCharAt(i);
-            }
-        }
-        return buffer.toString();
-    }
-
     private boolean contains(String name) {
         return (findIndex(name) != -1);
     }
@@ -48,6 +37,17 @@ public class Enigma2ServiceContainer {
             }
         }
         return -1;
+    }
+
+    public static String cleanString(String string) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(string);
+        for (int i = buffer.length() - 1; i >= 0; i--) {
+            if (!isValidChar(buffer.charAt(i))) {
+                buffer.deleteCharAt(i);
+            }
+        }
+        return buffer.toString();
     }
 
     private static boolean isValidChar(char c) {

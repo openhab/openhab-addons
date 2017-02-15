@@ -31,11 +31,9 @@ public class Enigma2HandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (thingTypeUID.equals(THING_TYPE_DEVICE)) {
             return new Enigma2Handler(thing);
         }
-
         return null;
     }
 }
