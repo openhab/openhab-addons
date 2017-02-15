@@ -20,8 +20,9 @@ public enum Enigma2RemoteKey {
     // TV is 377 instead of 385
     // RADIO is 385 instead of 377
 
-    POWER1(116),
+    POWER(116),
 
+    KEY0(11),
     KEY1(2),
     KEY2(3),
     KEY3(4),
@@ -31,7 +32,6 @@ public enum Enigma2RemoteKey {
     KEY7(8),
     KEY8(9),
     KEY9(10),
-    KEY0(11),
 
     ARROW_LEFT(412),
     ARROW_RIGHT(407),

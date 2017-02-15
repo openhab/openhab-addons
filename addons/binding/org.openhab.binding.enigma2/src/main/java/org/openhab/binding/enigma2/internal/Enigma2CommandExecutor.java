@@ -37,7 +37,6 @@ public class Enigma2CommandExecutor {
     private static final String SUFFIX_REMOTE_CONTROL = "/web/remotecontrol?command=";
 
     private static final String SUFFIX_POWERSTATE = "/web/powerstate";
-    private static final String SUFFIX_SET_POWERSTATE = "/web/powerstate?newstate=";
     private static final String SUFFIX_VOLUME = "/web/vol";
     private static final String SUFFIX_SET_VOLUME = "/web/vol?set=set";
     private static final String SUFFIX_DOWNMIX = "/web/downmix";
@@ -46,6 +45,7 @@ public class Enigma2CommandExecutor {
     private static final String SUFFIX_ZAP = "/web/zap?sRef=";
     private static final String SUFFIX_CHANNEL = "/web/subservices";
     private static final String SUFFIX_EPG = "/web/epgservice?sRef=";
+    private static final String SUFFIX_TOGGLE_POWERSTATE = "/web/powerstate?newstate=0";
 
     private static final String SUFFIX_MESSAGE = "/web/message?type=1&TIMEOUT=10&text=";
     private static final String SUFFIX_WARNING = "/web/message?type=2&TIMEOUT=30&text=";
@@ -78,7 +78,7 @@ public class Enigma2CommandExecutor {
      */
     public void setPowerState(Command command) {
         if (command instanceof OnOffType) {
-            String url = deviceURL + SUFFIX_SET_POWERSTATE + Enigma2PowerState.TOGGLE_STANDBY.getValue();
+            String url = deviceURL + SUFFIX_TOGGLE_POWERSTATE;
             try {
                 OnOffType currentState = (OnOffType) getPowerState();
                 OnOffType newState = (OnOffType) command;
