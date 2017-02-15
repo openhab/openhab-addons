@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.insteonplm.internal.device;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -150,7 +151,17 @@ public class DeviceFeatureBuilder {
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
             T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
-            ch.setParameters(params);
+
+            // Call sets for the properties out of the parameters.
+            for (String paramName : params.keySet()) {
+                Method method = dc.getMethod(
+                        "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1), String.class);
+                if (method == null) {
+                    logger.error("Unable to find method {} on {}", "set" + paramName, name);
+                } else {
+                    method.invoke(ch, params.get(paramName));
+                }
+            }
             return ch;
         } catch (Exception e) {
             logger.error("error trying to create message handler: {}", name, e);
@@ -174,10 +185,51 @@ public class DeviceFeatureBuilder {
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
             T mh = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
-            mh.setParameters(params);
+            // Call sets for the properties out of the parameters.
+            for (String paramName : params.keySet()) {
+                Method method = dc.getMethod(
+                        "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1), String.class);
+                if (method == null) {
+                    logger.error("Unable to find method {} on {}", "set" + paramName, name);
+                } else {
+                    method.invoke(mh, params.get(paramName));
+                }
+            }
             return mh;
         } catch (Exception e) {
             logger.error("error trying to create message handler: {}", name, e);
+        }
+        return null;
+    }
+
+    /**
+     * Factory method for creating handlers of a given name using java reflection
+     *
+     * @param ph the name of the handler to create
+     * @param f the feature for which to create the handler
+     * @return the handler which was created
+     */
+    private <T extends PollHandler> T makePollHandler(HandlerEntry ph, DeviceFeature f) {
+        String cname = PollHandler.class.getName() + "$" + ph.getName();
+        try {
+            Class<?> c = Class.forName(cname);
+            @SuppressWarnings("unchecked")
+            Class<? extends T> dc = (Class<? extends T>) c;
+            T phc = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
+            phc.setParameters(ph.getParams());
+            // Call sets for the properties out of the parameters.
+            for (String paramName : ph.getParams().keySet()) {
+                Method method = dc.getMethod(
+                        "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1), String.class);
+                if (method == null) {
+                    logger.error("Unable to find method {} on {}", "set" + paramName, ph.getName());
+                } else {
+                    method.invoke(phc, ph.getParams().get(paramName));
+                }
+            }
+            return phc;
+        } catch (Exception e) {
+            logger.error("error trying to create message handler: {}", ph.getName(), e);
         }
         return null;
     }
@@ -191,12 +243,8 @@ public class DeviceFeatureBuilder {
         DeviceFeature f = new DeviceFeature(m_name);
         f.setStatusFeature(m_isStatus);
         f.setTimeout(m_timeout);
-        if (m_dispatcher != null) {
-            f.setMessageDispatcher(
-                    MessageDispatcher.s_makeHandler(m_dispatcher.getName(), m_dispatcher.getParams(), f));
-        }
         if (m_pollHandler != null) {
-            f.setPollHandler(PollHandler.s_makeHandler(m_pollHandler, f));
+            f.setPollHandler(makePollHandler(m_pollHandler, f));
         }
         if (m_defaultCmdHandler != null) {
             f.setDefaultCommandHandler(

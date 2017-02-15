@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.device.InsteonThing;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Msg;
+import org.openhab.binding.insteonplm.internal.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,23 +27,25 @@ public class RampOnOffCommandHandler extends RampCommandHandler {
     }
 
     @Override
-    public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonThing dev) {
+    public void handleCommand(InsteonThingHandler conf, ChannelUID channelId, Command cmd) {
         try {
             if (cmd == OnOffType.ON) {
                 double ramptime = getRampTime(conf, 0);
                 int ramplevel = getRampLevel(conf, 100);
                 byte cmd2 = encode(ramptime, ramplevel);
-                Msg m = dev.makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2, getGroup(conf));
-                dev.enqueueMessage(m, getFeature());
-                logger.info("{}: sent ramp on to switch {} time {} level {} cmd1 {}", nm(), dev.getAddress(), ramptime,
+                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2,
+                        conf.getInsteonGroup(), conf.getAddress());
+                conf.enqueueMessage(m, getFeature());
+                logger.info("{}: sent ramp on to switch {} time {} level {} cmd1 {}", nm(), conf.getAddress(), ramptime,
                         ramplevel, getOnCmd());
             } else if (cmd == OnOffType.OFF) {
                 double ramptime = getRampTime(conf, 0);
                 int ramplevel = getRampLevel(conf, 0 /* ignored */);
                 byte cmd2 = encode(ramptime, ramplevel);
-                Msg m = dev.makeStandardMessage((byte) 0x0f, getOffCmd(), cmd2, getGroup(conf));
-                dev.enqueueMessage(m, getFeature());
-                logger.info("{}: sent ramp off to switch {} time {} cmd1 {}", nm(), dev.getAddress(), ramptime,
+                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOffCmd(), cmd2,
+                        conf.getInsteonGroup(), conf.getAddress());
+                conf.enqueueMessage(m, getFeature());
+                logger.info("{}: sent ramp off to switch {} time {} cmd1 {}", nm(), conf.getAddress(), ramptime,
                         getOffCmd());
             }
             // expect to get a direct ack after this!

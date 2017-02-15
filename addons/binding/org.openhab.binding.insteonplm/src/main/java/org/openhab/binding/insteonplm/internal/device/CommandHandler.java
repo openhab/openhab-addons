@@ -8,13 +8,9 @@
  */
 package org.openhab.binding.insteonplm.internal.device;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
-import org.openhab.binding.insteonplm.internal.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +23,6 @@ import org.slf4j.LoggerFactory;
 public abstract class CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(CommandHandler.class);
     DeviceFeature m_feature = null; // related DeviceFeature
-    HashMap<String, String> m_parameters = new HashMap<String, String>();
 
     /**
      * Constructor
@@ -47,39 +42,7 @@ public abstract class CommandHandler {
      * @param cmd the openhab command issued
      * @param device the Insteon device to which this command applies
      */
-    public abstract void handleCommand(ChannelUID channel, Command cmd, InsteonThingHandler handler);
-
-    /**
-     * Returns parameter as integer
-     *
-     * @param key key of parameter
-     * @param def default
-     * @return value of parameter
-     */
-    protected int getIntParameter(String key, int def) {
-        String val = m_parameters.get(key);
-        if (val == null) {
-            return (def); // param not found
-        }
-        int ret = def;
-        try {
-            ret = Utils.strToInt(val);
-        } catch (NumberFormatException e) {
-            logger.error("malformed int parameter in command handler: {}", key);
-        }
-        return ret;
-    }
-
-    /**
-     * Returns parameter as String
-     *
-     * @param key key of parameter
-     * @param def default
-     * @return value of parameter
-     */
-    protected String getStringParameter(String key, String def) {
-        return (m_parameters.get(key) == null ? def : m_parameters.get(key));
-    }
+    public abstract void handleCommand(InsteonThingHandler handler, ChannelUID channel, Command cmd);
 
     /**
      * Shorthand to return class name for logging purposes
@@ -91,31 +54,21 @@ public abstract class CommandHandler {
     }
 
     protected int getMaxLightLevel(InsteonThingHandler conf, int defaultLevel) {
-        Map<String, String> params = conf.getThing().getProperties();
-        if (conf.getFeature().contains("dimmer") && params.containsKey("dimmermax")) {
+        if (conf.getFeatureNames().contains("dimmer")) {
             String item = conf.getThing().getLabel();
-            String dimmerMax = params.get("dimmermax");
-            try {
-                int i = Integer.parseInt(dimmerMax);
-                if (i > 1 && i <= 99) {
-                    int level = (int) Math.ceil((i * 255.0) / 100); // round up
-                    if (level < defaultLevel) {
-                        logger.info("item {}: using dimmermax value of {}", item, dimmerMax);
-                        return level;
-                    }
-                } else {
-                    logger.error("item {}: dimmermax must be between 1-99 inclusive: {}", item, dimmerMax);
+            int dimmerMax = conf.getDimmerMax();
+            if (dimmerMax > 1 && dimmerMax <= 99) {
+                int level = (int) Math.ceil((dimmerMax * 255.0) / 100); // round up
+                if (level < defaultLevel) {
+                    logger.info("item {}: using dimmermax value of {}", item, dimmerMax);
+                    return level;
                 }
-            } catch (NumberFormatException e) {
-                logger.error("item {}: invalid int value for dimmermax: {}", item, dimmerMax);
+            } else {
+                logger.error("item {}: dimmermax must be between 1-99 inclusive: {}", item, dimmerMax);
             }
         }
 
         return defaultLevel;
-    }
-
-    void setParameters(HashMap<String, String> hm) {
-        m_parameters = hm;
     }
 
     /**
@@ -125,22 +78,5 @@ public abstract class CommandHandler {
      */
     public DeviceFeature getFeature() {
         return m_feature;
-    }
-
-    /**
-     * Helper function to extract the group parameter from the binding config,
-     *
-     * @param c the binding configuration to test
-     * @return the value of the "group" parameter, or -1 if none
-     */
-    protected int getGroup(InsteonThingHandler c) {
-        String v = c.getThing().getProperties().get("group");
-        int iv = -1;
-        try {
-            iv = (v == null) ? -1 : Utils.strToInt(v);
-        } catch (NumberFormatException e) {
-            logger.error("malformed int parameter in for item {}", c.getThing().getLabel());
-        }
-        return iv;
     }
 }

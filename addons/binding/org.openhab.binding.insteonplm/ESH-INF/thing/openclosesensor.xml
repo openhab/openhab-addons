@@ -15,6 +15,7 @@
             <channel id="contact" typeId="contact" />
             <channel id="batteryLevel" typeId="battery" />
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
+            <channel id="pendingWrite" typeId="decimal" />
         </channels>
     </thing-type>
 </thing:thing-descriptions>

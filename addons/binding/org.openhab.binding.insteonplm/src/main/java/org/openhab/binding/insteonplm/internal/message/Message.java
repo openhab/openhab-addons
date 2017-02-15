@@ -167,9 +167,9 @@ public class Message {
         return isPureNack() || !isUnsolicited();
     }
 
-    public boolean isOfType(MsgType mt) {
+    public boolean isOfType(MessageType mt) {
         try {
-            MsgType t = MsgType.s_fromValue(getByte("messageFlags"));
+            MessageType t = MessageType.s_fromValue(getByte("messageFlags"));
             return (t == mt);
         } catch (FieldException e) {
             return false;
@@ -177,23 +177,23 @@ public class Message {
     }
 
     public boolean isBroadcast() {
-        return isOfType(MsgType.ALL_LINK_BROADCAST) || isOfType(MsgType.BROADCAST);
+        return isOfType(MessageType.ALL_LINK_BROADCAST) || isOfType(MessageType.BROADCAST);
     }
 
     public boolean isCleanup() {
-        return isOfType(MsgType.ALL_LINK_CLEANUP);
+        return isOfType(MessageType.ALL_LINK_CLEANUP);
     }
 
     public boolean isAllLink() {
-        return isOfType(MsgType.ALL_LINK_BROADCAST) || isOfType(MsgType.ALL_LINK_CLEANUP);
+        return isOfType(MessageType.ALL_LINK_BROADCAST) || isOfType(MessageType.ALL_LINK_CLEANUP);
     }
 
     public boolean isAckOfDirect() {
-        return isOfType(MsgType.ACK_OF_DIRECT);
+        return isOfType(MessageType.ACK_OF_DIRECT);
     }
 
     public boolean isAllLinkCleanupAckOrNack() {
-        return isOfType(MsgType.ALL_LINK_CLEANUP_ACK) || isOfType(MsgType.ALL_LINK_CLEANUP_NACK);
+        return isOfType(MessageType.ALL_LINK_CLEANUP_ACK) || isOfType(MessageType.ALL_LINK_CLEANUP_NACK);
     }
 
     public boolean isX10() {
@@ -468,7 +468,7 @@ public class Message {
                 byte b;
                 try {
                     b = f.getByte(m_data);
-                    MsgType t = MsgType.s_fromValue(b);
+                    MessageType t = MessageType.s_fromValue(b);
                     s += f.toString(m_data) + "=" + t.toString() + ":" + (b & 0x03) + ":" + ((b & 0x0c) >> 2) + "|";
                 } catch (FieldException e) {
                     logger.error("toString error: ", e);

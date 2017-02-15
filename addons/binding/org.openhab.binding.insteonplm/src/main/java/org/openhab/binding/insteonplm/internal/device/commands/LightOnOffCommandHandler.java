@@ -3,13 +3,13 @@ package org.openhab.binding.insteonplm.internal.device.commands;
 import java.io.IOException;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.device.InsteonThing;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Msg;
+import org.openhab.binding.insteonplm.internal.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,40 +22,79 @@ import org.slf4j.LoggerFactory;
 public class LightOnOffCommandHandler extends CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(LightOnOffCommandHandler.class);
 
+    private enum ExtendedData {
+        extendedNone,
+        extendedCrc1,
+        extendedCrc2
+    }
+
+    private ExtendedData extended = ExtendedData.extendedNone;
+    private byte data1 = 0;
+    private byte data2 = 0;
+    private byte data3 = 0;
+
     LightOnOffCommandHandler(DeviceFeature f) {
         super(f);
     }
 
-    @Override
-    public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonThing dev) {
+    public void setExtended(String val) {
+        extended = ExtendedData.valueOf(val);
+    }
+
+    public void setData1(String val) {
         try {
-            int ext = getIntParameter("ext", 0);
+            data1 = Byte.valueOf(val);
+        } catch (NumberFormatException e) {
+            logger.error("Unable to read {}", e, val);
+        }
+    }
+
+    public void setData2(String val) {
+        try {
+            data2 = Byte.valueOf(val);
+        } catch (NumberFormatException e) {
+            logger.error("Unable to read {}", e, val);
+        }
+    }
+
+    public void setData3(String val) {
+        try {
+            data3 = Byte.valueOf(val);
+        } catch (NumberFormatException e) {
+            logger.error("Unable to read {}", e, val);
+        }
+    }
+
+    @Override
+    public void handleCommand(InsteonThingHandler conf, ChannelUID channelId, Command cmd) {
+        try {
             int direc = 0x00;
             int level = 0x00;
-            Msg m = null;
+            Message m = null;
             if (cmd == OnOffType.ON) {
                 level = getMaxLightLevel(conf, 0xff);
                 direc = 0x11;
-                logger.info("{}: sent msg to switch {} to {}", nm(), dev.getAddress(), level == 0xff ? "on" : level);
+                logger.info("{}: sent msg to switch {} to {}", nm(), conf.getAddress(), level == 0xff ? "on" : level);
             } else if (cmd == OnOffType.OFF) {
                 direc = 0x13;
-                logger.info("{}: sent msg to switch {} off", nm(), dev.getAddress());
+                logger.info("{}: sent msg to switch {} off", nm(), conf.getAddress());
             }
-            if (ext == 1 || ext == 2) {
-                byte[] data = new byte[] { (byte) getIntParameter("d1", 0), (byte) getIntParameter("d2", 0),
-                        (byte) getIntParameter("d3", 0) };
-                m = dev.makeExtendedMessage((byte) 0x0f, (byte) direc, (byte) level, data);
-                logger.info("{}: was an extended message for device {}", nm(), dev.getAddress());
-                if (ext == 1) {
+            if (extended != ExtendedData.extendedNone) {
+                byte[] data = new byte[] { data1, data2, data3 };
+                m = conf.getMessageFactory().makeExtendedMessage((byte) 0x0f, (byte) direc, (byte) level, data,
+                        conf.getAddress());
+                logger.info("{}: was an extended message for device {}", nm(), conf.getAddress());
+                if (extended == ExtendedData.extended1) {
                     m.setCRC();
-                } else if (ext == 2) {
+                } else if (extended == ExtendedData.extended1) {
                     m.setCRC2();
                 }
             } else {
-                m = dev.makeStandardMessage((byte) 0x0f, (byte) direc, (byte) level, getGroup(conf));
+                m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) direc, (byte) level,
+                        conf.getInsteonGroup(), conf.getAddress());
             }
-            logger.info("Sending message to {}", dev.getAddress());
-            dev.enqueueMessage(m, getFeature());
+            logger.info("Sending message to {}", conf.getAddress());
+            conf.enqueueMessage(m, getFeature());
             // expect to get a direct ack after this!
         } catch (IOException e) {
             logger.error("{}: command send i/o error: ", nm(), e);

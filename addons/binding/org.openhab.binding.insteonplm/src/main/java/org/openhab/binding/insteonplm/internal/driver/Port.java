@@ -10,15 +10,17 @@ package org.openhab.binding.insteonplm.internal.driver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.openhab.binding.insteonplm.internal.device.ModemDBBuilder;
-import org.openhab.binding.insteonplm.internal.message.Msg;
-import org.openhab.binding.insteonplm.internal.message.MsgFactory;
-import org.openhab.binding.insteonplm.internal.message.MsgListener;
+import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 /**
  * The Port class represents a port, that is a connection to either an Insteon modem either through
@@ -51,20 +53,18 @@ public class Port {
         GOT_NACK
     }
 
-    private IOStream m_ioStream = null;
-    private String m_devName = "INVALID";
-    private String m_logName = "INVALID";
-    private IOStreamReader m_reader = null;
-    private IOStreamWriter m_writer = null;
-    private final int m_readSize = 1024; // read buffer size
-    private Thread m_readThread = null;
-    private Thread m_writeThread = null;
-    private boolean m_running = false;
-    private boolean m_modemDBComplete = false;
-    private MsgFactory m_msgFactory = new MsgFactory();
-    private ModemDBBuilder m_mdbb = null;
-    private ArrayList<MsgListener> m_listeners = new ArrayList<MsgListener>();
-    private LinkedBlockingQueue<Msg> m_writeQueue = new LinkedBlockingQueue<Msg>();
+    private IOStream ioStream = null;
+    private IOStreamReader reader = null;
+    private IOStreamWriter writer = null;
+    private final int readSize = 1024; // read buffer size
+    private Thread readThread = null;
+    private Thread writeThread = null;
+    private boolean running = false;
+    private boolean modemDBComplete = false;
+    private ModemDBBuilder mdbb = null;
+    private MessageFactory messageFactory;
+    private LinkedBlockingQueue<Message> writeQueue = new LinkedBlockingQueue<Message>();
+    private List<MessageListener> messageListeners;
 
     /**
      * Constructor
@@ -72,105 +72,107 @@ public class Port {
      * @param devName the name of the port, i.e. '/dev/insteon'
      * @param d The Driver object that manages this port
      */
-    public Port(IOStream stream) {
-        m_ioStream = stream;
-        m_reader = new IOStreamReader();
-        m_writer = new IOStreamWriter();
-        m_mdbb = new ModemDBBuilder(this);
+    public Port(IOStream stream, MessageFactory messageFactory) {
+        ioStream = stream;
+        reader = new IOStreamReader();
+        writer = new IOStreamWriter();
+        mdbb = new ModemDBBuilder(this);
+        messageFactory = messageFactory;
     }
 
     public synchronized boolean isModemDBComplete() {
-        return (m_modemDBComplete);
+        return (modemDBComplete);
     }
 
     public boolean isRunning() {
-        return m_running;
+        return running;
     }
 
     public String getDeviceName() {
-        return m_devName;
+        return devName;
     }
 
     public void setModemDBRetryTimeout(int timeout) {
-        m_mdbb.setRetryTimeout(timeout);
+        mdbb.setRetryTimeout(timeout);
     }
 
-    public void addListener(MsgListener l) {
-        synchronized (m_listeners) {
-            if (!m_listeners.contains(l)) {
-                m_listeners.add(l);
-            }
+    /**
+     * Adds a message listener to the set, so we know about all incoming messages.
+     */
+    public void addListener(MessageListener l) {
+        synchronized (messageListeners) {
+            messageListeners.add(l);
         }
     }
 
-    public void removeListener(MsgListener l) {
-        synchronized (m_listeners) {
-            if (m_listeners.remove(l)) {
-                // logger.debug("removed listener from port");
-            }
+    public void removeListener(MessageListener l) {
+        synchronized (messageListeners) {
+            messageListeners.remove(l);
         }
     }
 
     /**
      * Starts threads necessary for reading and writing
      */
-    public void start() {
-        logger.debug("starting port {}", m_logName);
-        if (m_running) {
-            logger.debug("port {} already running, not started again", m_logName);
+    public boolean start() {
+        logger.debug("starting port {}", ioStream.toString());
+        if (running) {
+            logger.debug("port {} already running, not started again", ioStream.toString());
+            return true;
         }
-        if (!m_ioStream.open()) {
-            logger.debug("failed to open port {}", m_logName);
-            return;
+        if (!ioStream.open()) {
+            logger.debug("failed to open port {}", ioStream.toString());
+            return false;
         }
-        m_readThread = new Thread(m_reader);
-        m_writeThread = new Thread(m_writer);
-        m_readThread.setName(m_logName + " Reader");
-        m_writeThread.setName(m_logName + " Writer");
-        m_readThread.start();
-        m_writeThread.start();
-        m_mdbb.start(); // start downloading the device list
-        m_running = true;
+        readThread = new Thread(reader);
+        writeThread = new Thread(writer);
+        readThread.setName(ioStream.toString() + " Reader");
+        writeThread.setName(ioStream.toString() + " Writer");
+        readThread.start();
+        writeThread.start();
+        mdbb.start(); // start downloading the device list
+        running = true;
+        return true;
     }
 
     /**
      * Stops all threads
      */
     public void stop() {
-        if (!m_running) {
-            logger.debug("port {} not running, no need to stop it", m_logName);
+        if (!running) {
+            logger.debug("port {} not running, no need to stop it", ioStream.toString());
             return;
         }
-        if (m_mdbb != null) {
-            m_mdbb = null;
+        if (mdbb != null) {
+            mdbb = null;
         }
-        if (m_readThread != null) {
-            m_readThread.interrupt();
+        if (readThread != null) {
+            readThread.interrupt();
         }
-        if (m_writeThread != null) {
-            m_writeThread.interrupt();
+        if (writeThread != null) {
+            writeThread.interrupt();
         }
-        logger.debug("waiting for read thread to exit for port {}", m_logName);
+        logger.debug("waiting for read thread to exit for port {}", ioStream.toString());
         try {
-            if (m_readThread != null) {
-                m_readThread.join();
+            if (readThread != null) {
+                readThread.join();
             }
         } catch (InterruptedException e) {
             logger.debug("got interrupted waiting for read thread to exit.");
         }
-        logger.debug("waiting for write thread to exit for port {}", m_logName);
+        logger.debug("waiting for write thread to exit for port {}", ioStream.toString());
         try {
-            if (m_writeThread != null) {
-                m_writeThread.join();
+            if (writeThread != null) {
+                writeThread.join();
             }
         } catch (InterruptedException e) {
             logger.debug("got interrupted waiting for write thread to exit.");
         }
-        logger.debug("all threads for port {} stopped.", m_logName);
-        m_ioStream.close();
-        m_running = false;
-        synchronized (m_listeners) {
-            m_listeners.clear();
+        logger.debug("all threads for port {} stopped.", ioStream.toString());
+        ioStream.close();
+        running = false;
+        synchronized (messageListeners) {
+            messageListeners.clear();
         }
     }
 
@@ -180,7 +182,7 @@ public class Port {
      * @param m message to be added to the write queue
      * @throws IOException
      */
-    public void writeMessage(Msg m) throws IOException {
+    public void writeMessage(Message m) throws IOException {
         if (m == null) {
             logger.error("trying to write null message!");
             throw new IOException("trying to write null message!");
@@ -190,7 +192,7 @@ public class Port {
             throw new IOException("trying to write message without data!");
         }
         try {
-            m_writeQueue.add(m);
+            writeQueue.add(m);
             logger.trace("enqueued msg: {}", m);
         } catch (IllegalStateException e) {
             logger.error("cannot write message {}, write queue is full!", m);
@@ -224,14 +226,14 @@ public class Port {
         @Override
         public void run() {
             logger.debug("starting reader...");
-            byte[] buffer = new byte[2 * m_readSize];
+            byte[] buffer = new byte[2 * readSize];
             Random rng = new Random();
             try {
-                for (int len = -1; (len = m_ioStream.read(buffer, 0, m_readSize)) > 0;) {
+                for (int len = -1; (len = ioStream.read(buffer, 0, readSize)) > 0;) {
                     if (m_dropRandomBytes && rng.nextInt(100) < 20) {
                         len = dropBytes(buffer, len);
                     }
-                    m_msgFactory.addData(buffer, len);
+                    messageFactory.addData(buffer, len);
                     processMessages();
                 }
             } catch (InterruptedException e) {
@@ -243,7 +245,7 @@ public class Port {
         private void processMessages() {
             try {
                 // must call processData() until we get a null pointer back
-                for (Msg m = m_msgFactory.processData(); m != null; m = m_msgFactory.processData()) {
+                for (Message m = messageFactory.processData(); m != null; m = messageFactory.processData()) {
                     toAllListeners(m);
                     notifyWriter(m);
                 }
@@ -261,7 +263,7 @@ public class Port {
             }
         }
 
-        private void notifyWriter(Msg msg) {
+        private void notifyWriter(Message msg) {
             synchronized (getRequestReplyLock()) {
                 if (m_reply == ReplyType.WAITING_FOR_ACK) {
                     if (!msg.isUnsolicited()) {
@@ -303,18 +305,18 @@ public class Port {
         }
 
         @SuppressWarnings("unchecked")
-        private void toAllListeners(Msg msg) {
+        private void toAllListeners(Message msg) {
             // When we deliver the message, the recipient
             // may in turn call removeListener() or addListener(),
             // thereby corrupting the very same list we are iterating
             // through. That's why we make a copy of it, and
             // iterate through the copy.
-            ArrayList<MsgListener> tempList = null;
-            synchronized (m_listeners) {
-                tempList = (ArrayList<MsgListener>) m_listeners.clone();
+            ArrayList<MessageListener> tempList = null;
+            synchronized (messageListeners) {
+                tempList = Lists.newArrayList(messageListeners);
             }
-            for (MsgListener l : tempList) {
-                l.msg(msg, m_devName); // deliver msg to listener
+            for (MessageListener listener : tempList) {
+                listener.processMessage(msg); // deliver msg to listener
             }
         }
 
@@ -364,9 +366,9 @@ public class Port {
             logger.debug("starting writer...");
             while (true) {
                 try {
-                    // this call blocks until the lock on the queue is released
                     logger.trace("writer checking message queue");
-                    Msg msg = m_writeQueue.take();
+                    // this call blocks until the lock on the queue is released
+                    Message msg = writeQueue.take();
                     if (msg.getData() == null) {
                         logger.error("found null message in write queue!");
                     } else {
@@ -375,12 +377,12 @@ public class Port {
                         // file definitions be available *before* the modem link records,
                         // slow down the modem traffic with the following statement:
                         // Thread.sleep(500);
-                        synchronized (m_reader.getRequestReplyLock()) {
-                            m_ioStream.write(msg.getData());
-                            while (m_reader.waitForReply()) {
+                        synchronized (reader.getRequestReplyLock()) {
+                            ioStream.write(msg.getData());
+                            while (reader.waitForReply()) {
                                 Thread.sleep(WAIT_TIME);
                                 logger.trace("retransmitting msg: {}", msg);
-                                m_ioStream.write(msg.getData());
+                                ioStream.write(msg.getData());
                             }
 
                         }

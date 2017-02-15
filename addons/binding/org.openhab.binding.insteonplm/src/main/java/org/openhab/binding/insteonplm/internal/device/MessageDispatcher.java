@@ -10,8 +10,9 @@ package org.openhab.binding.insteonplm.internal.device;
 
 import java.util.HashMap;
 
+import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Msg;
+import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public abstract class MessageDispatcher {
 
     /**
      * Constructor
-     * 
+     *
      * @param f DeviceFeature to which this MessageDispatcher belongs
      */
     MessageDispatcher(DeviceFeature f) {
@@ -43,12 +44,12 @@ public abstract class MessageDispatcher {
 
     /**
      * Generic handling of incoming ALL LINK messages
-     * 
+     *
      * @param msg the message received
      * @param port the port on which the message was received
      * @return true if the message was handled by this function
      */
-    protected boolean handleAllLinkMessage(Msg msg, String port) {
+    protected boolean handleAllLinkMessage(InsteonThingHandler handler, Message msg) {
         if (!msg.isAllLink()) {
             return false;
         }
@@ -76,10 +77,9 @@ public abstract class MessageDispatcher {
             if (!h.isDuplicate(msg)) {
                 logger.debug("all link message is no duplicate: {}/{}", h.matchesGroup(group), h.matches(msg));
                 if (h.matchesGroup(group) && h.matches(msg)) {
-                    logger.debug("{}:{}->{} cmd1:{} group {}/{}:{}", m_feature.getDevice().getAddress(),
-                            m_feature.getName(), h.getClass().getSimpleName(), Utils.getHexByte(cmd1), group,
-                            h.getGroup(), msg);
-                    h.handleMessage(group, cmd1, msg, m_feature, port);
+                    logger.debug("{}:{}->{} cmd1:{} group {}/{}:{}", handler.getAddress(), m_feature.getName(),
+                            h.getClass().getSimpleName(), Utils.getHexByte(cmd1), group, h.getGroup(), msg);
+                    h.handleMessage(handler, group, cmd1, msg, m_feature);
                 }
             }
         } catch (FieldException e) {
@@ -90,24 +90,24 @@ public abstract class MessageDispatcher {
 
     /**
      * Checks if this message is in response to previous query by this feature
-     * 
+     *
      * @param msg
      * @return true;
      */
-    boolean isMyDirectAck(Msg msg) {
+    boolean isMyDirectAck(InsteonThingHandler handler, Message msg) {
         return msg.isAckOfDirect() && (m_feature.getQueryStatus() == DeviceFeature.QueryStatus.QUERY_PENDING)
-                && m_feature.getDevice().getFeatureQueried() == m_feature;
+                && handler.getFeatureQueried() == m_feature;
     }
 
     /**
      * Dispatches message
-     * 
+     *
+     * @param handler The handler the message came from
      * @param msg Message to dispatch
-     * @param port Insteon device ('/dev/usb') from which the message came
      * @return true if this message was found to be a reply to a direct message,
      *         and was claimed by one of the handlers
      */
-    public abstract boolean dispatch(Msg msg, String port);
+    public abstract boolean dispatch(InsteonThingHandler handler, Message msg);
 
     //
     //
@@ -121,7 +121,7 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(InsteonThingHandler handler, Message msg) {
             byte cmd = 0x00;
             byte cmd1 = 0x00;
             boolean isConsumed = false;
@@ -138,16 +138,16 @@ public abstract class MessageDispatcher {
                 // in response to a direct status query message
                 return false;
             }
-            if (handleAllLinkMessage(msg, port)) {
+            if (handleAllLinkMessage(handler, msg)) {
                 return false;
             }
             if (msg.isAckOfDirect()) {
                 // in the case of direct ack, the cmd1 code is useless.
                 // you have to know what message was sent before to
                 // interpret the reply message
-                if (isMyDirectAck(msg)) {
-                    logger.debug("{}:{} DIRECT_ACK: q:{} cmd: {}", m_feature.getDevice().getAddress(),
-                            m_feature.getName(), m_feature.getQueryStatus(), cmd);
+                if (isMyDirectAck(handler, msg)) {
+                    logger.debug("{}:{} DIRECT_ACK: q:{} cmd: {}", handler.getAddress(), m_feature.getName(),
+                            m_feature.getQueryStatus(), cmd);
                     isConsumed = true;
                     if (cmd == 0x50) {
                         // must be a reply to our message, tweak the cmd1 code!
@@ -165,16 +165,16 @@ public abstract class MessageDispatcher {
                 }
                 if (h.matches(msg)) {
                     if (!isConsumed) {
-                        logger.debug("{}:{}->{} DIRECT", m_feature.getDevice().getAddress(), m_feature.getName(),
+                        logger.debug("{}:{}->{} DIRECT", handler.getAddress(), m_feature.getName(),
                                 h.getClass().getSimpleName());
                     }
-                    h.handleMessage(-1, cmd1, msg, m_feature, port);
+                    h.handleMessage(handler, -1, cmd1, msg, m_feature);
                 }
             }
             if (isConsumed) {
                 m_feature.setQueryStatus(DeviceFeature.QueryStatus.QUERY_ANSWERED);
-                logger.debug("defdisp: {}:{} set status to: {}", m_feature.getDevice().getAddress(),
-                        m_feature.getName(), m_feature.getQueryStatus());
+                logger.debug("defdisp: {}:{} set status to: {}", handler.getAddress(), m_feature.getName(),
+                        m_feature.getQueryStatus());
             }
             return isConsumed;
         }
@@ -186,7 +186,7 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(InsteonThingHandler handler, Message msg) {
             byte cmd = 0x00;
             byte cmd1 = 0x00;
             boolean isConsumed = false;
@@ -203,15 +203,15 @@ public abstract class MessageDispatcher {
                 // in response to a direct status query message
                 return false;
             }
-            if (handleAllLinkMessage(msg, port)) {
+            if (handleAllLinkMessage(handler, msg)) {
                 return false;
             }
             if (msg.isAckOfDirect()) {
                 // in the case of direct ack, the cmd1 code is useless.
                 // you have to know what message was sent before to
                 // interpret the reply message
-                if (isMyDirectAck(msg)) {
-                    logger.debug("{}:{} qs:{} cmd: {}", m_feature.getDevice().getAddress(), m_feature.getName(),
+                if (isMyDirectAck(handler, msg)) {
+                    logger.debug("{}:{} qs:{} cmd: {}", handler.getAddress(), m_feature.getName(),
                             m_feature.getQueryStatus(), cmd);
                     isConsumed = true;
                     if (cmd == 0x50) {
@@ -223,25 +223,27 @@ public abstract class MessageDispatcher {
             } else {
                 key = (cmd1 & 0xFF);
             }
-            if (key != -1) {
-                for (DeviceFeature f : m_feature.getConnectedFeatures()) {
-                    MessageHandler h = f.getMsgHandlers().get(key);
-                    if (h == null) {
-                        h = f.getDefaultMsgHandler();
-                    }
-                    if (h.matches(msg)) {
-                        if (!isConsumed) {
-                            logger.debug("{}:{}->{} DIRECT", f.getDevice().getAddress(), f.getName(),
-                                    h.getClass().getSimpleName());
-                        }
-                        h.handleMessage(-1, cmd1, msg, f, port);
-                    }
-
-                }
-            }
+            /*
+             * if (key != -1) {
+             * for (DeviceFeature f : m_feature.getConnectedFeatures()) {
+             * MessageHandler h = f.getMsgHandlers().get(key);
+             * if (h == null) {
+             * h = f.getDefaultMsgHandler();
+             * }
+             * if (h.matches(msg)) {
+             * if (!isConsumed) {
+             * logger.debug("{}:{}->{} DIRECT", f.getDevice().getAddress(), f.getName(),
+             * h.getClass().getSimpleName());
+             * }
+             * h.handleMessage(-1, cmd1, msg, f, port);
+             * }
+             *
+             * }
+             * }
+             */
             if (isConsumed) {
                 m_feature.setQueryStatus(DeviceFeature.QueryStatus.QUERY_ANSWERED);
-                logger.debug("{}:{} set status to: {}", m_feature.getDevice().getAddress(), m_feature.getName(),
+                logger.debug("{}:{} set status to: {}", handler.getAddress(), m_feature.getName(),
                         m_feature.getQueryStatus());
             }
             return isConsumed;
@@ -254,19 +256,19 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(InsteonThingHandler handler, Message msg) {
             if (msg.isAllLinkCleanupAckOrNack()) {
                 // Had cases when a KeypadLinc would send an ALL_LINK_CLEANUP_ACK
                 // in response to a direct status query message
                 return false;
             }
-            if (handleAllLinkMessage(msg, port)) {
+            if (handleAllLinkMessage(handler, msg)) {
                 return false;
             }
             if (msg.isAckOfDirect()) {
-                boolean isMyAck = isMyDirectAck(msg);
+                boolean isMyAck = isMyDirectAck(handler, msg);
                 if (isMyAck) {
-                    logger.debug("{}:{} got poll ACK", m_feature.getDevice().getAddress(), m_feature.getName());
+                    logger.debug("{}:{} got poll ACK", handler.getAddress(), m_feature.getName());
                 }
                 return (isMyAck);
             }
@@ -280,10 +282,10 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(InsteonThingHandler handler, Message msg) {
             byte cmd1 = 0x00;
             try {
-                if (handleAllLinkMessage(msg, port)) {
+                if (handleAllLinkMessage(handler, msg)) {
                     return false;
                 }
                 if (msg.isAllLinkCleanupAckOrNack()) {
@@ -296,16 +298,16 @@ public abstract class MessageDispatcher {
                 logger.debug("no cmd1 found, dropping msg {}", msg);
                 return false;
             }
-            boolean isConsumed = isMyDirectAck(msg);
+            boolean isConsumed = isMyDirectAck(handler, msg);
             int key = (cmd1 & 0xFF);
             MessageHandler h = m_feature.getMsgHandlers().get(key);
             if (h == null) {
                 h = m_feature.getDefaultMsgHandler();
             }
             if (h.matches(msg)) {
-                logger.trace("{}:{}->{} {}", m_feature.getDevice().getAddress(), m_feature.getName(),
-                        h.getClass().getSimpleName(), msg);
-                h.handleMessage(-1, cmd1, msg, m_feature, port);
+                logger.trace("{}:{}->{} {}", handler.getAddress(), m_feature.getName(), h.getClass().getSimpleName(),
+                        msg);
+                h.handleMessage(handler, -1, cmd1, msg, m_feature);
             }
             return isConsumed;
         }
@@ -317,7 +319,7 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(InsteonThingHandler handler, Message msg) {
             try {
                 byte rawX10 = msg.getByte("rawX10");
                 int cmd = (rawX10 & 0x0f);
@@ -325,10 +327,10 @@ public abstract class MessageDispatcher {
                 if (h == null) {
                     h = m_feature.getDefaultMsgHandler();
                 }
-                logger.debug("{}:{}->{} {}", m_feature.getDevice().getAddress(), m_feature.getName(),
-                        h.getClass().getSimpleName(), msg);
+                logger.debug("{}:{}->{} {}", handler.getAddress(), m_feature.getName(), h.getClass().getSimpleName(),
+                        msg);
                 if (h.matches(msg)) {
-                    h.handleMessage(-1, (byte) cmd, msg, m_feature, port);
+                    h.handleMessage(handler, -1, (byte) cmd, msg, m_feature);
                 }
             } catch (FieldException e) {
                 logger.error("error parsing {}: ", msg, e);
@@ -343,12 +345,12 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(InsteonThingHandler handler, Message msg) {
             MessageHandler h = m_feature.getDefaultMsgHandler();
             if (h.matches(msg)) {
-                logger.trace("{}:{}->{} {}", m_feature.getDevice().getAddress(), m_feature.getName(),
-                        h.getClass().getSimpleName(), msg);
-                h.handleMessage(-1, (byte) 0x01, msg, m_feature, port);
+                logger.trace("{}:{}->{} {}", handler.getAddress(), m_feature.getName(), h.getClass().getSimpleName(),
+                        msg);
+                h.handleMessage(handler, -1, (byte) 0x01, msg, m_feature);
             }
             return false;
         }
@@ -363,14 +365,14 @@ public abstract class MessageDispatcher {
         }
 
         @Override
-        public boolean dispatch(Msg msg, String port) {
+        public boolean dispatch(InsteonThingHandler handler, Message msg) {
             return false;
         }
     }
 
     /**
      * Factory method for creating a dispatcher of a given name using java reflection
-     * 
+     *
      * @param name the name of the dispatcher to create
      * @param params
      * @param f the feature for which to create the dispatcher

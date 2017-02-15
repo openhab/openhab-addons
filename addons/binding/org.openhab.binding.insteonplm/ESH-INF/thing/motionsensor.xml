@@ -16,6 +16,7 @@
             <channel id="batteryLevel" typeId="battery" />
             <channel id="lightLevel" typeId="integer" />
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
+            <channel id="pendingWrite" typeId="decimal" />
         </channels>
     </thing-type>
 </thing:thing-descriptions>

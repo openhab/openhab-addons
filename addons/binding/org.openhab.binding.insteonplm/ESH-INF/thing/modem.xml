@@ -13,6 +13,7 @@
 
         <channels>
             <channel id="broadcastOnOff" typeId="switch" />
+            <channel id="pendingWrite" typeId="decimal" />
         </channels>
     </thing-type>
 </thing:thing-descriptions>

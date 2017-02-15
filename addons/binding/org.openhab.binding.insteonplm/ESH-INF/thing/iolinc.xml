@@ -15,6 +15,7 @@
             <channel id="contact" typeId="switch" />
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
             <channel id="switch" typeId="switch" />
+            <channel id="pendingWrite" typeId="decimal" />
         </channels>
     </thing-type>
 </thing:thing-descriptions>

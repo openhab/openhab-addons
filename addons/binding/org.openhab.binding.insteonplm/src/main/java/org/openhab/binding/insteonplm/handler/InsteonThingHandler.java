@@ -1,43 +1,72 @@
 package org.openhab.binding.insteonplm.handler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.joda.time.DateTime;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Msg;
+import org.openhab.binding.insteonplm.internal.device.MessageDispatcher;
+import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.MessageFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InsteonThingHandler extends BaseThingHandler {
+    private Logger logger = LoggerFactory.getLogger(InsteonThingHandler.class);
     /** need to wait after query to avoid misinterpretation of duplicate replies */
     private static final int QUIET_TIME_DIRECT_MESSAGE = 2000;
     /** how far to space out poll messages */
     private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
+    /** Default amount of time to hang onto a message. */
+    private static final long DEFAULT_TTL = 60000;
 
-    private HashMap<String, DeviceFeature> m_features = new HashMap<String, DeviceFeature>();
-    private PriorityQueue<QEntry> m_requestQueue = new PriorityQueue<QEntry>();
-    private Long m_lastTimePolled;
+    private HashMap<String, FeatureDetails> features = new HashMap<String, FeatureDetails>();
+    private PriorityQueue<QEntry> requestQueue = new PriorityQueue<QEntry>();
+    private Long lastTimePolled;
+    // Default to 10 days ago.
+    private DateTime lastMessageReceived = DateTime.now().minusDays(10);
 
     public InsteonThingHandler(Thing thing) {
         super(thing);
     }
 
     @Override
+    public void initialize() {
+        // TODO Auto-generated method stub
+        super.initialize();
+        // Set up the dispatches for the features.
+
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Lookup the features to do stuff.
-        for (DeviceFeature feature : m_features.values()) {
-            if (feature.isReferencedByItem(channelUID.getId())) {
-                feature.handleCommand(channelUID, command);
-            }
+        for (FeatureDetails feature : features.values()) {
+            feature.getFeature().handleCommand(this, channelUID, command);
         }
+    }
 
+    /**
+     * Handles the message received over the channel to the modem.
+     */
+    public void handleMessage(Message message) {
+        lastMessageReceived = DateTime.now();
+    }
+
+    /**
+     * The list of feature names on this thing.
+     */
+    public Set<String> getFeatureNames() {
+        return features.keySet();
     }
 
     /** The address for this thing. */
@@ -47,14 +76,7 @@ public class InsteonThingHandler extends BaseThingHandler {
     }
 
     /**
-     * The feature for this specific thing.
-     */
-    public String getFeature() {
-        return getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_FEATURE);
-    }
-
-    /**
-     * The produce key for this specific thing.
+     * The product key for this specific thing.
      */
     public String getProductKey() {
         return getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_PRODUCT_KEY);
@@ -70,37 +92,41 @@ public class InsteonThingHandler extends BaseThingHandler {
     public void doPoll(long timeDelayPollRelatedMsec) {
         long now = System.currentTimeMillis();
         ArrayList<QEntry> l = new ArrayList<QEntry>();
-        synchronized (m_features) {
+        synchronized (features) {
             int spacing = 0;
-            for (DeviceFeature i : m_features.values()) {
-                if (i.hasListeners()) {
-                    Msg m = i.makePollMsg();
-                    if (m != null) {
-                        l.add(new QEntry(i, m, now + timeDelayPollRelatedMsec + spacing));
-                        spacing += TIME_BETWEEN_POLL_MESSAGES;
-                    }
+            for (FeatureDetails i : features.values()) {
+                Message m = i.getFeature().makePollMsg(this);
+                if (m != null) {
+                    l.add(new QEntry(i.getFeature(), m, now + timeDelayPollRelatedMsec + spacing));
+                    spacing += TIME_BETWEEN_POLL_MESSAGES;
                 }
             }
         }
         if (l.isEmpty()) {
             return;
         }
-        synchronized (m_requestQueue) {
+        synchronized (requestQueue) {
             for (QEntry e : l) {
-                m_requestQueue.add(e);
+                requestQueue.add(e);
             }
         }
         getInsteonBridge().addQueue(this, now + timeDelayPollRelatedMsec);
 
         if (!l.isEmpty()) {
-            synchronized (m_lastTimePolled) {
-                m_lastTimePolled = now;
+            synchronized (lastTimePolled) {
+                lastTimePolled = now;
             }
         }
     }
 
+    /** The bridge associated with this thing. */
     InsteonPLMBridgeHandler getInsteonBridge() {
         return (InsteonPLMBridgeHandler) getBridge();
+    }
+
+    /** The message factory to use when making messages. */
+    public MessageFactory getMessageFactory() {
+        return getInsteonBridge().getMessageFactory();
     }
 
     /**
@@ -110,14 +136,14 @@ public class InsteonThingHandler extends BaseThingHandler {
      */
     static class QEntry implements Comparable<QEntry> {
         private DeviceFeature m_feature = null;
-        private Msg m_msg = null;
+        private Message m_msg = null;
         private long m_expirationTime = 0L;
 
         public DeviceFeature getFeature() {
             return m_feature;
         }
 
-        public Msg getMsg() {
+        public Message getMsg() {
             return m_msg;
         }
 
@@ -125,7 +151,7 @@ public class InsteonThingHandler extends BaseThingHandler {
             return m_expirationTime;
         }
 
-        public QEntry(DeviceFeature f, Msg m, long t) {
+        public QEntry(DeviceFeature f, Message m, long t) {
             m_feature = f;
             m_msg = m;
             m_expirationTime = t;
@@ -137,112 +163,109 @@ public class InsteonThingHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Helper method to make standard message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @return standard message
-     * @throws FieldException
-     * @throws IOException
-     */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2) throws FieldException, IOException {
-        return (makeStandardMessage(flags, cmd1, cmd2, -1));
-    }
+    static class FeatureDetails {
+        private final DeviceFeature feature;
+        private final MessageDispatcher dispatcher;
 
-    /**
-     * Helper method to make standard message, possibly with group
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param group (-1 if not a group message)
-     * @return standard message
-     * @throws FieldException
-     * @throws IOException
-     */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group) throws FieldException, IOException {
-        Msg m = Msg.s_makeMessage("SendStandardMessage");
-        InsteonAddress addr = null;
-        if (group != -1) {
-            flags |= 0xc0; // mark message as group message
-            // and stash the group number into the address
-            addr = new InsteonAddress((byte) 0, (byte) 0, (byte) (group & 0xff));
-        } else {
-            addr = getAddress();
+        public FeatureDetails(DeviceFeature feature, MessageDispatcher dispatcher) {
+            this.feature = feature;
+            this.dispatcher = dispatcher;
         }
-        m.setAddress("toAddress", addr);
-        m.setByte("messageFlags", flags);
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        return m;
-    }
 
-    public Msg makeX10Message(byte rawX10, byte X10Flag) throws FieldException, IOException {
-        Msg m = Msg.s_makeMessage("SendX10Message");
-        m.setByte("rawX10", rawX10);
-        m.setByte("X10Flag", X10Flag);
-        m.setQuietTime(300L);
-        return m;
+        public DeviceFeature getFeature() {
+            return feature;
+        }
+
+        public MessageDispatcher getDispatcher() {
+            return dispatcher;
+        }
     }
 
     /**
-     * Helper method to make extended message
+     * Adds this message into the output queue for this thing.
      *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @return extended message
-     * @throws FieldException
-     * @throws IOException
+     * @param message The message to queue
+     * @param feature The feature it is associated with (for acks)
      */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2) throws FieldException, IOException {
-        return makeExtendedMessage(flags, cmd1, cmd2, new byte[] {});
+    public void enqueueMessage(Message message, DeviceFeature feature) {
+        enqueueDelayedMessage(message, feature, 0L);
     }
 
     /**
-     * Helper method to make extended message
+     * Adds this message into the output queue for this thing with a delay.
      *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param data array with userdata
-     * @return extended message
-     * @throws FieldException
-     * @throws IOException
+     * @param message The message to queue
+     * @param feature The feature it is associated with (for acks)
      */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data) throws FieldException, IOException {
-        Msg m = Msg.s_makeMessage("SendExtendedMessage");
-        m.setAddress("toAddress", getAddress());
-        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        m.setUserData(data);
-        m.setCRC();
-        return m;
+    public void enqueueDelayedMessage(Message message, DeviceFeature feature, long delay) {
+        synchronized (requestQueue) {
+            requestQueue.add(new QEntry(feature, message, System.currentTimeMillis() + delay));
+        }
+        if (!message.isBroadcast()) {
+            message.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
+        }
+        logger.trace("enqueueing message with delay {}", delay);
+    }
+
+    public DeviceFeature getFeatureQueried() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /** The max value to set the dimmer too. This can be configured on a per-thing basis. */
+    public int getDimmerMax() {
+        return 100;
+    }
+
+    /** The group the insteon product is in. */
+    public int getInsteonGroup() {
+        return -1;
+    }
+
+    public byte getX10HouseCode() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public int getX10UnitCode() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
     /**
-     * Helper method to make extended message, but with different CRC calculation
+     * Updates the channel based on the new input state. This will lookup the correct channel
+     * from the feature details and then update it.
      *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param data array with user data
-     * @return extended message
-     * @throws FieldException
-     * @throws IOException
+     * @param f the feature details to use for lookup
+     * @param newState the new state to broadcast
      */
-    public Msg makeExtendedMessageCRC2(byte flags, byte cmd1, byte cmd2, byte[] data)
-            throws FieldException, IOException {
-        Msg m = Msg.s_makeMessage("SendExtendedMessage");
-        m.setAddress("toAddress", getAddress());
-        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        m.setUserData(data);
-        m.setCRC2();
-        return m;
+    public void updateFeatureState(String channel, State newState) {
+        updateState(channel, newState);
+    }
+
+    /**
+     * Do a poll for this specific feature.
+     *
+     * @param doItNow If we should do the poll now, or wait a bit
+     */
+    public void pollFeature(DeviceFeature feature, boolean doItNow) {
+        Message mess = feature.getPollHandler().makeMsg(this);
+        if (mess != null) {
+            if (doItNow) {
+                enqueueMessage(mess, feature);
+            } else {
+                enqueueDelayedMessage(mess, feature, 1000);
+            }
+        }
+    }
+
+    /**
+     * Make an id for a channel based on the feature
+     *
+     * @param f The feature to turn into a channel id
+     * @return the channel id
+     */
+    private String makeChannelId(DeviceFeature f) {
+        return f.getName();
     }
 }

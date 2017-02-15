@@ -1,15 +1,12 @@
 package org.openhab.binding.insteonplm.internal.device.commands;
 
-import static org.openhab.binding.insteonplm.internal.device.CommandHandler.logger;
-
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Basic command handler for ramp commands.
@@ -18,11 +15,13 @@ import org.openhab.binding.insteonplm.internal.message.FieldException;
  * @author Bernd Pfrommer
  */
 public abstract class RampCommandHandler extends CommandHandler {
+    private static final Logger logger = LoggerFactory.getLogger(RampCommandHandler.class);
+
     private static double[] halfRateRampTimes = new double[] { 0.1, 0.3, 2, 6.5, 19, 23.5, 28, 32, 38.5, 47, 90, 150,
             210, 270, 360, 480 };
 
-    private byte onCmd;
-    private byte offCmd;
+    private byte onCmd = 0x2E;
+    private byte offCmd = 0x2F;
 
     RampCommandHandler(DeviceFeature f) {
         super(f);
@@ -30,10 +29,22 @@ public abstract class RampCommandHandler extends CommandHandler {
         // Unfortunately, this means we can't declare the onCmd, offCmd to be final.
     }
 
-    void setParameters(HashMap<String, String> params) {
-        super.setParameters(params);
-        onCmd = (byte) getIntParameter("on", 0x2E);
-        offCmd = (byte) getIntParameter("off", 0x2F);
+    public void setOnCmd(String on) {
+        try {
+            onCmd = Byte.valueOf(on);
+        } catch (NumberFormatException e) {
+            logger.error("Unable to parse {}", e, on);
+        }
+
+    }
+
+    public void setOffCmd(String off) {
+        try {
+            offCmd = Byte.valueOf(off);
+        } catch (NumberFormatException e) {
+            logger.error("Unable to parse {}", e, off);
+        }
+
     }
 
     protected final byte getOnCmd() {
@@ -74,10 +85,5 @@ public abstract class RampCommandHandler extends CommandHandler {
         }
 
         return (byte) (((ramplevel & 0x0f) << 4) | (ramptime & 0xf));
-    }
-
-    protected double getRampTime(InsteonThingHandler conf, double defaultValue) {
-        Map<String, String> params = conf.getThing().getProperties();
-        return params.containsKey("ramptime") ? Double.parseDouble(params.get("ramptime")) : defaultValue;
     }
 }

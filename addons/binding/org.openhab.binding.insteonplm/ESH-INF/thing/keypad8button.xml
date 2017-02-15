@@ -24,6 +24,7 @@
             <channel id="buttonG" typeId="switch" />
             <channel id="buttonH" typeId="switch" />
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
+            <channel id="pendingWrite" typeId="decimal" />
         </channels>
     </thing-type>
 </thing:thing-descriptions>

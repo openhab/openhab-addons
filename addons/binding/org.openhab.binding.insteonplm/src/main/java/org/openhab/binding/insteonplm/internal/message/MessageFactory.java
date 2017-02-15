@@ -11,6 +11,7 @@ package org.openhab.binding.insteonplm.internal.message;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.utils.Utils;
 import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class MessageFactory {
 
     /**
      * Constructor
-     * 
+     *
      * @throws FieldException
      * @throws ParsingException
      * @throws IOException
@@ -169,5 +170,118 @@ public class MessageFactory {
             throw new IOException("unknown message type: " + type);
         }
         return new Message(m);
+    }
+
+    /**
+     * Helper method to make standard message
+     *
+     * @param flags
+     * @param cmd1
+     * @param cmd2
+     * @return standard message
+     * @throws FieldException
+     * @throws IOException
+     */
+    public Message makeStandardMessage(byte flags, byte cmd1, byte cmd2, InsteonAddress address)
+            throws FieldException, IOException {
+        return (makeStandardMessage(flags, cmd1, cmd2, -1, address));
+    }
+
+    /**
+     * Helper method to make standard message, possibly with group
+     *
+     * @param flags
+     * @param cmd1
+     * @param cmd2
+     * @param group (-1 if not a group message)
+     * @return standard message
+     * @throws FieldException
+     * @throws IOException
+     */
+    public Message makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group, InsteonAddress address)
+            throws FieldException, IOException {
+        Message m = makeMessage("SendStandardMessage");
+        InsteonAddress addr = null;
+        if (group != -1) {
+            flags |= 0xc0; // mark message as group message
+            // and stash the group number into the address
+            addr = new InsteonAddress((byte) 0, (byte) 0, (byte) (group & 0xff));
+        } else {
+            addr = address;
+        }
+        m.setAddress("toAddress", addr);
+        m.setByte("messageFlags", flags);
+        m.setByte("command1", cmd1);
+        m.setByte("command2", cmd2);
+        return m;
+    }
+
+    public Message makeX10Message(byte rawX10, byte X10Flag) throws FieldException, IOException {
+        Message m = makeMessage("SendX10Message");
+        m.setByte("rawX10", rawX10);
+        m.setByte("X10Flag", X10Flag);
+        m.setQuietTime(300L);
+        return m;
+    }
+
+    /**
+     * Helper method to make extended message
+     *
+     * @param flags
+     * @param cmd1
+     * @param cmd2
+     * @return extended message
+     * @throws FieldException
+     * @throws IOException
+     */
+    public Message makeExtendedMessage(byte flags, byte cmd1, byte cmd2, InsteonAddress address)
+            throws FieldException, IOException {
+        return makeExtendedMessage(flags, cmd1, cmd2, new byte[] {}, address);
+    }
+
+    /**
+     * Helper method to make extended message
+     *
+     * @param flags
+     * @param cmd1
+     * @param cmd2
+     * @param data array with userdata
+     * @return extended message
+     * @throws FieldException
+     * @throws IOException
+     */
+    public Message makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data, InsteonAddress address)
+            throws FieldException, IOException {
+        Message m = makeMessage("SendExtendedMessage");
+        m.setAddress("toAddress", address);
+        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
+        m.setByte("command1", cmd1);
+        m.setByte("command2", cmd2);
+        m.setUserData(data);
+        m.setCRC();
+        return m;
+    }
+
+    /**
+     * Helper method to make extended message, but with different CRC calculation
+     *
+     * @param flags
+     * @param cmd1
+     * @param cmd2
+     * @param data array with user data
+     * @return extended message
+     * @throws FieldException
+     * @throws IOException
+     */
+    public Message makeExtendedMessageCRC2(byte flags, byte cmd1, byte cmd2, byte[] data, InsteonAddress address)
+            throws FieldException, IOException {
+        Message m = makeMessage("SendExtendedMessage");
+        m.setAddress("toAddress", address);
+        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
+        m.setByte("command1", cmd1);
+        m.setByte("command2", cmd2);
+        m.setUserData(data);
+        m.setCRC2();
+        return m;
     }
 }

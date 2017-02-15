@@ -32,4 +32,10 @@ public class InsteonPLMBindingConstants {
     // This is a comma delimited string.
     public final static String PROPERTY_INSTEON_FEATURE_GROUPS = "featureGroups";
     public final static String PROPERTY_INSTEON_PRODUCT_KEY = "productkey";
+
+    // Properties for channels to help configure them.
+    public final static String PROPERTY_ONOFF_EXTENDED_NEEDED = "ext";
+    public final static String PROPERTY_ONOFF_EXTENDED_DATA1 = "d1";
+    public final static String PROPERTY_ONOFF_EXTENDED_DATA2 = "d2";
+    public final static String PROPERTY_ONOFF_EXTENDED_DATA3 = "d3";
 }

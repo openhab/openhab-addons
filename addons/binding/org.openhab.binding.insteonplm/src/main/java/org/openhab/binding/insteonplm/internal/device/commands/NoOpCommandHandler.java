@@ -1,10 +1,10 @@
 package org.openhab.binding.insteonplm.internal.device.commands;
 
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.device.InsteonThing;
 
 /**
  * Do nothing.
@@ -18,7 +18,7 @@ public class NoOpCommandHandler extends CommandHandler {
     }
 
     @Override
-    public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonThing dev) {
+    public void handleCommand(InsteonThingHandler conf, ChannelUID id, Command cmd) {
         // do nothing, not even log
     }
 }

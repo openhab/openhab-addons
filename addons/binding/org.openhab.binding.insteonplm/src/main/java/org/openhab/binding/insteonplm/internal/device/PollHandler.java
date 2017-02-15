@@ -9,12 +9,11 @@
 package org.openhab.binding.insteonplm.internal.device;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Msg;
-import org.openhab.binding.insteonplm.internal.utils.Utils;
+import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,14 +27,13 @@ import org.slf4j.LoggerFactory;
 public abstract class PollHandler {
     private static final Logger logger = LoggerFactory.getLogger(PollHandler.class);
     DeviceFeature m_feature = null;
-    HashMap<String, String> m_parameters = new HashMap<String, String>();
 
     /**
      * Constructor
      *
      * @param feature The device feature being polled
      */
-    PollHandler(DeviceFeature feature) {
+    PollHandler(DeviceFeature feature, MessageFactory messageFactory) {
         m_feature = feature;
     }
 
@@ -46,32 +44,7 @@ public abstract class PollHandler {
      * @param device reference to the insteon device to be polled
      * @return Insteon query message or null if creation failed
      */
-    public abstract Msg makeMsg(InsteonThingHandler device);
-
-    public void setParameters(HashMap<String, String> hm) {
-        m_parameters = hm;
-    }
-
-    /**
-     * Returns parameter as integer
-     *
-     * @param key key of parameter
-     * @param def default
-     * @return value of parameter
-     */
-    protected int getIntParameter(String key, int def) {
-        String val = m_parameters.get(key);
-        if (val == null) {
-            return (def); // param not found
-        }
-        int ret = def;
-        try {
-            ret = Utils.strToInt(val);
-        } catch (NumberFormatException e) {
-            logger.error("malformed int parameter in command handler: {}", key);
-        }
-        return ret;
-    }
+    public abstract Message makeMsg(InsteonThingHandler device);
 
     /**
      * A flexible, parameterized poll handler that can generate
@@ -80,30 +53,82 @@ public abstract class PollHandler {
      */
 
     public static class FlexPollHandler extends PollHandler {
-        FlexPollHandler(DeviceFeature f) {
-            super(f);
+        byte cmd1;
+        byte cmd2;
+        byte data1;
+        byte data2;
+        byte data3;
+
+        FlexPollHandler(DeviceFeature f, MessageFactory factory) {
+            super(f, factory);
+        }
+
+        private enum ExtendedData {
+            extendedNone,
+            extendedCrc1,
+            extendedCrc2
+        }
+
+        ExtendedData extended = ExtendedData.extendedNone;
+
+        public void setExtended(String val) {
+            extended = ExtendedData.valueOf(val);
+        }
+
+        public void setCmd1(String factor) {
+            try {
+                cmd1 = Byte.valueOf(factor);
+            } catch (NumberFormatException e) {
+                logger.error("Unable to parse {}", e, factor);
+            }
+        }
+
+        public void setCmd2(String factor) {
+            try {
+                cmd2 = Byte.valueOf(factor);
+            } catch (NumberFormatException e) {
+                logger.error("Unable to parse {}", e, factor);
+            }
+        }
+
+        public void setData1(String val) {
+            try {
+                data1 = Byte.valueOf(val);
+            } catch (NumberFormatException e) {
+                logger.error("Unable to read {}", e, val);
+            }
+        }
+
+        public void setData2(String val) {
+            try {
+                data2 = Byte.valueOf(val);
+            } catch (NumberFormatException e) {
+                logger.error("Unable to read {}", e, val);
+            }
+        }
+
+        public void setData3(String val) {
+            try {
+                data3 = Byte.valueOf(val);
+            } catch (NumberFormatException e) {
+                logger.error("Unable to read {}", e, val);
+            }
         }
 
         @Override
-        public Msg makeMsg(InsteonThingHandler d) {
-            Msg m = null;
-            int cmd1 = getIntParameter("cmd1", 0);
-            int cmd2 = getIntParameter("cmd2", 0);
-            int ext = getIntParameter("ext", -1);
+        public Message makeMsg(InsteonThingHandler d) {
+            Message m = null;
             try {
-                if (ext == 1 || ext == 2) {
-                    int d1 = getIntParameter("d1", 0);
-                    int d2 = getIntParameter("d2", 0);
-                    int d3 = getIntParameter("d3", 0);
-                    m = d.makeExtendedMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2,
-                            new byte[] { (byte) d1, (byte) d2, (byte) d3 });
-                    if (ext == 1) {
+                if (extended != ExtendedData.extendedNone) {
+                    m = d.getMessageFactory().makeExtendedMessage((byte) 0x0f, cmd1, cmd2,
+                            new byte[] { data1, data2, data3 }, d.getAddress());
+                    if (extended == ExtendedData.extendedCrc1) {
                         m.setCRC();
-                    } else if (ext == 2) {
+                    } else if (extended == ExtendedData.extendedCrc2) {
                         m.setCRC2();
                     }
                 } else {
-                    m = d.makeStandardMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2);
+                    m = d.getMessageFactory().makeStandardMessage((byte) 0x0f, cmd1, cmd2, d.getAddress());
                 }
                 m.setQuietTime(500L);
             } catch (FieldException e) {
@@ -116,35 +141,13 @@ public abstract class PollHandler {
     }
 
     public static class NoPollHandler extends PollHandler {
-        NoPollHandler(DeviceFeature f) {
-            super(f);
+        NoPollHandler(DeviceFeature f, MessageFactory messageFactory) {
+            super(f, messageFactory);
         }
 
         @Override
-        public Msg makeMsg(InsteonThing d) {
+        public Message makeMsg(InsteonThingHandler d) {
             return null;
         }
-    }
-
-    /**
-     * Factory method for creating handlers of a given name using java reflection
-     *
-     * @param ph the name of the handler to create
-     * @param f the feature for which to create the handler
-     * @return the handler which was created
-     */
-    public static <T extends PollHandler> T s_makeHandler(HandlerEntry ph, DeviceFeature f) {
-        String cname = PollHandler.class.getName() + "$" + ph.getName();
-        try {
-            Class<?> c = Class.forName(cname);
-            @SuppressWarnings("unchecked")
-            Class<? extends T> dc = (Class<? extends T>) c;
-            T phc = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
-            phc.setParameters(ph.getParams());
-            return phc;
-        } catch (Exception e) {
-            logger.error("error trying to create message handler: {}", ph.getName(), e);
-        }
-        return null;
     }
 }

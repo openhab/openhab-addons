@@ -2,13 +2,13 @@ package org.openhab.binding.insteonplm.internal.device.commands;
 
 import java.io.IOException;
 
-import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.device.InsteonThing;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Msg;
+import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.types.RampOnOffType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,23 +26,25 @@ public class RampPercentHandler extends RampCommandHandler {
     }
 
     @Override
-    public void handleCommand(InsteonThingHandler conf, Command cmd, InsteonThing dev) {
+    public void handleCommand(InsteonThingHandler conf, ChannelUID channelId, Command cmd) {
         try {
-            PercentType pc = (PercentType) cmd;
-            double ramptime = getRampTime(conf, 0);
-            int level = pc.intValue();
+            RampOnOffType ramp = (RampOnOffType) cmd;
+            double ramptime = ramp.getRamp();
+            int level = ramp.intValue();
             if (level > 0) { // make light on message with given level
                 level = getMaxLightLevel(conf, level);
                 byte cmd2 = encode(ramptime, level);
-                Msg m = dev.makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2);
-                dev.enqueueMessage(m, getFeature());
-                logger.info("{}: sent msg to set {} to {} with {} second ramp time.", nm(), dev.getAddress(), level,
+                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2,
+                        conf.getAddress());
+                conf.enqueueMessage(m, getFeature());
+                logger.info("{}: sent msg to set {} to {} with {} second ramp time.", nm(), conf.getAddress(), level,
                         ramptime);
             } else { // switch off
-                Msg m = dev.makeStandardMessage((byte) 0x0f, getOffCmd(), (byte) 0x00);
-                dev.enqueueMessage(m, getFeature());
+                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOffCmd(), (byte) 0x00,
+                        conf.getAddress());
+                conf.enqueueMessage(m, getFeature());
                 logger.info("{}: sent msg to set {} to zero by switching off with {} ramp time.", nm(),
-                        dev.getAddress(), ramptime);
+                        conf.getAddress(), ramptime);
             }
         } catch (IOException e) {
             logger.error("{}: command send i/o error: ", nm(), e);

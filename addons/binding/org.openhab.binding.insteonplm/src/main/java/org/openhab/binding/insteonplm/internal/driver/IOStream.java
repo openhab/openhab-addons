@@ -98,33 +98,4 @@ public abstract class IOStream {
         close();
         return (open());
     }
-
-    /**
-     * Creates an IOStream from an allowed config string:
-     *
-     * /dev/ttyXYZ (serial port like e.g. usb: /dev/ttyUSB0 or alias /dev/insteon)
-     *
-     * /hub2/user:password@myinsteonhub.mydomain.com:25105,poll_time=1000 (insteon hub2 (2014))
-     *
-     * /hub/myinsteonhub.mydomain.com:9761
-     *
-     * /tcp/serialportserver.mydomain.com:port (serial port exposed via tcp, eg. ser2net)
-     *
-     * @param config
-     * @return reference to IOStream
-     */
-
-    public static IOStream s_create(String config) {
-        if (config.startsWith("/hub2/")) {
-            return makeHub2014Stream(config);
-        } else if (config.startsWith("/hub/") || config.startsWith("/tcp/")) {
-            return makeTCPStream(config);
-        } else {
-            return new SerialIOStream(config);
-        }
-    }
-
-    private static TcpIOStream makeTCPStream(String config) {
-    }
-
 }
