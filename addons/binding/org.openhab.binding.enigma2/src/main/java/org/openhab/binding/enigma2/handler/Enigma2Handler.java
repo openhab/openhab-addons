@@ -160,50 +160,50 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     private void updateCurrentStates() {
         if (commandExecutor.getPowerState() != null) {
             updateState(channelPowerUID, commandExecutor.getPowerState());
-        }
-        if (commandExecutor.getPowerState() == OnOffType.ON) {
-            if (commandExecutor.getVolumeState() != null) {
-                updateState(channelVolumeUID, commandExecutor.getVolumeState());
-            }
-            if (commandExecutor.getMutedState() != null) {
-                updateState(channelMuteUID, commandExecutor.getMutedState());
-            }
-            if (commandExecutor.getChannelState() != null) {
-                updateState(channelChannelUID, commandExecutor.getChannelState());
-            }
-            updateState(channelPlayerControlUID, new StringType(""));
-            updateState(channelRemoteKeyUID, new StringType(""));
-            updateState(channelSendMessageUID, new StringType(""));
-            updateState(channelSendWarningUID, new StringType(""));
-            updateState(channelSendQuestionUID, new StringType(""));
-            if (commandExecutor.getAnswerState() != null) {
-                updateState(channelGetAnswerUID, commandExecutor.getAnswerState());
-            }
+            if (commandExecutor.getPowerState() == OnOffType.ON) {
+                if (commandExecutor.getVolumeState() != null) {
+                    updateState(channelVolumeUID, commandExecutor.getVolumeState());
+                }
+                if (commandExecutor.getMutedState() != null) {
+                    updateState(channelMuteUID, commandExecutor.getMutedState());
+                }
+                if (commandExecutor.getChannelState() != null) {
+                    updateState(channelChannelUID, commandExecutor.getChannelState());
+                }
+                updateState(channelPlayerControlUID, new StringType(""));
+                updateState(channelRemoteKeyUID, new StringType(""));
+                updateState(channelSendMessageUID, new StringType(""));
+                updateState(channelSendWarningUID, new StringType(""));
+                updateState(channelSendQuestionUID, new StringType(""));
+                if (commandExecutor.getAnswerState() != null) {
+                    updateState(channelGetAnswerUID, commandExecutor.getAnswerState());
+                }
 
-            if (commandExecutor.getNowPlayingTitle() != null) {
-                updateState(channelNowPlaylingTitleUID, commandExecutor.getNowPlayingTitle());
-            }
-            if (commandExecutor.getNowPlayingDescription() != null) {
-                updateState(channelNowPlaylingDescriptionUID, commandExecutor.getNowPlayingDescription());
-            }
-            if (commandExecutor.getNowPlayingDescriptionExtended() != null) {
-                updateState(channelNowPlaylingDescriptionExtendedUID,
-                        commandExecutor.getNowPlayingDescriptionExtended());
-            }
-        } else {
-            updateState(channelVolumeUID, new StringType(""));
-            updateState(channelMuteUID, new StringType(""));
-            updateState(channelChannelUID, new StringType(""));
-            updateState(channelPlayerControlUID, new StringType(""));
-            updateState(channelRemoteKeyUID, new StringType(""));
-            updateState(channelSendMessageUID, new StringType(""));
-            updateState(channelSendWarningUID, new StringType(""));
-            updateState(channelSendQuestionUID, new StringType(""));
-            updateState(channelGetAnswerUID, new StringType(""));
+                if (commandExecutor.getNowPlayingTitle() != null) {
+                    updateState(channelNowPlaylingTitleUID, commandExecutor.getNowPlayingTitle());
+                }
+                if (commandExecutor.getNowPlayingDescription() != null) {
+                    updateState(channelNowPlaylingDescriptionUID, commandExecutor.getNowPlayingDescription());
+                }
+                if (commandExecutor.getNowPlayingDescriptionExtended() != null) {
+                    updateState(channelNowPlaylingDescriptionExtendedUID,
+                            commandExecutor.getNowPlayingDescriptionExtended());
+                }
+            } else {
+                updateState(channelVolumeUID, new StringType(""));
+                updateState(channelMuteUID, new StringType(""));
+                updateState(channelChannelUID, new StringType(""));
+                updateState(channelPlayerControlUID, new StringType(""));
+                updateState(channelRemoteKeyUID, new StringType(""));
+                updateState(channelSendMessageUID, new StringType(""));
+                updateState(channelSendWarningUID, new StringType(""));
+                updateState(channelSendQuestionUID, new StringType(""));
+                updateState(channelGetAnswerUID, new StringType(""));
 
-            updateState(channelNowPlaylingTitleUID, new StringType(""));
-            updateState(channelNowPlaylingDescriptionUID, new StringType(""));
-            updateState(channelNowPlaylingDescriptionExtendedUID, new StringType(""));
+                updateState(channelNowPlaylingTitleUID, new StringType(""));
+                updateState(channelNowPlaylingDescriptionUID, new StringType(""));
+                updateState(channelNowPlaylingDescriptionExtendedUID, new StringType(""));
+            }
         }
     }
 

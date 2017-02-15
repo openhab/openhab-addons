@@ -285,9 +285,10 @@ public class Enigma2CommandExecutor {
             State returnState = content.contains("true") ? OnOffType.OFF : OnOffType.ON;
             return returnState;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            logger.warn("Error during send Command: {}", e);
+            return null;
         }
-        return null;
+
     }
 
     /**
