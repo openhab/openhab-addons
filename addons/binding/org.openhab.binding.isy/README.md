@@ -84,7 +84,7 @@ sitemap testing label="Main Menu"
 }
 ```
 
-## Rule sample
+## Rules sample
 
 ```
 var Timer timer
