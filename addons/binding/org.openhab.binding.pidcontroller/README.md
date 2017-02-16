@@ -2,6 +2,7 @@
 
 The PID Controller binding provides PID controllers with the purpose of fine tuning systems using input/setpoint variables (such as temperature control).
 For a glimpse of how a PID Controller works, please check: https://en.wikipedia.org/wiki/PID_controller 
+
 The binding provides 9 channels,  3 (input, setpoint, output) of them being the required channels for the binding to cause result for the items linked to the channels. The other 6 (LoopTime, kpadjuster, kiadjuster, kdadjuster, pidlowerlimit, pidupperlimit) channels (configuration channels for the controller) only provide tweaking  of the controllers initialized, if not set the controller defaults to the following:
 LoopTime=1000 (milliseconds)
 kpadjuster=1 (multiplier for the Kp - proportional constant in the PID controller)
