@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -80,9 +80,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
   @Override
   public void initialize() {
     logger.debug("Initializing PHC Bridge.");
-    updateStatus(ThingStatus.INITIALIZING);
 
-    String port = ((String) getConfig().get(PHCBindingConstants.PORT));// .toUpperCase(); // for Windows
+    String port = ((String) getConfig().get(PHCBindingConstants.PORT));
     logger.debug(port);
 
     try {
@@ -238,7 +237,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             // TODO: List with available addresses(things)? It would be more accurate.
 
             moduleAddress = b;
-            messageStart = 0;
+            messageStart = pos - 1;
             break;
           }
         }
@@ -702,10 +701,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     public int getCounter() {
       return counter;
     }
-  }
-
-  public boolean isInitialized() {
-    return thingIsInitialized();
   }
 
   @Override

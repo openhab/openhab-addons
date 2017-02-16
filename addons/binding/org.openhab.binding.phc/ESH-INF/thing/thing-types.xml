@@ -83,6 +83,7 @@
                 <required>true</required>
             </parameter>
              <parameter name="upDownTime" type="decimal">
+                <advanced>true</advanced>
                 <label>UpDownTime</label>
                 <description>The Time which the shutter needs to move up/down</description>
                 <required>false</required>

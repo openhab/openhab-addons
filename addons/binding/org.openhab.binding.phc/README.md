@@ -21,20 +21,30 @@ At the Moment you can only use one Bridge (like one STM).
 **Serial Port:** Type the serial port of the RS485 adaptor, e.g. COM3 (Windows) or /dev/ttyUSB0 (Linux).
 
 #### Serial Communication
-The binding was tested with QinHeng Electronics HL-340 USB-Serial adapter (RS485) on Raspbian and Windows 10.  
+The binding was tested with QinHeng Electronics HL-340 USB-Serial adapter (RS485) and the Digitus DA-70157 (FTDI/FT323RL) on Raspbian Ubilinux (Up Board) and Windows 10:  
 
-For all devices running with Linux that use the ch341 driver, the new version (ch34x) is needed.
+| Device/OS                | adaptor       | result       |
+|--------------------------|---------------|--------------|
+| Windows 10               | HL-340        | good         |
+|                          | FTDI          | good         |
+| Raspberry Pi 3B/Jessie   | HL-340        | not reliable |
+|                          | FTDI          | doesn´t work |
+|                          | on board      | bad          |
+| Up Board/ubilinux(Jessie)| HL-340        | not reliable |
+|                          | FTDI          | ok           |
+ 
+For all devices running with Linux that use the ch341 driver (HL-340), the new version (ch34x) is needed.
 A guide how to install this can be found here: [CH340/341 UART Driver for Raspberry Pi](https://github.com/aperepel/raspberrypi-ch340-driver).  
 
 If you don´t have the same kernel as used in the guide you have to compile the module yourself. In the guide is described a specific way for the Raspberry Pi. With another Linux version you can go the normal way with linux-headers.   
 
-In Linux the user 'openhab' must be added to the group 'dialout': ```sudo usermod -a -G dialout openhab```.
+In Linux amongst others the user 'openhab' must be added to the group 'dialout': ```sudo usermod -a -G dialout openhab``` For more information read the [installation guide](http://docs.openhab.org/installation/linux.html#recommended-additional-setup-steps).
 
 ## Supported Things
 
 - **AM module:** This represents the AM module with 8 outgoing channels (relays).
 
-- **EM module:** This represents the EM module with 16 incoming (switches) and 8 outgoing (for a LED in the switch) channels (relays).
+- **EM module:** This represents the EM module with 16 incoming (switches) and 8 outgoing (for a LED in the switch) channels.
 
 - **JRM module:** This represents the JRM module with 4 channels for Shutters.
 
@@ -50,7 +60,7 @@ Please note, if you define the things manually (not in the UI) that the ThingID 
 
 - **Address:** Type the address of the module like the DIP switches (you can also find in the PHC software) of the module, e.g. 10110. (mandatory)
 
-- **UpDownTime (only JRM):** The time in seconds that the shutter needs to move up or down. The default, if no value is specified, is 30 seconds. For an exact calculation of the shutter's position, an exact time is needed. NOT IMPLEMENTED YET!
+- **UpDownTime (only JRM):** (advanced) NOT IMPLEMENTED YET! The time in seconds that the shutter needs to move up or down. The default, if no value is specified, is 30 seconds. For an exact calculation of the shutter's position, an exact time is needed.
 
 ## Channels
 
