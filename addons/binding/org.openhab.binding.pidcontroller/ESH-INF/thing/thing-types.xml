@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pidcontroller"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!--Controller-->
+    <thing-type id="Controller">
+        <label>Controller Thing</label>
+        <description>Thing for PIDController Binding</description>
+
+        <channels>
+            <channel id="input" typeId="input"></channel><channel typeId="setpoint" id="setpoint"></channel>
+        	<channel typeId="LoopTime" id="LoopTime"></channel>
+        	<channel typeId="output" id="output"></channel>
+        	<channel typeId="kpadjuster" id="kpadjuster"></channel>
+        	<channel typeId="kiadjuster" id="kiadjuster"></channel>
+        	<channel typeId="kdadjuster" id="kdadjuster"></channel>
+        	<channel typeId="pidlowerlimit" id="pidlowerlimit"></channel>
+        	<channel typeId="pidupperlimit" id="pidupperlimit"></channel>
+        </channels>
+    </thing-type>
+
+    <!-- Sample Channel Type -->
+    <channel-type id="input">
+        <item-type>Number</item-type>
+        <label>Controller input value</label>
+        <description>Input value for the controller</description>
+    </channel-type>
+    <channel-type id="setpoint">
+    	<item-type>Number</item-type>
+    	<label>Controller setpoint value</label>
+    	<description>Setpoint value for the controller</description>
+    </channel-type>
+    <channel-type id="LoopTime">
+    	<item-type>Number</item-type>
+    	<label>Loop Time for the controller</label>
+    	<description>Duration of the loop (milliseconds)</description>
+    </channel-type>
+    <channel-type id="output">
+    	<item-type>Number</item-type>
+    	<label>Output of controller</label>
+    	<description>The output of the controller (default range -255 to 255)</description>
+    </channel-type>
+    <channel-type id="kpadjuster">
+    	<item-type>Number</item-type>
+    	<label>Kp adjust</label>
+    	<description>Adjust the constant Kp with this multiplier. Has to have positive values. Default is 1.</description>
+    </channel-type>
+    <channel-type id="kiadjuster">
+    	<item-type>Number</item-type>
+    	<label>Ki adjust</label>
+    	<description>Adjust the constant Ki with this multiplier. Has to have positive values. Default is 1.</description>
+    </channel-type>
+    <channel-type id="kdadjuster">
+    	<item-type>Number</item-type>
+    	<label>Kd adjust</label>
+    	<description>Adjust the constant Kd with this multiplier. Has to have positive values.  Default is 1.</description>
+    </channel-type>
+    <channel-type id="pidlowerlimit">
+    	<item-type>Number</item-type>
+    	<label>PID Controller lower limit</label>
+    	<description>The lower limit of the controller (defaults to -255)</description>
+    </channel-type>
+    <channel-type id="pidupperlimit">
+        <item-type>Number</item-type>
+        <label>PID Controller upper limit</label>
+        <description>The lower limit of the controller (defaults to 255)</description>
+
+    </channel-type>
+
+</thing:thing-descriptions>
