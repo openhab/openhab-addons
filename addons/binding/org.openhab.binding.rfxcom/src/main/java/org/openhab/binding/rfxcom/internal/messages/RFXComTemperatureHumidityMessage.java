@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.items.NumberItem;
@@ -17,9 +18,9 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for temperature and humidity message.
@@ -29,7 +30,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
 
     public enum SubType {
-        UNDEF(0),
         TH1(1),
         TH2(2),
         TH3(3),
@@ -43,8 +43,7 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
         TH11(11),
         TH12(12),
         TH13(13),
-
-        UNKNOWN(255);
+        TH14(14);
 
         private final int subType;
 
@@ -52,12 +51,18 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
         public byte toByte() {
             return (byte) subType;
+        }
+
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
@@ -65,9 +70,7 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
         NORMAL(0),
         COMFORT(1),
         DRY(2),
-        WET(3),
-
-        UNKNOWN(255);
+        WET(3);
 
         private final int humidityStatus;
 
@@ -75,12 +78,18 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
             this.humidityStatus = humidityStatus;
         }
 
-        HumidityStatus(byte humidityStatus) {
-            this.humidityStatus = humidityStatus;
-        }
-
         public byte toByte() {
             return (byte) humidityStatus;
+        }
+
+        public static HumidityStatus fromByte(int input) throws RFXComUnsupportedValueException {
+            for (HumidityStatus status : HumidityStatus.values()) {
+                if (status.humidityStatus == input) {
+                    return status;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(HumidityStatus.class, input);
         }
     }
 
@@ -88,21 +97,21 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.TEMPERATURE,
             RFXComValueSelector.HUMIDITY, RFXComValueSelector.HUMIDITY_STATUS);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
+    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Collections.emptyList();
 
-    public SubType subType = SubType.UNDEF;
-    public int sensorId = 0;
-    public double temperature = 0;
-    public byte humidity = 0;
-    public HumidityStatus humidityStatus = HumidityStatus.NORMAL;
-    public byte signalLevel = 0;
-    public byte batteryLevel = 0;
+    public SubType subType;
+    public int sensorId;
+    public double temperature;
+    public byte humidity;
+    public HumidityStatus humidityStatus;
+    public byte signalLevel;
+    public byte batteryLevel;
 
     public RFXComTemperatureHumidityMessage() {
         packetType = PacketType.TEMPERATURE_HUMIDITY;
     }
 
-    public RFXComTemperatureHumidityMessage(byte[] data) {
+    public RFXComTemperatureHumidityMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -123,15 +132,11 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         temperature = (short) ((data[6] & 0x7F) << 8 | (data[7] & 0xFF)) * 0.1;
@@ -140,12 +145,7 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
         }
 
         humidity = data[8];
-
-        try {
-            humidityStatus = HumidityStatus.values()[data[9]];
-        } catch (Exception e) {
-            humidityStatus = HumidityStatus.UNKNOWN;
-        }
+        humidityStatus = HumidityStatus.fromByte(data[9]);
 
         signalLevel = (byte) ((data[10] & 0xF0) >> 4);
         batteryLevel = (byte) (data[10] & 0x0F);
@@ -184,7 +184,7 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        State state;
 
         if (valueSelector.getItemClass() == NumberItem.class) {
 
@@ -251,11 +251,10 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 

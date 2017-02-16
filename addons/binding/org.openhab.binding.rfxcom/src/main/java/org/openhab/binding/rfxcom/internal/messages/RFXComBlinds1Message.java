@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for blinds1 message.
@@ -31,6 +32,43 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  */
 public class RFXComBlinds1Message extends RFXComBaseMessage {
 
+    public enum SubType {
+        T0(0), // Hasta new/RollerTrol
+        T1(1),
+        T2(2),
+        T3(3),
+        T4(4), // Additional commands.
+        T5(5), // MEDIA MOUNT have different direction commands than the rest!! Needs to be fixed.
+        T6(6),
+        T7(7),
+        T8(8), // Chamberlain CS4330
+        T9(9), // Sunpery/BTX
+        T10(10), // Dolat DLM-1, Topstar
+        T11(11), // ASP
+        T12(12), // Confexx CNF24-2435
+        T13(13); // Screenline
+
+        private final int subType;
+
+        SubType(int subType) {
+            this.subType = subType;
+        }
+
+        public byte toByte() {
+            return (byte) subType;
+        }
+
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(SubType.class, input);
+        }
+    }
+
     public enum Commands {
         OPEN(0), // MediaMount DOWN(0),
         CLOSE(1), // MediaMount UPP(1),
@@ -39,9 +77,7 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
         SET_LIMIT(4), // YR1326 SET_UPPER_LIMIT(4),
         SET_LOWER_LIMIT(5), // YR1326
         DELETE_LIMITS(6), // YR1326
-        CHANGE_DIRECTON(7), // YR1326
-
-        UNKNOWN(255);
+        CHANGE_DIRECTON(7); // YR1326
 
         private final int command;
 
@@ -49,40 +85,18 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
             this.command = command;
         }
 
-        Commands(byte command) {
-            this.command = command;
-        }
-
         public byte toByte() {
             return (byte) command;
         }
-    }
 
-    public enum SubType {
-        T0(0),
-        T1(1),
-        T2(2),
-        T3(3),
-        T4(4),
-        T5(5),
-        T6(6),
-        T7(7),
-        T8(8),
+        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
+            for (Commands c : Commands.values()) {
+                if (c.command == input) {
+                    return c;
+                }
+            }
 
-        UNKNOWN(255);
-
-        private final int subType;
-
-        SubType(int subType) {
-            this.subType = subType;
-        }
-
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
-        public byte toByte() {
-            return (byte) subType;
+            throw new RFXComUnsupportedValueException(Commands.class, input);
         }
     }
 
@@ -92,18 +106,18 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
             .asList(RFXComValueSelector.SHUTTER);
 
-    public SubType subType = SubType.T0;
-    public int sensorId = 0;
-    public byte unitCode = 0;
-    public Commands command = Commands.STOP;
-    public byte signalLevel = 0;
-    public byte batteryLevel = 0;
+    public SubType subType;
+    public int sensorId;
+    public byte unitCode;
+    public Commands command;
+    public byte signalLevel;
+    public byte batteryLevel;
 
     public RFXComBlinds1Message() {
         packetType = PacketType.BLINDS1;
     }
 
-    public RFXComBlinds1Message(byte[] data) {
+    public RFXComBlinds1Message(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -122,24 +136,21 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
+        subType = SubType.fromByte(super.subType);
+
+        if (subType == SubType.T6) {
+            sensorId = (data[4] & 0xFF) << 20 | (data[5] & 0xFF) << 12 | (data[6] & 0xFF) << 4 | (data[7] & 0xF0) >> 4;
+            unitCode = (byte) (data[7] & 0x0F);
+        } else {
+            sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
+            unitCode = data[7];
         }
 
-        sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
-        unitCode = data[7];
-
-        try {
-            command = Commands.values()[data[8]];
-        } catch (Exception e) {
-            command = Commands.UNKNOWN;
-        }
+        command = Commands.fromByte(data[8]);
 
         signalLevel = (byte) ((data[9] & 0xF0) >> 4);
         batteryLevel = (byte) (data[9] & 0x0F);
@@ -156,10 +167,19 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
         data[1] = RFXComBaseMessage.PacketType.BLINDS1.toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
-        data[4] = (byte) ((sensorId >> 16) & 0xFF);
-        data[5] = (byte) ((sensorId >> 8) & 0xFF);
-        data[6] = (byte) (sensorId & 0xFF);
-        data[7] = unitCode;
+
+        if (subType == SubType.T6) {
+            data[4] = (byte) ((sensorId >>> 20) & 0xFF);
+            data[5] = (byte) ((sensorId >>> 12) & 0xFF);
+            data[6] = (byte) ((sensorId >>> 4) & 0xFF);
+            data[7] = (byte) (((sensorId & 0x0F) << 4) | (unitCode & 0x0F));
+        } else {
+            data[4] = (byte) ((sensorId >> 16) & 0xFF);
+            data[5] = (byte) ((sensorId >> 8) & 0xFF);
+            data[6] = (byte) (sensorId & 0xFF);
+            data[7] = unitCode;
+        }
+
         data[8] = command.toByte();
         data[9] = (byte) (((signalLevel & 0x0F) << 4) | (batteryLevel & 0x0F));
 
@@ -267,11 +287,10 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 

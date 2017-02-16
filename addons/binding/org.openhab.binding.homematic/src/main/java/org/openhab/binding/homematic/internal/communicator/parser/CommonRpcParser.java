@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,7 +35,11 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (object == null || object instanceof Integer) {
             return (Integer) object;
         }
-        return NumberUtils.createInteger(ObjectUtils.toString(object));
+        try {
+            return Double.valueOf(ObjectUtils.toString(object)).intValue();
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 
     /**
@@ -86,26 +90,34 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     protected void adjustRssiValue(HmDatapoint dp) {
         if (dp.getValue() != null && dp.getName().startsWith("RSSI_") && dp.isIntegerType()) {
             int rssiValue = ((Number) dp.getValue()).intValue();
-            if (rssiValue >= 255 || rssiValue <= -255) {
-                dp.setValue(new Integer(0));
-            }
+            dp.setValue(getAdjustedRssiValue(rssiValue));
         }
     }
 
     /**
-     * Converts the type of the value if necessary and sets the value of the datapoint.
+     * Adjust a rssi value if it is out of range.
      */
-    protected void setDatapointValue(HmDatapoint dp, Object value) {
+    protected Integer getAdjustedRssiValue(Integer rssiValue) {
+        if (rssiValue == null || rssiValue >= 255 || rssiValue <= -255) {
+            return 0;
+        }
+        return rssiValue;
+    }
+
+    /**
+     * Converts the value to the correct type if necessary.
+     */
+    protected Object convertToType(HmDatapoint dp, Object value) {
         if (dp.isBooleanType()) {
-            dp.setValue(toBoolean(value));
+            return toBoolean(value);
         } else if (dp.isIntegerType()) {
-            dp.setValue(toInteger(value));
+            return toInteger(value);
         } else if (dp.isFloatType()) {
-            dp.setValue(toNumber(value));
+            return toNumber(value);
         } else if (dp.isStringType()) {
-            dp.setValue(toString(value));
+            return toString(value);
         } else {
-            dp.setValue(value);
+            return value;
         }
     }
 

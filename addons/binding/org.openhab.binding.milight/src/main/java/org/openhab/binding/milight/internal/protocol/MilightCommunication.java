@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.milight.internal.MilightThingState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +36,10 @@ public class MilightCommunication {
 
     private static final Logger logger = LoggerFactory.getLogger(MilightCommunication.class);
 
+    private static final int rgbwLevels = 26;
+    private static final int wLevels = 11;
+
     private final String bridgeId;
-    final int rgbwSteps = 27;
     final DatagramPacket packet;
     final DatagramSocket datagramSocket;
 
@@ -57,30 +58,34 @@ public class MilightCommunication {
     }
 
     public int setBrightness(int bulb, int value, int oldPercent) {
-        if (value == 0) {
+        if (value <= 0) {
             return setOff(bulb);
-        } else if (value == 100) {
+        } else if (value >= 100) {
             return setFull(bulb);
         }
 
-        // White Bulbs: 10 levels of brightness + Off.
+        // White Bulbs: 11 levels of brightness + Off.
         if (bulb < 5) {
-            double stepSize = 9.090909090909091;
+            final int newLevel = (int) Math.ceil((value * wLevels) / 100.0);
 
-            // Assume lowest brightness level (about 9%) if just powered on.
+            // When turning on start from full brightness
+            int oldLevel;
             if (oldPercent == 0) {
-                oldPercent = 9;
+                setFull(bulb);
+                oldLevel = wLevels;
+            } else {
+                oldLevel = (int) Math.ceil((oldPercent * wLevels) / 100.0);
             }
 
-            int repeatCount = Math.abs((int) Math.round(value / stepSize) - (int) Math.round(oldPercent / stepSize));
+            final int repeatCount = Math.abs(newLevel - oldLevel);
             logger.debug("milight: dim from '{}' with command '{}' via '{}' steps.", String.valueOf(oldPercent),
                     String.valueOf(value), repeatCount);
-            if (value > oldPercent) {
+            if (newLevel > oldLevel) {
                 for (int i = 0; i < repeatCount; i++) {
                     sleep(50);
                     increaseBrightness(bulb, -1);
                 }
-            } else if (value < oldPercent) {
+            } else if (newLevel < oldLevel) {
                 for (int i = 0; i < repeatCount; i++) {
                     sleep(50);
                     decreaseBrightness(bulb, -1);
@@ -104,29 +109,17 @@ public class MilightCommunication {
             }
             // RGBW Bulbs:
         } else if (bulb > 5) {
-            if (value > 0 && value < 100) {
-                int newCommand = (value * (rgbwSteps - 2) / 100 + 2);
-                sleep(100);
-                String messageBytes = "4E:" + Integer.toHexString(newCommand) + ":55";
-                logger.debug("milight: send dimming packet '{}' to RGBW bulb channel '{}'", messageBytes, bulb);
-                sendMessage(messageBytes);
-            } else if (value > 99) {
-                value = setFull(bulb);
-            } else if (value < 1) {
-                value = setOff(bulb);
-            }
+            int newCommand = (int) Math.ceil((value * rgbwLevels) / 100.0) + 1;
+            setOn(bulb);
+            sleep(100);
+            String messageBytes = "4E:" + Integer.toHexString(newCommand) + ":55";
+            logger.debug("milight: send dimming packet '{}' to RGBW bulb channel '{}'", messageBytes, bulb);
+            sendMessage(messageBytes);
         }
         return value;
     }
 
     public int setDiscoSpeed(int bulb, int value, int oldPercent) {
-        // Make sure lights are on and engage current bulb via a preceding ON command:
-        setOn(bulb);
-
-        if (bulb != 5) {
-            return 0;
-        }
-
         if (value > oldPercent) {
             int repeatCount = (value - oldPercent) / 10;
             for (int i = 0; i < repeatCount; i++) {
@@ -170,26 +163,32 @@ public class MilightCommunication {
     }
 
     public int setColorTemperature(int bulb, int value, int oldPercent) {
-        // Make sure lights are on and engage current bulb via a preceding ON command:
-        setOn(bulb);
-
-        // White Bulbs: 10 levels of brightness + Off.
+        // White Bulbs: 11 levels of temperature + Off.
         if (bulb < 5) {
-            double stepSize = 9.090909090909091;
-
-            // Assume lowest brightness level (about 9%) if just powered on.
-            if (oldPercent == 0) {
-                oldPercent = 9;
+            int newLevel;
+            int oldLevel;
+            // Reset bulb to known state
+            if (value <= 0) {
+                value = 0;
+                newLevel = 1;
+                oldLevel = wLevels;
+            } else if (value >= 100) {
+                value = 100;
+                newLevel = wLevels;
+                oldLevel = 1;
+            } else {
+                newLevel = (int) Math.ceil((value * wLevels) / 100.0);
+                oldLevel = (int) Math.ceil((oldPercent * wLevels) / 100.0);
             }
 
-            int repeatCount = Math.abs((int) Math.round(value / stepSize) - (int) Math.round(oldPercent / stepSize));
+            final int repeatCount = Math.abs(newLevel - oldLevel);
             logger.debug("milight: dim from '{}' with command '{}' via '{}' steps.", oldPercent, value, repeatCount);
-            if (value > oldPercent) {
+            if (newLevel > oldLevel) {
                 for (int i = 0; i < repeatCount; i++) {
                     sleep(50);
                     warmer(bulb, -1);
                 }
-            } else if (value < oldPercent) {
+            } else if (newLevel < oldLevel) {
                 for (int i = 0; i < repeatCount; i++) {
                     sleep(50);
                     cooler(bulb, -1);
@@ -232,23 +231,18 @@ public class MilightCommunication {
                 break;
         }
         int currentPercent = oldPercent;
-        if (currentPercent == 0) {
-            setOn(bulb);
-            sleep(100);
-        }
         int newPercent = currentPercent + 10;
         if (newPercent > 100) {
             newPercent = 100;
         }
 
         if (bulb > 5) {
-            int increasePercent = newPercent * (rgbwSteps - 2) / 100 + 2;
+            int increasePercent = (int) Math.ceil((newPercent * rgbwLevels) / 100.0) + 1;
             messageBytes = "4E:" + Integer.toHexString(increasePercent) + ":55";
-            logger.debug("Bulb '{}' set to '{}' dimming Steps", bulb, rgbwSteps);
-        } else if (bulb < 5) {
-            newPercent = (int) Math.round((Math.round(oldPercent / 9.090909090909091) + 1) * 9.090909090909091);
-            logger.debug("milight: Bulb '{}' getting increased to '{}'", bulb, newPercent);
+            logger.debug("Bulb '{}' set to '{}' dimming Steps", bulb, increasePercent);
         }
+        setOn(bulb);
+        sleep(100);
         sendMessage(messageBytes);
         return newPercent;
     }
@@ -274,18 +268,17 @@ public class MilightCommunication {
         if (newPercent < 0) {
             newPercent = 0;
         }
-        PercentType newValue = new PercentType(newPercent);
-        if (newValue.equals(PercentType.ZERO)) {
+
+        if (oldPercent != -1 && newPercent == 0) {
             setOff(bulb);
         } else {
             if (bulb > 5) {
-                int decreasePercent = newPercent * (rgbwSteps - 2) / 100 + 2;
+                int decreasePercent = (int) Math.ceil((newPercent * rgbwLevels) / 100.0) + 1;
                 messageBytes = "4E:" + Integer.toHexString(decreasePercent) + ":55";
-                logger.debug("Bulb '{}' set to '{}' dimming Steps", bulb, rgbwSteps);
-            } else if (bulb < 5) {
-                newPercent = (int) Math.round((Math.round(oldPercent / 9.090909090909091) - 1) * 9.090909090909091);
-                logger.debug("milight: Bulb '{}' getting decreased to '{}'", bulb, newPercent);
+                logger.debug("Bulb '{}' set to '{}' dimming Steps", bulb, decreasePercent);
             }
+            setOn(bulb);
+            sleep(100);
             sendMessage(messageBytes);
         }
         return newPercent;
@@ -298,6 +291,8 @@ public class MilightCommunication {
             newPercent = 100;
         }
         String messageBytes = "3E:00:55";
+        setOn(bulb);
+        sleep(100);
         sendMessage(messageBytes);
         return newPercent;
     }
@@ -310,6 +305,8 @@ public class MilightCommunication {
         }
 
         String messageBytes = "3F:00:55";
+        setOn(bulb);
+        sleep(100);
         sendMessage(messageBytes);
         return newPercent;
     }
@@ -318,10 +315,14 @@ public class MilightCommunication {
         logger.debug("milight: sendDiscoModeUp");
         if (bulb < 6) {
             String messageBytes = "27:00:55";
+            setOn(bulb);
+            sleep(100);
             sendMessage(messageBytes);
         }
         if (bulb > 5) {
             String messageBytes = "4D:00:55";
+            setOn(bulb);
+            sleep(100);
             sendMessage(messageBytes);
         }
         return Math.max(oldPercent + 10, 100);
@@ -330,6 +331,8 @@ public class MilightCommunication {
     public int previousDiscoMode(int bulb, int oldPercent) {
         logger.debug("milight: sendDiscoModeDown");
         String messageBytes = "28:00:55";
+        setOn(bulb);
+        sleep(100);
         sendMessage(messageBytes);
         return Math.min(oldPercent - 10, 0);
     }
@@ -351,6 +354,8 @@ public class MilightCommunication {
                 messageBytes = "44:00:55";
                 break;
         }
+        setOn(bulb);
+        sleep(100);
         sendMessage(messageBytes);
     }
 
@@ -371,6 +376,8 @@ public class MilightCommunication {
                 messageBytes = "43:00:55";
                 break;
         }
+        setOn(bulb);
+        sleep(100);
         sendMessage(messageBytes);
     }
 
@@ -429,12 +436,8 @@ public class MilightCommunication {
 
         // nightMode for RGBW bulbs requires second message 100ms later.
         if (bulb >= 6 && bulb <= 10) {
-            try {
-                Thread.sleep(100);
-                sendMessage(messageBytes2);
-            } catch (InterruptedException e) {
-                logger.debug("Sleeping thread has been interrupted.");
-            }
+            sleep(100);
+            sendMessage(messageBytes2);
         }
 
     }
@@ -464,6 +467,8 @@ public class MilightCommunication {
                 messageBytes = "CB:00:55";
                 break;
         }
+        setOn(bulb);
+        sleep(100);
         sendMessage(messageBytes);
     }
 
@@ -496,14 +501,11 @@ public class MilightCommunication {
             case 8:
             case 9:
             case 10:
-                try {
-                    setOn(bulb);
-                    Thread.sleep(100);
-                    messageBytes = "4E:" + Integer.toHexString(rgbwSteps) + ":55";
-                    logger.debug("Bulb '{}' set to '{}' dimming Steps", bulb, rgbwSteps);
-                } catch (InterruptedException e) {
-                    logger.debug("Sleeping thread has been interrupted.");
-                }
+                setOn(bulb);
+                sleep(100);
+                int fullPercent = rgbwLevels + 1;
+                messageBytes = "4E:" + Integer.toHexString(fullPercent) + ":55";
+                logger.debug("Bulb '{}' set to '{}' dimming Steps", bulb, fullPercent);
                 break;
         }
         sendMessage(messageBytes);
@@ -611,13 +613,6 @@ public class MilightCommunication {
                 messageBytes = "4C:00:55";
                 break;
         }
-        // Bring white bulb to 10% before powering off.
-        if (bulb < 5) {
-            for (int i = 0; i < 10; i++) {
-                decreaseBrightness(bulb, 100);
-                sleep(50);
-            }
-        }
         sendMessage(messageBytes);
         return 0;
     }
@@ -638,7 +633,7 @@ public class MilightCommunication {
         }
         if (bulb > 5) {
             setOn(bulb);
-            sleep(50);
+            sleep(100);
             String messageBytes = "40:" + Integer.toHexString(milightColorNo) + ":55";
             sendMessage(messageBytes);
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -150,7 +150,7 @@ public class NetworkUtils {
             throws InvalidConfigurationException, IOException, InterruptedException {
         Process proc;
         if (SystemUtils.IS_OS_UNIX) {
-            proc = new ProcessBuilder("ping", "-t", String.valueOf(timeout / 1000), "-c", "1", hostname).start();
+            proc = new ProcessBuilder("ping", "-w", String.valueOf(timeout / 1000), "-c", "1", hostname).start();
         } else if (SystemUtils.IS_OS_WINDOWS) {
             proc = new ProcessBuilder("ping", "-w", String.valueOf(timeout), "-n", "1", hostname).start();
         } else {

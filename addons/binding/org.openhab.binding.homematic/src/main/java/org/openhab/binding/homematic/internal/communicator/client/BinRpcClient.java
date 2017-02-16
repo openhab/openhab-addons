@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 public class BinRpcClient extends RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(BinRpcClient.class);
-    private static final int MAX_SOCKET_RETRY = 1;
 
     private SocketHandler socketHandler;
 
@@ -73,37 +72,37 @@ public class BinRpcClient extends RpcClient {
      */
     @Override
     protected synchronized Object[] sendMessage(int port, RpcRequest request) throws IOException {
-        if (TRACE_ENABLED) {
+        if (logger.isTraceEnabled()) {
             logger.trace("Client BinRpcRequest:\n{}", request);
         }
-        return sendMessage(port, (BinRpcMessage) request, 0);
+        return sendMessage(port, request, 0);
     }
 
     /**
      * Sends the message, retries if there was an error.
      */
-    private Object[] sendMessage(int port, BinRpcMessage request, int socketRetryCounter) throws IOException {
+    private Object[] sendMessage(int port, RpcRequest request, int rpcRetryCounter) throws IOException {
         BinRpcMessage resp = null;
         try {
             Socket socket = socketHandler.getSocket(port);
             socket.getOutputStream().write(request.createMessage());
             resp = new BinRpcMessage(socket.getInputStream(), false, config.getEncoding());
             return new RpcResponseParser(request).parse(resp.getResponseData());
-        } catch (UnknownRpcFailureException rpcEx) {
+        } catch (UnknownRpcFailureException | UnknownParameterSetException rpcEx) {
             // throw immediately, don't retry the message
             throw rpcEx;
         } catch (IOException ioEx) {
-            if ("init".equals(request.getMethodName()) || socketRetryCounter >= MAX_SOCKET_RETRY) {
+            if ("init".equals(request.getMethodName()) || rpcRetryCounter >= MAX_RPC_RETRY) {
                 throw ioEx;
             } else {
-                socketRetryCounter++;
-                logger.debug("BinRpcMessage socket failure, sending message again {}/{}", socketRetryCounter,
-                        MAX_SOCKET_RETRY);
+                rpcRetryCounter++;
+                logger.debug("BinRpcMessage socket failure, sending message again {}/{}", rpcRetryCounter,
+                        MAX_RPC_RETRY);
                 socketHandler.removeSocket(port);
-                return sendMessage(port, request, socketRetryCounter);
+                return sendMessage(port, request, rpcRetryCounter);
             }
         } finally {
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 logger.trace("Client BinRpcResponse:\n{}", resp == null ? "null" : resp.toString());
             }
         }

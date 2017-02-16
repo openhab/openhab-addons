@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,8 +14,11 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.audio.AudioHTTPServer;
+import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -48,6 +51,10 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private AudioHTTPServer audioHTTPServer;
+
+    private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -66,7 +73,17 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(SQUEEZEBOXPLAYER_THING_TYPE)) {
             logger.trace("creating handler for player thing {}", thing);
-            return new SqueezeBoxPlayerHandler(thing);
+            SqueezeBoxPlayerHandler playerHandler = new SqueezeBoxPlayerHandler(thing);
+
+            // Register the player as an audio sink
+            logger.trace("Registering an audio sink for player thing {}", thing.getUID());
+            SqueezeBoxAudioSink audioSink = new SqueezeBoxAudioSink(playerHandler, audioHTTPServer);
+            @SuppressWarnings("unchecked")
+            ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+            audioSinkRegistrations.put(thing.getUID().toString(), reg);
+
+            return playerHandler;
         }
 
         return null;
@@ -123,9 +140,26 @@ public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof SqueezeBoxPlayerHandler) {
             SqueezeBoxServerHandler bridge = ((SqueezeBoxPlayerHandler) thingHandler).getSqueezeBoxServerHandler();
             if (bridge != null) {
+                // Unregister the player's audio sink
+                logger.trace("Unregistering the audio sync service for player thing {}",
+                        thingHandler.getThing().getUID());
+                ServiceRegistration<AudioSink> reg = audioSinkRegistrations
+                        .get(thingHandler.getThing().getUID().toString());
+                if (reg != null) {
+                    reg.unregister();
+                }
+
                 logger.trace("removing handler for player thing {}", thingHandler.getThing());
                 bridge.removePlayerCache(((SqueezeBoxPlayerHandler) thingHandler).getMac());
             }
         }
+    }
+
+    protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = audioHTTPServer;
+    }
+
+    protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = null;
     }
 }

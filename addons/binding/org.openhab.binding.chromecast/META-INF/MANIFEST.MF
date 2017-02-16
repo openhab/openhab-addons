@@ -3,13 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Chromecast Binding
 Bundle-SymbolicName: org.openhab.binding.chromecast;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/protobuf-java-2.6.0.jar,
  lib/api-v2-0.9.4-SNAPSHOT.jar
 Import-Package: 
  com.fasterxml.jackson.annotation,
+ javax.jmdns,
  org.apache.commons.lang,
  org.codehaus.jackson,
  org.codehaus.jackson.annotate,
@@ -25,6 +26,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.mdns.discovery,
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.openhab.binding.chromecast,

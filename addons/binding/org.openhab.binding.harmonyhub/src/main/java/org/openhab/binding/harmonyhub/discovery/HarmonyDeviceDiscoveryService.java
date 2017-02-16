@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -76,7 +76,7 @@ public class HarmonyDeviceDiscoveryService extends AbstractDiscoveryService impl
      */
     private void discoverDevices() {
         if (bridge.getClient() == null) {
-            logger.warn("Harmony client not connected, scanning postponed.");
+            logger.debug("Harmony client not connected, scanning postponed.");
             return;
         }
         logger.debug("getting devices on {}", bridge.getThing().getUID().getId());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for thermostat1 message.
@@ -32,9 +33,7 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
 
     public enum SubType {
         DIGIMAX(0),
-        DIGIMAX_SHORT(1),
-
-        UNKNOWN(255);
+        DIGIMAX_SHORT(1);
 
         private final int subType;
 
@@ -42,45 +41,53 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
         public byte toByte() {
             return (byte) subType;
+        }
+
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
     /* Added item for ContactTypes */
-    public enum Contact {
+    public enum Status {
         NO_STATUS(0),
         DEMAND(1),
         NO_DEMAND(2),
-        INITIALIZING(3),
+        INITIALIZING(3);
 
-        UNKNOWN(255);
+        private final int status;
 
-        private final int contact;
-
-        Contact(int contact) {
-            this.contact = contact;
-        }
-
-        Contact(byte contact) {
-            this.contact = contact;
+        Status(int status) {
+            this.status = status;
         }
 
         public byte toByte() {
-            return (byte) contact;
+            return (byte) status;
+        }
+
+        public static Status fromByte(int input) throws RFXComUnsupportedValueException {
+            for (Status contact : Status.values()) {
+                if (contact.status == input) {
+                    return contact;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(Status.class, input);
         }
     }
 
     /* Operating mode */
     public enum Mode {
         HEATING(0),
-        COOLING(1),
-
-        UNKNOWN(255);
+        COOLING(1);
 
         private final int mode;
 
@@ -88,12 +95,18 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
             this.mode = mode;
         }
 
-        Mode(byte mode) {
-            this.mode = mode;
-        }
-
         public byte toByte() {
             return (byte) mode;
+        }
+
+        public static Mode fromByte(int input) throws RFXComUnsupportedValueException {
+            for (Mode mode : Mode.values()) {
+                if (mode.mode == input) {
+                    return mode;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(Mode.class, input);
         }
     }
 
@@ -103,19 +116,19 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
 
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
 
-    public SubType subType = SubType.DIGIMAX;
-    public int sensorId = 0;
-    public byte temperature = 0;
-    public byte set = 0;
-    public Mode mode = Mode.HEATING;
-    public Contact status = Contact.NO_STATUS;
-    public byte signalLevel = 0;
+    public SubType subType;
+    public int sensorId;
+    public byte temperature;
+    public byte set;
+    public Mode mode;
+    public Status status;
+    public byte signalLevel;
 
     public RFXComThermostat1Message() {
         packetType = PacketType.THERMOSTAT1;
     }
 
-    public RFXComThermostat1Message(byte[] data) {
+    public RFXComThermostat1Message(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -136,21 +149,17 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
-
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
         temperature = data[6];
         set = data[7];
-        mode = Mode.values()[data[8] & 0x08 >> 4];
-        status = Contact.values()[(data[8] & 0x03)];
+        mode = Mode.fromByte((data[8] & 0xF0) >> 7);
+
+        status = Status.fromByte(data[8] & 0x03);
         signalLevel = (byte) ((data[9] & 0xF0) >> 4);
     }
 
@@ -158,7 +167,7 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
     public byte[] decodeMessage() {
         byte[] data = new byte[10];
 
-        data[0] = 0x08;
+        data[0] = 0x09;
         data[1] = RFXComBaseMessage.PacketType.THERMOSTAT1.toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
@@ -166,8 +175,8 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
         data[5] = (byte) (sensorId & 0x00FF);
         data[6] = (temperature);
         data[7] = (set);
-        data[8] = (byte) ((mode.toByte() << 4) & status.toByte());
-        data[9] = (byte) (((signalLevel & 0x0F) << 4));
+        data[8] = (byte) ((mode.toByte() << 7) | (status.toByte() & 0xFF));
+        data[9] = (byte) (signalLevel << 4);
 
         return data;
     }
@@ -247,11 +256,10 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 

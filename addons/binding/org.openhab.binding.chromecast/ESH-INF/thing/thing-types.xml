@@ -12,6 +12,7 @@
         <channels>
             <channel id="control" typeId="control"/>
             <channel id="volume" typeId="volume"/>
+            <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
         </channels>
 
@@ -33,6 +34,7 @@
         <channels>
             <channel id="control" typeId="control"/>
             <channel id="volume" typeId="volume"/>
+            <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
         </channels>
 
@@ -51,6 +53,12 @@
         <label>Volume</label>
         <description>the sound volume of the device</description>
         <category>SoundVolume</category>
+    </channel-type>
+
+    <channel-type id="mute" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Set or get the mute state of the device</description>
     </channel-type>
 
     <channel-type id="playuri" advanced="true">

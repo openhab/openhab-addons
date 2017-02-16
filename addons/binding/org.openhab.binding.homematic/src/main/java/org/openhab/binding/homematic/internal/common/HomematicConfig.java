@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,6 +30,7 @@ public class HomematicConfig {
     private static final int DEFAULT_PORT_WIRED = 2000;
     private static final int DEFAULT_PORT_HMIP = 2010;
     private static final int DEFAULT_PORT_CUXD = 8701;
+    private static final int DEFAULT_PORT_GROUP = 9292;
 
     private String gatewayAddress;
     private String gatewayType = GATEWAY_TYPE_AUTO;
@@ -38,6 +39,7 @@ public class HomematicConfig {
     private int wiredPort;
     private int hmIpPort;
     private int cuxdPort;
+    private int groupPort;
 
     private String callbackHost;
     private int xmlCallbackPort;
@@ -234,25 +236,46 @@ public class HomematicConfig {
             return getHmIpPort();
         } else if (HmInterface.CUXD.equals(hmInterface)) {
             return getCuxdPort();
+        } else if (HmInterface.GROUP.equals(hmInterface)) {
+            return getGroupPort();
         } else {
             return getRfPort();
         }
     }
 
+    /**
+     * Returns the port of the RF daemon.
+     */
     private int getRfPort() {
         return rfPort == 0 ? DEFAULT_PORT_RF : rfPort;
     }
 
+    /**
+     * Returns the port of the wired daemon.
+     */
     private int getWiredPort() {
         return wiredPort == 0 ? DEFAULT_PORT_WIRED : wiredPort;
     }
 
+    /**
+     * Returns the port of the HmIp daemon.
+     */
     private int getHmIpPort() {
         return hmIpPort == 0 ? DEFAULT_PORT_HMIP : hmIpPort;
     }
 
+    /**
+     * Returns the port of the CUxD daemon.
+     */
     private int getCuxdPort() {
         return cuxdPort == 0 ? DEFAULT_PORT_CUXD : cuxdPort;
+    }
+
+    /**
+     * Returns the port of the group daemon.
+     */
+    public int getGroupPort() {
+        return groupPort == 0 ? DEFAULT_PORT_GROUP : groupPort;
     }
 
     /**
@@ -277,6 +300,13 @@ public class HomematicConfig {
     }
 
     /**
+     * Returns true, if a group port is configured.
+     */
+    public boolean hasGroupPort() {
+        return groupPort != 0;
+    }
+
+    /**
      * Returns the encoding of a Homematic gateway.
      */
     public String getEncoding() {
@@ -296,7 +326,7 @@ public class HomematicConfig {
         tsb.append("gatewayAddress", gatewayAddress).append("callbackHost", callbackHost)
                 .append("xmlCallbackPort", xmlCallbackPort).append("binCallbackPort", binCallbackPort)
                 .append("gatewayType", gatewayType).append("rfPort", getRfPort()).append("wiredPort", getWiredPort())
-                .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort())
+                .append("hmIpPort", getHmIpPort()).append("cuxdPort", getCuxdPort()).append("groupPort", getGroupPort())
                 .append("aliveInterval", aliveInterval).append("reconnectInterval", reconnectInterval)
                 .append("timeout", timeout).append("socketMaxAlive", socketMaxAlive);
         return tsb.toString();

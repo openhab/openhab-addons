@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,9 +17,14 @@ import java.util.Map;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
+import org.openhab.binding.netatmo.config.NetatmoThingConfiguration;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.NADeviceAdapter;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
 import org.openhab.binding.netatmo.internal.NAPlugAdapter;
@@ -81,6 +86,17 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void onDeviceAddedInternal(NADeviceAdapter<?> naDevice) {
+        // Prevent for adding already known devices
+        for (Thing thing : netatmoBridgeHandler.getThing().getThings()) {
+            if (thing.getHandler() instanceof NetatmoDeviceHandler) {
+                NetatmoDeviceHandler<?> device = (NetatmoDeviceHandler<?>) thing.getHandler();
+                NetatmoThingConfiguration configuration = device.getConfiguration();
+                if (configuration.getEquipmentId().equalsIgnoreCase(naDevice.getId())) {
+                    return;
+                }
+            }
+        }
+
         ThingUID thingUID = findThingUID(naDevice.getType(), naDevice.getId());
         Map<String, Object> properties = new HashMap<>(1);
 
@@ -90,6 +106,18 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void onModuleAddedInternal(String deviceId, NAModuleAdapter naModule) {
+        // Prevent for adding already known modules
+        for (Thing thing : netatmoBridgeHandler.getThing().getThings()) {
+            if (thing.getHandler() instanceof NetatmoModuleHandler) {
+                NetatmoModuleHandler<?> module = (NetatmoModuleHandler<?>) thing.getHandler();
+                NetatmoModuleConfiguration configuration = module.getConfiguration();
+                if (configuration.getParentId().equalsIgnoreCase(deviceId)
+                        && configuration.getEquipmentId().equalsIgnoreCase(naModule.getId())) {
+                    return;
+                }
+            }
+        }
+
         ThingUID thingUID = findThingUID(naModule.getType(), naModule.getId());
         Map<String, Object> properties = new HashMap<>(2);
 

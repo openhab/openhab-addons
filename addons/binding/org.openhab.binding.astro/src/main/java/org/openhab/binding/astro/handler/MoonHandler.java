@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,6 +16,8 @@ import java.util.Set;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.astro.internal.calc.MoonCalc;
+import org.openhab.binding.astro.internal.job.AbstractDailyJob;
+import org.openhab.binding.astro.internal.job.DailyJobMoon;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.Planet;
 
@@ -23,14 +25,14 @@ import com.google.common.collect.Sets;
 
 /**
  * The MoonHandler is responsible for updating calculated moon data.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public class MoonHandler extends AstroThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_MOON);
 
-    private String[] positionalChannelIds = new String[] { "phase#name", "phase#age", "phase#illumination", "position#azimuth", "position#elevation",
-            "zodiac#sign" };
+    private String[] positionalChannelIds = new String[] { "phase#name", "phase#age", "phase#illumination",
+            "position#azimuth", "position#elevation", "zodiac#sign" };
     private MoonCalc moonCalc = new MoonCalc();
     private Moon moon;
 
@@ -79,6 +81,14 @@ public class MoonHandler extends AstroThingHandler {
     @Override
     protected String[] getPositionalChannelIds() {
         return positionalChannelIds;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Class<? extends AbstractDailyJob> getDailyJobClass() {
+        return DailyJobMoon.class;
     }
 
 }

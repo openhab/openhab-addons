@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,11 +18,12 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * Thing configuration from openHab.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public class AstroThingConfig {
     private String geolocation;
+    private Integer altitude;
     private Double latitude;
     private Double longitude;
     private Integer interval;
@@ -69,6 +70,13 @@ public class AstroThingConfig {
     }
 
     /**
+     * Returns the longitude.
+     */
+    public Integer getAltitude() {
+        return altitude;
+    }
+
+    /**
      * Returns the interval.
      */
     public Integer getInterval() {
@@ -100,8 +108,9 @@ public class AstroThingConfig {
         tzInfo.append(" (").append(tz.getDisplayName(false, TimeZone.SHORT)).append(" ")
                 .append(new SimpleDateFormat("Z").format(Calendar.getInstance().getTime()));
         tzInfo.append(")");
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("thing", thingUid).append("geolocation", geolocation)
-                .append("interval", interval).append("systemTimezone", tzInfo.toString())
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("thing", thingUid)
+                .append("geolocation", geolocation).append("altitude", altitude).append("interval", interval)
+                .append("systemTimezone", tzInfo.toString())
                 .append("daylightSavings", Calendar.getInstance().get(Calendar.DST_OFFSET) != 0).toString();
     }
 }

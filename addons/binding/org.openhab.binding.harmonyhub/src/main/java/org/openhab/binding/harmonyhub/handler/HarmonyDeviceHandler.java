@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -147,6 +147,8 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             updateChannel();
         } else if (bridgeStatus == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else if (bridgeStatus == ThingStatus.UNKNOWN) {
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

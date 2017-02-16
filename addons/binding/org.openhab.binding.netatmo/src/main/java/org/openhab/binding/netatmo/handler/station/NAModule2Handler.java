@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,19 +33,21 @@ public class NAModule2Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        NADashboardData dashboardData = module.getDashboardData();
-        switch (channelId) {
-            case CHANNEL_WIND_ANGLE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getWindAngle());
-            case CHANNEL_WIND_STRENGTH:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getWindStrength());
-            case CHANNEL_GUST_ANGLE:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getGustAngle());
-            case CHANNEL_GUST_STRENGTH:
-                return ChannelTypeUtils.toDecimalType(dashboardData.getGustStrength());
-            default:
-                return super.getNAThingProperty(channelId);
+        if (module != null) {
+            NADashboardData dashboardData = module.getDashboardData();
+            switch (channelId) {
+                case CHANNEL_WIND_ANGLE:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getWindAngle());
+                case CHANNEL_WIND_STRENGTH:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getWindStrength());
+                case CHANNEL_GUST_ANGLE:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getGustAngle());
+                case CHANNEL_GUST_STRENGTH:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getGustStrength());
+
+            }
         }
+        return super.getNAThingProperty(channelId);
     }
 
 }

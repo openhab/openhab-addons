@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -69,22 +69,22 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_IN_ALARM:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_TAMPER:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_FAULT:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_TRIPPED:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;

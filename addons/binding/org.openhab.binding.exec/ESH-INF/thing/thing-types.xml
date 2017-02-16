@@ -10,8 +10,9 @@
 
         <channels>
             <channel id="output" typeId="output"/>
+            <channel id="input" typeId="input"/>
             <channel id="exit" typeId="exit"/>
-            <channel id="run" typeId="running"/>
+            <channel id="run" typeId="run"/>
             <channel id="lastexecution" typeId="lastexecution" />
         </channels>
         
@@ -23,15 +24,23 @@
             <parameter name="transform" type="text" required="false">
                 <label>Transform</label>
                 <description>The transformation to apply on the execution result, e.g. REGEX((.*))</description>
+                <default>REGEX((.*))</default>
             </parameter>
             <parameter name="interval" type="integer"  required="false">
                 <label>Interval</label>
                 <description>Interval, in seconds, the command will be repeatedly executed</description>
+                <default>60</default>
             </parameter>
             <parameter name="timeout" type="integer"  required="false">
                 <label>Timeout</label>
                 <description>Time out, in seconds, the execution of the command will time out</description>
-            </parameter>        
+                <default>15</default>
+            </parameter>
+            <parameter name="autorun" type="boolean"  required="false">
+                <label>Autorun</label>
+                <description>When true, the command will execute each time the state of the input channel changes</description>
+                <default>false</default>
+            </parameter>         
         </config-description>
         
     </thing-type>
@@ -42,7 +51,13 @@
         <description>Output of the last execution of the command</description>
         <state readOnly="true"></state>  
     </channel-type>
-        <channel-type id="exit">
+    <channel-type id="input">
+        <item-type>String</item-type>        
+        <label>Input</label>
+        <description>Input that will be passed as second parameter to the command</description>
+        <state readOnly="false"></state>  
+    </channel-type>
+    <channel-type id="exit">
         <item-type>Number</item-type>
         <label>Exit Value</label>
         <description>The exit value of the last execution of the command</description>

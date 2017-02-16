@@ -5,6 +5,18 @@
 
 	<!-- Channel definitions -->
 
+	<channel-type id="rawmessage">
+		<item-type>String</item-type>
+		<label>Raw Message</label>
+		<description>Hexadecimal representation of undecoded RFXCOM messages including header and payload</description>
+	</channel-type>
+
+	<channel-type id="rawpayload">
+		<item-type>String</item-type>
+		<label>Raw Payload</label>
+		<description>Hexadecimal representation of payload of undecoded RFXCOM messages</description>
+	</channel-type>
+
 	<channel-type id="command">
 		<item-type>Switch</item-type>
 		<label>Command</label>
@@ -15,6 +27,12 @@
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Contact channel</description>
+	</channel-type>
+
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>DateTime</label>
+		<description>DateTime channel</description>
 	</channel-type>
 
 	<channel-type id="dimminglevel">
@@ -63,7 +81,7 @@
 		<item-type>Number</item-type>
 		<label>Rain Total</label>
 		<description>Total rain in millimeters</description>
-		<state pattern="%d mm" readOnly="true"></state>
+		<state pattern="%.1f mm" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="shutter">

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.rfxcom.internal.messages;
+
+import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -24,15 +26,16 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for lighting5 message.
  *
  * @author Paul Hampson, Neil Renaud - Initial contribution
  * @author Pauli Anttila
+ * @author Martin van Wingerden - added support for IT and some other subtypes
  */
 public class RFXComLighting5Message extends RFXComBaseMessage {
 
@@ -45,11 +48,14 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
         LIVOLO(5),
         RGB_TRC02(6),
         AOKE(7),
-        RGB_TRC02_2(7),
-        EURODOMEST(8),
-        LIVOLO_APPLIANCE(9),
-
-        UNKNOWN(255);
+        RGB_TRC02_2(8),
+        EURODOMEST(9),
+        LIVOLO_APPLIANCE(10),
+        MDREMOTE_107(12),
+        AVANTEK(14),
+        IT(15),
+        MDREMOTE_108(16),
+        KANGTAI(17);
 
         private final int subType;
 
@@ -57,48 +63,80 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
         public byte toByte() {
             return (byte) subType;
         }
+
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(SubType.class, input);
+        }
     }
 
+    /**
+     * Note: for the lighting5 commands, some command are only supported for certain sub types and
+     * command-bytes might even have a different meaning for another sub type.
+     * <p>
+     * If no sub types are specified for a command, its supported by all sub types.
+     * An example is the command OFF which is represented by the byte 0x00 for all subtypes.
+     * <p>
+     * Otherwise the list of sub types after the command-bytes indicates the sub types
+     * which support this command with this byte.
+     * Example byte value 0x03 means GROUP_ON for IT and some others while it means MOOD1 for LIGHTWAVERF
+     */
     public enum Commands {
-        OFF(0),
-        ON(1),
-        GROUP_OFF(2),
-        MOOD1(3),
-        MOOD2(4),
-        MOOD3(5),
-        MOOD4(6),
-        MOOD5(7),
-        RESERVED1(8),
-        RESERVED2(9),
-        UNLOCK(10),
-        LOCK(11),
-        ALL_LOCK(12),
-        CLOSE_RELAY(13),
-        STOP_RELAY(14),
-        OPEN_RELAY(15),
-        SET_LEVEL(16),
-
-        UNKNOWN(255);
+        OFF(0x00),
+        ON(0x01),
+        GROUP_OFF(0x02, LIGHTWAVERF, BBSB_NEW, CONRAD_RSL2, EURODOMEST, AVANTEK, IT, KANGTAI),
+        LEARN(0x02, EMW100),
+        GROUP_ON(0x03, BBSB_NEW, CONRAD_RSL2, EURODOMEST, AVANTEK, IT, KANGTAI),
+        MOOD1(0x03, LIGHTWAVERF),
+        MOOD2(0x04, LIGHTWAVERF),
+        MOOD3(0x05, LIGHTWAVERF),
+        MOOD4(0x06, LIGHTWAVERF),
+        MOOD5(0x07, LIGHTWAVERF),
+        RESERVED1(0x08, LIGHTWAVERF),
+        RESERVED2(0x09, LIGHTWAVERF),
+        UNLOCK(0x0A, LIGHTWAVERF),
+        LOCK(0x0B, LIGHTWAVERF),
+        ALL_LOCK(0x0C, LIGHTWAVERF),
+        CLOSE_RELAY(0x0D, LIGHTWAVERF),
+        STOP_RELAY(0x0E, LIGHTWAVERF),
+        OPEN_RELAY(0x0F, LIGHTWAVERF),
+        SET_LEVEL(0x10, LIGHTWAVERF, IT),
+        COLOUR_PALETTE(0x11, LIGHTWAVERF),
+        COLOUR_TONE(0x12, LIGHTWAVERF),
+        COLOUR_CYCLE(0x13, LIGHTWAVERF);
 
         private final int command;
+        private final List<SubType> supportedBySubTypes;
 
         Commands(int command) {
-            this.command = command;
+            this(command, SubType.values());
         }
 
-        Commands(byte command) {
+        Commands(int command, SubType... supportedBySubTypes) {
             this.command = command;
+            this.supportedBySubTypes = Arrays.asList(supportedBySubTypes);
         }
 
         public byte toByte() {
             return (byte) command;
+        }
+
+        public static Commands fromByte(int input, SubType subType) throws RFXComUnsupportedValueException {
+            for (Commands c : Commands.values()) {
+                if (c.command == input && c.supportedBySubTypes.contains(subType)) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(Commands.class, input);
         }
     }
 
@@ -109,18 +147,18 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
             .asList(RFXComValueSelector.COMMAND, RFXComValueSelector.DIMMING_LEVEL);
 
-    public SubType subType = SubType.LIGHTWAVERF;
-    public int sensorId = 0;
-    public byte unitCode = 0;
-    public Commands command = Commands.OFF;
-    public byte dimmingLevel = 0;
-    public byte signalLevel = 0;
+    public SubType subType;
+    public int sensorId;
+    public byte unitCode;
+    public Commands command;
+    public byte dimmingLevel;
+    public byte signalLevel;
 
     public RFXComLighting5Message() {
         packetType = PacketType.LIGHTING5;
     }
 
-    public RFXComLighting5Message(byte[] data) {
+    public RFXComLighting5Message(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -139,24 +177,15 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
-
+    public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
+        subType = SubType.fromByte(super.subType);
 
-        sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF) << 0;
+        sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
         unitCode = data[7];
 
-        try {
-            command = Commands.values()[data[8]];
-        } catch (Exception e) {
-            command = Commands.UNKNOWN;
-        }
+        command = Commands.fromByte(data[8], subType);
 
         dimmingLevel = data[9];
         signalLevel = (byte) ((data[10] & 0xF0) >> 4);
@@ -190,7 +219,7 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
 
     /**
      * Convert a 0-31 scale value to a percent type.
-     * 
+     *
      * @param pt
      *            percent type to convert
      * @return converted value 0-31
@@ -202,8 +231,8 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
 
     /**
      * Convert a 0-31 scale value to a percent type.
-     * 
-     * @param pt
+     *
+     * @param value
      *            percent type to convert
      * @return converted value 0-31
      */
@@ -217,7 +246,7 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        State state;
 
         if (valueSelector.getItemClass() == NumberItem.class) {
 
@@ -273,6 +302,7 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
                         break;
 
                     case ON:
+                    case GROUP_ON:
                         state = OnOffType.ON;
                         break;
 
@@ -297,6 +327,7 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
                         break;
 
                     case ON:
+                    case GROUP_ON:
                         state = OpenClosedType.OPEN;
                         break;
 
@@ -383,11 +414,10 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 

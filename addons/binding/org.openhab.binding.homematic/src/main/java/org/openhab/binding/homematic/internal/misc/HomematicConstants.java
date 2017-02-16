@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -62,6 +62,7 @@ public class HomematicConstants {
     public static final String DATAPOINT_NAME_ON_TIME = "ON_TIME";
     public static final String DATAPOINT_NAME_STOP = "STOP";
     public static final String DATAPOINT_NAME_RSSI_DEVICE = "RSSI_DEVICE";
+    public static final String DATAPOINT_NAME_RSSI_PEER = "RSSI_PEER";
     public static final String DATAPOINT_NAME_AES_KEY = "AES_KEY";
 
     public static final String VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE = "BATTERY_TYPE";
@@ -74,6 +75,10 @@ public class HomematicConstants {
     public static final String VIRTUAL_DATAPOINT_NAME_ON_TIME_AUTOMATIC = "ON_TIME_AUTOMATIC";
     public static final String VIRTUAL_DATAPOINT_NAME_RELOAD_ALL_FROM_GATEWAY = "RELOAD_ALL_FROM_GATEWAY";
     public static final String VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY = "RELOAD_FROM_GATEWAY";
+    public static final String VIRTUAL_DATAPOINT_NAME_RELOAD_RSSI = "RELOAD_RSSI";
+    public static final String VIRTUAL_DATAPOINT_NAME_RSSI = "RSSI";
+    public static final String VIRTUAL_DATAPOINT_NAME_STATE_CONTACT = "STATE_CONTACT";
+    public static final String VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH = "SIGNAL_STRENGTH";
 
     public static final String RPC_METHODNAME_EVENT = "event";
     public static final String RPC_METHODNAME_LIST_DEVICES = "listDevices";
@@ -82,4 +87,5 @@ public class HomematicConstants {
     public static final String RPC_METHODNAME_NEW_DEVICES = "newDevices";
     public static final String RPC_METHODNAME_SYSTEM_LISTMETHODS = "system.listMethods";
     public static final String RPC_METHODNAME_SYSTEM_MULTICALL = "system.multicall";
+    public static final String RPC_METHODNAME_SET_CONFIG_READY = "setReadyConfig";
 }

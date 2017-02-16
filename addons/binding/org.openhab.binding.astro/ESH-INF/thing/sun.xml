@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="astro"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="astro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -23,9 +22,11 @@
 			<channel-group id="eveningNight" typeId="sunRange" />
 			<channel-group id="daylight" typeId="sunRange" />
 			<channel-group id="position" typeId="position" />
+			<channel-group id="radiation" typeId="radiation" />
 			<channel-group id="zodiac" typeId="sunZodiac" />
 			<channel-group id="season" typeId="season" />
 			<channel-group id="eclipse" typeId="sunEclipse" />
+			<channel-group id="phase" typeId="sunPhase" />
 		</channel-groups>
 		<config-description-ref uri="thing-type:astro:config" />
 	</thing-type>

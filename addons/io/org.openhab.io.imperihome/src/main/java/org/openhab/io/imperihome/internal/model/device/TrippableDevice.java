@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,8 +7,6 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.io.imperihome.internal.model.device;
-
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.items.Item;
@@ -41,21 +39,20 @@ public class TrippableDevice extends AbstractDevice {
 
         boolean tripped = false;
 
-        List<Class<? extends State>> acceptedDataTypes = item.getAcceptedDataTypes();
-        if (acceptedDataTypes.contains(OpenClosedType.class)) {
+        if (item.getStateAs(OpenClosedType.class) != null) {
             OpenClosedType state = (OpenClosedType) item.getStateAs(OpenClosedType.class);
             tripped = state == OpenClosedType.CLOSED;
-        } else if (acceptedDataTypes.contains(OnOffType.class)) {
+        } else if (item.getStateAs(OnOffType.class) != null) {
             OnOffType state = (OnOffType) item.getStateAs(OnOffType.class);
             tripped = state == OnOffType.ON;
-        } else if (acceptedDataTypes.contains(DecimalType.class)) {
+        } else if (item.getStateAs(DecimalType.class) != null) {
             DecimalType state = (DecimalType) item.getStateAs(DecimalType.class);
             tripped = state.intValue() != 0;
-        } else if (acceptedDataTypes.contains(StringType.class)) {
+        } else if (item.getStateAs(StringType.class) != null) {
             StringType state = (StringType) item.getStateAs(StringType.class);
             tripped = StringUtils.isNotBlank(state.toString()) && !state.toString().trim().equals("ok");
         } else {
-            logger.warn("Can't interpret state {} as tripped status", item.getState());
+            logger.debug("Can't interpret state {} as tripped status", item.getState());
         }
 
         addParam(new DeviceParam(ParamType.TRIPPED, tripped ^ isInverted() ? "1" : "0"));

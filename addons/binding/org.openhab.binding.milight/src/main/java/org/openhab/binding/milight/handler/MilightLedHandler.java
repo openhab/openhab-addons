@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@ package org.openhab.binding.milight.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -88,18 +89,48 @@ public class MilightLedHandler extends BaseThingHandler {
                 break;
             }
             case MilightBindingConstants.CHANNEL_TEMP: {
-                DecimalType d = (DecimalType) command;
-                state.setColorTemperature(d.intValue());
+                if (command instanceof IncreaseDecreaseType) {
+                    IncreaseDecreaseType id = (IncreaseDecreaseType) command;
+                    if (id == IncreaseDecreaseType.INCREASE) {
+                        state.warmer();
+                    } else if (id == IncreaseDecreaseType.DECREASE) {
+                        state.cooler();
+                    }
+                } else if (command instanceof DecimalType) {
+                    DecimalType d = (DecimalType) command;
+                    state.setColorTemperature(d.intValue());
+                }
                 break;
             }
             case MilightBindingConstants.CHANNEL_SPEED: {
-                DecimalType d = (DecimalType) command;
-                state.setDiscoSpeed(d.intValue());
+                if (command instanceof IncreaseDecreaseType) {
+                    IncreaseDecreaseType id = (IncreaseDecreaseType) command;
+                    if (id == IncreaseDecreaseType.INCREASE) {
+                        state.increaseSpeed();
+                    } else if (id == IncreaseDecreaseType.DECREASE) {
+                        state.decreaseSpeed();
+                    }
+                } else if (command instanceof DecimalType) {
+                    DecimalType d = (DecimalType) command;
+                    state.setDiscoSpeed(d.intValue());
+                }
                 break;
             }
             case MilightBindingConstants.CHANNEL_MODE: {
-                StringType d = (StringType) command;
-                state.setDiscoMode(Integer.valueOf(d.toString()));
+                if (command instanceof IncreaseDecreaseType) {
+                    IncreaseDecreaseType id = (IncreaseDecreaseType) command;
+                    if (id == IncreaseDecreaseType.INCREASE) {
+                        state.nextDiscoMode();
+                    } else if (id == IncreaseDecreaseType.DECREASE) {
+                        state.previousDiscoMode();
+                    }
+                } else if (command instanceof DecimalType) {
+                    DecimalType d = (DecimalType) command;
+                    state.setDiscoMode(d.intValue());
+                } else if (command instanceof StringType) {
+                    StringType d = (StringType) command;
+                    state.setDiscoMode(Integer.valueOf(d.toString()));
+                }
                 break;
             }
             default:
