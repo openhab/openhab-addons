@@ -40,14 +40,6 @@ All channels are provided as Number type.
 *pidlowerlimit=-255 (the lower limit of the output of controller)
 *pidupperlimit=255 (the upper limit of the output of controller)
 
-* power: power On/Off the AVR. Receive power events.
-* volumeDimmer: Increase/Decrease the volume on the AVR or set the volume as %. Receive volume change events (in %).  
-* volumeDb: Set the volume of the AVR in dB (from -80.0 to 12 with 0.5 dB steps). Receive volume change events (in dB).
-* mute: Mute/Unmute the AVR. Receive mute events.
-* setInputSource: Set the input source of the AVR. See input source mapping for more details. Receive source input change events with the input source ID.
-* displayInformation: Receive display events. Reflect the display on the AVR front panel.
-
-
 ## Full example
 
 *demo.Things:
