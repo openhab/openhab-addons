@@ -369,28 +369,4 @@ public abstract class MessageDispatcher {
             return false;
         }
     }
-
-    /**
-     * Factory method for creating a dispatcher of a given name using java reflection
-     *
-     * @param name the name of the dispatcher to create
-     * @param params
-     * @param f the feature for which to create the dispatcher
-     * @return the handler which was created
-     */
-    public static <T extends MessageDispatcher> T s_makeHandler(String name, HashMap<String, String> params,
-            DeviceFeature f) {
-        String cname = MessageDispatcher.class.getName() + "$" + name;
-        try {
-            Class<?> c = Class.forName(cname);
-            @SuppressWarnings("unchecked")
-            Class<? extends T> dc = (Class<? extends T>) c;
-            T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
-            ch.setParameters(params);
-            return ch;
-        } catch (Exception e) {
-            logger.error("error trying to create dispatcher: {}", name, e);
-        }
-        return null;
-    }
 }

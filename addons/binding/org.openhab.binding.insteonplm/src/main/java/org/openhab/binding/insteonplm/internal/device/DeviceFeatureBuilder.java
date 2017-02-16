@@ -233,6 +233,30 @@ public class DeviceFeatureBuilder {
     }
 
     /**
+     * Factory method for creating a dispatcher of a given name using java reflection
+     *
+     * @param name the name of the dispatcher to create
+     * @param params
+     * @param f the feature for which to create the dispatcher
+     * @return the handler which was created
+     */
+    public static <T extends MessageDispatcher> T makeMessageDispatcherHandler(String name, Map<String, String> params,
+            DeviceFeature f) {
+        String cname = MessageDispatcher.class.getName() + "$" + name;
+        try {
+            Class<?> c = Class.forName(cname);
+            @SuppressWarnings("unchecked")
+            Class<? extends T> dc = (Class<? extends T>) c;
+            T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
+            ch.setParameters(params);
+            return ch;
+        } catch (Exception e) {
+            logger.error("error trying to create dispatcher: {}", name, e);
+        }
+        return null;
+    }
+
+    /**
      * Builds the actual feature
      *
      * @return the feature which this template describes
@@ -251,6 +275,10 @@ public class DeviceFeatureBuilder {
         if (m_defaultMsgHandler != null) {
             f.setDefaultMsgHandler(
                     makeMessageHandler(m_defaultMsgHandler.getHandlerName(), m_defaultMsgHandler.getParameters(), f));
+        }
+        if (m_dispatcher != null) {
+            f.setMessageDispatcher(
+                    makeMessageDispatcherHandler(m_dispatcher.getHandlerName(), m_dispatcher.getParameters(), f));
         }
         for (Entry<Integer, HandlerEntry> mH : m_messageHandlers.entrySet()) {
             f.addMessageHandler(mH.getKey(),

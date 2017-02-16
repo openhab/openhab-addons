@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-    
-    <thing-type id="waterleaksensor" listed="false">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-        <label>Water Leak Sensor</label>
-        <description>Water Leak Sensor</description>
+	<thing-type id="waterleaksensor" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
 
-        <channels>
-            <channel id="contact" typeId="switch">
-                <properties>
-                    <property name="feature">LeakSensorContact</property>
-                </properties>
-            </channel>
-            <channel id="lastHeardFrom" typeId="lastHeardFrom" />
-            <channel id="pendingWrite" typeId="decimal" />
-        </channels>
-        
-        <properties>
-            <property name="productKey">F00.00.0A</property>
-            <property name="model">2452-222</property>
-        </properties>
-    </thing-type>
+		<label>Water Leak Sensor</label>
+		<description>Water Leak Sensor</description>
+
+		<channels>
+			<channel id="contact" typeId="switch">
+				<properties>
+					<property name="feature">LeakSensorContact</property>
+					<property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x00</property>
+				</properties>
+			</channel>
+			<channel id="lastHeardFrom" typeId="lastHeardFrom" />
+			<channel id="pendingWrite" typeId="decimal" />
+		</channels>
+
+		<properties>
+			<property name="productKey">F00.00.0A</property>
+			<property name="model">2452-222</property>
+		</properties>
+	</thing-type>
 </thing:thing-descriptions>

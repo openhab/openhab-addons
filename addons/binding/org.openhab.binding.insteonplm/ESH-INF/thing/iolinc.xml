@@ -15,11 +15,13 @@
 			<channel id="contact" typeId="switch">
 				<properties>
 					<property name="feature">IOLincContact</property>
+                    <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x01</property>
 				</properties>
 			</channel>
 			<channel id="switch" typeId="switch">
 				<properties>
 					<property name="feature">IOLincSwitch</property>
+                    <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x00</property>
 				</properties>
 			</channel>
 			<channel id="lastHeardFrom" typeId="lastHeardFrom" />

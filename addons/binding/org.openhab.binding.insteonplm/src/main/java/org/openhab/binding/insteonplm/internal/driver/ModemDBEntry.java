@@ -8,12 +8,13 @@
  */
 package org.openhab.binding.insteonplm.internal.driver;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
-import org.openhab.binding.insteonplm.internal.message.Msg;
+import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.utils.Utils;
+
+import com.google.common.collect.Lists;
 
 /*
  * The ModemDBEntry class holds a modem device type record
@@ -25,19 +26,19 @@ import org.openhab.binding.insteonplm.internal.utils.Utils;
 public class ModemDBEntry {
     private InsteonAddress m_address = null;
     private Port m_port = null;
-    private ArrayList<Msg> m_linkRecords = new ArrayList<Msg>();
-    private ArrayList<Byte> m_controls = new ArrayList<Byte>();
-    private ArrayList<Byte> m_respondsTo = new ArrayList<Byte>();
+    private List<Message> m_linkRecords = Lists.newArrayList();
+    private List<Byte> m_controls = Lists.newArrayList();
+    private List<Byte> m_respondsTo = Lists.newArrayList();
 
     public ModemDBEntry(InsteonAddress aAddr) {
         m_address = aAddr;
     }
 
-    public ArrayList<Msg> getLinkRecords() {
+    public List<Message> getLinkRecords() {
         return m_linkRecords;
     }
 
-    public void addLinkRecord(Msg m) {
+    public void addLinkRecord(Message m) {
         m_linkRecords.add(m);
     }
 
@@ -45,7 +46,7 @@ public class ModemDBEntry {
         m_controls.add(c);
     }
 
-    public ArrayList<Byte> getControls() {
+    public List<Byte> getControls() {
         return m_controls;
     }
 
@@ -53,7 +54,7 @@ public class ModemDBEntry {
         m_respondsTo.add(r);
     }
 
-    public ArrayList<Byte> getRespondsTo() {
+    public List<Byte> getRespondsTo() {
         return m_respondsTo;
     }
 
@@ -69,18 +70,15 @@ public class ModemDBEntry {
     public String toString() {
         String s = "addr:" + m_address + "|controls:[" + toGroupString(m_controls) + "]|responds_to:["
                 + toGroupString(m_respondsTo) + "]|link_recors";
-        for (Msg m : m_linkRecords) {
+        for (Message m : m_linkRecords) {
             s += ":(" + m + ")";
         }
         return s;
     }
 
-    private String toGroupString(ArrayList<Byte> group) {
-        ArrayList<Byte> sorted = new ArrayList<Byte>(group);
-        Collections.sort(sorted);
-
+    private String toGroupString(List<Byte> group) {
         StringBuffer buf = new StringBuffer();
-        for (Byte b : sorted) {
+        for (Byte b : group) {
             if (buf.length() > 0) {
                 buf.append(",");
             }

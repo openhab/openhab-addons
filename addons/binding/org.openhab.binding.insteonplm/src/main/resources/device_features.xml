@@ -8,7 +8,6 @@
 	<message-handler channel="switch" cmd="0x14" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
 	<message-handler channel="switch" cmd="0x19">SwitchRequestReplyHandler</message-handler>
 	<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
-	<poll-handler extended="extendedNone" cmd1="0x19" cmd2="0x00" >FlexPollHandler</poll-handler>
 </feature>
 <feature name="FastOnOff">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>

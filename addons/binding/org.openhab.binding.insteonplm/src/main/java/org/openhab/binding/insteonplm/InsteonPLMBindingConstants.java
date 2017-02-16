@@ -36,4 +36,11 @@ public class InsteonPLMBindingConstants {
     public final static String PROPERTY_ONOFF_EXTENDED_DATA2 = "d2";
     public final static String PROPERTY_ONOFF_EXTENDED_DATA3 = "d3";
 
+    public static final Object PROPERTY_CHANNEL_FEATURE = "feature";
+
+    public enum ExtendedData {
+        extendedNone,
+        extendedCrc1,
+        extendedCrc2
+    }
 }

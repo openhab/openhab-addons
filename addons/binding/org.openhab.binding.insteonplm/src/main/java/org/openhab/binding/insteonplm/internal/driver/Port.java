@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.openhab.binding.insteonplm.internal.device.ModemDBBuilder;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.slf4j.Logger;
@@ -61,7 +60,7 @@ public class Port {
     private Thread writeThread = null;
     private boolean running = false;
     private boolean modemDBComplete = false;
-    private ModemDBBuilder mdbb = null;
+    private AllLinkModemDB mdbb = null;
     private MessageFactory messageFactory;
     private LinkedBlockingQueue<Message> writeQueue = new LinkedBlockingQueue<Message>();
     private List<MessageListener> messageListeners;
@@ -76,7 +75,7 @@ public class Port {
         ioStream = stream;
         reader = new IOStreamReader();
         writer = new IOStreamWriter();
-        mdbb = new ModemDBBuilder(this);
+        mdbb = new AllLinkModemDB(this);
         messageFactory = messageFactory;
     }
 

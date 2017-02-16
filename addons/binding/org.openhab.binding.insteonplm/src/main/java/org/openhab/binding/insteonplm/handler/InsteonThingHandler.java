@@ -2,11 +2,18 @@ package org.openhab.binding.insteonplm.handler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Set;
 
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -20,6 +27,9 @@ import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 public class InsteonThingHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(InsteonThingHandler.class);
     /** need to wait after query to avoid misinterpretation of duplicate replies */
@@ -29,11 +39,12 @@ public class InsteonThingHandler extends BaseThingHandler {
     /** Default amount of time to hang onto a message. */
     private static final long DEFAULT_TTL = 60000;
 
-    private HashMap<String, FeatureDetails> features = new HashMap<String, FeatureDetails>();
+    private HashMap<ChannelUID, List<DeviceFeature>> featureChannelMapping = new HashMap<ChannelUID, List<DeviceFeature>>();
     private PriorityQueue<QEntry> requestQueue = new PriorityQueue<QEntry>();
     private Long lastTimePolled;
     // Default to 10 days ago.
     private DateTime lastMessageReceived = DateTime.now().minusDays(10);
+    private InsteonAddress address;
 
     public InsteonThingHandler(Thing thing) {
         super(thing);
@@ -45,13 +56,32 @@ public class InsteonThingHandler extends BaseThingHandler {
         super.initialize();
         // Set up the dispatches for the features.
 
+        address = new InsteonAddress(
+                this.getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_ADDRESS));
+        if (address == null) {
+            logger.error("Address is not set in {}", this.getThing().getUID());
+            return;
+        }
+
+        String productKey = this.getThing().getProperties()
+                .get(InsteonPLMBindingConstants.PROPERTY_INSTEON_PRODUCT_KEY);
+        if (productKey == null) {
+            logger.error("Product Key is not set in {}", this.getThing().getUID());
+            return;
+        }
+
+        // TODO: Shouldn't the framework do this for us???
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            bridgeStatusChanged(bridge.getStatusInfo());
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Lookup the features to do stuff.
-        for (FeatureDetails feature : features.values()) {
-            feature.getFeature().handleCommand(this, channelUID, command);
+        for (DeviceFeature feature : featureChannelMapping.get(channelUID)) {
+            feature.handleCommand(this, channelUID, command);
         }
     }
 
@@ -62,17 +92,9 @@ public class InsteonThingHandler extends BaseThingHandler {
         lastMessageReceived = DateTime.now();
     }
 
-    /**
-     * The list of feature names on this thing.
-     */
-    public Set<String> getFeatureNames() {
-        return features.keySet();
-    }
-
     /** The address for this thing. */
     public InsteonAddress getAddress() {
-        String data = getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_ADDRESS);
-        return new InsteonAddress(data);
+        return address;
     }
 
     /**
@@ -92,13 +114,15 @@ public class InsteonThingHandler extends BaseThingHandler {
     public void doPoll(long timeDelayPollRelatedMsec) {
         long now = System.currentTimeMillis();
         ArrayList<QEntry> l = new ArrayList<QEntry>();
-        synchronized (features) {
+        synchronized (featureChannelMapping) {
             int spacing = 0;
-            for (FeatureDetails i : features.values()) {
-                Message m = i.getFeature().makePollMsg(this);
-                if (m != null) {
-                    l.add(new QEntry(i.getFeature(), m, now + timeDelayPollRelatedMsec + spacing));
-                    spacing += TIME_BETWEEN_POLL_MESSAGES;
+            for (List<DeviceFeature> i : featureChannelMapping.values()) {
+                for (DeviceFeature feature : i) {
+                    Message m = feature.makePollMsg(this);
+                    if (m != null) {
+                        l.add(new QEntry(feature, m, now + timeDelayPollRelatedMsec + spacing));
+                        spacing += TIME_BETWEEN_POLL_MESSAGES;
+                    }
                 }
             }
         }
@@ -239,8 +263,8 @@ public class InsteonThingHandler extends BaseThingHandler {
      * @param f the feature details to use for lookup
      * @param newState the new state to broadcast
      */
-    public void updateFeatureState(String channel, State newState) {
-        updateState(channel, newState);
+    public void updateFeatureState(Channel channel, State newState) {
+        updateState(channel.getUID(), newState);
     }
 
     /**
@@ -258,4 +282,39 @@ public class InsteonThingHandler extends BaseThingHandler {
             }
         }
     }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            logger.debug("NODE {}: controller is offline.", getAddress().toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
+        logger.debug("NODE {}: controller is online, starting initialization.", getAddress().toString());
+        initializeInsteon();
+    }
+
+    private void initializeInsteon() {
+        featureChannelMapping = Maps.newHashMap();
+        for (Channel channel : getThing().getChannels()) {
+            // Process the channel properties and configuration
+            Map<String, String> properties = channel.getProperties();
+            Configuration configuration = channel.getConfiguration();
+
+            logger.debug("NODE {}: Initialising channel {}", getAddress(), channel.getUID());
+
+            // Get the property that defines the feature to use for this channel.
+            String featureNames = properties.get(InsteonPLMBindingConstants.PROPERTY_CHANNEL_FEATURE);
+
+            String[] features = featureNames.split(",");
+            featureChannelMapping.put(channel.getUID(), Lists.<DeviceFeature> newArrayList());
+            for (String name : features) {
+                DeviceFeature feature = getInsteonBridge().getDeviceFeatureFactory().makeDeviceFeature(name);
+                featureChannelMapping.get(channel.getUID()).add(feature);
+            }
+        }
+    }
+
 }

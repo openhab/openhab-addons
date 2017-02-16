@@ -142,4 +142,9 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler {
     public MessageFactory getMessageFactory() {
         return messageFactory;
     }
+
+    public void writeMessage(Message makeMessage) {
+        // TODO Auto-generated method stub
+
+    }
 }

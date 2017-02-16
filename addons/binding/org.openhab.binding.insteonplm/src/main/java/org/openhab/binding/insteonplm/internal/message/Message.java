@@ -362,7 +362,7 @@ public class Message {
     /**
      * Sets the userData fields from a byte array
      *
-     * @param data
+     * @param data.data
      */
     public void setUserData(byte[] arg) {
         byte[] data = Arrays.copyOf(arg, 14); // appends zeros if short

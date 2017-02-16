@@ -15,11 +15,13 @@
             <channel id="dimmer" typeId="percent">
                 <properties>
                     <property name="feature">GenericDimmer</property>
+                    <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x00</property>
                 </properties>
             </channel>
             <channel id="fan" typeId="decimal">
                 <properties>
                     <property name="feature">FanLincFan</property>
+                    <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x03</property>
                 </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />

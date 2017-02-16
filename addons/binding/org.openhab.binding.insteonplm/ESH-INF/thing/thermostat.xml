@@ -1,89 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="thermostat" listed="false">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-        </supported-bridge-type-refs>
+	<thing-type id="thermostat" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
 
-        <label>Thermostat</label>
-        <description>Insteon Thermostat</description>
+		<label>Thermostat</label>
+		<description>Insteon Thermostat</description>
 
-        <channels>
-            <channel id="backLightDuration" typeId="decimal">
-                <properties>
-                    <property name="feature">ThermostatBacklightDuration</property>
-                </properties>
-            </channel>
-            <channel id="acDelay" typeId="decimal">
-                <properties>
-                    <property name="feature">ThermostatACDelay</property>
-                </properties>
-            </channel>
-            <channel id="humidityHigh" typeId="decimal">
-                <properties>
-                    <property name="feature">ThermostatHumidityHigh</property>
-                </properties>
-            </channel>
-            <channel id="humidityLow" typeId="decimal">
-                <properties>
-                    <property name="feature">ThermostatHumidityLow</property>
-                </properties>
-            </channel>
-            <channel id="coolSetPoint" typeId="decimal">
-                <properties>
-                    <property name="feature">ThermostatCoolSetPoint</property>
-                </properties>
-            </channel>
-            <channel id="heatSetPoint" typeId="decimal">
-                <properties>
-                    <property name="feature">ThermostatHeatSetPoint</property>
-                </properties>
-            </channel>
-            <channel id="thermostatMode" typeId="string">
-                <properties>
-                    <property name="feature">ThermostatSystemMode</property>
-                </properties>
-            </channel>
-            <channel id="fanMode" typeId="string">
-                <properties>
-                    <property name="feature">ThermostatFanMode</property>
-                </properties>
-            </channel>
-            <channel id="isHeating" typeId="switch">
-                <properties>
-                    <property name="feature">ThermostatIsHeating</property>
-                </properties>
-            </channel>
-            <channel id="isCooling" typeId="switch">
-                <properties>
-                    <property name="feature">ThermostatIsCooling</property>
-                </properties>
-            </channel>
-            <channel id="temperatureCelcius" typeId="decimal">
-                <properties>
-                    <property name="feature">ThermostatTemperatureCelcius</property>
-                </properties>
-            </channel>
-            <channel id="temperatureFarenheit" typeId="decimal">
-                <properties>
-                    <property name="feature">ThermostatTemperatureFarnenheit</property>
-                </properties>
-            </channel>
-            <channel id="humidty" typeId="decimal">
-                <properties>
-                    <property name="feature">ThermostatHumidity</property>
-                </properties>
-            </channel>
-            <channel id="lastHeardFrom" typeId="lastHeardFrom" />
-            <channel id="pendingWrite" typeId="decimal" />
-        </channels>
+		<channels>
+			<channel id="backLightDuration" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatBacklightDuration</property>
+					<property name="dataGroup">datagroup1</property>
+					<property name="pollHandler">FlexPollHandler:extendedCrc,0x2e,0x00</property>
+				</properties>
+			</channel>
+			<channel id="acDelay" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatACDelay</property>
+					<property name="dataGroup">datagroup1</property>
+				</properties>
+			</channel>
+			<channel id="humidityHigh" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatHumidityHigh</property>
+					<property name="dataGroup">datagroup2</property>
+                    <property name="pollHandler">FlexPollHandler:extendedCrc2,0x2e,0x00,0,0,0x01</property>
+				</properties>
+			</channel>
+			<channel id="humidityLow" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatHumidityLow</property>
+					<property name="dataGroup">datagroup2</property>
+				</properties>
+			</channel>
+			<channel id="stage1duration" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatStage1Duration</property>
+					<property name="dataGroup">datagroup2</property>
+				</properties>
+			</channel>
+			<channel id="coolSetPoint" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatCoolSetPoint</property>
+					<property name="dataGroup">datagroup3</property>
+                    <property name="pollHandler">FlexPollHandler:extendedCrc2,0x2e,0x02</property>
+				</properties>
+			</channel>
+			<channel id="heatSetPoint" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatHeatSetPoint</property>
+					<property name="dataGroup">datagroup3</property>
+				</properties>
+			</channel>
+			<channel id="thermostatMode" typeId="string">
+				<properties>
+					<property name="feature">ThermostatSystemMode</property>
+					<property name="dataGroup">datagroup3</property>
+				</properties>
+			</channel>
+			<channel id="fanMode" typeId="string">
+				<properties>
+					<property name="feature">ThermostatFanMode</property>
+					<property name="dataGroup">datagroup3</property>
+				</properties>
+			</channel>
+			<channel id="isHeating" typeId="switch">
+				<properties>
+					<property name="feature">ThermostatIsHeating</property>
+					<property name="dataGroup">datagroup3</property>
+				</properties>
+			</channel>
+			<channel id="isCooling" typeId="switch">
+				<properties>
+					<property name="feature">ThermostatIsCooling</property>
+					<property name="dataGroup">datagroup3</property>
+				</properties>
+			</channel>
+			<channel id="temperatureCelcius" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatTemperatureCelcius</property>
+					<property name="dataGroup">datagroup3</property>
+				</properties>
+			</channel>
+			<channel id="temperatureFarenheit" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatTemperatureFarnenheit</property>
+					<property name="dataGroup">datagroup3</property>
+				</properties>
+			</channel>
+			<channel id="humidty" typeId="decimal">
+				<properties>
+					<property name="feature">ThermostatHumidity</property>
+					<property name="dataGroup">datagroup3</property>
+				</properties>
+			</channel>
+			<channel id="lastHeardFrom" typeId="lastHeardFrom" />
+			<channel id="pendingWrite" typeId="decimal" />
+		</channels>
 
-        <properties>
-            <property name="productKey">F00.00.18</property>
-            <property name="model">2441TH</property>
-        </properties>
-    </thing-type>
+		<properties>
+			<property name="productKey">F00.00.18</property>
+			<property name="model">2441TH</property>
+		</properties>
+	</thing-type>
 </thing:thing-descriptions>

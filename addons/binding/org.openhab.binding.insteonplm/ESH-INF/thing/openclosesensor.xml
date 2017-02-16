@@ -15,11 +15,7 @@
             <channel id="contact" typeId="contact">
                 <properties>
                     <property name="message">GenericContact</property>
-                </properties>
-            </channel>
-            <channel id="batteryLevel" typeId="battery">
-                <properties>
-                    <property name="message">GenericBatteryLevel</property>
+                    <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x00</property>
                 </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
