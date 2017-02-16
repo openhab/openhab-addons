@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.russound.internal.net;
+package org.openhab.binding.atlona.internal.net;
 
 import java.io.IOException;
 

@@ -132,4 +132,15 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
         _wrappedCallback.setProperty(propertyName, propertyValue);
 
     }
+
+    /**
+     * Callback to get the {@link State} for a given property name
+     *
+     * @param propertyName a possibly null, possibly empty property name
+     * @return the {@link State} for the propertyName or null if not found
+     */
+    public State getState(String propertyName) {
+        // TODO Auto-generated method stub
+        return _state.get(propertyName);
+    }
 }
