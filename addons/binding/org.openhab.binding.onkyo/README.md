@@ -110,6 +110,7 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 | player#listenmode              | Number       | Current listening mode e.g. Stereo, 5.1ch Surround,..|
 | player#playuri                 | String       | Plays the URI provided to the channel |
 | player#albumArt                | Image        | Image of the current album art of the current song |
+| player#albumArtUrl             | String       | Url to the current album art of the current song |
 | netmenu#title                  | String       | Title of the current NET service |
 | netmenu#control                | String       | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select[0-9] 
 | netmenu#selection              | Number       | The number of the currently selected USB/Net Menu entry (0-9) 
@@ -154,5 +155,5 @@ Here after are the ID values of the input sources:
 
 ## Audio Support
 
-+All supported Onkyo AVRs are registered as an audio sink in the framework.
-+Audio streams are sent to the `playuri` channel.
++ All supported Onkyo AVRs are registered as an audio sink in the framework.
++ Audio streams are sent to the `playuri` channel.
