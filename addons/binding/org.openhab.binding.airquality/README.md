@@ -6,7 +6,7 @@ layout: documentation
 
 # Air Quality Binding
 
-This binding uses the [AQIcn.org service](https://www.wunderground.com/AirQuality/api/) for providing air quality information for any location worldwide.
+This binding uses the [AQIcn.org service](http://aqicn.org) for providing air quality information for any location worldwide.
 
 The World Air Quality Index project is a social enterprise project started in 2007. Its mission is to promote Air Pollution awareness and provide a unified Air Quality information for the whole world. 
 
@@ -39,8 +39,10 @@ The thing has a few configuration parameters:
 
 For the location parameter, the following syntax is allowed (comma separated latitude and longitude):
 
-`37.8,-122.4`
-`37.8255,-122.456`
+```
+37.8,-122.4
+37.8255,-122.456
+```
 
 If you always want to receive data from specific station and you know its unique ID, you can enter it
 instead of the coordinates. 
