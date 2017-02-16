@@ -300,6 +300,8 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
 
     @Override
     public void rescanTelldusDevices() {
+        this.deviceList = null;
+        this.sensorList = null;
         refreshDeviceList();
     }
 
