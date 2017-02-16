@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
@@ -125,7 +126,11 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         }
 
         if (readerThread != null) {
-            readerThread.interrupt();
+            try {
+                readerThread.interrupt();
+                readerThread.join();
+            } catch (InterruptedException e) {
+            }
         }
     }
 
@@ -230,6 +235,8 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         private InputStream inputStream;
         private boolean hasInterval = interval == 0 ? false : true;
 
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
+
         public SerialPortReader(InputStream in) {
             this.inputStream = in;
             this.setName("SerialPortReader-" + getThing().getUID());
@@ -253,6 +260,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
             byte[] tmpData = new byte[bufferSize];
             int index = 0;
             int len = -1;
+            boolean foundStart = false;
 
             final byte LINE_FEED = (byte) '\n';
             final byte CARRIAGE_RETURN = (byte) '\r';
@@ -264,12 +272,13 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                     long startOfRead = System.currentTimeMillis();
 
                     if ((len = inputStream.read(tmpData)) > 0) {
+                        foundStart = false;
                         for (int i = 0; i < len; i++) {
-
-                            if (hasInterval && i > 1) {
+                            if (hasInterval && i > 0) {
                                 if (tmpData[i] != LINE_FEED && tmpData[i] != CARRIAGE_RETURN) {
-                                    if (tmpData[i - 2] == LINE_FEED && tmpData[i - 2] == CARRIAGE_RETURN) {
+                                    if (tmpData[i - 1] == LINE_FEED || tmpData[i - 1] == CARRIAGE_RETURN) {
                                         index = 0;
+                                        foundStart = true;
                                     }
                                 }
                             }
@@ -279,12 +288,20 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                             }
 
                             if (tmpData[i] == LINE_FEED || tmpData[i] == CARRIAGE_RETURN) {
-                                if (index > 0) {
-                                    onDataReceived(new String(Arrays.copyOf(dataBuffer, index)));
-                                    index = 0;
+                                if (index > 1) {
                                     if (hasInterval) {
-                                        break;
+                                        if (foundStart) {
+                                            onDataReceived(new String(Arrays.copyOf(dataBuffer, index)));
+                                            break;
+                                        } else {
+                                            index = 0;
+                                            foundStart = true;
+                                        }
+                                    } else {
+                                        onDataReceived(new String(Arrays.copyOf(dataBuffer, index)));
+                                        index = 0;
                                     }
+
                                 }
                             }
 
@@ -302,13 +319,13 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                             } catch (InterruptedException e) {
                             }
                         }
-                    } else {
-                        try {
-                            Thread.sleep(sleep);
-                        } catch (InterruptedException e) {
-                            // quietly exit
-                        }
                     }
+
+                    try {
+                        Thread.sleep(sleep);
+                    } catch (InterruptedException e) {
+                    }
+
                 }
             } catch (InterruptedIOException e) {
                 Thread.currentThread().interrupt();
