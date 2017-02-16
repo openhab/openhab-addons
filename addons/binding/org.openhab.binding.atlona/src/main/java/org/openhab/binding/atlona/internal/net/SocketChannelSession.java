@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.russound.internal.net;
+package org.openhab.binding.atlona.internal.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -88,13 +88,6 @@ public class SocketChannelSession implements SocketSession {
         _port = port;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.openhab.binding.russound.internal.net.SocketSession#addListener(org.openhab.binding.russound.internal.net.
-     * SocketSessionListener)
-     */
     @Override
     public void addListener(SocketSessionListener listener) {
         if (listener == null) {
@@ -103,33 +96,16 @@ public class SocketChannelSession implements SocketSession {
         _listeners.add(listener);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#clearListeners()
-     */
     @Override
     public void clearListeners() {
         _listeners.clear();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.openhab.binding.russound.internal.net.SocketSession#removeListener(org.openhab.binding.russound.internal.net.
-     * SocketSessionListener)
-     */
     @Override
     public boolean removeListener(SocketSessionListener listener) {
         return _listeners.remove(listener);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#connect()
-     */
     @Override
     public void connect() throws IOException {
         disconnect();
@@ -153,11 +129,6 @@ public class SocketChannelSession implements SocketSession {
         new Thread(_responseReader).start();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#disconnect()
-     */
     @Override
     public void disconnect() throws IOException {
         if (isConnected()) {
@@ -173,31 +144,17 @@ public class SocketChannelSession implements SocketSession {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#isConnected()
-     */
     @Override
     public boolean isConnected() {
         final SocketChannel channel = _socketChannel.get();
         return channel != null && channel.isConnected();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openhab.binding.russound.internal.net.SocketSession#sendCommand(java.lang.String)
-     */
     @Override
     public synchronized void sendCommand(String command) throws IOException {
         if (command == null) {
             throw new IllegalArgumentException("command cannot be null");
         }
-
-        // if (command.trim().length() == 0) {
-        // throw new IllegalArgumentException("Command cannot be empty");
-        // }
 
         if (!isConnected()) {
             throw new IOException("Cannot send message - disconnected");
@@ -234,8 +191,7 @@ public class SocketChannelSession implements SocketSession {
         private final CountDownLatch _running = new CountDownLatch(1);
 
         /**
-         * Stops the reader. Will wait 5 seconds for the runnable to stop (should stop within 1 second based on the
-         * setSOTimeout)
+         * Stops the reader. Will wait 5 seconds for the runnable to stop
          */
         public void stopRunning() {
             if (_isRunning.getAndSet(false)) {
@@ -306,7 +262,7 @@ public class SocketChannelSession implements SocketSession {
                 } catch (InterruptedException e) {
                     // Do nothing - probably shutting down
                 } catch (AsynchronousCloseException e) {
-                    // socket was definitelyclosed by another thread
+                    // socket was definitely closed by another thread
                 } catch (IOException e) {
                     try {
                         _isRunning.set(false);
@@ -342,18 +298,27 @@ public class SocketChannelSession implements SocketSession {
         private final CountDownLatch _running = new CountDownLatch(1);
 
         /**
+         * Whether the dispatcher is currently processing a message
+         */
+        private final AtomicReference<Thread> _processingThread = new AtomicReference<Thread>();
+
+        /**
          * Stops the reader. Will wait 5 seconds for the runnable to stop (should stop within 1 second based on the poll
          * timeout below)
          */
         public void stopRunning() {
-
             if (_isRunning.getAndSet(false)) {
-                try {
-                    if (!_running.await(5, TimeUnit.SECONDS)) {
-                        _logger.warn("Waited too long for dispatcher to finish");
+                // only wait if stopRunning didn't get called as part of processing a message
+                // (which would happen if we are processing an exception that forced a session close)
+                final Thread processingThread = _processingThread.get();
+                if (processingThread != null && Thread.currentThread() != processingThread) {
+                    try {
+                        if (!_running.await(5, TimeUnit.SECONDS)) {
+                            _logger.warn("Waited too long for dispatcher to finish");
+                        }
+                    } catch (InterruptedException e) {
+                        // do nothing
                     }
-                } catch (InterruptedException e) {
-                    // do nothing
                 }
             }
         }
@@ -363,13 +328,14 @@ public class SocketChannelSession implements SocketSession {
          */
         @Override
         public void run() {
+            _processingThread.set(Thread.currentThread());
+
             _isRunning.set(true);
             while (_isRunning.get()) {
                 try {
-                    final SocketSessionListener[] listeners = _listeners.toArray(new SocketSessionListener[0]);
 
                     // if no listeners, we don't want to start dispatching yet.
-                    if (listeners.length == 0) {
+                    if (_listeners.size() == 0) {
                         Thread.sleep(250);
                         continue;
                     }
@@ -380,6 +346,8 @@ public class SocketChannelSession implements SocketSession {
                         if (response instanceof String) {
                             try {
                                 _logger.debug("Dispatching response: {}", response);
+                                final SocketSessionListener[] listeners = _listeners
+                                        .toArray(new SocketSessionListener[0]);
                                 for (SocketSessionListener listener : listeners) {
                                     listener.responseReceived((String) response);
                                 }
@@ -388,6 +356,7 @@ public class SocketChannelSession implements SocketSession {
                             }
                         } else if (response instanceof Exception) {
                             _logger.debug("Dispatching exception: {}", response);
+                            final SocketSessionListener[] listeners = _listeners.toArray(new SocketSessionListener[0]);
                             for (SocketSessionListener listener : listeners) {
                                 listener.responseException((Exception) response);
                             }
@@ -397,10 +366,13 @@ public class SocketChannelSession implements SocketSession {
                     }
                 } catch (InterruptedException e) {
                     // Do nothing
+                } catch (Exception e) {
+                    _logger.debug("Uncaught exception {}", e.getMessage(), e);
+                    break;
                 }
             }
             _isRunning.set(false);
-
+            _processingThread.set(null);
             _running.countDown();
         }
     }
