@@ -4,11 +4,17 @@ The PID Controller binding provides PID controllers with the purpose of fine tun
 For a glimpse of how a PID Controller works, please check: https://en.wikipedia.org/wiki/PID_controller 
 
 The binding provides 9 channels,  3 (input, setpoint, output) of them being the required channels for the binding to cause result for the items linked to the channels. The other 6 (LoopTime, kpadjuster, kiadjuster, kdadjuster, pidlowerlimit, pidupperlimit) channels (configuration channels for the controller) only provide tweaking  of the controllers initialized, if not set the controller defaults to the following:
+
 LoopTime=1000 (milliseconds)
+
 kpadjuster=1 (multiplier for the Kp - proportional constant in the PID controller)
+
 kiadjuster=1 (multiplier for the Ki - integral constant in the PID controller)
+
 kdadjuster=1 (multiplier for the Kd - derivative constant in the PID controller)
+
 pidlowerlimit=-255 (the lower limit of the output of controller)
+
 pidupperlimit=255 (the upper limit of the output of controller)
 
 In order for the binding to produce result, the input, setpoint and output channels have to be linked to items. 
