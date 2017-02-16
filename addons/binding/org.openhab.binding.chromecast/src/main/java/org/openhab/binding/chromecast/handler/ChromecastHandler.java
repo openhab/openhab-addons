@@ -9,6 +9,8 @@
 package org.openhab.binding.chromecast.handler;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -200,7 +202,9 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
 
     private void handlePlayUri(Command command) {
         if (command instanceof StringType) {
-            playMedia(null, null, command.toString(), null);
+            String url = command.toString();
+            String mimeType = getMimeType(url);
+            playMedia(null, null, url, mimeType);
         }
     }
 
@@ -341,6 +345,21 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
                 break;
 
         }
+    }
+
+    String getMimeType(String mediaUrl) {
+        URL url = null;
+        String mimeType = null;
+        try {
+            url = new URL(mediaUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+            mimeType = connection.getContentType();
+            connection.disconnect();
+        } catch (IOException e) {
+            // we couldn't establish mime type
+        }
+        return mimeType;
     }
 
     @Override
