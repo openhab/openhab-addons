@@ -42,30 +42,36 @@
     	<label>Output of controller</label>
     	<description>The output of the controller (default range -255 to 255)</description>
     </channel-type>
-    <channel-type id="kpadjuster">
+    <channel-type id="kpadjuster" advanced="true">
     	<item-type>Number</item-type>
     	<label>Kp adjust</label>
-    	<description>Adjust the constant Kp with this multiplier. Has to have positive values. Default is 1.</description>
+    	<description>
+    		Adjust the constant Kp with this multiplier. Has to have positive values. Default is 1.
+    	</description>
     </channel-type>
-    <channel-type id="kiadjuster">
+    <channel-type id="kiadjuster" advanced="true">
     	<item-type>Number</item-type>
     	<label>Ki adjust</label>
-    	<description>Adjust the constant Ki with this multiplier. Has to have positive values. Default is 1.</description>
+    	<description>
+    		Adjust the constant Ki with this multiplier. Has to have positive values. Default is 1.
+    	</description>
     </channel-type>
-    <channel-type id="kdadjuster">
+    <channel-type id="kdadjuster" advanced="true">
     	<item-type>Number</item-type>
     	<label>Kd adjust</label>
-    	<description>Adjust the constant Kd with this multiplier. Has to have positive values.  Default is 1.</description>
+    	<description>
+    		Adjust the constant Kd with this multiplier. Has to have positive values. Default is 1.
+    	</description>
     </channel-type>
-    <channel-type id="pidlowerlimit">
+    <channel-type id="pidlowerlimit" advanced="true">
     	<item-type>Number</item-type>
     	<label>PID Controller lower limit</label>
     	<description>The lower limit of the controller (defaults to -255)</description>
     </channel-type>
-    <channel-type id="pidupperlimit">
-        <item-type>Number</item-type>
-        <label>PID Controller upper limit</label>
-        <description>The lower limit of the controller (defaults to 255)</description>
+    <channel-type id="pidupperlimit" advanced="true">
+    	<item-type>Number</item-type>
+    	<label>PID Controller upper limit</label>
+    	<description>The lower limit of the controller (defaults to 255)</description>
 
     </channel-type>
 

@@ -46,7 +46,7 @@ public class PIDControllerHandler extends BaseThingHandler {
     /*
      * Optional variable for the loop duration. If not set defaults to 1000 millisecond
      */
-    private int PIDLoopTime = LoopTimeDefault;
+    private int PIDLoopTime = LOOP_TIME_DEFAULT;
     /*
      * variables for the output of the controller
      */
@@ -88,7 +88,7 @@ public class PIDControllerHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
-            case input:
+            case INPUT:
                 if (command != null) {
                     PIDinput = BigDecimal.valueOf(Double.parseDouble(command.toString()));
                     logger.debug("input value {} for channel {}", PIDinput, channelUID);
@@ -96,7 +96,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case setpoint:
+            case SETPOINT:
                 if (command != null) {
                     PIDsetpoint = BigDecimal.valueOf(Double.parseDouble(command.toString()));
                     logger.debug("setpoint value {} for channel {}", PIDsetpoint, channelUID);
@@ -104,7 +104,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case LoopTime:
+            case LOOP_TIME:
                 if (command != null) {
                     PIDLoopTime = Integer.parseInt(command.toString());
                     logger.debug("Initializing loop time for controller with value: {}", PIDLoopTime);
@@ -115,7 +115,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case kpadjuster:
+            case KP_ADJUSTER:
                 if (command != null) {
                     Kpadjuster = BigDecimal.valueOf(Double.parseDouble(command.toString()));
                     logger.debug("Kp adjust value {} for channel {}", Kpadjuster, channelUID);
@@ -123,7 +123,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case kiadjuster:
+            case KI_ADJUSTER:
                 if (command != null) {
                     Kiadjuster = BigDecimal.valueOf(Double.parseDouble(command.toString()));
                     logger.debug("Ki adjust {} for channel {}", Kiadjuster, channelUID);
@@ -131,7 +131,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case kdadjuster:
+            case KD_ADJUSTER:
                 if (command != null) {
                     Kdadjuster = BigDecimal.valueOf(Double.parseDouble(command.toString()));
                     logger.debug("Kd adjust value {} for channel {}", Kdadjuster, channelUID);
@@ -139,7 +139,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case pidlowerlimit:
+            case PID_LOWER_LIMIT:
                 if (command != null) {
                     PIDOutputLowerLimit = BigDecimal.valueOf(Double.parseDouble(command.toString()));
                     logger.debug("PIDLowerLimit value {} for channel {}", PIDOutputLowerLimit, channelUID);
@@ -147,7 +147,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case pidupperlimit:
+            case PID_UPPER_LIMIT:
                 if (command != null) {
                     PIDOutputUpperLimit = BigDecimal.valueOf(Double.parseDouble(command.toString()));
                     logger.debug("PIDLowerLimit value {} for channel {}", PIDOutputUpperLimit, channelUID);
@@ -169,7 +169,7 @@ public class PIDControllerHandler extends BaseThingHandler {
     public void handleUpdate(ChannelUID channelUID, State channelstate) {
 
         switch (channelUID.getId()) {
-            case input:
+            case INPUT:
                 if (channelstate != null) {
                     PIDinput = BigDecimal.valueOf(Double.parseDouble(channelstate.toString()));
                     logger.debug("input value{} for channel {}", PIDinput, channelUID);
@@ -177,7 +177,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case setpoint:
+            case SETPOINT:
                 if (channelstate != null) {
                     PIDsetpoint = BigDecimal.valueOf(Double.parseDouble(channelstate.toString()));
                     logger.debug("setpoint value {} for channel {}", PIDsetpoint, channelUID);
@@ -185,7 +185,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case LoopTime:
+            case LOOP_TIME:
                 if (channelstate != null) {
                     PIDLoopTime = Integer.parseInt(channelstate.toString());
                     logger.debug("Initializing controller loop in update handler");
@@ -197,7 +197,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case kpadjuster:
+            case KP_ADJUSTER:
                 if (channelstate != null) {
                     Kpadjuster = BigDecimal.valueOf(Double.parseDouble(channelstate.toString()));
                     logger.debug("Kp adjust value {} for channel {}", PIDsetpoint, channelUID);
@@ -205,7 +205,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case kiadjuster:
+            case KI_ADJUSTER:
                 if (channelstate != null) {
                     Kiadjuster = BigDecimal.valueOf(Double.parseDouble(channelstate.toString()));
                     logger.debug("Ki adjust {} for channel {}", PIDsetpoint, channelUID);
@@ -213,7 +213,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case kdadjuster:
+            case KD_ADJUSTER:
                 if (channelstate != null) {
                     Kdadjuster = BigDecimal.valueOf(Double.parseDouble(channelstate.toString()));
                     logger.debug("valoare de Kd adjust {} for channel {}", PIDsetpoint, channelUID);
@@ -221,7 +221,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case pidlowerlimit:
+            case PID_LOWER_LIMIT:
                 if (channelstate != null) {
                     PIDOutputLowerLimit = BigDecimal.valueOf(Double.parseDouble(channelstate.toString()));
                     logger.debug("valoare de PIDLowerLimit adjust {} for channel {}", PIDOutputLowerLimit, channelUID);
@@ -229,7 +229,7 @@ public class PIDControllerHandler extends BaseThingHandler {
                     logger.debug("Channel value can not be null");
                 }
                 break;
-            case pidupperlimit:
+            case PID_UPPER_LIMIT:
                 if (channelstate != null) {
                     PIDOutputUpperLimit = BigDecimal.valueOf(Double.parseDouble(channelstate.toString()));
                     logger.debug("valoare de PIDLowerLimit adjust {} for channel {}", PIDOutputUpperLimit, channelUID);
@@ -271,7 +271,7 @@ public class PIDControllerHandler extends BaseThingHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channelLinked: {}", channelUID);
-        if (channelUID.getId().equals(output))
+        if (channelUID.getId().equals(OUTPUT))
 
         {
             outputChannelUID = channelUID;
@@ -308,11 +308,12 @@ public class PIDControllerHandler extends BaseThingHandler {
         };
 
         if (PIDLoopTime == 0) {
-            PIDLoopTime = LoopTimeDefault;
+            PIDLoopTime = LOOP_TIME_DEFAULT;
         }
         StringBuilder strPIDLoopTime = new StringBuilder();
         strPIDLoopTime.append(PIDLoopTime);
-        logger.debug(strPIDLoopTime.toString());
+        logger.debug("This is the Loop Time at the initialization of the Controlller Thing : {}",
+                strPIDLoopTime.toString());
         /*
          * Scheduling of the runnable
          */
@@ -332,7 +333,6 @@ public class PIDControllerHandler extends BaseThingHandler {
     private void disposejob() {
         controllerjob.cancel(true);
         controllerjob = null;
-
     }
 
 }

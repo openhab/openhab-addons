@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>PIDController Binding</name>
-    <description>This is the binding for PIDController.</description>
+    <description>This is the binding for PIDController. It supports any items of Number type that can provide a live input (from another binding) and a setpoint (phisically existent or as a setpoint item).</description>
     <author>George Erhan</author>
 
 </binding:binding>

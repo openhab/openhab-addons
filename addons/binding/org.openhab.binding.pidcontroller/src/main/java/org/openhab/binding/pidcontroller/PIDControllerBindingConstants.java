@@ -23,16 +23,17 @@ public class PIDControllerBindingConstants {
     public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "Controller");
 
     // List of all Channel ids
-    public final static String input = "input";
-    public final static String setpoint = "setpoint";
-    public final static String LoopTime = "LoopTime";
-    public final static String output = "output";
-    public final static String kpadjuster = "kpadjuster";
-    public final static String kiadjuster = "kiadjuster";
-    public final static String kdadjuster = "kdadjuster";
-    public final static String pidlowerlimit = "pidlowerlimit";
-    public final static String pidupperlimit = "pidupperlimit";
-    public final static int LoopTimeDefault = 1000;
-    public final static int PIDrangeDefault = 510;
+    public final static String INPUT = "input";
+    public final static String SETPOINT = "setpoint";
+    public final static String LOOP_TIME = "LoopTime";
+    public final static String OUTPUT = "output";
+    public final static String KP_ADJUSTER = "kpadjuster";
+    public final static String KI_ADJUSTER = "kiadjuster";
+    public final static String KD_ADJUSTER = "kdadjuster";
+    public final static String PID_LOWER_LIMIT = "pidlowerlimit";
+    public final static String PID_UPPER_LIMIT = "pidupperlimit";
 
+    // List of specific PID controller parameter constants
+    public final static int LOOP_TIME_DEFAULT = 1000;
+    public final static int PID_RANGE_DEFAULT = 510;
 }

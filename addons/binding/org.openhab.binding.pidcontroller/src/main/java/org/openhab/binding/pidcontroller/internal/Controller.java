@@ -13,7 +13,7 @@
 
 package org.openhab.binding.pidcontroller.internal;
 
-import static org.openhab.binding.pidcontroller.PIDControllerBindingConstants.PIDrangeDefault;
+import static org.openhab.binding.pidcontroller.PIDControllerBindingConstants.PID_RANGE_DEFAULT;
 
 import java.math.BigDecimal;
 
@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * The {@link Controller} provides the necessary methods for retrieving part(s) of the PID calculations
+ * and it provides the method for the overall PID calculations. It also resets the PID controller
  *
  * @author George Erhan - Initial contribution
  */
@@ -36,23 +38,27 @@ public class Controller {
     public BigDecimal Error = BigDecimal.valueOf(0);
     public BigDecimal maxIntegral = BigDecimal.valueOf(0);
     public BigDecimal Output = BigDecimal.valueOf(0);
+    private BigDecimal Ku;
+    private BigDecimal Kp;
+    private BigDecimal Ki;
+    private BigDecimal Kd;
 
     public BigDecimal PIDCalculation(BigDecimal PIDinput, BigDecimal PIDsetpoint, int LoopTime,
             BigDecimal PIDOutputLowerLimit, BigDecimal PIDOutputUpperLimit, BigDecimal Kpadjuster,
             BigDecimal Kiadjuster, BigDecimal Kdadjuster) {
 
-        BigDecimal Ku = PIDOutputUpperLimit.subtract(PIDOutputLowerLimit).divide(BigDecimal.valueOf(PIDrangeDefault));
-        BigDecimal Kp = Kpadjuster.multiply(Ku);
-        BigDecimal Ki = Kiadjuster.multiply(Ku.multiply(BigDecimal.valueOf(2)).divide(BigDecimal.valueOf(LoopTime)));
-        BigDecimal Kd = Kiadjuster.multiply(Ku.multiply(BigDecimal.valueOf(LoopTime)));
+        Ku = PIDOutputUpperLimit.subtract(PIDOutputLowerLimit).divide(BigDecimal.valueOf(PID_RANGE_DEFAULT));
+        Kp = Kpadjuster.multiply(Ku);
+        Ki = Kiadjuster.multiply(Ku.multiply(BigDecimal.valueOf(2)).divide(BigDecimal.valueOf(LoopTime)));
+        Kd = Kiadjuster.multiply(Ku.multiply(BigDecimal.valueOf(LoopTime)));
         BigDecimal maxIntegral = PIDOutputUpperLimit.abs().subtract((Kp.multiply(Proportionalresult).abs())).divide(Ki);
 
         Error = PIDsetpoint.subtract(PIDinput);
-        logger.debug("Eroarea: {}", Error.floatValue());
+        logger.debug("The calculated error is: {}", Error.floatValue());
         Proportionalresult = Error;
-
+        logger.debug("Proportional part: {}", Kp.multiply(Proportionalresult));
         Integralresult = Integralresult.add(Error.multiply(BigDecimal.valueOf(LoopTime)));
-        logger.debug("Integral: {}", Integralresult);
+
         if (Integralresult.abs().compareTo(maxIntegral.abs()) == 1) {
 
             if (Output.compareTo(BigDecimal.valueOf(0)) == -1) {
@@ -66,9 +72,9 @@ public class Controller {
                         && Error.compareTo(BigDecimal.valueOf(0)) == -1)) {
             Integralresult = BigDecimal.valueOf(0);
         }
-        logger.debug("Partea integrala: {}", Integralresult);
-        logger.debug("Eroarea: {}", Error);
+        logger.debug("Integral part: {}", Ki.multiply(Integralresult));
         Derivativeresult = Error.subtract(previousError).divide(BigDecimal.valueOf(LoopTime));
+        logger.debug("Derivative part: {}", Kd.multiply(Derivativeresult));
         Output = Kp.multiply(Proportionalresult).add(Ki.multiply(Integralresult)).add(Kd.multiply(Derivativeresult));
         previousError = Error;
         return Output;
@@ -76,17 +82,17 @@ public class Controller {
     }
 
     public BigDecimal getProportionalpart() {
-        BigDecimal proportional = Proportionalresult;
+        BigDecimal proportional = Kp.multiply(Proportionalresult);
         return proportional;
     }
 
     public BigDecimal getIntegralpart() {
-        BigDecimal integral = Integralresult;
+        BigDecimal integral = Ki.multiply(Integralresult);
         return integral;
     }
 
     public BigDecimal getDerivativepart() {
-        BigDecimal derivative = Derivativeresult;
+        BigDecimal derivative = Kd.multiply(Derivativeresult);
         return derivative;
     }
 
@@ -96,7 +102,6 @@ public class Controller {
         Integralresult = BigDecimal.valueOf(0);
         previousError = BigDecimal.valueOf(0);
         Error = BigDecimal.valueOf(0);
-
     }
 
 }

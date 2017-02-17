@@ -36,6 +36,7 @@ pidcontroller.Controller.Your_Controller_Name
 
 
 ## Channels
+
 All channels are provided as Number type.
 *input: the input of the controller (from a sensor)
 *setpoint: the setpoint of the controller (a virtual item or an item receiving setpoint status from the outside world)
