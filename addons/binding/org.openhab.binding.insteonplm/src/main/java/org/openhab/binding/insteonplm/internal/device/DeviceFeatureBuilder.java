@@ -31,7 +31,6 @@ public class DeviceFeatureBuilder {
     private static final String MESSAGE_HANDLER_PACKAGE = "org.openhab.binding.insteonplm.internal.device.commands.MessageHandler";
     private String m_name = null;
     private String m_timeout = null;
-    private boolean m_isStatus = false;
     private HandlerEntry m_dispatcher = null;
     private HandlerEntry m_pollHandler = null;
     private HandlerEntry m_defaultMsgHandler = null;
@@ -46,10 +45,6 @@ public class DeviceFeatureBuilder {
 
     public String getTimeout() {
         return m_timeout;
-    }
-
-    public boolean isStatusFeature() {
-        return m_isStatus;
     }
 
     public HandlerEntry getPollHandler() {
@@ -91,10 +86,6 @@ public class DeviceFeatureBuilder {
     // simple setters
     public void setName(String name) {
         m_name = name;
-    }
-
-    public void setStatusFeature(boolean status) {
-        m_isStatus = status;
     }
 
     public void setTimeout(String s) {
@@ -232,7 +223,6 @@ public class DeviceFeatureBuilder {
      */
     public DeviceFeature build() {
         DeviceFeature f = new DeviceFeature(m_name);
-        f.setStatusFeature(m_isStatus);
         f.setTimeout(m_timeout);
         if (m_defaultCmdHandler != null) {
             f.setDefaultCommandHandler(
@@ -259,6 +249,6 @@ public class DeviceFeatureBuilder {
 
     @Override
     public String toString() {
-        return getName() + "(" + isStatusFeature() + ")";
+        return getName();
     }
 }

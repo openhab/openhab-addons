@@ -17,6 +17,6 @@ public class DimmerStopManualChangeHandler extends MessageHandler {
 
     @Override
     public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
-        handler.pollFeature(getFeature(), true);
+        handler.pollChannel(f, true);
     }
 }

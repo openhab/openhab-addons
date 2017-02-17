@@ -36,7 +36,7 @@ public class LightOnDimmerHandler extends MessageHandler {
             // need to poll to find out what level the dimmer is at now.
             // it may not be at 100% because dimmers can be configured
             // to switch to e.g. 75% when turned on.
-            handler.pollFeature(getFeature(), false);
+            handler.pollChannel(f, false);
         }
     }
 }

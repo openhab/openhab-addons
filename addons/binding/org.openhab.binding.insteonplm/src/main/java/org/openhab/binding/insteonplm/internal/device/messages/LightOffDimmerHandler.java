@@ -25,7 +25,6 @@ public class LightOffDimmerHandler extends MessageHandler {
         if (isMybutton(msg)) {
             logger.info("{}: device {} was turned off {}.", nm(), handler.getAddress(), f.getLabel());
         }
-            handler.updateFeatureState(f, PercentType.ZERO);
-        }
+        handler.updateFeatureState(f, PercentType.ZERO);
     }
 }

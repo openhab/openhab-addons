@@ -24,6 +24,6 @@ public class PowerMeterResetHandler extends MessageHandler {
         logger.info("{}: power meter {} was reset", nm(), handler.getAddress());
 
         // poll device to get updated kilowatt hours and watts
-        handler.pollFeature(getFeature(), true);
+        handler.pollChannel(f, true);
     }
 }

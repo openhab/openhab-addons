@@ -66,6 +66,7 @@ public class Message {
     private MessageDefinition m_definition = new MessageDefinition();
     private Direction m_direction = Direction.TO_MODEM;
     private long m_quietTime = 0;
+    private MessageType messageType;
 
     /**
      * Constructor
@@ -173,6 +174,14 @@ public class Message {
             return (t == mt);
         } catch (FieldException e) {
             return false;
+        }
+    }
+
+    public MessageType getType() {
+        try {
+            return MessageType.s_fromValue(getByte("messageFlags"));
+        } catch (FieldException e) {
+            return MessageType.INVALID;
         }
     }
 
@@ -480,5 +489,12 @@ public class Message {
             }
         }
         return s;
+    }
+
+    /**
+     * How many milliseconds for a direct ack timeout.
+     */
+    public long getDirectAckTimeout() {
+        return 6000L;
     }
 }

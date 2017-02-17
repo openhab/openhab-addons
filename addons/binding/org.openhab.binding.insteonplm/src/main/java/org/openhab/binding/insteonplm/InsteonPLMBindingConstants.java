@@ -40,6 +40,8 @@ public class InsteonPLMBindingConstants {
 
     public static final Object PROPERTY_CHANNEL_POLL_HANDLER = "pollHandler";
 
+    public static final Object PROPERTY_INSTEON_X10 = "x10";
+
     public enum ExtendedData {
         extendedNone,
         extendedCrc1,

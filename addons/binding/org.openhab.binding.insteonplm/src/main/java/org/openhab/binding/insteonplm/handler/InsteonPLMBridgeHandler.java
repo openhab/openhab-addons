@@ -121,13 +121,25 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
         } catch (FieldException e) {
             logger.error("Unable to parse modem message", e);
         }
-        // Send the message to all the handlers. This is a little inefficent, leave it for now.
-        for (Thing thing : bridge.getThings()) {
-            if (thing.getHandler() instanceof InsteonThingHandler) {
-                InsteonThingHandler handler = (InsteonThingHandler) thing.getHandler();
-                handler.handleMessage(message);
+
+        try {
+            InsteonAddress fromAddress = message.getAddress("fromAddress");
+            InsteonAddress toAddress = message.getAddress("toAddress");
+
+            // Send the message to all the handlers. This is a little inefficent, leave it for now.
+            for (Thing thing : bridge.getThings()) {
+                if (thing.getHandler() instanceof InsteonThingHandler) {
+                    InsteonThingHandler handler = (InsteonThingHandler) thing.getHandler();
+                    // Only send on messages to that specific thing.
+                    if (fromAddress.equals(handler.getAddress()) || toAddress.equals(handler.getAddress())) {
+                        handler.handleMessage(message);
+                    }
+                }
             }
+        } catch (FieldException e) {
+            logger.error("Unable to get the address from the message {}", message, e);
         }
+
     }
 
     /** Gets the thing associated with this address. */

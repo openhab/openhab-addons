@@ -53,7 +53,6 @@ public class PowerMeterKwhUpdateHandler extends MessageHandler {
 
                 logger.debug("{}:{} watts: {} kwh: {} ", nm(), handler.getAddress(), watts, kwh);
                 handler.updateFeatureState(f, new DecimalType(kwh));
-                handler.updateFeatureState(wattsChannel, new DecimalType(watts));
             } catch (FieldException e) {
                 logger.error("error parsing {}: ", msg, e);
             }

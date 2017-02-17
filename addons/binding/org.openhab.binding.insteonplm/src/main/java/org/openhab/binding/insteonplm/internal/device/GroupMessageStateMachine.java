@@ -78,7 +78,7 @@ public class GroupMessageStateMachine {
      * IN:Cmd:0x50|fromAddress:20.AC.99|toAddress:13.03.01|messageFlags:0xCB=ALL_LINK_BROADCAST:3:2|command1:0x06|
      * command2:0x00|
      */
-    enum GroupMessage {
+    public enum GroupMessage {
         BCAST,
         CLEAN,
         SUCCESS;
@@ -99,7 +99,7 @@ public class GroupMessageStateMachine {
 
     /**
      * Advance the state machine and determine if update is genuine (no duplicate)
-     * 
+     *
      * @param a the group message (action) that was received
      * @param hops number of hops that was given on the message. Currently not used.
      * @return true if the group message is not a duplicate

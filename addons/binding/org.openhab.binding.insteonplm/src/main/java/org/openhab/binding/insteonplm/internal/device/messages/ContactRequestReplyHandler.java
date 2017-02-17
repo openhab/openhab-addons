@@ -32,7 +32,7 @@ public class ContactRequestReplyHandler extends MessageHandler {
             logger.debug("{} no cmd found, dropping msg {}", nm(), msg);
             return;
         }
-        if (msg.isAckOfDirect() && (f.getQueryStatus() == DeviceFeature.QueryStatus.QUERY_PENDING) && cmd == 0x50) {
+        if (msg.isAckOfDirect() && cmd == 0x50) {
             OpenClosedType oc = (cmd2 == 0) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             logger.info("{}: set contact {} to: {}", nm(), handler.getAddress(), oc);
             handler.updateFeatureState(f, oc);

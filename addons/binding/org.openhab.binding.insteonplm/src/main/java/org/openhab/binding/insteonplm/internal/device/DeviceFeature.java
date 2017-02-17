@@ -8,15 +8,21 @@
  */
 package org.openhab.binding.insteonplm.internal.device;
 
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.commands.NoOpCommandHandler;
+import org.openhab.binding.insteonplm.internal.device.messages.DefaultMsgHandler;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * A DeviceFeature represents a certain feature (trait) of an insteon device. This feature is shared
@@ -48,25 +54,16 @@ import org.slf4j.LoggerFactory;
  */
 
 public class DeviceFeature {
-    public static enum QueryStatus {
-        NEVER_QUERIED,
-        QUERY_PENDING,
-        QUERY_ANSWERED
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(DeviceFeature.class);
 
     private String m_name = "INVALID_FEATURE_NAME";
     private int m_directAckTimeout = 6000;
-    private QueryStatus m_queryStatus = QueryStatus.NEVER_QUERIED;
 
-    private MessageHandler m_defaultMsgHandler = new MessageHandler.DefaultMsgHandler(this);
+    private MessageHandler m_defaultMsgHandler = new DefaultMsgHandler(this);
     private CommandHandler m_defaultCommandHandler = new NoOpCommandHandler(this);
-    private PollHandler m_pollHandler;
-    private boolean m_statusFeature = false;
 
-    private HashMap<Integer, MessageHandler> m_msgHandlers = new HashMap<Integer, MessageHandler>();
-    private HashMap<Class<? extends Command>, CommandHandler> m_commandHandlers = new HashMap<Class<? extends Command>, CommandHandler>();
+    private Map<Integer, List<MessageHandler>> m_msgHandlers = Maps.newHashMap();
+    private Map<Class<? extends Command>, CommandHandler> m_commandHandlers = Maps.newHashMap();
 
     /**
      * Constructor
@@ -82,10 +79,6 @@ public class DeviceFeature {
         return m_name;
     }
 
-    public synchronized QueryStatus getQueryStatus() {
-        return m_queryStatus;
-    }
-
     public int getDirectAckTimeout() {
         return m_directAckTimeout;
     }
@@ -94,38 +87,17 @@ public class DeviceFeature {
         return m_defaultMsgHandler;
     }
 
-    public PollHandler getPollHandler() {
-        return m_pollHandler;
-    }
-
-    public HashMap<Integer, MessageHandler> getMsgHandlers() {
+    public Map<Integer, List<MessageHandler>> getMsgHandlers() {
         return this.m_msgHandlers;
     }
 
-    public boolean isStatusFeature() {
-        return m_statusFeature;
-    }
-
     // various simple setters
-    public void setStatusFeature(boolean state) {
-        m_statusFeature = state;
-    }
-
-    public void setMessageDispatcher(MessageDispatcher md) {
-        m_dispatcher = md;
-    }
-
     public void setDefaultCommandHandler(CommandHandler ch) {
         m_defaultCommandHandler = ch;
     }
 
     public void setDefaultMsgHandler(MessageHandler mh) {
         m_defaultMsgHandler = mh;
-    }
-
-    public synchronized void setQueryStatus(QueryStatus status) {
-        logger.trace("{} set query status to: {}", m_name, status);
-        m_queryStatus = status;
     }
 
     public void setTimeout(String s) {
@@ -137,21 +109,6 @@ public class DeviceFeature {
                 logger.error("invalid number for timeout: {}", s);
             }
         }
-    }
-
-    /**
-     * Called when message is incoming. Dispatches message according to message dispatcher
-     *
-     * @param msg The message to dispatch
-     * @param port the port from which the message came
-     * @return true if dispatch successful
-     */
-    public boolean handleMessage(InsteonThingHandler handler, Message msg) {
-        if (m_dispatcher == null) {
-            logger.error("{} no dispatcher for msg {}", m_name, msg);
-            return false;
-        }
-        return (m_dispatcher.dispatch(handler, msg));
     }
 
     /**
@@ -169,21 +126,6 @@ public class DeviceFeature {
     }
 
     /**
-     * Make a poll message using the configured poll message handler
-     *
-     * @return the poll message
-     *         public Message makePollMsg() {
-     *         if (m_pollHandler == null) {
-     *         return null;
-     *         }
-     *         logger.trace("{} making poll msg for {} using handler {}", getName(), getDevice().getAddress(),
-     *         m_pollHandler.getClass().getSimpleName());
-     *         Message m = m_pollHandler.makeMsg(m_device);
-     *         return m;
-     *         }
-     */
-
-    /**
      * Adds a message handler to this device feature.
      *
      * @param cm1 The insteon cmd1 of the incoming message for which the handler should be used
@@ -191,7 +133,12 @@ public class DeviceFeature {
      */
     public void addMessageHandler(int cm1, MessageHandler handler) {
         synchronized (m_msgHandlers) {
-            m_msgHandlers.put(cm1, handler);
+            List<MessageHandler> handlers = m_msgHandlers.get(cm1);
+            if (handlers == null) {
+                handlers = Lists.newArrayList();
+                m_msgHandlers.put(cm1, handlers);
+            }
+            handlers.add(handler);
         }
     }
 
@@ -215,23 +162,7 @@ public class DeviceFeature {
         return m_name + " (" + m_commandHandlers.size() + ":" + m_msgHandlers.size() + ")";
     }
 
-    /** Sets the poll handler to use for making poll messages. */
-    public void setPollHandler(PollHandler pollHandler) {
-        m_pollHandler = pollHandler;
-    }
-
-    /**
-     * Make a poll message using the configured poll message handler
-     *
-     * @return the poll message
-     */
-    public Message makePollMsg(InsteonThingHandler handler) {
-        if (m_pollHandler == null) {
-            return null;
-        }
-        logger.trace("{} making poll msg for {} using handler {}", getName(), handler.getAddress(),
-                m_pollHandler.getClass().getSimpleName());
-        Message m = m_pollHandler.makeMsg(handler);
-        return m;
+    public void handleGroupMessage(InsteonThingHandler insteonThingHandler, int group, byte command, Message message,
+            Channel channel) {
     }
 }

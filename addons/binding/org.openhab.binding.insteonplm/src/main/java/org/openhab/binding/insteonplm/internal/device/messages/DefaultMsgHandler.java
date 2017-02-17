@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultMsgHandler extends MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(DefaultMsgHandler.class);
 
-    DefaultMsgHandler(DeviceFeature p) {
+    public DefaultMsgHandler(DeviceFeature p) {
         super(p);
     }
 

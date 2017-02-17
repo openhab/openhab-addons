@@ -23,7 +23,7 @@ public class LightOffSwitchHandler extends MessageHandler {
     @Override
     public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
         if (isMybutton(msg)) {
-            logger.info("{}: device {} was switched off {}.", nm(), handler.getAddress(), f.getName());
+            logger.info("{}: device {} was switched off {}.", nm(), handler.getAddress(), f.getLabel());
             handler.updateFeatureState(f, OnOffType.OFF);
         }
     }

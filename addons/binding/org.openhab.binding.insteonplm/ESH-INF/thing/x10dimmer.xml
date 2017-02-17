@@ -24,6 +24,7 @@
         <properties>
             <property name="productKey">X00.00.02</property>
             <property name="model">X10 dimmer</property>
+            <property name="x10">true</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

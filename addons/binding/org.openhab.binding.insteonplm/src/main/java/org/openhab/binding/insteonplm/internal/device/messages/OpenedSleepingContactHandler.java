@@ -30,7 +30,7 @@ public class OpenedSleepingContactHandler extends MessageHandler {
             Message mess = handler.getMessageFactory().makeExtendedMessage((byte) 0x1F, (byte) 0x2e, (byte) 00,
                     handler.getAddress());
             mess.setQuietTime(500);
-            handler.enqueueMessage(mess, getFeature());
+            handler.enqueueMessage(mess);
         } catch (FieldException | IOException e) {
             logger.error("i/o issues sending the message to device {}", e, handler.getAddress());
         }

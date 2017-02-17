@@ -128,10 +128,8 @@ public class DeviceFeatureFactory {
 
     private DeviceFeatureBuilder parseFeature(Element e) throws ParsingException {
         String name = e.getAttribute("name");
-        boolean statusFeature = e.getAttribute("statusFeature").equals("true");
         DeviceFeatureBuilder feature = new DeviceFeatureBuilder();
         feature.setName(name);
-        feature.setStatusFeature(statusFeature);
         feature.setTimeout(e.getAttribute("timeout"));
 
         NodeList nodes = e.getChildNodes();
@@ -227,7 +225,7 @@ public class DeviceFeatureFactory {
             T phc = dc.getDeclaredConstructor(PollHandler.class).newInstance(cname);
             return phc;
         } catch (Exception e) {
-            logger.error("error trying to create message handler: {}", ph.getHandlerName(), e);
+            logger.error("error trying to create message handler: {}", pollHandlerClass.getHandlerName(), e);
         }
         return null;
     }

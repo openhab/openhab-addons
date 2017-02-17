@@ -1,13 +1,8 @@
 package org.openhab.binding.insteonplm.internal.device.messages;
 
-import java.util.HashMap;
-
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.device.GroupMessageStateMachine;
-
-import com.google.common.collect.Maps;
 
 /**
  * @author Daniel Pfrommer
@@ -15,7 +10,6 @@ import com.google.common.collect.Maps;
  */
 public class MessageHandlerData {
     public DeviceFeature feature;
-    public HashMap<Integer, GroupMessageStateMachine> groupState = Maps.newHashMap();
     public int group = -1;
     public int button = -1;
     public int cmd1 = -1;

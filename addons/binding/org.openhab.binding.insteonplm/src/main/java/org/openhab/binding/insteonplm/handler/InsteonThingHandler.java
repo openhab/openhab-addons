@@ -18,13 +18,17 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.joda.time.DateTime;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
-import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
+import org.openhab.binding.insteonplm.config.PollingHandlerInfo;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
+import org.openhab.binding.insteonplm.internal.device.GroupMessageStateMachine;
+import org.openhab.binding.insteonplm.internal.device.GroupMessageStateMachine.GroupMessage;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
-import org.openhab.binding.insteonplm.internal.device.MessageDispatcher;
+import org.openhab.binding.insteonplm.internal.device.MessageHandler;
 import org.openhab.binding.insteonplm.internal.device.PollHandler;
+import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.MessageFactory;
+import org.openhab.binding.insteonplm.internal.message.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +43,16 @@ public class InsteonThingHandler extends BaseThingHandler {
     private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
 
     private Map<ChannelUID, List<DeviceFeature>> featureChannelMapping = Maps.newHashMap();
-    private Map<ChannelUID, PollHandler> pollHandlers = Maps.newHashMap();
+    private Map<ChannelUID, PollingHandlerInfo> pollHandlers = Maps.newHashMap();
     private PriorityQueue<InsteonThingMessageQEntry> requestQueue = new PriorityQueue<InsteonThingMessageQEntry>();
+    public Map<Integer, GroupMessageStateMachine> groupState = Maps.newHashMap();
     private Long lastTimePolled;
     // Default to 10 days ago.
     private DateTime lastMessageReceived = DateTime.now().minusDays(10);
     private InsteonAddress address;
+    private Message requestMessage;
+    private long lastTimeQueried = 0;
+    private boolean isX10Device = false;
 
     public InsteonThingHandler(Thing thing) {
         super(thing);
@@ -68,6 +76,11 @@ public class InsteonThingHandler extends BaseThingHandler {
             return;
         }
 
+        String x10Key = this.getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_X10);
+        if (x10Key != null && "true".equals(x10Key)) {
+            isX10Device = true;
+        }
+
         // TODO: Shouldn't the framework do this for us???
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -84,16 +97,141 @@ public class InsteonThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Handles the message received over the channel to the modem.
+     * True if we should process this message. False if it is a duplicate or we should ignore it.
      */
-    public void handleMessage(Message message) {
-        lastMessageReceived = DateTime.now();
-        // Send the message to all the features on this thing to be processed.
-        for (List<DeviceFeature> features : featureChannelMapping.values()) {
-            for (DeviceFeature feature : features) {
-                feature.handleMessage(this, message);
+    private boolean shouldPublishForGroup(int group, GroupMessageStateMachine.GroupMessage type, int hops) {
+        GroupMessageStateMachine state = groupState.get(group);
+        if (state == null) {
+            state = new GroupMessageStateMachine();
+        }
+        return state.action(type, hops);
+    }
+
+    /**
+     * Handle all the all link message cases.
+     */
+    private void handlerAllLinkMessage(Message message) throws FieldException {
+        int command1 = message.getByte("command1");
+        InsteonAddress toAddress = message.getAddress("toAddress");
+
+        if (!message.isCleanup() && command1 == 0x06) {
+            command1 = toAddress.getHighByte();
+        }
+
+        int group = (message.isCleanup() ? message.getByte("command2") : toAddress.getLowByte()) & 0xff;
+
+        GroupMessage groupMessage;
+        MessageType messageType = message.getType();
+        if (messageType == MessageType.ALL_LINK_BROADCAST) {
+            // if the command is 0x06, then it's success message
+            // from the original broadcaster, with which the device
+            // confirms that it got all cleanup replies successfully.
+            if (command1 == 0x06) {
+                groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
+            } else {
+                groupMessage = GroupMessageStateMachine.GroupMessage.SUCCESS;
+            }
+        } else if (messageType == MessageType.ALL_LINK_CLEANUP) {
+            groupMessage = GroupMessageStateMachine.GroupMessage.CLEAN;
+            // the cleanup messages are direct messages, so the
+            // group # is not in the toAddress, but in cmd2
+            group = message.getByte("command2") & 0xff;
+        } else {
+            groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
+        }
+        if (shouldPublishForGroup(group, groupMessage, message.getHopsLeft())) {
+            // See if we can find the right handler for this group message.
+            for (ChannelUID channelId : featureChannelMapping.keySet()) {
+                List<DeviceFeature> features = featureChannelMapping.get(channelId);
+                for (DeviceFeature feature : features) {
+                    List<MessageHandler> allHandlers = feature.getMsgHandlers().get(command1 & 0xff);
+                    if (allHandlers != null) {
+                        for (MessageHandler handler : allHandlers) {
+                            if (handler.matchesGroup(group) && handler.matches(message)) {
+                                handler.handleMessage(this, group, (byte) command1, message,
+                                        getThing().getChannel(channelId.getId()));
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+
+    /**
+     * Handles the message received over the channel to the modem.
+     *
+     * @throws FieldException
+     */
+    public void handleMessage(Message message) throws FieldException {
+        lastMessageReceived = DateTime.now();
+
+        if (!isX10Device) {
+            byte cmd = message.getByte("Cmd");
+            byte command1 = message.getByte("command1");
+            // All link message for this thing.
+            if (message.isAllLink()) {
+                handlerAllLinkMessage(message);
+                return;
+            }
+
+            if (message.isAllLinkCleanupAckOrNack()) {
+                // Had cases when a KeypadLinc would send an ALL_LINK_CLEANUP_ACK
+                // in response to a direct status query message
+                return;
+            }
+
+            // We have an ack and we have a request message. Yay.
+            int key = -1;
+            if (message.isAckOfDirect() && requestMessage != null) {
+                // The request message is good, for us.
+                if (cmd == 0x50) {
+                    // Grab from the request message.
+                    key = requestMessage.getByte("command1");
+                }
+                // We have the request message and this is an ack for it. Yay.
+                requestMessage = null;
+            } else {
+                key = command1;
+            }
+
+            // For direct acks and for normal direct messages we do this. Yay!
+            if (key != -1) {
+                for (ChannelUID channelId : featureChannelMapping.keySet()) {
+                    List<DeviceFeature> features = featureChannelMapping.get(channelId);
+                    for (DeviceFeature feature : features) {
+                        List<MessageHandler> allHandlers = feature.getMsgHandlers().get(command1 & 0xff);
+                        if (allHandlers != null) {
+                            for (MessageHandler handler : allHandlers) {
+                                if (handler.matches(message)) {
+                                    handler.handleMessage(this, -1, command1, message,
+                                            getThing().getChannel(channelId.getId()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            // X10 Message.
+            byte rawX10 = message.getByte("rawX10");
+            int cmd = (rawX10 & 0x0f);
+            for (ChannelUID channelId : featureChannelMapping.keySet()) {
+                List<DeviceFeature> features = featureChannelMapping.get(channelId);
+                for (DeviceFeature feature : features) {
+                    List<MessageHandler> allHandlers = feature.getMsgHandlers().get(cmd & 0xff);
+                    if (allHandlers != null) {
+                        for (MessageHandler handler : allHandlers) {
+                            if (handler.matches(message)) {
+                                handler.handleMessage(this, -1, (byte) cmd, message,
+                                        getThing().getChannel(channelId.getId()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // Update the status of the last message received channel.
         updateState(new ChannelUID("lastMessageReceived"), new DateTimeType(lastMessageReceived.toGregorianCalendar()));
     }
@@ -120,16 +258,13 @@ public class InsteonThingHandler extends BaseThingHandler {
     public void doPoll(long timeDelayPollRelatedMsec) {
         long now = System.currentTimeMillis();
         ArrayList<InsteonThingMessageQEntry> l = new ArrayList<InsteonThingMessageQEntry>();
-        synchronized (featureChannelMapping) {
+        synchronized (pollHandlers) {
             int spacing = 0;
-            for (List<DeviceFeature> i : featureChannelMapping.values()) {
-                for (DeviceFeature feature : i) {
-                    Message m = feature.makePollMsg(this);
-                    if (m != null) {
-                        l.add(new InsteonThingMessageQEntry(feature, m, now + timeDelayPollRelatedMsec + spacing));
-                        spacing += TIME_BETWEEN_POLL_MESSAGES;
-                    }
-                }
+            for (PollingHandlerInfo i : pollHandlers.values()) {
+                PollHandler pollHandler = i.getPollHandler();
+                Message message = pollHandler.makeMsg(this);
+                l.add(new InsteonThingMessageQEntry(message, now + timeDelayPollRelatedMsec + spacing));
+                spacing += TIME_BETWEEN_POLL_MESSAGES;
             }
         }
         if (l.isEmpty()) {
@@ -159,32 +294,14 @@ public class InsteonThingHandler extends BaseThingHandler {
         return getInsteonBridge().getMessageFactory();
     }
 
-    static class FeatureDetails {
-        private final DeviceFeature feature;
-        private final MessageDispatcher dispatcher;
-
-        public FeatureDetails(DeviceFeature feature, MessageDispatcher dispatcher) {
-            this.feature = feature;
-            this.dispatcher = dispatcher;
-        }
-
-        public DeviceFeature getFeature() {
-            return feature;
-        }
-
-        public MessageDispatcher getDispatcher() {
-            return dispatcher;
-        }
-    }
-
     /**
      * Adds this message into the output queue for this thing.
      *
      * @param message The message to queue
      * @param feature The feature it is associated with (for acks)
      */
-    public void enqueueMessage(Message message, DeviceFeature feature) {
-        enqueueDelayedMessage(message, feature, 0L);
+    public void enqueueMessage(Message message) {
+        enqueueDelayedMessage(message, 0L);
     }
 
     /**
@@ -193,9 +310,9 @@ public class InsteonThingHandler extends BaseThingHandler {
      * @param message The message to queue
      * @param feature The feature it is associated with (for acks)
      */
-    public void enqueueDelayedMessage(Message message, DeviceFeature feature, long delay) {
+    public void enqueueDelayedMessage(Message message, long delay) {
         synchronized (requestQueue) {
-            requestQueue.add(new InsteonThingMessageQEntry(feature, message, System.currentTimeMillis() + delay));
+            requestQueue.add(new InsteonThingMessageQEntry(message, System.currentTimeMillis() + delay));
         }
         if (!message.isBroadcast()) {
             message.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
@@ -245,13 +362,15 @@ public class InsteonThingHandler extends BaseThingHandler {
      *
      * @param doItNow If we should do the poll now, or wait a bit
      */
-    public void pollFeature(DeviceFeature feature, boolean doItNow) {
-        Message mess = feature.getPollHandler().makeMsg(this);
-        if (mess != null) {
+    public void pollChannel(Channel channel, boolean doItNow) {
+        // Find the channel the feature is on.
+        PollingHandlerInfo handler = pollHandlers.get(channel.getUID().getId());
+        if (handler != null) {
+            Message mess = handler.getPollHandler().makeMsg(this);
             if (doItNow) {
-                enqueueMessage(mess, feature);
+                enqueueMessage(mess);
             } else {
-                enqueueDelayedMessage(mess, feature, 1000);
+                enqueueDelayedMessage(mess, 1000);
             }
         }
     }
@@ -289,44 +408,55 @@ public class InsteonThingHandler extends BaseThingHandler {
 
             String pollHandlerData = properties.get(InsteonPLMBindingConstants.PROPERTY_CHANNEL_POLL_HANDLER);
             if (pollHandlerData != null) {
-                String[] typeArgs = pollHandlerData.split(":");
-                if (typeArgs.length != 2) {
-                    logger.error("NODE {}: Invalid poll data for channel {} -- {}", getAddress(), channel.getUID(),
-                            pollHandlerData);
-                } else {
-                    String[] args = typeArgs[1].split(",");
-                    ExtendedData extendedData = InsteonPLMBindingConstants.ExtendedData.valueOf(args[0]);
-                    byte cmd1 = fromHexString(args[1]);
-                    byte cmd2 = fromHexString(args[2]);
-                    PollHandler pollHandler = getInsteonBridge().getDeviceFeatureFactory().makePollHandler(args[0]);
-                    pollHandler.setCmd1(cmd1);
-                    pollHandler.setCmd2(cmd2);
-                    pollHandler.setExtended(extendedData);
-                    if (args.length > 3) {
-                        byte data1 = fromHexString(args[3]);
-                        byte data2 = fromHexString(args[4]);
-                        byte data3 = fromHexString(args[5]);
-                        pollHandler.setData1(data1);
-                        pollHandler.setData2(data2);
-                        pollHandler.setData3(data3);
-                    }
-                    // Now remember the poll handler...
-                    pollHandlers.put(channel.getUID(), pollHandler);
+                PollingHandlerInfo info = new PollingHandlerInfo(pollHandlerData);
+                if (info.getPollHandlerType() != null) {
+                    PollHandler pollHandler = getInsteonBridge().getDeviceFeatureFactory()
+                            .makePollHandler(info.getPollHandlerType());
+                    info.setPollHandler(pollHandler);
+                    pollHandlers.put(channel.getUID(), info);
                 }
             }
         }
         doPoll(0);
     }
 
-    private byte fromHexString(String str) {
-        if (str.startsWith("0x")) {
-            return Byte.parseByte(str.substring(2));
-        } else {
-            return Byte.parseByte(str);
-        }
-    }
-
+    /**
+     * The request queue for all the pending messages to be sent.
+     */
     public PriorityQueue<InsteonThingMessageQEntry> getRequestQueue() {
         return requestQueue;
+    }
+
+    /**
+     * Goes through the request queue and handles sending the next message, or not.
+     *
+     * @return the updated wait time for this queue
+     */
+    public long processRequestQueue(long now) {
+        synchronized (requestQueue) {
+            if (requestQueue.isEmpty()) {
+                return 0;
+            }
+            // We have a pending message.
+            if (requestMessage != null) {
+                long dt = now - (lastTimeQueried + requestMessage.getDirectAckTimeout());
+                if (dt < 0) {
+                    logger.debug("Still waiting for query reply from {} for another {} usec", getAddress(), -dt);
+                } else {
+                    logger.debug("gave up waiting for query reply from device {}", getAddress());
+                    // TODO: track stats on how often messages fail to various devices.
+                }
+            }
+            InsteonThingMessageQEntry entry = requestQueue.poll();
+            if (entry.getMsg().isBroadcast()) {
+                // Broadcast message. Yay!
+                logger.debug("Broadcast message on queue {} {}", getAddress(), entry.getMsg());
+            } else {
+                // Direct message, exciting.
+                logger.debug("Direct message on queue {} {}", getAddress(), entry.getMsg());
+                lastTimeQueried = now;
+            }
+        }
+        return 0;
     }
 }

@@ -24,6 +24,6 @@ public class TriggerPollMsgHandler extends MessageHandler {
 
     @Override
     public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
-        handler.pollFeature(f, false);
+        handler.pollChannel(f, false);
     }
 }

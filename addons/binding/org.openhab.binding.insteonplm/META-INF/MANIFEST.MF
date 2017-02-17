@@ -27,6 +27,7 @@ Import-Package:
  org.joda.time.base,
  org.openhab.binding.insteonplm,
  org.openhab.binding.insteonplm.handler,
+ org.openhab.binding.max.internal.message,
  org.openhab.core.types,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

@@ -3,6 +3,7 @@ package org.openhab.binding.insteonplm.internal.device.messages;
 import java.io.IOException;
 
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
@@ -29,7 +30,7 @@ public class ClosedSleepingContactHandler extends MessageHandler {
             Message mess = handler.getMessageFactory().makeExtendedMessage((byte) 0x1F, (byte) 0x2e, (byte) 00,
                     handler.getAddress());
             mess.setQuietTime(500);
-            handler.enqueueMessage(mess, f);
+            handler.enqueueMessage(mess);
         } catch (FieldException | IOException e) {
             logger.error("i/o issues sending the message to device {}", e, handler.getAddress());
         }

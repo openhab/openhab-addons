@@ -24,6 +24,7 @@
         <properties>
             <property name="productKey">X00.00.01</property>
             <property name="model">X10 switch</property>
+            <property name="x10">true</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>
