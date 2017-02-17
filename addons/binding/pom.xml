@@ -61,7 +61,7 @@
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.yamahareceiver</module>
-    <module>org.openhab.binding.isy</module>
+    <module>org.openhab.binding.omnilink</module>
   </modules>
 
 </project>
