@@ -146,8 +146,6 @@ public class DeviceFeatureFactory {
                     parseCommandHandler(child, feature);
                 } else if (child.getTagName().equals("message-dispatcher")) {
                     parseMessageDispatcher(child, feature);
-                } else if (child.getTagName().equals("poll-handler")) {
-                    parsePollHandler(child, feature);
                 }
             }
         }
@@ -199,11 +197,6 @@ public class DeviceFeatureFactory {
         }
     }
 
-    private void parsePollHandler(Element e, DeviceFeatureBuilder f) throws ParsingException {
-        HandlerEntry he = makeHandlerEntry(e);
-        f.setPollHandler(he);
-    }
-
     private Class<? extends Command> parseCommandClass(String c) throws ParsingException {
         if (c.equals("OnOffType")) {
             return OnOffType.class;
@@ -218,4 +211,24 @@ public class DeviceFeatureFactory {
         }
     }
 
+    /**
+     * Factory method for creating handlers of a given name using java reflection
+     *
+     * @param ph the name of the handler to create
+     * @param f the feature for which to create the handler
+     * @return the handler which was created
+     */
+    public <T extends PollHandler> T makePollHandler(String pollHandlerClass) {
+        String cname = PollHandler.class.getName() + "$" + pollHandlerClass;
+        try {
+            Class<?> c = Class.forName(cname);
+            @SuppressWarnings("unchecked")
+            Class<? extends T> dc = (Class<? extends T>) c;
+            T phc = dc.getDeclaredConstructor(PollHandler.class).newInstance(cname);
+            return phc;
+        } catch (Exception e) {
+            logger.error("error trying to create message handler: {}", ph.getHandlerName(), e);
+        }
+        return null;
+    }
 }

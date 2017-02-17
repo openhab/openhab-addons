@@ -24,6 +24,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.joda.time,
+ org.joda.time.base,
  org.openhab.binding.insteonplm,
  org.openhab.binding.insteonplm.handler,
  org.openhab.core.types,
@@ -31,4 +32,3 @@ Import-Package:
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.insteonplm,
  org.openhab.binding.insteonplm.handler
-Require-Bundle: org.eclipse.smarthome.io.transport.dbus

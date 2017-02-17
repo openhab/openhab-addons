@@ -10,6 +10,7 @@ package org.openhab.binding.insteonplm.internal.device;
 
 import java.io.IOException;
 
+import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
@@ -27,6 +28,12 @@ import org.slf4j.LoggerFactory;
 public abstract class PollHandler {
     private static final Logger logger = LoggerFactory.getLogger(PollHandler.class);
     DeviceFeature m_feature = null;
+    ExtendedData extended = ExtendedData.extendedNone;
+    byte cmd1;
+    byte cmd2;
+    byte data1;
+    byte data2;
+    byte data3;
 
     /**
      * Constructor
@@ -46,6 +53,30 @@ public abstract class PollHandler {
      */
     public abstract Message makeMsg(InsteonThingHandler device);
 
+    public void setExtended(ExtendedData data) {
+        extended = data;
+    }
+
+    public void setCmd1(byte value) {
+        cmd1 = value;
+    }
+
+    public void setCmd2(byte value) {
+        cmd2 = value;
+    }
+
+    public void setData1(byte value) {
+        data1 = value;
+    }
+
+    public void setData2(byte value) {
+        data2 = value;
+    }
+
+    public void setData3(byte value) {
+        data3 = value;
+    }
+
     /**
      * A flexible, parameterized poll handler that can generate
      * most query messages. Provide the suitable parameters in
@@ -53,66 +84,9 @@ public abstract class PollHandler {
      */
 
     public static class FlexPollHandler extends PollHandler {
-        byte cmd1;
-        byte cmd2;
-        byte data1;
-        byte data2;
-        byte data3;
 
         FlexPollHandler(DeviceFeature f, MessageFactory factory) {
             super(f, factory);
-        }
-
-        private enum ExtendedData {
-            extendedNone,
-            extendedCrc1,
-            extendedCrc2
-        }
-
-        ExtendedData extended = ExtendedData.extendedNone;
-
-        public void setExtended(String val) {
-            extended = ExtendedData.valueOf(val);
-        }
-
-        public void setCmd1(String factor) {
-            try {
-                cmd1 = Byte.valueOf(factor);
-            } catch (NumberFormatException e) {
-                logger.error("Unable to parse {}", e, factor);
-            }
-        }
-
-        public void setCmd2(String factor) {
-            try {
-                cmd2 = Byte.valueOf(factor);
-            } catch (NumberFormatException e) {
-                logger.error("Unable to parse {}", e, factor);
-            }
-        }
-
-        public void setData1(String val) {
-            try {
-                data1 = Byte.valueOf(val);
-            } catch (NumberFormatException e) {
-                logger.error("Unable to read {}", e, val);
-            }
-        }
-
-        public void setData2(String val) {
-            try {
-                data2 = Byte.valueOf(val);
-            } catch (NumberFormatException e) {
-                logger.error("Unable to read {}", e, val);
-            }
-        }
-
-        public void setData3(String val) {
-            try {
-                data3 = Byte.valueOf(val);
-            } catch (NumberFormatException e) {
-                logger.error("Unable to read {}", e, val);
-            }
         }
 
         @Override

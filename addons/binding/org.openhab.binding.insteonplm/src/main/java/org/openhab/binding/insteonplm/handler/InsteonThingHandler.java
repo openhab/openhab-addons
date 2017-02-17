@@ -1,12 +1,11 @@
 package org.openhab.binding.insteonplm.handler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -19,9 +18,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.joda.time.DateTime;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
+import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.device.MessageDispatcher;
+import org.openhab.binding.insteonplm.internal.device.PollHandler;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.slf4j.Logger;
@@ -36,11 +37,10 @@ public class InsteonThingHandler extends BaseThingHandler {
     private static final int QUIET_TIME_DIRECT_MESSAGE = 2000;
     /** how far to space out poll messages */
     private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
-    /** Default amount of time to hang onto a message. */
-    private static final long DEFAULT_TTL = 60000;
 
-    private HashMap<ChannelUID, List<DeviceFeature>> featureChannelMapping = new HashMap<ChannelUID, List<DeviceFeature>>();
-    private PriorityQueue<QEntry> requestQueue = new PriorityQueue<QEntry>();
+    private Map<ChannelUID, List<DeviceFeature>> featureChannelMapping = Maps.newHashMap();
+    private Map<ChannelUID, PollHandler> pollHandlers = Maps.newHashMap();
+    private PriorityQueue<InsteonThingMessageQEntry> requestQueue = new PriorityQueue<InsteonThingMessageQEntry>();
     private Long lastTimePolled;
     // Default to 10 days ago.
     private DateTime lastMessageReceived = DateTime.now().minusDays(10);
@@ -52,9 +52,7 @@ public class InsteonThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO Auto-generated method stub
         super.initialize();
-        // Set up the dispatches for the features.
 
         address = new InsteonAddress(
                 this.getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_ADDRESS));
@@ -90,6 +88,14 @@ public class InsteonThingHandler extends BaseThingHandler {
      */
     public void handleMessage(Message message) {
         lastMessageReceived = DateTime.now();
+        // Send the message to all the features on this thing to be processed.
+        for (List<DeviceFeature> features : featureChannelMapping.values()) {
+            for (DeviceFeature feature : features) {
+                feature.handleMessage(this, message);
+            }
+        }
+        // Update the status of the last message received channel.
+        updateState(new ChannelUID("lastMessageReceived"), new DateTimeType(lastMessageReceived.toGregorianCalendar()));
     }
 
     /** The address for this thing. */
@@ -113,14 +119,14 @@ public class InsteonThingHandler extends BaseThingHandler {
      */
     public void doPoll(long timeDelayPollRelatedMsec) {
         long now = System.currentTimeMillis();
-        ArrayList<QEntry> l = new ArrayList<QEntry>();
+        ArrayList<InsteonThingMessageQEntry> l = new ArrayList<InsteonThingMessageQEntry>();
         synchronized (featureChannelMapping) {
             int spacing = 0;
             for (List<DeviceFeature> i : featureChannelMapping.values()) {
                 for (DeviceFeature feature : i) {
                     Message m = feature.makePollMsg(this);
                     if (m != null) {
-                        l.add(new QEntry(feature, m, now + timeDelayPollRelatedMsec + spacing));
+                        l.add(new InsteonThingMessageQEntry(feature, m, now + timeDelayPollRelatedMsec + spacing));
                         spacing += TIME_BETWEEN_POLL_MESSAGES;
                     }
                 }
@@ -130,12 +136,12 @@ public class InsteonThingHandler extends BaseThingHandler {
             return;
         }
         synchronized (requestQueue) {
-            for (QEntry e : l) {
+            for (InsteonThingMessageQEntry e : l) {
                 requestQueue.add(e);
             }
         }
-        getInsteonBridge().addQueue(this, now + timeDelayPollRelatedMsec);
-
+        // Update the data to send if needed.
+        getInsteonBridge().addThingToSendingQueue(this, requestQueue.peek().getExpirationTime());
         if (!l.isEmpty()) {
             synchronized (lastTimePolled) {
                 lastTimePolled = now;
@@ -151,40 +157,6 @@ public class InsteonThingHandler extends BaseThingHandler {
     /** The message factory to use when making messages. */
     public MessageFactory getMessageFactory() {
         return getInsteonBridge().getMessageFactory();
-    }
-
-    /**
-     * Queue entry helper class
-     *
-     * @author Bernd Pfrommer
-     */
-    static class QEntry implements Comparable<QEntry> {
-        private DeviceFeature m_feature = null;
-        private Message m_msg = null;
-        private long m_expirationTime = 0L;
-
-        public DeviceFeature getFeature() {
-            return m_feature;
-        }
-
-        public Message getMsg() {
-            return m_msg;
-        }
-
-        public long getExpirationTime() {
-            return m_expirationTime;
-        }
-
-        public QEntry(DeviceFeature f, Message m, long t) {
-            m_feature = f;
-            m_msg = m;
-            m_expirationTime = t;
-        }
-
-        @Override
-        public int compareTo(QEntry a) {
-            return (int) (m_expirationTime - a.m_expirationTime);
-        }
     }
 
     static class FeatureDetails {
@@ -223,11 +195,12 @@ public class InsteonThingHandler extends BaseThingHandler {
      */
     public void enqueueDelayedMessage(Message message, DeviceFeature feature, long delay) {
         synchronized (requestQueue) {
-            requestQueue.add(new QEntry(feature, message, System.currentTimeMillis() + delay));
+            requestQueue.add(new InsteonThingMessageQEntry(feature, message, System.currentTimeMillis() + delay));
         }
         if (!message.isBroadcast()) {
             message.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
+        getInsteonBridge().addThingToSendingQueue(this, requestQueue.peek().getExpirationTime());
         logger.trace("enqueueing message with delay {}", delay);
     }
 
@@ -301,7 +274,6 @@ public class InsteonThingHandler extends BaseThingHandler {
         for (Channel channel : getThing().getChannels()) {
             // Process the channel properties and configuration
             Map<String, String> properties = channel.getProperties();
-            Configuration configuration = channel.getConfiguration();
 
             logger.debug("NODE {}: Initialising channel {}", getAddress(), channel.getUID());
 
@@ -314,7 +286,47 @@ public class InsteonThingHandler extends BaseThingHandler {
                 DeviceFeature feature = getInsteonBridge().getDeviceFeatureFactory().makeDeviceFeature(name);
                 featureChannelMapping.get(channel.getUID()).add(feature);
             }
+
+            String pollHandlerData = properties.get(InsteonPLMBindingConstants.PROPERTY_CHANNEL_POLL_HANDLER);
+            if (pollHandlerData != null) {
+                String[] typeArgs = pollHandlerData.split(":");
+                if (typeArgs.length != 2) {
+                    logger.error("NODE {}: Invalid poll data for channel {} -- {}", getAddress(), channel.getUID(),
+                            pollHandlerData);
+                } else {
+                    String[] args = typeArgs[1].split(",");
+                    ExtendedData extendedData = InsteonPLMBindingConstants.ExtendedData.valueOf(args[0]);
+                    byte cmd1 = fromHexString(args[1]);
+                    byte cmd2 = fromHexString(args[2]);
+                    PollHandler pollHandler = getInsteonBridge().getDeviceFeatureFactory().makePollHandler(args[0]);
+                    pollHandler.setCmd1(cmd1);
+                    pollHandler.setCmd2(cmd2);
+                    pollHandler.setExtended(extendedData);
+                    if (args.length > 3) {
+                        byte data1 = fromHexString(args[3]);
+                        byte data2 = fromHexString(args[4]);
+                        byte data3 = fromHexString(args[5]);
+                        pollHandler.setData1(data1);
+                        pollHandler.setData2(data2);
+                        pollHandler.setData3(data3);
+                    }
+                    // Now remember the poll handler...
+                    pollHandlers.put(channel.getUID(), pollHandler);
+                }
+            }
+        }
+        doPoll(0);
+    }
+
+    private byte fromHexString(String str) {
+        if (str.startsWith("0x")) {
+            return Byte.parseByte(str.substring(2));
+        } else {
+            return Byte.parseByte(str);
         }
     }
 
+    public PriorityQueue<InsteonThingMessageQEntry> getRequestQueue() {
+        return requestQueue;
+    }
 }

@@ -202,37 +202,6 @@ public class DeviceFeatureBuilder {
     }
 
     /**
-     * Factory method for creating handlers of a given name using java reflection
-     *
-     * @param ph the name of the handler to create
-     * @param f the feature for which to create the handler
-     * @return the handler which was created
-     */
-    private <T extends PollHandler> T makePollHandler(HandlerEntry ph, DeviceFeature f) {
-        String cname = PollHandler.class.getName() + "$" + ph.getHandlerName();
-        try {
-            Class<?> c = Class.forName(cname);
-            @SuppressWarnings("unchecked")
-            Class<? extends T> dc = (Class<? extends T>) c;
-            T phc = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
-            // Call sets for the properties out of the parameters.
-            for (String paramName : ph.getParameters().keySet()) {
-                Method method = dc.getMethod(
-                        "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1), String.class);
-                if (method == null) {
-                    logger.error("Unable to find method {} on {}", "set" + paramName, ph.getHandlerName());
-                } else {
-                    method.invoke(phc, ph.getParameters().get(paramName));
-                }
-            }
-            return phc;
-        } catch (Exception e) {
-            logger.error("error trying to create message handler: {}", ph.getHandlerName(), e);
-        }
-        return null;
-    }
-
-    /**
      * Factory method for creating a dispatcher of a given name using java reflection
      *
      * @param name the name of the dispatcher to create
@@ -240,7 +209,7 @@ public class DeviceFeatureBuilder {
      * @param f the feature for which to create the dispatcher
      * @return the handler which was created
      */
-    public static <T extends MessageDispatcher> T makeMessageDispatcherHandler(String name, Map<String, String> params,
+    public <T extends MessageDispatcher> T makeMessageDispatcherHandler(String name, Map<String, String> params,
             DeviceFeature f) {
         String cname = MessageDispatcher.class.getName() + "$" + name;
         try {
@@ -248,7 +217,7 @@ public class DeviceFeatureBuilder {
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
             T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
-            ch.setParameters(params);
+            // ch.setParameters(params);
             return ch;
         } catch (Exception e) {
             logger.error("error trying to create dispatcher: {}", name, e);
@@ -265,9 +234,6 @@ public class DeviceFeatureBuilder {
         DeviceFeature f = new DeviceFeature(m_name);
         f.setStatusFeature(m_isStatus);
         f.setTimeout(m_timeout);
-        if (m_pollHandler != null) {
-            f.setPollHandler(makePollHandler(m_pollHandler, f));
-        }
         if (m_defaultCmdHandler != null) {
             f.setDefaultCommandHandler(
                     makeCommandHandler(m_defaultCmdHandler.getHandlerName(), m_defaultCmdHandler.getParameters(), f));

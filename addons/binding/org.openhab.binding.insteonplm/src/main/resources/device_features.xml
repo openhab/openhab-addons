@@ -2,17 +2,17 @@
 <feature name="GenericSwitch" timeout="5000">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
-	<message-handler channel="switch" cmd="0x11" group="1">LightOnSwitchHandler</message-handler>
-	<message-handler channel="switch" cmd="0x12" group="1" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="switch" cmd="0x13" group="1">LightOffSwitchHandler</message-handler>
-	<message-handler channel="switch" cmd="0x14" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
-	<message-handler channel="switch" cmd="0x19">SwitchRequestReplyHandler</message-handler>
+	<message-handler cmd="0x11" group="1">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x12" group="1" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x13" group="1">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x14" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x19">SwitchRequestReplyHandler</message-handler>
 	<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
 </feature>
 <feature name="FastOnOff">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="switch" cmd="0x12" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="switch" cmd="0x14" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x12" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x14" mode="FAST">LightOffSwitchHandler</message-handler>
 	<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
@@ -21,7 +21,7 @@
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<!-- cmd1 defaults to 0x2E, 0x2F -->
 	<!-- default dispatcher uses 0x19 for lookup key instead of cmd1 -->
-	<message-handler channel="dimmer" cmd="0x19">RampDimmerHandler</message-handler>
+	<message-handler cmd="0x19">RampDimmerHandler</message-handler>
 	<command-handler command="PercentType">RampPercentHandler</command-handler>
 	<command-handler command="OnOffType">RampOnOffCommandHandler</command-handler>
 </feature>
@@ -29,7 +29,7 @@
 <feature name="RampDimmer_3435">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<!-- default dispatcher uses 0x19 for lookup key instead of cmd1 -->
-	<message-handler channel="dimmer" cmd="0x19" on="0x34" off="0x35">RampDimmerHandler</message-handler>
+	<message-handler cmd="0x19" on="0x34" off="0x35">RampDimmerHandler</message-handler>
 	<command-handler command="PercentType"  on="0x34" off="0x35">RampPercentHandler</command-handler>
 	<command-handler command="OnOffType" on="0x34" off="0x35">RampOnOffCommandHandler</command-handler>
 </feature>
@@ -45,111 +45,111 @@
 <feature name="RemoteButton1">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
-	<message-handler channel="button1" cmd="0x11" button="1" group="1">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button1" cmd="0x13" button="1" group="1">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x11" button="1" group="1">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x13" button="1" group="1">LightOffSwitchHandler</message-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="RemoteButton2">
     	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-    	<message-handler channel="button2" cmd="0x03" group="2">NoOpMsgHandler</message-handler>
-    	<message-handler channel="button2" cmd="0x11" button="2" group="2">LightOnSwitchHandler</message-handler>
-    	<message-handler channel="button2" cmd="0x13" button="2" group="2">LightOffSwitchHandler</message-handler>
+    	<message-handler cmd="0x03" group="2">NoOpMsgHandler</message-handler>
+    	<message-handler cmd="0x11" button="2" group="2">LightOnSwitchHandler</message-handler>
+    	<message-handler cmd="0x13" button="2" group="2">LightOffSwitchHandler</message-handler>
     	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="RemoteButton3">
     	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-    	<message-handler channel="button3" cmd="0x03" group="3">NoOpMsgHandler</message-handler>
-    	<message-handler channel="button3" cmd="0x11" button="3" group="3">LightOnSwitchHandler</message-handler>
-    	<message-handler channel="button3" cmd="0x13" button="3" group="3">LightOffSwitchHandler</message-handler>
+    	<message-handler cmd="0x03" group="3">NoOpMsgHandler</message-handler>
+    	<message-handler cmd="0x11" button="3" group="3">LightOnSwitchHandler</message-handler>
+    	<message-handler cmd="0x13" button="3" group="3">LightOffSwitchHandler</message-handler>
     	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="RemoteButton4">
     	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-    	<message-handler channel="button4" cmd="0x03" group="4">NoOpMsgHandler</message-handler>
-    	<message-handler channel="button4" cmd="0x11" button="4" group="4">LightOnSwitchHandler</message-handler>
-    	<message-handler channel="button4" cmd="0x13" button="4" group="4">LightOffSwitchHandler</message-handler>
+    	<message-handler cmd="0x03" group="4">NoOpMsgHandler</message-handler>
+    	<message-handler cmd="0x11" button="4" group="4">LightOnSwitchHandler</message-handler>
+    	<message-handler cmd="0x13" button="4" group="4">LightOffSwitchHandler</message-handler>
     	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="RemoteButton5">
     	<message-dispatcher>DefaultDispatcher</message-dispatcher>
     	<message-handler cmd="0x03" group="5">NoOpMsgHandler</message-handler>
-    	<message-handler channel="button5" cmd="0x11" button="5" group="5">LightOnSwitchHandler</message-handler>
-    	<message-handler channel="button5" cmd="0x13" button="5" group="5">LightOffSwitchHandler</message-handler>
+    	<message-handler cmd="0x11" button="5" group="5">LightOnSwitchHandler</message-handler>
+    	<message-handler cmd="0x13" button="5" group="5">LightOffSwitchHandler</message-handler>
     	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="RemoteButton6">
     	<message-dispatcher>DefaultDispatcher</message-dispatcher>
     	<message-handler cmd="0x03" group="6">NoOpMsgHandler</message-handler>
-    	<message-handler channel="button6" cmd="0x11" button="6" group="6">LightOnSwitchHandler</message-handler>
-    	<message-handler channel="button6" cmd="0x13" button="6" group="6">LightOffSwitchHandler</message-handler>
+    	<message-handler cmd="0x11" button="6" group="6">LightOnSwitchHandler</message-handler>
+    	<message-handler cmd="0x13" button="6" group="6">LightOffSwitchHandler</message-handler>
     	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="RemoteButton7">
     	<message-dispatcher>DefaultDispatcher</message-dispatcher>
     	<message-handler cmd="0x03" group="7">NoOpMsgHandler</message-handler>
-    	<message-handler channel="button7" cmd="0x11" button="7" group="7">LightOnSwitchHandler</message-handler>
-    	<message-handler channel="button7" cmd="0x13" button="7" group="7">LightOffSwitchHandler</message-handler>
+    	<message-handler cmd="0x11" button="7" group="7">LightOnSwitchHandler</message-handler>
+    	<message-handler cmd="0x13" button="7" group="7">LightOffSwitchHandler</message-handler>
     	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="RemoteButton8">
     	<message-dispatcher>DefaultDispatcher</message-dispatcher>
     	<message-handler cmd="0x03" group="8">NoOpMsgHandler</message-handler>
-    	<message-handler channel="button8" cmd="0x11" button="8" group="8">LightOnSwitchHandler</message-handler>
-    	<message-handler channel="button8" cmd="0x13" button="8" group="8">LightOffSwitchHandler</message-handler>
+    	<message-handler cmd="0x11" button="8" group="8">LightOnSwitchHandler</message-handler>
+    	<message-handler cmd="0x13" button="8" group="8">LightOffSwitchHandler</message-handler>
     	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="LoadSwitchButton">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
-	<message-handler channel="button1" cmd="0x11" button="1" group="1">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button1" cmd="0x12" button="1" group="1" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button1" cmd="0x13" button="1" group="1">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button1" cmd="0x14" button="1" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button1" cmd="0x19" button="1" group="1">SwitchRequestReplyHandler</message-handler>
+	<message-handler cmd="0x11" button="1" group="1">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x12" button="1" group="1" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x13" button="1" group="1">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x14" button="1" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x19" button="1" group="1">SwitchRequestReplyHandler</message-handler>
 	<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
 	<poll-handler extended="extendedNone" cmd1="0x19" cmd2="0x00" >FlexPollHandler</poll-handler>
 </feature>
 <feature name="LoadSwitchManualChange">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button1" cmd="0x17" group="1">StartManualChangeHandler</message-handler>
-	<message-handler channel="button1" cmd="0x18" group="1">StopManualChangeHandler</message-handler>
+	<message-handler cmd="0x17" group="1">StartManualChangeHandler</message-handler>
+	<message-handler cmd="0x18" group="1">StopManualChangeHandler</message-handler>
 	<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 
 <feature name="LoadSwitchFastOnOff">
     <message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button1"  cmd="0x12" group="1" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button1" cmd="0x19" group="1">SwitchRequestReplyHandler</message-handler>
-	<message-handler channel="button1" cmd="0x14" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler  cmd="0x12" group="1" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x19" group="1">SwitchRequestReplyHandler</message-handler>
+	<message-handler cmd="0x14" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
 	<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="LoadDimmerButton">
     <message-dispatcher>DefaultDispatcher</message-dispatcher>
     <message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
-    <message-handler channel="dimmer" cmd="0x11" button="1" group="1">LightOnDimmerHandler</message-handler>
-    <message-handler channel="dimmer" cmd="0x12" button="1" group="1" mode="FAST">LightOnDimmerHandler</message-handler>
-    <message-handler channel="dimmer" cmd="0x13" button="1" group="1">LightOffDimmerHandler</message-handler>
-    <message-handler channel="dimmer" cmd="0x14" button="1" group="1" mode="FAST">LightOffDimmerHandler</message-handler>
-    <message-handler channel="dimmer" cmd="0x17" button="1" group="1">NoOpMsgHandler</message-handler>
-    <message-handler channel="dimmer" cmd="0x18" button="1" group="1">DimmerStopManualChangeHandler</message-handler>
-    <message-handler channel="dimmer" cmd="0x19" button="1" group="1">DimmerRequestReplyHandler</message-handler>
+    <message-handler cmd="0x11" button="1" group="1">LightOnDimmerHandler</message-handler>
+    <message-handler cmd="0x12" button="1" group="1" mode="FAST">LightOnDimmerHandler</message-handler>
+    <message-handler cmd="0x13" button="1" group="1">LightOffDimmerHandler</message-handler>
+    <message-handler cmd="0x14" button="1" group="1" mode="FAST">LightOffDimmerHandler</message-handler>
+    <message-handler cmd="0x17" button="1" group="1">NoOpMsgHandler</message-handler>
+    <message-handler cmd="0x18" button="1" group="1">DimmerStopManualChangeHandler</message-handler>
+    <message-handler cmd="0x19" button="1" group="1">DimmerRequestReplyHandler</message-handler>
     <command-handler command="PercentType">PercentHandler</command-handler>
     <command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
 	<poll-handler extended="extendedNone" cmd1="0x19" cmd2="0x00" >FlexPollHandler</poll-handler>
 </feature>
 <feature name="LoadDimmerFastOnOff">
     <message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="dimmer" cmd="0x12" group="1" mode="FAST">LightOnDimmerHandler</message-handler>
-	<message-handler channel="dimmer" cmd="0x14" group="1" mode="FAST">LightOffDimmerHandler</message-handler>
+	<message-handler cmd="0x12" group="1" mode="FAST">LightOnDimmerHandler</message-handler>
+	<message-handler cmd="0x14" group="1" mode="FAST">LightOffDimmerHandler</message-handler>
 	<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="LoadDimmerManualChange">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="dimmer" cmd="0x17" group="1">StartManualChangeHandler</message-handler>
-	<message-handler channel="dimmer" cmd="0x18" group="1">StopManualChangeHandler</message-handler>
+	<message-handler cmd="0x17" group="1">StartManualChangeHandler</message-handler>
+	<message-handler cmd="0x18" group="1">StopManualChangeHandler</message-handler>
 	<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
@@ -158,7 +158,7 @@
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<!-- cmd1 defaults to 0x2E, 0x2F -->
 	<!-- default dispatcher uses 0x19 for lookup key instead of cmd1 -->
-	<message-handler channel="ramp" cmd="0x19" group="1">RampDimmerHandler</message-handler>
+	<message-handler cmd="0x19" group="1">RampDimmerHandler</message-handler>
 	<command-handler command="PercentType">RampPercentHandler</command-handler>
 	<command-handler command="OnOffType">RampOnOffCommandHandler</command-handler>
 </feature>
@@ -177,25 +177,25 @@
 </feature>
 <feature name="KeyPadButton2">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button2" cmd="0x03" group="1">NoOpMsgHandler</message-handler>
-	<message-handler channel="button2" cmd="0x11" button="2" group="2">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button2" cmd="0x12" button="2" group="2" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button2" cmd="0x13" button="2" group="2">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button2" cmd="0x14" button="2" group="2" mode="FAST">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button2" cmd="0x19" button="2" group="2">SwitchRequestReplyHandler</message-handler>
+	<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
+	<message-handler cmd="0x11" button="2" group="2">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x12" button="2" group="2" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x13" button="2" group="2">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x14" button="2" group="2" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x19" button="2" group="2">SwitchRequestReplyHandler</message-handler>
 	<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
 </feature>
 <feature name="FastOnOffButton2">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button2" cmd="0x12" group="2" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button2" cmd="0x14" group="2" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x12" group="2" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x14" group="2" mode="FAST">LightOffSwitchHandler</message-handler>
 	<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="ManualChangeButton2">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button2" cmd="0x17" group="2">StartManualChangeHandler</message-handler>
-	<message-handler channel="button2" cmd="0x18" group="2">StopManualChangeHandler</message-handler>
+	<message-handler cmd="0x17" group="2">StartManualChangeHandler</message-handler>
+	<message-handler cmd="0x18" group="2">StopManualChangeHandler</message-handler>
 	<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
@@ -204,24 +204,24 @@
 <feature name="KeyPadButton3">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
-	<message-handler channel="button3" cmd="0x11" button="3" group="3">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button3" cmd="0x12" button="3" group="3" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button3" cmd="0x13" button="3" group="3">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button3" cmd="0x14" button="3" group="3" mode="FAST">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button3" cmd="0x19" button="3" group="3">SwitchRequestReplyHandler</message-handler>
+	<message-handler cmd="0x11" button="3" group="3">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x12" button="3" group="3" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x13" button="3" group="3">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x14" button="3" group="3" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x19" button="3" group="3">SwitchRequestReplyHandler</message-handler>
 	<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
 </feature>
 <feature name="FastOnOffButton3">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button3" cmd="0x12" group="3" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button3" cmd="0x14" group="3" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x12" group="3" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x14" group="3" mode="FAST">LightOffSwitchHandler</message-handler>
 	<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="ManualChangeButton3">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button3" cmd="0x17" group="3">StartManualChangeHandler</message-handler>
-	<message-handler channel="button3" cmd="0x18" group="3">StopManualChangeHandler</message-handler>
+	<message-handler cmd="0x17" group="3">StartManualChangeHandler</message-handler>
+	<message-handler cmd="0x18" group="3">StopManualChangeHandler</message-handler>
 	<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
@@ -229,24 +229,24 @@
 <feature name="KeyPadButton4">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
-	<message-handler channel="button4" cmd="0x11" button="4" group="4">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button4" cmd="0x12" button="4" group="4" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button4" cmd="0x13" button="4" group="4">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button4" cmd="0x14" button="4" group="4" mode="FAST">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button4" cmd="0x19" button="4" group="4">SwitchRequestReplyHandler</message-handler>
+	<message-handler cmd="0x11" button="4" group="4">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x12" button="4" group="4" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x13" button="4" group="4">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x14" button="4" group="4" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x19" button="4" group="4">SwitchRequestReplyHandler</message-handler>
 	<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
 </feature>
 <feature name="FastOnOffButton4">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button4" cmd="0x12" group="4" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button4" cmd="0x14" group="4" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x12" group="4" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x14" group="4" mode="FAST">LightOffSwitchHandler</message-handler>
 	<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="ManualChangeButton4">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button4" cmd="0x17" group="4">StartManualChangeHandler</message-handler>
-	<message-handler channel="button4" cmd="0x18" group="4">StopManualChangeHandler</message-handler>
+	<message-handler cmd="0x17" group="4">StartManualChangeHandler</message-handler>
+	<message-handler cmd="0x18" group="4">StopManualChangeHandler</message-handler>
 	<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
@@ -255,24 +255,24 @@
 <feature name="KeyPadButton5">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
 	<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
-	<message-handler channel="button5" cmd="0x11" button="5" group="5">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button5" cmd="0x12" button="5" group="5" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button5" cmd="0x13" button="5" group="5">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button5" cmd="0x14" button="5" group="5" mode="FAST">LightOffSwitchHandler</message-handler>
-	<message-handler channel="button5" cmd="0x19" button="5" group="5">SwitchRequestReplyHandler</message-handler>
+	<message-handler cmd="0x11" button="5" group="5">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x12" button="5" group="5" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x13" button="5" group="5">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x14" button="5" group="5" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x19" button="5" group="5">SwitchRequestReplyHandler</message-handler>
 	<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
 </feature>
 <feature name="FastOnOffButton5">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button5" cmd="0x12" group="5" mode="FAST">LightOnSwitchHandler</message-handler>
-	<message-handler channel="button5" cmd="0x14" group="5" mode="FAST">LightOffSwitchHandler</message-handler>
+	<message-handler cmd="0x12" group="5" mode="FAST">LightOnSwitchHandler</message-handler>
+	<message-handler cmd="0x14" group="5" mode="FAST">LightOffSwitchHandler</message-handler>
 	<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
 <feature name="ManualChangeButton5">
 	<message-dispatcher>DefaultDispatcher</message-dispatcher>
-	<message-handler channel="button5" cmd="0x17" group="5">StartManualChangeHandler</message-handler>
-	<message-handler channel="button5" cmd="0x18" group="5">StopManualChangeHandler</message-handler>
+	<message-handler cmd="0x17" group="5">StartManualChangeHandler</message-handler>
+	<message-handler cmd="0x18" group="5">StopManualChangeHandler</message-handler>
 	<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>
@@ -407,7 +407,7 @@
 	<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
 	<message-handler cmd="0x11" group="1">NoOpMsgHandler</message-handler>
 	<message-handler cmd="0x13" group="1">NoOpMsgHandler</message-handler>
-	<message-handler channel="contact" cmd="0x2e">MotionSensorDataReplyHandler</message-handler>
+	<message-handler cmd="0x2e">MotionSensorDataReplyHandler</message-handler>
 	<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
 	<poll-handler>NoPollHandler</poll-handler>
 </feature>

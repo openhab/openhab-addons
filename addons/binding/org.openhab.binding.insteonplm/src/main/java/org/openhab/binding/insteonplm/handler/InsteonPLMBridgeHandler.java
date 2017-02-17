@@ -10,6 +10,7 @@ package org.openhab.binding.insteonplm.handler;
 import static org.openhab.binding.insteonplm.InsteonPLMBindingConstants.CHANNEL_1;
 
 import java.io.IOException;
+import java.util.PriorityQueue;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -18,12 +19,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.config.InsteonPLMBridgeConfiguration;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeatureFactory;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
-import org.openhab.binding.insteonplm.internal.device.RequestQueueManager;
 import org.openhab.binding.insteonplm.internal.driver.IOStream;
+import org.openhab.binding.insteonplm.internal.driver.MessageListener;
 import org.openhab.binding.insteonplm.internal.driver.Port;
 import org.openhab.binding.insteonplm.internal.driver.SerialIOStream;
 import org.openhab.binding.insteonplm.internal.driver.TcpIOStream;
@@ -41,13 +41,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Bennett - Initial contribution
  */
-public class InsteonPLMBridgeHandler extends BaseBridgeHandler {
+public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements MessageListener {
     private Logger logger = LoggerFactory.getLogger(InsteonPLMBridgeHandler.class);
-    private RequestQueueManager requestQueueManager;
     private DeviceFeatureFactory deviceFeatureFactory;
     private MessageFactory messageFactory;
     private IOStream ioStream;
     private Port port;
+    private PriorityQueue<InsteonBridgeThingQEntry> messagesToSend = new PriorityQueue<>();
+    private Thread messageQueueThread;
     private InsteonAddress modemAddress;
 
     public InsteonPLMBridgeHandler(Bridge thing) {
@@ -71,7 +72,6 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler {
         InsteonPLMBridgeConfiguration config = getConfigAs(InsteonPLMBridgeConfiguration.class);
         // Connect to the port.
         try {
-            requestQueueManager = new RequestQueueManager();
             deviceFeatureFactory = new DeviceFeatureFactory();
             messageFactory = new MessageFactory();
         } catch (IOException e) {
@@ -99,28 +99,47 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler {
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
         port = new Port(ioStream, messageFactory);
+        port.addListener(this);
         modemAddress = null;
     }
 
-    public void handleMessage(Message message, InsteonAddress address) {
-        if (address != null && address.equals(modemAddress)) {
-            // To the modem, then the bridge itself will process this packet.
-        } else if (address != null) {
-            Bridge bridge = getThing();
-            // Find the device based on the address.
-            for (Thing thing : bridge.getThings()) {
-                if (thing.getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_ADDRESS)
-                        .equals(address.toString())) {
-                    // Yay!
-                    InsteonThingHandler handler = (InsteonThingHandler) thing.getHandler();
-                    handler.handleMessage(message);
-                }
+    @Override
+    public void processMessage(Message message) {
+        // Got a message, go online. Yay!
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            messageQueueThread = new Thread(new RequestQueueReader());
+            messageQueueThread.start();
+        }
+        Bridge bridge = getThing();
+        try {
+            if (message.getByte("Cmd") == 0x60) {
+                // add the modem to the device list
+                modemAddress = new InsteonAddress(message.getAddress("IMAddress"));
+                logger.info("Found the modem address", modemAddress);
+            }
+        } catch (FieldException e) {
+            logger.error("Unable to parse modem message", e);
+        }
+        // Send the message to all the handlers. This is a little inefficent, leave it for now.
+        for (Thing thing : bridge.getThings()) {
+            if (thing.getHandler() instanceof InsteonThingHandler) {
+                InsteonThingHandler handler = (InsteonThingHandler) thing.getHandler();
+                handler.handleMessage(message);
             }
         }
     }
 
     /** Gets the thing associated with this address. */
-    public Thing getDevice(InsteonAddress a) {
+    public InsteonThingHandler getDevice(InsteonAddress a) {
+        for (Thing thing : getBridge().getThings()) {
+            if (thing.getHandler() instanceof InsteonThingHandler) {
+                InsteonThingHandler handler = (InsteonThingHandler) thing.getHandler();
+                if (handler.getAddress().equals(a)) {
+                    return handler;
+                }
+            }
+        }
         return null;
     }
 
@@ -133,18 +152,90 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler {
         return deviceFeatureFactory;
     }
 
-    /** The queue to handle talking to the devices. */
-    public RequestQueueManager getRequestQueueManager() {
-        return requestQueueManager;
-    }
-
     /** The message factory to use when making messages. */
     public MessageFactory getMessageFactory() {
         return messageFactory;
     }
 
-    public void writeMessage(Message makeMessage) {
-        // TODO Auto-generated method stub
+    /**
+     * Add device to global request queue.
+     *
+     * @param dev the device to add
+     * @param time the time when the queue should be processed
+     */
+    public void addThingToSendingQueue(InsteonThingHandler handler, long time) {
+        synchronized (messagesToSend) {
+            // See if we can find the entry first.
+            for (InsteonBridgeThingQEntry entry : messagesToSend) {
+                if (entry.getThingHandler() == handler) {
+                    long expTime = entry.getExpirationTime();
+                    if (expTime > time) {
+                        entry.setExpirationTime(time);
+                    }
+                    messagesToSend.remove(entry);
+                    messagesToSend.add(entry);
+                    messagesToSend.notify();
+                    logger.trace("updating request for device {} in {} msec", handler.getAddress(),
+                            time - System.currentTimeMillis());
+                    return;
+                }
+            }
+            logger.trace("scheduling request for device {} in {} msec", handler.getAddress(),
+                    time - System.currentTimeMillis());
+            InsteonBridgeThingQEntry entry = new InsteonBridgeThingQEntry(handler, time);
+            // add the queue back in after (maybe) having modified
+            // the expiration time
+            messagesToSend.add(entry);
+            messagesToSend.notify();
+        }
+    }
 
+    class RequestQueueReader implements Runnable {
+        @Override
+        public void run() {
+            logger.debug("starting request queue thread");
+            // Run while we are online.
+            while (getBridge().getStatus() == ThingStatus.ONLINE) {
+                InsteonBridgeThingQEntry entry = messagesToSend.peek();
+                try {
+                    if (messagesToSend.size() > 0) {
+                        long now = System.currentTimeMillis();
+                        long expTime = entry.getExpirationTime();
+                        if (expTime > now) {
+                            //
+                            // The head of the queue is not up for processing yet, wait().
+                            //
+                            logger.trace("request queue head: {} must wait for {} msec",
+                                    entry.getThingHandler().getAddress(), expTime - now);
+                            //
+                            // note that the wait() can also return because of changes to
+                            // the queue, not just because the time expired!
+                            //
+                            continue;
+                        }
+                        //
+                        // The head of the queue has expired and can be processed!
+                        //
+                        entry = messagesToSend.poll(); // remove front element
+                        long nextExp = entry.getThingHandler().processRequestQueue(now);
+                        if (nextExp > 0) {
+                            InsteonBridgeThingQEntry newEntry = new InsteonBridgeThingQEntry(entry.getThingHandler(),
+                                    nextExp);
+                            messagesToSend.add(newEntry);
+                            logger.trace("device queue for {} rescheduled in {} msec",
+                                    entry.getThingHandler().getAddress(), nextExp - now);
+                        } else {
+                            // remove from hash since queue is no longer scheduled
+                            logger.debug("device queue for {} is empty!", entry.getThingHandler().getAddress());
+                        }
+                    }
+                    logger.trace("waiting for request queues to fill");
+                    messagesToSend.wait();
+                } catch (InterruptedException e) {
+                    logger.error("request queue thread got interrupted, breaking..", e);
+                    break;
+                }
+            }
+        }
     }
 }

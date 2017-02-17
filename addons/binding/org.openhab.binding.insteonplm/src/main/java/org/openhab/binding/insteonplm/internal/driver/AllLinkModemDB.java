@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openhab.binding.insteonplm.handler.InsteonPLMBridgeHandler;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.openhab.binding.insteonplm.internal.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +34,13 @@ public class AllLinkModemDB implements MessageListener, Runnable {
     private boolean isComplete = false;
     private Thread writeThread = null;
     private int timeoutMillis = 120000;
-    private InsteonPLMBridgeHandler bridge;
+    private final Port port;
+    private final MessageFactory factory;
     private Map<InsteonAddress, ModemDBEntry> modemDb = Maps.newHashMap();
 
-    public AllLinkModemDB(InsteonPLMBridgeHandler handler) {
-        this.bridge = handler;
+    public AllLinkModemDB(Port port, MessageFactory factory) {
+        this.port = port;
+        this.factory = factory;
     }
 
     public void setRetryTimeout(int timeout) {
@@ -81,7 +83,7 @@ public class AllLinkModemDB implements MessageListener, Runnable {
 
     private void getFirstLinkRecord() {
         try {
-            bridge.writeMessage(bridge.getMessageFactory().makeMessage("GetFirstALLLinkRecord"));
+            port.writeMessage(factory.makeMessage("GetFirstALLLinkRecord"));
         } catch (IOException e) {
             logger.error("error sending link record query ", e);
         }
@@ -110,7 +112,7 @@ public class AllLinkModemDB implements MessageListener, Runnable {
             } else if (msg.getByte("Cmd") == 0x57) {
                 // we got the link record response
                 updateModemDB(msg.getAddress("LinkAddr"), msg);
-                bridge.writeMessage(bridge.getMessageFactory().makeMessage("GetNextALLLinkRecord"));
+                port.writeMessage(factory.makeMessage("GetNextALLLinkRecord"));
             }
         } catch (FieldException e) {
             logger.debug("bad field handling link records {}", e);
