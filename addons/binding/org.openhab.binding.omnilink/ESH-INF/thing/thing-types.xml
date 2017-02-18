@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="omnilinkBridge">
+        <label>Omnilink IP Access Point</label>
+        <description>Ethernet access point to Omnilink control system</description>
+
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <context>network-address</context>
+                <label>IP or Host Name</label>
+                <description>The IP or host name of the Omnilink Controller</description>
+            </parameter>
+            <parameter name="key1" type="text" required="true">
+                <label>Key 1</label>
+                <description>The first key</description>
+            </parameter>
+            <parameter name="key2" type="text" required="true">
+                <label>Key 2</label>
+                <description>The second key</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+    
+    <thing-type id="unit">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="omnilinkBridge" />
+        </supported-bridge-type-refs>
+
+        <label>Unit</label>
+        <description>Controls dimmable loads</description>
+
+        <channels>
+            <channel id="lightlevel" typeId="lightlevel" />
+        </channels>
+
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Unit Number</label>
+                <description>Unit number of the dimmer.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Name of the dimmer.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="zone">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="omnilinkBridge" />
+        </supported-bridge-type-refs>
+
+        <label>Security Zone</label>
+        <description>Security Zone</description>
+
+        <channels>
+            <channel id="status" typeId="ContactSensor" />
+        </channels>
+
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Zone Number</label>
+                <description>Zone Number</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Name of the zone.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <channel-type id="lightlevel">
+        <item-type>Dimmer</item-type>
+        <label>Light Level</label>
+        <description>Increase/decrease the light level</description>
+        <category>DimmableLight</category>
+        <state min="0" max="100" pattern="%d %%" />
+    </channel-type>
+    
+    <channel-type id="ContactSensor">
+        <item-type>Switch</item-type>
+        <label>Contact State</label>
+        <description>Contact state information</description>
+        <category>Contact</category>
+        <state pattern="%s" readOnly="true"></state>
+    </channel-type>
+    
+</thing:thing-descriptions>
