@@ -97,7 +97,7 @@ public class IsyInsteonDeviceHandler extends AbtractIsyThingHandler {
                 bridgeHandler.getInsteonClient().changeNodeState("DON", Integer.toString(commandValue), isyAddress);
             }
         } else {
-            logger.error("unhandled Command: " + command.toFullString());
+            logger.warn("unhandled Command: " + command.toFullString());
         }
     }
 

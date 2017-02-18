@@ -112,6 +112,10 @@
 				<label>Name</label>
 				<description>Text description of device.</description>
 			</parameter>
+			<parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
 		</config-description>
 	</thing-type>
 
@@ -138,6 +142,10 @@
 				<label>Name</label>
 				<description>Text description of device.</description>
 			</parameter>
+			<parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="leakdetector">
@@ -163,6 +171,10 @@
 				<label>Name</label>
 				<description>Text description of device.</description>
 			</parameter>
+			<parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="switch">
@@ -184,6 +196,10 @@
 				<label>Name</label>
 				<description>Text description of device.</description>
 			</parameter>
+			<parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="inlinelincswitch">
@@ -204,6 +220,10 @@
 				<label>Name</label>
 				<description>Text description of device.</description>
 			</parameter>
+			<parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="garage">
@@ -225,6 +245,10 @@
 				<label>Name</label>
 				<description>Text description of device.</description>
 			</parameter>
+			<parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="keypadlinc6">
@@ -250,6 +274,10 @@
 				<label>Name</label>
 				<description>Text description of device.</description>
 			</parameter>
+			<parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="keypadlinc5">
@@ -275,6 +303,10 @@
 				<label>Name</label>
 				<description>Text description of device.</description>
 			</parameter>
+			<parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="remotelinc8">
@@ -302,8 +334,36 @@
 				<label>Name</label>
 				<description>Text description of device.</description>
 			</parameter>
+			<parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="unrecognized">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge" />
+        </supported-bridge-type-refs>
+        <label>Unrecognized Device</label>
+        <description>Unrecognized Device</description>
+        <channels>
+            
+        </channels>
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <label>Insteon Address</label>
+                <description>Insteon Address of device.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Text description of device.</description>
+            </parameter>
+            <parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
 	<channel-type id="contact_sensor">
 		<item-type>Switch</item-type>
 		<label>Contact Sensor</label>

@@ -178,19 +178,22 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
             properties = new HashMap<>(0);
             properties.put(IsyInsteonDeviceConfiguration.ADDRESS, insteonAddress.toStringNoDeviceId());
             properties.put(IsyInsteonDeviceConfiguration.NAME, node.getName());
+            properties.put(IsyInsteonDeviceConfiguration.DEVICEID, node.getTypeReadable());
 
             if (insteonAddress.getDeviceId() == 1) {
                 ThingTypeUID theThingTypeUid = mMapDeviceTypeThingType.get(node.getTypeReadable());
-                if (theThingTypeUid != null) {
-                    String thingID = node.getName().replace(" ", "").replaceAll("\\.", "");
-                    ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                            .withProperties(properties).withBridge(bridgeUID).withLabel(node.getName()).build();
-                    thingDiscovered(discoveryResult);
-                } else {
+                if (theThingTypeUid == null) {
                     logger.warn("Unsupported insteon node, name: " + node.getName() + ", type: "
                             + node.getTypeReadable() + ", address: " + node.getAddress());
+                    theThingTypeUid = IsyBindingConstants.UNRECOGNIZED_SWITCH_THING_TYPE;
                 }
+
+                String thingID = node.getName().replace(" ", "").replaceAll("\\.", "");
+                ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                        .withProperties(properties).withBridge(bridgeUID).withLabel(node.getName()).build();
+                thingDiscovered(discoveryResult);
+
             }
         }
     }

@@ -116,7 +116,7 @@ public class IsyWebSocketSubscription implements WebSocketListener {
     }
 
     private void parseXml(String message) {
-        logger.debug("Parsing message: " + message);
+        logger.trace("Parsing message: " + message);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -134,14 +134,14 @@ public class IsyWebSocketSubscription implements WebSocketListener {
                 String node = (String) nodeExpr.evaluate(doc, XPathConstants.STRING);
                 logger.debug("Control: " + control + ", Action: " + action + ", Node: " + node);
                 if ("_1".equals(control) && "6".equals(action)) {
-                    logger.debug("Possible variable event: " + message);
+                    logger.trace("Possible variable event: " + message);
                     XPathExpression valueExp = xpath.compile("//Event/eventInfo/var/val");
                     String value = (String) valueExp.evaluate(doc, XPathConstants.STRING);
                     String id = (String) xpath.compile("//Event/eventInfo/var/@id").evaluate(doc,
                             XPathConstants.STRING);
                     String type = (String) xpath.compile("//Event/eventInfo/var/@type").evaluate(doc,
                             XPathConstants.STRING);
-                    logger.debug("Variable with id: " + id + " type: " + type + ", value:" + value);
+                    logger.debug("Variable event with id: " + id + " type: " + type + ", value:" + value);
                     String theEvent = type + " " + id + " " + value;
                     listener.onModelChanged(control, action, theEvent);
                 } else if (!"".equals(control)) {
