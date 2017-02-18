@@ -32,8 +32,8 @@
 		<description>Program</description>
 		<channels>
 			<channel id="control" typeId="program_control" />
-			<!--  <channel id="runThen" typeId="runThen_switch" />
-			<channel id="runElse" typeId="runElse_switch" />
+			<channel id="run" typeId="runIf_switch" />
+		<!--	<channel id="runElse" typeId="runElse_switch" />
             <channel id="stop" typeId="stop_switch" /> -->
 		</channels>
 		<config-description>
@@ -575,8 +575,8 @@
 
     <channel-type id="program_control">
         <item-type>Switch</item-type>
-        <label>Run</label>
-        <description>Run If Clause for Program</description>
+        <label>Control</label>
+        <description>Program Control</description>
         <category>Program Control</category>
     </channel-type>
 	<channel-type id="runIf_switch">
