@@ -125,7 +125,11 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         }
 
         if (readerThread != null) {
-            readerThread.interrupt();
+            try {
+                readerThread.interrupt();
+                readerThread.join();
+            } catch (InterruptedException e) {
+            }
         }
     }
 
@@ -302,13 +306,13 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                             } catch (InterruptedException e) {
                             }
                         }
-                    } else {
-                        try {
-                            Thread.sleep(sleep);
-                        } catch (InterruptedException e) {
-                            // quietly exit
-                        }
                     }
+
+                    try {
+                        Thread.sleep(sleep);
+                    } catch (InterruptedException e) {
+                    }
+
                 }
             } catch (InterruptedIOException e) {
                 Thread.currentThread().interrupt();
