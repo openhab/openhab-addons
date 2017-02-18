@@ -75,7 +75,9 @@ The Kodi thing supports the following channels:
 | mediatype               | String       | The media type of the current file. e.g. song or movie | 
 
 ## Item Configuration
+
 demo.items
+
 ```
 Switch myKodi_mute          "Stumm"                 { channel="kodi:kodi:myKodi:mute" }
 Dimmer myKodi_volume        "Lautstärke [%d]"       { channel="kodi:kodi:myKodi:volume" }
@@ -94,7 +96,9 @@ String myKodi_mediatype     "Mediatyp [%s]"         { channel="kodi:kodi:myKodi:
 ```
 
 ## Sitemap Configuration
+
 demo.sitemap
+
 ```
 sitemap demo label="myKodi"
 {
