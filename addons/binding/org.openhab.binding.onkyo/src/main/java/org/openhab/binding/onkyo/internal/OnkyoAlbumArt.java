@@ -153,13 +153,13 @@ public class OnkyoAlbumArt {
                     if (data != null) {
                         int bodyLength = data.length;
                         int i = new String(data).indexOf("image/");
-                        while (i < bodyLength && data[i] != '\r') {
-                            i++;
-                        }
-                        while (i < bodyLength && (data[i] == '\r' || data[i] == '\n')) {
-                            i++;
-                        }
                         if (i > 0) {
+                            while (i < bodyLength && data[i] != '\r') {
+                                i++;
+                            }
+                            while (i < bodyLength && (data[i] == '\r' || data[i] == '\n')) {
+                                i++;
+                            }
                             data = Arrays.copyOfRange(data, i, bodyLength);
                             logger.trace("Onkyo fixed picture data @ {}: {} ", i, new String(data));
                         }
