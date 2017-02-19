@@ -263,6 +263,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 handlePlayUri(command);
                 break;
             case CHANNEL_ALBUM_ART:
+            case CHANNEL_ALBUM_ART_URL:
                 if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommand.NETUSB_ALBUM_ART_QUERY);
                 }
@@ -538,6 +539,16 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             }
             onkyoAlbumArt.clearAlbumArt();
         }
+
+        if (data.startsWith("2-")) {
+            updateState(CHANNEL_ALBUM_ART_URL, new StringType(data.substring(2, data.length())));
+        } else if (data.startsWith("n-")) {
+            updateState(CHANNEL_ALBUM_ART_URL, UnDefType.UNDEF);
+        } else {
+            logger.debug("Not supported album art URL type: {}", data.substring(0, 2));
+            updateState(CHANNEL_ALBUM_ART_URL, UnDefType.UNDEF);
+        }
+
     }
 
     private void updateNetTitle(String data) {

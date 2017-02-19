@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.russound.internal.net;
+package org.openhab.binding.atlona.internal.net;
 
 /**
  * Interface defining a listener to a {@link SocketSession} that will receive responses and/or exceptions from the

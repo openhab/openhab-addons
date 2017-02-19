@@ -30,19 +30,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HDanywhereHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link MultiroomPlusHandler} is responsible for handling commands, which are
+ * sent to one of the channels. It supports the Multiroom+ V1/2/3 matrix (Note: this matrix is not longer supported by
+ * HDanywhere)
  *
  * @author Karel Goderis - Initial contribution
  */
-public class HDanywhereHandler extends BaseThingHandler {
+public class MultiroomPlusHandler extends BaseThingHandler {
 
     // List of Configurations constants
     public static final String IP_ADDRESS = "ipAddress";
     public static final String PORTS = "ports";
     public static final String POLLING_INTERVAL = "interval";
 
-    private Logger logger = LoggerFactory.getLogger(HDanywhereHandler.class);
+    private Logger logger = LoggerFactory.getLogger(MultiroomPlusHandler.class);
 
     private ScheduledFuture<?> pollingJob;
 
@@ -52,7 +53,7 @@ public class HDanywhereHandler extends BaseThingHandler {
      */
     private static int timeout = 5000;
 
-    public HDanywhereHandler(Thing thing) {
+    public MultiroomPlusHandler(Thing thing) {
         super(thing);
     }
 
@@ -146,10 +147,10 @@ public class HDanywhereHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing HDanywhere matrix handler.");
+        logger.debug("Initializing HDanywhere Multiroom+ matrix handler.");
         onUpdate();
 
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     private synchronized void onUpdate() {

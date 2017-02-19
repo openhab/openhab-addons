@@ -24,8 +24,6 @@ public class AstroBindingConstants {
     public static final String MOON = "moon";
     public static final String LOCAL = "local";
 
-    public static final String EVENT_CONFIG_OFFSET = "offset";
-
     // things
     public static final ThingTypeUID THING_TYPE_SUN = new ThingTypeUID(BINDING_ID, SUN);
     public static final ThingTypeUID THING_TYPE_MOON = new ThingTypeUID(BINDING_ID, MOON);

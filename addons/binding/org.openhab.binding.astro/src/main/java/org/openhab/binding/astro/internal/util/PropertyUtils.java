@@ -20,10 +20,11 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 
 /**
  * Methods to get the value from a property of an object.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public class PropertyUtils {
@@ -31,12 +32,16 @@ public class PropertyUtils {
     /**
      * Returns the state of the channel.
      */
-    public static State getState(ChannelUID channelUID, Object instance) throws Exception {
+    public static State getState(ChannelUID channelUID, AstroChannelConfig config, Object instance) throws Exception {
         Object value = getPropertyValue(channelUID, instance);
         if (value == null) {
             return UnDefType.UNDEF;
         } else if (value instanceof Calendar) {
-            return new DateTimeType((Calendar) value);
+            Calendar cal = (Calendar) value;
+            if (config.getOffset() != null) {
+                cal.add(Calendar.MINUTE, config.getOffset());
+            }
+            return new DateTimeType(cal);
         } else if (value instanceof Number) {
             BigDecimal decimalValue = new BigDecimal(value.toString()).setScale(2, RoundingMode.HALF_UP);
             return new DecimalType(decimalValue);
