@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.FailedLoginException;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -850,9 +851,12 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
 
     protected void updateBridgeStatus(ThingStatus newStatus, ThingStatusDetail statusDetail, String statusDescription) {
         ThingStatusInfo curStatusInfo = thing.getStatusInfo();
+        String curDescription = StringUtils.isBlank(curStatusInfo.getDescription()) ? ""
+                : curStatusInfo.getDescription();
+
         // Status changed
         if ((curStatusInfo.getStatus() != newStatus) || (curStatusInfo.getStatusDetail() != statusDetail)
-                || (curStatusInfo.getDescription() != statusDescription)) {
+                || (curDescription != statusDescription)) {
 
             // if (thing.getStatus() != newStatus) {
             logger.info("{}: Bridge status changed from '{}' to '{}'", getLogIdentifier(), thing.getStatus(),
