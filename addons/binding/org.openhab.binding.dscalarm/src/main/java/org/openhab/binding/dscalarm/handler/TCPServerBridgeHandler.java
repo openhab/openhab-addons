@@ -47,6 +47,7 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
     private String ipAddress;
     private int tcpPort;
     private int connectionTimeout;
+    private int protocol;
     private Socket tcpSocket = null;
     private OutputStreamWriter tcpOutput = null;
     private BufferedReader tcpInput = null;
@@ -63,11 +64,18 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             tcpPort = configuration.port.intValue();
             connectionTimeout = configuration.connectionTimeout.intValue();
             pollPeriod = configuration.pollPeriod.intValue();
+            protocol = configuration.protocol.intValue();
 
             if (this.pollPeriod > 15) {
                 this.pollPeriod = 15;
             } else if (this.pollPeriod < 1) {
                 this.pollPeriod = 1;
+            }
+
+            if (this.protocol == 2) {
+                setProtocol(DSCAlarmProtocol.ENVISALINK_TPI);
+            } else {
+                setProtocol(DSCAlarmProtocol.IT100_API);
             }
 
             logger.debug("TCP Server Bridge Handler Initialized");

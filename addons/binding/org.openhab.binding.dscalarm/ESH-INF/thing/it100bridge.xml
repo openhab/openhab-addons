@@ -13,6 +13,10 @@
 				<label>Reset IT100</label>
 				<description>Resets the IT100</description>
 			</channel>
+            <channel id="send_command" typeId="command">
+                <label>Send Command</label>
+                <description>Sends a DSC Alarm Command</description>
+            </channel>
 		</channels>
 
 		<config-description>
@@ -44,5 +48,11 @@
 		<label>Reset</label>
 		<description>Reset Switch</description>
 	</channel-type>
+
+    <channel-type id="command">
+        <item-type>String</item-type>
+        <label>Send Command</label>
+        <description>Sends a DSC Alarm Command</description>
+    </channel-type>
 
 </thing:thing-descriptions>
