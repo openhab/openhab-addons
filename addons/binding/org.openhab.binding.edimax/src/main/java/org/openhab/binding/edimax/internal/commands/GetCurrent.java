@@ -13,16 +13,16 @@ import java.util.List;
 
 /**
  * Command to retrieve current in Ampere.
- * 
+ *
  * @author Heinz
  */
 public class GetCurrent extends AbstractCMDNowPowerCommand<BigDecimal> {
 
-	@Override
-	protected List<String> getPath() {
-		List<String> list = super.getPath();
-		list.add("Device.System.Power.NowCurrent");
-		return list;
-	}
+    @Override
+    protected List<String> getPath() {
+        List<String> list = super.getPath();
+        list.add("Device.System.Power.NowCurrent");
+        return list;
+    }
 
 }

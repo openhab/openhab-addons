@@ -54,14 +54,14 @@ public class Edimax2101Handler extends EdimaxHandler {
             if (channelUID.getId().equals(EdimaxBindingConstants.CURRENT)) {
                 if (command instanceof RefreshType) {
                     final DecimalType current = new DecimalType(getCurrent());
-                    LOGGER.debug("Current: " + current);
+                    LOGGER.debug("Current: {}", current);
                     updateState(channelUID, current);
                 }
             }
             if (channelUID.getId().equals(EdimaxBindingConstants.POWER)) {
                 if (command instanceof RefreshType) {
                     final DecimalType power = new DecimalType(getPower());
-                    LOGGER.debug("Power: " + power);
+                    LOGGER.debug("Power: {}", power);
                     updateState(channelUID, power);
                 }
             }

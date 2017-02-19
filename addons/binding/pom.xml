@@ -27,6 +27,7 @@
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.dscalarm</module>
+	<module>org.openhab.binding.edimax</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feed.test</module>

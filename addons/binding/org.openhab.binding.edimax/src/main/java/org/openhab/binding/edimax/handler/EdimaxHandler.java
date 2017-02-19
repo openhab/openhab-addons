@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2014-2016 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,20 +8,23 @@
  */
 package org.openhab.binding.edimax.handler;
 
-import static org.openhab.binding.edimax.EdimaxBindingConstants.SWITCH_CHANNEL;
-
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.edimax.config.EdimaxConfiguration;
-import org.openhab.binding.edimax.internal.HTTPSend;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.edimax.EdimaxBindingConstants;
+import org.openhab.binding.edimax.configuration.EdimaxConfiguration;
+import org.openhab.binding.edimax.internal.ConnectionInformation;
+import org.openhab.binding.edimax.internal.commands.GetState;
+import org.openhab.binding.edimax.internal.commands.SetState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,61 +36,95 @@ import org.slf4j.LoggerFactory;
  */
 public class EdimaxHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(EdimaxHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EdimaxHandler.class);
 
+    private static final int PORT = 10000;
+
+    /**
+     * Connection Information to the device.
+     */
+    protected ConnectionInformation ci;
+
+    private ScheduledFuture<?> pollingJob;
+
+    /**
+     * Constructor for the edimax things.
+     *
+     * @param thing The thing
+     */
     public EdimaxHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(SWITCH_CHANNEL)) {
-            final EdimaxConfiguration config = this.getConfigAs(EdimaxConfiguration.class);
-            try {
-                if (command.equals(OnOffType.ON)) {
-                    createSender(config).switchState(config.getIpAddress(), Boolean.TRUE);
-                } else if (command.equals(OnOffType.OFF)) {
-                    createSender(config).switchState(config.getIpAddress(), Boolean.FALSE);
+        LOGGER.debug("command for {}: {}", channelUID.getAsString(), command.toString());
+        try {
+            if (channelUID.getId().equals(EdimaxBindingConstants.SWITCH)) {
+                if (command instanceof RefreshType) {
+                    LOGGER.debug("State: {}", getState().toString());
+                    if (getState()) {
+                        updateState(channelUID, OnOffType.ON);
+                    } else {
+                        updateState(channelUID, OnOffType.OFF);
+                    }
                 }
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                if (command instanceof OnOffType) {
+                    if (command.equals(OnOffType.ON)) {
+                        switchState(Boolean.TRUE);
+                    } else {
+                        switchState(Boolean.FALSE);
+                    }
+                }
             }
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
     @Override
     public void initialize() {
-        try {
-            final Thing thing = this.getThing();
-            final EdimaxConfiguration config = this.getConfigAs(EdimaxConfiguration.class);
-            final Boolean state = createSender(config).getState(config.getIpAddress());
-            final Channel channel = thing.getChannel(SWITCH_CHANNEL);
+        LOGGER.debug("Initializing Things");
+        final EdimaxConfiguration configuration = this.getConfigAs(EdimaxConfiguration.class);
+        final String completeUrl = completeURL(configuration.getIpAddress());
+        ci = new ConnectionInformation(configuration.getUsername(), configuration.getPassword(), completeUrl, PORT);
+        updateStatus(ThingStatus.ONLINE);
 
-            if (state.equals(Boolean.TRUE)) {
-                this.updateState(channel.getUID(), OnOffType.ON);
-            } else if (state.equals(Boolean.FALSE)) {
-                this.updateState(channel.getUID(), OnOffType.OFF);
-            } else {
-                logger.warn("unknown state " + state + " for channel " + channel.getUID());
-            }
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        }
+        final Runnable runnable = () -> handleCommand(getThing().getChannel(EdimaxBindingConstants.SWITCH).getUID(),
+                RefreshType.REFRESH);
+        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 30, 30, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        pollingJob.cancel(true);
+    }
+
+    private static String completeURL(String anIp) {
+        return "http://" + anIp;
     }
 
     /**
-     * Creates sender based on the configured password.
+     * Returns state for device.
      *
-     * @param config
-     * @return
+     * @return The on/off state of the thing
+     * @throws IOException if the communication fails
      */
-    private HTTPSend createSender(EdimaxConfiguration config) {
-        String password = config.getPassword();
-        if (password == null) {
-            return new HTTPSend();
-        } else {
-            return new HTTPSend(password);
-        }
+    private Boolean getState() throws IOException {
+        final GetState getS = new GetState();
+        return getS.executeCommand(ci);
+    }
+
+    /**
+     * Switch to.
+     *
+     * @param newState new state for the thing
+     * @return True if device is turned on. Otherwise false.
+     * @throws IOException if the communication fails
+     */
+    public Boolean switchState(Boolean newState) throws IOException {
+        final SetState setS = new SetState(newState);
+        return setS.executeCommand(ci);
     }
 }
