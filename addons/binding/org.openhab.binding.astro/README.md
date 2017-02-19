@@ -114,7 +114,7 @@ astro:sun:home  [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ]
 astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
 ```
 
-or optionally with an offset
+or optionally with an event offset
 
 ```
 astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ] {
@@ -124,6 +124,20 @@ astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ] 
         ]
 }
 astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
+```
+
+or a datetime offset
+
+```
+astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ] {
+    Channels:
+        Type start : rise#start [
+            offset=5
+        ]
+        Type end : rise#end [
+            offset=5
+        ]
+}
 ```
 
 Items:
