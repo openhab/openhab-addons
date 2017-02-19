@@ -1,6 +1,8 @@
 # Lutron Binding 
 
-This binding integrates with [Lutron](http://www.lutron.com) light control systems.  For Grafik Eye 3x/4x binding through the GRX-PRG or GRX-CI-PRG - see farther below.
+This binding integrates with [Lutron](http://www.lutron.com) light control systems. 
+
+For Grafik Eye 3x/4x binding through the GRX-PRG or GRX-CI-PRG - see farther below.
 
 **Note:** while the integration protocol should be largely similar with other Lutron systems such as Homeworks QS, this binding has only been tested with RadioRA 2.
 
@@ -94,6 +96,7 @@ Switch TheaterScene2 { channel="lutron:keypad:theater:button2" }
 
 
 # Lutron Grafik Eye 3x/4x binding via GRX-PRG or GRX-CI-PRG
+
 This lutron binding will also work with Grafik Eye 3x/4x systems in conjuction with the GRX-PRG or GRX-CI-PRG interfaces.  Please see [RS232ProtocolCommandSet](http://www.lutron.com/TechnicalDocumentLibrary/RS232ProtocolCommandSet.040196d.pdf) for more information.
 
 ## Supported Things
@@ -113,7 +116,7 @@ lutron:prgbridge:home [ ipAddress="192.168.1.51", user="nwk", retryPolling=10 ]
 ```
 
 The Grafik Eye thing requires the control unit address (1-8).  Optionally you may specify the default fade time (when raising/lowering zones or setting zone intensities) and polling time (in seconds) to refresh the state from the Grafik Eye (defaults to 30 seconds).  If any of the zones control a QED shade (via the SG/SO-SVCN/SVCI keypad), those zones
-should be listed (comma separated list) in the shadeZones
+should be listed (comma separated list) in the shadeZones.
 
 ```
 lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=30, shadeZones="2,3,4" ]
@@ -156,6 +159,7 @@ lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=
 | zoneshadeX        | No       | Rollershutter | Specifies the shade zone                                       |
 
 ### Notes
+
 * The "buttonpress" channel reports which keypad button was pressed.  DIP switch 6 must be set on the interface for this to be reported.  The "buttonpress" channel is only useful in rules to take action when a specific button (on a specific keypad) has been pressed.
 * Sunset/sunrise will only be available if configured via the Liasion software
 * scenelock, sceneseq, zonelock cannot be determined from the API and will default to OFF on startup

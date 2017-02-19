@@ -11,6 +11,7 @@ The GlobalCache binding discovers GC-100 and iTach devices on the network, and c
 Devices are discovered dynamically. There is a single thing created for each physical GC-100 or iTach device connected to the network.  Each thing has channels that correspond to the physical connectors on the device. 
 
 Currently supported devices include:
+
 * iTach WF2IR and IP2IR
 * iTach WF2CC and IP2CC
 * iTach WF2SL and IP2SL
@@ -35,6 +36,7 @@ Note that automatic device discovery **will not work** with GC-100's running fir
 
 
 ## Thing Configuration
+
 The iTach IR, iTach SL, and GC-100 devices require a MAP file in order to transform the openHAB command to an IR command or to a serial command.  In the thing configuration, enter the name of the MAP file containing the IR and/or serial codes ().  The MAP file should be placed in the *conf/transform* directory.  See example below.
 
 For iTach SL and GC-100 devices that support serial connections, you must use the GlobalCache device web application to set the serial port parameters for **baud rate**, **flow control**, and **parity**.  These settings must match the serial port settings of the AV device being controlled.
@@ -44,6 +46,7 @@ For iTach Flex devices, you must set the Active Cable configuration parameter to
 The device's IP address is set at time of discovery.  However, in the event that the device's IP address is changed, the device IP address must be changed in the thing's configuration.
 
 #### Manual Thing Creation
+
 Devices can be manually created in the *PaperUI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.  See example below.
 
 #### Binding Dependencies
@@ -53,6 +56,7 @@ The GlobalCache binding uses the **transform** binding to map commands to IR and
 ## Channels and Channel Types
 
 There are four *channel types* used across the GC-100 and iTach family of devices. 
+
 - Contact Closure (CC)
 - Infrared (IR)
 - Serial (SL)
@@ -78,11 +82,11 @@ The item definition for an iTach Flex Ethernet device would look like this.
 String SamsungTV    "TV"     (gTheater)   { channel="globalcache:itachFlexEth:000C1E077BE1:ir-m1#c2" }
 ```
 
-####How to Specify IR Codes
+#### How to Specify IR Codes
 
 IR codes are contained in a MAP file contained within the conf/transform directory.  See example below.
 
-####Supported IR Code Formats
+#### Supported IR Code Formats
 
 Two different formatting methods are supported: Global Cache and hex code.
 
@@ -100,11 +104,13 @@ Here's an example of the hex code format:
 
 The [Global Cache iConvert utility](http://www.globalcache.com/files/docs/gc_iconvert_relnotes.txt) con be used to convert between the two formats, if desired.  The iConvert utility is available on the Windows platform only.  Global Cache also maintains an online [IR Control Tower database](https://irdb.globalcache.com/) of IR codes.  There are numerous other sources of IR codes, such as iRule and RemoteCentral.
 
-####Unsupported Features
+#### Unsupported Features
+
 Currently, only the *IR Out* and *IR Blaster* connector configurations are supported.  Other settings, such as *Sensor In*, *Sensor Notify*, and *LED Lighting*, may be supported in the future.
 
 
 ## Contact Closure (CC) Channel
+
 A *Contact Closure channel* activates the contact closure (relay) on the iTach or GC-100 device.  
 
 For example, the following item links to the module 1, connector 1 channel on an iTach CC device.
@@ -128,10 +134,11 @@ For example, the following item links to the module 1 connector 1 channel on a G
 String RS232ME      "My RS232-controlled Device"   { channel="globalcache:gc100_6:000C459A120A:sl-m1#c1" }
 ```
 
-Serial commands strings are contained in a MAP file contained within the conf/transform directory.  Serial command strings can contain URL-encoded characters in order to represent special characters such as spaces, tabs, carriage returns, line feeds, etc.  See example below.
+Serial commands strings are contained in a MAP file contained within the conf/transform directory. Serial command strings can contain URL-encoded characters in order to represent special characters such as spaces, tabs, carriage returns, line feeds, etc.  See example below.
 
 
 ## Serial Direct (SL) Channel
+
 The Serial Direct channel type enables serial commands to be sent directly to the device without attempting to map the command using the transformation service.  This is useful in rules where the serial command might be constructed "on the fly" in the body of the rule.
 
 For example, the following item links to the module 1 connector 1 channel on an iTach Flex device.
@@ -145,7 +152,7 @@ String RUSSCAA66    "Russound CAA66"   { channel="globalcache:itachFlex:000C45D5
 ### MAP File
 
 ```
- # Harmon Kardon AVR-245 Home Theater Receiver
+# Harmon Kardon AVR-245 Home Theater Receiver
 HKAVR245_POWER_ON   = 38000,1,1,340,170,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,63,21,63,21,63,21,63,21,63,21,21,21,21,21,1691,340,85,21,3753
 HKAVR245_POWER_OFF  = 38000,1,1,340,170,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,21,21,63,21,63,21,63,21,63,21,63,21,21,21,21,21,63,21,21,21,21,21,21,21,21,21,21,21,63,21,63,21,21,21,1691,340,85,21,3753
 HKAVR245_VOLUME_UP  = 38000,1,1,340,170,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,63,21,21,21,21,21,21,21,21,21,63,21,63,21,63,21,21,21,63,21,63,21,63,21,21,21,21,21,21,21,63,21,63,21,21,21,21,21,21,21,63,21,63,21,63,21,21,21,21,21,1691,340,85,21,3753
@@ -154,27 +161,26 @@ HKAVR245_MUTE       = 38000,1,1,340,170,21,21,21,21,21,21,21,21,21,21,21,21,21,2
 HKAVR245_HDMI1      = 38000,1,69,345,174,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,64,21,21,21,21,21,21,21,21,21,64,21,64,21,64,21,21,21,21,21,64,21,21,21,21,21,64,21,64,21,64,21,64,21,64,21,21,21,64,21,64,21,21,21,21,21,21,21,21,21,1725,345,86,21,3708
 HKAVR245_HDMI2      = 38000,1,69,345,174,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,64,21,21,21,21,21,21,21,21,21,64,21,64,21,64,21,21,21,64,21,64,21,21,21,21,21,64,21,64,21,64,21,64,21,21,21,21,21,64,21,64,21,21,21,21,21,21,21,21,21,1725,345,86,21,3708
 
- # Samsung HL-S Series DLP TV
+# Samsung HL-S Series DLP TV
 SAMSUNGHLS_POWER_ON = 38000,1,1,170,169,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,21,21,21,21,64,21,64,21,21,21,21,21,64,21,21,21,64,21,64,21,21,21,21,21,64,21,64,21,21,21,1673
 SAMSUNGHLS_POWER_OFF    = 38000,1,1,170,169,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,21,21,21,21,64,21,64,21,64,21,64,21,21,21,21,21,64,21,64,21,21,21,1673
 SAMSUNGHLS_HDMI1    = 38000,1,1,170,169,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,21,21,64,21,21,21,21,21,21,21,64,21,21,21,21,21,64,21,21,21,64,21,64,21,64,21,21,21,1673
 SAMSUNGHLS_HDMI2    = 38000,1,1,170,169,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,21,21,21,21,64,21,21,21,64,21,64,21,64,21,21,21,64,21,64,21,21,21,64,21,21,21,21,21,21,21,1673
 
 
- # Xfinity Pace XG2V2-P Cable Box
+# Xfinity Pace XG2V2-P Cable Box
 XFINITYXG2_GUIDE    = 38000,1,37,8,34,8,65,8,29,8,106,8,50,8,50,8,44,8,101,8,525,8,34,8,60,8,29,8,29,8,39,8,65,8,29,8,29,8,3058,8,34,8,65,8,29,8,106,8,50,8,50,8,44,8,101,8,525,8,34,8,101,8,70,8,29,8,39,8,65,8,29,8,29,8,3058
 XFINITYXG2_EXIT     = 38000,1,37,8,34,8,65,8,29,8,106,8,50,8,50,8,44,8,101,8,525,8,34,8,44,8,29,8,29,8,39,8,81,8,29,8,29,8,3058,8,34,8,65,8,29,8,106,8,50,8,50,8,44,8,101,8,525,8,34,8,86,8,70,8,29,8,39,8,81,8,29,8,29,8,3058
 
- # Serial commands
- # Represents the command string "POWER ON" followed by carriage return line feed
+# Serial commands
+# Represents the command string "POWER ON" followed by carriage return line feed
 RS232ME_POWER_ON = POWER%20ON%0D%0A
- # Represents the command string "POWER OFF" followed by carriage return line feed
+# Represents the command string "POWER OFF" followed by carriage return line feed
 RS232ME_POWER_OFF = POWER%20OFF%0D%0A
- # Represents the command string "VOLUME UP" followed by carriage return line feed
+# Represents the command string "VOLUME UP" followed by carriage return line feed
 RS232ME_VOLUME_UP   = VOLUME%20UP%0D%0A
- # Represents the command string "VOLUME DOWN" followed by carriage return line feed
+# Represents the command string "VOLUME DOWN" followed by carriage return line feed
 RS232ME_VOLUME_DOWN = VOLUME%20DOWN%0D%0A
-
 ```
 
 ### Items File
@@ -196,7 +202,6 @@ String RS232ME          "Preamp"                            { channel="globalcac
 String RUSSCAA66        "Russound CAA66"                    { channel="globalcache:itachFlex:000C45D530B9:sl-m1#c1-direct" }
 ```
 
- 
 ### Sitemap File
 
 This is an example of how to use contact closure, infrared, and serial devices in a sitemap.

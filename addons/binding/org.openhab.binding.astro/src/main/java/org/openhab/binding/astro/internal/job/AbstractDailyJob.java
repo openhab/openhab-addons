@@ -12,12 +12,12 @@ import static org.openhab.binding.astro.AstroBindingConstants.*;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
-import java.math.BigDecimal;
 import java.util.Calendar;
 
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.openhab.binding.astro.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
+import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
@@ -114,8 +114,8 @@ public abstract class AbstractDailyJob extends AbstractBaseJob {
      */
     private int getEventOffset(AstroThingHandler astroHandler, String channelId) {
         try {
-            BigDecimal delay = (BigDecimal) astroHandler.getThing().getChannel(channelId).getConfiguration()
-                    .get(EVENT_CONFIG_OFFSET);
+            Integer delay = astroHandler.getThing().getChannel(channelId).getConfiguration()
+                    .as(AstroChannelConfig.class).getOffset();
             return delay.intValue();
         } catch (Exception ex) {
             return 0;
