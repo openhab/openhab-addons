@@ -52,7 +52,7 @@ public class HandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
     /**
-     * 
+     * Provides the supported powerline thing types
      */
     protected boolean supportsPowerlineThingType(ThingTypeUID thingTypeUID) {
     	return SUPPORTED_POWERLINE_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -68,7 +68,6 @@ public class HandlerFactory extends BaseThingHandlerFactory {
 			BoxHandler handler = new BoxHandler((Bridge) thing);
 			registerDeviceDiscoveryService(handler);
 			return handler;
-        //} else if (thingTypeUID.equals(PL546E_STANDALONE_THING_TYPE)) {
         } else if(supportsPowerlineThingType(thing.getThingTypeUID())) {
 			return new DeviceHandler(thing);
         } else if(supportsThingType(thing.getThingTypeUID())) {

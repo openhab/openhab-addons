@@ -45,12 +45,12 @@
 		</config-description>
     </thing-type>
 
-    <thing-type id="Powerline_Solo">
+    <thing-type id="FRITZ_Powerline">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
 		</supported-bridge-type-refs>
-        <label>FRITZ!Powerline devices</label>
-        <description>FRITZ!Powerline devices: 1240E, 1220E, 1000E, 540E, 530E, 510E</description>
+        <label>FRITZ!Powerline</label>
+        <description>a FRITZ!Powerline device</description>
 		<channels>
 		</channels>
 		<config-description>
@@ -107,7 +107,7 @@
 			<bridge-type-ref id="fritzbox" />
 		</supported-bridge-type-refs>
         <label>FRITZ!Powerline 546E</label>
-        <description>FRITZ!Powerline 546E with switchable outlet</description>
+        <description>FRITZ!Powerline 546E switchable outlet</description>
 		<channels>
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
@@ -123,7 +123,7 @@
 
     <thing-type id="FRITZ_Powerline_546E_Solo">
         <label>FRITZ!Powerline 546E</label>
-        <description>FRITZ!Powerline 546E with switchable outlet</description>
+        <description>FRITZ!Powerline 546E switchable outlet</description>
 		<channels>
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />

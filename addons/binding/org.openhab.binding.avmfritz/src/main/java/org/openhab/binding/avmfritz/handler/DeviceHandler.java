@@ -80,15 +80,12 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      */
     @Override
     public void initialize() {
-        //if (this.getThing().getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE)) {
         if (BindingConstants.SUPPORTED_POWERLINE_THING_TYPES_UIDS.contains(this.getThing().getThingTypeUID())) {
-            //logger.debug("About to initialize thing " + BindingConstants.DEVICE_PL546E_STANDALONE);
         	logger.debug("About to initialize thing " + this.getThing().getUID());
             Thing thing = this.getThing();
             AvmFritzConfiguration config = this.getConfigAs(AvmFritzConfiguration.class);
             this.soloIp = config.getIpAddress();
 
-            //logger.debug("discovered PL546E initialized: " + config.toString());
             logger.debug("discovered " + this.getThing().getUID() + " initialized: " + config.toString());
 
             this.refreshInterval = config.getPollingInterval();
@@ -107,7 +104,6 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      */
     @Override
     public void dispose() {
-        //if (this.getThing().getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE)) {
     	if (BindingConstants.SUPPORTED_POWERLINE_THING_TYPES_UIDS.contains(this.getThing().getThingTypeUID())) {
             logger.debug("Handler disposed.");
             if (pollingJob != null && !pollingJob.isCancelled()) {
@@ -234,7 +230,6 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
             String thingName = device.getIdentifier().replaceAll("[^a-zA-Z0-9_]", "_");
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingName);
             return thingUID;
-        //} else if (thingTypeUID.equals(PL546E_STANDALONE_THING_TYPE)) {
         } else if (BindingConstants.SUPPORTED_POWERLINE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             String thingName = device.getIdentifier().replaceAll("[^a-zA-Z0-9_]", "_");
             ThingUID thingUID = new ThingUID(POWERLINE_THING_TYPE, thingName);

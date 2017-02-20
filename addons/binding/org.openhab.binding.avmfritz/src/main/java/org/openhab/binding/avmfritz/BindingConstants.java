@@ -44,10 +44,11 @@ public class BindingConstants {
     public static final String DEVICE_PL540E_STANDALONE = "FRITZ_Powerline_540E_Solo";
     public static final String DEVICE_PL530E_STANDALONE = "FRITZ_Powerline_530E_Solo";
     public static final String DEVICE_PL510E_STANDALONE = "FRITZ_Powerline_510E_Solo";
+    public static final String DEVICE_POWERLINE_STANDALONE = "FRITZ_Powerline";
     
     // List of all Thing Type UIDs
     public final static ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_FRITZBOX);
-    public final static ThingTypeUID POWERLINE_THING_TYPE = new ThingTypeUID(BINDING_ID, "Powerline_Solo");
+    public final static ThingTypeUID POWERLINE_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_POWERLINE_STANDALONE);
 
     public final static ThingTypeUID DECT210_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT210);
     public final static ThingTypeUID DECT200_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT200);
