@@ -41,7 +41,7 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
             MOTION_THING_TYPE, DIMMER_THING_TYPE, LEAKDETECTOR_THING_TYPE, SWITCH_THING_TYPE, RELAY_THING_TYPE,
             GARAGEDOORKIT_THING_TYPE, KEYPAD_LINC_6_THING_TYPE, KEYPAD_LINC_5_THING_TYPE, REMOTELINC_8_THING_TYPE,
             INLINELINC_SWITCH_THING_TYPE, PROGRAM_THING_TYPE, VARIABLE_THING_TYPE, SCENE_THING_TYPE,
-            UNRECOGNIZED_SWITCH_THING_TYPE);
+            UNRECOGNIZED_SWITCH_THING_TYPE, KEYPADLINC_8_THING_TYPE, OUTLETLINC_DIMMER_THING_TYPE);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
@@ -74,6 +74,8 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
                     .addChannelforDeviceId(CHANNEL_GARAGE_CONTACT, 2).build();
         } else if (thingTypeUID.equals(INLINELINC_SWITCH_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_SWITCH, 1).build();
+        } else if (thingTypeUID.equals(OUTLETLINC_DIMMER_THING_TYPE)) {
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_SWITCH, 1).build();
         } else if (thingTypeUID.equals(SWITCH_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_SWITCH, 1)
                     .addControlChannel(CHANNEL_PADDLEACTION).build();
@@ -85,7 +87,7 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_A, 3).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_B, 4)
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 5).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 6)
                     .addControlChannel(CHANNEL_PADDLEACTION).build();
-        } else if (thingTypeUID.equals(REMOTELINC_8_THING_TYPE)) {
+        } else if (thingTypeUID.equals(REMOTELINC_8_THING_TYPE) || thingTypeUID.equals(KEYPADLINC_8_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_LIGHTLEVEL, 1)
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_A, 2).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_B, 1)
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 4).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 3)

@@ -36,7 +36,9 @@ public class IsyBindingConstants {
     public final static ThingTypeUID KEYPAD_LINC_6_THING_TYPE = new ThingTypeUID(BINDING_ID, "keypadlinc6");
     public final static ThingTypeUID KEYPAD_LINC_5_THING_TYPE = new ThingTypeUID(BINDING_ID, "keypadlinc5");
     public final static ThingTypeUID REMOTELINC_8_THING_TYPE = new ThingTypeUID(BINDING_ID, "remotelinc8");
+    public final static ThingTypeUID KEYPADLINC_8_THING_TYPE = new ThingTypeUID(BINDING_ID, "keypadlinc8");
     public final static ThingTypeUID INLINELINC_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, "inlinelincswitch");
+    public final static ThingTypeUID OUTLETLINC_DIMMER_THING_TYPE = new ThingTypeUID(BINDING_ID, "outletlinc");
     public final static ThingTypeUID UNRECOGNIZED_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, "unrecognized");
 
     // List of all Channel ids

@@ -202,6 +202,30 @@
             </parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="outletlinc">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge" />
+        </supported-bridge-type-refs>
+        <label>Load Switch</label>
+        <description>Controls dimmable loads</description>
+        <channels>
+            <channel id="loadlevel" typeId="lightDimmer" />
+        </channels>
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <label>Insteon Address</label>
+                <description>Insteon Address of device.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Text description of device.</description>
+            </parameter>
+            <parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
 	<thing-type id="inlinelincswitch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge" />
@@ -340,6 +364,37 @@
             </parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="keypadlinc8">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge" />
+        </supported-bridge-type-refs>
+        <label>KeypadLinc 8</label>
+        <description>KeypadLinc 8</description>
+        <channels>
+            <channel id="button_a" typeId="remotelinc_btn_a" />
+            <channel id="button_b" typeId="remotelinc_btn_b" />
+            <channel id="button_c" typeId="remotelinc_btn_c" />
+            <channel id="button_d" typeId="remotelinc_btn_d" />
+            <channel id="button_e" typeId="remotelinc_btn_e" />
+            <channel id="button_f" typeId="remotelinc_btn_f" />
+            <channel id="button_g" typeId="remotelinc_btn_g" />
+            <channel id="button_h" typeId="remotelinc_btn_h" />
+        </channels>
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <label>Insteon Address</label>
+                <description>Insteon Address of device.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Text description of device.</description>
+            </parameter>
+            <parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
 	<thing-type id="unrecognized">
         <supported-bridge-type-refs>
             <bridge-type-ref id="ipbridge" />
