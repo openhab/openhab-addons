@@ -66,7 +66,9 @@ public abstract class AbstractDailyJob extends AbstractBaseJob {
         jobDataMap.put(EventJob.KEY_EVENT, event);
         jobDataMap.put(KEY_CHANNEL_ID, channelId);
 
-        eventAt = DateTimeUtils.addOffset(eventAt, getEventOffset(astroHandler, channelId));
+        AstroChannelConfig config = astroHandler.getThing().getChannel(channelId).getConfiguration()
+                .as(AstroChannelConfig.class);
+        eventAt = DateTimeUtils.applyConfig(eventAt, config);
         schedule(astroHandler, EventJob.class, jobDataMap, "event-" + event.toLowerCase() + "-" + channelId, eventAt);
     }
 
@@ -106,19 +108,6 @@ public abstract class AbstractDailyJob extends AbstractBaseJob {
             }
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
-        }
-    }
-
-    /**
-     * Returns the configured offset of the event.
-     */
-    private int getEventOffset(AstroThingHandler astroHandler, String channelId) {
-        try {
-            Integer delay = astroHandler.getThing().getChannel(channelId).getConfiguration()
-                    .as(AstroChannelConfig.class).getOffset();
-            return delay.intValue();
-        } catch (Exception ex) {
-            return 0;
         }
     }
 }
