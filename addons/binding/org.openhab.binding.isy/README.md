@@ -1,3 +1,6 @@
+# NOTE The latest build can be retrieved from: https://ci.m.quailholdings.com/job/openhab-2-binding-isy/
+
+
 # ISY Binding
 
 This binding integrates with [Universal Device's ISY994](https://www.universal-devices.com/residential/isy994i-series/) control system.
