@@ -194,7 +194,6 @@ Number CPU_Load                     { channel="systeminfo:computer:work:cpu#load
 Number CPU_Load1                    { channel="systeminfo:computer:work:cpu#load1" }
 Number CPU_Load5                    { channel="systeminfo:computer:work:cpu#load5" }
 Number CPU_Load15                   { channel="systeminfo:computer:work:cpu#load15" }
-Number CPU_Load1                    { channel="systeminfo:computer:work:cpu#load1" }
 Number CPU_Threads                  { channel="systeminfo:computer:work:cpu#threads" }
 Number CPU_Uptime                   { channel="systeminfo:computer:work:cpu#uptime" }
 
