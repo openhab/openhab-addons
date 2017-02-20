@@ -80,15 +80,15 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_SWITCH, 1)
                     .addControlChannel(CHANNEL_PADDLEACTION).build();
         } else if (thingTypeUID.equals(DIMMER_THING_TYPE)) {
-            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_LIGHTLEVEL, 1)
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_DIMMERLEVEL, 1)
                     .addControlChannel(CHANNEL_PADDLEACTION).build();
         } else if (thingTypeUID.equals(KEYPAD_LINC_6_THING_TYPE) || thingTypeUID.equals(KEYPAD_LINC_5_THING_TYPE)) {
-            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_LIGHTLEVEL, 1)
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_DIMMERLEVEL, 1)
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_A, 3).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_B, 4)
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 5).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 6)
                     .addControlChannel(CHANNEL_PADDLEACTION).build();
         } else if (thingTypeUID.equals(REMOTELINC_8_THING_TYPE) || thingTypeUID.equals(KEYPADLINC_8_THING_TYPE)) {
-            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_LIGHTLEVEL, 1)
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_DIMMERLEVEL, 1)
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_A, 2).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_B, 1)
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 4).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 3)
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_E, 6).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_F, 5)

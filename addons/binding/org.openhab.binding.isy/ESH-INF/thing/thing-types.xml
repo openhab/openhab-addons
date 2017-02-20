@@ -2,11 +2,9 @@
 <thing:thing-descriptions bindingId="isy" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
 	<bridge-type id="isyBridge">
 		<label>Isy IP Access Point</label>
 		<description>Ethernet access point to Isy control system</description>
-
 		<config-description>
 			<parameter name="user" type="text" required="true">
 				<label>User Name</label>
@@ -129,7 +127,7 @@
 		<description>Controls dimmable loads</description>
 
 		<channels>
-			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="loadlevel" typeId="loadLevel" />
 			<channel id="paddleaction" typeId="paddleAction" />
 		</channels>
 
@@ -209,7 +207,7 @@
         <label>Load Switch</label>
         <description>Controls dimmable loads</description>
         <channels>
-            <channel id="loadlevel" typeId="lightDimmer" />
+            <channel id="loadlevel" typeId="loadLevel" />
         </channels>
         <config-description>
             <parameter name="address" type="text" required="true">
@@ -282,7 +280,7 @@
 		<label>KeyPadLinc Dimmer 6</label>
 		<description>KeyPadLinc Dimmer 6</description>
 		<channels>
-			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="loadlevel" typeId="loadLevel" />
 			<channel id="paddleaction" typeId="paddleAction" />
 			<channel id="button_a" typeId="keylinc_btn_a" />
 			<channel id="button_b" typeId="keylinc_btn_b" />
@@ -311,7 +309,7 @@
 		<label>KeyPadLinc Dimmer 5</label>
 		<description>KeyPadLinc Dimmer 5</description>
 		<channels>
-			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="loadlevel" typeId="loadLevel" />
 			<channel id="paddleaction" typeId="paddleAction" />
 			<channel id="button_a" typeId="keylinc_btn_a" />
 			<channel id="button_b" typeId="keylinc_btn_b" />
@@ -402,7 +400,7 @@
         <label>Unrecognized Device</label>
         <description>Unrecognized Device</description>
         <channels>
-            
+           <channel id="loadlevel" typeId="loadLevel" /> 
         </channels>
         <config-description>
             <parameter name="address" type="text" required="true">
@@ -486,11 +484,11 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="lightDimmer">
+	<channel-type id="loadLevel">
 		<item-type>Dimmer</item-type>
 		<label>Load Level</label>
 		<description>Increase/decrease the load level</description>
-		<category>DimmableLight</category>
+		<category>DimmableLoad</category>
 		<state min="0" max="100" pattern="%d %%" />
 	</channel-type>
 	<channel-type id="rampRate">
