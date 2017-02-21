@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.netatmo.handler.station;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_RAIN;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -38,6 +38,10 @@ public class NAModule3Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
             switch (channelId) {
                 case CHANNEL_RAIN:
                     return ChannelTypeUtils.toDecimalType(dashboardData.getRain());
+                case CHANNEL_SUM_RAIN1:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getSumRain24());
+                case CHANNEL_SUM_RAIN24:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getSumRain24());
 
             }
         }
