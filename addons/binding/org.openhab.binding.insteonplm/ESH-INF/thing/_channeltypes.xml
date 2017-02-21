@@ -127,9 +127,11 @@
 		<description>Thermostat Mode</description>
 		<state readOnly="false">
 			<options>
-				<option value="off">Off</option>
-				<option value="heat">Heat</option>
-				<option value="cool">Cool</option>
+				<option value="0">Off</option>
+                <option value="3">Auto</option>
+				<option value="1">Heat</option>
+				<option value="2">Cool</option>
+                <option value="4">Program</option>
 			</options>
 		</state>
 	</channel-type>
@@ -140,8 +142,8 @@
 		<description>Temperature in Celsius</description>
 		<state readOnly="false">
 			<options>
-				<option value="off">Off</option>
-				<option value="heat">On</option>
+				<option value="0">Off</option>
+				<option value="1">On</option>
 			</options>
 		</state>
 	</channel-type>

@@ -54,20 +54,17 @@ public abstract class CommandHandler {
     }
 
     protected int getMaxLightLevel(InsteonThingHandler conf, int defaultLevel) {
-        if (conf.getFeatureNames().contains("dimmer")) {
-            String item = conf.getThing().getLabel();
-            int dimmerMax = conf.getDimmerMax();
-            if (dimmerMax > 1 && dimmerMax <= 99) {
-                int level = (int) Math.ceil((dimmerMax * 255.0) / 100); // round up
-                if (level < defaultLevel) {
-                    logger.info("item {}: using dimmermax value of {}", item, dimmerMax);
-                    return level;
-                }
-            } else {
-                logger.error("item {}: dimmermax must be between 1-99 inclusive: {}", item, dimmerMax);
+        String item = conf.getThing().getLabel();
+        int dimmerMax = conf.getDimmerMax();
+        if (dimmerMax > 1 && dimmerMax <= 99) {
+            int level = (int) Math.ceil((dimmerMax * 255.0) / 100); // round up
+            if (level < defaultLevel) {
+                logger.info("item {}: using dimmermax value of {}", item, dimmerMax);
+                return level;
             }
+        } else {
+            logger.error("item {}: dimmermax must be between 1-99 inclusive: {}", item, dimmerMax);
         }
-
         return defaultLevel;
     }
 

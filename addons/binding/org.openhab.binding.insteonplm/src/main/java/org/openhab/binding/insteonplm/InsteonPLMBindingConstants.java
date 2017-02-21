@@ -28,7 +28,7 @@ public class InsteonPLMBindingConstants {
     // Properties to track information about the thing.
     public final static String PROPERTY_INSTEON_ADDRESS = "address";
     public final static String PROPERTY_INSTEON_PRODUCT_KEY = "productkey";
-    public static final Object PROPERTY_INSTEON_MODEL = "model";
+    public static final String PROPERTY_INSTEON_MODEL = "model";
 
     // Properties for channels to help configure them.
     public final static String PROPERTY_ONOFF_EXTENDED_NEEDED = "ext";
