@@ -12,7 +12,7 @@
 		<description>The IO Link device</description>
 
 		<channels>
-			<channel id="contact" typeId="switch">
+			<channel id="contact" typeId="contact">
 				<properties>
 					<property name="feature">IOLincContact</property>
                     <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x01</property>
@@ -25,7 +25,9 @@
 				</properties>
 			</channel>
 			<channel id="lastHeardFrom" typeId="lastHeardFrom" />
-			<channel id="pendingWrite" typeId="decimal" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
 		</channels>
 		
 		<properties>

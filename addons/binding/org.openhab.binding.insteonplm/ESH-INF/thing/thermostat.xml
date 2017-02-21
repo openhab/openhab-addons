@@ -12,95 +12,97 @@
 		<description>Insteon Thermostat</description>
 
 		<channels>
-			<channel id="backLightDuration" typeId="decimal">
+			<channel id="backLightDuration" typeId="duration">
 				<properties>
 					<property name="feature">ThermostatBacklightDuration</property>
 					<property name="dataGroup">datagroup1</property>
 					<property name="pollHandler">FlexPollHandler:extendedCrc,0x2e,0x00</property>
 				</properties>
 			</channel>
-			<channel id="acDelay" typeId="decimal">
+			<channel id="acDelay" typeId="duration">
 				<properties>
 					<property name="feature">ThermostatACDelay</property>
 					<property name="dataGroup">datagroup1</property>
 				</properties>
 			</channel>
-			<channel id="humidityHigh" typeId="decimal">
+			<channel id="humidityHigh" typeId="humidity">
 				<properties>
 					<property name="feature">ThermostatHumidityHigh</property>
 					<property name="dataGroup">datagroup2</property>
                     <property name="pollHandler">FlexPollHandler:extendedCrc2,0x2e,0x00,0,0,0x01</property>
 				</properties>
 			</channel>
-			<channel id="humidityLow" typeId="decimal">
+			<channel id="humidityLow" typeId="humidity">
 				<properties>
 					<property name="feature">ThermostatHumidityLow</property>
 					<property name="dataGroup">datagroup2</property>
 				</properties>
 			</channel>
-			<channel id="stage1duration" typeId="decimal">
+			<channel id="stage1duration" typeId="duration">
 				<properties>
 					<property name="feature">ThermostatStage1Duration</property>
 					<property name="dataGroup">datagroup2</property>
 				</properties>
 			</channel>
-			<channel id="coolSetPoint" typeId="decimal">
+			<channel id="coolSetPoint" typeId="temperatureC">
 				<properties>
 					<property name="feature">ThermostatCoolSetPoint</property>
 					<property name="dataGroup">datagroup3</property>
                     <property name="pollHandler">FlexPollHandler:extendedCrc2,0x2e,0x02</property>
 				</properties>
 			</channel>
-			<channel id="heatSetPoint" typeId="decimal">
+			<channel id="heatSetPoint" typeId="temperatureC">
 				<properties>
 					<property name="feature">ThermostatHeatSetPoint</property>
 					<property name="dataGroup">datagroup3</property>
 				</properties>
 			</channel>
-			<channel id="thermostatMode" typeId="string">
+			<channel id="thermostatMode" typeId="thermostatMode">
 				<properties>
 					<property name="feature">ThermostatSystemMode</property>
 					<property name="dataGroup">datagroup3</property>
 				</properties>
 			</channel>
-			<channel id="fanMode" typeId="string">
+			<channel id="fanMode" typeId="fanMode">
 				<properties>
 					<property name="feature">ThermostatFanMode</property>
 					<property name="dataGroup">datagroup3</property>
 				</properties>
 			</channel>
-			<channel id="isHeating" typeId="switch">
+			<channel id="isHeating" typeId="contact">
 				<properties>
 					<property name="feature">ThermostatIsHeating</property>
 					<property name="dataGroup">datagroup3</property>
 				</properties>
 			</channel>
-			<channel id="isCooling" typeId="switch">
+			<channel id="isCooling" typeId="contact">
 				<properties>
 					<property name="feature">ThermostatIsCooling</property>
 					<property name="dataGroup">datagroup3</property>
 				</properties>
 			</channel>
-			<channel id="temperatureCelcius" typeId="decimal">
+			<channel id="temperatureCelcius" typeId="temperatureC">
 				<properties>
 					<property name="feature">ThermostatTemperatureCelcius</property>
 					<property name="dataGroup">datagroup3</property>
 				</properties>
 			</channel>
-			<channel id="temperatureFarenheit" typeId="decimal">
+			<channel id="temperatureFarenheit" typeId="temperatureF">
 				<properties>
 					<property name="feature">ThermostatTemperatureFarnenheit</property>
 					<property name="dataGroup">datagroup3</property>
 				</properties>
 			</channel>
-			<channel id="humidty" typeId="decimal">
+			<channel id="humidty" typeId="humidity">
 				<properties>
 					<property name="feature">ThermostatHumidity</property>
 					<property name="dataGroup">datagroup3</property>
 				</properties>
 			</channel>
 			<channel id="lastHeardFrom" typeId="lastHeardFrom" />
-			<channel id="pendingWrite" typeId="decimal" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
 		</channels>
 
 		<properties>

@@ -13,7 +13,9 @@
 
         <channels>
             <channel id="broadcastOnOff" typeId="switch" />
-            <channel id="pendingWrite" typeId="decimal" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
         </channels>
         
         <properties>

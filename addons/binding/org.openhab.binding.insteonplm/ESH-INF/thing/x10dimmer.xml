@@ -12,13 +12,15 @@
         <description>A wall switch that supports dimming</description>
 
         <channels>
-            <channel id="dimmer" typeId="percent">
+            <channel id="dimmer" typeId="dimmer">
             <properties>
                 <property name="feature">X10Dimmer</property>
             </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
-            <channel id="pendingWrite" typeId="decimal" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
         </channels>
         
         <properties>

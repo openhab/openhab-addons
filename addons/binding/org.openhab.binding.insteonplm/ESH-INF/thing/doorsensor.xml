@@ -12,23 +12,25 @@
         <description>Hidden door sensor</description>
 
         <channels>
-            <channel id="contact" typeId="switch">
+            <channel id="contact" typeId="contact">
 	            <properties>
 	                <property name="feature">WirelessMotionSensorContact</property>
 	            </properties>
             </channel>
-            <channel id="batteryLevel" typeId="decimal">
+            <channel id="batteryLevel" typeId="battery">
                 <properties>
                     <property name="feature">WirelessMotionSensorDataBatteryLevel</property>
                 </properties>
             </channel>
-            <channel id="batteryWatermark" typeId="decimal">
+            <channel id="batteryWatermark" typeId="batteryWatermark">
                 <properties>
                     <property name="feature">WirelessMotionSensorDataBatteryWatermark</property>
                 </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
-            <channel id="pendingWrite" typeId="decimal" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
         </channels>
         
         <properties>

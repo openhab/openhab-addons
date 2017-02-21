@@ -79,7 +79,6 @@
 					<option value="Hub">Hub connection</option>
 				</options>
 			</parameter>
-
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

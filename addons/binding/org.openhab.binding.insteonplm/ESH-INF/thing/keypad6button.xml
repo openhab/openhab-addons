@@ -18,7 +18,7 @@
                     <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x00</property>
                 </properties>
             </channel>
-            <channel id="rampDimmer" typeId="number">
+            <channel id="rampDimmer" typeId="rampDimmer">
                 <properties>
                     <property name="message">LoadDimmerRamp</property>
                 </properties>
@@ -49,7 +49,9 @@
                 </properties>
             </channel>
             <channel id="lastHeardFrom" typeId="lastHeardFrom" />
-            <channel id="pendingWrite" typeId="decimal" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
         </channels>
         
         <properties>
