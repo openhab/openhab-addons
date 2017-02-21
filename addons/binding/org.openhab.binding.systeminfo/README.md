@@ -100,9 +100,9 @@ The binding introduces the following channels:
 | Channel ID | Channel Description | Supported item type | Default priority | Advanced |
 | ------------- | ------------- |------------|----------|----------|
 | load  | Recent load in percents  | Number | High | False |
-| load1 | Load in percents for the last 1 minutes | Number | Medium | True |
+| load1 | Load in percents for the last 1 minute | Number | Medium | True |
 | load5 | Load in percents for the last 5 minutes | Number | Medium | True |
-| load15 | Load in percents for the last 1 minutes | Number | Medium | True |
+| load15 | Load in percents for the last 15 minutes | Number | Medium | True |
 | threads | Number of threads currently running | Number | Medium | True |
 | uptime | System uptime (time after start) in minutes | Number | Medium | True |
 | name | Name of the device  | String | Low | False |
@@ -122,7 +122,7 @@ The binding introduces the following channels:
 | information  | Product, manufacturer, SN, width and height of the display in cm  | String | Low | True |
 | ip  | Host IP address of the network  | String | Low | False |
 | mac  | MAC address | String | Low | True |
-| networkName  | The name of the network.  | String | Low | False |
+| networkName  | The name of the network  | String | Low | False |
 | networkDisplayName  | The display name of the network  | String | Low | False |
 | packagesSent  | Number of packages sent | Number | Medium | True |
 | packagesReceived  | Number of packages received | Number | Medium | True |
@@ -194,7 +194,6 @@ Number CPU_Load                     { channel="systeminfo:computer:work:cpu#load
 Number CPU_Load1                    { channel="systeminfo:computer:work:cpu#load1" }
 Number CPU_Load5                    { channel="systeminfo:computer:work:cpu#load5" }
 Number CPU_Load15                   { channel="systeminfo:computer:work:cpu#load15" }
-Number CPU_Load1                    { channel="systeminfo:computer:work:cpu#load1" }
 Number CPU_Threads                  { channel="systeminfo:computer:work:cpu#threads" }
 Number CPU_Uptime                   { channel="systeminfo:computer:work:cpu#uptime" }
 
