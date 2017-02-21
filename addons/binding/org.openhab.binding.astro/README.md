@@ -236,7 +236,8 @@ Text label="Astronomische Daten" icon="sun" {
 }
 ```
 
-Transform season.map
+Transformation definitons:<br>
+season.map
 ```
 SPRING=Frühling
 SUMMER=Sommer
@@ -244,7 +245,7 @@ AUTUMN=Herbst
 WINTER=Winter
 ```
 
-Transform zodiac.map
+zodiac.map
 ```
 ARIES=Widder
 TAURUS=Stier
