@@ -236,7 +236,8 @@ Text label="Astronomische Daten" icon="sun" {
 }
 ```
 
-Transformation definitons:<br>
+Transformation definitons:
+
 season.map
 ```
 SPRING=Frühling
