@@ -124,11 +124,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_STOP:
-                if (command instanceof OnOffType) {
+                if (command.equals(OnOffType.ON)) {
                     connection.playerStop();
-                    updateState(CHANNEL_STOP, UnDefType.UNDEF);
                 } else if (command.equals(RefreshType.REFRESH)) {
-                    updateState(CHANNEL_STOP, UnDefType.UNDEF);
+                    connection.updatePlayerStatus();
                 }
                 break;
             case CHANNEL_PLAYURI:
@@ -280,17 +279,24 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         switch (state) {
             case Play:
                 updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             case Pause:
+                updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
+                break;
             case Stop:
             case End:
                 updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+                updateState(CHANNEL_STOP, OnOffType.ON);
                 break;
             case FastForward:
                 updateState(CHANNEL_CONTROL, RewindFastforwardType.FASTFORWARD);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             case Rewind:
                 updateState(CHANNEL_CONTROL, RewindFastforwardType.REWIND);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
         }
     }

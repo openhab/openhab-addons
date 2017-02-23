@@ -62,7 +62,7 @@ The Kodi thing supports the following channels:
 | mute                    | Switch       | Mute/unmute your playback |
 | volume                  | Dimmer       | Read or control the volume of your playback |
 | control                 | Player       | Control the Kodi player, e.g.  `PLAY`, `PAUSE`, `NEXT`, `PREVIOUS`, `FASTFORWARD`, `REWIND` |
-| stop                    | Switch       | Stops the Kodi player |
+| stop                    | Switch       | Write `ON` to this channel: Stops the Kodi player. If this channel is `ON`, the player is stopped, otherwise kodi is in another state (see control channel) |
 | title                   | String       | Title of the currently played song/movie/tv episode |
 | showtitle               | String       | Title of the currently played tv-show; empty for other types |
 | album                   | String       | Album name of the currently played song |
