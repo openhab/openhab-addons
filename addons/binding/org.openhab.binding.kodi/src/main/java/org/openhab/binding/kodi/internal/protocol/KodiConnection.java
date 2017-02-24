@@ -252,6 +252,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
 
         String mediaType = item.get("type").getAsString();
+        if (mediaType.equals("channel") && item.has("channeltype")) {
+            String channelType = item.get("channeltype").getAsString();
+            if (channelType.equals("radio")) {
+                mediaType = "radio";
+            }
+        }
 
         String artist = "";
         if (mediaType.equals("movie")) {
@@ -365,6 +371,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
             if (data.has("item")) {
                 JsonObject item = data.get("item").getAsJsonObject();
                 String mediaType = item.get("type").getAsString();
+                if (mediaType.equals("channel") && item.has("channeltype")) {
+                    String channelType = item.get("channeltype").getAsString();
+                    if (channelType.equals("radio")) {
+                        mediaType = "radio";
+                    }
+                }
                 listener.updateMediaType(mediaType);
             }
             requestPlayerUpdate(playerId, false);
