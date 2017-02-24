@@ -20,6 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketRequest;
 import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketResponse;
 import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketResponseType;
+import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketVendor;
 import org.openhab.binding.silvercrestwifisocket.internal.exceptions.NotOneResponsePacketException;
 import org.openhab.binding.silvercrestwifisocket.internal.exceptions.PacketIntegrityErrorException;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * Transforms the the received datagram packet to one
  *
  * @author Jaime Vaz - Initial contribution
+ * @author Christian Heimerl - for integration of EasyHome
  *
  */
 public class WifiSocketPacketConverter {
@@ -41,9 +43,7 @@ public class WifiSocketPacketConverter {
     /* encryptDataLength */
     private static String ENCRYPT_PREFIX = "00";
     private static String PACKET_NUMBER = "FFFF";
-    private static String COMPANY_CODE = "C1";
     private static String DEVICE_TYPE = "11";
-    private static String AUTH_CODE = "7150";
 
     private static String ENCRIPTION_KEY = "0123456789abcdef";
 
@@ -54,9 +54,10 @@ public class WifiSocketPacketConverter {
      * START_OF_RECEIVED_PACKET.
      * STX - pkt nbr - CompanyCode - device - authCode
      *
-     * 00 -- 0029 -- C1 -- 11 -- 7150
+     * 00 -- 0029 -- C1 -- 11 -- 7150 (SilverCrest)
+     * 00 -- 0029 -- C2 -- 11 -- 92DD (EasyHome)
      */
-    private static String REGEX_START_OF_RECEIVED_PACKET = "00([A-F0-9]{4})C1117150";
+    private static String REGEX_START_OF_RECEIVED_PACKET = "00([A-F0-9]{4})(?:C21192DD|C1117150)";
     private static String REGEX_HEXADECIMAL_PAIRS = "([A-F0-9]{2})*";
 
     private static String REGEX_START_OF_RECEIVED_PACKET_SEARCH_MAC_ADDRESS = REGEX_START_OF_RECEIVED_PACKET + "23"
@@ -102,7 +103,8 @@ public class WifiSocketPacketConverter {
      */
     public byte[] transformToByteMessage(final SilvercrestWifiSocketRequest requestPacket) {
         byte[] requestDatagram = null;
-        String fullCommand = ENCRYPT_PREFIX + PACKET_NUMBER + COMPANY_CODE + DEVICE_TYPE + AUTH_CODE
+        String fullCommand = ENCRYPT_PREFIX + PACKET_NUMBER + requestPacket.getVendor().getCompanyCode() + DEVICE_TYPE
+                + requestPacket.getVendor().getAuthenticationCode()
                 + String.format(requestPacket.getType().getCommand(), requestPacket.getMacAddress());
 
         byte[] inputByte = hexStringToByteArray(fullCommand);
@@ -149,7 +151,8 @@ public class WifiSocketPacketConverter {
     /**
      * STX - pkt nbr - CompanyCode - device - authCode
      *
-     * 00 -- 0029 -- C1 -- 11 -- 7150
+     * 00 -- 0029 -- C1 -- 11 -- 7150 (Silvercrest)
+     * 00 -- 0029 -- C2 -- 11 -- 92DD (EasyHome)
      *
      * @param hexPacket the hex packet to convert
      * @return the converted response.
@@ -207,9 +210,15 @@ public class WifiSocketPacketConverter {
                     + "]  \nDecryptedPacket:[" + decryptedData + "]");
         }
 
-        logger.trace("Decrypt success. Packet is from socket with mac address [{}] and type is [{}]", macAddress,
-                responseType);
-        return new SilvercrestWifiSocketResponse(macAddress, responseType);
+        SilvercrestWifiSocketVendor vendor = SilvercrestWifiSocketVendor.fromCode(decryptedData.substring(6, 8));
+        if (vendor == null) {
+            throw new PacketIntegrityErrorException("Could not extract vendor from the decrypted packet. \nPacket:["
+                    + hexPacket + "]  \nDecryptedPacket:[" + decryptedData + "]");
+        }
+
+        logger.trace("Decrypt success. Packet is from socket with mac address [{}] and type is [{}] and vendor is [{}]",
+                macAddress, responseType, vendor);
+        return new SilvercrestWifiSocketResponse(macAddress, responseType, vendor);
     }
 
     /**
