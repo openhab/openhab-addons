@@ -141,7 +141,8 @@ public class OpenSprinklerBindingConstants {
         STATION45(44, STATION_45),
         STATION46(45, STATION_46),
         STATION47(46, STATION_47),
-        STATION48(47, STATION_48);
+        STATION48(47, STATION_48),
+        SENSORRAIN(-1, SENSOR_RAIN);
 
         private final int number;
         private final String id;
