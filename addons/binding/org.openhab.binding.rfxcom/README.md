@@ -85,32 +85,69 @@ Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
 }
 ```
 
+## Protocol specific details
+
+### Lighting 4
+
+The support for lighting 4 in RFXCOM is less complete because a lot of different devices use the same chips and can not easily be distinguished.
+
+So some extra configuration can be used for fine tuning the behavior of your Lighting4 devices. For configuration via the PaperUI three extra fields are available, being the the pulse length and a commmand id for on and off commands. If your item is auto-discovered normally the on or off command should be recognized properly.
+
+For a usb attached RFXCOM on Windows the configuration could look like this (note that the `onCommandId`, `offCommandId` and `pulse` are all optional):
+
+```
+Bridge rfxcom:bridge:238adf67 [ serialPort="COM4" ] {
+    Thing lighting4 17745 [deviceId="17745", subType="PT2262", onCommandId=7, offCommandId=4, pulse=800]
+    Thing lighting4 motion [deviceId="286169", subType="PT2262", onCommandId=9, pulse=392]
+}
+```
+
+Your items file could look like this:
+
+```
+Switch Switch {channel="rfxcom:lighting4:238adf67:17745:command"}
+Number SwitchCommandId "Command ID [%d]" {channel="rfxcom:lighting4:238adf67:17745:commandId"}
+```
+
+And if you want random actions on your relay you could for example do like this:
+
+```
+rule "Set random relay variations"
+    when
+        System started or
+        Time cron "/20 * * * * ?"
+    then
+        SwitchCommandId.sendCommand((Math::random * 15.9).intValue)
+end
+```
+
 ## Channels
 
 This binding currently supports following channels:
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|------------------------|--------------|
-| batteryLevel | Number | Battery level. |
-| command | Switch | Command channel. |
-| contact | Contact | Contact channel. |
-| dimmingLevel | Dimmer | Dimming level channel. |
-| humidity | Number | Relative humidity level in percentages. |
-| humidityStatus | String | Current humidity status. |
-| instantamp | Number | Instant current in Amperes. |
-| instantpower | Number | Instant power consumption in Watts. |
-| status | String | Status channel. |
-| setpoint | Number | Requested temperature. |
-| mood | Number | Mood channel. |
-| motion | Switch | Motion detection sensor state. |
-| rainRate | Number | Rain fall rate in millimeters per hour. |
-| rainTotal | Number | Total rain in millimeters. |
-| rawMessage | String | Hexadecimal string of the raw RF message. |
-| rawPayload | String | Hexadecimal string of the message payload, without header. |
-| shutter | Rollershutter | Shutter channel. |
-| signalLevel | Number | Received signal strength level. |
-| temperature | Number | Current temperature in degree Celsius. |
-| totalUsage | Number | Used energy in Watt hours. |
-| totalAmpHour | Number | Used "energy" in ampere-hours. |
-| windDirection | Number | Wind direction in degrees. |
-| windSpeed | Number | Average wind speed in meters per second. |
+| Channel Type ID | Item Type     | Description                                                |
+|-----------------|---------------|------------------------------------------------------------|
+| batteryLevel    | Number        | Battery level.                                             |
+| command         | Switch        | Command channel.                                           |
+| commandId       | String        | Id of the command.                                         |
+| contact         | Contact       | Contact channel.                                           |
+| dimmingLevel    | Dimmer        | Dimming level channel.                                     |
+| humidity        | Number        | Relative humidity level in percentages.                    |
+| humidityStatus  | String        | Current humidity status.                                   |
+| instantamp      | Number        | Instant current in Amperes.                                |
+| instantpower    | Number        | Instant power consumption in Watts.                        |
+| status          | String        | Status channel.                                            |
+| setpoint        | Number        | Requested temperature.                                     |
+| mood            | Number        | Mood channel.                                              |
+| motion          | Switch        | Motion detection sensor state.                             |
+| rainRate        | Number        | Rain fall rate in millimeters per hour.                    |
+| rainTotal       | Number        | Total rain in millimeters.                                 |
+| rawMessage      | String        | Hexadecimal string of the raw RF message.                  |
+| rawPayload      | String        | Hexadecimal string of the message payload, without header. |
+| shutter         | Rollershutter | Shutter channel.                                           |
+| signalLevel     | Number        | Received signal strength level.                            |
+| temperature     | Number        | Current temperature in degree Celsius.                     |
+| totalUsage      | Number        | Used energy in Watt hours.                                 |
+| totalAmpHour    | Number        | Used "energy" in ampere-hours.                             |
+| windDirection   | Number        | Wind direction in degrees.                                 |
+| windSpeed       | Number        | Average wind speed in meters per second.                   |

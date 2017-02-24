@@ -13,6 +13,7 @@ import java.util.List;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
@@ -61,30 +62,11 @@ public interface RFXComMessage {
     void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException;
 
     /**
-     * Procedure for converting sub type as string to sub type object.
-     *
-     * @return sub type object.
-     */
-    Object convertSubType(String subType) throws RFXComException;
-
-    /**
-     * Procedure to set sub type.
-     *
-     */
-    void setSubType(Object subType) throws RFXComException;
-
-    /**
      * Procedure to get device id.
      *
      * @return device Id.
      */
     String getDeviceId() throws RFXComException;
-
-    /**
-     * Procedure to set device id.
-     *
-     */
-    void setDeviceId(String deviceId) throws RFXComException;
 
     /**
      * Procedure for get supported value selector list for input values.
@@ -100,4 +82,11 @@ public interface RFXComMessage {
      */
     List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException;
 
+    /**
+     * Procedure to pass configuration to a message
+     *
+     * @param deviceConfiguration configuration about the device
+     * @throws RFXComException if the configuration could not be handled properly
+     */
+    void setConfig(RFXComDeviceConfiguration deviceConfiguration) throws RFXComException;
 }
