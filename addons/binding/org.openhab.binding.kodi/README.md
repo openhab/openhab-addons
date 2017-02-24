@@ -72,7 +72,7 @@ The Kodi thing supports the following channels:
 | input                   | String       | Allows to control Kodi. Valid values are: `Up`, `Down`, `Left`, `Right`, `Select`, `Back`, `Home`, `ContextMenu`, `Info`, `ShowCodec`, `ShowOSD` |
 | inputtext               | String       | This channel emulates a keyboard input |
 | systemcommand           | String       | This channel allows to send commands to `shutdown`, `suspend`, `hibernate`, `reboot` kodi |
-| mediatype               | String       | The media type of the current file. e.g. song or movie | 
+| mediatype               | String       | The media type of the current file. Valid return values are: `unknown`, `channel`, `episode`, `movie`, `musicvideo`, `picture`, `radio`, `song`, `video` |
 
 ## Item Configuration
 
