@@ -13,11 +13,9 @@ import java.io.IOException;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
-import org.openhab.binding.insteonplm.internal.device.GroupMessageStateMachine.GroupMessage;
 import org.openhab.binding.insteonplm.internal.device.messages.MessageHandlerData;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
-import org.openhab.binding.insteonplm.internal.message.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +66,7 @@ public abstract class MessageHandler {
             Message m = handler.getMessageFactory().makeExtendedMessage((byte) 0x1f, aCmd1, aCmd2,
                     handler.getAddress());
             m.setQuietTime(500L);
-            handler.enqueueMessage(m, f);
+            handler.enqueueMessage(m);
         } catch (IOException e) {
             logger.warn("i/o problem sending query message to device {}", handler.getAddress());
         } catch (FieldException e) {
@@ -229,57 +227,6 @@ public abstract class MessageHandler {
             return (false);
         }
         return (true);
-    }
-
-    /**
-     * Determines is an incoming ALL LINK message is a duplicate
-     *
-     * @param msg the received ALL LINK message
-     * @return true if this message is a duplicate
-     */
-    protected boolean isDuplicate(Message msg) {
-        boolean isDuplicate = false;
-        try {
-            MessageType t = MessageType.s_fromValue(msg.getByte("messageFlags"));
-            int hops = msg.getHopsLeft();
-            if (t == MessageType.ALL_LINK_BROADCAST) {
-                int group = msg.getAddress("toAddress").getLowByte() & 0xff;
-                byte cmd1 = msg.getByte("command1");
-                // if the command is 0x06, then it's success message
-                // from the original broadcaster, with which the device
-                // confirms that it got all cleanup replies successfully.
-                GroupMessage gm = (cmd1 == 0x06) ? GroupMessage.SUCCESS : GroupMessage.BCAST;
-                isDuplicate = !updateGroupState(group, hops, gm);
-            } else if (t == MessageType.ALL_LINK_CLEANUP) {
-                // the cleanup messages are direct messages, so the
-                // group # is not in the toAddress, but in cmd2
-                int group = msg.getByte("command2") & 0xff;
-                isDuplicate = !updateGroupState(group, hops, GroupMessage.CLEAN);
-            }
-        } catch (IllegalArgumentException e) {
-            logger.error("cannot parse msg: {}", msg, e);
-        } catch (FieldException e) {
-            logger.error("cannot parse msg: {}", msg, e);
-        }
-        return (isDuplicate);
-    }
-
-    /**
-     * Advance the state of the state machine that suppresses duplicates
-     *
-     * @param group the insteon group of the broadcast message
-     * @param hops number of hops left
-     * @param a what type of group message came in (action etc)
-     * @return true if this is message is NOT a duplicate
-     */
-    private boolean updateGroupState(int group, int hops, GroupMessage a) {
-        GroupMessageStateMachine m = data.groupState.get(new Integer(group));
-        if (m == null) {
-            m = new GroupMessageStateMachine();
-            data.groupState.put(new Integer(group), m);
-        }
-        logger.trace("updating group state for {} to {}", group, a);
-        return (m.action(a, hops));
     }
 
     /**

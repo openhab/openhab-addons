@@ -23,7 +23,7 @@ public class LightOnSwitchHandler extends MessageHandler {
     @Override
     public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
         if (isMybutton(msg)) {
-            logger.info("{}: device {} was switched on {}.", nm(), handler.getAddress(), f.getName());
+            logger.info("{}: device {} was switched on {}.", nm(), handler.getAddress(), f.getUID());
             handler.updateFeatureState(f, OnOffType.ON);
         } else {
             logger.debug("ignored message: {}", isMybutton(msg));

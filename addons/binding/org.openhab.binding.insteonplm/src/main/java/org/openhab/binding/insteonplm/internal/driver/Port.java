@@ -75,8 +75,7 @@ public class Port {
         ioStream = stream;
         reader = new IOStreamReader();
         writer = new IOStreamWriter();
-        mdbb = new AllLinkModemDB(this);
-        messageFactory = messageFactory;
+        this.messageFactory = messageFactory;
     }
 
     public synchronized boolean isModemDBComplete() {
@@ -85,10 +84,6 @@ public class Port {
 
     public boolean isRunning() {
         return running;
-    }
-
-    public String getDeviceName() {
-        return devName;
     }
 
     public void setModemDBRetryTimeout(int timeout) {
@@ -303,7 +298,6 @@ public class Port {
             return (l.size());
         }
 
-        @SuppressWarnings("unchecked")
         private void toAllListeners(Message msg) {
             // When we deliver the message, the recipient
             // may in turn call removeListener() or addListener(),

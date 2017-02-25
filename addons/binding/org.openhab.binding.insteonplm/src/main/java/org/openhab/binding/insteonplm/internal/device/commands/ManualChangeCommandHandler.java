@@ -35,7 +35,7 @@ public class ManualChangeCommandHandler extends CommandHandler {
                 int cmd2 = (v == 2) ? 0x01 : 0; // up or down
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2,
                         conf.getInsteonGroup(), conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: cmd {} sent manual change {} {} to {}", nm(), v, (cmd1 == 0x17) ? "START" : "STOP",
                         (cmd2 == 0x01) ? "UP" : "DOWN", conf.getAddress());
             } else {

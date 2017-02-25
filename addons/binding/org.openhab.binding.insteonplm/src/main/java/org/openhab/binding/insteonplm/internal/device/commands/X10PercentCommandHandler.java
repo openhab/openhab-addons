@@ -37,7 +37,7 @@ public class X10PercentCommandHandler extends CommandHandler {
             byte houseCode = conf.getX10HouseCode();
             byte houseUnitCode = (byte) (houseCode << 4 | conf.getX10UnitCode());
             Message munit = conf.getMessageFactory().makeX10Message(houseUnitCode, (byte) 0x00); // send unit code
-            conf.enqueueMessage(munit, getFeature());
+            conf.enqueueMessage(munit);
             PercentType pc = (PercentType) cmd;
             logger.debug("{}: changing level of {} to {}", nm(), conf.getAddress(), pc.intValue());
             int level = (pc.intValue() * 32) / 100;
@@ -49,7 +49,7 @@ public class X10PercentCommandHandler extends CommandHandler {
             houseCode = (byte) s_X10CodeForLevel[level];
             cmdCode |= (houseCode << 4);
             Message mcmd = conf.getMessageFactory().makeX10Message(cmdCode, (byte) 0x80); // send command code
-            conf.enqueueMessage(mcmd, getFeature());
+            conf.enqueueMessage(mcmd);
         } catch (IOException e) {
             logger.error("{}: command send i/o error: ", nm(), e);
         } catch (FieldException e) {

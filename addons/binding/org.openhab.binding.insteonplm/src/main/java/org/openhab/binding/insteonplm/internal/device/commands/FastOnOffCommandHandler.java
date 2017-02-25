@@ -33,13 +33,13 @@ public class FastOnOffCommandHandler extends CommandHandler {
                 int level = getMaxLightLevel(conf, 0xff);
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x12, (byte) level,
                         conf.getInsteonGroup(), conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent fast on to switch {} level {}", nm(), conf.getAddress(),
                         level == 0xff ? "on" : level);
             } else if (cmd == OnOffType.OFF) {
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x14, (byte) 0x00,
                         conf.getInsteonGroup(), conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent fast off to switch {}", nm(), conf.getAddress());
             }
             // expect to get a direct ack after this!

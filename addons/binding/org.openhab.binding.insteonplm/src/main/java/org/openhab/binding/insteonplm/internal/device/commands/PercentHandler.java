@@ -36,13 +36,13 @@ public class PercentHandler extends CommandHandler {
                 level = getMaxLightLevel(conf, level);
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x11, (byte) level,
                         conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent msg to set {} to {}", nm(), conf.getAddress(), level);
             } else { // switch off
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x13, (byte) 0x00,
                         conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
-                logger.info("{}: sent msg to set {} to zero by switching off", nm(), dev.getAddress());
+                conf.enqueueMessage(m);
+                logger.info("{}: sent msg to set {} to zero by switching off", nm(), conf.getAddress());
             }
         } catch (IOException e) {
             logger.error("{}: command send i/o error: ", nm(), e);

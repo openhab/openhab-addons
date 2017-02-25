@@ -10,7 +10,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.device.InsteonThing;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.slf4j.Logger;
@@ -30,17 +29,17 @@ public class IOLincOnOffCommandHandler extends CommandHandler {
     }
 
     @Override
-    public void handleCommand(InsteonThingHandler conf, ChannelUID channel, Command cmd) {
+    public void handleCommand(final InsteonThingHandler conf, final ChannelUID channel, Command cmd) {
         try {
             if (cmd == OnOffType.ON) {
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x11, (byte) 0xff,
                         conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent msg to switch {} on", nm(), conf.getAddress());
             } else if (cmd == OnOffType.OFF) {
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x13, (byte) 0x00,
                         conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent msg to switch {} off", nm(), conf.getAddress());
             }
             // This used to be configurable, but was made static to make
@@ -52,11 +51,7 @@ public class IOLincOnOffCommandHandler extends CommandHandler {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Message m = getFeature().makePollMsg();
-                    InsteonThing dev = getFeature().getDevice();
-                    if (m != null) {
-                        dev.enqueueMessage(m, getFeature());
-                    }
+                    conf.pollChannel(conf.getThing().getChannel(channel.getId()), true);
                 }
             }, delay);
         } catch (IOException e) {

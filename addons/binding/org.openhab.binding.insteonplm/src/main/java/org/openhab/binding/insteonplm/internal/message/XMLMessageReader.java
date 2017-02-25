@@ -19,7 +19,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.openhab.binding.insteonplm.internal.message.Message.Direction;
-import org.openhab.binding.insteonplm.internal.utils.Pair;
 import org.openhab.binding.insteonplm.internal.utils.Utils.DataTypeParser;
 import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
@@ -72,7 +71,7 @@ public class XMLMessageReader {
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     if (node.getNodeName().equals("msg")) {
                         Pair<String, Message> msgDef = readMessageDefinition((Element) node);
-                        messageMap.put(msgDef.getKey(), msgDef.getValue());
+                        messageMap.put(msgDef.getFirst(), msgDef.getSecond());
                     }
                 }
             }
@@ -118,9 +117,9 @@ public class XMLMessageReader {
                     offset += o;
                 } else {
                     Pair<Field, Object> field = readField((Element) node, offset);
-                    fieldMap.put(field.getKey(), field.getValue());
+                    fieldMap.put(field.getFirst(), field.getSecond());
                     // Increment the offset
-                    offset += field.getKey().getType().getSize();
+                    offset += field.getFirst().getType().getSize();
                 }
             }
         }
@@ -145,8 +144,8 @@ public class XMLMessageReader {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Pair<Field, Object> definition = readField((Element) node, offset);
                 if (definition != null) {
-                    offset += definition.getKey().getType().getSize();
-                    fields.put(definition.getKey(), definition.getValue());
+                    offset += definition.getFirst().getType().getSize();
+                    fields.put(definition.getFirst(), definition.getSecond());
                 }
             }
         }

@@ -84,9 +84,9 @@ public class LightOnOffCommandHandler extends CommandHandler {
                 m = conf.getMessageFactory().makeExtendedMessage((byte) 0x0f, (byte) direc, (byte) level, data,
                         conf.getAddress());
                 logger.info("{}: was an extended message for device {}", nm(), conf.getAddress());
-                if (extended == ExtendedData.extended1) {
+                if (extended == ExtendedData.extendedCrc1) {
                     m.setCRC();
-                } else if (extended == ExtendedData.extended1) {
+                } else if (extended == ExtendedData.extendedCrc2) {
                     m.setCRC2();
                 }
             } else {
@@ -94,7 +94,7 @@ public class LightOnOffCommandHandler extends CommandHandler {
                         conf.getInsteonGroup(), conf.getAddress());
             }
             logger.info("Sending message to {}", conf.getAddress());
-            conf.enqueueMessage(m, getFeature());
+            conf.enqueueMessage(m);
             // expect to get a direct ack after this!
         } catch (IOException e) {
             logger.error("{}: command send i/o error: ", nm(), e);

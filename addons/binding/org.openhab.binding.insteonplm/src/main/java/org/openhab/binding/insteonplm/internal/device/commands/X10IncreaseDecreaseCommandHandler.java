@@ -36,10 +36,10 @@ public class X10IncreaseDecreaseCommandHandler extends CommandHandler {
                 byte houseCommandCode = (byte) (houseCode << 4
                         | (cmd == IncreaseDecreaseType.INCREASE ? X10.Command.BRIGHT.code() : X10.Command.DIM.code()));
                 Message munit = conf.getMessageFactory().makeX10Message(houseUnitCode, (byte) 0x00); // send unit code
-                conf.enqueueMessage(munit, getFeature());
+                conf.enqueueMessage(munit);
                 Message mcmd = conf.getMessageFactory().makeX10Message(houseCommandCode, (byte) 0x80); // send command
                                                                                                        // code
-                conf.enqueueMessage(mcmd, getFeature());
+                conf.enqueueMessage(mcmd);
                 String bd = cmd == IncreaseDecreaseType.INCREASE ? "BRIGHTEN" : "DIM";
                 logger.info("{}: sent msg to switch {} {}", nm(), conf.getAddress(), bd);
             }

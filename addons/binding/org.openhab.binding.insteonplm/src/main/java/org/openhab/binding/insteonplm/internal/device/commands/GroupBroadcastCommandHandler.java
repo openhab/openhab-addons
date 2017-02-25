@@ -41,7 +41,7 @@ public class GroupBroadcastCommandHandler extends CommandHandler {
                         conf.getInsteonGroup());
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, cmd1, value, group,
                         conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
             }
         } catch (IOException e) {
             logger.error("{}: command send i/o error: ", nm(), e);

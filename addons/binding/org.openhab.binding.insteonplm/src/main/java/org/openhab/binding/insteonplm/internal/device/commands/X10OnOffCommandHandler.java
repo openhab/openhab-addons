@@ -36,10 +36,10 @@ public class X10OnOffCommandHandler extends CommandHandler {
                 byte houseCommandCode = (byte) (houseCode << 4
                         | (cmd == OnOffType.ON ? X10.Command.ON.code() : X10.Command.OFF.code()));
                 Message munit = conf.getMessageFactory().makeX10Message(houseUnitCode, (byte) 0x00); // send unit code
-                conf.enqueueMessage(munit, getFeature());
+                conf.enqueueMessage(munit);
                 Message mcmd = conf.getMessageFactory().makeX10Message(houseCommandCode, (byte) 0x80); // send command
                                                                                                        // code
-                conf.enqueueMessage(mcmd, getFeature());
+                conf.enqueueMessage(mcmd);
                 String onOff = cmd == OnOffType.ON ? "ON" : "OFF";
                 logger.info("{}: sent msg to switch {} {}", nm(), conf.getAddress(), onOff);
             }

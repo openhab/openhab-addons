@@ -56,12 +56,12 @@ public class LEDOnOffCommandHandler extends CommandHandler {
             if (cmd == OnOffType.ON) {
                 Message m = conf.getMessageFactory().makeExtendedMessage((byte) 0x1f, (byte) 0x2e, (byte) 0x00,
                         new byte[] { buttonNumber, (byte) 0x09, (byte) 0x01 }, conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent msg to switch {} on", nm(), conf.getAddress());
             } else if (cmd == OnOffType.OFF) {
                 Message m = conf.getMessageFactory().makeExtendedMessage((byte) 0x1f, (byte) 0x2e, (byte) 0x00,
                         new byte[] { buttonNumber, (byte) 0x09, (byte) 0x00 }, conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent msg to switch {} off", nm(), conf.getAddress());
             }
         } catch (IOException e) {

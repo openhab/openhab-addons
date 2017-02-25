@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.openhab.binding.insteonplm.internal.device.InsteonThing;
+import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * puts an entry into that devices request queue. So the Poller class actually never
  * sends out messages directly. That is done by the device itself via its request
  * queue. The poller just reminds the device to poll.
- * 
+ *
  * @author Bernd Pfrommer
  * @since 1.5.0
  */
@@ -42,6 +42,7 @@ public class Poller {
     private Thread m_pollThread = null;
     private TreeSet<PQEntry> m_pollQueue = new TreeSet<PQEntry>();
     private final long MIN_MSEC_BETWEEN_POLLS = 2000L;
+    private final long POLL_INTERVAL = 120000L;
     private boolean m_keepRunning = true;
 
     /**
@@ -52,7 +53,7 @@ public class Poller {
 
     /**
      * Get size of poll queue
-     * 
+     *
      * @return number of devices being polled
      */
     public int getSizeOfQueue() {
@@ -61,17 +62,17 @@ public class Poller {
 
     /**
      * Register a device for polling.
-     * 
+     *
      * @param d device to register for polling
      * @param aNumDev approximate number of total devices
      */
-    public void startPolling(InsteonThing d, int aNumDev) {
+    public void startPolling(InsteonThingHandler d, int aNumDev) {
         logger.debug("start polling device {}", d);
         synchronized (m_pollQueue) {
             // try to spread out the scheduling when
             // starting up
             int n = m_pollQueue.size();
-            long pollDelay = n * d.getPollInterval() / (aNumDev > 0 ? aNumDev : 1);
+            long pollDelay = n * POLL_INTERVAL / (aNumDev > 0 ? aNumDev : 1);
             addToPollQueue(d, System.currentTimeMillis() + pollDelay);
             m_pollQueue.notify();
         }
@@ -79,10 +80,10 @@ public class Poller {
 
     /**
      * Start polling a given device
-     * 
+     *
      * @param d reference to the device to be polled
      */
-    public void stopPolling(InsteonThing d) {
+    public void stopPolling(InsteonThingHandler d) {
         synchronized (m_pollQueue) {
             for (Iterator<PQEntry> i = m_pollQueue.iterator(); i.hasNext();) {
                 if (i.next().getDevice().getAddress().equals(d.getAddress())) {
@@ -125,13 +126,13 @@ public class Poller {
     /**
      * Adds a device to the poll queue. After this call, the device's doPoll() method
      * will be called according to the polling frequency set.
-     * 
+     *
      * @param d the device to poll periodically
      * @param time the target time for the next poll to happen. Note that this time is merely
      *            a suggestion, and may be adjusted, because there must be at least a minimum gap in polling.
      */
 
-    private void addToPollQueue(InsteonThing d, long time) {
+    private void addToPollQueue(InsteonThingHandler d, long time) {
         long texp = findNextExpirationTime(d, time);
         PQEntry ne = new PQEntry(d, texp);
         logger.trace("added entry {} originally aimed at time {}", ne, String.format("%tc", new Date(time)));
@@ -148,7 +149,7 @@ public class Poller {
      * @return the suggested time to poll
      */
 
-    private long findNextExpirationTime(InsteonThing d, long aTime) {
+    private long findNextExpirationTime(InsteonThingHandler d, long aTime) {
         long expTime = aTime;
         // tailSet finds all those that expire after aTime - buffer
         SortedSet<PQEntry> ts = m_pollQueue.tailSet(new PQEntry(d, aTime - MIN_MSEC_BETWEEN_POLLS));
@@ -202,7 +203,7 @@ public class Poller {
         /**
          * Waits for first element of poll queue to become current,
          * then process it.
-         * 
+         *
          * @throws InterruptedException
          */
         private void readPollQueue() throws InterruptedException {
@@ -229,28 +230,28 @@ public class Poller {
         /**
          * Takes first element off the poll queue, polls the corresponding device,
          * and puts the device back into the poll queue to be polled again later.
-         * 
+         *
          * @param now the current time
          */
         private void processQueue(long now) {
             PQEntry pqe = m_pollQueue.pollFirst();
             pqe.getDevice().doPoll(0);
-            addToPollQueue(pqe.getDevice(), now + pqe.getDevice().getPollInterval());
+            addToPollQueue(pqe.getDevice(), now + POLL_INTERVAL);
         }
     }
 
     /**
      * A poll queue entry corresponds to a single device that needs
      * to be polled.
-     * 
+     *
      * @author Bernd Pfrommer
      *
      */
     private static class PQEntry implements Comparable<PQEntry> {
-        private InsteonThing m_dev = null;
+        private InsteonThingHandler m_dev = null;
         private long m_expirationTime = 0L;
 
-        PQEntry(InsteonThing dev, long time) {
+        PQEntry(InsteonThingHandler dev, long time) {
             m_dev = dev;
             m_expirationTime = time;
         }
@@ -259,7 +260,7 @@ public class Poller {
             return m_expirationTime;
         }
 
-        InsteonThing getDevice() {
+        InsteonThingHandler getDevice() {
             return m_dev;
         }
 
@@ -276,7 +277,7 @@ public class Poller {
 
     /**
      * Singleton pattern instance() method
-     * 
+     *
      * @return the poller instance
      */
     public static synchronized Poller s_instance() {

@@ -32,12 +32,12 @@ public class IncreaseDecreaseCommandHandler extends CommandHandler {
             if (cmd == IncreaseDecreaseType.INCREASE) {
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x15, (byte) 0x00,
                         conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent msg to brighten {}", nm(), conf.getAddress());
             } else if (cmd == IncreaseDecreaseType.DECREASE) {
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x16, (byte) 0x00,
                         conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent msg to dimm {}", nm(), conf.getAddress());
             }
         } catch (IOException e) {

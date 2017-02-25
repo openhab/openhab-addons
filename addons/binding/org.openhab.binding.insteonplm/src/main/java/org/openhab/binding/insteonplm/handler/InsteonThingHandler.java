@@ -459,4 +459,10 @@ public class InsteonThingHandler extends BaseThingHandler {
         }
         return 0;
     }
+
+    /** Work out the ramp time from another channel. */
+    public double getRampTime() {
+
+        return 1;
+    }
 }

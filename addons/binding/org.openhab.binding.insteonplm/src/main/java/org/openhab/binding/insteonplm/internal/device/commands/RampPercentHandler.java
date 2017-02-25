@@ -36,13 +36,13 @@ public class RampPercentHandler extends RampCommandHandler {
                 byte cmd2 = encode(ramptime, level);
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2,
                         conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent msg to set {} to {} with {} second ramp time.", nm(), conf.getAddress(), level,
                         ramptime);
             } else { // switch off
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOffCmd(), (byte) 0x00,
                         conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent msg to set {} to zero by switching off with {} ramp time.", nm(),
                         conf.getAddress(), ramptime);
             }

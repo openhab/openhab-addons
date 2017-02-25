@@ -30,21 +30,21 @@ public class RampOnOffCommandHandler extends RampCommandHandler {
     public void handleCommand(InsteonThingHandler conf, ChannelUID channelId, Command cmd) {
         try {
             if (cmd == OnOffType.ON) {
-                double ramptime = getRampTime(conf, 0);
+                double ramptime = conf.getRampTime();
                 int ramplevel = getRampLevel(conf, 100);
                 byte cmd2 = encode(ramptime, ramplevel);
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2,
                         conf.getInsteonGroup(), conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent ramp on to switch {} time {} level {} cmd1 {}", nm(), conf.getAddress(), ramptime,
                         ramplevel, getOnCmd());
             } else if (cmd == OnOffType.OFF) {
-                double ramptime = getRampTime(conf, 0);
+                double ramptime = conf.getRampTime();
                 int ramplevel = getRampLevel(conf, 0 /* ignored */);
                 byte cmd2 = encode(ramptime, ramplevel);
                 Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOffCmd(), cmd2,
                         conf.getInsteonGroup(), conf.getAddress());
-                conf.enqueueMessage(m, getFeature());
+                conf.enqueueMessage(m);
                 logger.info("{}: sent ramp off to switch {} time {} cmd1 {}", nm(), conf.getAddress(), ramptime,
                         getOffCmd());
             }

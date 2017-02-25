@@ -135,7 +135,7 @@ public class NumberCommandHandler extends CommandHandler {
                 m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, cmd1, cmd2, conf.getAddress());
                 m.setByte(fieldForValue, level);
             }
-            conf.enqueueMessage(m, getFeature());
+            conf.enqueueMessage(m);
             logger.info("{}: sent msg to change level to {}", nm(), ((DecimalType) cmd).intValue());
             m = null;
         } catch (IOException e) {

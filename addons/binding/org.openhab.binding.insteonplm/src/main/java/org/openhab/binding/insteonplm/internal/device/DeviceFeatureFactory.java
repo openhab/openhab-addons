@@ -225,7 +225,7 @@ public class DeviceFeatureFactory {
             T phc = dc.getDeclaredConstructor(PollHandler.class).newInstance(cname);
             return phc;
         } catch (Exception e) {
-            logger.error("error trying to create message handler: {}", pollHandlerClass.getHandlerName(), e);
+            logger.error("error trying to create message handler: {}", pollHandlerClass, e);
         }
         return null;
     }
