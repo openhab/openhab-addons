@@ -8,6 +8,7 @@
  */
 package org.openhab.ui.cometvisu.servlet;
 
+import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -42,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.events.ItemEventFactory;
@@ -519,10 +521,13 @@ public class CometVisuServlet extends HttpServlet {
         }
         // Check if file actually exists in filesystem.
         if (!file.exists()) {
-            // Do your thing if the file appears to be non-existing.
-            // Throw an exception, or send 404, or show default/warning page, or
-            // just ignore it.
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            // show installation hints if the CometVisu-Clients main index.html is requested but cannot be found
+            if (file.getParent().equals(rootFolder.getCanonicalPath())
+                    && (file.getName().equalsIgnoreCase("index.html") || file.getName().length() == 0)) {
+                showInstallationHint(request, response);
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
             return;
         }
 
@@ -777,6 +782,20 @@ public class CometVisuServlet extends HttpServlet {
             close(output);
             close(input);
         }
+    }
+
+    /**
+     * Show hints for solving installation problems
+     *
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    private void showInstallationHint(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        BufferedInputStream in = new BufferedInputStream(getClass().getResourceAsStream("/404.html"));
+        String everything = IOUtils.toString(in);
+        response.getWriter().write(everything);
+        response.flushBuffer();
     }
 
     /**
