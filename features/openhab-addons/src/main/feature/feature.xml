@@ -379,7 +379,7 @@
 
     <!-- ui -->
 
-    <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
+    <feature name="openhab-ui-cometvisu" description="CometVisu Backend" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>esh-model-item</feature>
         <feature>esh-model-sitemap</feature>
