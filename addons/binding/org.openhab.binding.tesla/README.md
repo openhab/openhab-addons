@@ -29,7 +29,7 @@ All devices support the following channels (non exhaustive):
 | Channel Type ID | Item Type    | Description  |
 |-----------------|------------------------|--------------|----------------- |------------- |
 | charge | Switch       | This channel supports starting or stopping the charging process of the vehicle |
-| location | Location       | This channel indicates the actual location (latitude, longitude, elevation) of the vehicle |
+| location | Location       | This channel indicates the actual location (latitude, longitude, elevation) of the vehicle whilst driving|
 | doorlock | Switch       | This channel supports locking or unlocking the doors of the vehicle |
 | insidetemp | Number       | This channel indicates the inside temperature of the vehicle |
 | odometer | Number       | This channel indicates the actual state of the vehicle's odometer, in km or miles along the build of the vehicle (EU or US) |
@@ -69,7 +69,6 @@ DateTime TeslaEventstamp {channel="tesla:models:1:eventstamp"}
 Number 	TeslaOdometer {channel="tesla:models:1:odometer"}
 Number	TeslaLatitude {channel="tesla:models:1:latitude"}
 Number	TeslaLongitude {channel="tesla:models:1:longitude"}
-Number	TeslaElevation {channel="tesla:models:1:elevation"}
 Number	TeslaHeading {channel="tesla:models:1:heading"}
 DateTime TeslaGPSStamp {channel="tesla:models:1:gpstimestamp"}
 ```

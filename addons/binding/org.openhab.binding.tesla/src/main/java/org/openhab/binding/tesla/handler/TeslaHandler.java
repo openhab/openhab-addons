@@ -79,7 +79,7 @@ import com.google.gson.JsonParser;
  */
 public class TeslaHandler extends BaseThingHandler {
 
-    public static final int EVENT_REFRESH_INTERVAL = 200;
+    public static final int EVENT_REFRESH_INTERVAL = 2000;
     public static final int FAST_STATUS_REFRESH_INTERVAL = 15000;
     public static final int SLOW_STATUS_REFRESH_INTERVAL = 60000;
     public static final int EVENT_RETRY_INTERVAL = 5000;
@@ -121,8 +121,9 @@ public class TeslaHandler extends BaseThingHandler {
     protected QueueChannelThrottler stateThrottler;
 
     protected long intervalTimestamp = 0;
+    protected long lastEventTimeStamp;
     protected int intervalErrors = 0;
-    protected ReentrantLock lock;
+    protected ReentrantLock lock = new ReentrantLock();;
 
     protected Gson gson = new Gson();
     protected TeslaChannelSelectorProxy teslaChannelSelectorProxy = new TeslaChannelSelectorProxy();
@@ -138,8 +139,6 @@ public class TeslaHandler extends BaseThingHandler {
         logger.trace("Initializing the Tesla handler for {}", getThing().getUID());
 
         updateStatus(ThingStatus.UNKNOWN);
-
-        lock = new ReentrantLock();
 
         lock.lock();
         try {
@@ -524,6 +523,9 @@ public class TeslaHandler extends BaseThingHandler {
                         try {
                             TeslaChannelSelector selector = TeslaChannelSelector
                                     .getValueSelectorFromRESTID(entry.getKey());
+                            if (selector == TeslaChannelSelector.TIMESTAMP && !entry.getValue().isJsonNull()) {
+                                this.lastEventTimeStamp = Long.valueOf(entry.getValue().getAsString());
+                            }
                             if (!selector.isProperty()) {
                                 if (!entry.getValue().isJsonNull()) {
                                     updateState(selector.getChannelID(), teslaChannelSelectorProxy
@@ -795,16 +797,13 @@ public class TeslaHandler extends BaseThingHandler {
 
     protected Runnable eventRunnable = new Runnable() {
 
-        boolean isEstablished = false;
-        long emptyLineCounter = 0;
-        long lastEventSystemTime = 0;
-        long lastEventStreamEstablishedTime = 0;
-        String lastEventTimeStamp = "";
         Response eventResponse;
         BufferedReader eventBufferedReader;
         InputStreamReader eventInputStreamReader;
+        long eventLastEventTimeStamp;
 
-        protected void establishEventStream() {
+        protected boolean establishEventStream() {
+            boolean isEstablished = false;
             try {
                 eventBufferedReader = null;
 
@@ -813,7 +812,7 @@ public class TeslaHandler extends BaseThingHandler {
                 }
 
                 eventClient = ClientBuilder.newClient().property(ClientProperties.CONNECT_TIMEOUT, 3000)
-                        .property(ClientProperties.READ_TIMEOUT, 1000)
+                        .property(ClientProperties.READ_TIMEOUT, 5000)
                         .register(new Authenticator((String) getConfig().get(USERNAME), vehicle.tokens[0]));
                 eventTarget = eventClient.target(TESLA_EVENT_URI).path(vehicle.vehicle_id + "/").queryParam("values",
                         StringUtils.join(EventKeys.values(), ',', 1, EventKeys.values().length));
@@ -827,8 +826,9 @@ public class TeslaHandler extends BaseThingHandler {
                     eventInputStreamReader = new InputStreamReader(dummy);
                     eventBufferedReader = new BufferedReader(eventInputStreamReader);
                     isEstablished = true;
-                    lastEventStreamEstablishedTime = System.currentTimeMillis();
-                    lastEventSystemTime = lastEventStreamEstablishedTime;
+                } else if (eventResponse.getStatus() == 401) {
+                    updateStatus(ThingStatus.OFFLINE);
+                    isEstablished = false;
                 } else {
                     isEstablished = false;
                 }
@@ -838,6 +838,8 @@ public class TeslaHandler extends BaseThingHandler {
                         e.getMessage());
                 isEstablished = false;
             }
+
+            return isEstablished;
         }
 
         @Override
@@ -845,49 +847,22 @@ public class TeslaHandler extends BaseThingHandler {
             try {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     if (isAwake()) {
-                        if (!isEstablished
-                                && (System.currentTimeMillis() - lastEventSystemTime > EVENT_RETRY_INTERVAL)) {
-                            establishEventStream();
-                        }
+                        if (establishEventStream()) {
 
-                        if (!isEstablished && lastEventStreamEstablishedTime != 0 && (System.currentTimeMillis()
-                                - lastEventStreamEstablishedTime > EVENT_RECOVERY_INTERVAL)) {
-                            logger.warn(
-                                    "Event Stream : Resetting the vehicle connection because of a failing event stream");
-                            updateStatus(ThingStatus.OFFLINE);
-                        }
+                            String line = null;
+                            try {
+                                line = eventBufferedReader.readLine();
+                            } catch (Exception e) {
+                                logger.error("Event Stream : An exception occurred while reading events : '{}'",
+                                        e.getMessage());
+                            }
 
-                        if (isEstablished && lastEventSystemTime != 0 && !(isInMotion()) && (System.currentTimeMillis()
-                                - lastEventSystemTime > EVENT_MISSING_WHILE_STATIONARY_INTERVAL)) {
-                            logger.debug(
-                                    "Event Stream : Mmh... we are not getting any events anymore while being stationary");
-                            isEstablished = false;
-                        }
-
-                        if (isEstablished && lastEventSystemTime != 0 && isInMotion() && (System.currentTimeMillis()
-                                - lastEventSystemTime > EVENT_MISSING_WHILE_MOVING_INTERVAL)) {
-                            logger.debug("Event Stream : Mmh... we are not getting any events anymore while moving");
-                            isEstablished = false;
-                        }
-
-                        try {
-                            if (isEstablished) {
-                                String line = null;
+                            while (line != null) {
                                 try {
-                                    line = eventBufferedReader.readLine();
-                                } catch (SocketTimeoutException s) {
-                                    // Nothing to do here - we move on
-                                } catch (Exception e) {
-                                    logger.error("An exception occurred while reading events : '{}'", e.getMessage());
-                                    isEstablished = false;
-                                }
-                                if (line != null) {
-                                    emptyLineCounter = 0;
-                                    lastEventSystemTime = System.currentTimeMillis();
                                     logger.debug("Event Stream : Received an event: '{}'", line);
                                     String vals[] = line.split(",");
-                                    if (!vals[0].equals(lastEventTimeStamp)) {
-                                        lastEventTimeStamp = vals[0];
+                                    if (Long.valueOf(vals[0]) > eventLastEventTimeStamp) {
+                                        eventLastEventTimeStamp = Long.valueOf(vals[0]);
                                         for (int i = 0; i < EventKeys.values().length; i++) {
                                             try {
                                                 TeslaChannelSelector selector = TeslaChannelSelector
@@ -913,35 +888,47 @@ public class TeslaHandler extends BaseThingHandler {
                                                         e.getMessage());
                                             }
                                         }
+                                    } else {
+                                        logger.debug(
+                                                "Event Stream : Discarding an event with an out of sync timestamp");
                                     }
-                                } else {
-                                    emptyLineCounter++;
-                                    logger.trace("Event Stream : Empty Line # {}", emptyLineCounter);
+
+                                } catch (Exception e) {
+                                    logger.error(
+                                            "Event Stream : An exception occurred while reading event inputs from vehicle '{}' : {}",
+                                            vehicle.vin, e.getMessage());
+                                }
+
+                                Thread.sleep(100);
+
+                                try {
+                                    line = null;
+                                    line = eventBufferedReader.readLine();
+                                } catch (SocketTimeoutException s) {
+                                    logger.error("Event Stream : An timeout occurred while reading events : '{}'",
+                                            s.getMessage());
+                                    // Nothing to do here - we move on
+                                } catch (Exception e) {
+                                    logger.error("Event Stream : An exception occurred while reading events : '{}'",
+                                            e.getMessage());
+
                                 }
                             }
-                        } catch (Exception e) {
-                            logger.error(
-                                    "Event Stream : An exception occurred while reading event inputs from vehicle '{}' : {}",
-                                    vehicle.vin, e.getMessage());
-                            isEstablished = false;
-                        }
-                    } else {
-                        logger.debug("Event stream : The vehicle is not awake");
-                        if (vehicle != null) {
-                            // wake up the vehicle until streaming token <> 0
-                            logger.debug("Event stream : Wake up vehicle");
-                            sendCommand(TESLA_COMMAND_WAKE_UP);
                         } else {
-                            logger.debug("Event stream : Querying the vehicle");
-                            vehicle = queryVehicle();
+                            logger.debug("Event stream : The vehicle is not awake");
+                            if (vehicle != null) {
+                                // wake up the vehicle until streaming token <> 0
+                                logger.debug("Event stream : Wake up vehicle");
+                                sendCommand(TESLA_COMMAND_WAKE_UP);
+                            } else {
+                                logger.debug("Event stream : Querying the vehicle");
+                                vehicle = queryVehicle();
+                            }
                         }
                     }
-                } else {
-                    isEstablished = false;
                 }
             } catch (Exception t) {
                 logger.error("Event Stream : An exception ocurred in the event stream thread: '{}'", t.getMessage());
-                isEstablished = false;
             }
         }
     };
