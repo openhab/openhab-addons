@@ -82,6 +82,7 @@ An complementary altitude (optional) configuration item can also be specified to
             * `azimuth, elevation` (Number)
 
 ### Trigger Channels
+
 * **thing** `sun`
     * **group** `rise, set, noon, night, morningNight, astroDawn, nauticDawn, civilDawn, astroDusk, nauticDusk, civilDusk, eveningNight, daylight`
         * **event** `START, END`
@@ -101,9 +102,21 @@ An complementary altitude (optional) configuration item can also be specified to
     * **group** `apogee`
         * **event**: `APOGEE`
 
-**Offsets:** For each event group you can optionally configure an offset in minutes.
-The offset must be configured in the channel properties for the corresponding thing.
+### Channel config
+
+**Offsets:** For each event group you can optionally configure an `offset` in minutes. The `offset` must be configured in the channel properties for the corresponding thing.
+
 The minimum allowed offset is -1440 and the maximum allowed offset is 1440.
+
+**Earliest/Latest:** For each trigger channel and `start`, `end` datetime value, you can optionally configure the `earliest` and `latest` time of the day.  
+
+e.g `sun#rise earliest=18:00, latest=20:00`
+
+sunrise is 17:40, but `earliest` is set to 18:00 so the event/datetime value is moved to 18:00.
+
+OR
+
+sunrise is 22:10 but `latest` is set to 20:00 so the event/datetime value is moved 20:00.
 
 ## Full Example
 

@@ -10,9 +10,14 @@ package org.openhab.binding.astro.internal.util;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.model.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Common used DateTime functions.
@@ -20,6 +25,9 @@ import org.openhab.binding.astro.internal.model.Range;
  * @author Gerhard Riegler - Initial contribution
  */
 public class DateTimeUtils {
+    private static final Logger logger = LoggerFactory.getLogger(DateTimeUtils.class);
+    private static final Pattern HHMM_PATTERN = Pattern.compile("^([0-1][0-9]|2[0-3])(:[0-5][0-9])$");
+
     public static final double J1970 = 2440588.0;
     public static final double MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -157,16 +165,59 @@ public class DateTimeUtils {
     }
 
     /**
-     * Adds or subtracts the specified offset in minutes to the given calendar.
+     * Applies the config to the given calendar.
      */
-    public static Calendar addOffset(Calendar cal, int offset) {
-        if (offset == 0) {
-            return cal;
+    public static Calendar applyConfig(Calendar cal, AstroChannelConfig config) {
+        Calendar cCal = cal;
+        if (config.getOffset() != null && config.getOffset() != 0) {
+            Calendar cOffset = Calendar.getInstance();
+            cOffset.setTime(cCal.getTime());
+            cOffset.add(Calendar.MINUTE, config.getOffset());
+            cCal = cOffset;
         }
 
-        Calendar c = Calendar.getInstance();
-        c.setTime(cal.getTime());
-        c.add(Calendar.MINUTE, offset);
-        return c;
+        Calendar cEarliest = adjustTime(cCal, getMinutesFromTime(config.getEarliest()));
+        if (cCal.before(cEarliest)) {
+            return cEarliest;
+        }
+        Calendar cLatest = adjustTime(cCal, getMinutesFromTime(config.getLatest()));
+        if (cCal.after(cLatest)) {
+            return cLatest;
+        }
+
+        return cCal;
+    }
+
+    private static Calendar adjustTime(Calendar cal, int minutes) {
+        if (minutes > 0) {
+            Calendar cTime = Calendar.getInstance();
+            cTime = DateUtils.truncate(cal, Calendar.DAY_OF_MONTH);
+            cTime.add(Calendar.MINUTE, minutes);
+            return cTime;
+        }
+        return cal;
+    }
+
+    /**
+     * Parses a HH:MM string and returns the minutes.
+     */
+    private static int getMinutesFromTime(String configTime) {
+        String time = StringUtils.trimToNull(configTime);
+        if (time != null) {
+            try {
+                if (!HHMM_PATTERN.matcher(time).matches()) {
+                    throw new NumberFormatException();
+                } else {
+                    int hour = Integer.parseInt(StringUtils.substringBefore(time, ":"));
+                    int minutes = Integer.parseInt(StringUtils.substringAfter(time, ":"));
+                    return (hour * 60) + minutes;
+                }
+            } catch (Exception ex) {
+                logger.warn(
+                        "Can not parse astro channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
+                        time);
+            }
+        }
+        return 0;
     }
 }
