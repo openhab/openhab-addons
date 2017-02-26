@@ -133,7 +133,7 @@ All supported configuration parameters for serial port connection:
 This binding currently supports following channels for F1x45 pump models:
 
 | Channel Type ID | Item Type | Min | Max | Type | Description | Values |
-|-|-|-|-|-|-|-|
+|-----------------|-----------|-----|-----|------|-------------|--------|
 | 40004 | Number | -32767 | 32767 | Setting | BT1 Outdoor temp |  |
 | 40005 | Number | -32767 | 32767 | Setting | EP23-BT2 Supply temp S4 |  |
 | 40006 | Number | -32767 | 32767 | Setting | EP22-BT2 Supply temp S3 |  |
