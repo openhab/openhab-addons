@@ -109,7 +109,6 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     public void dispose() {
         logger.debug("Handler disposed.");
         if (pollingJob != null && !pollingJob.isCancelled()) {
-        	logger.debug("stop polling job");
             pollingJob.cancel(true);
             pollingJob = null;
         }
@@ -211,7 +210,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     private synchronized void onUpdate() {
         if (this.getThing() != null) {
             if (pollingJob == null || pollingJob.isCancelled()) {
-                logger.debug("start polling job at intervall {}", refreshInterval);
+                logger.debug("start polling job at intervall " + refreshInterval);
                 pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
             } else {
                 logger.debug("pollingJob active");
