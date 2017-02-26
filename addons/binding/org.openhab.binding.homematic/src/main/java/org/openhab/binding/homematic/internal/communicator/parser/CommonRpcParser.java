@@ -180,7 +180,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             return (Boolean.FALSE);
         } else if (value.matches("(-|\\+)?[0-9]+")) {
             return (Integer.valueOf(value));
-        } else if (value.matches("(-|\\+)?[0-9]+\\.[0-9]+")) {
+        } else if (value.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
             return (Double.valueOf(value));
         } else {
             return value;
