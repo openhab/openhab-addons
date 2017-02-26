@@ -88,12 +88,11 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 5).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 6)
                     .addControlChannel(CHANNEL_PADDLEACTION).build();
         } else if (thingTypeUID.equals(REMOTELINC_8_THING_TYPE) || thingTypeUID.equals(KEYPADLINC_8_THING_TYPE)) {
-            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_DIMMERLEVEL, 1)
-                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_A, 2).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_B, 1)
-                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 4).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 3)
-                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_E, 6).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_F, 5)
-                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_G, 8).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_H, 7)
-                    .build();
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_A, 2)
+                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_B, 1).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 4)
+                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 3).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_E, 6)
+                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_F, 5).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_G, 8)
+                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_H, 7).build();
         } else if (thingTypeUID.equals(THING_TYPE_ISYBRIDGE)) {
             IsyBridgeHandler handler = new IsyBridgeHandler((Bridge) thing);
             registerIsyBridgeDiscoveryService(handler);
