@@ -1,0 +1,5285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nibeheatpump"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" 
+xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="type-40004">
+		<item-type>Number</item-type>
+		<label>BT1 Outdoor temp</label>
+		<description>Outdoor temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40005">
+		<item-type>Number</item-type>
+		<label>EP23-BT2 Supply temp S4</label>
+		<description>Supply temperature for system 4</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40006">
+		<item-type>Number</item-type>
+		<label>EP22-BT2 Supply temp S3</label>
+		<description>Supply temperature for system 3</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40007">
+		<item-type>Number</item-type>
+		<label>EP21-BT2 Supply temp S2</label>
+		<description>Supply temperature for system 2</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40008">
+		<item-type>Number</item-type>
+		<label>BT2 Supply temp S1</label>
+		<description>Supply temperature for system 1</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40012">
+		<item-type>Number</item-type>
+		<label>EB100-EP14-BT3 Return temp</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40013">
+		<item-type>Number</item-type>
+		<label>BT7 Hot Water top</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40014">
+		<item-type>Number</item-type>
+		<label>BT6 Hot Water load</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40015">
+		<item-type>Number</item-type>
+		<label>EB100-EP14-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40016">
+		<item-type>Number</item-type>
+		<label>EB100-EP14-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40017">
+		<item-type>Number</item-type>
+		<label>EB100-EP14-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40018">
+		<item-type>Number</item-type>
+		<label>EB100-EP14-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40019">
+		<item-type>Number</item-type>
+		<label>EB100-EP14-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40022">
+		<item-type>Number</item-type>
+		<label>EB100-EP14-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40025">
+		<item-type>Number</item-type>
+		<label>EB100-BT20 Exhaust air temp. 1</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40026">
+		<item-type>Number</item-type>
+		<label>EB100-BT21 Vented air temp. 1</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40028">
+		<item-type>Number</item-type>
+		<label>AZ1-BT26 Temp Collector in FLM 1</label>
+		<description>Connected to the FLM module</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40029">
+		<item-type>Number</item-type>
+		<label>AZ1-BT27 Temp Collector out FLM 1</label>
+		<description>Connected to the FLM module</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40030">
+		<item-type>Number</item-type>
+		<label>EP23-BT50 Room Temp S4</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40031">
+		<item-type>Number</item-type>
+		<label>EP22-BT50 Room Temp S3</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40032">
+		<item-type>Number</item-type>
+		<label>EP21-BT50 Room Temp S2</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40033">
+		<item-type>Number</item-type>
+		<label>BT50 Room Temp S1</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40042">
+		<item-type>Number</item-type>
+		<label>CL11-BT51 Pool 1 Temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40043">
+		<item-type>Number</item-type>
+		<label>EP8-BT53 Solar Panel Temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40044">
+		<item-type>Number</item-type>
+		<label>EP8-BT54 Solar Load Temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40045">
+		<item-type>Number</item-type>
+		<label>EQ1-BT64 Cool Supply Temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40046">
+		<item-type>Number</item-type>
+		<label>EQ1-BT65 Cool Return Temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40054">
+		<item-type>Number</item-type>
+		<label>EB100-FD1 Temperature limiter</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40067">
+		<item-type>Number</item-type>
+		<label>BT1 Average</label>
+		<description>EB100-BT1 Outdoor temperature average</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40070">
+		<item-type>Number</item-type>
+		<label>EM1-BT52 Boiler temperature</label>
+		<description>Temperature of Boiler</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40071">
+		<item-type>Number</item-type>
+		<label>BT25 external supply temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40072">
+		<item-type>Number</item-type>
+		<label>BF1 Flow</label>
+		<description>Current flow</description>
+		<state pattern="%.1f l/m" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40074">
+		<item-type>Number</item-type>
+		<label>EB100-FR1 Anode Status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40079">
+		<item-type>Number</item-type>
+		<label>EB100-BE3 Current Phase 3</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40081">
+		<item-type>Number</item-type>
+		<label>EB100-BE2 Current Phase 2</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40083">
+		<item-type>Number</item-type>
+		<label>EB100-BE1 Current Phase 1</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40106">
+		<item-type>Number</item-type>
+		<label>CL12-BT51 Pool 2 Temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40107">
+		<item-type>Number</item-type>
+		<label>EB100-BT20 Exhaust air temp. 4</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40108">
+		<item-type>Number</item-type>
+		<label>EB100-BT20 Exhaust air temp. 3</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40109">
+		<item-type>Number</item-type>
+		<label>EB100-BT20 Exhaust air temp. 2</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40110">
+		<item-type>Number</item-type>
+		<label>EB100-BT21 Vented air temp. 4</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40111">
+		<item-type>Number</item-type>
+		<label>EB100-BT21 Vented air temp. 3</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40112">
+		<item-type>Number</item-type>
+		<label>EB100-BT21 Vented air temp. 2</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40113">
+		<item-type>Number</item-type>
+		<label>AZ4-BT26 Temp Collector in FLM 4</label>
+		<description>Connected to the FLM module</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40114">
+		<item-type>Number</item-type>
+		<label>AZ3-BT26 Temp Collector in FLM 3</label>
+		<description>Connected to the FLM module</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40115">
+		<item-type>Number</item-type>
+		<label>AZ2-BT26 Temp Collector in FLM 2</label>
+		<description>Connected to the FLM module</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40116">
+		<item-type>Number</item-type>
+		<label>AZ4-BT27 Temp Collector out FLM 4</label>
+		<description>Connected to the FLM module</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40117">
+		<item-type>Number</item-type>
+		<label>AZ3-BT27 Temp Collector out FLM 3</label>
+		<description>Connected to the FLM module</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40118">
+		<item-type>Number</item-type>
+		<label>AZ2-BT27 Temp Collector out FLM 2</label>
+		<description>Connected to the FLM module</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40127">
+		<item-type>Number</item-type>
+		<label>EP23-BT3 Return temp S4</label>
+		<description>Return temperature for system 4</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40128">
+		<item-type>Number</item-type>
+		<label>EP22-BT3 Return temp S3</label>
+		<description>Return temperature for system 3</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40129">
+		<item-type>Number</item-type>
+		<label>EP21-BT3 Return temp S2</label>
+		<description>Return temperature for system 2</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40155">
+		<item-type>Number</item-type>
+		<label>EQ1-BT57 Collector temp.</label>
+		<description>External collector temperature for ACS</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-40156">
+		<item-type>Number</item-type>
+		<label>EQ1-BT75 Heatdump temp.</label>
+		<description>Heating medium dump temperature for ACS</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43001">
+		<item-type>Number</item-type>
+		<label>Software version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43005">
+		<item-type>Number</item-type>
+		<label>Degree Minutes</label>
+		<description></description>
+		<state min="-30000" max="30000" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-43006">
+		<item-type>Number</item-type>
+		<label>Calculated Supply Temperature S4</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43007">
+		<item-type>Number</item-type>
+		<label>Calculated Supply Temperature S3</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43008">
+		<item-type>Number</item-type>
+		<label>Calculated Supply Temperature S2</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43009">
+		<item-type>Number</item-type>
+		<label>Calculated Supply Temperature S1</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43013">
+		<item-type>String</item-type>
+		<label>Freeze Protection Status</label>
+		<description>1 = Freeze protection active</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="1">Freeze protection active</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-43024">
+		<item-type>String</item-type>
+		<label>Status Cooling</label>
+		<description> 0=Off 1=On</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-43081">
+		<item-type>Number</item-type>
+		<label>Tot. op.time add.</label>
+		<description>Total electric additive operation time</description>
+		<state pattern="%.1f h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43084">
+		<item-type>Number</item-type>
+		<label>Int. el.add. Power</label>
+		<description>Current power from the internal electrical addition</description>
+		<state pattern="%.2f kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43086">
+		<item-type>String</item-type>
+		<label>Prio</label>
+		<description>Indicates what heating action (HW/heat/pool) currently prioritised 10=Off 20=Hot Water 30=Heat 40=Pool 41=Pool 2 50=Transfer 60=Cooling</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="10">Off</option>
+				<option value="20">Hot Water</option>
+				<option value="30">Heat</option>
+				<option value="40">Pool</option>
+				<option value="41">Pool 2</option>
+				<option value="50">Transfer</option>
+				<option value="60">Cooling</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-43091">
+		<item-type>Number</item-type>
+		<label>Int. el.add. State</label>
+		<description>State of the internal electrical addition</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43097">
+		<item-type>String</item-type>
+		<label>Status of the shunt controlled additional heat accessory</label>
+		<description>10 = Off, 20 = Running, 30 = Passive</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="10">Off</option>
+				<option value="20">Running</option>
+				<option value="30">Passive</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-43103">
+		<item-type>Number</item-type>
+		<label>HPAC state</label>
+		<description>State of the HPAC cooling accessory.</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43108">
+		<item-type>Number</item-type>
+		<label>Fan speed current</label>
+		<description>The current fan speed after scheduling and blocks are considered</description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43152">
+		<item-type>Number</item-type>
+		<label>Internal cooling blocked</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43158">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S4</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43159">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S3</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43160">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S2</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43161">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S1</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43163">
+		<item-type>String</item-type>
+		<label>Blocking status of the shunt controlled add heat acc</label>
+		<description>0 = Unblocked, 1 = Blocked</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Unblocked</option>
+				<option value="1">Blocked</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-43164">
+		<item-type>Number</item-type>
+		<label>Cooling blocked</label>
+		<description>Whether cooling is blocked</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43171">
+		<item-type>String</item-type>
+		<label>Blocking status of the step controlled add heat acc</label>
+		<description>0 = Unblocked, 1 = Blocked</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Unblocked</option>
+				<option value="1">Blocked</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-43189">
+		<item-type>String</item-type>
+		<label>Ext. Heat Medium Pump</label>
+		<description>0=Off,1=On</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-43230">
+		<item-type>Number</item-type>
+		<label>Accumulated energy</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43239">
+		<item-type>Number</item-type>
+		<label>Tot. HW op.time add.</label>
+		<description>Total electric additive operation time in hot water mode</description>
+		<state pattern="%.1f h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43395">
+		<item-type>Number</item-type>
+		<label>HPAC Relays</label>
+		<description>Indicates the active relays on the HPAC accessory. The information is binary encoded</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43416">
+		<item-type>Number</item-type>
+		<label>Compressor starts EB100-EP14</label>
+		<description>Number of compressorer starts</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43420">
+		<item-type>Number</item-type>
+		<label>Tot. op.time compr. EB100-EP14</label>
+		<description>Total compressorer operation time</description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43424">
+		<item-type>Number</item-type>
+		<label>Tot. HW op.time compr. EB100-EP14</label>
+		<description>Total compressorer operation time in hot water mode</description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43427">
+		<item-type>String</item-type>
+		<label>Compressor State EP14</label>
+		<description>20 = Stopped, 40 = Starting, 60 = Running, 100 = Stopping</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="20">Stopped</option>
+				<option value="40">Starting</option>
+				<option value="60">Running</option>
+				<option value="100">Stopping</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-43431">
+		<item-type>Number</item-type>
+		<label>Supply Pump State EP14</label>
+		<description>State of the supply pump</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43433">
+		<item-type>Number</item-type>
+		<label>Brine pump state EP14</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43435">
+		<item-type>String</item-type>
+		<label>Compressor status EP14</label>
+		<description>Indicates if the compressor is supplied with power 0=Off 1=On</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-43437">
+		<item-type>Number</item-type>
+		<label>HM-pump Status EP14</label>
+		<description>Status of the circ. pump</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43439">
+		<item-type>Number</item-type>
+		<label>Brinepump Status EP14</label>
+		<description>Status of the Brine pump</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43473">
+		<item-type>Number</item-type>
+		<label>Heat Compressors</label>
+		<description>Number of compressors docked to heating</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43474">
+		<item-type>Number</item-type>
+		<label>Hot Water Compressors</label>
+		<description>Number of compressors docked to hot water</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43475">
+		<item-type>Number</item-type>
+		<label>Pool 1 Compressors</label>
+		<description>Number of compressors docked to pool 1</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43484">
+		<item-type>Number</item-type>
+		<label>FLM Cooling Activated</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43485">
+		<item-type>Number</item-type>
+		<label>FLM Cooling Activated</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43486">
+		<item-type>Number</item-type>
+		<label>FLM Cooling Activated</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43487">
+		<item-type>Number</item-type>
+		<label>FLM Cooling Activated</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43514">
+		<item-type>Number</item-type>
+		<label>PCA-Base Relays EP14</label>
+		<description>Indicates the active relays on the PCA-Base card. The information is binary encoded</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43516">
+		<item-type>Number</item-type>
+		<label>PCA-Power Relays EP14</label>
+		<description>Indicates the active relays on the PCA-Power card. The information is binary encoded</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43560">
+		<item-type>Number</item-type>
+		<label>Pool 2 blocked</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43561">
+		<item-type>Number</item-type>
+		<label>Pool 1 blocked</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43563">
+		<item-type>Number</item-type>
+		<label>Pool 2 valve</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43564">
+		<item-type>Number</item-type>
+		<label>Pool 1 valve</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43577">
+		<item-type>Number</item-type>
+		<label>Pool 2 Compressors</label>
+		<description>Number of compressors docked to pool 2</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43580">
+		<item-type>Number</item-type>
+		<label>EB108 Version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43598">
+		<item-type>Number</item-type>
+		<label>EB108 Slave Type</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43599">
+		<item-type>Number</item-type>
+		<label>EB108 Compressor Size</label>
+		<description></description>
+		<state pattern="%d kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43600">
+		<item-type>Number</item-type>
+		<label>EB108-EP15-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43601">
+		<item-type>Number</item-type>
+		<label>EB108-EP15-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43602">
+		<item-type>Number</item-type>
+		<label>EB108-EP15-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43603">
+		<item-type>Number</item-type>
+		<label>EB108-EP15-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43604">
+		<item-type>Number</item-type>
+		<label>EB108-EP15-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43605">
+		<item-type>Number</item-type>
+		<label>EB108-EP15-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43606">
+		<item-type>Number</item-type>
+		<label>EB108-EP15-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43607">
+		<item-type>Number</item-type>
+		<label>EB108-EP15-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43608">
+		<item-type>Number</item-type>
+		<label>EB108-EP15-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43609">
+		<item-type>Number</item-type>
+		<label>EB108-EP15 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43610">
+		<item-type>Number</item-type>
+		<label>EB108-EP15 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43611">
+		<item-type>Number</item-type>
+		<label>EB108-EP15 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43612">
+		<item-type>Number</item-type>
+		<label>EB108-EP15 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43613">
+		<item-type>Number</item-type>
+		<label>EB108-EP15 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43614">
+		<item-type>Number</item-type>
+		<label>EB108-EP15 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43616">
+		<item-type>Number</item-type>
+		<label>EB108-EP15 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43618">
+		<item-type>Number</item-type>
+		<label>EB108-EP15 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43620">
+		<item-type>Number</item-type>
+		<label>EB108-EP15 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43621">
+		<item-type>Number</item-type>
+		<label>EB108-EP14-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43622">
+		<item-type>Number</item-type>
+		<label>EB108-EP14-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43623">
+		<item-type>Number</item-type>
+		<label>EB108-EP14-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43624">
+		<item-type>Number</item-type>
+		<label>EB108-EP14-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43625">
+		<item-type>Number</item-type>
+		<label>EB108-EP14-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43626">
+		<item-type>Number</item-type>
+		<label>EB108-EP14-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43627">
+		<item-type>Number</item-type>
+		<label>EB108-EP14-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43628">
+		<item-type>Number</item-type>
+		<label>EB108-EP14-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43629">
+		<item-type>Number</item-type>
+		<label>EB108-EP14-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43630">
+		<item-type>Number</item-type>
+		<label>EB108-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43631">
+		<item-type>Number</item-type>
+		<label>EB108-EP14 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43632">
+		<item-type>Number</item-type>
+		<label>EB108-EP14 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43633">
+		<item-type>Number</item-type>
+		<label>EB108-EP14 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43634">
+		<item-type>Number</item-type>
+		<label>EB108-EP14 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43635">
+		<item-type>Number</item-type>
+		<label>EB108-EP14 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43637">
+		<item-type>Number</item-type>
+		<label>EB108-EP14 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43639">
+		<item-type>Number</item-type>
+		<label>EB108-EP14 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43641">
+		<item-type>Number</item-type>
+		<label>EB108-EP14 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43642">
+		<item-type>Number</item-type>
+		<label>EB107 Version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43660">
+		<item-type>Number</item-type>
+		<label>EB107 Slave Type</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43661">
+		<item-type>Number</item-type>
+		<label>EB107 Compressor Size</label>
+		<description></description>
+		<state pattern="%d kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43662">
+		<item-type>Number</item-type>
+		<label>EB107-EP15-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43663">
+		<item-type>Number</item-type>
+		<label>EB107-EP15-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43664">
+		<item-type>Number</item-type>
+		<label>EB107-EP15-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43665">
+		<item-type>Number</item-type>
+		<label>EB107-EP15-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43666">
+		<item-type>Number</item-type>
+		<label>EB107-EP15-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43667">
+		<item-type>Number</item-type>
+		<label>EB107-EP15-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43668">
+		<item-type>Number</item-type>
+		<label>EB107-EP15-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43669">
+		<item-type>Number</item-type>
+		<label>EB107-EP15-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43670">
+		<item-type>Number</item-type>
+		<label>EB107-EP15-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43671">
+		<item-type>Number</item-type>
+		<label>EB107-EP15 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43672">
+		<item-type>Number</item-type>
+		<label>EB107-EP15 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43673">
+		<item-type>Number</item-type>
+		<label>EB107-EP15 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43674">
+		<item-type>Number</item-type>
+		<label>EB107-EP15 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43675">
+		<item-type>Number</item-type>
+		<label>EB107-EP15 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43676">
+		<item-type>Number</item-type>
+		<label>EB107-EP15 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43678">
+		<item-type>Number</item-type>
+		<label>EB107-EP15 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43680">
+		<item-type>Number</item-type>
+		<label>EB107-EP15 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43682">
+		<item-type>Number</item-type>
+		<label>EB107-EP15 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43683">
+		<item-type>Number</item-type>
+		<label>EB107-EP14-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43684">
+		<item-type>Number</item-type>
+		<label>EB107-EP14-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43685">
+		<item-type>Number</item-type>
+		<label>EB107-EP14-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43686">
+		<item-type>Number</item-type>
+		<label>EB107-EP14-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43687">
+		<item-type>Number</item-type>
+		<label>EB107-EP14-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43688">
+		<item-type>Number</item-type>
+		<label>EB107-EP14-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43689">
+		<item-type>Number</item-type>
+		<label>EB107-EP14-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43690">
+		<item-type>Number</item-type>
+		<label>EB107-EP14-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43691">
+		<item-type>Number</item-type>
+		<label>EB107-EP14-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43692">
+		<item-type>Number</item-type>
+		<label>EB107-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43693">
+		<item-type>Number</item-type>
+		<label>EB107-EP14 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43694">
+		<item-type>Number</item-type>
+		<label>EB107-EP14 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43695">
+		<item-type>Number</item-type>
+		<label>EB107-EP14 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43696">
+		<item-type>Number</item-type>
+		<label>EB107-EP14 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43697">
+		<item-type>Number</item-type>
+		<label>EB107-EP14 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43699">
+		<item-type>Number</item-type>
+		<label>EB107-EP14 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43701">
+		<item-type>Number</item-type>
+		<label>EB107-EP14 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43703">
+		<item-type>Number</item-type>
+		<label>EB107-EP14 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43704">
+		<item-type>Number</item-type>
+		<label>EB106 Version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43722">
+		<item-type>Number</item-type>
+		<label>EB106 Slave Type</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43723">
+		<item-type>Number</item-type>
+		<label>EB106 Compressor Size</label>
+		<description></description>
+		<state pattern="%d kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43724">
+		<item-type>Number</item-type>
+		<label>EB106-EP15-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43725">
+		<item-type>Number</item-type>
+		<label>EB106-EP15-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43726">
+		<item-type>Number</item-type>
+		<label>EB106-EP15-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43727">
+		<item-type>Number</item-type>
+		<label>EB106-EP15-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43728">
+		<item-type>Number</item-type>
+		<label>EB106-EP15-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43729">
+		<item-type>Number</item-type>
+		<label>EB106-EP15-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43730">
+		<item-type>Number</item-type>
+		<label>EB106-EP15-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43731">
+		<item-type>Number</item-type>
+		<label>EB106-EP15-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43732">
+		<item-type>Number</item-type>
+		<label>EB106-EP15-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43733">
+		<item-type>Number</item-type>
+		<label>EB106-EP15 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43734">
+		<item-type>Number</item-type>
+		<label>EB106-EP15 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43735">
+		<item-type>Number</item-type>
+		<label>EB106-EP15 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43736">
+		<item-type>Number</item-type>
+		<label>EB106-EP15 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43737">
+		<item-type>Number</item-type>
+		<label>EB106-EP15 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43738">
+		<item-type>Number</item-type>
+		<label>EB106-EP15 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43740">
+		<item-type>Number</item-type>
+		<label>EB106-EP15 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43742">
+		<item-type>Number</item-type>
+		<label>EB106-EP15 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43744">
+		<item-type>Number</item-type>
+		<label>EB106-EP15 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43745">
+		<item-type>Number</item-type>
+		<label>EB106-EP14-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43746">
+		<item-type>Number</item-type>
+		<label>EB106-EP14-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43747">
+		<item-type>Number</item-type>
+		<label>EB106-EP14-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43748">
+		<item-type>Number</item-type>
+		<label>EB106-EP14-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43749">
+		<item-type>Number</item-type>
+		<label>EB106-EP14-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43750">
+		<item-type>Number</item-type>
+		<label>EB106-EP14-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43751">
+		<item-type>Number</item-type>
+		<label>EB106-EP14-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43752">
+		<item-type>Number</item-type>
+		<label>EB106-EP14-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43753">
+		<item-type>Number</item-type>
+		<label>EB106-EP14-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43754">
+		<item-type>Number</item-type>
+		<label>EB106-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43755">
+		<item-type>Number</item-type>
+		<label>EB106-EP14 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43756">
+		<item-type>Number</item-type>
+		<label>EB106-EP14 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43757">
+		<item-type>Number</item-type>
+		<label>EB106-EP14 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43758">
+		<item-type>Number</item-type>
+		<label>EB106-EP14 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43759">
+		<item-type>Number</item-type>
+		<label>EB106-EP14 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43761">
+		<item-type>Number</item-type>
+		<label>EB106-EP14 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43763">
+		<item-type>Number</item-type>
+		<label>EB106-EP14 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43765">
+		<item-type>Number</item-type>
+		<label>EB106-EP14 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43766">
+		<item-type>Number</item-type>
+		<label>EB105 Version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43784">
+		<item-type>Number</item-type>
+		<label>EB105 Slave Type</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43785">
+		<item-type>Number</item-type>
+		<label>EB105 Compressor Size</label>
+		<description></description>
+		<state pattern="%d kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43786">
+		<item-type>Number</item-type>
+		<label>EB105-EP15-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43787">
+		<item-type>Number</item-type>
+		<label>EB105-EP15-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43788">
+		<item-type>Number</item-type>
+		<label>EB105-EP15-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43789">
+		<item-type>Number</item-type>
+		<label>EB105-EP15-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43790">
+		<item-type>Number</item-type>
+		<label>EB105-EP15-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43791">
+		<item-type>Number</item-type>
+		<label>EB105-EP15-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43792">
+		<item-type>Number</item-type>
+		<label>EB105-EP15-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43793">
+		<item-type>Number</item-type>
+		<label>EB105-EP15-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43794">
+		<item-type>Number</item-type>
+		<label>EB105-EP15-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43795">
+		<item-type>Number</item-type>
+		<label>EB105-EP15 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43796">
+		<item-type>Number</item-type>
+		<label>EB105-EP15 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43797">
+		<item-type>Number</item-type>
+		<label>EB105-EP15 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43798">
+		<item-type>Number</item-type>
+		<label>EB105-EP15 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43799">
+		<item-type>Number</item-type>
+		<label>EB105-EP15 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43800">
+		<item-type>Number</item-type>
+		<label>EB105-EP15 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43802">
+		<item-type>Number</item-type>
+		<label>EB105-EP15 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43804">
+		<item-type>Number</item-type>
+		<label>EB105-EP15 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43806">
+		<item-type>Number</item-type>
+		<label>EB105-EP15 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43807">
+		<item-type>Number</item-type>
+		<label>EB105-EP14-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43808">
+		<item-type>Number</item-type>
+		<label>EB105-EP14-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43809">
+		<item-type>Number</item-type>
+		<label>EB105-EP14-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43810">
+		<item-type>Number</item-type>
+		<label>EB105-EP14-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43811">
+		<item-type>Number</item-type>
+		<label>EB105-EP14-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43812">
+		<item-type>Number</item-type>
+		<label>EB105-EP14-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43813">
+		<item-type>Number</item-type>
+		<label>EB105-EP14-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43814">
+		<item-type>Number</item-type>
+		<label>EB105-EP14-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43815">
+		<item-type>Number</item-type>
+		<label>EB105-EP14-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43816">
+		<item-type>Number</item-type>
+		<label>EB105-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43817">
+		<item-type>Number</item-type>
+		<label>EB105-EP14 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43818">
+		<item-type>Number</item-type>
+		<label>EB105-EP14 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43819">
+		<item-type>Number</item-type>
+		<label>EB105-EP14 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43820">
+		<item-type>Number</item-type>
+		<label>EB105-EP14 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43821">
+		<item-type>Number</item-type>
+		<label>EB105-EP14 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43823">
+		<item-type>Number</item-type>
+		<label>EB105-EP14 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43825">
+		<item-type>Number</item-type>
+		<label>EB105-EP14 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43827">
+		<item-type>Number</item-type>
+		<label>EB105-EP14 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43828">
+		<item-type>Number</item-type>
+		<label>EB104 Version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43846">
+		<item-type>Number</item-type>
+		<label>EB104 Slave Type</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43847">
+		<item-type>Number</item-type>
+		<label>EB104 Compressor Size</label>
+		<description></description>
+		<state pattern="%d kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43848">
+		<item-type>Number</item-type>
+		<label>EB104-EP15-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43849">
+		<item-type>Number</item-type>
+		<label>EB104-EP15-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43850">
+		<item-type>Number</item-type>
+		<label>EB104-EP15-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43851">
+		<item-type>Number</item-type>
+		<label>EB104-EP15-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43852">
+		<item-type>Number</item-type>
+		<label>EB104-EP15-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43853">
+		<item-type>Number</item-type>
+		<label>EB104-EP15-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43854">
+		<item-type>Number</item-type>
+		<label>EB104-EP15-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43855">
+		<item-type>Number</item-type>
+		<label>EB104-EP15-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43856">
+		<item-type>Number</item-type>
+		<label>EB104-EP15-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43857">
+		<item-type>Number</item-type>
+		<label>EB104-EP15 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43858">
+		<item-type>Number</item-type>
+		<label>EB104-EP15 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43859">
+		<item-type>Number</item-type>
+		<label>EB104-EP15 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43860">
+		<item-type>Number</item-type>
+		<label>EB104-EP15 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43861">
+		<item-type>Number</item-type>
+		<label>EB104-EP15 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43862">
+		<item-type>Number</item-type>
+		<label>EB104-EP15 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43864">
+		<item-type>Number</item-type>
+		<label>EB104-EP15 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43866">
+		<item-type>Number</item-type>
+		<label>EB104-EP15 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43868">
+		<item-type>Number</item-type>
+		<label>EB104-EP15 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43869">
+		<item-type>Number</item-type>
+		<label>EB104-EP14-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43870">
+		<item-type>Number</item-type>
+		<label>EB104-EP14-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43871">
+		<item-type>Number</item-type>
+		<label>EB104-EP14-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43872">
+		<item-type>Number</item-type>
+		<label>EB104-EP14-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43873">
+		<item-type>Number</item-type>
+		<label>EB104-EP14-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43874">
+		<item-type>Number</item-type>
+		<label>EB104-EP14-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43875">
+		<item-type>Number</item-type>
+		<label>EB104-EP14-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43876">
+		<item-type>Number</item-type>
+		<label>EB104-EP14-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43877">
+		<item-type>Number</item-type>
+		<label>EB104-EP14-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43878">
+		<item-type>Number</item-type>
+		<label>EB104-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43879">
+		<item-type>Number</item-type>
+		<label>EB104-EP14 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43880">
+		<item-type>Number</item-type>
+		<label>EB104-EP14 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43881">
+		<item-type>Number</item-type>
+		<label>EB104-EP14 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43882">
+		<item-type>Number</item-type>
+		<label>EB104-EP14 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43883">
+		<item-type>Number</item-type>
+		<label>EB104-EP14 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43885">
+		<item-type>Number</item-type>
+		<label>EB104-EP14 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43887">
+		<item-type>Number</item-type>
+		<label>EB104-EP14 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43889">
+		<item-type>Number</item-type>
+		<label>EB104-EP14 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43890">
+		<item-type>Number</item-type>
+		<label>EB103 Version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43908">
+		<item-type>Number</item-type>
+		<label>EB103 Slave Type</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43909">
+		<item-type>Number</item-type>
+		<label>EB103 Compressor Size</label>
+		<description></description>
+		<state pattern="%d kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43910">
+		<item-type>Number</item-type>
+		<label>EB103-EP15-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43911">
+		<item-type>Number</item-type>
+		<label>EB103-EP15-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43912">
+		<item-type>Number</item-type>
+		<label>EB103-EP15-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43913">
+		<item-type>Number</item-type>
+		<label>EB103-EP15-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43914">
+		<item-type>Number</item-type>
+		<label>EB103-EP15-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43915">
+		<item-type>Number</item-type>
+		<label>EB103-EP15-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43916">
+		<item-type>Number</item-type>
+		<label>EB103-EP15-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43917">
+		<item-type>Number</item-type>
+		<label>EB103-EP15-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43918">
+		<item-type>Number</item-type>
+		<label>EB103-EP15-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43919">
+		<item-type>Number</item-type>
+		<label>EB103-EP15 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43920">
+		<item-type>Number</item-type>
+		<label>EB103-EP15 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43921">
+		<item-type>Number</item-type>
+		<label>EB103-EP15 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43922">
+		<item-type>Number</item-type>
+		<label>EB103-EP15 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43923">
+		<item-type>Number</item-type>
+		<label>EB103-EP15 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43924">
+		<item-type>Number</item-type>
+		<label>EB103-EP15 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43926">
+		<item-type>Number</item-type>
+		<label>EB103-EP15 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43928">
+		<item-type>Number</item-type>
+		<label>EB103-EP15 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43930">
+		<item-type>Number</item-type>
+		<label>EB103-EP15 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43931">
+		<item-type>Number</item-type>
+		<label>EB103-EP14-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43932">
+		<item-type>Number</item-type>
+		<label>EB103-EP14-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43933">
+		<item-type>Number</item-type>
+		<label>EB103-EP14-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43934">
+		<item-type>Number</item-type>
+		<label>EB103-EP14-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43935">
+		<item-type>Number</item-type>
+		<label>EB103-EP14-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43936">
+		<item-type>Number</item-type>
+		<label>EB103-EP14-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43937">
+		<item-type>Number</item-type>
+		<label>EB103-EP14-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43938">
+		<item-type>Number</item-type>
+		<label>EB103-EP14-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43939">
+		<item-type>Number</item-type>
+		<label>EB103-EP14-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43940">
+		<item-type>Number</item-type>
+		<label>EB103-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43941">
+		<item-type>Number</item-type>
+		<label>EB103-EP14 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43942">
+		<item-type>Number</item-type>
+		<label>EB103-EP14 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43943">
+		<item-type>Number</item-type>
+		<label>EB103-EP14 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43944">
+		<item-type>Number</item-type>
+		<label>EB103-EP14 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43945">
+		<item-type>Number</item-type>
+		<label>EB103-EP14 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43947">
+		<item-type>Number</item-type>
+		<label>EB103-EP14 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43949">
+		<item-type>Number</item-type>
+		<label>EB103-EP14 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43951">
+		<item-type>Number</item-type>
+		<label>EB103-EP14 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43952">
+		<item-type>Number</item-type>
+		<label>EB102 Version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43970">
+		<item-type>Number</item-type>
+		<label>EB102 Slave Type</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43971">
+		<item-type>Number</item-type>
+		<label>EB102 Compressor Size</label>
+		<description></description>
+		<state pattern="%d kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43972">
+		<item-type>Number</item-type>
+		<label>EB102-EP15-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43973">
+		<item-type>Number</item-type>
+		<label>EB102-EP15-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43974">
+		<item-type>Number</item-type>
+		<label>EB102-EP15-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43975">
+		<item-type>Number</item-type>
+		<label>EB102-EP15-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43976">
+		<item-type>Number</item-type>
+		<label>EB102-EP15-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43977">
+		<item-type>Number</item-type>
+		<label>EB102-EP15-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43978">
+		<item-type>Number</item-type>
+		<label>EB102-EP15-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43979">
+		<item-type>Number</item-type>
+		<label>EB102-EP15-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43980">
+		<item-type>Number</item-type>
+		<label>EB102-EP15-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43981">
+		<item-type>Number</item-type>
+		<label>EB102-EP15 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43982">
+		<item-type>Number</item-type>
+		<label>EB102-EP15 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43983">
+		<item-type>Number</item-type>
+		<label>EB102-EP15 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43984">
+		<item-type>Number</item-type>
+		<label>EB102-EP15 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43985">
+		<item-type>Number</item-type>
+		<label>EB102-EP15 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43986">
+		<item-type>Number</item-type>
+		<label>EB102-EP15 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43988">
+		<item-type>Number</item-type>
+		<label>EB102-EP15 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43990">
+		<item-type>Number</item-type>
+		<label>EB102-EP15 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43992">
+		<item-type>Number</item-type>
+		<label>EB102-EP15 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43993">
+		<item-type>Number</item-type>
+		<label>EB102-EP14-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43994">
+		<item-type>Number</item-type>
+		<label>EB102-EP14-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43995">
+		<item-type>Number</item-type>
+		<label>EB102-EP14-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43996">
+		<item-type>Number</item-type>
+		<label>EB102-EP14-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43997">
+		<item-type>Number</item-type>
+		<label>EB102-EP14-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43998">
+		<item-type>Number</item-type>
+		<label>EB102-EP14-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-43999">
+		<item-type>Number</item-type>
+		<label>EB102-EP14-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44000">
+		<item-type>Number</item-type>
+		<label>EB102-EP14-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44001">
+		<item-type>Number</item-type>
+		<label>EB102-EP14-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44002">
+		<item-type>Number</item-type>
+		<label>EB102-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44003">
+		<item-type>Number</item-type>
+		<label>EB102-EP14 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44004">
+		<item-type>Number</item-type>
+		<label>EB102-EP14 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44005">
+		<item-type>Number</item-type>
+		<label>EB102-EP14 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44006">
+		<item-type>Number</item-type>
+		<label>EB102-EP14 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44007">
+		<item-type>Number</item-type>
+		<label>EB102-EP14 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44009">
+		<item-type>Number</item-type>
+		<label>EB102-EP14 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44011">
+		<item-type>Number</item-type>
+		<label>EB102-EP14 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44013">
+		<item-type>Number</item-type>
+		<label>EB102-EP14 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44014">
+		<item-type>Number</item-type>
+		<label>EB101 Version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44032">
+		<item-type>Number</item-type>
+		<label>EB101 Slave Type</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44033">
+		<item-type>Number</item-type>
+		<label>EB101 Compressor Size</label>
+		<description></description>
+		<state pattern="%d kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44034">
+		<item-type>Number</item-type>
+		<label>EB101-EP15-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44035">
+		<item-type>Number</item-type>
+		<label>EB101-EP15-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44036">
+		<item-type>Number</item-type>
+		<label>EB101-EP15-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44037">
+		<item-type>Number</item-type>
+		<label>EB101-EP15-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44038">
+		<item-type>Number</item-type>
+		<label>EB101-EP15-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44039">
+		<item-type>Number</item-type>
+		<label>EB101-EP15-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44040">
+		<item-type>Number</item-type>
+		<label>EB101-EP15-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44041">
+		<item-type>Number</item-type>
+		<label>EB101-EP15-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44042">
+		<item-type>Number</item-type>
+		<label>EB101-EP15-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44043">
+		<item-type>Number</item-type>
+		<label>EB101-EP15 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44044">
+		<item-type>Number</item-type>
+		<label>EB101-EP15 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44045">
+		<item-type>Number</item-type>
+		<label>EB101-EP15 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44046">
+		<item-type>Number</item-type>
+		<label>EB101-EP15 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44047">
+		<item-type>Number</item-type>
+		<label>EB101-EP15 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44048">
+		<item-type>Number</item-type>
+		<label>EB101-EP15 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44050">
+		<item-type>Number</item-type>
+		<label>EB101-EP15 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44052">
+		<item-type>Number</item-type>
+		<label>EB101-EP15 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44054">
+		<item-type>Number</item-type>
+		<label>EB101-EP15 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44055">
+		<item-type>Number</item-type>
+		<label>EB101-EP14-BT3 Return temp.</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44056">
+		<item-type>Number</item-type>
+		<label>EB101-EP14-BT10 Brine in temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44057">
+		<item-type>Number</item-type>
+		<label>EB101-EP14-BT11 Brine out temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44058">
+		<item-type>Number</item-type>
+		<label>EB101-EP14-BT12 Cond. out</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44059">
+		<item-type>Number</item-type>
+		<label>EB101-EP14-BT14 Hot gas temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44060">
+		<item-type>Number</item-type>
+		<label>EB101-EP14-BT15 Liquid line</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44061">
+		<item-type>Number</item-type>
+		<label>EB101-EP14-BT17 Suction</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44062">
+		<item-type>Number</item-type>
+		<label>EB101-EP14-BT29 Compr. Oil. temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44063">
+		<item-type>Number</item-type>
+		<label>EB101-EP14-BP8 Pressure transmitter</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44064">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Compressor State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44065">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Compr. time to start</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44066">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Relay status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44067">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Heat med. pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44068">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Brine pump status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44069">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Compressor starts</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44071">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Tot. op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44073">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Tot. HW op.time compr</label>
+		<description></description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44075">
+		<item-type>Number</item-type>
+		<label>EB101-EP14 Alarm number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44138">
+		<item-type>String</item-type>
+		<label>EB108-EP15 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44139">
+		<item-type>String</item-type>
+		<label>EB108-EP14 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44151">
+		<item-type>String</item-type>
+		<label>EB107-EP15 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44152">
+		<item-type>String</item-type>
+		<label>EB107-EP14 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44164">
+		<item-type>String</item-type>
+		<label>EB106-EP15 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44165">
+		<item-type>String</item-type>
+		<label>EB106-EP14 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44177">
+		<item-type>String</item-type>
+		<label>EB105-EP15 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44178">
+		<item-type>String</item-type>
+		<label>EB105-EP14 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44190">
+		<item-type>String</item-type>
+		<label>EB104-EP15 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44191">
+		<item-type>String</item-type>
+		<label>EB104-EP14 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44203">
+		<item-type>String</item-type>
+		<label>EB103-EP15 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44204">
+		<item-type>String</item-type>
+		<label>EB103-EP14 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44216">
+		<item-type>String</item-type>
+		<label>EB102-EP15 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44217">
+		<item-type>String</item-type>
+		<label>EB102-EP14 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44229">
+		<item-type>String</item-type>
+		<label>EB101-EP15 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44230">
+		<item-type>String</item-type>
+		<label>EB101-EP14 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44242">
+		<item-type>String</item-type>
+		<label>EB100-EP15 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44243">
+		<item-type>String</item-type>
+		<label>EB100-EP14 Prio</label>
+		<description>Indicates what need is assigned to the compressor module, 0 = Off, 1 = Heat, 2 = Hot water, 3 = Pool 1, 4 = Pool2</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Hot water</option>
+				<option value="3">Pool 1</option>
+				<option value="4">Pool2</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-44266">
+		<item-type>Number</item-type>
+		<label>Cool Degree Minutes</label>
+		<description></description>
+		<state min="-30000" max="30000" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-44267">
+		<item-type>Number</item-type>
+		<label>Calc. Cooling Supply Temperature S4</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44268">
+		<item-type>Number</item-type>
+		<label>Calc. Cooling Supply Temperature S3</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44269">
+		<item-type>Number</item-type>
+		<label>Calc. Cooling Supply Temperature S2</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44270">
+		<item-type>Number</item-type>
+		<label>Calc. Cooling Supply Temperature S1</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44276">
+		<item-type>Number</item-type>
+		<label>State ACS</label>
+		<description>The state of the ACS accessory</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44277">
+		<item-type>Number</item-type>
+		<label>State ACS heatdump</label>
+		<description>The state of the heatdump in the ACS accessory</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44278">
+		<item-type>Number</item-type>
+		<label>State ACS cooldump</label>
+		<description>The state of the cooldump in the ACS accessory</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44282">
+		<item-type>Number</item-type>
+		<label>Used cprs. HW</label>
+		<description>The number of compressors that's currently producing hot water</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44283">
+		<item-type>Number</item-type>
+		<label>Used cprs. heat</label>
+		<description>The number of compressors that's currently producing heating</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44284">
+		<item-type>Number</item-type>
+		<label>Used cprs. pool 1</label>
+		<description>The number of compressors that's currently producing poolheating for pool 1</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44285">
+		<item-type>Number</item-type>
+		<label>Used cprs. pool 2</label>
+		<description>The number of compressors that's currently producing poolheating for pool 2</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44298">
+		<item-type>Number</item-type>
+		<label>Accumulated Energy HW Cpr and Add</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44300">
+		<item-type>Number</item-type>
+		<label>Accumulated Energy Heat Cpr and Add</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44302">
+		<item-type>Number</item-type>
+		<label>Accumulated Energy Cooling Cpr</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44304">
+		<item-type>Number</item-type>
+		<label>Accumulated Energy Pool Cpr</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44306">
+		<item-type>Number</item-type>
+		<label>Accumulated Energy HW Cpr</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44308">
+		<item-type>Number</item-type>
+		<label>Accumulated Energy Heat Cpr</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44320">
+		<item-type>Number</item-type>
+		<label>Used cprs. cool</label>
+		<description>The number of compressors that's currently producing active cooling</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44331">
+		<item-type>Number</item-type>
+		<label>Software release</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44380">
+		<item-type>Number</item-type>
+		<label>External Compressors</label>
+		<description>Number of compressors with external control</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44410">
+		<item-type>Number</item-type>
+		<label>EB108 Own Hot Water</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44411">
+		<item-type>Number</item-type>
+		<label>EB108-BT6 Hot water load temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44412">
+		<item-type>Number</item-type>
+		<label>EB108-BT7 Hot water top temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44413">
+		<item-type>Number</item-type>
+		<label>EB108-BT2 Supply temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44416">
+		<item-type>Number</item-type>
+		<label>EB107 Own Hot Water</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44417">
+		<item-type>Number</item-type>
+		<label>EB107-BT6 Hot water load temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44418">
+		<item-type>Number</item-type>
+		<label>EB107-BT7 Hot water top temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44419">
+		<item-type>Number</item-type>
+		<label>EB107-BT2 Supply temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44422">
+		<item-type>Number</item-type>
+		<label>EB106 Own Hot Water</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44423">
+		<item-type>Number</item-type>
+		<label>EB106-BT6 Hot water load temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44424">
+		<item-type>Number</item-type>
+		<label>EB106-BT7 Hot water top temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44425">
+		<item-type>Number</item-type>
+		<label>EB106-BT2 Supply temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44428">
+		<item-type>Number</item-type>
+		<label>EB105 Own Hot Water</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44429">
+		<item-type>Number</item-type>
+		<label>EB105-BT6 Hot water load temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44430">
+		<item-type>Number</item-type>
+		<label>EB105-BT7 Hot water top temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44431">
+		<item-type>Number</item-type>
+		<label>EB105-BT2 Supply temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44434">
+		<item-type>Number</item-type>
+		<label>EB104 Own Hot Water</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44435">
+		<item-type>Number</item-type>
+		<label>EB104-BT6 Hot water load temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44436">
+		<item-type>Number</item-type>
+		<label>EB104-BT7 Hot water top temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44437">
+		<item-type>Number</item-type>
+		<label>EB104-BT2 Supply temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44440">
+		<item-type>Number</item-type>
+		<label>EB103 Own Hot Water</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44441">
+		<item-type>Number</item-type>
+		<label>EB103-BT6 Hot water load temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44442">
+		<item-type>Number</item-type>
+		<label>EB103-BT7 Hot water top temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44443">
+		<item-type>Number</item-type>
+		<label>EB103-BT2 Supply temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44446">
+		<item-type>Number</item-type>
+		<label>EB102 Own Hot Water</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44447">
+		<item-type>Number</item-type>
+		<label>EB102-BT6 Hot water load temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44448">
+		<item-type>Number</item-type>
+		<label>EB102-BT7 Hot water top temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44449">
+		<item-type>Number</item-type>
+		<label>EB102-BT2 Supply temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44452">
+		<item-type>Number</item-type>
+		<label>EB101 Own Hot Water</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44453">
+		<item-type>Number</item-type>
+		<label>EB101-BT6 Hot water load temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44454">
+		<item-type>Number</item-type>
+		<label>EB101-BT7 Hot water top temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44455">
+		<item-type>Number</item-type>
+		<label>EB101-BT2 Supply temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44487">
+		<item-type>Number</item-type>
+		<label>Cool Compressors</label>
+		<description>Number of compressors docked to cooling</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44744">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S4</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44745">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S3</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44746">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S2</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44748">
+		<item-type>Number</item-type>
+		<label>Pool 2 pump</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44749">
+		<item-type>Number</item-type>
+		<label>Pool 1 pump</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44753">
+		<item-type>Number</item-type>
+		<label>Passiv cool shunt</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44754">
+		<item-type>Number</item-type>
+		<label>Passiv cool pool</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44756">
+		<item-type>Number</item-type>
+		<label>State ground water pump</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44874">
+		<item-type>Number</item-type>
+		<label>State SG Ready</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44878">
+		<item-type>Number</item-type>
+		<label>SG Ready input A</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44879">
+		<item-type>Number</item-type>
+		<label>SG Ready input B</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44910">
+		<item-type>Number</item-type>
+		<label>Brine pump  dT act.</label>
+		<description>Current value between set and act value on brine pumps</description>
+		<state pattern="%.1f" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44911">
+		<item-type>Number</item-type>
+		<label>Brine pump  dT act.</label>
+		<description>set point delta T for the brine pumps</description>
+		<state pattern="%.1f" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-44912">
+		<item-type>Switch</item-type>
+		<label>Brine pump auto controlled</label>
+		<description>Brine pump auto controlled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="type-45001">
+		<item-type>Number</item-type>
+		<label>Alarm Number</label>
+		<description>The value indicates the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-47291">
+		<item-type>Number</item-type>
+		<label>Floor drying timer</label>
+		<description></description>
+		<state pattern="%d hrs" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-47325">
+		<item-type>Number</item-type>
+		<label>Step controlled add. max. step</label>
+		<description>Maximum number of steps allowed in step controlled add.</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-47004">
+		<item-type>Number</item-type>
+		<label>Heat curve S4</label>
+		<description>Heat curve to use see manual for the different curves.</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47005">
+		<item-type>Number</item-type>
+		<label>Heat curve S3</label>
+		<description>Heat curve to use see manual for the different curves.</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47006">
+		<item-type>Number</item-type>
+		<label>Heat curve S2</label>
+		<description>Heat curve to use see manual for the different curves.</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47007">
+		<item-type>Number</item-type>
+		<label>Heat curve S1</label>
+		<description>Heat curve to use see manual for the different curves.</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47008">
+		<item-type>Number</item-type>
+		<label>Offset S4</label>
+		<description>Offset of the heat curve</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47009">
+		<item-type>Number</item-type>
+		<label>Offset S3</label>
+		<description>Offset of the heat curve</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47010">
+		<item-type>Number</item-type>
+		<label>Offset S2</label>
+		<description>Offset of the heat curve</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47011">
+		<item-type>Number</item-type>
+		<label>Offset S1</label>
+		<description>Offset of the heat curve</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47012">
+		<item-type>Number</item-type>
+		<label>Min Supply System 4</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47013">
+		<item-type>Number</item-type>
+		<label>Min Supply System 3</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47014">
+		<item-type>Number</item-type>
+		<label>Min Supply System 2</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47015">
+		<item-type>Number</item-type>
+		<label>Min Supply System 1</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47016">
+		<item-type>Number</item-type>
+		<label>Max Supply System 4</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47017">
+		<item-type>Number</item-type>
+		<label>Max Supply System 3</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47018">
+		<item-type>Number</item-type>
+		<label>Max Supply System 2</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47019">
+		<item-type>Number</item-type>
+		<label>Max Supply System 1</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47020">
+		<item-type>Number</item-type>
+		<label>Own Curve P7</label>
+		<description>User defined curve point</description>
+		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47021">
+		<item-type>Number</item-type>
+		<label>Own Curve P6</label>
+		<description>User defined curve point</description>
+		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47022">
+		<item-type>Number</item-type>
+		<label>Own Curve P5</label>
+		<description>User defined curve point</description>
+		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47023">
+		<item-type>Number</item-type>
+		<label>Own Curve P4</label>
+		<description>User defined curve point</description>
+		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47024">
+		<item-type>Number</item-type>
+		<label>Own Curve P3</label>
+		<description>User defined curve point</description>
+		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47025">
+		<item-type>Number</item-type>
+		<label>Own Curve P2</label>
+		<description>User defined curve point</description>
+		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47026">
+		<item-type>Number</item-type>
+		<label>Own Curve P1</label>
+		<description>User defined curve point</description>
+		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47027">
+		<item-type>Number</item-type>
+		<label>Point offset outdoor temp.</label>
+		<description>Outdoor temperature point where the heat curve is offset</description>
+		<state min="-40" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47028">
+		<item-type>Number</item-type>
+		<label>Point offset</label>
+		<description>Amount of offset at the point offset temperature</description>
+		<state min="-10" max="10" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47029">
+		<item-type>Number</item-type>
+		<label>External adjustment S4</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47030">
+		<item-type>Number</item-type>
+		<label>External adjustment S3</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47031">
+		<item-type>Number</item-type>
+		<label>External adjustment S2</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47032">
+		<item-type>Number</item-type>
+		<label>External adjustment S1</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47033">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S4</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47034">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S3</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47035">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S2</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47036">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S1</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47041">
+		<item-type>String</item-type>
+		<label>Hot water mode</label>
+		<description> 0=Economy 1=Normal 2=Luxury</description>
+		<state min="0" max="2" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">Economy</option>
+				<option value="1">Normal</option>
+				<option value="2">Luxury</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-47043">
+		<item-type>Number</item-type>
+		<label>Start temperature HW Luxury</label>
+		<description>Start temperature for heating water</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47044">
+		<item-type>Number</item-type>
+		<label>Start temperature HW Normal</label>
+		<description>Start temperature for heating water</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47045">
+		<item-type>Number</item-type>
+		<label>Start temperature HW Economy</label>
+		<description>Start temperature for heating water</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47046">
+		<item-type>Number</item-type>
+		<label>Stop temperature Periodic HW</label>
+		<description>Temperature where hot water generation will stop</description>
+		<state min="550" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47047">
+		<item-type>Number</item-type>
+		<label>Stop temperature HW Luxury</label>
+		<description>Temperature where hot water generation will stop</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47048">
+		<item-type>Number</item-type>
+		<label>Stop temperature HW Normal</label>
+		<description>Temperature where hot water generation will stop</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47049">
+		<item-type>Number</item-type>
+		<label>Stop temperature HW Economy</label>
+		<description>Temperature where hot water generation will stop</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47050">
+		<item-type>Switch</item-type>
+		<label>Periodic HW</label>
+		<description>Activates the periodic hot water generation</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47051">
+		<item-type>Number</item-type>
+		<label>Periodic HW Interval</label>
+		<description>Interval between Periodic hot water sessions</description>
+		<state min="1" max="90" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47054">
+		<item-type>Number</item-type>
+		<label>Run time HWC</label>
+		<description>Run time for the hot water circulation system</description>
+		<state min="1" max="60" step="1" pattern="%d min" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47055">
+		<item-type>Number</item-type>
+		<label>Still time HWC</label>
+		<description>Still time for the hot water circulation system</description>
+		<state min="0" max="60" step="1" pattern="%d min" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47131">
+		<item-type>String</item-type>
+		<label>Language</label>
+		<description>Display language in the heat pump 0=English 1=Svenska 2=Deutsch 3=Francais 4=Espanol 5=Suomi 6=Lietuviu 7=Cesky 8=Polski 9=Nederlands 10=Norsk 11=Dansk 12=Eesti 13=Latviesu 16=Magyar</description>
+		<state min="0" max="21" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">English</option>
+				<option value="1">Svenska</option>
+				<option value="2">Deutsch</option>
+				<option value="3">Francais</option>
+				<option value="4">Espanol</option>
+				<option value="5">Suomi</option>
+				<option value="6">Lietuviu</option>
+				<option value="7">Cesky</option>
+				<option value="8">Polski</option>
+				<option value="9">Nederlands</option>
+				<option value="10">Norsk</option>
+				<option value="11">Dansk</option>
+				<option value="12">Eesti</option>
+				<option value="13">Latviesu</option>
+				<option value="16">Magyar</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-47134">
+		<item-type>Number</item-type>
+		<label>Period HW</label>
+		<description></description>
+		<state min="0" max="180" step="1" pattern="%d min" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47135">
+		<item-type>Number</item-type>
+		<label>Period Heat</label>
+		<description></description>
+		<state min="0" max="180" step="1" pattern="%d min" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47136">
+		<item-type>Number</item-type>
+		<label>Period Pool</label>
+		<description></description>
+		<state min="0" max="180" step="1" pattern="%d min" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47138">
+		<item-type>String</item-type>
+		<label>Operational mode heat medium pump</label>
+		<description> 10=Intermittent 20=Continous 30=Economy 40=Auto</description>
+		<state min="10" max="40" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="10">Intermittent</option>
+				<option value="20">Continous</option>
+				<option value="30">Economy</option>
+				<option value="40">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-47139">
+		<item-type>String</item-type>
+		<label>Operational mode brine medium pump</label>
+		<description> 10=Intermittent 20=Continuous 30=Economy 40=Auto</description>
+		<state min="10" max="30" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="10">Intermittent</option>
+				<option value="20">Continuous</option>
+				<option value="30">Economy</option>
+				<option value="40">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-47206">
+		<item-type>Number</item-type>
+		<label>DM start heating</label>
+		<description>The value the degree minutes needed to be reached for the pump to start heating</description>
+		<state min="-1000" max="-30" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47207">
+		<item-type>Number</item-type>
+		<label>DM start cooling</label>
+		<description>The value the degree minutes needed to be reached for the pump to start cooling</description>
+		<state min="-32767" max="32767" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47208">
+		<item-type>Number</item-type>
+		<label>DM start add.</label>
+		<description>The value the degree minutes needed to be reached for the pump to start electric addition</description>
+		<state min="-32767" max="32767" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47209">
+		<item-type>Number</item-type>
+		<label>DM between add. steps</label>
+		<description>The number of degree minutes between start of each electric addition step</description>
+		<state min="-32767" max="32767" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47210">
+		<item-type>Number</item-type>
+		<label>DM start add. with shunt</label>
+		<description></description>
+		<state min="-2000" max="-30" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47212">
+		<item-type>Number</item-type>
+		<label>Max int add. power</label>
+		<description></description>
+		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47214">
+		<item-type>Number</item-type>
+		<label>Fuse</label>
+		<description>Size of the fuse that the HP is connected to</description>
+		<state min="1" max="200" step="1" pattern="%d A" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47261">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed 4</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47262">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed 3</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47263">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed 2</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47264">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed 1</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47265">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed normal</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47271">
+		<item-type>Number</item-type>
+		<label>Fan return time 4</label>
+		<description>Time from a changed fan speed until it returns to normal speed</description>
+		<state min="1" max="99" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47272">
+		<item-type>Number</item-type>
+		<label>Fan return time 3</label>
+		<description>Time from a changed fan speed until it returns to normal speed</description>
+		<state min="1" max="99" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47273">
+		<item-type>Number</item-type>
+		<label>Fan return time 2</label>
+		<description>Time from a changed fan speed until it returns to normal speed</description>
+		<state min="1" max="99" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47274">
+		<item-type>Number</item-type>
+		<label>Fan return time 1</label>
+		<description>Time from a changed fan speed until it returns to normal speed</description>
+		<state min="1" max="99" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47275">
+		<item-type>Number</item-type>
+		<label>Filter Reminder period</label>
+		<description>Time between the reminder of filter replacement/cleaning.</description>
+		<state min="1" max="24" step="1" pattern="%d Months" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47276">
+		<item-type>Switch</item-type>
+		<label>Floor drying</label>
+		<description> 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47277">
+		<item-type>Number</item-type>
+		<label>Floor drying period 7</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47278">
+		<item-type>Number</item-type>
+		<label>Floor drying period 6</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47279">
+		<item-type>Number</item-type>
+		<label>Floor drying period 5</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47280">
+		<item-type>Number</item-type>
+		<label>Floor drying period 4</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47281">
+		<item-type>Number</item-type>
+		<label>Floor drying period 3</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47282">
+		<item-type>Number</item-type>
+		<label>Floor drying period 2</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47283">
+		<item-type>Number</item-type>
+		<label>Floor drying period 1</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47284">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 7</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47285">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 6</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47286">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 5</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47287">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 4</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47288">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 3</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47289">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 2</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47290">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 1</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47302">
+		<item-type>Switch</item-type>
+		<label>Climate system 2 accessory</label>
+		<description>Activates the climate system 2 accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47303">
+		<item-type>Switch</item-type>
+		<label>Climate system 3 accessory</label>
+		<description>Activates the climate system 3 accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47304">
+		<item-type>Switch</item-type>
+		<label>Climate system 4 accessory</label>
+		<description>Activates the climate system 4 accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47305">
+		<item-type>Number</item-type>
+		<label>Climate system 4 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47306">
+		<item-type>Number</item-type>
+		<label>Climate system 3 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47307">
+		<item-type>Number</item-type>
+		<label>Climate system 2 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47308">
+		<item-type>Number</item-type>
+		<label>Climate system 4 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47309">
+		<item-type>Number</item-type>
+		<label>Climate system 3 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47310">
+		<item-type>Number</item-type>
+		<label>Climate system 2 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47312">
+		<item-type>Switch</item-type>
+		<label>FLM pump</label>
+		<description>Operating mode for the FLM pump 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47313">
+		<item-type>Number</item-type>
+		<label>FLM defrost</label>
+		<description>Minimum time between defrost in FLM</description>
+		<state min="1" max="30" step="1" pattern="%d hrs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47317">
+		<item-type>Switch</item-type>
+		<label>Shunt controlled add. accessory</label>
+		<description>Activates the shunt controlled addition accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47318">
+		<item-type>Number</item-type>
+		<label>Shunt controlled add. min. temp.</label>
+		<description></description>
+		<state min="5" max="90" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47319">
+		<item-type>Number</item-type>
+		<label>Shunt controlled add. min. runtime</label>
+		<description></description>
+		<state min="0" max="48" step="1" pattern="%d hrs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47320">
+		<item-type>Number</item-type>
+		<label>Shunt controlled add. mixing valve amp.</label>
+		<description>Mixing valve amplification for shunt controlled add.</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47321">
+		<item-type>Number</item-type>
+		<label>Shunt controlled add. mixing valve wait</label>
+		<description>Wait time between changes of the shunt in shunt controlled add.</description>
+		<state min="10" max="300" step="1" pattern="%d secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47322">
+		<item-type>Switch</item-type>
+		<label>Step controlled add. accessory</label>
+		<description>Activates the step controlled addition accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47323">
+		<item-type>Number</item-type>
+		<label>Step controlled add. start DM</label>
+		<description>DM where the first step of step controlled add. starts</description>
+		<state min="-2000" max="-30" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47324">
+		<item-type>Number</item-type>
+		<label>Step controlled add. diff. DM</label>
+		<description>Difference in DM of each step in the step controlled add.</description>
+		<state min="0" max="1000" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47326">
+		<item-type>Switch</item-type>
+		<label>Step controlled add. mode</label>
+		<description>Binary or linear stepping method. 0=Linear 1=Binary</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47327">
+		<item-type>Switch</item-type>
+		<label>Ground water pump accessory</label>
+		<description>Ground water pump using AXC40 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47329">
+		<item-type>Switch</item-type>
+		<label>Cooling 2-pipe accessory</label>
+		<description>Activates the 2-pipe cooling accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47330">
+		<item-type>Switch</item-type>
+		<label>Cooling 4-pipe accessory</label>
+		<description>Activates the 4-pipe cooling accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47335">
+		<item-type>Number</item-type>
+		<label>Time betw. switch heat/cool</label>
+		<description>Time between switching from heating to cooling or vice versa.</description>
+		<state min="0" max="48" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47336">
+		<item-type>Number</item-type>
+		<label>Heat at room under temp.</label>
+		<description>This value indicates how many degrees under set room temp heating will be allowed</description>
+		<state min="5" max="100" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47337">
+		<item-type>Number</item-type>
+		<label>Cool at room over temp.</label>
+		<description>This value indicates how many degrees over set room temp cooling will be allowed</description>
+		<state min="5" max="100" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47338">
+		<item-type>Number</item-type>
+		<label>Cooling mix. valve amp.</label>
+		<description>Mixing valve amplification for the cooling valve</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47339">
+		<item-type>Number</item-type>
+		<label>Cooling mix. valve step delay</label>
+		<description></description>
+		<state min="10" max="300" step="1" pattern="%d s" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47340">
+		<item-type>Switch</item-type>
+		<label>Cooling with room sensor</label>
+		<description>Enables use of room sensor together with cooling 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47341">
+		<item-type>Switch</item-type>
+		<label>HPAC accessory</label>
+		<description>Activates the HPAC accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47342">
+		<item-type>Number</item-type>
+		<label>Start Passive Cooling DM</label>
+		<description>Value the degree minutes have to reach to start passive cooling</description>
+		<state min="10" max="500" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47343">
+		<item-type>Number</item-type>
+		<label>Start Active Cooling DM</label>
+		<description>Value the degree minutes have to reach to start active cooling</description>
+		<state min="30" max="300" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47352">
+		<item-type>Switch</item-type>
+		<label>SMS40 accessory</label>
+		<description>Activates the SMS40 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47365">
+		<item-type>Switch</item-type>
+		<label>RMU System 1</label>
+		<description>Activates the RMU accessory for system 1</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47366">
+		<item-type>Switch</item-type>
+		<label>RMU System 2</label>
+		<description>Activates the RMU accessory for system 2</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47367">
+		<item-type>Switch</item-type>
+		<label>RMU System 3</label>
+		<description>Activates the RMU accessory for system 3</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47368">
+		<item-type>Switch</item-type>
+		<label>RMU System 4</label>
+		<description>Activates the RMU accessory for system 4</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47370">
+		<item-type>Switch</item-type>
+		<label>Allow Additive Heating</label>
+		<description>Whether to allow additive heating (only valid for operational mode Manual)</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47371">
+		<item-type>Switch</item-type>
+		<label>Allow Heating</label>
+		<description>Whether to allow heating (only valid for operational mode Manual or Add. heat only)</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47372">
+		<item-type>Switch</item-type>
+		<label>Allow Cooling</label>
+		<description>Whether to allow cooling (only valid for operational mode Manual or Add. heat only)</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47378">
+		<item-type>Number</item-type>
+		<label>Max diff. comp.</label>
+		<description></description>
+		<state min="10" max="250" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47379">
+		<item-type>Number</item-type>
+		<label>Max diff. add.</label>
+		<description></description>
+		<state min="10" max="240" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47380">
+		<item-type>Switch</item-type>
+		<label>Low brine out autoreset</label>
+		<description> 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47381">
+		<item-type>Number</item-type>
+		<label>Low brine out temp.</label>
+		<description></description>
+		<state min="-120" max="150" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47382">
+		<item-type>Switch</item-type>
+		<label>High brine in</label>
+		<description>Activates the High brine in temperature alarm. 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47383">
+		<item-type>Number</item-type>
+		<label>High brine in temp.</label>
+		<description>The brine in temperature that triggers the high brine in temperature alarm (if active).</description>
+		<state min="100" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47384">
+		<item-type>String</item-type>
+		<label>Date format</label>
+		<description> 1=DD-MM-YY 2=YY-MM-DD</description>
+		<state min="1" max="2" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="1">DD-MM-YY</option>
+				<option value="2">YY-MM-DD</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-47385">
+		<item-type>String</item-type>
+		<label>Time format</label>
+		<description> 12=12 hours 24=24 Hours</description>
+		<state min="12" max="24" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="12">hours 24</option>
+				<option value="24">Hours</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-47387">
+		<item-type>Switch</item-type>
+		<label>HW production</label>
+		<description>Activates hot water production where applicable 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47388">
+		<item-type>Switch</item-type>
+		<label>Alarm lower room temp.</label>
+		<description>Lowers the room temperature during red light alarms to notify the occupants of the building that something is the matter 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47389">
+		<item-type>Switch</item-type>
+		<label>Alarm lower HW temp.</label>
+		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building that something is the matter 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47391">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S4</label>
+		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47392">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S3</label>
+		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47393">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S2</label>
+		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47394">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S1</label>
+		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47395">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S4</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47396">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S3</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47397">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S2</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47398">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S1</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47399">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S4</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47400">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S3</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47401">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S2</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47402">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S1</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47413">
+		<item-type>Number</item-type>
+		<label>Speed circ.pump HW</label>
+		<description></description>
+		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47414">
+		<item-type>Number</item-type>
+		<label>Speed circ.pump Heat</label>
+		<description></description>
+		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47415">
+		<item-type>Number</item-type>
+		<label>Speed circ.pump Pool</label>
+		<description></description>
+		<state min="70" max="70" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47416">
+		<item-type>Number</item-type>
+		<label>Speed circ.pump Economy</label>
+		<description></description>
+		<state min="0" max="255" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47417">
+		<item-type>Number</item-type>
+		<label>Speed circ.pump Cooling</label>
+		<description></description>
+		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47418">
+		<item-type>Number</item-type>
+		<label>Speed brine pump</label>
+		<description></description>
+		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47537">
+		<item-type>Switch</item-type>
+		<label>Night cooling</label>
+		<description>If the fan should have a higher speed when there is a high room temp and a low outdoor temp. 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-47538">
+		<item-type>Number</item-type>
+		<label>Start room temp. night cooling</label>
+		<description></description>
+		<state min="20" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47539">
+		<item-type>Number</item-type>
+		<label>Night Cooling Min. diff.</label>
+		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
+		<state min="3" max="10" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47540">
+		<item-type>Number</item-type>
+		<label>Heat DM diff</label>
+		<description>Difference in DM between compressor starts in heating mode</description>
+		<state min="10" max="2000" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47543">
+		<item-type>Number</item-type>
+		<label>Cooling DM diff</label>
+		<description>Difference in DM between compressor starts in cooling mode</description>
+		<state min="10" max="150" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-47570">
+		<item-type>String</item-type>
+		<label>Operational mode</label>
+		<description>The operational mode of the heat pump 0=Auto 1=Manual 2=Add. heat only</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Manual</option>
+				<option value="2">Add. heat only</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-48053">
+		<item-type>Number</item-type>
+		<label>FLM 2 speed 4</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48054">
+		<item-type>Number</item-type>
+		<label>FLM 2 speed 3</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48055">
+		<item-type>Number</item-type>
+		<label>FLM 2 speed 2</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48056">
+		<item-type>Number</item-type>
+		<label>FLM 2 speed 1</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48057">
+		<item-type>Number</item-type>
+		<label>FLM 2 speed normal</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48058">
+		<item-type>Number</item-type>
+		<label>FLM 3 speed 4</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48059">
+		<item-type>Number</item-type>
+		<label>FLM 3 speed 3</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48060">
+		<item-type>Number</item-type>
+		<label>FLM 3 speed 2</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48061">
+		<item-type>Number</item-type>
+		<label>FLM 3 speed 1</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48062">
+		<item-type>Number</item-type>
+		<label>FLM 3 speed normal</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48063">
+		<item-type>Number</item-type>
+		<label>FLM 4 speed 4</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48064">
+		<item-type>Number</item-type>
+		<label>FLM 4 speed 3</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48065">
+		<item-type>Number</item-type>
+		<label>FLM 4 speed 2</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48066">
+		<item-type>Number</item-type>
+		<label>FLM 4 speed 1</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48067">
+		<item-type>Number</item-type>
+		<label>FLM 4 speed normal</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48068">
+		<item-type>Switch</item-type>
+		<label>FLM 4 accessory</label>
+		<description>Activates the FLM 4 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48069">
+		<item-type>Switch</item-type>
+		<label>FLM 3 accessory</label>
+		<description>Activates the FLM 3 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48070">
+		<item-type>Switch</item-type>
+		<label>FLM 2 accessory</label>
+		<description>Activates the FLM 2 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48071">
+		<item-type>Switch</item-type>
+		<label>FLM 1 accessory</label>
+		<description>Activates the FLM 1 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48072">
+		<item-type>Number</item-type>
+		<label>DM diff start add.</label>
+		<description>The value below the last compressor step the degree minutes needed to be reached for the pump to start electric addition</description>
+		<state min="-32767" max="32767" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48073">
+		<item-type>Switch</item-type>
+		<label>FLM cooling</label>
+		<description>FLM cooling activated</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48074">
+		<item-type>Number</item-type>
+		<label>Set point for BT74</label>
+		<description>Set point for change between cooling and heating when using BT74</description>
+		<state min="50" max="400" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48087">
+		<item-type>Switch</item-type>
+		<label>Pool 2 accessory</label>
+		<description>Activate the pool 2 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48088">
+		<item-type>Switch</item-type>
+		<label>Pool 1 accessory</label>
+		<description>Activates the pool 1 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48089">
+		<item-type>Number</item-type>
+		<label>Pool 2 start temp.</label>
+		<description>The Temperature below which the pool heating should start</description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48090">
+		<item-type>Number</item-type>
+		<label>Pool 1 start temp.</label>
+		<description>The Temperature below which the pool heating should start</description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48091">
+		<item-type>Number</item-type>
+		<label>Pool 2 stop temp.</label>
+		<description>The Temperature at which the pool heating will stop</description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48092">
+		<item-type>Number</item-type>
+		<label>Pool 1 stop temp.</label>
+		<description>The Temperature at which the pool heating will stop</description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48093">
+		<item-type>Switch</item-type>
+		<label>Pool 2 Activated</label>
+		<description>Activates pool heating</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48094">
+		<item-type>Switch</item-type>
+		<label>Pool 1 Activated</label>
+		<description>Activates pool heating</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48133">
+		<item-type>Number</item-type>
+		<label>Period Pool 2</label>
+		<description></description>
+		<state min="0" max="180" step="1" pattern="%d min" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48174">
+		<item-type>Number</item-type>
+		<label>Min cooling supply temp S4</label>
+		<description>Minimum allowed supply temperature during cooling</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48175">
+		<item-type>Number</item-type>
+		<label>Min cooling supply temp S3</label>
+		<description>Minimum allowed supply temperature during cooling</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48176">
+		<item-type>Number</item-type>
+		<label>Min cooling supply temp S2</label>
+		<description>Minimum allowed supply temperature during cooling</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48177">
+		<item-type>Number</item-type>
+		<label>Min cooling supply temp S1</label>
+		<description>Minimum allowed supply temperature during cooling</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48178">
+		<item-type>Number</item-type>
+		<label>Cooling supply temp. at 20°C</label>
+		<description>Supply Temperature at 20°C. Used to create cooling curve</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48179">
+		<item-type>Number</item-type>
+		<label>Cooling supply temp. at 20°C</label>
+		<description>Supply Temperature at 20°C. Used to create cooling curve</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48180">
+		<item-type>Number</item-type>
+		<label>Cooling supply temp. at 20°C</label>
+		<description>Supply Temperature at 20°C. Used to create cooling curve</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48181">
+		<item-type>Number</item-type>
+		<label>Cooling supply temp. at 20°C</label>
+		<description>Supply Temperature at 20°C. Used to create cooling curve</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48182">
+		<item-type>Number</item-type>
+		<label>Cooling supply temp. at 40°C</label>
+		<description>Supply Temperature at 40°C. Used to create cooling curve</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48183">
+		<item-type>Number</item-type>
+		<label>Cooling supply temp. at 40°C</label>
+		<description>Supply Temperature at 40°C. Used to create cooling curve</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48184">
+		<item-type>Number</item-type>
+		<label>Cooling supply temp. at 40°C</label>
+		<description>Supply Temperature at 40°C. Used to create cooling curve</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48185">
+		<item-type>Number</item-type>
+		<label>Cooling supply temp. at 40°C</label>
+		<description>Supply Temperature at 40°C. Used to create cooling curve</description>
+		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48186">
+		<item-type>Switch</item-type>
+		<label>Cooling use mix. valves</label>
+		<description>Close use valves during cooling mode</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48187">
+		<item-type>Switch</item-type>
+		<label>Cooling use mix. valves</label>
+		<description>Close use valves during cooling mode</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48188">
+		<item-type>Switch</item-type>
+		<label>Cooling use mix. valves</label>
+		<description>Close use valves during cooling mode</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48189">
+		<item-type>Number</item-type>
+		<label>Cooling use mix. valves</label>
+		<description>Close use valves during cooling mode</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48190">
+		<item-type>Number</item-type>
+		<label>Heatdump mix. valve delay</label>
+		<description>Mixing valve step delay for the heatdump valve</description>
+		<state min="10" max="500" step="1" pattern="%d s" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48191">
+		<item-type>Number</item-type>
+		<label>Heatdump mix. valve amp.</label>
+		<description>Mixing valve amplification for the heatdump valve</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48192">
+		<item-type>Number</item-type>
+		<label>Cooldump mix. valve delay</label>
+		<description>Mixing valve step delay for the cooldump valve for the ACS-system</description>
+		<state min="10" max="500" step="1" pattern="%d s" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48193">
+		<item-type>Number</item-type>
+		<label>Cooldump mix. valve amp.</label>
+		<description>Mixing valve amplification for the cooldump valve for the ACS-system</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48194">
+		<item-type>Switch</item-type>
+		<label>ACS accessory</label>
+		<description>Activate the ACS accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48195">
+		<item-type>Switch</item-type>
+		<label>ACS heat dump 24h-function</label>
+		<description></description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48196">
+		<item-type>Switch</item-type>
+		<label>ACS run brinepump in wait mode</label>
+		<description></description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48197">
+		<item-type>Number</item-type>
+		<label>ACS closingtime for cool dump</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d s" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48226">
+		<item-type>Number</item-type>
+		<label>Max charge pump reg speed</label>
+		<description>Max charge pump reg speed</description>
+		<state min="80" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48282">
+		<item-type>Switch</item-type>
+		<label>SG Ready heating</label>
+		<description>Sets whether or not SG Ready should affect heating</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48283">
+		<item-type>Switch</item-type>
+		<label>SG Ready cooling</label>
+		<description>Sets whether or not SG Ready should affect cooling</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48284">
+		<item-type>Switch</item-type>
+		<label>SG Ready hot water</label>
+		<description>Sets whether or not SG Ready should affect hot water</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48285">
+		<item-type>Switch</item-type>
+		<label>SG Ready pool</label>
+		<description>Sets whether or not SG Ready should affect pool</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48452">
+		<item-type>Switch</item-type>
+		<label>Auto heat medium pump speed, hw</label>
+		<description>Auto heat medium pump speed hw</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48453">
+		<item-type>Switch</item-type>
+		<label>Auto heat medium pump speed, heat</label>
+		<description>Auto heat medium pump speed heat</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48454">
+		<item-type>Switch</item-type>
+		<label>Auto heat medium pump speed, pool</label>
+		<description>Auto heat medium pump speed pool</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48455">
+		<item-type>Switch</item-type>
+		<label>Auto heat medium pump speed, cool</label>
+		<description>Auto heat medium pump speed cool</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="type-48456">
+		<item-type>Number</item-type>
+		<label>Operational mode heat medium pump, cooling</label>
+		<description></description>
+		<state min="10" max="20" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48458">
+		<item-type>Number</item-type>
+		<label>Max speed circ.pump Heat</label>
+		<description></description>
+		<state min="50" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48459">
+		<item-type>Number</item-type>
+		<label>Speed brine pump cooling</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="type-48487">
+		<item-type>Number</item-type>
+		<label>Speed circ.pump Cooling</label>
+		<description></description>
+		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
