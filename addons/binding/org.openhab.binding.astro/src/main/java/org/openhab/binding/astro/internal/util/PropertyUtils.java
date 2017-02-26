@@ -38,10 +38,7 @@ public class PropertyUtils {
             return UnDefType.UNDEF;
         } else if (value instanceof Calendar) {
             Calendar cal = (Calendar) value;
-            if (config.getOffset() != null) {
-                cal.add(Calendar.MINUTE, config.getOffset());
-            }
-            return new DateTimeType(cal);
+            return new DateTimeType(DateTimeUtils.applyConfig(cal, config));
         } else if (value instanceof Number) {
             BigDecimal decimalValue = new BigDecimal(value.toString()).setScale(2, RoundingMode.HALF_UP);
             return new DecimalType(decimalValue);
