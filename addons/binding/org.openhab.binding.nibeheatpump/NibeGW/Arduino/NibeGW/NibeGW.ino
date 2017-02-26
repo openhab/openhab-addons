@@ -30,15 +30,13 @@
 #define VERBOSE_LEVEL           3
 
 #define BOARD_NAME              "Arduino NibeGW"
-//#define BOARD_MAC               { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }
-#define BOARD_MAC               { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0x1A }
-#define BOARD_IP                { 192, 168, 1, 150 }
+#define BOARD_MAC               { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }
+#define BOARD_IP                { 192, 168, 1, 50 }
 #define GATEWAY_IP              { 192, 168, 1, 1 }
 #define NETWORK_MASK            { 255, 255, 255, 0 }
 #define INCOMING_PORT_READCMDS  TARGET_PORT
 #define INCOMING_PORT_WRITECMDS 10000
 
-//#define TARGET_IP               192, 168, 1, 28
 #define TARGET_IP               192, 168, 1, 19
 #define TARGET_PORT             9999
 #define TARGER_DEBUG_PORT       50000
