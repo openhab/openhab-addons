@@ -55,35 +55,43 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
     public void initialize() {
         PcapNetworkInterfaceService.instance().registerListener(this);
         AmazonDashButtonConfig dashButtonConfig = getConfigAs(AmazonDashButtonConfig.class);
-        String pcapNetworkInterfaceName = dashButtonConfig.pcapNetworkInterfaceName;
-        String macAddress = dashButtonConfig.macAddress;
+        final String pcapNetworkInterfaceName = dashButtonConfig.pcapNetworkInterfaceName;
+        final String macAddress = dashButtonConfig.macAddress;
         final Integer packetInterval = dashButtonConfig.packetInterval;
-        PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil.getNetworkInterfaceByName(pcapNetworkInterfaceName);
-        if (pcapNetworkInterface == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
-            return;
-        }
-
-        packetCapturingService = new PacketCapturingService(pcapNetworkInterface);
-        boolean capturingStarted = packetCapturingService.startCapturing(new PacketCapturingHandler() {
+        scheduler.submit(new Runnable() {
 
             @Override
-            public void packetCaptured(MacAddress macAddress) {
-                long now = System.currentTimeMillis();
-                if (lastCommandHandled + packetInterval < now) {
-                    ChannelUID pressChannel = new ChannelUID(getThing().getUID(), PRESS);
-                    triggerChannel(pressChannel);
-                    lastCommandHandled = now;
+            public void run() {
+                PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil
+                        .getNetworkInterfaceByName(pcapNetworkInterfaceName);
+                if (pcapNetworkInterface == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                            "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
+                    return;
+                }
+
+                packetCapturingService = new PacketCapturingService(pcapNetworkInterface);
+                boolean capturingStarted = packetCapturingService.startCapturing(new PacketCapturingHandler() {
+
+                    @Override
+                    public void packetCaptured(MacAddress macAddress) {
+                        long now = System.currentTimeMillis();
+                        if (lastCommandHandled + packetInterval < now) {
+                            ChannelUID pressChannel = new ChannelUID(getThing().getUID(), PRESS);
+                            triggerChannel(pressChannel);
+                            lastCommandHandled = now;
+                        }
+                    }
+                }, macAddress);
+                if (capturingStarted) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                            "The capturing for " + pcapNetworkInterfaceName + " cannot be started.");
                 }
             }
-        }, macAddress);
-        if (capturingStarted) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "The capturing for " + pcapNetworkInterfaceName + " cannot be started.");
-        }
+        });
+
     }
 
     @Override
