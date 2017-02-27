@@ -119,6 +119,8 @@ public class OceanicThingHandler extends SerialThingHandler {
     @Override
     public void onDataReceived(String line) {
 
+        logger.trace("Received '{}'", line);
+
         line = StringUtils.chomp(line);
 
         // little hack to overcome Locale limits of the Oceanic device
