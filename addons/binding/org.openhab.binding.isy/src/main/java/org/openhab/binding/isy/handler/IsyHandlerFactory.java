@@ -41,7 +41,8 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
             MOTION_THING_TYPE, DIMMER_THING_TYPE, LEAKDETECTOR_THING_TYPE, SWITCH_THING_TYPE, RELAY_THING_TYPE,
             GARAGEDOORKIT_THING_TYPE, KEYPAD_LINC_6_THING_TYPE, KEYPAD_LINC_5_THING_TYPE, REMOTELINC_8_THING_TYPE,
             INLINELINC_SWITCH_THING_TYPE, PROGRAM_THING_TYPE, VARIABLE_THING_TYPE, SCENE_THING_TYPE,
-            UNRECOGNIZED_SWITCH_THING_TYPE, KEYPADLINC_8_THING_TYPE, OUTLETLINC_DIMMER_THING_TYPE);
+            UNRECOGNIZED_SWITCH_THING_TYPE, KEYPADLINC_8_THING_TYPE, OUTLETLINC_DIMMER_THING_TYPE,
+            TRIGGERLINC_THING_TYPE);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
@@ -65,10 +66,12 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_MOTION_MOTION, 1)
                     .addChannelforDeviceId(CHANNEL_MOTION_DUSK, 2).addChannelforDeviceId(CHANNEL_MOTION_BATTERY, 3)
                     .build();
+        } else if (thingTypeUID.equals(TRIGGERLINC_THING_TYPE)) {
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_CLOSED_SENSOR, 1)
+                    .addChannelforDeviceId(CHANNEL_OPEN_SENSOR, 2).addChannelforDeviceId(CHANNEL_HEARTBEAT, 4).build();
         } else if (thingTypeUID.equals(LEAKDETECTOR_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_LEAK_DRY, 1)
-                    .addChannelforDeviceId(CHANNEL_LEAK_WET, 2).addChannelforDeviceId(CHANNEL_LEAK_HEARTBEAT, 4)
-                    .build();
+                    .addChannelforDeviceId(CHANNEL_LEAK_WET, 2).addChannelforDeviceId(CHANNEL_HEARTBEAT, 4).build();
         } else if (thingTypeUID.equals(GARAGEDOORKIT_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_GARAGE_SENSOR, 1)
                     .addChannelforDeviceId(CHANNEL_GARAGE_CONTACT, 2).build();
@@ -88,11 +91,11 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
                     .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 5).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 6)
                     .addControlChannel(CHANNEL_PADDLEACTION).build();
         } else if (thingTypeUID.equals(REMOTELINC_8_THING_TYPE) || thingTypeUID.equals(KEYPADLINC_8_THING_TYPE)) {
-            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_A, 2)
-                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_B, 1).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 4)
-                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 3).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_E, 6)
-                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_F, 5).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_G, 8)
-                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_H, 7).build();
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_A, 1)
+                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_B, 2).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_C, 3)
+                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_D, 4).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_E, 5)
+                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_F, 6).addChannelforDeviceId(CHANNEL_KEYPAD_LINC_G, 7)
+                    .addChannelforDeviceId(CHANNEL_KEYPAD_LINC_H, 8).build();
         } else if (thingTypeUID.equals(THING_TYPE_ISYBRIDGE)) {
             IsyBridgeHandler handler = new IsyBridgeHandler((Bridge) thing);
             registerIsyBridgeDiscoveryService(handler);

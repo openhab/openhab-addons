@@ -39,6 +39,7 @@ public class IsyBindingConstants {
     public final static ThingTypeUID KEYPADLINC_8_THING_TYPE = new ThingTypeUID(BINDING_ID, "keypadlinc8");
     public final static ThingTypeUID INLINELINC_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, "inlinelincswitch");
     public final static ThingTypeUID OUTLETLINC_DIMMER_THING_TYPE = new ThingTypeUID(BINDING_ID, "outletlinc");
+    public final static ThingTypeUID TRIGGERLINC_THING_TYPE = new ThingTypeUID(BINDING_ID, "triggerlinc");
     public final static ThingTypeUID UNRECOGNIZED_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, "unrecognized");
 
     // List of all Channel ids
@@ -57,7 +58,7 @@ public class IsyBindingConstants {
     // leak
     public final static String CHANNEL_LEAK_DRY = "dry";
     public final static String CHANNEL_LEAK_WET = "wet";
-    public final static String CHANNEL_LEAK_HEARTBEAT = "heartbeat";
+    public final static String CHANNEL_HEARTBEAT = "heartbeat";
 
     public final static String CHANNEL_KEYPAD_LINC_A = "button_a";
     public final static String CHANNEL_KEYPAD_LINC_B = "button_b";
@@ -78,5 +79,8 @@ public class IsyBindingConstants {
     public final static String CHANNEL_VARIABLE_VALUE = "value";
 
     public final static String CHANNEL_SCENE_ONOFF = "onoff";
+
+    public final static String CHANNEL_OPEN_SENSOR = "open_sensor";
+    public final static String CHANNEL_CLOSED_SENSOR = "closed_sensor";
 
 }
