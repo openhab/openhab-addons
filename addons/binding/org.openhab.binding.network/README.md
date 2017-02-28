@@ -104,8 +104,8 @@ demo.sitemap:
 sitemap demo label="Main Menu"
 {
 	Frame {
-		Text item=MyDevice
-		Text item=MyDeviceResponseTime
+		Text item=MyDevice label="Device [%s]"
+		Text item=MyDeviceResponseTime label="Device Response Time [%s]"
 	}
 }
 ```
