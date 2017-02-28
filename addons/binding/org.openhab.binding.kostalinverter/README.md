@@ -1,10 +1,4 @@
----
-layout: documentation
----
-
-{% include base.html %}
-
-# Kostal inverter Binding
+# Kostal Inverter Binding
 
 Scrapes the web interface of the inverter for the metrics of the supported channels below.
 
