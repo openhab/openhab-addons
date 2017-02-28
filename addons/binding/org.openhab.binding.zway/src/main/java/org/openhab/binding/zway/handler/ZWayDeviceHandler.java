@@ -11,6 +11,7 @@ package org.openhab.binding.zway.handler;
 import static de.fh_zwickau.informatik.sensor.ZWayConstants.*;
 import static org.openhab.binding.zway.ZWayBindingConstants.*;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zway.ZWayBindingConstants;
 import org.openhab.binding.zway.internal.converter.ZWayDeviceStateConverter;
 import org.slf4j.Logger;
@@ -70,6 +72,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
     private DevicePolling devicePolling;
     private ScheduledFuture<?> pollingJob;
+    protected Calendar lastUpdate;
+
+    protected abstract void refreshLastUpdate();
 
     /**
      * Initialize polling job and register all linked item in openHAB connector as observer
@@ -240,6 +245,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         public void run() {
             logger.debug("Starting polling for device: {}", getThing().getLabel());
             if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                // Refresh device states
                 for (Channel channel : getThing().getChannels()) {
                     logger.debug("Checking link state of channel: {}", channel.getLabel());
                     if (isLinked(channel.getUID().getId())) {
@@ -269,6 +275,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                 channel.getLabel());
                     }
                 }
+
+                // Refresh last update
+                refreshLastUpdate();
             } else {
                 logger.debug("Polling not possible, Z-Way device isn't ONLINE");
             }
@@ -451,6 +460,14 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         } else {
             logger.warn("Device unsubscribing failed");
         }
+    }
+
+    @Override
+    public void handleUpdate(ChannelUID channelUID, State newState) {
+        // Refresh update time
+        logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
+
+        refreshLastUpdate();
     }
 
     @Override
