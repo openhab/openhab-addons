@@ -216,7 +216,7 @@
         <category>Temperature</category>
         <state readOnly="false" />
     </channel-type>
-    
+        
     <!-- Special channel types -->
     
     <channel-type id="actions">
