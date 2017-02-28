@@ -1,9 +1,3 @@
----
-layout: documentation
----
-
-{% include base.html %}
-
 # Air Quality Binding
 
 This binding uses the [AQIcn.org service](http://aqicn.org) for providing air quality information for any location worldwide.
