@@ -169,7 +169,7 @@
     </channel-type>
     
     <channel-type id="switchMultilevel">
-        <item-type>Number</item-type>
+        <item-type>Dimmer</item-type>
         <label>Switch multilevel</label>
         <description>This channel represents a universal channel if no further device information is available.</description>
         <state readOnly="false" />
