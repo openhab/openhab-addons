@@ -13,13 +13,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link RotelRa1xBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author FaMaKe - Initial contribution
+ * @author Marius Bjørnstad - Initial contribution
  */
 public class RotelRa1xBindingConstants {
 
     public static final String BINDING_ID = "rotelra1x";
 
-    // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_AMP = new ThingTypeUID(BINDING_ID, "amp");
 
 }

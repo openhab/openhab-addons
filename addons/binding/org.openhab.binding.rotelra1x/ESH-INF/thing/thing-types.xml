@@ -38,7 +38,6 @@
         
     </thing-type>
 
-    <!-- Sample Channel Type -->
     <channel-type id="power">
         <item-type>Switch</item-type>
         <label>Power</label>
@@ -58,6 +57,7 @@
         <label>Volume</label>
         <description>Volume control (%)</description>
         <category>SoundVolume</category>
+        <state pattern="%d %%"></state>
     </channel-type>
     
     <channel-type id="source">

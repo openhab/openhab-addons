@@ -23,6 +23,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gnu.io.PortInUseException;
 import gnu.io.RXTXPort;
@@ -30,10 +32,10 @@ import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
 /**
- * The {@link RotelRa1xHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link RotelRa1xHandler} handles commands and state changes, and communicates
+ * with the amplifier over the serial port interface..
  *
- * @author FaMaKe - Initial contribution
+ * @author Marius Bjørnstad - Initial contribution
  */
 public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
@@ -43,6 +45,8 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
     private boolean connected, exit = false;
     private volatile boolean power = false;
+
+    private Logger logger = LoggerFactory.getLogger(RotelRa1xHandler.class);
 
     public RotelRa1xHandler(Thing thing) {
         super(thing);
@@ -54,7 +58,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
         try {
             connect();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Unable to connect to device", e);
         }
     }
 
@@ -72,6 +76,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             String portName = (String) getThing().getConfiguration().get("port");
             if (portName == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                throw new IOException("Serial port not configured");
             } else {
                 try {
                     serialPort = new RXTXPort(portName);
@@ -79,19 +84,25 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                             SerialPort.PARITY_NONE);
                 } catch (PortInUseException | UnsupportedCommOperationException e) {
                     serialPort = null;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                     throw new IOException(e);
                 }
             }
             connected = true;
-            // Don't need continuous updates of the display, we still get updates when
-            // the volume, etc., changes
-            serialPort.getOutputStream().write("display_update_manual!".getBytes("ascii"));
-            Thread receiver = new Thread(this);
-            receiver.start();
-            updateStatus(ThingStatus.ONLINE);
-            sendForce("get_current_power!");
-            updateState(getThing().getChannel("mute").getUID(), OnOffType.OFF);
-            updateState(getThing().getChannel("dimmer").getUID(), new PercentType(100));
+            try {
+                // Don't need continuous updates of the display, we still get updates when
+                // the volume, etc., changes
+                serialPort.getOutputStream().write("display_update_manual!".getBytes("ascii"));
+                updateStatus(ThingStatus.ONLINE);
+                sendForce("get_current_power!");
+                updateState(getThing().getChannel("mute").getUID(), OnOffType.OFF);
+                updateState(getThing().getChannel("dimmer").getUID(), new PercentType(100));
+                Thread receiver = new Thread(this);
+                receiver.start();
+            } catch (IOException e) {
+                disconnect();
+                throw e;
+            }
         }
     }
 
@@ -142,7 +153,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
         } else if (volumeString.equals("max")) {
             volume = max_vol;
         } else {
-            volume = Integer.parseInt(volumeString);
+            volume = Integer.parseInt(volumeString, 10);
         }
         double volumePct = volume * 100.0 / max_vol;
         return new PercentType(BigDecimal.valueOf(Math.round(volumePct)));
@@ -150,7 +161,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
     public PercentType readDimmer() throws IOException {
         String dimmerString = readUntil('!');
-        int dimmer = Integer.parseInt(dimmerString);
+        int dimmer = Integer.parseInt(dimmerString, 10);
         // Let's make 100 % the brightest, makes more sense
         double dimmerPct = 100.0 - (dimmer * 100.0 / 6.0);
         return new PercentType(BigDecimal.valueOf(Math.round(dimmerPct)));
@@ -175,7 +186,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                     send("get_volume!");
                     send("get_current_source!");
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.warn("Failed to request volume and source after powering on.", e);
                 }
             }
         }.start();
@@ -187,6 +198,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             Thread.sleep(1000); // Seems we need to wait a bit after initialization or channels won't
                                 // be updated. (making run() and initialize() synchronized doesn't work)
         } catch (InterruptedException e1) {
+            return;
         }
         while (connected && !exit) {
             try {
@@ -244,7 +256,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Input error while receiving data from amplifier", e);
                 disconnect();
             }
         }
@@ -295,7 +307,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("An I/O error occurred while processing the command {}.", command, e);
             disconnect();
         }
     }

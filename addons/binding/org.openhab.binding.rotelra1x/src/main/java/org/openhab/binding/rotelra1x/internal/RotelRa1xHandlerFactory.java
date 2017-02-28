@@ -7,27 +7,27 @@
  */
 package org.openhab.binding.rotelra1x.internal;
 
-import static org.openhab.binding.rotelra1x.RotelRa1xBindingConstants.*;
+import static org.openhab.binding.rotelra1x.RotelRa1xBindingConstants.THING_TYPE_AMP;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.rotelra1x.handler.RotelRa1xHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.rotelra1x.handler.RotelRa1xHandler;
 
 /**
- * The {@link RotelRa1xHandlerFactory} is responsible for creating things and thing 
+ * The {@link RotelRa1xHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
- * @author FaMaKe - Initial contribution
+ *
+ * @author Marius Bjørnstad - Initial contribution
  */
 public class RotelRa1xHandlerFactory extends BaseThingHandlerFactory {
-    
+
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);
-    
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -45,4 +45,3 @@ public class RotelRa1xHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 }
-
