@@ -100,15 +100,19 @@ public class MetadataUtils {
         List<T> options = null;
         if (dp.isEnumType()) {
             options = new ArrayList<T>();
-            for (int i = 0; i < dp.getOptions().length; i++) {
-                String description = null;
-                if (!dp.isVariable() && !dp.isScript()) {
-                    description = getDescription(dp.getChannel().getType(), dp.getName(), dp.getOptions()[i]);
+            if (dp.getOptions() == null) {
+                logger.warn("No options for ENUM datapoint {}", dp);
+            } else {
+                for (int i = 0; i < dp.getOptions().length; i++) {
+                    String description = null;
+                    if (!dp.isVariable() && !dp.isScript()) {
+                        description = getDescription(dp.getChannel().getType(), dp.getName(), dp.getOptions()[i]);
+                    }
+                    if (description == null) {
+                        description = dp.getOptions()[i];
+                    }
+                    options.add(optionsBuilder.createOption(dp.getOptions()[i], description));
                 }
-                if (description == null) {
-                    description = dp.getOptions()[i];
-                }
-                options.add(optionsBuilder.createOption(dp.getOptions()[i], description));
             }
         }
         return options;
