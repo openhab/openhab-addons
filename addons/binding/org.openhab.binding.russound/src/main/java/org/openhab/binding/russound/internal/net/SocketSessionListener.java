@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.russound.internal.net;
 
+import java.io.IOException;
+
 /**
  * Interface defining a listener to a {@link SocketSession} that will receive responses and/or exceptions from the
  * socket
@@ -19,13 +21,15 @@ public interface SocketSessionListener {
      * Called when a command has completed with the response for the command
      *
      * @param response a non-null, possibly empty response
+     * @throws InterruptedException if the response processing was interrupted
      */
-    public void responseReceived(String response);
+    public void responseReceived(String response) throws InterruptedException;
 
     /**
      * Called when a command finished with an exception or a general exception occurred while reading
      *
-     * @param e a non-null exception
+     * @param e a non-null io exception
+     * @throws InterruptedException if the exception processing was interrupted
      */
-    public void responseException(Exception e);
+    public void responseException(IOException e) throws InterruptedException;
 }
