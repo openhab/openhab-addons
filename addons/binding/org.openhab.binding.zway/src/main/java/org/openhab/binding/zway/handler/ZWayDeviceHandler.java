@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -529,9 +530,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             }
                         } else if (device instanceof SwitchMultilevel) {
                             // possible commands: update(), on(), up(), off(), down(), min(), max(), upMax(),
-                            // increase(),
-                            // decrease(), exact(level), exactSmooth(level, duration), stop(), startUp(), startDown()
-                            if (command instanceof DecimalType) {
+                            // increase(), decrease(), exact(level), exactSmooth(level, duration), stop(), startUp(),
+                            // startDown()
+                            if (command instanceof DecimalType || command instanceof PercentType) {
                                 logger.debug("Handle command: DecimalType");
 
                                 device.exact(command.toString());
@@ -545,14 +546,19 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
                                     device.startDown();
                                 }
-                            } else {
-                                if (command instanceof StopMoveType) {
-                                    logger.debug("Handle command: StopMoveType");
+                            } else if (command instanceof StopMoveType) {
+                                logger.debug("Handle command: StopMoveType");
 
-                                    device.stop();
+                                device.stop();
+                            } else if (command instanceof OnOffType) {
+                                logger.debug("Handle command: OnOffType");
+
+                                if (command.equals(OnOffType.ON)) {
+                                    device.on();
+                                } else if (command.equals(OnOffType.OFF)) {
+                                    device.off();
                                 }
                             }
-
                         } else if (device instanceof SwitchRGBW) {
                             // possible commands: on(), off(), exact(red, green, blue)
                             if (command instanceof HSBType) {
@@ -663,7 +669,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 acceptedItemType = "Switch";
             } else if (device instanceof SwitchMultilevel) {
                 id = SWITCH_MULTILEVEL_CHANNEL;
-                acceptedItemType = "Number";
+                acceptedItemType = "Dimmer";
             } else if (device instanceof SwitchToggle) {
                 // ?
             } else if (device instanceof SwitchRGBW) {

@@ -128,7 +128,7 @@ The following channels represent universial channels if no further device inform
 | sensorBinary      | Switch | Switch       | SensorBinary |
 | sensorMultilevel  | Number | -            | SensorMultilevel |
 | switchBinary      | Switch | Switch       | SwitchBinary |
-| switchMultilevel  | Number | -            | SwitchMultilevel |
+| switchMultilevel  | Dimmer | -            | SwitchMultilevel |
 | switchColor       | Color  | ColorLight   | SwitchRGBW |
 | switchControl     | Switch | Switch       | SwitchControl |
 | thermostat        | Number | Temperature  | Thermostat |
