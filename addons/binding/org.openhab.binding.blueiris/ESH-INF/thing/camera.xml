@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="blueiris" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="sample" listed="false">
+	   <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+        
+		<label>Camera</label>
+		<description>Blue Iris Camera</description>
+	
+		<channels>
+			<channel id="enabled" typeId="boolean">
+				<label>Enabled</label>
+				<description>If the Blue Iris camera is enabled or not</description>
+			</channel>
+			<channel id="name" typeId="name">
+				<label>Name</label>
+				<description>The name of the camera</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="vendor">Blue Iris</property>
+		</properties>
+	</thing-type>
+
+	<channel-type id="boolean">
+		<item-type>switch</item-type>
+		<label>Boolean value</label>
+		<description>Boolean value</description>
+	</channel-type>
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name of the camera</description>
+	</channel-type>
+
+</thing:thing-descriptions>
