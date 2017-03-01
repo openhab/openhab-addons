@@ -67,8 +67,16 @@ public class IsyInsteonDeviceHandler extends AbtractIsyThingHandler {
         InsteonAddress insteonAddress = new InsteonAddress((String) parameters[2]);
         int deviceId = insteonAddress.getDeviceId();
         if ("ST".equals(parameters[0])) {
-            updateState(mDeviceidToChannelMap.get(deviceId),
-                    IsyInsteonDeviceHandler.statusValuetoState(Integer.parseInt((String) parameters[1])));
+            State newState;
+            int newIntState = Integer.parseInt((String) parameters[1]);
+            if (newIntState == 0) {
+                newState = OnOffType.OFF;
+            } else if (newIntState == 255) {
+                newState = OnOffType.ON;
+            } else {
+                newState = IsyInsteonDeviceHandler.statusValuetoState(newIntState);
+            }
+            updateState(mDeviceidToChannelMap.get(deviceId), newState);
         } else if (mControlUID != null && ("DOF".equals(parameters[0]) || "DFOF".equals(parameters[0])
                 || "DON".equals(parameters[0]) || "DFON".equals(parameters[0]))) {
             updateState(mControlUID, new StringType((String) parameters[0]));
