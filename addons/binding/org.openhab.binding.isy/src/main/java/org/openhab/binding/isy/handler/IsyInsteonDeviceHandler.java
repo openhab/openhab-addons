@@ -51,8 +51,19 @@ public class IsyInsteonDeviceHandler extends AbtractIsyThingHandler {
         throw new IllegalArgumentException("Could not find device id for channel: '" + channel + "'");
     }
 
+    private static String toStringForObject(Object... parameters) {
+        StringBuilder returnValue = new StringBuilder();
+        for (Object object : parameters) {
+            returnValue.append(object.toString()).append(":");
+        }
+        return returnValue.toString();
+    }
+
     @Override
     public void handleUpdate(Object... parameters) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("handleUpdate called, parameters: " + toStringForObject(parameters));
+        }
         InsteonAddress insteonAddress = new InsteonAddress((String) parameters[2]);
         int deviceId = insteonAddress.getDeviceId();
         if ("ST".equals(parameters[0])) {
