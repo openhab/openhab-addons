@@ -57,7 +57,8 @@ public class ZWayDeviceStateConverter {
         } else if (device instanceof SwitchBinary) {
             return getBinaryState(level.toLowerCase());
         } else if (device instanceof SwitchMultilevel) {
-            if (channel.getAcceptedItemType().equals("Rollershutter")) {
+            if (channel.getAcceptedItemType().equals("Rollershutter")
+                    || channel.getAcceptedItemType().equals("Dimmer")) {
                 return getPercentState(level);
             } else {
                 return getMultilevelState(level);
