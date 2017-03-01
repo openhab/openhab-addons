@@ -7,7 +7,6 @@
  */
 package org.openhab.binding.blueiris.internal;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -25,6 +24,8 @@ import org.openhab.binding.blueiris.handler.BlueIrisBridgeHandler;
 import org.openhab.binding.blueiris.handler.BlueIrisCameraHandler;
 import org.osgi.framework.ServiceRegistration;
 
+import com.google.common.collect.Sets;
+
 /**
  * The {@link BlueIrisHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -33,7 +34,8 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class BlueIrisHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+            .newHashSet(BlueIrisBindingConstants.THING_TYPE_BRIDGE, BlueIrisBindingConstants.THING_TYPE_CAMERA);
     Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
 
     @Override
