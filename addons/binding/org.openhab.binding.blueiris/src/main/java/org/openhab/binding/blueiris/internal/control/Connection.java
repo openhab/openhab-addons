@@ -135,13 +135,14 @@ public class Connection {
             if (request.getCmd().equals("camconfig")) {
                 output = "{\"cmd\":\"camconfig\",\"camera\":\"cam1\",\"session\":\"" + this.session + "\"}";
             }
-            logger.error("Sending {}", output);
 
-            Request httpRequest = this.client.newRequest(url).method(HttpMethod.POST)
-                    .timeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS).content(new StringContentProvider(output));
             ContentResponse response;
-
-            response = httpRequest.send();
+            synchronized (client) {
+                Request httpRequest = this.client.newRequest(url).method(HttpMethod.POST)
+                        .timeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS).content(new StringContentProvider(output));
+                logger.error("Sending {}", output);
+                response = httpRequest.send();
+            }
 
             if (response.getStatus() == HttpStatus.OK_200) {
                 Object data = request.deserializeReply(new StringReader(response.getContentAsString()), gson);

@@ -1,7 +1,6 @@
 package org.openhab.binding.blueiris.internal.data;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 public class CamConfigRequest extends BlueIrisCommandRequest<CamConfigReply> {
     @Expose
@@ -13,14 +12,19 @@ public class CamConfigRequest extends BlueIrisCommandRequest<CamConfigReply> {
     @Expose
     private Boolean motion;
     @Expose
-    @SerializedName("camera")
     private String camera;
+    @Expose
+    private Boolean schedule;
+    @Expose
+    private Boolean ptzcycle;
+    @Expose
+    private Boolean ptzevents;
 
     public CamConfigRequest() {
         super(CamConfigReply.class, "camconfig");
     }
 
-    public boolean isReset() {
+    public Boolean isReset() {
         return reset;
     }
 
@@ -28,7 +32,7 @@ public class CamConfigRequest extends BlueIrisCommandRequest<CamConfigReply> {
         this.reset = reset;
     }
 
-    public boolean isEnable() {
+    public Boolean isEnable() {
         return enable;
     }
 
@@ -44,7 +48,7 @@ public class CamConfigRequest extends BlueIrisCommandRequest<CamConfigReply> {
         this.pause = pause;
     }
 
-    public boolean isMotion() {
+    public Boolean isMotion() {
         return motion;
     }
 
@@ -58,5 +62,29 @@ public class CamConfigRequest extends BlueIrisCommandRequest<CamConfigReply> {
 
     public void setCamera(String camera) {
         this.camera = camera;
+    }
+
+    public Boolean isSchedule() {
+        return schedule;
+    }
+
+    public Boolean isPtzcycle() {
+        return ptzcycle;
+    }
+
+    public Boolean isPtzevents() {
+        return ptzevents;
+    }
+
+    public void setSchedule(Boolean schedule) {
+        this.schedule = schedule;
+    }
+
+    public void setPtzcycle(Boolean ptzcycle) {
+        this.ptzcycle = ptzcycle;
+    }
+
+    public void setPtzevents(Boolean ptzevents) {
+        this.ptzevents = ptzevents;
     }
 }

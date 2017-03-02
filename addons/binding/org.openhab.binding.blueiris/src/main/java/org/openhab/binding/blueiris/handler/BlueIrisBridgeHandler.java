@@ -9,8 +9,13 @@ package org.openhab.binding.blueiris.handler;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -24,6 +29,8 @@ import org.openhab.binding.blueiris.internal.control.ConnectionListener;
 import org.openhab.binding.blueiris.internal.data.CamListReply;
 import org.openhab.binding.blueiris.internal.data.CamListRequest;
 import org.openhab.binding.blueiris.internal.data.LoginReply;
+import org.openhab.binding.blueiris.internal.data.SysConfigReply.Data;
+import org.openhab.binding.blueiris.internal.data.SysConfigRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +46,8 @@ public class BlueIrisBridgeHandler extends BaseBridgeHandler implements Connecti
     private Logger logger = LoggerFactory.getLogger(BlueIrisBridgeHandler.class);
     private Connection connection;
     private List<BridgeListener> listeners = Lists.newArrayList();
-    private Thread pollingThread;
-    private boolean running;
+    private ScheduledFuture<?> pollingThread;
+    private ScheduledFuture<?> sysInfoPollingThread;
 
     public BlueIrisBridgeHandler(Bridge thing) {
         super(thing);
@@ -48,6 +55,41 @@ public class BlueIrisBridgeHandler extends BaseBridgeHandler implements Connecti
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_GLOBAL_SCHEDULE)) {
+            SysConfigRequest request = new SysConfigRequest();
+            if (command instanceof OnOffType) {
+                OnOffType onOff = (OnOffType) command;
+                request.setSchedule(onOff == OnOffType.ON);
+                sendSysconfigRequest(request);
+            }
+        }
+        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_WEB_ARCHIVE)) {
+            SysConfigRequest request = new SysConfigRequest();
+            if (command instanceof OnOffType) {
+                OnOffType onOff = (OnOffType) command;
+                request.setArchive(onOff == OnOffType.ON);
+                sendSysconfigRequest(request);
+            }
+        }
+    }
+
+    private void sendSysconfigRequest(final SysConfigRequest request) {
+        Thread myThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (connection.sendCommand(request)) {
+                    handleSysconfigData(request.getReply().getData());
+                }
+            }
+        });
+        myThread.start();
+    }
+
+    private void handleSysconfigData(Data data) {
+        Channel chan = getThing().getChannel(BlueIrisBindingConstants.CHANNEL_GLOBAL_SCHEDULE);
+        updateState(chan.getUID(), data.isSchedule() ? OnOffType.ON : OnOffType.OFF);
+        chan = getThing().getChannel(BlueIrisBindingConstants.CHANNEL_WEB_ARCHIVE);
+        updateState(chan.getUID(), data.isArchive() ? OnOffType.ON : OnOffType.OFF);
     }
 
     @Override
@@ -66,17 +108,22 @@ public class BlueIrisBridgeHandler extends BaseBridgeHandler implements Connecti
         } catch (NoSuchAlgorithmException e) {
             logger.error("Failed to setup the md5 pieces", e);
         }
-        this.running = true;
-        this.pollingThread = new Thread(new PollingThread());
-        this.pollingThread.start();
+        startAutomaticRefresh(config);
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        Config config = getConfigAs(Config.class);
+        stopAutomaticRefresh();
+        startAutomaticRefresh(config);
     }
 
     @Override
     public void dispose() {
         this.connection.removeListener(this);
         this.connection.dispose();
-        this.running = false;
-        this.pollingThread.interrupt();
+        stopAutomaticRefresh();
         super.dispose();
     }
 
@@ -119,6 +166,29 @@ public class BlueIrisBridgeHandler extends BaseBridgeHandler implements Connecti
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to login");
     }
 
+    private synchronized void startAutomaticRefresh(Config config) {
+        if (pollingThread == null || pollingThread.isCancelled()) {
+            pollingThread = scheduler.scheduleWithFixedDelay(new PollingThread(), 0, config.pollInterval,
+                    TimeUnit.SECONDS);
+        }
+        if (sysInfoPollingThread == null || sysInfoPollingThread.isCancelled()) {
+            sysInfoPollingThread = scheduler.scheduleWithFixedDelay(new SysInfoPollingThread(), 0,
+                    config.configPollInterval, TimeUnit.MINUTES);
+
+        }
+    }
+
+    private synchronized void stopAutomaticRefresh() {
+        if (pollingThread != null) {
+            pollingThread.cancel(true);
+            pollingThread = null;
+        }
+        if (sysInfoPollingThread != null) {
+            sysInfoPollingThread.cancel(true);
+            sysInfoPollingThread = null;
+        }
+    }
+
     /**
      * Thread to handle the polling.
      */
@@ -126,24 +196,24 @@ public class BlueIrisBridgeHandler extends BaseBridgeHandler implements Connecti
 
         @Override
         public void run() {
-            while (running) {
-                long pollInterval = getConfigAs(Config.class).pollInterval * 1000L;
-                if (pollInterval <= 0) {
-                    pollInterval = 5000L;
-                }
-                try {
-                    Thread.sleep(pollInterval);
-                } catch (InterruptedException e) {
-                    if (!running) {
-                        return;
-                    }
-                }
-                CamListRequest request = new CamListRequest();
-                if (connection.sendCommand(request)) {
-                    onCamList(request.getReply());
-                }
+            CamListRequest request = new CamListRequest();
+            if (connection.sendCommand(request)) {
+                onCamList(request.getReply());
             }
         }
+    }
 
+    /**
+     * Thread to handle the polling.
+     */
+    private class SysInfoPollingThread implements Runnable {
+
+        @Override
+        public void run() {
+            SysConfigRequest request = new SysConfigRequest();
+            if (connection.sendCommand(request)) {
+                handleSysconfigData(request.getReply().getData());
+            }
+        }
     }
 }

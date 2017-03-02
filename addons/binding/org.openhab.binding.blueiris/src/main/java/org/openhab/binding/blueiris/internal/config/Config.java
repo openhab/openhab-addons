@@ -11,4 +11,5 @@ public class Config {
     public String user;
     public String password;
     public Integer pollInterval;
+    public Integer configPollInterval;
 }

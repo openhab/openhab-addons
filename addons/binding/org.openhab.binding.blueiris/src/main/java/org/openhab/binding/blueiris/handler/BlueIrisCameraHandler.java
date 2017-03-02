@@ -8,6 +8,7 @@
 package org.openhab.binding.blueiris.handler;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -23,9 +24,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.blueiris.BlueIrisBindingConstants;
+import org.openhab.binding.blueiris.internal.data.CamConfigReply;
 import org.openhab.binding.blueiris.internal.data.CamConfigRequest;
 import org.openhab.binding.blueiris.internal.data.CamListReply;
 import org.openhab.binding.blueiris.internal.data.CamListRequest;
+import org.openhab.binding.blueiris.internal.data.StatusRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +39,10 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial contribution
  */
 public class BlueIrisCameraHandler extends BaseThingHandler {
-
+    private static final long DEFAULT_POLL_TIME = 60 * 60; // One hour.
     private Logger logger = LoggerFactory.getLogger(BlueIrisCameraHandler.class);
     private CamConfigRequest request;
+    private Date nextPoll = null;
 
     public BlueIrisCameraHandler(Thing thing) {
         super(thing);
@@ -57,18 +61,10 @@ public class BlueIrisCameraHandler extends BaseThingHandler {
                 } else {
                     request.setEnable(false);
                 }
-                request.setCamera(getThing().getProperties().get(BlueIrisBindingConstants.PROPERTY_SHORT_NAME));
-
-                if (getBlueIrisBridgeHandler().getConnection().sendCommand(request)) {
-                    // Re-request the data as a list.
-                    CamListRequest camList = new CamListRequest();
-                    if (getBlueIrisBridgeHandler().getConnection().sendCommand(camList)) {
-                        getBlueIrisBridgeHandler().onCamList(camList.getReply());
-                    }
-                }
+                sendCamConfigRequest(request);
             }
         }
-        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_MOTION)) {
+        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_MOTION_ENABLED)) {
             if (command instanceof OnOffType) {
                 CamConfigRequest request = new CamConfigRequest();
                 OnOffType onOff = (OnOffType) command;
@@ -77,6 +73,106 @@ public class BlueIrisCameraHandler extends BaseThingHandler {
                 } else {
                     request.setMotion(false);
                 }
+                sendCamConfigRequest(request);
+            }
+        }
+        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_PTZ_CYCLE)) {
+            if (command instanceof OnOffType) {
+                CamConfigRequest request = new CamConfigRequest();
+                OnOffType onOff = (OnOffType) command;
+                if (onOff == OnOffType.ON) {
+                    request.setPtzcycle(true);
+                } else {
+                    request.setPtzcycle(false);
+                }
+                sendCamConfigRequest(request);
+            }
+        }
+        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_PTZ_EVENTS)) {
+            if (command instanceof OnOffType) {
+                CamConfigRequest request = new CamConfigRequest();
+                OnOffType onOff = (OnOffType) command;
+                if (onOff == OnOffType.ON) {
+                    request.setPtzevents(true);
+                } else {
+                    request.setPtzevents(false);
+                }
+                sendCamConfigRequest(request);
+            }
+        }
+        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_SCHEDULE_ENABLED)) {
+            if (command instanceof OnOffType) {
+                CamConfigRequest request = new CamConfigRequest();
+                OnOffType onOff = (OnOffType) command;
+                if (onOff == OnOffType.ON) {
+                    request.setSchedule(true);
+                } else {
+                    request.setSchedule(false);
+                }
+                sendCamConfigRequest(request);
+            }
+
+        }
+        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_PAUSED_TYPE)) {
+            if (command instanceof DecimalType) {
+                CamConfigRequest request = new CamConfigRequest();
+                DecimalType decimal = (DecimalType) command;
+                int val = decimal.intValue();
+                if (val <= 3 && val >= -1) {
+                    request.setPause(val);
+                    sendCamConfigRequest(request);
+                }
+            }
+        }
+        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_PROFILE)) {
+            StatusRequest request = new StatusRequest();
+            if (command instanceof DecimalType) {
+                DecimalType decimal = (DecimalType) command;
+                int val = decimal.intValue();
+                if (val >= 0 && val <= 7) {
+                    request.setProfile(val);
+                }
+            } else if (command instanceof StringType) {
+                StringType stringType = (StringType) command;
+                // See if we can find the profile in the list.
+                int pos = 0;
+                for (String profileName : getBlueIrisBridgeHandler().getConnection().getLoginReply().getData()
+                        .getProfiles()) {
+                    if (profileName.equalsIgnoreCase(stringType.toString())) {
+                        request.setProfile(pos);
+                    }
+                    pos++;
+                }
+            }
+            if (request.getProfile() != null) {
+                sendStatusRequest(request);
+            }
+        }
+    }
+
+    private void sendCamConfigRequest(final CamConfigRequest request) {
+        Thread myThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                request.setCamera(getThing().getProperties().get(BlueIrisBindingConstants.PROPERTY_SHORT_NAME));
+
+                if (getBlueIrisBridgeHandler().getConnection().sendCommand(request)) {
+                    // Re-request the data as a list.
+                    CamListRequest camList = new CamListRequest();
+                    if (getBlueIrisBridgeHandler().getConnection().sendCommand(camList)) {
+                        getBlueIrisBridgeHandler().onCamList(camList.getReply());
+                    }
+                }
+
+            }
+        });
+        myThread.start();
+    }
+
+    private void sendStatusRequest(final StatusRequest request) {
+        Thread myThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
                 request.setCamera(getThing().getProperties().get(BlueIrisBindingConstants.PROPERTY_SHORT_NAME));
 
                 if (getBlueIrisBridgeHandler().getConnection().sendCommand(request)) {
@@ -87,7 +183,8 @@ public class BlueIrisCameraHandler extends BaseThingHandler {
                     }
                 }
             }
-        }
+        });
+        myThread.start();
     }
 
     @Override
@@ -162,15 +259,38 @@ public class BlueIrisCameraHandler extends BaseThingHandler {
         request.setPause(0);
         request.setReset(false);
 
-        // Now ask for details about ourselves.
-        CamConfigRequest configRequest = new CamConfigRequest();
-        configRequest.setCamera(camData.getOptionValue());
-        if (getBlueIrisBridgeHandler().getConnection().sendCommand(configRequest)) {
-            // Update some stuff.
+        if (nextPoll == null || nextPoll.after(new Date())) {
+            // Now ask for details about ourselves.
+            CamConfigRequest configRequest = new CamConfigRequest();
+            configRequest.setCamera(camData.getOptionValue());
+            if (getBlueIrisBridgeHandler().getConnection().sendCommand(configRequest)) {
+                updateCamConfig(configRequest.getReply().getData());
+            }
+            nextPoll = new Date();
+            nextPoll.setTime(nextPoll.getTime() + (getConfigPollLength() * 1000L));
         }
+    }
+
+    private void updateCamConfig(CamConfigReply.Data camConfig) {
+        Channel chan = getThing().getChannel(BlueIrisBindingConstants.CHANNEL_MOTION_ENABLED);
+        updateState(chan.getUID(), camConfig.isMotion() ? OnOffType.ON : OnOffType.OFF);
+        chan = getThing().getChannel(BlueIrisBindingConstants.CHANNEL_PTZ_CYCLE);
+        updateState(chan.getUID(), camConfig.isPtzcycle() ? OnOffType.ON : OnOffType.OFF);
+        chan = getThing().getChannel(BlueIrisBindingConstants.CHANNEL_PTZ_EVENTS);
+        updateState(chan.getUID(), camConfig.isPtzevents() ? OnOffType.ON : OnOffType.OFF);
+        chan = getThing().getChannel(BlueIrisBindingConstants.CHANNEL_SCHEDULE_ENABLED);
+        updateState(chan.getUID(), camConfig.isSchedule() ? OnOffType.ON : OnOffType.OFF);
     }
 
     BlueIrisBridgeHandler getBlueIrisBridgeHandler() {
         return (BlueIrisBridgeHandler) getBridge().getHandler();
+    }
+
+    private long getConfigPollLength() {
+        Object obj = this.getConfig().get("pollingTime");
+        if (obj instanceof Integer) {
+            return (Integer) obj;
+        }
+        return DEFAULT_POLL_TIME;
     }
 }

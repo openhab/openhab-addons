@@ -46,6 +46,14 @@ public class BlueIrisBindingConstants {
     public final static String CHANNEL_NUMBER_OF_TRIGGERS = "numberOfTriggers";
     public final static String CHANNEL_NUMBER_OF_NO_SIGNAL = "numberOfNoSignal";
     public final static String CHANNEL_NUMBER_OF_CLIPS = "numberOfClips";
+    public final static String CHANNEL_MOTION_ENABLED = "motionEnabled";
+    public final static String CHANNEL_SCHEDULE_ENABLED = "scheduleEnabled";
+    public final static String CHANNEL_PTZ_CYCLE = "ptzCycle";
+    public final static String CHANNEL_PTZ_EVENTS = "ptzEvents";
+
+    // Bridge channels
+    public final static String CHANNEL_GLOBAL_SCHEDULE = "globalSchedule";
+    public final static String CHANNEL_WEB_ARCHIVE = "webArchive";
 
     // Properties.
     public final static String PROPERTY_SHORT_NAME = "shortName";
