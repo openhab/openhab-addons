@@ -44,7 +44,6 @@ public class BlueIrisBridgeHandler extends BaseBridgeHandler implements Connecti
 
     public BlueIrisBridgeHandler(Bridge thing) {
         super(thing);
-        logger.error("Init bridge is {}", thing);
     }
 
     @Override
@@ -95,7 +94,6 @@ public class BlueIrisBridgeHandler extends BaseBridgeHandler implements Connecti
         for (BridgeListener listener : listeners) {
             listener.onCamList(camListReply);
         }
-        logger.error("Bridge is {}", getThing());
         List<Thing> things = getThing().getThings();
         for (CamListReply.Data data : camListReply.getCameras()) {
             for (Thing thing : things) {
@@ -142,7 +140,7 @@ public class BlueIrisBridgeHandler extends BaseBridgeHandler implements Connecti
                 }
                 CamListRequest request = new CamListRequest();
                 if (connection.sendCommand(request)) {
-                    onCamList(request.getCamListReply());
+                    onCamList(request.getReply());
                 }
             }
         }

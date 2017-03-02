@@ -23,7 +23,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.blueiris.BlueIrisBindingConstants;
+import org.openhab.binding.blueiris.internal.data.CamConfigRequest;
 import org.openhab.binding.blueiris.internal.data.CamListReply;
+import org.openhab.binding.blueiris.internal.data.CamListRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,20 +38,53 @@ import org.slf4j.LoggerFactory;
 public class BlueIrisCameraHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(BlueIrisCameraHandler.class);
+    private CamConfigRequest request;
 
     public BlueIrisCameraHandler(Thing thing) {
         super(thing);
+        request = new CamConfigRequest();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.error("Got channel id {} {}", channelUID, command);
         if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_ENABLED)) {
             if (command instanceof OnOffType) {
+                CamConfigRequest request = new CamConfigRequest();
                 OnOffType onOff = (OnOffType) command;
                 if (onOff == OnOffType.ON) {
-
+                    request.setEnable(true);
                 } else {
+                    request.setEnable(false);
+                }
+                request.setCamera(getThing().getProperties().get(BlueIrisBindingConstants.PROPERTY_SHORT_NAME));
 
+                if (getBlueIrisBridgeHandler().getConnection().sendCommand(request)) {
+                    // Re-request the data as a list.
+                    CamListRequest camList = new CamListRequest();
+                    if (getBlueIrisBridgeHandler().getConnection().sendCommand(camList)) {
+                        getBlueIrisBridgeHandler().onCamList(camList.getReply());
+                    }
+                }
+            }
+        }
+        if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_MOTION)) {
+            if (command instanceof OnOffType) {
+                CamConfigRequest request = new CamConfigRequest();
+                OnOffType onOff = (OnOffType) command;
+                if (onOff == OnOffType.ON) {
+                    request.setMotion(true);
+                } else {
+                    request.setMotion(false);
+                }
+                request.setCamera(getThing().getProperties().get(BlueIrisBindingConstants.PROPERTY_SHORT_NAME));
+
+                if (getBlueIrisBridgeHandler().getConnection().sendCommand(request)) {
+                    // Re-request the data as a list.
+                    CamListRequest camList = new CamListRequest();
+                    if (getBlueIrisBridgeHandler().getConnection().sendCommand(camList)) {
+                        getBlueIrisBridgeHandler().onCamList(camList.getReply());
+                    }
                 }
             }
         }
@@ -85,7 +120,6 @@ public class BlueIrisCameraHandler extends BaseThingHandler {
         chan = getThing().getChannel(BlueIrisBindingConstants.CHANNEL_PAUSED);
         updateState(chan.getUID(), camData.isPaused() ? OnOffType.ON : OnOffType.OFF);
         chan = getThing().getChannel(BlueIrisBindingConstants.CHANNEL_WEBCAST);
-        logger.error("Getting channel {} {}", BlueIrisBindingConstants.CHANNEL_WEBCAST, chan);
         updateState(chan.getUID(), camData.isWebcast() ? OnOffType.ON : OnOffType.OFF);
         chan = getThing().getChannel(BlueIrisBindingConstants.CHANNEL_PAUSED_TYPE);
         updateState(chan.getUID(), new DecimalType(camData.getPause()));
@@ -123,5 +157,20 @@ public class BlueIrisCameraHandler extends BaseThingHandler {
         HSBType color = HSBType.fromRGB(camData.getColor() & 0xff, (camData.getColor() >> 8) & 0xff,
                 (camData.getColor() >> 16) & 0xff);
         updateState(chan.getUID(), color);
+        request.setEnable(camData.isEnabled());
+        request.setMotion(camData.isMotion());
+        request.setPause(0);
+        request.setReset(false);
+
+        // Now ask for details about ourselves.
+        CamConfigRequest configRequest = new CamConfigRequest();
+        configRequest.setCamera(camData.getOptionValue());
+        if (getBlueIrisBridgeHandler().getConnection().sendCommand(configRequest)) {
+            // Update some stuff.
+        }
+    }
+
+    BlueIrisBridgeHandler getBlueIrisBridgeHandler() {
+        return (BlueIrisBridgeHandler) getBridge().getHandler();
     }
 }

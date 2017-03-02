@@ -65,11 +65,13 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Camera is enabled</description>
+		<state readOnly="false"></state>
 	</channel-type>
     <channel-type id="webCast">
         <item-type>Switch</item-type>
         <label>Webcast</label>
         <description>Webcast is enabled</description>
+        <state readOnly="false"></state>
     </channel-type>
 	<channel-type id="isAlerting">
 		<item-type>Switch</item-type>
@@ -93,6 +95,7 @@
 		<item-type>Switch</item-type>
 		<label>Paused</label>
 		<description>Is paused</description>
+        <state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="pausedType">
 		<item-type>Number</item-type>
@@ -118,11 +121,13 @@
 		<item-type>Switch</item-type>
 		<label>Recording</label>
 		<description>Is the camera recording</description>
+        <state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="cautionIcon">
 		<item-type>Switch</item-type>
 		<label>Caution Icon</label>
 		<description>Is caution icon on</description>
+        <state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="ptzSupported">
 		<item-type>Switch</item-type>
@@ -164,6 +169,7 @@
 		<item-type>Number</item-type>
 		<label>Num Clips</label>
 		<description>Number of no recording events since last reset</description>
+        <state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="nosignal">
 		<item-type>Number</item-type>
