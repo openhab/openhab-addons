@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="elkalarm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="blueiris" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -24,6 +24,10 @@
             <parameter name="password" type="text">
                 <label>Password</label>
                 <description>The password for the blue iris system.</description>
+            </parameter>
+            <parameter name="pollInterval" type="integer">
+                <label>pollInterval</label>
+                <description>The number of seconds to poll the blue iris system for updated camera status.</description>
             </parameter>
         </config-description>
     </bridge-type>

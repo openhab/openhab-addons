@@ -16,7 +16,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author David Bennett - Initial contribution
  */
 public class BlueIrisBindingConstants {
-
     public static final String BINDING_ID = "blueiris";
 
     // List of all Thing Type UIDs
@@ -24,9 +23,30 @@ public class BlueIrisBindingConstants {
     public final static ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID(BINDING_ID, "camera");
 
     // List of all Channel ids
-    public final static String CHANNEL_NAME = "name";
+    public final static String CHANNEL_PROFILE = "profile";
     public final static String CHANNEL_ENABLED = "enabled";
+    public final static String CHANNEL_AUDIO_SUPPORTED = "audioSupported";
+    public final static String CHANNEL_FPS = "fps";
+    public final static String CHANNEL_COLOR = "color";
+    public final static String CHANNEL_WEBCAST = "webCast";
+    public final static String CHANNEL_ALERTING = "alerting";
+    public final static String CHANNEL_MOTION = "motion";
+    public final static String CHANNEL_NO_SIGNAL = "noSignal";
+    public final static String CHANNEL_PAUSED = "paused";
+    public final static String CHANNEL_PAUSED_TYPE = "pausedType";
+    public final static String CHANNEL_TRIGGERED = "triggered";
+    public final static String CHANNEL_RECORDING = "recording";
+    public final static String CHANNEL_CAUTION_ICON = "cautionIcon";
+    public final static String CHANNEL_PTZ_SUPPORTED = "ptzSupported";
+    public final static String CHANNEL_WIDTH = "width";
+    public final static String CHANNEL_HEIGHT = "height";
+    public final static String CHANNEL_NEW_ALERTS = "newAlerts";
+    public final static String CHANNEL_LAST_ALERT = "lastAlert";
+    public final static String CHANNEL_NUMBER_OF_ALERTS = "numberOfAlerts";
+    public final static String CHANNEL_NUMBER_OF_TRIGGERS = "numberOfTriggers";
+    public final static String CHANNEL_NUMBER_OF_NO_SIGNAL = "numberOfNoSignal";
+    public final static String CHANNEL_NUMBER_OF_CLIPS = "numberOfClips";
 
     // Properties.
-    public final static String PROPERTY_SHORT_NAME = "short_name";
+    public final static String PROPERTY_SHORT_NAME = "shortName";
 }

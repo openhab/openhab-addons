@@ -2,7 +2,7 @@ package org.openhab.binding.blueiris.internal.data;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
+import com.google.gson.annotations.Expose;
 
 /**
  * cam list data from blue iris.
@@ -12,65 +12,97 @@ import com.google.common.collect.Lists;
  */
 public class CamListReply {
 
-    private List<Data> cameras;
+    @Expose
+    private String result;
+    @Expose
+    private List<Data> data;
 
     /**
      * Create the cam list reply information
-     *
-     * @param cameras The cameras as a reply
      */
-    public CamListReply(Data[] cameras) {
-        this.cameras = Lists.newArrayList(cameras);
+    public CamListReply() {
     }
 
     /**
      * @return The details about the cameras.
      */
     public List<Data> getCameras() {
-        return cameras;
+        return data;
     }
 
     @Override
     public String toString() {
-        return "CamListReply [cameras=" + cameras + "]";
+        return "CamListReply [result=" + result + ", data=" + data + "]";
     }
 
     /**
      * Data in the array from the cam list reply.
      */
     public static class Data {
-        private String optionsDisplay;
-        private String optionsValue;
-        private Integer FPS;
+        @Expose
+        private String optionDisplay;
+        @Expose
+        private String optionValue;
+        @Expose
+        private Double FPS;
+        @Expose
         private Integer color;
+        @Expose
         private Integer clipsCreated;
+        @Expose
+        private boolean webcast;
+        @Expose
         private boolean isAlerting;
+        @Expose
         private boolean isEnabled;
+        @Expose
         private boolean isOnline;
+        @Expose
         private boolean isMotion;
+        @Expose
         private boolean isNoSignal;
+        @Expose
         private boolean isPaused;
+        @Expose
         private boolean isTriggered;
+        @Expose
         private boolean isRecording;
+        @Expose
         private boolean isYellow;
+        @Expose
         private String profile;
+        @Expose
         private boolean ptz;
+        @Expose
         private boolean audio;
+        @Expose
         private Integer width;
+        @Expose
         private Integer height;
+        @Expose
         private Integer nTriggers;
+        @Expose
         private Integer nNoSignal;
+        @Expose
         private Integer nClips;
+        @Expose
+        private Integer pause;
+        @Expose
+        private Integer nAlerts;
+        @Expose
+        private Integer newalerts;
+        @Expose
+        private Integer alertutc;
 
-        public String getOptionsDisplay() {
-            return optionsDisplay;
+        public String getOptionDisplay() {
+            return optionDisplay;
         }
 
-        public String getOptionsValue() {
-            return optionsValue;
+        public String getOptionValue() {
+            return optionValue;
         }
 
-        public Integer getFPS() {
+        public Double getFPS() {
             return FPS;
         }
 
@@ -138,27 +170,48 @@ public class CamListReply {
             return height;
         }
 
-        public Integer getnTriggers() {
+        public Integer getNumTriggers() {
             return nTriggers;
         }
 
-        public Integer getnNoSignal() {
+        public Integer getNumNoSignal() {
             return nNoSignal;
         }
 
-        public Integer getnClips() {
+        public Integer getNumClips() {
             return nClips;
+        }
+
+        public boolean isWebcast() {
+            return webcast;
+        }
+
+        public Integer getPause() {
+            return pause;
+        }
+
+        public Integer getNumAlerts() {
+            return nAlerts;
+        }
+
+        public Integer getNewAlerts() {
+            return newalerts;
+        }
+
+        public Integer getAlertUTC() {
+            return alertutc;
         }
 
         @Override
         public String toString() {
-            return "Data [optionsDisplay=" + optionsDisplay + ", optionsValue=" + optionsValue + ", FPS=" + FPS
-                    + ", color=" + color + ", clipsCreated=" + clipsCreated + ", isAlerting=" + isAlerting
+            return "Data [optionDisplay=" + optionDisplay + ", optionValue=" + optionValue + ", FPS=" + FPS + ", color="
+                    + color + ", clipsCreated=" + clipsCreated + ", webcast=" + webcast + ", isAlerting=" + isAlerting
                     + ", isEnabled=" + isEnabled + ", isOnline=" + isOnline + ", isMotion=" + isMotion + ", isNoSignal="
                     + isNoSignal + ", isPaused=" + isPaused + ", isTriggered=" + isTriggered + ", isRecording="
                     + isRecording + ", isYellow=" + isYellow + ", profile=" + profile + ", ptz=" + ptz + ", audio="
                     + audio + ", width=" + width + ", height=" + height + ", nTriggers=" + nTriggers + ", nNoSignal="
-                    + nNoSignal + ", nClips=" + nClips + "]";
+                    + nNoSignal + ", nClips=" + nClips + ", pause=" + pause + ", nAlerts=" + nAlerts + ", newalerts="
+                    + newalerts + ", alertutc=" + alertutc + "]";
         }
     }
 }

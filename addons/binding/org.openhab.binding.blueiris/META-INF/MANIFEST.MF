@@ -7,13 +7,14 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: 
- com.google.common.collect;version="10.0.1",
- com.google.gson;version="2.5.0",
- org.apache.http;version="4.2.5",
- org.apache.http.client;version="4.2.6",
- org.apache.http.client.methods;version="4.2.6",
- org.apache.http.entity;version="4.2.5",
- org.apache.http.impl.client;version="4.2.6",
+ com.google.common.collect,
+ com.google.gson,
+ com.google.gson.annotations,
+ org.apache.http,
+ org.apache.http.client,
+ org.apache.http.client.methods,
+ org.apache.http.entity,
+ org.apache.http.impl.client,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -24,7 +25,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.blueiris,
  org.openhab.binding.blueiris.handler,
- org.osgi.framework;version="1.8.0",
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.blueiris,

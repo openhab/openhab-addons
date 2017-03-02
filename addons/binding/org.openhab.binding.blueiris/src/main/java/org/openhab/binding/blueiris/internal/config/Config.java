@@ -6,8 +6,9 @@ package org.openhab.binding.blueiris.internal.config;
  * @author David Bennett - Initial Contribution
  */
 public class Config {
-    public String host;
+    public String ipAddress;
     public Integer port;
     public String user;
     public String password;
+    public Integer pollInterval;
 }

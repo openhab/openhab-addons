@@ -2,6 +2,8 @@ package org.openhab.binding.blueiris.internal.data;
 
 import java.util.List;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Alertlist data from blue iris.
  *
@@ -22,12 +24,19 @@ public class AlertListReply {
      * @author David Bennett - Initial Contribution
      */
     public static class Data {
+        @Expose
         private String camera;
+        @Expose
         private String jpeg;
+        @Expose
         private String path;
+        @Expose
         private Integer offset;
+        @Expose
         private Integer flags;
+        @Expose
         private Integer date;
+        @Expose
         private Integer color;
 
         public String getCamera() {

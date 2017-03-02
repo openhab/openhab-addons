@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -23,6 +24,8 @@ import org.openhab.binding.blueiris.discovery.BlueIrisDiscoveryService;
 import org.openhab.binding.blueiris.handler.BlueIrisBridgeHandler;
 import org.openhab.binding.blueiris.handler.BlueIrisCameraHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
@@ -33,10 +36,15 @@ import com.google.common.collect.Sets;
  * @author David Bennett - Initial contribution
  */
 public class BlueIrisHandlerFactory extends BaseThingHandlerFactory {
+    private Logger logger = LoggerFactory.getLogger(BlueIrisHandlerFactory.class);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .newHashSet(BlueIrisBindingConstants.THING_TYPE_BRIDGE, BlueIrisBindingConstants.THING_TYPE_CAMERA);
     Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
+
+    public BlueIrisHandlerFactory() {
+        super();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -54,8 +62,10 @@ public class BlueIrisHandlerFactory extends BaseThingHandlerFactory {
             return new BlueIrisCameraHandler(thing);
         }
         if (thingTypeUID.equals(BlueIrisBindingConstants.THING_TYPE_BRIDGE)) {
-            BlueIrisBridgeHandler bridge = new BlueIrisBridgeHandler(thing);
+            Bridge bridgeThing = (Bridge) thing;
+            BlueIrisBridgeHandler bridge = new BlueIrisBridgeHandler(bridgeThing);
             BlueIrisDiscoveryService service = new BlueIrisDiscoveryService(bridge);
+            service.activateBridge();
             // Register the discovery service.
             discoveryService.put(bridge.getThing().getUID(), bundleContext
                     .registerService(DiscoveryService.class.getName(), service, new Hashtable<String, Object>()));
@@ -73,6 +83,7 @@ public class BlueIrisHandlerFactory extends BaseThingHandlerFactory {
                 BlueIrisDiscoveryService service = (BlueIrisDiscoveryService) bundleContext
                         .getService(reg.getReference());
                 reg.unregister();
+
                 discoveryService.remove(handler.getThing().getUID());
             }
         }
