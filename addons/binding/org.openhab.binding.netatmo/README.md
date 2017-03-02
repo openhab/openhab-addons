@@ -1,9 +1,3 @@
----
-layout: documentation
----
-
-{% include base.html %}
-
 # Netatmo Binding
  
 The Netatmo binding integrates the following Netatmo products:

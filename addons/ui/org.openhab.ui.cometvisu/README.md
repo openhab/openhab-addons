@@ -1,4 +1,4 @@
-Documentation of the CometVisu Backend for openHAB2
+# CometVisu Backend for openHAB2
 
 ## Introduction
 

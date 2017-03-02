@@ -103,6 +103,7 @@ public class ZWayBindingConstants {
     public static final String DEVICE_PROP_DEVICE_TYPE = "deviceType";
     public static final String DEVICE_PROP_ZDDXMLFILE = "zddxmlfile";
     public static final String DEVICE_PROP_SDK = "SDK";
+    public static final String DEVICE_PROP_LAST_UPDATE = "lastUpdate";
 
     /* Bridge properties */
     public final static String BRIDGE_PROP_SOFTWARE_REVISION_VERSION = "softwareRevisionVersion";
