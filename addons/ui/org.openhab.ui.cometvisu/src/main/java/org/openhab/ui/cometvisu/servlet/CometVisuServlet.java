@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -872,22 +872,24 @@ public class CometVisuServlet extends HttpServlet {
         } else if (file.getName().equals("list_all_icons.php")) {
             // all item names
             File iconDir = new File(rootFolder, "icon/knx-uf-iconset/128x128_white/");
-            FilenameFilter filter = new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    // TODO Auto-generated method stub
-                    return name.endsWith(".png");
-                }
-            };
-            File[] icons = iconDir.listFiles(filter);
-            Arrays.sort(icons);
-            for (File iconFile : icons) {
-                if (iconFile.isFile()) {
-                    String iconName = iconFile.getName().replace(".png", "");
-                    DataBean bean = new DataBean();
-                    bean.label = iconName;
-                    bean.value = iconName;
-                    beans.add(bean);
+            if (iconDir.exists() && iconDir.isDirectory()) {
+                FilenameFilter filter = new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        // TODO Auto-generated method stub
+                        return name.endsWith(".png");
+                    }
+                };
+                File[] icons = iconDir.listFiles(filter);
+                Arrays.sort(icons);
+                for (File iconFile : icons) {
+                    if (iconFile.isFile()) {
+                        String iconName = iconFile.getName().replace(".png", "");
+                        DataBean bean = new DataBean();
+                        bean.label = iconName;
+                        bean.value = iconName;
+                        beans.add(bean);
+                    }
                 }
             }
         } else if (file.getName().equals("list_all_plugins.php")) {
@@ -920,9 +922,14 @@ public class CometVisuServlet extends HttpServlet {
             // all item names
 
         }
-        response.setContentType(MediaType.APPLICATION_JSON);
-        response.getWriter().write(marshalJson(beans));
-        response.flushBuffer();
+        if (beans.size() == 0) {
+            // nothing found try the PHP files
+            processPhpRequest(file, request, response);
+        } else {
+            response.setContentType(MediaType.APPLICATION_JSON);
+            response.getWriter().write(marshalJson(beans));
+            response.flushBuffer();
+        }
     }
 
     private String marshalJson(Object bean) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,6 +20,7 @@ import org.openhab.binding.astro.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Range;
+import org.openhab.binding.astro.internal.model.SunPhaseName;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -75,6 +76,16 @@ public abstract class AbstractDailyJob extends AbstractBaseJob {
         jobDataMap.put(KEY_THING_UID, thingUid);
 
         schedule(astroHandler, PublishPlanetJob.class, jobDataMap, "publish-" + jobKey, eventAt);
+    }
+
+    protected void scheduleSunPhase(String thingUid, AstroThingHandler astroHandler, SunPhaseName phaseName,
+            Calendar eventAt) {
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(KEY_THING_UID, thingUid);
+        jobDataMap.put(KEY_PHASE_NAME, phaseName);
+
+        schedule(astroHandler, SunPhaseJob.class, jobDataMap, "sunPhase-" + phaseName.toString().toLowerCase(),
+                eventAt);
     }
 
     private void schedule(AstroThingHandler astroHandler, Class<? extends AbstractBaseJob> clazz, JobDataMap jobDataMap,

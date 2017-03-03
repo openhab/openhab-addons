@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,7 +30,7 @@ import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
@@ -91,10 +91,10 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                         logger.warn("RFXCOM doesn't support transmitting for channel '{}'", channelUID.getId());
                     }
 
-                } catch (RFXComNotImpException e) {
-                    logger.error("Message not supported: {}", e.getMessage());
+                } catch (RFXComMessageNotImplementedException e) {
+                    logger.error("Message not supported", e);
                 } catch (RFXComException e) {
-                    logger.error("Transmitting error: {}", e.getMessage());
+                    logger.error("Transmitting error", e);
                 }
             }
 
@@ -272,7 +272,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                 }
             }
         } catch (Exception e) {
-            logger.error("Error occurred during message receiving: {}", e.getMessage());
+            logger.error("Error occured during message receiving", e);
         }
     }
 

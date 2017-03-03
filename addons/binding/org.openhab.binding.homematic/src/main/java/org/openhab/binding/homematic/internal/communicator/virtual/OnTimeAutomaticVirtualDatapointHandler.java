@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,7 +37,15 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
      * {@inheritDoc}
      */
     @Override
-    public void add(HmDevice device) {
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_ON_TIME_AUTOMATIC;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(HmDevice device) {
         for (HmChannel channel : device.getChannels()) {
             HmDatapointInfo dpInfoOnTime = HmDatapointInfo.createValuesInfo(channel, DATAPOINT_NAME_ON_TIME);
             if (channel.hasDatapoint(dpInfoOnTime)) {
@@ -46,8 +54,8 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
                 if (channel.hasDatapoint(dpInfoLevel) || channel.hasDatapoint(dpInfoState)) {
                     HmDatapoint dpOnTime = channel.getDatapoint(dpInfoOnTime);
                     HmDatapoint dpOnTimeAutomatic = dpOnTime.clone();
-                    dpOnTimeAutomatic.setName(VIRTUAL_DATAPOINT_NAME_ON_TIME_AUTOMATIC);
-                    dpOnTimeAutomatic.setDescription(VIRTUAL_DATAPOINT_NAME_ON_TIME_AUTOMATIC);
+                    dpOnTimeAutomatic.setName(getName());
+                    dpOnTimeAutomatic.setDescription(getName());
                     addDatapoint(channel, dpOnTimeAutomatic);
                 }
             }
@@ -58,32 +66,31 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
      * {@inheritDoc}
      */
     @Override
-    public boolean canHandle(HmDatapoint dp, Object value) {
+    public boolean canHandleCommand(HmDatapoint dp, Object value) {
         boolean isLevel = DATAPOINT_NAME_LEVEL.equals(dp.getName()) && value != null && value instanceof Number
                 && ((Number) value).doubleValue() > 0.0;
         boolean isState = DATAPOINT_NAME_STATE.equals(dp.getName()) && MiscUtils.isTrueValue(value);
 
         return ((isLevel || isState) && getVirtualDatapointValue(dp.getChannel()) > 0.0)
-                || VIRTUAL_DATAPOINT_NAME_ON_TIME_AUTOMATIC.equals(dp.getName());
+                || getName().equals(dp.getName());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handle(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
+    public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
-        if (!VIRTUAL_DATAPOINT_NAME_ON_TIME_AUTOMATIC.equals(dp.getName())) {
+        if (!getName().equals(dp.getName())) {
             HmChannel channel = dp.getChannel();
             HmDatapoint dpOnTime = channel
                     .getDatapoint(HmDatapointInfo.createValuesInfo(channel, DATAPOINT_NAME_ON_TIME));
             if (dpOnTime != null) {
-                gateway.sendDatapoint(dpOnTime, new HmDatapointConfig(true), getVirtualDatapointValue(channel));
+                gateway.sendDatapoint(dpOnTime, new HmDatapointConfig(), getVirtualDatapointValue(channel));
             } else {
                 logger.warn(
                         "Can't find ON_TIME datapoint in channel '{}' in device '{}', ignoring virtual datapoint '{}'",
-                        channel.getNumber(), channel.getDevice().getAddress(),
-                        VIRTUAL_DATAPOINT_NAME_ON_TIME_AUTOMATIC);
+                        channel.getNumber(), channel.getDevice().getAddress(), getName());
             }
             gateway.sendDatapointIgnoreVirtual(dp, dpConfig, value);
         } else {
@@ -95,8 +102,7 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
      * Returns the virtual datapoint value or 0 if not specified.
      */
     private Double getVirtualDatapointValue(HmChannel channel) {
-        HmDatapoint dpOnTimeAutomatic = channel
-                .getDatapoint(HmDatapointInfo.createValuesInfo(channel, VIRTUAL_DATAPOINT_NAME_ON_TIME_AUTOMATIC));
+        HmDatapoint dpOnTimeAutomatic = getVirtualDatapoint(channel);
         return dpOnTimeAutomatic == null || dpOnTimeAutomatic.getValue() == null
                 || dpOnTimeAutomatic.getType() != HmValueType.FLOAT ? 0.0
                         : ((Number) dpOnTimeAutomatic.getValue()).doubleValue();

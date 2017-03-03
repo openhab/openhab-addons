@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -99,18 +99,32 @@ public class OnkyoDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
                     String deviceModel = device.getDetails().getModelDetails() != null
                             ? device.getDetails().getModelDetails().getModelName() : null;
-                    ThingTypeUID thingTypeUID = THING_TYPE_ONKYOAV;
-                    if (!isSupportedDeviceModel(deviceModel)) {
-                        logger.debug("Device model {} not supported. Odd behaviors may happen.", deviceModel);
-                        thingTypeUID = THING_TYPE_ONKYO_UNSUPPORTED;
-                    }
 
+                    logger.debug("Device model: {}.", deviceModel);
+
+                    ThingTypeUID thingTypeUID = findThingType(deviceModel);
                     result = new ThingUID(thingTypeUID, device.getIdentity().getUdn().getIdentifierString());
                 }
             }
         }
 
         return result;
+    }
+
+    private ThingTypeUID findThingType(String deviceModel) {
+        ThingTypeUID thingTypeUID = THING_TYPE_ONKYO_UNSUPPORTED;
+
+        for (ThingTypeUID thingType : SUPPORTED_THING_TYPES_UIDS) {
+            if (thingType.getId().equalsIgnoreCase(deviceModel)) {
+                return thingType;
+            }
+        }
+
+        if (isSupportedDeviceModel(deviceModel)) {
+            thingTypeUID = THING_TYPE_ONKYOAV;
+        }
+
+        return thingTypeUID;
     }
 
     /**

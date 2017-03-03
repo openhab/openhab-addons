@@ -12,6 +12,8 @@ All parts together represents a smart home controller for Z-Wave.
 
 The entire infrastructure is maintained and developed by [Z-Wave.Me](https://www.z-wave.me/index.php?id=1) with the help of a large community.
 
+Please note the **known issues** below.
+
 ### Approach
 
 The idea behind is the integration of Z-Wave through a bridge (Z-Way controller). The existing, certified Z-Way stack can be used to build, configure and control the Z-Wave network. By using the REST API all devices are loaded from Z-Way and represented as openHAB elements. The sensor data and actuator states are constantly updated and commands are passed to the Z-Way system.
@@ -152,6 +154,10 @@ The locations of the Z-Way devices are loaded during the discovery. Based on the
 Because textual configuration isn't useful, follow the instructions in the [Getting Started](doc/GETTING_STARTED.md) document.
 
 ## Developer stuff
+
+### Known issues
+
+- The Z-Way Binding only works, when simple mode of item linking is enabled during thing creation.
 
 ### Structure of Z-Way Binding
 

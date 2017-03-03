@@ -15,15 +15,32 @@ This binding supports only one thing: The Onkyo AV Receiver.  All supported Onky
 
 This binding can discover the supported Onkyo AV Receivers. At the moment only the following models are supported:
 
+* TX-NR414
+* TX-NR509
+* TX-NR515
+* TX-NR525
 * TX-NR535
+* TX-NR555
+* TX-NR535
+* TX-NR616
 * TX-NR626
+* TX-NR636
 * TX-NR646
+* TX-NR656
+* TX-NR717
+* TX-NR727
+* TX-NR747
+* TX-NR818
+* TX-NR828
+* TX-NR838
 
 ## Binding Configuration
 
 The binding can auto-discover the Onkyo AVRs present on your local network. The auto-discovery is enabled by default. To disable it, you can create a file in the services directory called onkyo.cfg with the following content:
 
-`org.openhab.onkyo:enableAutoDiscovery=false`
+```
+org.openhab.onkyo:enableAutoDiscovery=false
+```
 
 This configuration parameter only controls the Onkyo AVR auto-discovery process, not the openHAB auto-discovery. Moreover, if the openHAB auto-discovery is disabled, the Onkyo AVR auto-discovery is disabled too.
 
@@ -39,14 +56,37 @@ The binding has the following configuration options, which can be set for "bindi
 The Onkyo AVR thing requires the ip address and the port to access it on.
 In the thing file, this looks e.g. like
 
-`onkyo:onkyoAV:myOnkyo [ipAddress="192.168.1.100", port="60128"]`
+Model specific
 
-Optionally you can specify the refresh interval
-`onkyo:onkyoAV:myOnkyo [ipAddress="192.168.1.100", port="60128", refreshInterval=30]`
+```
+onkyo:TX-NR818:myOnkyo [ipAddress="192.168.1.100", port="60128"]
+```
+
+or
+
+Generic model
+
+```
+onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128"]
+```
+
+Optionally you can specify the refresh interval by refreshInterval parameter.
+
+```
+onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128", refreshInterval=30]
+```
+
+Maximum volume level can also be configured by volumeLimit parameter. This prevent setting receiver volume level too high, which could damage your speakers or receiver.
+
+```
+onkyo:onkyoAVR:myOnkyo [ipAddress="192.168.1.100", port="60128", volumeLimit=50]
+```
+
+Binding then automatically scale the volume level in both directions (100% = 50 = 100%).
 
 ## Channels
 
-The Onkyo AVR supports the following channels:
+The Onkyo AVR supports the following channels (some channels are model specific):
 
 | Channel Type ID         | Item Type    | Description  |
 |-------------------------|--------------|--------------|
@@ -58,6 +98,10 @@ The Onkyo AVR supports the following channels:
 | zone2#mute                     | Switch       | Mute/unmute zone 2 |
 | zone2#input                    | Number       | The input for zone 2    |
 | zone2#volume                   | Dimmer       | Volume of zone 2 |
+| zone3#power                    | Switch       | Power on/off zone 3 |
+| zone3#mute                     | Switch       | Mute/unmute zone 3 |
+| zone3#input                    | Number       | The input for zone 3    |
+| zone3#volume                   | Dimmer       | Volume of zone 3 |
 | player#control                 | Player       | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind (available if playing from Network or USB)|
 | player#title                   | String       | Title of the current song (available if playing from Network or USB)|
 | player#album                   | String       | Album name of the current song (available if playing from Network or USB)|
@@ -65,7 +109,8 @@ The Onkyo AVR supports the following channels:
 | player#currentPlayingTime      | String       | Current playing time of the current song (available if playing from Network or USB)|
 | player#listenmode              | Number       | Current listening mode e.g. Stereo, 5.1ch Surround,..|
 | player#playuri                 | String       | Plays the URI provided to the channel |
-| player#albumArt                | String       | Hyperlink to the current album art image |
+| player#albumArt                | Image        | Image of the current album art of the current song |
+| player#albumArtUrl             | String       | Url to the current album art of the current song |
 | netmenu#title                  | String       | Title of the current NET service |
 | netmenu#control                | String       | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select[0-9] 
 | netmenu#selection              | Number       | The number of the currently selected USB/Net Menu entry (0-9) 
@@ -109,6 +154,6 @@ Here after are the ID values of the input sources:
 * 50: SIRIUS
 
 ## Audio Support
-+
-+All supported Onkyo AVRs are registered as an audio sink in the framework.
-+Audio streams are sent to the `playuri` channel.
+
++ All supported Onkyo AVRs are registered as an audio sink in the framework.
++ Audio streams are sent to the `playuri` channel.

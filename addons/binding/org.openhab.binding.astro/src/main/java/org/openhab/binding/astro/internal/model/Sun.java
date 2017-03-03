@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,256 +8,284 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * Holds the calculated sun data.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public class Sun extends RiseSet implements Planet {
 
-	private Range astroDawn = new Range();
-	private Range nauticDawn = new Range();
-	private Range civilDawn = new Range();
+    private Map<SunPhaseName, Range> ranges = new HashMap<SunPhaseName, Range>();
 
-	private Range civilDusk = new Range();
-	private Range nauticDusk = new Range();
-	private Range astroDusk = new Range();
+    private Position position = new Position();
 
-	private Range morningNight = new Range();
-	private Range eveningNight = new Range();
-	private Range daylight = new Range();
-	private Range noon = new Range();
-	private Range night = new Range();
+    private SunZodiac zodiac = new SunZodiac(null, null);
 
-	private Position position = new Position();
+    private Season season = new Season();
 
-	private SunZodiac zodiac = new SunZodiac(null, null);
+    private SunEclipse eclipse = new SunEclipse();
 
-	private Season season = new Season();
+    private Radiation radiation = new Radiation();
 
-	private SunEclipse eclipse = new SunEclipse();
+    private SunPhase phase = new SunPhase();
 
-	/**
-	 * Returns the astro dawn range.
-	 */
-	public Range getAstroDawn() {
-		return astroDawn;
-	}
+    /**
+     * Returns the astro dawn range.
+     */
+    public Range getAstroDawn() {
+        return ranges.get(SunPhaseName.ASTRO_DAWN);
+    }
 
-	/**
-	 * Sets the astro dawn range.
-	 */
-	public void setAstroDawn(Range astroDawn) {
-		this.astroDawn = astroDawn;
-	}
+    /**
+     * Sets the astro dawn range.
+     */
+    public void setAstroDawn(Range astroDawn) {
+        ranges.put(SunPhaseName.ASTRO_DAWN, astroDawn);
+    }
 
-	/**
-	 * Returns the nautic dawn range.
-	 */
-	public Range getNauticDawn() {
-		return nauticDawn;
-	}
+    /**
+     * Returns the nautic dawn range.
+     */
+    public Range getNauticDawn() {
+        return ranges.get(SunPhaseName.NAUTIC_DAWN);
+    }
 
-	/**
-	 * Sets the nautic dawn range.
-	 */
-	public void setNauticDawn(Range nauticDawn) {
-		this.nauticDawn = nauticDawn;
-	}
+    /**
+     * Sets the nautic dawn range.
+     */
+    public void setNauticDawn(Range nauticDawn) {
+        ranges.put(SunPhaseName.NAUTIC_DAWN, nauticDawn);
+    }
 
-	/**
-	 * Returns the civil dawn range.
-	 */
-	public Range getCivilDawn() {
-		return civilDawn;
-	}
+    /**
+     * Returns the civil dawn range.
+     */
+    public Range getCivilDawn() {
+        return ranges.get(SunPhaseName.CIVIL_DAWN);
+    }
 
-	/**
-	 * Sets the civil dawn range.
-	 */
-	public void setCivilDawn(Range civilDawn) {
-		this.civilDawn = civilDawn;
-	}
+    /**
+     * Sets the civil dawn range.
+     */
+    public void setCivilDawn(Range civilDawn) {
+        ranges.put(SunPhaseName.CIVIL_DAWN, civilDawn);
+    }
 
-	/**
-	 * Returns the civil dusk range.
-	 */
-	public Range getCivilDusk() {
-		return civilDusk;
-	}
+    /**
+     * Returns the civil dusk range.
+     */
+    public Range getCivilDusk() {
+        return ranges.get(SunPhaseName.CIVIL_DUSK);
+    }
 
-	/**
-	 * Sets the civil dusk range.
-	 */
-	public void setCivilDusk(Range civilDusk) {
-		this.civilDusk = civilDusk;
-	}
+    /**
+     * Sets the civil dusk range.
+     */
+    public void setCivilDusk(Range civilDusk) {
+        ranges.put(SunPhaseName.CIVIL_DUSK, civilDusk);
+    }
 
-	/**
-	 * Returns the nautic dusk range.
-	 */
-	public Range getNauticDusk() {
-		return nauticDusk;
-	}
+    /**
+     * Returns the nautic dusk range.
+     */
+    public Range getNauticDusk() {
+        return ranges.get(SunPhaseName.NAUTIC_DUSK);
+    }
 
-	/**
-	 * Sets the nautic dusk range.
-	 */
-	public void setNauticDusk(Range nauticDusk) {
-		this.nauticDusk = nauticDusk;
-	}
+    /**
+     * Sets the nautic dusk range.
+     */
+    public void setNauticDusk(Range nauticDusk) {
+        ranges.put(SunPhaseName.NAUTIC_DUSK, nauticDusk);
+    }
 
-	/**
-	 * Returns the astro dusk range.
-	 */
-	public Range getAstroDusk() {
-		return astroDusk;
-	}
+    /**
+     * Returns the astro dusk range.
+     */
+    public Range getAstroDusk() {
+        return ranges.get(SunPhaseName.ASTRO_DUSK);
+    }
 
-	/**
-	 * Sets the astro dusk range.
-	 */
-	public void setAstroDusk(Range astroDusk) {
-		this.astroDusk = astroDusk;
-	}
+    /**
+     * Sets the astro dusk range.
+     */
+    public void setAstroDusk(Range astroDusk) {
+        ranges.put(SunPhaseName.ASTRO_DUSK, astroDusk);
+    }
 
-	/**
-	 * Returns the noon range, start and end is always equal.
-	 */
-	public Range getNoon() {
-		return noon;
-	}
+    /**
+     * Returns the noon range, start and end is always equal.
+     */
+    public Range getNoon() {
+        return ranges.get(SunPhaseName.NOON);
+    }
 
-	/**
-	 * Sets the noon range.
-	 */
-	public void setNoon(Range noon) {
-		this.noon = noon;
-	}
+    /**
+     * Sets the noon range.
+     */
+    public void setNoon(Range noon) {
+        ranges.put(SunPhaseName.NOON, noon);
+    }
 
-	/**
-	 * Returns the daylight range.
-	 */
-	public Range getDaylight() {
-		return daylight;
-	}
+    /**
+     * Returns the daylight range.
+     */
+    public Range getDaylight() {
+        return ranges.get(SunPhaseName.DAYLIGHT);
+    }
 
-	/**
-	 * Sets the daylight range.
-	 */
-	public void setDaylight(Range daylight) {
-		this.daylight = daylight;
-	}
+    /**
+     * Sets the daylight range.
+     */
+    public void setDaylight(Range daylight) {
+        ranges.put(SunPhaseName.DAYLIGHT, daylight);
+    }
 
-	/**
-	 * Returns the morning night range.
-	 */
-	public Range getMorningNight() {
-		return morningNight;
-	}
+    /**
+     * Returns the morning night range.
+     */
+    public Range getMorningNight() {
+        return ranges.get(SunPhaseName.MORNING_NIGHT);
+    }
 
-	/**
-	 * Sets the morning night range.
-	 */
-	public void setMorningNight(Range morningNight) {
-		this.morningNight = morningNight;
-	}
+    /**
+     * Sets the morning night range.
+     */
+    public void setMorningNight(Range morningNight) {
+        ranges.put(SunPhaseName.MORNING_NIGHT, morningNight);
+    }
 
-	/**
-	 * Returns the evening night range.
-	 */
-	public Range getEveningNight() {
-		return eveningNight;
-	}
+    /**
+     * Returns the evening night range.
+     */
+    public Range getEveningNight() {
+        return ranges.get(SunPhaseName.EVENING_NIGHT);
+    }
 
-	/**
-	 * Sets the evening night range.
-	 */
-	public void setEveningNight(Range eveningNight) {
-		this.eveningNight = eveningNight;
-	}
+    /**
+     * Sets the evening night range.
+     */
+    public void setEveningNight(Range eveningNight) {
+        ranges.put(SunPhaseName.EVENING_NIGHT, eveningNight);
+    }
 
-	/**
-	 * Returns the night range.
-	 */
-	public Range getNight() {
-		return night;
-	}
+    /**
+     * Returns the night range.
+     */
+    public Range getNight() {
+        return ranges.get(SunPhaseName.NIGHT);
+    }
 
-	/**
-	 * Sets the night range.
-	 */
-	public void setNight(Range night) {
-		this.night = night;
-	}
+    /**
+     * Sets the night range.
+     */
+    public void setNight(Range night) {
+        ranges.put(SunPhaseName.NIGHT, night);
+    }
 
-	/**
-	 * Returns the sun position.
-	 */
-	public Position getPosition() {
-		return position;
-	}
+    /**
+     * Returns the sun position.
+     */
+    public Position getPosition() {
+        return position;
+    }
 
-	/**
-	 * Sets the sun position.
-	 */
-	public void setPosition(Position position) {
-		this.position = position;
-	}
+    /**
+     * Returns the sun radiation
+     */
+    public Radiation getRadiation() {
+        return radiation;
+    }
 
-	/**
-	 * Returns the zodiac.
-	 */
-	public SunZodiac getZodiac() {
-		return zodiac;
-	}
+    /**
+     * Sets the sun position.
+     */
+    public void setPosition(Position position) {
+        this.position = position;
+    }
 
-	/**
-	 * Sets the zodiac.
-	 */
-	public void setZodiac(SunZodiac zodiac) {
-		this.zodiac = zodiac;
-	}
+    /**
+     * Returns the zodiac.
+     */
+    public SunZodiac getZodiac() {
+        return zodiac;
+    }
 
-	/**
-	 * Returns the seasons.
-	 */
-	public Season getSeason() {
-		return season;
-	}
+    /**
+     * Sets the zodiac.
+     */
+    public void setZodiac(SunZodiac zodiac) {
+        this.zodiac = zodiac;
+    }
 
-	/**
-	 * Sets the seasons.
-	 */
-	public void setSeason(Season season) {
-		this.season = season;
-	}
+    /**
+     * Returns the seasons.
+     */
+    public Season getSeason() {
+        return season;
+    }
 
-	/**
-	 * Returns the eclipses.
-	 */
-	public SunEclipse getEclipse() {
-		return eclipse;
-	}
+    /**
+     * Sets the seasons.
+     */
+    public void setSeason(Season season) {
+        this.season = season;
+    }
 
-	/**
-	 * Sets the eclipses.
-	 */
-	public void setEclipse(SunEclipse eclipse) {
-		this.eclipse = eclipse;
-	}
+    /**
+     * Returns the eclipses.
+     */
+    public SunEclipse getEclipse() {
+        return eclipse;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("sunrise", getRise())
-				.append("noon", getNoon()).append("sunset", getSet()).append("night", night)
-				.append("morningNight", morningNight).append("astroDawn", astroDawn).append("nauticDawn", nauticDawn)
-				.append("civilDawn", civilDawn).append("civilDusk", civilDusk).append("nauticDusk", nauticDusk)
-				.append("astroDusk", astroDusk).append("daylight", getDaylight())
-				.append("eveningNight", getEveningNight()).append("eclipse", eclipse).toString();
-	}
+    /**
+     * Sets the eclipses.
+     */
+    public void setEclipse(SunEclipse eclipse) {
+        this.eclipse = eclipse;
+    }
+
+    /**
+     * Returns the sun phase.
+     */
+    public SunPhase getPhase() {
+        return phase;
+    }
+
+    /**
+     * Sets the sun phase.
+     */
+    public void setPhase(SunPhase phase) {
+        this.phase = phase;
+    }
+
+    /**
+     * Returns all ranges of the sun.
+     */
+    public Map<SunPhaseName, Range> getAllRanges() {
+        return ranges;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("sunrise", getRise())
+                .append("noon", getNoon()).append("sunset", getSet()).append("night", getNight())
+                .append("morningNight", getMorningNight()).append("astroDawn", getAstroDawn())
+                .append("nauticDawn", getNauticDawn()).append("civilDawn", getCivilDawn())
+                .append("civilDusk", getCivilDusk()).append("nauticDusk", getNauticDawn())
+                .append("astroDusk", getAstroDusk()).append("daylight", getDaylight())
+                .append("eveningNight", getEveningNight()).append("eclipse", eclipse).append("phase", phase)
+                .append("radiation", radiation).toString();
+    }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,11 +13,14 @@ import java.net.URISyntaxException;
 
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.minecraft.discovery.MinecraftDiscoveryService;
+import org.openhab.binding.minecraft.message.OHMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.firebase.tubesock.WebSocket;
 import com.firebase.tubesock.WebSocketException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -37,8 +40,11 @@ public class ServerConnection {
     private String host;
     private int port;
     private ThingUID thingUID;
+    private Gson gson = new GsonBuilder().create();
 
     private MinecraftSocketHandler socketHandler;
+
+    private WebSocket webSocket;
 
     private ServerConnection(ThingUID thingUID, String host, int port) {
         this.host = host;
@@ -85,6 +91,11 @@ public class ServerConnection {
         return thingUID;
     }
 
+    public void sendMessage(OHMessage message) {
+        String serializedMessage = gson.toJson(message);
+        webSocket.send(serializedMessage);
+    }
+
     /**
      * Add the handler used to handle messages state updates web socket.
      *
@@ -92,6 +103,10 @@ public class ServerConnection {
      */
     private void setSocketHandler(MinecraftSocketHandler handler) {
         socketHandler = handler;
+    }
+
+    private void setWebSocket(WebSocket webSocket) {
+        this.webSocket = webSocket;
     }
 
     /**
@@ -111,7 +126,7 @@ public class ServerConnection {
 
         final String serverUrl = String.format("ws://%s:%d/stream", host, port);
 
-        return Observable.<ServerConnection>create(new OnSubscribe<ServerConnection>() {
+        return Observable.<ServerConnection> create(new OnSubscribe<ServerConnection>() {
 
             @Override
             public void call(final Subscriber<? super ServerConnection> subscriber) {
@@ -132,8 +147,6 @@ public class ServerConnection {
                             subscriber.onCompleted();
                         };
                     };
-                    serverConnection.setSocketHandler(socketHandler);
-                    subscriber.onNext(serverConnection);
 
                     URI destUri = null;
                     try {
@@ -144,6 +157,10 @@ public class ServerConnection {
                     final WebSocket websocket = new WebSocket(destUri);
                     websocket.setEventHandler(socketHandler);
                     websocket.connect();
+
+                    serverConnection.setSocketHandler(socketHandler);
+                    serverConnection.setWebSocket(websocket);
+                    subscriber.onNext(serverConnection);
 
                     subscriber.add(Subscriptions.create(new Action0() {
                         @Override

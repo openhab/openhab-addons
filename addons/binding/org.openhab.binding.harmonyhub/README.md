@@ -78,4 +78,4 @@ sitemap demo label="Main Menu" {
         }
 }
 ```
-Possible values for the "buttonPress" channel can be determined via the REST API for channel-types, http://YourServer/rest/channel-types. Search the JSON for "harmonyhub:device".
+Possible values for the "buttonPress" channel can be determined via the REST API for channel-types, http://YourServer:8080/rest/channel-types. Search the JSON for "harmonyhub:device".

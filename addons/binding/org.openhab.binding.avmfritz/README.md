@@ -59,10 +59,10 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 | Channel Type ID | Item Type    | Description  | Available on thing |
 |-------------|--------|-----------------------------|------------------------------------|
-| temperature | Number | Actual measured temperature | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100 |
-| energy | Number | Accumulated energy consumption | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
-| power | Number | Current power consumption | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
-| outlet | Switch | Switchable outlet | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
+| temperature | Number | Actual measured temperature (in °C) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100 |
+| energy | Number | Accumulated energy consumption (in Wh) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
+| power | Number | Current power consumption (in W) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
+| outlet | Switch | Switchable outlet (ON/OFF) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
 
 ## Full Example
 
@@ -78,7 +78,11 @@ Bridge avmfritz:fritzbox:1 [ ipAddress="192.168.xxx.xxx", password ="xxx", user=
 demo.items:
 
 ```
-Number Temp { channel="avmfritz:FRITZ_DECT_200:1:DECT1:temperature" }
+Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:outlet" }
+Number Temperature1 "Actual measured temperature [%.1f °C]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:temperature" }
+Number Energy1 "Accumulated energy consumption [%.3 Wh]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:energy" }
+Number Power1 "Current power consumption [%.2 W]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:power" }
+
 Switch Outlet2 { channel="avmfritz:FRITZ_Powerline_546E:1:PL1:outlet" }
 ```
 
@@ -87,8 +91,13 @@ demo.sitemap:
 ```
 sitemap demo label="Main Menu"
 {
-	Frame {
-		Text item=Temp
+	Frame "FRITZ!DECT 200 switchable outlet" {
+		Switch item=Outlet1 icon="PowerOutlet"
+		Text item=Temperature1 icon="temperature"
+		Text item=Energy1 icon="energy"
+		Text item=Power1 icon="energy"
+	}
+	Frame "FRITZ!Powerline 546E switchable outlet" {
 		Switch item=Outlet2
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -45,14 +45,19 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
             HmDatapointInfo dpInfo = new HmDatapointInfo(paramsetType, channel, dpName);
             HmDatapoint dp = channel.getDatapoint(dpInfo);
             if (dp != null) {
-                dp.setValue(mapMessage.get(dpName));
+                dp.setValue(convertToType(dp, mapMessage.get(dpName)));
                 adjustRssiValue(dp);
             } else {
                 // should never happen, but in case ...
-                logger.warn("Can't set value for datapoint '{}'", dpInfo);
+
+                // suppress warning for this datapoint due wrong CCU metadata
+                boolean isHmSenMdirNextTrans = channel.getDevice().getType().startsWith("HM-Sen-MDIR-O")
+                        && dpInfo.getName().equals("NEXT_TRANSMISSION");
+                if (!isHmSenMdirNextTrans) {
+                    logger.warn("Can't set value for datapoint '{}'", dpInfo);
+                }
             }
         }
         return null;
     }
-
 }

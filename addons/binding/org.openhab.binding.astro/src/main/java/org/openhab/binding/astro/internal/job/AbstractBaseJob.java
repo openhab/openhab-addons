@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,6 +25,7 @@ public abstract class AbstractBaseJob implements Job {
     public static final String KEY_THING_UID = "thingUid";
     public static final String KEY_CHANNEL_ID = "channelId";
     public static final String KEY_JOB_NAME = "jobName";
+    public static final String KEY_PHASE_NAME = "phaseName";
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {

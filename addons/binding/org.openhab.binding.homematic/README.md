@@ -8,7 +8,7 @@ This binding allows you to integrate, view, control and configure all Homematic 
 All gateways which provides the Homematic BIN- or XML-RPC API: 
 - CCU 1+2 
 - [Homegear](https://www.homegear.eu)
-- [LXCCU](http://www.lxccu.com)
+- [YAHM](https://github.com/leonsio/YAHM)
 - [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
 - [OCCU](https://github.com/eq-3/occu)
 
@@ -20,6 +20,7 @@ These ports are used by the binding by default to communicate **TO** the gateway
 - HMIP components: 2010 
 - CUxD: 8701
 - TclRegaScript: 8181
+- Groups: 9292
 
 And **FROM** the gateway to openHab:
 - XML-RPC: 9125
@@ -32,6 +33,7 @@ And **FROM** the gateway to openHab:
     * **WIRED**: BIN-RPC
     * **HMIP**: XML-RPC
     * **CUxD**: BIN-RPC (CUxD version >= 1.6 required)
+    * **Groups**: XML-RPC
 * **Homegear**
     * BIN-RPC
 * **Other**
@@ -46,7 +48,7 @@ All devices connected to a Homematic gateway. All required openHAB metadata are 
 Gateway discovery is only available for Homegear, you need at least 0.6.x for gateway discovery. For all other gateways you have to manually add a bridge in a things file.  
 Device discovery is supported for all gateways.
 
-The binding has a gateway type autodetection, but sometimes a gateway does not clearly notify the type. If you are using a LXCCU for example, you have to manually set the gateway type in the bride configuration to CCU.  
+The binding has a gateway type autodetection, but sometimes a gateway does not clearly notify the type. If you are using a YAHM for example, you have to manually set the gateway type in the bride configuration to CCU.  
 
 If autodetection can not identify the gateway, the binding uses the default gateway implementation. The difference is, that variables, scripts and device names are not supported, everything else is the same.
 
@@ -184,6 +186,12 @@ Address: fixed GWE00000000
 #### RELOAD_ALL_FROM_GATEWAY
 A virtual datapoint (Switch) to reload all values for all devices, available in channel 0 in GATEWAY-EXTRAS
 
+#### RELOAD_RSSI
+A virtual datapoint (Switch) to reload all rssi values for all devices, available in channel 0 in GATEWAY-EXTRAS
+
+#### RSSI
+A virtual datapoint (Number) with the unified RSSI value from RSSI_DEVICE and RSSI_PEER, available in channel 0 for all wireless devices
+
 #### INSTALL_MODE
 A virtual datapoint (Switch) to start the install mode on the gateway, available in channel 0 in GATEWAY-EXTRAS
 
@@ -273,6 +281,14 @@ If a button is still not working and you do not see any PRESS_LONG / SHORT in yo
 A device may return this failure while fetching the datapoint values. I've tested pretty much but i did not found the reason. The HM-ES-TX-WM device for example always returns this failure, it's impossible with the current CCU2 firmware (2.17.15) to fetch the values. I've implemented two workarounds, if a device returns the failure, workaround one is executed, if the device still returns the failure, workaround two is executed. This always works in my tests, but you may see a OFFLINE, ONLINE cycle for the device.  
 Fetching values is only done at startup or if you trigger a REFRESH. I hope this will be fixed in one of the next CCU firmwares.  
 With [Homegear](https://www.homegear.eu) everything works as expected.
+
+**No variables and scripts in GATEWAY-EXTRAS**  
+
+The gateway autodetection of the binding can not clearly identify the gateway and falls back to the default implementation. Use the ```gatewayType=ccu``` config to force the binding to use the CCU implementation.
+
+**Variables out of sync**  
+
+The CCU only sends a event if a datapoint of a device has changed. There is (currently) no way to receive a event automatically when a variable has changed. To reload all variables, send a REFRESH command to any variable.
 
 ### Debugging and Tracing
 
