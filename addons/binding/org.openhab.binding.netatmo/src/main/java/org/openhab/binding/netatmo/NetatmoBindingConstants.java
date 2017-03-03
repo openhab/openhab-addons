@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,6 +40,7 @@ public class NetatmoBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_TEMPERATURE = "Temperature";
+    public final static String CHANNEL_TEMP_TREND = "TempTrend";
     public final static String CHANNEL_HUMIDITY = "Humidity";
     public final static String CHANNEL_HUMIDEX = "Humidex";
     public final static String CHANNEL_TIMEUTC = "TimeStamp";
@@ -59,9 +60,10 @@ public class NetatmoBindingConstants {
     public final static String CHANNEL_CO2 = "Co2";
     public final static String CHANNEL_NOISE = "Noise";
     public final static String CHANNEL_PRESSURE = "Pressure";
+    public final static String CHANNEL_PRESS_TREND = "PressTrend";
     public final static String CHANNEL_RAIN = "Rain";
-    public final static String CHANNEL_SUM_RAIN1 = "sum_rain_1";
-    public final static String CHANNEL_SUM_RAIN24 = "sum_rain_24";
+    public final static String CHANNEL_SUM_RAIN1 = "SumRain1";
+    public final static String CHANNEL_SUM_RAIN24 = "SumRain24";
     public final static String CHANNEL_WIND_ANGLE = "WindAngle";
     public final static String CHANNEL_WIND_STRENGTH = "WindStrength";
     public final static String CHANNEL_GUST_ANGLE = "GustAngle";

@@ -61,8 +61,8 @@ The Kodi thing supports the following channels:
 |-------------------------|--------------|--------------|
 | mute                    | Switch       | Mute/unmute your playback |
 | volume                  | Dimmer       | Read or control the volume of your playback |
-| control                 | Player       | Control the Kodi player, e.g.  play/pause/next/previous/ffward/rewind |
-| stop                    | Switch       | Stops the Kodi player |
+| control                 | Player       | Control the Kodi player, e.g.  `PLAY`, `PAUSE`, `NEXT`, `PREVIOUS`, `FASTFORWARD`, `REWIND` |
+| stop                    | Switch       | Write `ON` to this channel: Stops the Kodi player. If this channel is `ON`, the player is stopped, otherwise kodi is in another state (see control channel) |
 | title                   | String       | Title of the currently played song/movie/tv episode |
 | showtitle               | String       | Title of the currently played tv-show; empty for other types |
 | album                   | String       | Album name of the currently played song |
@@ -71,9 +71,55 @@ The Kodi thing supports the following channels:
 | shownotification        | String       | Shows the provided notification message on the screen |
 | input                   | String       | Allows to control Kodi. Valid values are: `Up`, `Down`, `Left`, `Right`, `Select`, `Back`, `Home`, `ContextMenu`, `Info`, `ShowCodec`, `ShowOSD` |
 | inputtext               | String       | This channel emulates a keyboard input |
-| systemcommand           | String       | This channel allows to send commands to shutdown/suspend/hibernate/reboot kodi |
+| systemcommand           | String       | This channel allows to send commands to `shutdown`, `suspend`, `hibernate`, `reboot` kodi |
 | mediatype               | String       | The media type of the current file. e.g. song or movie | 
 
+## Item Configuration
+
+demo.items
+
+```
+Switch myKodi_mute          "Stumm"                 { channel="kodi:kodi:myKodi:mute" }
+Dimmer myKodi_volume        "Lautstärke [%d]"       { channel="kodi:kodi:myKodi:volume" }
+Player myKodi_control       "Kontrolle [%s]"        { channel="kodi:kodi:myKodi:control" }
+Switch myKodi_stop          "Stop"                  { channel="kodi:kodi:myKodi:stop" }
+String myKodi_title         "Titel [%s]"            { channel="kodi:kodi:myKodi:title" }
+String myKodi_showtitle     "Showtitel [%s]"        { channel="kodi:kodi:myKodi:showtitle" }
+String myKodi_album         "Album [%s]"            { channel="kodi:kodi:myKodi:album" }
+String myKodi_artist        "Artist [%s]"           { channel="kodi:kodi:myKodi:artist" }
+String myKodi_playuri       "PlayerURI [%s]"        { channel="kodi:kodi:myKodi:playuri" }
+String myKodi_notification  "Benachrichtigung [%s]" { channel="kodi:kodi:myKodi:shownotification" }
+String myKodi_input         "Input [%s]"            { channel="kodi:kodi:myKodi:input" }
+String myKodi_inputtext     "Inputtext [%s]"        { channel="kodi:kodi:myKodi:inputtext" }
+String myKodi_systemcommand "Systemcommand [%s]"    { channel="kodi:kodi:myKodi:systemcommand" }
+String myKodi_mediatype     "Mediatyp [%s]"         { channel="kodi:kodi:myKodi:mediatype" }
+```
+
+## Sitemap Configuration
+
+demo.sitemap
+
+```
+sitemap demo label="myKodi"
+{
+    Frame label="myKodi" {
+        Switch    item=myKodi_mute
+        Slider    item=myKodi_volume
+        Selection item=myKodi_control mappings=[PLAY='Play', PAUSE='Pause', NEXT='Next', PREVIOUSE'Previous', FFWARD='Fastforward', REWIND='Rewind']
+        Switch    item=myKodi_stop
+        Text      item=myKodi_title
+        Text      item=myKodi_showtitle
+        Text      item=myKodi_album
+        Text      item=myKodi_artist
+        Text      item=myKodi_playuri
+        Text      item=myKodi_notification
+        Text      item=myKodi_input
+        Text      item=myKodi_inputtext
+        Selection item=myKodi_systemcommand mappings=[Shutdown='Herunterfahren', Suspend='Bereitschaft', Reboot='Neustart']
+        Text      item=myKodi_mediatype
+    }
+}
+```
 
 ## Audio Support
 

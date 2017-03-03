@@ -1,12 +1,15 @@
 # Milight Binding
+
 The openHAB2 Milight binding allows to send commands to multiple Milight bridges.
 
 [![openHAB Milight](http://img.youtube.com/vi/zNe9AkQbfmc/0.jpg)](http://www.youtube.com/watch?v=zNe9AkQbfmc)
 
 ## Supported Things
+
 The Milight Binding supports White, and RGB(W) bulbs.
 
 ## Discovery
+
 Version 3+ bridges can be discovered by triggering a search in openHAB's inbox. Found bridges
 will show up an can easily be added as things.
 After a bridge has been added, all possible bridge supported devices will appear
@@ -15,10 +18,12 @@ no real auto detection for single milight leds but only for the briges possible.
 Add the leds you actually configured and hide the rest of the detected things.
 
 ## Binding Configuration
+
 When manually adding an older bridge Type (3-), you have to add configuration information for
 the bridge IP-Address and the listening port.
 
 ## Thing Configuration
+
 Besides adding bridges through Paper-UI, you can also add them manually in your Thing
 configuration file.
 
@@ -44,6 +49,7 @@ The group number corresponds to the bulbs/channels on your bridge, where 0 refle
 1-4 white bulb channels and 5 all rgb bulbs.
 
 ## Features
+
 For white bulbs these channels are supported:
 
     ledbrightness       controls the brightness of your bulbs
@@ -135,6 +141,7 @@ The rgb bulbs do not support changing their saturation, so the colorpicker will 
     end
   
 ## Authors
+
  * David Gräff <david.graeff@tu-dortmund.de>, 2016
  * Hans-Joerg Merk
  * Kai Kreuzer

@@ -65,7 +65,7 @@
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
-		<description>Stop the player</description>
+		<description>Stops the player. ON if the player is stopped.</description>
 	</channel-type>
 	<channel-type id="playuri" advanced="true">
 		<item-type>String</item-type>

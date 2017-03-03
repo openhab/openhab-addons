@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.zway.handler;
 import static de.fh_zwickau.informatik.sensor.ZWayConstants.*;
 import static org.openhab.binding.zway.ZWayBindingConstants.*;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -38,6 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.zway.ZWayBindingConstants;
 import org.openhab.binding.zway.internal.converter.ZWayDeviceStateConverter;
 import org.slf4j.Logger;
@@ -70,6 +73,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
     private DevicePolling devicePolling;
     private ScheduledFuture<?> pollingJob;
+    protected Calendar lastUpdate;
+
+    protected abstract void refreshLastUpdate();
 
     /**
      * Initialize polling job and register all linked item in openHAB connector as observer
@@ -240,6 +246,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         public void run() {
             logger.debug("Starting polling for device: {}", getThing().getLabel());
             if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                // Refresh device states
                 for (Channel channel : getThing().getChannels()) {
                     logger.debug("Checking link state of channel: {}", channel.getLabel());
                     if (isLinked(channel.getUID().getId())) {
@@ -269,6 +276,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                 channel.getLabel());
                     }
                 }
+
+                // Refresh last update
+                refreshLastUpdate();
             } else {
                 logger.debug("Polling not possible, Z-Way device isn't ONLINE");
             }
@@ -454,6 +464,14 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     }
 
     @Override
+    public void handleUpdate(ChannelUID channelUID, State newState) {
+        // Refresh update time
+        logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
+
+        refreshLastUpdate();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, final Command command) {
         logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
 
@@ -512,9 +530,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             }
                         } else if (device instanceof SwitchMultilevel) {
                             // possible commands: update(), on(), up(), off(), down(), min(), max(), upMax(),
-                            // increase(),
-                            // decrease(), exact(level), exactSmooth(level, duration), stop(), startUp(), startDown()
-                            if (command instanceof DecimalType) {
+                            // increase(), decrease(), exact(level), exactSmooth(level, duration), stop(), startUp(),
+                            // startDown()
+                            if (command instanceof DecimalType || command instanceof PercentType) {
                                 logger.debug("Handle command: DecimalType");
 
                                 device.exact(command.toString());
@@ -528,14 +546,19 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
 
                                     device.startDown();
                                 }
-                            } else {
-                                if (command instanceof StopMoveType) {
-                                    logger.debug("Handle command: StopMoveType");
+                            } else if (command instanceof StopMoveType) {
+                                logger.debug("Handle command: StopMoveType");
 
-                                    device.stop();
+                                device.stop();
+                            } else if (command instanceof OnOffType) {
+                                logger.debug("Handle command: OnOffType");
+
+                                if (command.equals(OnOffType.ON)) {
+                                    device.on();
+                                } else if (command.equals(OnOffType.OFF)) {
+                                    device.off();
                                 }
                             }
-
                         } else if (device instanceof SwitchRGBW) {
                             // possible commands: on(), off(), exact(red, green, blue)
                             if (command instanceof HSBType) {
@@ -646,7 +669,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 acceptedItemType = "Switch";
             } else if (device instanceof SwitchMultilevel) {
                 id = SWITCH_MULTILEVEL_CHANNEL;
-                acceptedItemType = "Number";
+                acceptedItemType = "Dimmer";
             } else if (device instanceof SwitchToggle) {
                 // ?
             } else if (device instanceof SwitchRGBW) {

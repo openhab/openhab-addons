@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.config.AstroThingConfig;
 import org.openhab.binding.astro.internal.job.AbstractBaseJob;
 import org.openhab.binding.astro.internal.job.AbstractDailyJob;
@@ -157,7 +158,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     public void publishChannelIfLinked(ChannelUID channelUID) {
         if (isLinked(channelUID.getId()) && getPlanet() != null) {
             try {
-                updateState(channelUID, PropertyUtils.getState(channelUID, getPlanet()));
+                AstroChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                        .as(AstroChannelConfig.class);
+                updateState(channelUID, PropertyUtils.getState(channelUID, config, getPlanet()));
             } catch (Exception ex) {
                 logger.error("Can't update state for channel " + channelUID + ": " + ex.getMessage(), ex);
             }

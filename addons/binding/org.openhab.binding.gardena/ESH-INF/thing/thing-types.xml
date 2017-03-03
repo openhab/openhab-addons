@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gardena" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- ############################### Mower ############################### -->
+    <thing-type id="mower">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="account" />
+        </supported-bridge-type-refs>
+
+        <label>Gardena Smart Sileno mower</label>
+        <description>A Gardena Smart Sileno mower</description>
+
+        <channel-groups>
+            <channel-group id="device_info" typeId="deviceInfo" />
+            <channel-group id="battery" typeId="rechargeableBattery" />
+            <channel-group id="radio" typeId="radio" />
+            <channel-group id="internal_temperature" typeId="internalTemperature" />
+            <channel-group id="mower" typeId="mower" />
+            <channel-group id="firmware" typeId="firmware" />
+        </channel-groups>
+        <properties>
+            <!-- device info -->
+            <property name="manufacturer" />
+            <property name="product" />
+            <property name="serialNumber" />
+            <property name="sgtin" />
+            <property name="version" />
+            <property name="category" />
+        </properties>
+    </thing-type>
+
+    <channel-group-type id="deviceInfo">
+        <label>Device Info</label>
+        <description>Information about the device</description>
+        <channels>
+            <channel id="last_time_online" typeId="lastTimeOnline" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="rechargeableBattery">
+        <label>Battery Info</label>
+        <description>Information about the rechargeable battery</description>
+        <channels>
+            <channel id="level" typeId="system.battery-level" />
+            <channel id="rechargeable_battery_status" typeId="rechargeableBatteryStatus" />
+            <channel id="charging" typeId="charging" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="radio">
+        <label>Radio Link</label>
+        <description>Information about the radio link</description>
+        <channels>
+            <channel id="quality" typeId="radioQuality" />
+            <channel id="state" typeId="system.signal-strength" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="mower">
+        <label>Robotic Mower</label>
+        <description>Information about the robotic mower</description>
+        <channels>
+            <channel id="manual_operation" typeId="manualOperation" />
+            <channel id="status" typeId="status" />
+            <channel id="error" typeId="error" />
+            <channel id="source_for_next_start" typeId="sourceForNextStart" />
+            <channel id="timestamp_next_start" typeId="timestampNextStart" />
+            <channel id="override_end_time" typeId="overrideEndTime" />
+            <channel id="park_until_further_notice_command" typeId="parkUntilFurtherNotice" />
+            <channel id="park_until_next_timer_command" typeId="parkUntilNextTimerCommand" />
+            <channel id="start_resume_schedule_command" typeId="startResumeSchedule" />
+            <channel id="start_override_timer_command" typeId="startOverrideTimer" />
+            <channel id="mower_command_duration" typeId="mowerCommandDuration" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="internalTemperature">
+        <label>Internal Temperature</label>
+        <description>The internal temperature of the robotic mower</description>
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+        </channels>
+    </channel-group-type>
+
+
+    <channel-type id="mowerCommandDuration">
+        <item-type>Number</item-type>
+        <label>Mowing time</label>
+        <description>Mowing time in minutes</description>
+        <state pattern="%d min" min="1" max="1440" step="1" />
+    </channel-type>
+
+    <channel-type id="parkUntilFurtherNotice">
+        <item-type>Switch</item-type>
+        <label>Park And Pause All Timers</label>
+        <description>Park and pause all timers</description>
+    </channel-type>
+
+    <channel-type id="parkUntilNextTimerCommand">
+        <item-type>Switch</item-type>
+        <label>Park Until Next Timer</label>
+        <description>Park until next timer</description>
+    </channel-type>
+
+    <channel-type id="startResumeSchedule">
+        <item-type>Switch</item-type>
+        <label>Start Resume Schedule</label>
+        <description>Start resume schedule</description>
+    </channel-type>
+
+    <channel-type id="startOverrideTimer">
+        <item-type>Switch</item-type>
+        <label>Override Timer</label>
+        <description>Starts the mower for the specified duration</description>
+    </channel-type>
+
+    <channel-type id="lastTimeOnline" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Last Time Online</label>
+        <description>Last time the device was online</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="rechargeableBatteryStatus" advanced="true">
+        <item-type>String</item-type>
+        <label>Rechargeable Battery Status</label>
+        <description>The status of the rechargeable battery</description>
+        <state readOnly="true">
+            <options>
+                <option value="weak">Weak</option>
+                <option value="ok">OK</option>
+                <option value="undefined">Undefined</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="charging" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Battery Charging</label>
+        <description>Battery Charging</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="radioQuality" advanced="true">
+        <item-type>Number</item-type>
+        <label>Radio Link Quality</label>
+        <description>Radio Link Quality</description>
+        <state pattern="%d %%" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="manualOperation" advanced="true">
+        <item-type>String</item-type>
+        <label>Manual Operation</label>
+        <description>The mower is controlled manually</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="status">
+        <item-type>String</item-type>
+        <label>Mower Status</label>
+        <description>The mower status</description>
+        <state readOnly="true">
+            <options>
+                <option value="paused">Paused</option>
+                <option value="ok_cutting">Mowing</option>
+                <option value="ok_searching">Searching charging station</option>
+                <option value="ok_charging">Charging</option>
+                <option value="ok_leaving">Mowing</option>
+                <option value="wait_updating">Updating ...</option>
+                <option value="wait_power_up">Powering up ...</option>
+                <option value="parked_timer">Parked on schedule</option>
+                <option value="parked_park_selected">Parked</option>
+                <option value="off_disabled">The mower is turned off</option>
+                <option value="off_hatch_open">Disabled. Hatch open</option>
+                <option value="unknown">Unknown</option>
+                <option value="error">Error</option>
+                <option value="error_at_power_up">Error</option>
+                <option value="off_hatch_closed">Disabled. Manual start needed</option>
+                <option value="ok_cutting_timer_overridden">Manual mowing</option>
+                <option value="parked_autotimer">Parked due to SensorControl</option>
+                <option value="parked_daily_limit_reached">Completed</option>
+                <option value="undefined">Undefined</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="error" advanced="true">
+        <item-type>String</item-type>
+        <label>Mower Error</label>
+        <description>Mower Error</description>
+        <state readOnly="true">
+            <options>
+                <option value="no_message">No message</option>
+                <option value="outside_working_area">Outside working area</option>
+                <option value="no_loop_signal">No loop signal</option>
+                <option value="wrong_loop_signal">Wrong loop signal</option>
+                <option value="loop_sensor_problem_front">Loop sensor problem, front</option>
+                <option value="loop_sensor_problem_rear">Loop sensor problem, rear</option>
+                <option value="trapped">Trapped</option>
+                <option value="upside_down">Upside down</option>
+                <option value="low_battery">Low battery</option>
+                <option value="empty_battery">Empty battery</option>
+                <option value="no_drive">Disabled. Hatch open</option>
+                <option value="lifted">Lifted</option>
+                <option value="stuck_in_charging_station">Stuck in charging station</option>
+                <option value="charging_station_blocked">Charging station blocked</option>
+                <option value="collision_sensor_problem_rear">Collision sensor problem, rear</option>
+                <option value="collision_sensor_problem_front">Collision sensor problem, front</option>
+                <option value="wheel_motor_blocked_right">Wheel motor blocked, right</option>
+                <option value="wheel_motor_blocked_left">Wheel motor blocked, left</option>
+                <option value="wheel_drive_problem_right">Wheel drive problem, right</option>
+                <option value="wheel_drive_problem_left">Wheel drive problem, left</option>
+                <option value="cutting_system_blocked">Cutting system blocked</option>
+                <option value="invalid_sub_device_combination">Invalid sub-device combination</option>
+                <option value="settings_restored">Settings restored</option>
+                <option value="electronic_problem">Electronic problem</option>
+                <option value="charging_system_problem">Charging system problem</option>
+                <option value="tilt_sensor_problem">Tilt sensor problem</option>
+                <option value="wheel_motor_overloaded_right">Wheel motor overloaded, right</option>
+                <option value="wheel_motor_overloaded_left">Wheel motor overloaded, left</option>
+                <option value="charging_current_too_high">Charging current too high</option>
+                <option value="temporary_problem">Temporary problem</option>
+                <option value="guide_1_not_found">Guide 1 not found</option>
+                <option value="guide_2_not_found">Guide 2 not found</option>
+                <option value="guide_3_not_found">Guide 3 not found</option>
+                <option value="difficult_finding_home">Difficult finding home</option>
+                <option value="guide_calibration_accomplished">Guide calibration accomplished</option>
+                <option value="guide_calibration_failed">Guide calibration failed</option>
+                <option value="temporary_battery_problem">Temporary battery problem</option>
+                <option value="battery_problem">Battery problem</option>
+                <option value="alarm_mower_switched_off">Alarm! Mower switched off</option>
+                <option value="alarm_mower_stopped">Alarm! Mower stopped</option>
+                <option value="alarm_mower_lifted">Alarm! Mower lifted</option>
+                <option value="alarm_mower_tilted">Alarm! Mower tilted</option>
+                <option value="connection_changed">Connection changed</option>
+                <option value="connection_not_changed">Connection not changed</option>
+                <option value="com_board_not_available">COM board not available</option>
+                <option value="slipped">Slipped</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="sourceForNextStart" advanced="true">
+        <item-type>String</item-type>
+        <label>Source For Next Start</label>
+        <description>The source for the next start</description>
+        <state readOnly="true">
+            <options>
+                <option value="no_source">No source</option>
+                <option value="completed_cutting_daily_limit">Completed cutting daily limit</option>
+                <option value="week_timer">Week timer</option>
+                <option value="countdown_timer">Countdown timer</option>
+                <option value="mower_charging">Mower charging</option>
+                <option value="completed_cutting_autotimer">Completed cutting autotimer</option>
+                <option value="undefined">Undefined</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="timestampNextStart">
+        <item-type>DateTime</item-type>
+        <label>Timestamp Next Start</label>
+        <description>Timestamp of the next start</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="overrideEndTime" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Override End Time</label>
+        <description>Override End Time</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="temperature" advanced="true">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Temperature</description>
+        <state pattern="%d °C" readOnly="true" />
+    </channel-type>
+
+    <channel-group-type id="firmware">
+        <label>Firmware</label>
+        <description>Information about the firmware</description>
+        <channels>
+            <channel id="firmware_status" typeId="firmwareStatus" />
+            <channel id="firmware_upload_progress" typeId="firmwareUploadProgress" />
+            <channel id="firmware_available_version" typeId="firmwareAvailableVersion" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="firmwareStatus" advanced="true">
+        <item-type>String</item-type>
+        <label>Status</label>
+        <description>The firmware status</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="firmwareUploadProgress" advanced="true">
+        <item-type>Numper</item-type>
+        <label>Upload progress</label>
+        <description>Firmware upload in progress</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="firmwareAvailableVersion" advanced="true">
+        <item-type>String</item-type>
+        <label>Available version</label>
+        <description>Available firmware version</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <!-- ############################### Watering Computer ############################### -->
+    <thing-type id="watering_computer">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="account" />
+        </supported-bridge-type-refs>
+
+        <label>Gardena Smart Watering Computer</label>
+        <description>Represents a Gardena Smart Watering Computer</description>
+
+        <channel-groups>
+            <channel-group id="device_info" typeId="deviceInfo" />
+            <channel-group id="battery" typeId="battery" />
+            <channel-group id="radio" typeId="radio" />
+            <channel-group id="outlet" typeId="outlet" />
+            <channel-group id="ambient_temperature" typeId="ambientTemperature" />
+        </channel-groups>
+        <properties>
+            <!-- device info -->
+            <property name="manufacturer" />
+            <property name="product" />
+            <property name="serialNumber" />
+            <property name="sgtin" />
+            <property name="version" />
+            <property name="category" />
+        </properties>
+    </thing-type>
+
+    <channel-group-type id="battery">
+        <label>Battery Info</label>
+        <description>Information about the battery</description>
+        <channels>
+            <channel id="level" typeId="system.battery-level" />
+            <channel id="disposable_battery_status" typeId="disposableBatteryStatus" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="outlet">
+        <label>Watering Outlet</label>
+        <description>Information about the watering outlet</description>
+        <channels>
+            <channel id="valve_open" typeId="valveOpen" />
+            <channel id="manual_override" typeId="manualOverride" />
+            <channel id="button_manual_override_time" typeId="buttonManualOverrideTime" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="ambientTemperature">
+        <label>Ambient Temperature</label>
+        <description>Ambient Temperature</description>
+        <channels>
+            <channel id="temperature" typeId="temperature">
+                <label>Ambient Temperature</label>
+            </channel>
+            <channel id="frost_warning" typeId="frostWarning" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="disposableBatteryStatus" advanced="true">
+        <item-type>String</item-type>
+        <label>Disposable Battery Status</label>
+        <description>The status of the disposable battery</description>
+        <state readOnly="true">
+            <options>
+                <option value="out_of_operation">Out of operation</option>
+                <option value="replace_now">Critical battery level, replace now</option>
+                <option value="low">Low</option>
+                <option value="ok">OK</option>
+                <option value="undefined">Undefined</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="valveOpen">
+        <item-type>Switch</item-type>
+        <label>Valve Open</label>
+        <description>Valve Open</description>
+    </channel-type>
+
+    <channel-type id="manualOverride" advanced="true">
+        <item-type>String</item-type>
+        <label>Manual Override</label>
+        <description>Manual Override</description>
+        <state readOnly="true">
+            <options>
+                <option value="inactive">Inactive</option>
+                <option value="open">Open</option>
+                <option value="undefined">Undefined</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="buttonManualOverrideTime" advanced="true">
+        <item-type>Number</item-type>
+        <label>Button Manual Override</label>
+        <description>The time the valve is open when you press the button on the device</description>
+        <state pattern="%d min" min="1" max="180" step="1" />
+    </channel-type>
+
+    <channel-type id="frostWarning" advanced="true">
+        <item-type>String</item-type>
+        <label>Frost Warning</label>
+        <description>Frost Warning</description>
+        <state readOnly="true">
+            <options>
+                <option value="no_frost">No frost</option>
+                <option value="frost">Frost</option>
+                <option value="undefined">Undefined</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- ############################### Sensor ############################### -->
+    <thing-type id="sensor">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="account" />
+        </supported-bridge-type-refs>
+
+        <label>Gardena Smart Sensor</label>
+        <description>Represents a Gardena Smart Sensor</description>
+
+        <channel-groups>
+            <channel-group id="device_info" typeId="deviceInfo" />
+            <channel-group id="battery" typeId="battery" />
+            <channel-group id="radio" typeId="radio" />
+            <channel-group id="ambient_temperature" typeId="ambientTemperature" />
+            <channel-group id="soil_temperature" typeId="soilTemperature" />
+            <channel-group id="humidity" typeId="humidity" />
+            <channel-group id="light" typeId="light" />
+        </channel-groups>
+        <properties>
+            <!-- device info -->
+            <property name="manufacturer" />
+            <property name="product" />
+            <property name="serialNumber" />
+            <property name="sgtin" />
+            <property name="version" />
+            <property name="category" />
+        </properties>
+    </thing-type>
+
+    <channel-group-type id="soilTemperature">
+        <label>Soil Temperature</label>
+        <description>The soil temperature</description>
+        <channels>
+            <channel id="temperature" typeId="temperature">
+                <label>Soil Temperature</label>
+            </channel>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="humidity">
+        <label>Humidity</label>
+        <description>The humidity</description>
+        <channels>
+            <channel id="humidity" typeId="humidity" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="light">
+        <label>Brightness</label>
+        <description>The brightness</description>
+        <channels>
+            <channel id="light" typeId="light" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="humidity">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <description>The humidity</description>
+        <state pattern="%d %%" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="light">
+        <item-type>Number</item-type>
+        <label>Brightness</label>
+        <description>The brightness</description>
+        <state pattern="%d lx" readOnly="true" />
+    </channel-type>
+
+</thing:thing-descriptions>

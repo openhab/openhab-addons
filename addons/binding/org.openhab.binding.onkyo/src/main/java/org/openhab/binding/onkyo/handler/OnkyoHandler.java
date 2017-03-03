@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,9 +39,9 @@ import org.openhab.binding.onkyo.internal.OnkyoAlbumArt;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
 import org.openhab.binding.onkyo.internal.OnkyoEventListener;
 import org.openhab.binding.onkyo.internal.ServiceType;
+import org.openhab.binding.onkyo.internal.config.OnkyoDeviceConfiguration;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
-import org.openhab.binding.rfxcom.internal.config.OnkyoDeviceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -263,6 +263,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 handlePlayUri(command);
                 break;
             case CHANNEL_ALBUM_ART:
+            case CHANNEL_ALBUM_ART_URL:
                 if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommand.NETUSB_ALBUM_ART_QUERY);
                 }
@@ -538,6 +539,16 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             }
             onkyoAlbumArt.clearAlbumArt();
         }
+
+        if (data.startsWith("2-")) {
+            updateState(CHANNEL_ALBUM_ART_URL, new StringType(data.substring(2, data.length())));
+        } else if (data.startsWith("n-")) {
+            updateState(CHANNEL_ALBUM_ART_URL, UnDefType.UNDEF);
+        } else {
+            logger.debug("Not supported album art URL type: {}", data.substring(0, 2));
+            updateState(CHANNEL_ALBUM_ART_URL, UnDefType.UNDEF);
+        }
+
     }
 
     private void updateNetTitle(String data) {

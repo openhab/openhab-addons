@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.homematic.converter.ConverterException;
+import org.openhab.binding.homematic.converter.ConverterTypeException;
 import org.openhab.binding.homematic.converter.StateInvertInfo;
 import org.openhab.binding.homematic.converter.TypeConverter;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -90,11 +91,11 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
         } else if (type.getClass().isEnum() && !(this instanceof OnOffTypeConverter)
                 && !(this instanceof OpenClosedTypeConverter)) {
             return commandToBinding((Command) type, dp);
-        } else if (!toBindingValidation(dp)) {
+        } else if (!toBindingValidation(dp, type.getClass())) {
             String errorMessage = String.format("Can't convert type %s with value '%s' to %s value with %s for '%s'",
                     type.getClass().getSimpleName(), type.toString(), dp.getType(), this.getClass().getSimpleName(),
                     new HmDatapointInfo(dp));
-            throw new ConverterException(errorMessage);
+            throw new ConverterTypeException(errorMessage);
         }
 
         return toBinding((T) type, dp);
@@ -116,7 +117,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
         } else if (!fromBindingValidation(dp)) {
             String errorMessage = String.format("Can't convert %s value '%s' with %s for '%s'", dp.getType(),
                     dp.getValue(), this.getClass().getSimpleName(), new HmDatapointInfo(dp));
-            throw new ConverterException(errorMessage);
+            throw new ConverterTypeException(errorMessage);
         }
 
         return fromBinding(dp);
@@ -133,7 +134,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     /**
      * Returns true, if the conversion from openHab to the binding is possible.
      */
-    protected abstract boolean toBindingValidation(HmDatapoint dp);
+    protected abstract boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass);
 
     /**
      * Converts the type to a datapoint value.
