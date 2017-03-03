@@ -140,14 +140,12 @@ public class Connection {
             synchronized (client) {
                 Request httpRequest = this.client.newRequest(url).method(HttpMethod.POST)
                         .timeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS).content(new StringContentProvider(output));
-                logger.error("Sending {}", output);
                 response = httpRequest.send();
             }
 
             if (response.getStatus() == HttpStatus.OK_200) {
                 Object data = request.deserializeReply(new StringReader(response.getContentAsString()), gson);
                 if (data != null) {
-                    logger.error("Returned {}", data.toString());
                     return true;
                 }
                 logger.info("No data returned {}", response.getContentAsString());

@@ -51,7 +51,6 @@ public class BlueIrisCameraHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.error("Got channel id {} {}", channelUID, command);
         if (channelUID.getId().equals(BlueIrisBindingConstants.CHANNEL_ENABLED)) {
             if (command instanceof OnOffType) {
                 CamConfigRequest request = new CamConfigRequest();
