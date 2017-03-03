@@ -418,7 +418,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
         if (deviceStatusListener == null) {
-            throw new NullPointerException("It's not allowed to pass a null deviceStatusListener.");
+            throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
         boolean result = deviceStatusListeners.add(deviceStatusListener);
         if (result) {
@@ -429,7 +429,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
         if (deviceStatusListener == null) {
-            throw new NullPointerException("It's not allowed to pass a null deviceStatusListener.");
+            throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
         boolean result = deviceStatusListeners.remove(deviceStatusListener);
         if (result) {

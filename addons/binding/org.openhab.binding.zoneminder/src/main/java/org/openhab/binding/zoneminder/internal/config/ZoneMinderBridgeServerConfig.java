@@ -9,8 +9,6 @@
 package org.openhab.binding.zoneminder.internal.config;
 
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Configuration data according to zoneminderserver.xml
@@ -19,8 +17,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
-
-    private final Logger logger = LoggerFactory.getLogger(ZoneMinderBridgeServerConfig.class);
 
     private String hostname;
     private Integer http_port;
@@ -93,7 +89,7 @@ public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
     }
 
     public void setUserName(String userName) {
-        this.user = user;
+        this.user = userName;
     }
 
     public String getPassword() {
