@@ -47,7 +47,7 @@ public class PcapNetworkInterfaceWrapper {
 
     private PcapNetworkInterfaceWrapper(PcapNetworkInterface pcapNetworkInterface) {
         if (pcapNetworkInterface == null) {
-            throw new NullPointerException("Don't pass null.");
+            throw new IllegalArgumentException("Don't pass null.");
         }
         this.pcapNetworkInterface = pcapNetworkInterface;
     }
