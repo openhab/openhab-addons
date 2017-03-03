@@ -105,7 +105,7 @@ sitemap demo label="myKodi"
     Frame label="myKodi" {
         Switch    item=myKodi_mute
         Slider    item=myKodi_volume
-        Selection item=myKodi_control mappings=[PLAY='Play', PAUSE='Pause', NEXT='Next', PREVIOUSE'Previous', FASTFORWARD='Fastforward', REWIND='Rewind']
+        Selection item=myKodi_control mappings=[PLAY='Play', PAUSE='Pause', NEXT='Next', PREVIOUS='Previous', FASTFORWARD='Fastforward', REWIND='Rewind']
         Default   item=myKodi_control
         Switch    item=myKodi_stop
         Text      item=myKodi_title
@@ -113,7 +113,6 @@ sitemap demo label="myKodi"
         Text      item=myKodi_album
         Text      item=myKodi_artist
         Text      item=myKodi_playuri
-        Text      item=myKodi_notification
         Selection item=myKodi_input mappings=[Up='Up', Down='Down', Left='Left', Right='Right', Select='Select', Back='Back', Home='Home', ContextMenu='ContextMenu', Info='Info', ShowCodec='ShowCodec', ShowOSD='ShowOSD']
         Selection item=myKodi_systemcommand mappings=[Shutdown='Herunterfahren', Suspend='Bereitschaft', Reboot='Neustart']
         Text      item=myKodi_mediatype
