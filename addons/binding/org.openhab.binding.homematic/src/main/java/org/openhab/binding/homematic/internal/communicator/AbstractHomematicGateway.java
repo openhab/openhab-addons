@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,6 +31,7 @@ import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.BinRpcClient;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
 import org.openhab.binding.homematic.internal.communicator.client.TransferMode;
+import org.openhab.binding.homematic.internal.communicator.client.UnknownParameterSetException;
 import org.openhab.binding.homematic.internal.communicator.client.XmlRpcClient;
 import org.openhab.binding.homematic.internal.communicator.server.BinRpcServer;
 import org.openhab.binding.homematic.internal.communicator.server.RpcEventListener;
@@ -48,6 +49,7 @@ import org.openhab.binding.homematic.internal.communicator.virtual.ReloadAllFrom
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadFromGatewayVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.ReloadRssiVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.RssiVirtualDatapointHandler;
+import org.openhab.binding.homematic.internal.communicator.virtual.SignalStrengthVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.StateContactVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.VirtualGateway;
@@ -112,6 +114,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         virtualDatapointHandlers.add(new RssiVirtualDatapointHandler());
         virtualDatapointHandlers.add(new ReloadRssiVirtualDatapointHandler());
         virtualDatapointHandlers.add(new StateContactVirtualDatapointHandler());
+        virtualDatapointHandlers.add(new SignalStrengthVirtualDatapointHandler());
     }
 
     public AbstractHomematicGateway(String id, HomematicConfig config, HomematicGatewayListener eventListener) {
@@ -397,11 +400,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                                     cloneAllDatapointsIntoChannel(channel, cachedDatapoints);
                                 } else {
                                     logger.trace("    Loading datapoints into channel {}", channel);
-                                    // load all datapoints from the gateway
-                                    HmInterface hmInterface = channel.getDevice().getHmInterface();
-                                    getRpcClient(hmInterface).addChannelDatapoints(channel, HmParamsetType.MASTER);
-                                    getRpcClient(hmInterface).addChannelDatapoints(channel, HmParamsetType.VALUES);
-
+                                    addChannelDatapoints(channel, HmParamsetType.MASTER);
+                                    addChannelDatapoints(channel, HmParamsetType.VALUES);
                                     datapointsByChannelIdCache.put(channelId, channel.getDatapoints().values());
                                 }
                             }
@@ -418,6 +418,19 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         }
         if (!cancelLoadAllMetadata) {
             devices.keySet().retainAll(loadedDevices);
+        }
+    }
+
+    /**
+     * Loads all datapoints from the gateway.
+     */
+    protected void addChannelDatapoints(HmChannel channel, HmParamsetType paramsetType) throws IOException {
+        try {
+            getRpcClient(channel.getDevice().getHmInterface()).addChannelDatapoints(channel, paramsetType);
+        } catch (UnknownParameterSetException ex) {
+            logger.info(
+                    "Can not load metadata for device: {}, channel: {}, paramset: {}, maybe there are no channels available",
+                    channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
         }
     }
 
@@ -468,11 +481,23 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             }
         } else {
             logger.debug("Loading values for channel {} of device '{}'", channel, channel.getDevice().getAddress());
-            HmInterface hmInterface = channel.getDevice().getHmInterface();
-            getRpcClient(hmInterface).setChannelDatapointValues(channel, HmParamsetType.MASTER);
-            getRpcClient(hmInterface).setChannelDatapointValues(channel, HmParamsetType.VALUES);
+            setChannelDatapointValues(channel, HmParamsetType.MASTER);
+            setChannelDatapointValues(channel, HmParamsetType.VALUES);
         }
         channel.setInitialized(true);
+    }
+
+    /**
+     * Sets all datapoint values for the given channel.
+     */
+    protected void setChannelDatapointValues(HmChannel channel, HmParamsetType paramsetType) throws IOException {
+        try {
+            getRpcClient(channel.getDevice().getHmInterface()).setChannelDatapointValues(channel, paramsetType);
+        } catch (UnknownParameterSetException ex) {
+            logger.info(
+                    "Can not load values for device: {}, channel: {}, paramset: {}, maybe there are no values available",
+                    channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
+        }
     }
 
     /**
@@ -644,9 +669,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                     for (HmDevice device : deviceDescriptions) {
                         if (device.getAddress().equals(address)) {
                             for (HmChannel channel : device.getChannels()) {
-                                HmInterface hmInterface = channel.getDevice().getHmInterface();
-                                getRpcClient(hmInterface).addChannelDatapoints(channel, HmParamsetType.MASTER);
-                                getRpcClient(hmInterface).addChannelDatapoints(channel, HmParamsetType.VALUES);
+                                addChannelDatapoints(channel, HmParamsetType.MASTER);
+                                addChannelDatapoints(channel, HmParamsetType.VALUES);
                             }
                             prepareDevice(device);
                             eventListener.onNewDevice(device);

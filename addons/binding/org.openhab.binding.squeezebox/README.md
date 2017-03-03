@@ -61,3 +61,38 @@ All devices support some of the following channels:
 | coverartdata            | Image        | Image data of cover art of the current song|
 | ircode                  | String       | Received IR code|
 | numberPlaylistTracks    | Number       | Number of playlist tracks|
+| notificationSoundVolume | Dimmer       | Volume for playing notifications|
+
+## Notifications
+
+### How To Set Up
+
+Squeeze Players can be set up as audio sinks in openHAB.  Please follow the [openHAB multimedia documentation](http://docs.openhab.org/configuration/multimedia.html) for setup guidance. 
+
+You can create an item and sitemap entry in order to set the notification volume independently from the Squeeze Player's current volume setting. If the notification volume is not specified, it will use the Player's current volume setting.
+
+Item for setting notification volume.
+```
+Dimmer NotificationVolume "Notification Volume [%d %%]" {channel="squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510:notificationSoundVolume"}
+```
+
+Sitemap entry for setting notification volume.
+```
+Slider item=NotificationVolume label="Notification Volume"
+```
+
+You can play notifications from within rules.
+```
+rule "Garage Door Open Notification"
+when
+    Item GarageDoorOpenNotification received command ON
+then
+    say("The garage door is open!", "voicerss:enUS", "squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510")
+end
+```
+
+### Known Issues
+
+- There are some versions of squeezelite that will not correctly play very short duration mp3 files.  Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably.  For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications. This bug has been reported on the squeezelite forum.
+
+- When streaming from a remote service (such as Pandora or Spotify), after the notification plays, the Squeezebox Server starts playing a new track, instead of picking up from where it left off on the currently playing track.

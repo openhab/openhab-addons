@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airquality" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Air Quality Thing -->
+	<thing-type id="aqi">
+		<label>Air Quality</label>
+		<description>
+		Provides various air quality data from the World Air Quality Project.
+		In order to receive the data, you must register an account on http://aqicn.org/data-platform/token/ and get your API token.
+        </description>
+
+		<channels>
+			<channel id="aqiLevel" typeId="aqiLevel" />
+			<channel id="aqiDescription" typeId="aqiDescription" />
+			<channel id="pm25" typeId="pm25" />
+			<channel id="pm10" typeId="pm10" />
+			<channel id="o3" typeId="o3" />
+			<channel id="no2" typeId="no2" />
+			<channel id="co" typeId="co" />
+			<channel id="locationName" typeId="locationName" />
+			<channel id="stationLocation" typeId="stationLocation" />
+			<channel id="stationId" typeId="stationId" />
+			<channel id="observationTime" typeId="observationTime" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="pressure" typeId="pressure" />
+			<channel id="humidity" typeId="humidity" />
+		</channels>
+
+		<config-description>
+			<parameter name="apikey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>Data-platform token to access the AQIcn.org service</description>
+			</parameter>
+			<parameter name="location" type="text" required="false"
+				pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)[,]\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$">
+				<label>Location</label>
+				<description>Your geo coordinates separated with comma (e.g. "37.8,-122.4").</description>
+			</parameter>
+			<parameter name="stationId" type="integer" required="false">
+				<label>Station ID</label>
+				<description>Fill only in case you want to receive data from the specific station</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="30" required="false">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in minutes.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="aqiLevel">
+		<item-type>Number</item-type>
+		<label>Air Quality Index</label>
+		<description></description>
+		<category>Air Quality Index</category>
+		<state readOnly="true" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="aqiDescription">
+		<item-type>String</item-type>
+		<label>AQI Description</label>
+		<description></description>
+		<category>AQI Description</category>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="pm25">
+		<item-type>Number</item-type>
+		<label>PM2.5</label>
+		<description>Fine particles pollution level</description>
+		<category>PM2.5</category>
+		<state readOnly="true" pattern="%d μg/m&#179;"></state>
+	</channel-type>
+
+	<channel-type id="pm10">
+		<item-type>Number</item-type>
+		<label>PM10</label>
+		<description>Coarse dust particles pollution level</description>
+		<category>PM10</category>
+		<state readOnly="true" pattern="%d μg/m&#179;"></state>
+	</channel-type>
+
+	<channel-type id="o3">
+		<item-type>Number</item-type>
+		<label>O3</label>
+		<description>Ozone level</description>
+		<category>O3</category>
+		<state readOnly="true" pattern="%.1f μg/m&#179;"></state>
+	</channel-type>
+
+	<channel-type id="no2">
+		<item-type>Number</item-type>
+		<label>NO2</label>
+		<description>Nitrogen dioxide level</description>
+		<category>NO2</category>
+		<state readOnly="true" pattern="%.1f μg/m&#179;"></state>
+	</channel-type>
+
+	<channel-type id="co">
+		<item-type>Number</item-type>
+		<label>CO</label>
+		<description>Carbon monoxide level</description>
+		<category>CO</category>
+		<state readOnly="true" pattern="%.1f μg/m&#179;"></state>
+	</channel-type>
+
+	<channel-type id="locationName" advanced="true">
+		<item-type>String</item-type>
+		<label>Location</label>
+		<description>Nearest measuring station location</description>
+		<category>Location</category>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="stationLocation" advanced="true">
+		<item-type>Location</item-type>
+		<label>Station Location</label>
+		<description>Latitude/Longitude of the measuring station</description>
+		<category>Station Location</category>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="stationId" advanced="true">
+		<item-type>Number</item-type>
+		<label>Station ID</label>
+		<description>Unique measuring station ID</description>
+		<category>Station ID</category>
+		<state readOnly="true" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="observationTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Observation time</label>
+		<description>Observation date and time</description>
+		<category>Observation time</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="temperature" advanced="true">
+		<item-type>Number</item-type>
+		<label>Temperature (°C)</label>
+		<description>Temperature in Celsius degrees</description>
+		<category>Temperature (°C)</category>
+		<state readOnly="true" pattern="%.1f °C"></state>
+	</channel-type>
+
+	<channel-type id="pressure" advanced="true">
+		<item-type>Number</item-type>
+		<label>Pressure level</label>
+		<description></description>
+		<category>Pressure level</category>
+		<state readOnly="true" pattern="%.1f hPa"></state>
+	</channel-type>
+
+	<channel-type id="humidity" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidity level</label>
+		<description></description>
+		<category>Humidity level</category>
+		<state readOnly="true" min="0" max="100" pattern="%.2f %%">
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
+

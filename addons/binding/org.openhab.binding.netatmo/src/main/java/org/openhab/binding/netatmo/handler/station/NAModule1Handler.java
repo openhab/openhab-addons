@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,7 @@ package org.openhab.binding.netatmo.handler.station;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
@@ -36,6 +37,10 @@ public class NAModule1Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
         if (module != null) {
             NADashboardData dashboardData = module.getDashboardData();
             switch (channelId) {
+                case CHANNEL_PRESS_TREND:
+                    return new StringType(dashboardData.getPressureTrend());
+                case CHANNEL_TEMP_TREND:
+                    return new StringType(dashboardData.getTempTrend());
                 case CHANNEL_TEMPERATURE:
                     return ChannelTypeUtils.toDecimalType(dashboardData.getTemperature());
                 case CHANNEL_HUMIDITY:

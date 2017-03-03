@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -47,7 +47,7 @@ public class PcapNetworkInterfaceWrapper {
 
     private PcapNetworkInterfaceWrapper(PcapNetworkInterface pcapNetworkInterface) {
         if (pcapNetworkInterface == null) {
-            throw new NullPointerException("Don't pass null.");
+            throw new IllegalArgumentException("Don't pass null.");
         }
         this.pcapNetworkInterface = pcapNetworkInterface;
     }

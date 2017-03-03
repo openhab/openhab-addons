@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +20,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.chromecast.ChromecastBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ChromecastDiscoveryParticipant} is responsible for discovering Chromecast devices through UPnP.
@@ -30,6 +33,7 @@ import org.openhab.binding.chromecast.ChromecastBindingConstants;
 public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_googlecast._tcp.local.";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -52,7 +56,9 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
         final Map<String, Object> properties = new HashMap<>(2);
         String host = service.getHostAddresses()[0];
         properties.put(ChromecastBindingConstants.HOST, host);
-
+        int port = service.getPort();
+        properties.put(ChromecastBindingConstants.PORT, port);
+        logger.debug("Chromecast Found: {} {}", host, port);
         String friendlyName = service.getPropertyString("fn"); // friendly name;
 
         final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
@@ -63,11 +69,14 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     private ThingTypeUID getThingType(final ServiceInfo service) {
         String model = service.getPropertyString("md"); // model
+        logger.debug("Chromecast Type: {}", model);
         if (model == null) {
             return null;
         }
         if (model.equals("Chromecast Audio")) {
             return ChromecastBindingConstants.THING_TYPE_AUDIO;
+        } else if (model.equals("Google Cast Group")) {
+            return ChromecastBindingConstants.THING_TYPE_AUDIOGROUP;
         } else {
             return ChromecastBindingConstants.THING_TYPE_CHROMECAST;
         }

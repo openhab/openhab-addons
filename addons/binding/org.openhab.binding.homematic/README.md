@@ -6,25 +6,25 @@ This binding allows you to integrate, view, control and configure all Homematic 
 ## Supported Bridges
 
 All gateways which provides the Homematic BIN- or XML-RPC API: 
-- CCU 1+2 
-- [Homegear](https://www.homegear.eu)
-- [YAHM](https://github.com/leonsio/YAHM)
-- [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
-- [OCCU](https://github.com/eq-3/occu)
+* CCU 1+2 
+* [Homegear](https://www.homegear.eu)
+* [YAHM](https://github.com/leonsio/YAHM)
+* [Windows BidCos service](http://www.eq-3.de/downloads.html?kat=download&id=125)
+* [OCCU](https://github.com/eq-3/occu)
 
 The Homematic IP Access Point does not support this API and can't be used with this binding. But you can control Homematic IP devices with a CCU2 with at least firmware 2.17.15.
 
 These ports are used by the binding by default to communicate **TO** the gateway:  
-- RF components: 2001
-- WIRED components: 2000
-- HMIP components: 2010 
-- CUxD: 8701
-- TclRegaScript: 8181
-- Groups: 9292
+* RF components: 2001
+* WIRED components: 2000
+* HMIP components: 2010 
+* CUxD: 8701
+* TclRegaScript: 8181
+* Groups: 9292
 
 And **FROM** the gateway to openHab:
-- XML-RPC: 9125
-- BIN-RPC: 9126
+* XML-RPC: 9125
+* BIN-RPC: 9126
 
 **Note:** The binding tries to identify the gateway with XML-RPC and uses henceforth:
 
@@ -103,8 +103,8 @@ The syntax for a bridge is:
 
 ```
 homematic:bridge:NAME
-
 ```
+
 - **homematic** the binding id, fixed
 - **bridge** the type, fixed
 - **name** the name of the bridge
@@ -140,18 +140,19 @@ Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
   Thing HM-LC-Dim1T-Pl-2    JEQ0999999
 }
 ```
+
 The first parameter after Thing is the device type, the second the serial number. If you are using Homegear, you have to add the prefix ```HG-``` for each type.
 
 ```
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999
-
 ```
+
 This is necessary, because the Homegear devices supports more datapoints than Homematic devices.
 
 ```
   Thing HG-HM-LC-Dim1T-Pl-2     JEQ0999999  "Name"  @  "Location"
-
 ```
+
 As additional parameters you can define a name and a location for each thing. The Name will be used to identify the Thing in the Paper UI lists, the Location will be used in the Control section of PaperUI to sort the things.
 
 ### Items
@@ -159,8 +160,8 @@ In the items file, you can map the datapoints, the syntax is:
 
 ```
 homematic:TYPE:BRIDGE:SERIAL:CHANNELNUMBER#DATAPOINTNAME
-
 ```
+
 * **homematic:** the binding id, fixed  
 * **type:** the type of the Homematic device  
 * **bridge:** the name of the bridge  
@@ -172,6 +173,7 @@ homematic:TYPE:BRIDGE:SERIAL:CHANNELNUMBER#DATAPOINTNAME
 Switch  RC_1  "Remote Control Button 1" { channel="homematic:HM-RC-19-B:ccu:KEQ0099999:1#PRESS_SHORT" }
 Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:ccu:JEQ0555555:1#LEVEL" }
 ```
+
 **Note:** don't forget to add the ```HG-``` type prefix for Homegear devices
 
 
@@ -233,38 +235,35 @@ Assumed you mapped the virtual datapoint to a String item called Display_Options
 ```
 String Display_Options "Display_Options" { channel="homematic:HM-RC-19-B:ccu:KEQ0099999:18#DISPLAY_OPTIONS" }
 ```
+
 show message TEST:
 
 ```
 smarthome send Display_Options "TEST"
-
 ```
+
 show message TEXT, beep once and turn backlight on:
 
 ```
 smarthome send Display_Options "TEXT, TONE1, BACKLIGHT_ON"
-
 ```
  
 show message 15, beep once, turn backlight on and shows the celsius unit:
 
 ```
 smarthome send Display_Options "15, TONE1, BACKLIGHT_ON, CELSIUS"
-
 ```
- 
+
 show message ALARM, beep three times, let the backlight blink fast and shows a bell symbol:
 
 ```
 smarthome send Display_Options "ALARM, TONE3, BLINK_FAST, BELL"
-
 ```
- 
+
 Duplicate options: TONE3 is ignored, because TONE1 is specified previously.
 
 ```
 smarthome send Display_Options "TEXT, TONE1, BLINK_FAST, TONE3"
-
 ```
 
 ### Troubleshooting
@@ -288,7 +287,23 @@ The gateway autodetection of the binding can not clearly identify the gateway an
 
 **Variables out of sync**  
 
-The CCU only sends a event if a datapoint of a device has changed. There is (currently) no way to receive a event automatically when a variable has changed. To reload all variables, send a REFRESH command to any variable.
+The CCU only sends a event if a datapoint of a device has changed. There is (currently) no way to receive a event automatically when a variable has changed. To reload all variable values, send a REFRESH command to any variable.  
+e.g you have a item linked to a variable with the name Var_1  
+In the console:
+
+```
+smarthome send Var_1 REFRESH
+```
+
+In scripts:
+
+```
+import org.eclipse.smarthome.core.types.RefreshType
+...
+sendCommand(Var_1, RefreshType.REFRESH)
+```
+
+**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported. You have to delete the Thing, start a scan and add it again. 
 
 ### Debugging and Tracing
 
