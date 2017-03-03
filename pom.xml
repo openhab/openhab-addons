@@ -384,6 +384,20 @@
 
     </profiles>
 
+    <pluginRepositories>
+      <pluginRepository>
+          <id>openhab-bintray</id>
+          <name>Bintray Repository for openHAB</name>
+          <url>https://dl.bintray.com/openhab/mvn/</url>
+          <releases>
+              <enabled>true</enabled>
+              <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+              <enabled>false</enabled>
+          </snapshots>
+      </pluginRepository>
+    </pluginRepositories>
 
     <repositories>
 
