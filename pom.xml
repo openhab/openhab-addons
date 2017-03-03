@@ -53,9 +53,10 @@
         <ohc.version>2.1.0-SNAPSHOT</ohc.version>
         <ohcp2.version>2.1.x</ohcp2.version>
         <ohdr.version>1.0.10</ohdr.version>
+        <sat.version>0.0.1</sat.version>
         <karaf.version>4.0.8</karaf.version>
         <jackson.version>1.9.13</jackson.version>
-        <tycho-version>0.24.0</tycho-version>
+        <tycho-version>1.0.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -306,6 +307,81 @@
                 </plugins>
             </build>
         </profile>
+
+	<!-- static code analysis profiles -->
+    <profile>
+      <id>check</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.openhab.tools</groupId>
+              <artifactId>static-code-analysis</artifactId>
+              <version>${sat.version}</version>
+              <executions>
+                <execution>
+                  <phase>verify</phase>
+                  <goals>
+                    <goal>checkstyle</goal>
+                    <goal>pmd</goal>
+                    <goal>findbugs</goal>
+                    <goal>report</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>
+                <findbugsPlugins>
+                  <findbugsPlugin>
+                     <groupId>jp.skypencil.findbugs.slf4j</groupId>
+                     <artifactId>bug-pattern</artifactId>
+                    <version>1.2.4</version>
+                  </findbugsPlugin>
+                </findbugsPlugins>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <id>check-bundles</id>
+      <activation>
+        <file>
+          <exists>META-INF/MANIFEST.MF</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+              <groupId>org.openhab.tools</groupId>
+              <artifactId>static-code-analysis</artifactId>
+            <configuration>
+              <ruleset>bundle</ruleset>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>check-bindings</id>
+      <activation>
+        <file>
+          <exists>ESH-INF/binding/binding.xml</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+              <groupId>org.openhab.tools</groupId>
+              <artifactId>static-code-analysis</artifactId>
+            <configuration>
+              <ruleset>binding</ruleset>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     </profiles>
 
 

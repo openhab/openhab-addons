@@ -41,11 +41,11 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
      * Create the callback from the other {@link AtlonaHandlerCallback}
      *
      * @param wrappedCallback a non-null {@link AtlonaHandlerCallback}
-     * @throws NullPointerException if wrappedCallback is null
+     * @throws IllegalArgumentException if wrappedCallback is null
      */
     public StatefulHandlerCallback(AtlonaHandlerCallback wrappedCallback) {
         if (wrappedCallback == null) {
-            throw new NullPointerException("wrappedCallback cannot be null");
+            throw new IllegalArgumentException("wrappedCallback cannot be null");
         }
 
         _wrappedCallback = wrappedCallback;

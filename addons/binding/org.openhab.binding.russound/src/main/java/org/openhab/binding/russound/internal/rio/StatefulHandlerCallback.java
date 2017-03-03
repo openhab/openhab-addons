@@ -41,11 +41,11 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
      * Create the callback from the other {@link RioHandlerCallback}
      *
      * @param wrappedCallback a non-null {@link RioHandlerCallback}
-     * @throws NullPointerException if wrappedCallback is null
+     * @throws IllegalArgumentException if wrappedCallback is null
      */
     public StatefulHandlerCallback(RioHandlerCallback wrappedCallback) {
         if (wrappedCallback == null) {
-            throw new NullPointerException("wrappedCallback cannot be null");
+            throw new IllegalArgumentException("wrappedCallback cannot be null");
         }
 
         _wrappedCallback = wrappedCallback;

@@ -585,7 +585,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     public boolean registerApplianceStatusListener(ApplianceStatusListener applianceStatusListener) {
         if (applianceStatusListener == null) {
-            throw new NullPointerException("It's not allowed to pass a null ApplianceStatusListener.");
+            throw new IllegalArgumentException("It's not allowed to pass a null ApplianceStatusListener.");
         }
         boolean result = applianceStatusListeners.add(applianceStatusListener);
         if (result && isInitialized()) {
