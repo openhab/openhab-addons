@@ -15,6 +15,7 @@ import java.util.Stack;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
@@ -134,10 +135,12 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case MsgBody:
                 if ("nowPlaying".equals(localName)) {
-                    if (!checkDeviceId(localName, attributes, true)) {
-                        state = XMLHandlerState.Unprocessed;
-                        break;
-                    }
+                    /*
+                     * if (!checkDeviceId(localName, attributes, true)) {
+                     * state = XMLHandlerState.Unprocessed;
+                     * break;
+                     * }
+                     */
                     rateEnabled = OnOffType.OFF;
                     skipEnabled = OnOffType.OFF;
                     skipPreviousEnabled = OnOffType.OFF;
@@ -215,19 +218,6 @@ public class XMLResponseHandler extends DefaultHandler {
                 zoneMemberIp = attributes.getValue("ipaddress");
                 state = nextState(stateMap, curState, localName);
                 break;
-            case NowPlayingRateEnabled:
-                rateEnabled = OnOffType.ON;
-                state = nextState(stateMap, curState, localName);
-                break;
-            case NowPlayingSkipEnabled:
-                skipEnabled = OnOffType.ON;
-                state = nextState(stateMap, curState, localName);
-                break;
-            case NowPlayingSkipPreviousEnabled:
-                skipPreviousEnabled = OnOffType.ON;
-                state = nextState(stateMap, curState, localName);
-                break;
-
             case ContentItem:
             case Info:
             case NowPlaying:
@@ -246,6 +236,9 @@ public class XMLResponseHandler extends DefaultHandler {
             case NowPlayingGenre:
             case NowPlayingDescription:
             case NowPlayingPlayStatus:
+            case NowPlayingRateEnabled:
+            case NowPlayingSkipEnabled:
+            case NowPlayingSkipPreviousEnabled:
             case NowPlayingStationLocation:
             case NowPlayingStationName:
             case NowPlayingTrack:
@@ -326,41 +319,62 @@ public class XMLResponseHandler extends DefaultHandler {
         }
         final XMLHandlerState prevState = state;
         state = states.pop();
-        if (prevState == XMLHandlerState.Info) {
-            handler.sendRequestInWebSocket("volume");
-            handler.sendRequestInWebSocket("presets");
-            handler.sendRequestInWebSocket("now_playing");
-            handler.sendRequestInWebSocket("getZone");
-        }
-        if (prevState == XMLHandlerState.ContentItem && state == XMLHandlerState.NowPlaying) {
-            // update now playing name...
-            processor.updateNowPlayingItemName(new StringType(contentItem.getItemName()));
-            handler.setCurrentContentItem(contentItem);
-            handler.checkOperationMode();
-        }
-        if (prevState == XMLHandlerState.ContentItem && state == XMLHandlerState.Preset) {
-            preset.setContentItem(contentItem);
-        }
-        if (prevState == XMLHandlerState.Preset && state == XMLHandlerState.Presets) {
-            handler.addPresetToList(preset);
-            handler.checkOperationMode();
-        }
-        if (prevState == XMLHandlerState.NowPlaying && state == XMLHandlerState.MsgBody) {
-            processor.updateRateEnabled(rateEnabled);
-            processor.updateSkipEnabled(skipEnabled);
-            processor.updateSkipPreviousEnabled(skipPreviousEnabled);
-        }
-        if (prevState == XMLHandlerState.Volume) {
-            if (handler.isMuted() != volumeMuteEnabled) {
-                handler.setMuted(volumeMuteEnabled);
-                handler.updateVolumeMuted(handler.isMuted() ? OnOffType.ON : OnOffType.OFF);
-            }
-        }
-        if (prevState == XMLHandlerState.ZoneUpdated) {
-            handler.sendRequestInWebSocket("getZone");
-        }
-        if (prevState == XMLHandlerState.Zone) {
-            handler.updateZoneState(zoneState, zoneMaster, zoneMembers);
+        switch (prevState) {
+            case Info:
+                handler.sendRequestInWebSocket("volume");
+                handler.sendRequestInWebSocket("presets");
+                handler.sendRequestInWebSocket("now_playing");
+                handler.sendRequestInWebSocket("getZone");
+                break;
+            case ContentItem:
+                if (state == XMLHandlerState.NowPlaying) {
+                    // update now playing name...
+                    processor.updateNowPlayingItemName(new StringType(contentItem.getItemName()));
+                    handler.setCurrentContentItem(contentItem);
+                    handler.checkOperationMode();
+                }
+                if (state == XMLHandlerState.Preset) {
+                    preset.setContentItem(contentItem);
+                }
+                break;
+            case Preset:
+                if (state == XMLHandlerState.Presets) {
+                    handler.addPresetToList(preset);
+                    handler.checkOperationMode();
+                }
+                break;
+            case NowPlaying:
+                if (state == XMLHandlerState.MsgBody) {
+                    processor.updateRateEnabled(rateEnabled);
+                    processor.updateSkipEnabled(skipEnabled);
+                    processor.updateSkipPreviousEnabled(skipPreviousEnabled);
+                }
+                break;
+            // handle special tags..
+            case NowPlayingRateEnabled:
+                rateEnabled = OnOffType.ON;
+                break;
+            case NowPlayingSkipEnabled:
+                skipEnabled = OnOffType.ON;
+                break;
+            case NowPlayingSkipPreviousEnabled:
+                skipPreviousEnabled = OnOffType.ON;
+                break;
+            case Volume:
+                if (handler.isMuted() != volumeMuteEnabled) {
+                    handler.setMuted(volumeMuteEnabled);
+                    handler.updateVolumeMuted(handler.isMuted() ? OnOffType.ON : OnOffType.OFF);
+                }
+                break;
+            case ZoneUpdated:
+                handler.sendRequestInWebSocket("getZone");
+                break;
+            case Zone:
+                handler.updateZoneState(zoneState, zoneMaster, zoneMembers);
+                break;
+            default:
+                // no actions...
+                break;
         }
     }
 
@@ -419,7 +433,14 @@ public class XMLResponseHandler extends DefaultHandler {
                 processor.updateNowPlayingGenre(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingPlayStatus:
-                processor.updateNowPlayingPlayStatus(new StringType(new String(ch, start, length)));
+                String playPauseState = new String(ch, start, length);
+                if ("PLAY_STATE".equals(playPauseState)) {
+                    processor.updateNowPlayingPlayStatus(PlayPauseType.PLAY);
+                } else if ("STOP_STATE".equals(playPauseState) || "PAUSE_STATE".equals(playPauseState)) {
+                    processor.updateNowPlayingPlayStatus(PlayPauseType.PAUSE);
+                } else {
+                    processor.updateNowPlayingPlayStatus(new StringType(playPauseState));
+                }
                 break;
             case NowPlayingStationLocation:
                 processor.updateNowPlayingStationLocation(new StringType(new String(ch, start, length)));
