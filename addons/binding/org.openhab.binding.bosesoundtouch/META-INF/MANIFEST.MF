@@ -5,12 +5,14 @@ Bundle-SymbolicName: org.openhab.binding.bosesoundtouch;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .,
- lib/okio-1.6.0.jar,
- lib/okhttp-2.6.0.jar,
- lib/okhttp-ws-2.6.0.jar
+Bundle-ClassPath: .
 Import-Package: 
  javax.jmdns,
+ org.eclipse.jetty.util,
+ org.eclipse.jetty.util.component,
+ org.eclipse.jetty.websocket.api,
+ org.eclipse.jetty.websocket.client,
+ org.eclipse.jetty.websocket.common,
  org.openhab.binding.bosesoundtouch,
  org.openhab.binding.bosesoundtouch.handler,
  org.eclipse.smarthome.config.core,

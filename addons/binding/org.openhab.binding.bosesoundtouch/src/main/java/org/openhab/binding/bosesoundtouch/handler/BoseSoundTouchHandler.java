@@ -9,13 +9,22 @@
 package org.openhab.binding.bosesoundtouch.handler;
 
 import java.io.IOException;
+import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.StatusCode;
+import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -43,17 +52,6 @@ import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
-import com.squareup.okhttp.ws.WebSocket;
-import com.squareup.okhttp.ws.WebSocketCall;
-import com.squareup.okhttp.ws.WebSocketListener;
-
-import okio.Buffer;
 
 /**
  * The {@link BoseSoundTouchHandler} is responsible for handling commands, which are
@@ -83,7 +81,10 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     private boolean muted;
     private OperationModeType currentOperationMode;
 
-    private WebSocket socket;
+    private ScheduledFuture<?> connectionChecker;
+    private WebSocketClient client;
+    private Session session;
+    private ByteBuffer pingPayload = ByteBuffer.wrap("Are you still here?".getBytes());
 
     private XMLResponseProcessor xmlResponseProcessor;
 
@@ -117,6 +118,13 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
 
         factory.registerSoundTouchDevice(this);
+        connectionChecker = scheduler.scheduleWithFixedDelay(new Runnable() {
+
+            @Override
+            public void run() {
+                checkConnection();
+            }
+        }, 300, 300, TimeUnit.SECONDS);
         openConnection();
     }
 
@@ -124,6 +132,9 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     public void dispose() {
         super.dispose();
         closeConnection();
+        if (connectionChecker != null && !connectionChecker.isCancelled()) {
+            connectionChecker.cancel(false);
+        }
     }
 
     @Override
@@ -438,9 +449,9 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         String msg = "<msg><header " + "deviceID=\"" + getMacAddress() + "\"" + " url=\"" + url
                 + "\" method=\"GET\"><request requestID=\"" + id + "\"><info type=\"new\"/></request></header></msg>";
         try {
-            socket.sendMessage(RequestBody.create(WebSocket.TEXT, msg));
+            session.getRemote().sendString(msg);
         } catch (IOException e) {
-            onFailure(e, null);
+            onWebSocketError(e);
         }
     }
 
@@ -450,9 +461,9 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 + "\" method=\"POST\"><request requestID=\"" + id + "\"><info " + (infoAddon == null ? "" : infoAddon)
                 + " type=\"new\"/></request></header><body>" + postData + "</body></msg>";
         try {
-            socket.sendMessage(RequestBody.create(WebSocket.TEXT, msg));
+            session.getRemote().sendString(msg);
         } catch (IOException e) {
-            onFailure(e, null);
+            onWebSocketError(e);
         }
     }
 
@@ -554,7 +565,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     private boolean removeZoneMember(BoseSoundTouchHandler oh) {
         boolean found = false;
-        for (Iterator< ZoneMember>mi = zoneMembers.iterator(); mi.hasNext();) {
+        for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
             ZoneMember m = mi.next();
             if (oh == m.getHandler()) {
                 mi.remove();
@@ -582,43 +593,40 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     }
 
     @Override
-    public void onOpen(WebSocket socket, Response resp) {
-        logger.debug(getDeviceName() + ": onOpen(\"" + resp + "\")");
-        this.socket = socket;
+    public void onWebSocketConnect(Session session) {
+        logger.debug(getDeviceName() + ": onWebSocketConnect(\"" + session + "\")");
+        this.session = session;
         updateStatus(ThingStatus.ONLINE);
         // socket.newMessageSink(PayloadType.TEXT);
         sendRequestInWebSocket("info");
     }
 
     @Override
-    public void onFailure(IOException e, Response response) {
+    public void onWebSocketError(Throwable e) {
         logger.error(getDeviceName() + ": Error during websocket communication: ", e);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         this.currentOperationMode = OperationModeType.OFFLINE;
         this.currentContentItem = null;
         this.checkOperationMode();
-        try {
-            socket.close(1011, getDeviceName() + ": Failure: " + e.getMessage());
-        } catch (IOException e1) {
-            logger.error(getDeviceName() + ": Error while closing websocket communication (during error handling): ",
-                    e);
+        if (session != null) {
+            session.close(StatusCode.SERVER_ERROR, getDeviceName() + ": Failure: " + e.getMessage());
         }
     }
 
     @Override
-    public void onMessage(ResponseBody message) throws IOException {
-        String msg = message.string();
-        logger.debug(getDeviceName() + ": onMessage(\"" + msg + "\")");
+    public void onWebSocketText(String msg) {
+        logger.debug(getDeviceName() + ": onWebSocketText(\"" + msg + "\")");
         xmlResponseProcessor.handleMessage(msg);
     }
 
     @Override
-    public void onPong(Buffer payload) {
-        logger.debug(getDeviceName() + ": onPong(\"" + payload + "\")");
+    public void onWebSocketBinary(byte[] arr, int pos, int len) {
+        logger.info(
+                getDeviceName() + ": onWebSocketBinary(\"" + pos + ", " + len + ", " + Arrays.toString(arr) + "\")");
     }
 
     @Override
-    public void onClose(int code, String reason) {
+    public void onWebSocketClose(int code, String reason) {
         logger.debug(getDeviceName() + ": onClose(" + code + ", \"" + reason + "\")");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         this.currentOperationMode = OperationModeType.OFFLINE;
@@ -691,29 +699,60 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         zoneState = ZoneState.None;
         zoneMaster = null;
         // updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE);
-        OkHttpClient client = new OkHttpClient();
-        // we need longer timeouts for websocket.
-        client.setReadTimeout(300, TimeUnit.SECONDS);
-        Map<String, Object> props = thing.getConfiguration().getProperties();
-        String host = (String) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
+        try {
+            client = new WebSocketClient();
+            // we need longer timeouts for web socket.
+            client.setMaxIdleTimeout(360 * 1000);
+            Map<String, Object> props = thing.getConfiguration().getProperties();
+            String host = (String) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
 
-        // Port seems to be hardcoded, therefore no userinput or discovery is necessary
-        String wsUrl = "http://" + host + ":8080/";
-        logger.debug(getDeviceName() + ": Connecting to: " + wsUrl);
-        Request request = new Request.Builder().url(wsUrl).addHeader("Sec-WebSocket-Protocol", "gabbo").build();
-        WebSocketCall call = WebSocketCall.create(client, request);
-        call.enqueue(this);
+            // Port seems to be hard coded, therefore no user input or discovery is necessary
+            String wsUrl = "ws://" + host + ":8080/";
+            logger.debug(getDeviceName() + ": Connecting to: " + wsUrl);
+            ClientUpgradeRequest request = new ClientUpgradeRequest();
+            request.setSubProtocols("gabbo");
+            client.start();
+            client.connect(this, new URI(wsUrl), request);
+        } catch (Exception e) {
+            onWebSocketError(e);
+        }
     }
 
     private void closeConnection() {
-        if (socket != null) {
+        if (session != null) {
             try {
-                socket.close(1000, "Binding shutdown");
-            } catch (IOException | IllegalStateException e) {
+                session.close(StatusCode.NORMAL, "Binding shutdown");
+            } catch (Throwable e) {
                 logger.error(getDeviceName() + ": Error while closing websocket communication: "
                         + e.getClass().getName() + "(" + e.getMessage() + ")");
             }
-            socket = null;
+            session = null;
+        }
+        if (client != null) {
+            try {
+                client.stop();
+                client.destroy();
+            } catch (Exception e) {
+                logger.error(getDeviceName() + ": Error while closing websocket communication: "
+                        + e.getClass().getName() + "(" + e.getMessage() + ")");
+            }
+            client = null;
+        }
+    }
+
+    private void checkConnection() {
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            openConnection(); // try to reconnect....
+        }
+        if (thing.getStatus() == ThingStatus.ONLINE) {
+            try {
+                session.getRemote().sendPing(pingPayload);
+            } catch (Throwable e) {
+                onWebSocketError(e);
+                closeConnection();
+                openConnection();
+            }
+
         }
     }
 }
