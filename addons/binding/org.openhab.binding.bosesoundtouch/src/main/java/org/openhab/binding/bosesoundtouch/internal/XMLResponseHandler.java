@@ -451,12 +451,11 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case NowPlayingPlayStatus:
                 String playPauseState = new String(ch, start, length);
-                if ("PLAY_STATE".equals(playPauseState)) {
-                    processor.updateNowPlayingPlayStatus(PlayPauseType.PLAY);
+                processor.updateNowPlayingPlayStatus(new StringType(playPauseState));
+                if ("PLAY_STATE".equals(playPauseState) || "BUFFERING_STATE".equals(playPauseState)) {
+                    handler.updatePlayerControl(PlayPauseType.PLAY);
                 } else if ("STOP_STATE".equals(playPauseState) || "PAUSE_STATE".equals(playPauseState)) {
-                    processor.updateNowPlayingPlayStatus(PlayPauseType.PAUSE);
-                } else {
-                    processor.updateNowPlayingPlayStatus(new StringType(playPauseState));
+                    handler.updatePlayerControl(PlayPauseType.PAUSE);
                 }
                 break;
             case NowPlayingStationLocation:

@@ -262,7 +262,11 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 if (command instanceof PlayPauseType) {
                     PlayPauseType type = (PlayPauseType) command;
                     if (type == PlayPauseType.PLAY) {
-                        simulateRemoteKey(RemoteKey.PLAY);
+                        if (currentOperationMode == OperationModeType.STANDBY) {
+                            simulateRemoteKey(RemoteKey.POWER);
+                        } else {
+                            simulateRemoteKey(RemoteKey.PLAY);
+                        }
                     }
                     if (type == PlayPauseType.PAUSE) {
                         simulateRemoteKey(RemoteKey.PAUSE);
@@ -278,7 +282,11 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 } else if (command instanceof StringType) {
                     String cmd = command.toString();
                     if (cmd.equals("PLAY")) {
-                        simulateRemoteKey(RemoteKey.PLAY);
+                        if (currentOperationMode == OperationModeType.STANDBY) {
+                            simulateRemoteKey(RemoteKey.POWER);
+                        } else {
+                            simulateRemoteKey(RemoteKey.PLAY);
+                        }
                     }
                     if (cmd.equals("PAUSE")) {
                         simulateRemoteKey(RemoteKey.PAUSE);
@@ -516,6 +524,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 zoneMaster = null;
             }
             updateState(channelPowerUID, OnOffType.OFF);
+            updateState(channelPlayerControlUID, PlayPauseType.PAUSE);
         } else {
             updateState(channelPowerUID, OnOffType.ON);
         }
@@ -590,6 +599,10 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     public void updateNowPlayingSource(State state) {
         nowPlayingSource = state;
+    }
+
+    public void updatePlayerControl(PlayPauseType state) {
+        updateState(channelPlayerControlUID, state);
     }
 
     public void updateVolume(State state) {
