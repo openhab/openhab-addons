@@ -41,14 +41,16 @@ public class NetworkService {
     private long refreshInterval;
     private int timeout;
     private boolean useSystemPing;
+    private final StateUpdateListener updateListener;
 
-    public NetworkService() {
-        this("", 0, 1, true, 60000, 5000, false);
+    public NetworkService(final StateUpdateListener updateListener) {
+        this(updateListener, "", 0, 1, true, 60000, 5000, false);
     }
 
-    public NetworkService(String hostname, int port, int retry, boolean dhcplisten, long refreshInterval, int timeout,
-            boolean useSystemPing) {
+    public NetworkService(final StateUpdateListener updateListener, String hostname, int port, int retry,
+            boolean dhcplisten, long refreshInterval, int timeout, boolean useSystemPing) {
         super();
+        this.updateListener = updateListener;
         this.hostname = hostname;
         this.port = port;
         this.retry = retry;
@@ -110,35 +112,78 @@ public class NetworkService {
         this.useSystemPing = useSystemPing;
     }
 
-    public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
-            final StateUpdate stateUpdate) {
-        Runnable runnable = new Runnable() {
+    /**
+     * Create a runner to be called by a scheduler periodically. The runner
+     * will update the device state and inform the callback listener.
+     *
+     * @return Return a runner.
+     */
+    private Runnable createUpdateListenerRunnable() {
+        return new Runnable() {
             @Override
             public void run() {
                 try {
-                    stateUpdate.newState(updateDeviceState());
+                    updateListener.updatedDeviceState(updateDeviceState());
                 } catch (InvalidConfigurationException e) {
-                    stateUpdate.invalidConfig();
+                    updateListener.invalidConfig();
                 }
             }
         };
+    }
 
-        refreshJob = scheduledExecutorService.scheduleAtFixedRate(runnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
-
-        if (dhcplisten) {
-            try {
-                ReceiveDHCPRequestPackets.register(InetAddress.getByName(hostname).getHostAddress(), stateUpdate);
-            } catch (SocketException | UnknownHostException e) {
-                logger.error("Cannot use DHCP listen: {}", e.getMessage());
+    /**
+     * Cancel a running refreshJob. Will not throw if no job is running
+     * or the job is already canceled.
+     */
+    private void cancelRefreshJob() {
+        try {
+            if (refreshJob != null) {
+                refreshJob.cancel(true);
             }
+        } catch (Exception ignore) {
         }
     }
 
+    /**
+     * Start/Restart a fixed scheduled runner to update the devices reach-ability state.
+     *
+     * @param scheduledExecutorService A scheduler to run pings periodically.
+     * @param stateChangeListener Your callback listener
+     */
+    public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService) {
+        cancelRefreshJob();
+        refreshJob = scheduledExecutorService.scheduleAtFixedRate(createUpdateListenerRunnable(), 0, refreshInterval,
+                TimeUnit.MILLISECONDS);
+
+        enableDHCPListen(dhcplisten);
+    }
+
     public void stopAutomaticRefresh() {
-        refreshJob.cancel(true);
+        cancelRefreshJob();
+        enableDHCPListen(false);
+    }
+
+    /**
+     * Enables/Disables listing for dhcp packets to figure out if devices have entered the network. This does not work
+     * for iOS devices. The hostname of this network service object will be registered to the dhcp request packet
+     * listener if enabled and unregistered otherwise.
+     *
+     * @param enabled Enable/Disable the dhcp listen service for this hostname.
+     */
+    private void enableDHCPListen(boolean enabled) {
         try {
-            ReceiveDHCPRequestPackets.unregister(InetAddress.getByName(hostname).getHostAddress());
+            if (enabled) {
+                try {
+                    ReceiveDHCPRequestPackets.register(InetAddress.getByName(hostname).getHostAddress(),
+                            updateListener);
+                } catch (SocketException e) {
+                    logger.warn("Cannot use DHCP listen. You may not have approriate access rights!", e);
+                }
+            } else {
+                ReceiveDHCPRequestPackets.unregister(InetAddress.getByName(hostname).getHostAddress());
+            }
         } catch (UnknownHostException e) {
+            logger.warn("Hostname invalid: {}", hostname, e);
         }
     }
 
