@@ -91,7 +91,6 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 * Humidex
 * Dewpoint
 * DewpointDepression
-* WifiStatus
 * LastStatusStore
  
 ### Weather Station Outdoor module
