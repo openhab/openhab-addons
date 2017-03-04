@@ -31,7 +31,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class XMLResponseProcessor {
 
-    private final static Logger logger = LoggerFactory.getLogger(XMLResponseProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(XMLResponseProcessor.class);
 
     private BoseSoundTouchHandler handler;
 
@@ -169,9 +169,9 @@ public class XMLResponseProcessor {
             reader.parse(new InputSource(new StringReader(msg)));
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
-            logger.error(handler.getDeviceName() + ": Could not parse XML from string '{}'; exception is: ", msg, e);
+            logger.error("{}: Could not parse XML from string '{}'; exception is: ", handler.getDeviceName(), msg, e);
         } catch (Throwable s) {
-            logger.error(handler.getDeviceName() + ": Could not parse XML from string '{}'; exception is: ", msg, s);
+            logger.error("{}: Could not parse XML from string '{}'; exception is: ", handler.getDeviceName(), msg, s);
         }
     }
 

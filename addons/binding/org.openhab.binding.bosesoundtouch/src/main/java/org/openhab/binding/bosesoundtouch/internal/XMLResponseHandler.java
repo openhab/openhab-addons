@@ -38,7 +38,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XMLResponseHandler extends DefaultHandler {
 
-    private final static Logger logger = LoggerFactory.getLogger(XMLResponseHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(XMLResponseHandler.class);
 
     private boolean tracing;
 
@@ -76,7 +76,7 @@ public class XMLResponseHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
         if (tracing) {
-            logger.trace(handler.getDeviceName() + ": startElement(\"" + localName + "\"; state: " + state + ")");
+            logger.trace("{}: startElement('{}'; state: {})", handler.getDeviceName(), localName, state);
         }
         states.push(state);
         XMLHandlerState curState = state; // save for switch statement
@@ -98,8 +98,8 @@ public class XMLResponseHandler extends DefaultHandler {
                     state = XMLHandlerState.Msg;
                 } else {
                     if (logger.isDebugEnabled()) {
-                        logger.warn(handler.getDeviceName() + ": Unhandled XML entity during " + curState + ": "
-                                + localName);
+                        logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                                localName);
                     }
                     state = XMLHandlerState.Unprocessed;
                 }
@@ -120,8 +120,8 @@ public class XMLResponseHandler extends DefaultHandler {
                         state = XMLHandlerState.Unprocessed;
                     }
                 } else {
-                    logger.warn(
-                            handler.getDeviceName() + ": Unhandled XML entity during " + curState + ": " + localName);
+                    logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                            localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -129,8 +129,8 @@ public class XMLResponseHandler extends DefaultHandler {
                 if ("request".equals(localName)) {
                     state = XMLHandlerState.Unprocessed; // TODO implement request id / response tracking...
                 } else {
-                    logger.warn(
-                            handler.getDeviceName() + ": Unhandled XML entity during " + curState + ": " + localName);
+                    logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                            localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -183,8 +183,8 @@ public class XMLResponseHandler extends DefaultHandler {
                             zoneState = ZoneState.Member;
                             zoneMaster = handler.getFactory().getBoseSoundTouchDevice(master);
                             if (zoneMaster == null) {
-                                logger.warn(handler.getDeviceName() + ": Zone update: Unable to find master with ID "
-                                        + master);
+                                logger.warn("{}: Zone update: Unable to find master with ID {}",
+                                        handler.getDeviceName(), master);
                             }
                         }
                     }
@@ -192,8 +192,8 @@ public class XMLResponseHandler extends DefaultHandler {
                 } else {
                     state = stateMap.get(localName);
                     if (state == null) {
-                        logger.warn(handler.getDeviceName() + ": Unhandled XML entity during " + curState + ": "
-                                + localName);
+                        logger.warn("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
+                                localName);
                         state = XMLHandlerState.Unprocessed;
                     } else if (state != XMLHandlerState.Volume && state != XMLHandlerState.Presets
                             && state != XMLHandlerState.Unprocessed) {
@@ -210,8 +210,8 @@ public class XMLResponseHandler extends DefaultHandler {
                     String id = attributes.getValue("id");
                     preset = new Preset(Integer.parseInt(id));
                 } else {
-                    logger.warn(
-                            handler.getDeviceName() + ": Unhandled XML entity during " + curState + ": " + localName);
+                    logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                            localName);
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -251,7 +251,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case VolumeMuteEnabled:
             case ZoneMember:
             case ZoneUpdated: // currently this dosn't provide any zone details..
-                logger.warn(handler.getDeviceName() + ": Unhandled XML entity during " + curState + ": " + localName);
+                logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState, localName);
                 state = XMLHandlerState.Unprocessed;
                 break;
             case Unprocessed:
@@ -270,8 +270,8 @@ public class XMLResponseHandler extends DefaultHandler {
             // try {
             // contentItem.source = Source.valueOf(source);
             // } catch (Throwable t) {
-            // logger.error(boseSoundTouchHandler.getThing() + ": Unknown Source: "
-            // + source + " - needs to be defined!");
+            // logger.error("{}: Unknown Source: '{}' - needs to be defined!",
+            // boseSoundTouchHandler.getThing(), source);
             // contentItem.source = Source.UNKNOWN;
             // }
             // }
@@ -292,7 +292,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 contentItem.setOperationMode(OperationModeType.STORED_MUSIC);
             } else {
                 contentItem.setOperationMode(OperationModeType.OTHER);
-                logger.error(handler.getDeviceName() + ": Unknown SourceType: " + source + " - needs to be defined!");
+                logger.error("{}: Unknown SourceType: '{}' - needs to be defined!", handler.getDeviceName(), source);
             }
             // TODO Implement other sources
             contentItem.setLocation(attributes.getValue("location"));
@@ -310,7 +310,7 @@ public class XMLResponseHandler extends DefaultHandler {
             String localName) {
         XMLHandlerState state = stateMap.get(localName);
         if (state == null) {
-            logger.warn(handler.getDeviceName() + ": Unhandled XML entity during " + curState + ": " + localName);
+            logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState, localName);
             state = XMLHandlerState.Unprocessed;
         }
         return state;
@@ -320,7 +320,7 @@ public class XMLResponseHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
         if (tracing) {
-            logger.trace(handler.getDeviceName() + ": endElement(\"" + localName + "\")");
+            logger.trace("{}: endElement('{}')", handler.getDeviceName(), localName);
         }
         final XMLHandlerState prevState = state;
         state = states.pop();
@@ -391,7 +391,8 @@ public class XMLResponseHandler extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (tracing) {
-            logger.trace(handler.getDeviceName() + ":Text data during " + state + ": " + new String(ch, start, length));
+            logger.trace("{}: Text data during {}: '{}'", handler.getDeviceName(), state,
+                    new String(ch, start, length));
         }
         super.characters(ch, start, length);
         switch (state) {
@@ -414,8 +415,8 @@ public class XMLResponseHandler extends DefaultHandler {
             case UnprocessedNoTextExpected:
             case Zone:
             case ZoneUpdated:
-                logger.debug(handler.getDeviceName() + ": Unexpected text data during " + state + ": "
-                        + new String(ch, start, length));
+                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
+                        new String(ch, start, length));
                 break;
             case Unprocessed:
                 // drop quietly..
@@ -478,7 +479,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 String mac = new String(ch, start, length);
                 BoseSoundTouchHandler memberHandler = handler.getFactory().getBoseSoundTouchDevice(mac);
                 if (memberHandler == null) {
-                    logger.warn(handler.getDeviceName() + ": Zone update: Unable to find member with ID " + mac);
+                    logger.warn("{}: Zone update: Unable to find member with ID {}", handler.getDeviceName(), mac);
                 } else {
                     ZoneMember zoneMember = new ZoneMember();
                     zoneMember.setIp(zoneMemberIp);
@@ -498,7 +499,7 @@ public class XMLResponseHandler extends DefaultHandler {
     private boolean checkDeviceId(String localName, Attributes attributes, boolean allowFromMaster) {
         String did = attributes.getValue("deviceID");
         if (did == null) {
-            logger.warn(handler.getDeviceName() + ": No Device-ID in Entity " + localName);
+            logger.warn("{}: No Device-ID in Entity {}", handler.getDeviceName(), localName);
             return false;
         }
         if (did.equals(handler.getMacAddress())) {
@@ -507,8 +508,8 @@ public class XMLResponseHandler extends DefaultHandler {
         if (allowFromMaster && handler.getZoneMaster() != null && did.equals(handler.getZoneMaster().getMacAddress())) {
             return true;
         }
-        logger.warn(handler.getDeviceName() + ": Wrong Device-ID in Entity " + localName + ": Got: " + did
-                + " expected: " + handler.getMacAddress());
+        logger.warn("{}: Wrong Device-ID in Entity '{}': Got: '{}', expected: '{}'", handler.getDeviceName(), localName,
+                did, handler.getMacAddress());
         return false;
     }
 
@@ -516,8 +517,7 @@ public class XMLResponseHandler extends DefaultHandler {
         Map<String, String> prop = handler.getThing().getProperties();
         String cur = prop.get(option);
         if (cur == null || !cur.equals(value)) {
-            logger.info(handler.getDeviceName() + ": Option \"" + option + "\" updated: From \"" + cur + "\" to \""
-                    + value + "\"");
+            logger.info("{}: Option '{}' updated: From '{}' to '{}'", handler.getDeviceName(), option, cur, value);
             handler.getThing().setProperty(option, value);
         }
     }
