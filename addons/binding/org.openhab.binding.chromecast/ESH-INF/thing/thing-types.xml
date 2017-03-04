@@ -14,6 +14,11 @@
             <channel id="volume" typeId="volume"/>
             <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
+            <channel id="title" typeId="title"/>
+            <channel id="artist" typeId="artist"/>
+            <channel id="album" typeId="album"/>
+            <channel id="app" typeId="app"/>
+            <channel id="statustext" typeId="statustext"/>    
         </channels>
 
         <config-description>
@@ -42,6 +47,12 @@
             <channel id="volume" typeId="volume"/>
             <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
+            <channel id="title" typeId="title"/>
+            <channel id="artist" typeId="artist"/>
+            <channel id="album" typeId="album"/>
+            <channel id="app" typeId="app"/>
+            <channel id="statustext" typeId="statustext"/>
+            <channel id="onlinestatus" typeId="onlinestatus"/>
         </channels>
 
         <config-description>
@@ -69,6 +80,12 @@
             <channel id="volume" typeId="volume"/>
             <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
+            <channel id="title" typeId="title"/>
+            <channel id="artist" typeId="artist"/>
+            <channel id="album" typeId="album"/>
+            <channel id="app" typeId="app"/>
+            <channel id="statustext" typeId="statustext"/>
+            <channel id="onlinestatus" typeId="onlinestatus"/>
         </channels>
 
         <config-description>
@@ -106,10 +123,52 @@
         <description>Plays a given URI</description>
     </channel-type>
 
+    <channel-type id="title">
+        <item-type>String</item-type>
+        <label>Current Title</label>
+        <description>The current title on chromecast</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="album" advanced="true">
+        <item-type>String</item-type>
+        <label>Current album</label>
+        <description>Currently playing album</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="artist" advanced="true">
+        <item-type>String</item-type>
+        <label>Current artist</label>
+        <description>Currently playing artist</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="app">
+        <item-type>String</item-type>
+        <label>Current app</label>
+        <description>Currently casting app</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="statustext" advanced="true">
+        <item-type>String</item-type>
+        <label>Current status</label>
+        <description>Currently casting status</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
     <channel-type id="control">
         <item-type>Player</item-type>
         <label>Control</label>
         <description>Player control</description>
+    </channel-type>
+
+    <channel-type id="onlinestatus">
+        <item-type>Switch</item-type>
+        <label>OnlineStatus</label>
+        <description>Online Status of Chromecast </description>
+        <state readOnly="true"/>
     </channel-type>
 
 </thing:thing-descriptions>
