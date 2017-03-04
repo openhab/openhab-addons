@@ -95,6 +95,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
             return;
         }
         if (command instanceof RefreshType) {
+            getBridge().getHandler().handleCommand(channelUID, command);
             refreshDevice(dev);
             return;
         }

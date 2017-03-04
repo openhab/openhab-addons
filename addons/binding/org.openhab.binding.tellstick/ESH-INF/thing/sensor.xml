@@ -4,22 +4,22 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="sensor">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="telldus-core" />
-			<bridge-type-ref id="telldus-live" />
-		</supported-bridge-type-refs>
+    <thing-type id="sensor">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="telldus-core" />
+            <bridge-type-ref id="telldus-live" />
+        </supported-bridge-type-refs>
 
-		<label>Sensor</label>
-		<description>This Thing defines a Sensor</description>
+        <label>Sensor</label>
+        <description>This Thing defines a Sensor</description>
         <channels>
             <channel id="humidity" typeId="humidity" />
             <channel id="timestamp" typeId="timestamp" />
             <channel id="temperature" typeId="temperature" />
         </channels>
-		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
-	</thing-type>
-	<thing-type id="rainsensor">
+        <config-description-ref uri="thing-type:tellstick:sensor-config"/>
+    </thing-type>
+    <thing-type id="rainsensor">
         <supported-bridge-type-refs>
             <bridge-type-ref id="telldus-core" />
             <bridge-type-ref id="telldus-live" />
