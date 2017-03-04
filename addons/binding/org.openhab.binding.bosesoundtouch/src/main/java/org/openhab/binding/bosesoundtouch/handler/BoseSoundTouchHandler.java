@@ -169,80 +169,77 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
             } else if (channelUID.equals(channelOperationModeUID)) {
                 if (command instanceof StringType) {
                     // try to parse string command...
-                    String cmd = command.toString();
-                    if (cmd.equals("STANDBY")) {
-                        if (currentOperationMode != OperationModeType.STANDBY) {
+                    String cmd = command.toString().toUpperCase().trim();
+                    try {
+                        OperationModeType selectedMode = OperationModeType.valueOf(cmd);
+                        if (currentOperationMode == OperationModeType.STANDBY
+                                && selectedMode != OperationModeType.STANDBY) {
+                            // turn device on first...
                             simulateRemoteKey(RemoteKey.POWER);
                         }
-                    } else if (cmd.equals("INTERNET_RADIO")) {
-                        if (currentOperationMode == OperationModeType.STANDBY) {
-                            simulateRemoteKey(RemoteKey.POWER);
+                        switch (selectedMode) {
+                            case STANDBY:
+                                if (currentOperationMode != OperationModeType.STANDBY) {
+                                    simulateRemoteKey(RemoteKey.POWER);
+                                }
+                                break;
+                            case INTERNET_RADIO:
+                                Preset psFound = null;
+                                for (Preset ps : listOfPresets) {
+                                    if ((psFound == null) && (ps.getContentItem()
+                                            .getOperationMode() == OperationModeType.INTERNET_RADIO)) {
+                                        psFound = ps;
+                                    }
+                                }
+                                if (psFound != null) {
+                                    simulateRemoteKey(psFound.getKey());
+                                } else {
+                                    logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined",
+                                            getDeviceName());
+                                }
+                                break;
+                            case BLUETOOTH:
+                                int counter = 0;
+                                while ((currentOperationMode != OperationModeType.BLUETOOTH) && counter < 5) {
+                                    simulateRemoteKey(RemoteKey.AUX_INPUT);
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException e) {
+                                    }
+                                    counter++;
+                                }
+                                if (counter == 5) {
+                                    logger.warn("{}: Unable to switch to mode: BLUETOOTH. Mayby no device available",
+                                            getDeviceName());
+                                }
+                                break;
+                            case AUX:
+                                simulateRemoteKey(RemoteKey.AUX_INPUT);
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                }
+                                break;
+                            case STORED_MUSIC:
+                            case SPOTIFY:
+                            case DEEZER:
+                            case SIRIUSXM:
+                            case PANDORA:
+                            case OFFLINE:
+                            case OTHER:
+                                logger.warn("{}: \"{}\" OperationMode selection not supported yet", getDeviceName(),
+                                        cmd);
+                                break;
+
                         }
-                        Preset psFound = null;
-                        for (Preset ps : listOfPresets) {
-                            if ((psFound == null)
-                                    && (ps.getContentItem().getOperationMode() == OperationModeType.INTERNET_RADIO)) {
-                                psFound = ps;
-                            }
-                        }
-                        if (psFound != null) {
-                            simulateRemoteKey(psFound.getKey());
-                        } else {
-                            logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined",
-                                    getDeviceName());
-                        }
-                    } else if (cmd.equals("BLUETOOTH")) {
-                        if (currentOperationMode == OperationModeType.STANDBY) {
-                            simulateRemoteKey(RemoteKey.POWER);
-                        }
-                        int counter = 0;
-                        while ((currentOperationMode != OperationModeType.BLUETOOTH) && counter < 5) {
-                            simulateRemoteKey(RemoteKey.AUX_INPUT);
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                            }
-                            counter++;
-                        }
-                        if (counter == 5) {
-                            logger.warn("{}: Unable to switch to mode: BLUETOOTH. Mayby no device available",
-                                    getDeviceName());
-                        }
-                    } else if (cmd.equals("AUX")) {
-                        if (currentOperationMode == OperationModeType.STANDBY) {
-                            simulateRemoteKey(RemoteKey.POWER);
-                        }
-                        while (currentOperationMode != OperationModeType.AUX) {
-                            simulateRemoteKey(RemoteKey.AUX_INPUT);
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                            }
-                        }
-                    } else if (cmd.equals("MEDIA")) {
-                        logger.warn("{}: \"{}\" OperationMode not supported yet", getDeviceName(), cmd);
-                        // TODO
-                    } else if (cmd.equals("SPOTIFY")) {
-                        logger.warn("{}: \"{}\" OperationMode not supported yet", getDeviceName(), cmd);
-                        // TODO
-                    } else if (cmd.equals("PANDORA")) {
-                        logger.warn("{}: \"{}\" OperationMode not supported yet", getDeviceName(), cmd);
-                        // TODO
-                    } else if (cmd.equals("DEEZER")) {
-                        logger.warn("{}: \"{}\" OperationMode not supported yet", getDeviceName(), cmd);
-                        // TODO
-                    } else if (cmd.equals("SIRIUSXM")) {
-                        logger.warn("{}: \"{}\" OperationMode not supported yet", getDeviceName(), cmd);
-                        // TODO
-                    } else if (cmd.equals("STORED_MUSIC")) {
-                        logger.warn("{}: \"{}\" OperationMode not supported yet", getDeviceName(), cmd);
-                        // TODO
+                    } catch (IllegalArgumentException iae) {
+                        logger.error("{}: OperationMode \"{}\" is not valid!", getDeviceName(), cmd);
                     }
                 }
             } else if (channelUID.equals(channelVolumeUID)) {
                 if (command instanceof PercentType) {
                     PercentType percentType = (PercentType) command;
-                    sendRequestInWebSocket("volume", null, "<volume " + "deviceID=\"" + getMacAddress() + "\"" + ">"
+                    sendRequestInWebSocket("volume", null, "<volume deviceID=\"" + getMacAddress() + "\"" + ">"
                             + percentType.intValue() + "</volume>");
                 }
             } else if (channelUID.equals(channelMuteUID)) {
@@ -278,14 +275,14 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                     }
                 } else if (command instanceof StringType) {
                     String cmd = command.toString();
-                    if (cmd.equals("PLAY")) {
+                    if (cmd.equals(RemoteKey.PLAY.name)) {
                         if (currentOperationMode == OperationModeType.STANDBY) {
                             simulateRemoteKey(RemoteKey.POWER);
                         } else {
                             simulateRemoteKey(RemoteKey.PLAY);
                         }
                     }
-                    if (cmd.equals("PAUSE")) {
+                    if (cmd.equals(RemoteKey.PAUSE.name)) {
                         simulateRemoteKey(RemoteKey.PAUSE);
                     }
                     if (cmd.equals("NEXT")) {
@@ -368,17 +365,17 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
             } else if (channelUID.equals(channelPresetUID)) {
                 if (command instanceof StringType) {
                     String cmd = command.toString();
-                    if (cmd.equals("PRESET_1")) {
+                    if (cmd.equals(RemoteKey.PRESET_1.name)) {
                         simulateRemoteKey(RemoteKey.PRESET_1);
-                    } else if (cmd.equals("PRESET_2")) {
+                    } else if (cmd.equals(RemoteKey.PRESET_2.name)) {
                         simulateRemoteKey(RemoteKey.PRESET_2);
-                    } else if (cmd.equals("PRESET_3")) {
+                    } else if (cmd.equals(RemoteKey.PRESET_3.name)) {
                         simulateRemoteKey(RemoteKey.PRESET_3);
-                    } else if (cmd.equals("PRESET_4")) {
+                    } else if (cmd.equals(RemoteKey.PRESET_4.name)) {
                         simulateRemoteKey(RemoteKey.PRESET_4);
-                    } else if (cmd.equals("PRESET_5")) {
+                    } else if (cmd.equals(RemoteKey.PRESET_5.name)) {
                         simulateRemoteKey(RemoteKey.PRESET_5);
-                    } else if (cmd.equals("PRESET_6")) {
+                    } else if (cmd.equals(RemoteKey.PRESET_6.name)) {
                         simulateRemoteKey(RemoteKey.PRESET_6);
                     } else {
                         logger.warn("{}: Invalid preset: {}", getDeviceName(), cmd);
@@ -391,62 +388,10 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 }
             } else if (channelUID.equals(channelKeyCodeUID)) {
                 if (command instanceof StringType) {
-                    String cmd = command.toString();
-                    if (cmd.equals("PLAY")) {
-                        simulateRemoteKey(RemoteKey.PLAY);
-                    } else if (cmd.equals("PAUSE")) {
-                        simulateRemoteKey(RemoteKey.PAUSE);
-                    } else if (cmd.equals("STOP")) {
-                        simulateRemoteKey(RemoteKey.STOP);
-                    } else if (cmd.equals("PREV_TRACK")) {
-                        simulateRemoteKey(RemoteKey.PREV_TRACK);
-                    } else if (cmd.equals("NEXT_TRACK")) {
-                        simulateRemoteKey(RemoteKey.NEXT_TRACK);
-                    } else if (cmd.equals("THUMBS_UP")) {
-                        simulateRemoteKey(RemoteKey.THUMBS_UP);
-                    } else if (cmd.equals("THUMBS_DOWN")) {
-                        simulateRemoteKey(RemoteKey.THUMBS_DOWN);
-                    } else if (cmd.equals("BOOKMARK")) {
-                        simulateRemoteKey(RemoteKey.BOOKMARK);
-                    } else if (cmd.equals("POWER")) {
-                        simulateRemoteKey(RemoteKey.POWER);
-                    } else if (cmd.equals("MUTE")) {
-                        simulateRemoteKey(RemoteKey.MUTE);
-                    } else if (cmd.equals("VOLUME_UP")) {
-                        simulateRemoteKey(RemoteKey.VOLUME_UP);
-                    } else if (cmd.equals("VOLUME_DOWN")) {
-                        simulateRemoteKey(RemoteKey.VOLUME_DOWN);
-                    } else if (cmd.equals("PRESET_1")) {
-                        simulateRemoteKey(RemoteKey.PRESET_1);
-                    } else if (cmd.equals("PRESET_2")) {
-                        simulateRemoteKey(RemoteKey.PRESET_2);
-                    } else if (cmd.equals("PRESET_3")) {
-                        simulateRemoteKey(RemoteKey.PRESET_3);
-                    } else if (cmd.equals("PRESET_4")) {
-                        simulateRemoteKey(RemoteKey.PRESET_4);
-                    } else if (cmd.equals("PRESET_5")) {
-                        simulateRemoteKey(RemoteKey.PRESET_5);
-                    } else if (cmd.equals("PRESET_6")) {
-                        simulateRemoteKey(RemoteKey.PRESET_6);
-                    } else if (cmd.equals("AUX_INPUT")) {
-                        simulateRemoteKey(RemoteKey.AUX_INPUT);
-                    } else if (cmd.equals("SHUFFLE_OFF")) {
-                        simulateRemoteKey(RemoteKey.SHUFFLE_OFF);
-                    } else if (cmd.equals("SHUFFLE_ON")) {
-                        simulateRemoteKey(RemoteKey.SHUFFLE_ON);
-                    } else if (cmd.equals("REPEAT_OFF")) {
-                        simulateRemoteKey(RemoteKey.REPEAT_OFF);
-                    } else if (cmd.equals("REPEAT_ONE")) {
-                        simulateRemoteKey(RemoteKey.REPEAT_ONE);
-                    } else if (cmd.equals("REPEAT_ALL")) {
-                        simulateRemoteKey(RemoteKey.REPEAT_ALL);
-                    } else if (cmd.equals("PLAY_PAUSE")) {
-                        simulateRemoteKey(RemoteKey.PLAY_PAUSE);
-                    } else if (cmd.equals("ADD_FAVORITE")) {
-                        simulateRemoteKey(RemoteKey.ADD_FAVORITE);
-                    } else if (cmd.equals("REMOVE_FAVORITE")) {
-                        simulateRemoteKey(RemoteKey.REMOVE_FAVORITE);
-                    } else {
+                    String cmd = command.toString().toUpperCase().trim();
+                    try {
+                        simulateRemoteKey(RemoteKey.valueOf(cmd));
+                    } catch (IllegalArgumentException e) {
                         logger.warn("{}: Invalid remote key: {}", getDeviceName(), cmd);
                     }
                 }

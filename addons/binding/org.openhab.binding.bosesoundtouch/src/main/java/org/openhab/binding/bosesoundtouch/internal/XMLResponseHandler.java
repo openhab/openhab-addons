@@ -280,21 +280,13 @@ public class XMLResponseHandler extends DefaultHandler {
             // we started a content item. process data.
             contentItem = new ContentItem();
             String source = attributes.getValue("source");
-            if (source.equals("INTERNET_RADIO")) {
-                contentItem.setOperationMode(OperationModeType.INTERNET_RADIO);
-            } else if (source.equals("STANDBY")) {
-                contentItem.setOperationMode(OperationModeType.STANDBY);
-            } else if (source.equals("AUX")) {
-                contentItem.setOperationMode(OperationModeType.AUX);
-            } else if (source.equals("BLUETOOTH")) {
-                contentItem.setOperationMode(OperationModeType.BLUETOOTH);
-            } else if (source.equals("STORED_MUSIC")) {
-                contentItem.setOperationMode(OperationModeType.STORED_MUSIC);
-            } else {
+            try {
+                contentItem.setOperationMode(OperationModeType.valueOf(source));
+            } catch (IllegalArgumentException iae) {
                 contentItem.setOperationMode(OperationModeType.OTHER);
                 logger.error("{}: Unknown SourceType: '{}' - needs to be defined!", handler.getDeviceName(), source);
             }
-            // TODO Implement other sources
+            // TODO Different sources might have different / additional attributes?
             contentItem.setLocation(attributes.getValue("location"));
             contentItem.setSourceAccount(attributes.getValue("sourceAccount"));
         }

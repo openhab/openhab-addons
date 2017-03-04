@@ -41,5 +41,12 @@ public enum RemoteKey {
     PLAY_PAUSE,
     ADD_FAVORITE,
     REMOVE_FAVORITE,
-    INVALID_KEY
+    INVALID_KEY;
+
+    public final String name;
+
+    private RemoteKey() {
+        name = name();
+    }
+
 }

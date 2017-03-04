@@ -24,13 +24,11 @@ public enum OperationModeType implements PrimitiveType, State, Command {
     INTERNET_RADIO,
     BLUETOOTH,
     AUX,
-    MEDIA,
     SPOTIFY,
     PANDORA,
     DEEZER,
     SIRIUSXM,
     STORED_MUSIC,
-    GROUPMEMBER,
     OTHER;
 
     @Override
