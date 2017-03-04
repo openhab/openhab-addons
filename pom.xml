@@ -461,8 +461,8 @@
         <!-- openHAB snapshots -->
         <repository>
             <id>jfrog</id>
-            <name>JFrog OSS Repository</name>
-            <url>http://oss.jfrog.org/libs-snapshot/</url>
+            <name>JFrog Artifactory Repository</name>
+            <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
