@@ -6,13 +6,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.network.service;
+package org.openhab.binding.network.internal;
 
 /**
- * Callback for a new Device to be committed to Homematic
+ * All the supported presence detection types of this binding.
+ * Used by {@see PresenceDetectionValue}.
  *
- * @author Marc Mettke - Initial contribution
+ * @author David Graeff
  */
-public interface DiscoveryCallback {
-    public void newDevice(String ip);
+public enum PresenceDetectionType {
+    ARP_PING,
+    ICMP_PING,
+    TCP_CONNECTION,
+    DHCP_REQUEST
 }
