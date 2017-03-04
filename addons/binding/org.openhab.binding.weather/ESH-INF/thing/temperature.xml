@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="weather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-group-type id="temperature">
+        <label>Temperature</label>
+        <description>The temperature related channels</description>
+        <channels>
+            <channel typeId="current" id="current" />
+            <channel typeId="min" id="min" />
+            <channel typeId="max" id="max" />
+            <channel typeId="feel" id="feel" />
+            <channel typeId="dewpoint" id="dewpoint" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="current">
+        <item-type>Number</item-type>
+        <label>Current Temperature</label>
+        <description>The current temperature</description>
+    </channel-type>
+
+    <channel-type id="min">
+        <item-type>Number</item-type>
+        <label>Min Temperature</label>
+        <description>The minimum temperature today</description>
+    </channel-type>
+    
+    <channel-type id="max">
+        <item-type>Number</item-type>
+        <label>Max Temperature</label>
+        <description>The max temperature today</description>
+    </channel-type>
+    
+    <channel-type id="feel">
+        <item-type>Number</item-type>
+        <label>Feel</label>
+        <description>What the temperature feels like right now, with wind chill etc</description>
+    </channel-type>
+
+    <channel-type id="dewpoint">
+        <item-type>Number</item-type>
+        <label>Dew Point</label>
+        <description>The dew point</description>
+    </channel-type>
+    
+</thing:thing-descriptions>

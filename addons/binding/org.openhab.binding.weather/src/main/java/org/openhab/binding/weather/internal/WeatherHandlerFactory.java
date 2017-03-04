@@ -7,27 +7,29 @@
  */
 package org.openhab.binding.weather.internal;
 
-import static org.openhab.binding.weather.WeatherBindingConstants.*;
-
-import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.weather.handler.WeatherHandler;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.weather.WeatherBindingConstants;
+import org.openhab.binding.weather.internal.bus.WeatherBridgeHandler;
+
+import com.google.common.collect.Sets;
 
 /**
- * The {@link WeatherHandlerFactory} is responsible for creating things and thing 
+ * The {@link WeatherHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author David Bennett - Initial contribution
  */
 public class WeatherHandlerFactory extends BaseThingHandlerFactory {
-    
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
-    
+
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+            .newHashSet(WeatherBindingConstants.THING_TYPE_BRIDGE, WeatherBindingConstants.THING_TYPE_WEATHER);
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -38,11 +40,10 @@ public class WeatherHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
-            return new WeatherHandler(thing);
+        if (thingTypeUID.equals(WeatherBindingConstants.THING_TYPE_BRIDGE)) {
+            return new WeatherBridgeHandler((Bridge) thing);
         }
 
         return null;
     }
 }
-

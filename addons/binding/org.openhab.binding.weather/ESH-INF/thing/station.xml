@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="weather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-group-type id="station">
+        <label>Station</label>
+        <description>The station related channels</description>
+        <channels>
+            <channel typeId="name" id="name" />
+            <channel typeId="stationId" id="id" />
+            <channel typeId="latitude" id="latitude" />
+            <channel typeId="longitude" id="longitude" />
+            <channel typeId="altitude" id="altitude" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="name">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>The name of the station</description>
+    </channel-type>
+
+    <channel-type id="stationId">
+        <item-type>String</item-type>
+        <label>Station Id</label>
+        <description>The station id</description>
+    </channel-type>
+    
+    <channel-type id="latitude">
+        <item-type>Number</item-type>
+        <label>Latitude</label>
+        <description>The latitude of the station</description>
+    </channel-type>
+    
+    <channel-type id="longitude">
+        <item-type>Number</item-type>
+        <label>Longitude</label>
+        <description>The longitude speed of the station</description>
+    </channel-type>
+
+    <channel-type id="altitude">
+        <item-type>Number</item-type>
+        <label>Altitude</label>
+        <description>The altitude of the station</description>
+    </channel-type>
+    
+</thing:thing-descriptions>

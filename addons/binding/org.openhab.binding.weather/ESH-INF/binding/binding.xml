@@ -6,6 +6,5 @@
 
     <name>Weather Binding</name>
     <description>This is the binding for Weather.</description>
-    <author>David Bennett</author>
-
+    <author>Gerhard Riegler</author>
 </binding:binding>

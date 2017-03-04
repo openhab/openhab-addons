@@ -8,21 +8,25 @@
 package org.openhab.binding.weather;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.weather.internal.bus.WeatherBinding;
 
 /**
- * The {@link WeatherBinding} class defines common constants, which are 
+ * The {@link WeatherBinding} class defines common constants, which are
  * used across the whole binding.
- * 
+ *
  * @author David Bennett - Initial contribution
  */
 public class WeatherBindingConstants {
 
     public static final String BINDING_ID = "weather";
-    
+
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public final static ThingTypeUID THING_TYPE_WEATHER = new ThingTypeUID(BINDING_ID, "weather");
 
     // List of all Channel ids
     public final static String CHANNEL_1 = "channel1";
+
+    public static final Object PROPERTY_DAY = "day";
 
 }
