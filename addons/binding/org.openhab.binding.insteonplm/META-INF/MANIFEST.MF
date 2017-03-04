@@ -10,6 +10,11 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-DocURL: http://www.openhab.org
 Bundle-ClassPath: .
 Import-Package: 
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.client.api,
+ org.eclipse.jetty.client.util,
+ org.eclipse.jetty.http,
+ org.eclipse.jetty.util.component,
  com.google.common.collect,
  gnu.io,
  org.apache.commons.lang,
