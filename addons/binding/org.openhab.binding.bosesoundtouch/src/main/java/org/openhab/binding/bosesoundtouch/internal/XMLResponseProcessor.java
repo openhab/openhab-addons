@@ -85,6 +85,7 @@ public class XMLResponseProcessor {
         msgBodyMap.put("key", XMLHandlerState.Unprocessed); // only confirmation of our key presses...
         msgBodyMap.put("status", XMLHandlerState.Unprocessed); // only confirmation of commands sent to device...
         msgBodyMap.put("zone", XMLHandlerState.Zone); // only confirmation of our key presses...
+        msgBodyMap.put("bass", XMLHandlerState.Bass);
 
         // info message states
         Map<String, XMLHandlerState> infoMap = new HashMap<>();
@@ -106,6 +107,7 @@ public class XMLResponseProcessor {
         updatesMap.put("clockDisplayUpdated", XMLHandlerState.Unprocessed); // can we get anything useful of that?
         updatesMap.put("connectionStateUpdated", XMLHandlerState.UnprocessedNoTextExpected);
         updatesMap.put("infoUpdated", XMLHandlerState.Unprocessed);
+        updatesMap.put("bassUpdated", XMLHandlerState.BassUpdated);
         updatesMap.put("nowPlayingUpdated", XMLHandlerState.MsgBody);
         updatesMap.put("nowSelectionUpdated", XMLHandlerState.Unprocessed); // TODO this seems to be quite a useful info
                                                                             // what is currently played..
@@ -152,6 +154,12 @@ public class XMLResponseProcessor {
         Map<String, XMLHandlerState> zoneMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.Zone, zoneMap);
         zoneMap.put("member", XMLHandlerState.ZoneMember);
+
+        Map<String, XMLHandlerState> bassMap = new HashMap<>();
+        stateSwitchingMap.put(XMLHandlerState.Bass, bassMap);
+        bassMap.put("targetbass", XMLHandlerState.BassTargetValue);
+        bassMap.put("actualbass", XMLHandlerState.BassActualValue);
+
     }
 
     public void handleMessage(String msg) {
@@ -218,4 +226,5 @@ public class XMLResponseProcessor {
     protected void updateSkipPreviousEnabled(State state) {
         handler.updateState(channelSkipPreviousEnabled, state);
     }
+
 }

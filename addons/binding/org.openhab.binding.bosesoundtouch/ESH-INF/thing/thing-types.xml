@@ -17,6 +17,7 @@
 			<channel id="playerControl" typeId="playerControl" />
 			<channel id="zoneControl" typeId="zoneControl" />
 			<channel id="preset" typeId="preset" />
+            <channel id="bass" typeId="bass" />
             <channel id="rateEnabled" typeId="rateEnabled" />
             <channel id="skipEnabled" typeId="skipEnabled" />
             <channel id="skipPreviousEnabled" typeId="skipPreviousEnabled" />
@@ -81,7 +82,7 @@
             </options>
         </state>
     </channel-type>
-    <channel-type id="zoneInfo">
+    <channel-type id="zoneInfo" advanced="true">
         <item-type>String</item-type>
         <label>Zone Info</label>
         <description>Shows information about the current zone setup</description>
@@ -113,25 +114,31 @@
             </options>
         </state>
     </channel-type>
-    <channel-type id="rateEnabled">
+    <channel-type id="bass" advanced="true">
+        <item-type>Number</item-type>
+         <label>Bass</label>
+         <description>Bass (-9 minimum, 0 maximum)</description>
+         <state min="-9" max="0" step="1" pattern="%d " readOnly="false" />
+    </channel-type>
+    <channel-type id="rateEnabled" advanced="true">
         <item-type>Switch</item-type>
         <label>Rating enabled</label>
         <description>Current source allows rating</description>
         <state readOnly="true" />
     </channel-type>
-    <channel-type id="skipEnabled">
+    <channel-type id="skipEnabled" advanced="true">
         <item-type>Switch</item-type>
         <label>Skip enabled</label>
         <description>Current source allows skipping to next track</description>
         <state readOnly="true" />
     </channel-type>
-    <channel-type id="skipPreviousEnabled">
+    <channel-type id="skipPreviousEnabled" advanced="true">
         <item-type>Switch</item-type>
         <label>Skip/Previous enabled</label>
         <description>Current source allows scrolling through tracks</description>
         <state readOnly="true" />
     </channel-type>
-    <channel-type id="keyCode">
+    <channel-type id="keyCode" advanced="true">
         <item-type>String</item-type>
         <label>Remote Key Code</label>
         <description>Virtually push a remote button</description>

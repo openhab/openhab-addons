@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -218,6 +219,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 zoneMemberIp = attributes.getValue("ipaddress");
                 state = nextState(stateMap, curState, localName);
                 break;
+            case Bass:
             case ContentItem:
             case Info:
             case NowPlaying:
@@ -227,6 +229,9 @@ public class XMLResponseHandler extends DefaultHandler {
                 state = nextState(stateMap, curState, localName);
                 break;
             // all entities without any children expected..
+            case BassTargetValue:
+            case BassActualValue:
+            case BassUpdated:
             case ContentItemItemName:
             case InfoName:
             case InfoType:
@@ -325,6 +330,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 handler.sendRequestInWebSocket("presets");
                 handler.sendRequestInWebSocket("now_playing");
                 handler.sendRequestInWebSocket("getZone");
+                handler.sendRequestInWebSocket("bass");
                 break;
             case ContentItem:
                 if (state == XMLHandlerState.NowPlaying) {
@@ -351,6 +357,10 @@ public class XMLResponseHandler extends DefaultHandler {
                 }
                 break;
             // handle special tags..
+            case BassUpdated:
+                // request current bass level
+                handler.sendRequestInWebSocket("bass");
+                break;
             case NowPlayingRateEnabled:
                 rateEnabled = OnOffType.ON;
                 break;
@@ -389,6 +399,8 @@ public class XMLResponseHandler extends DefaultHandler {
             case Msg:
             case MsgHeader:
             case MsgBody:
+            case Bass:
+            case BassUpdated:
             case Updates:
             case Volume:
             case Info:
@@ -407,6 +419,11 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case Unprocessed:
                 // drop quietly..
+                break;
+            case BassActualValue:
+                handler.updateBassLevel(new DecimalType(new String(ch, start, length)));
+                break;
+            case BassTargetValue:
                 break;
             case InfoName:
                 setConfigOption(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME, new String(ch, start, length));

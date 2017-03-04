@@ -25,6 +25,7 @@ import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -72,6 +73,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     private ChannelUID channelPlayerControlUID;
     private ChannelUID channelZoneControlUID;
     private ChannelUID channelPresetUID;
+    private ChannelUID channelBassUID;
     private ChannelUID channelKeyCodeUID;
 
     private ArrayList<Preset> listOfPresets;
@@ -115,6 +117,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         channelPlayerControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PLAYER_CONTROL);
         channelZoneControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONE_CONTROL);
         channelPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PRESET);
+        channelBassUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_BASS);
         channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
 
         factory.registerSoundTouchDevice(this);
@@ -376,6 +379,11 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                         logger.warn(getDeviceName() + ": Invalid preset: " + cmd);
                     }
                 }
+            } else if (channelUID.equals(channelBassUID)) {
+                if (command instanceof DecimalType) {
+                    int bassLevel = ((DecimalType) command).intValue();
+                    sendRequestInWebSocket("bass", null, "<bass>" + bassLevel + "</bass>");
+                }
             } else if (channelUID.equals(channelKeyCodeUID)) {
                 if (command instanceof StringType) {
                     String cmd = command.toString();
@@ -590,6 +598,10 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     public void updateVolumeMuted(State state) {
         updateState(channelMuteUID, state);
+    }
+
+    public void updateBassLevel(DecimalType state) {
+        updateState(channelBassUID, state);
     }
 
     @Override
