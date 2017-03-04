@@ -22,11 +22,11 @@
 
 #define VERSION                 "3.00"
 
-// Enable if you use ProDiNo board, enable also HARDWARE_SERIAL from NibeGW.h 
-#define PRODINO_BOARD
+// Enable if you use ProDiNo board
+//#define PRODINO_BOARD
 
 // Enable debug printouts, listen printouts e.g. via netcat (nc -l -u 50000)
-#define ENABLE_DEBUG
+//#define ENABLE_DEBUG
 #define VERBOSE_LEVEL           3
 
 #define BOARD_NAME              "Arduino NibeGW"

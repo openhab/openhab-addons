@@ -35,7 +35,7 @@
 #include <Arduino.h>
 
 #define HARDWARE_SERIAL
-#define ENABLE_NIBE_DEBUG
+//#define ENABLE_NIBE_DEBUG
 
 // state machine states
 enum eState
