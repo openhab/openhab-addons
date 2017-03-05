@@ -18,23 +18,23 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class PHCBindingConstants {
 
-  public static final String BINDING_ID = "phc";
+    public static final String BINDING_ID = "phc";
 
-  // List of all Thing Type UIDs
-  public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    // List of all Thing Type UIDs
+    public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-  public final static ThingTypeUID THING_TYPE_AM = new ThingTypeUID(BINDING_ID, "AM");
-  public final static ThingTypeUID THING_TYPE_EM = new ThingTypeUID(BINDING_ID, "EM");
-  public final static ThingTypeUID THING_TYPE_JRM = new ThingTypeUID(BINDING_ID, "JRM");
+    public final static ThingTypeUID THING_TYPE_AM = new ThingTypeUID(BINDING_ID, "AM");
+    public final static ThingTypeUID THING_TYPE_EM = new ThingTypeUID(BINDING_ID, "EM");
+    public final static ThingTypeUID THING_TYPE_JRM = new ThingTypeUID(BINDING_ID, "JRM");
 
-  // List of all Channel Group IDs
-  public final static String CHANNELS_AM = "am";
-  public final static String CHANNELS_EM = "em";
-  public final static String CHANNELS_EM_LED = "emLed";
-  public final static String CHANNELS_JRM = "jrm";
+    // List of all Channel Group IDs
+    public final static String CHANNELS_AM = "am";
+    public final static String CHANNELS_EM = "em";
+    public final static String CHANNELS_EM_LED = "emLed";
+    public final static String CHANNELS_JRM = "jrm";
 
-  // List of all configuration parameters
-  public static final String PORT = "port";
-  public static final String ADDRESS = "address";
-  public static final String UP_DOWN_TIME = "upDownTime";
+    // List of all configuration parameters
+    public static final String PORT = "port";
+    public static final String ADDRESS = "address";
+    public static final String UP_DOWN_TIME = "upDownTime";
 }

@@ -31,52 +31,53 @@ import com.google.common.collect.Sets;
  */
 public class PHCHandlerFactory extends BaseThingHandlerFactory {
 
-  private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(
-      PHCBindingConstants.THING_TYPE_BRIDGE, PHCBindingConstants.THING_TYPE_AM, PHCBindingConstants.THING_TYPE_EM,
-      PHCBindingConstants.THING_TYPE_JRM);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(
+            PHCBindingConstants.THING_TYPE_BRIDGE, PHCBindingConstants.THING_TYPE_AM, PHCBindingConstants.THING_TYPE_EM,
+            PHCBindingConstants.THING_TYPE_JRM);
 
-  @Override
-  public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-    return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-  }
-
-  @Override
-  public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-      ThingUID bridgeUID) {
-
-    Thing thing = null;
-
-    if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-
-      if (thingTypeUID.equals(PHCBindingConstants.THING_TYPE_BRIDGE)) {
-        thing = super.createThing(thingTypeUID, configuration, thingUID, null);
-
-      } else {
-        ThingUID phcThingUID = new ThingUID(thingTypeUID,
-            configuration.get(PHCBindingConstants.ADDRESS).toString().toUpperCase());
-        thing = super.createThing(thingTypeUID, configuration, phcThingUID, bridgeUID);
-      }
-
-    } else {
-      throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the phc binding.");
+    @Override
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    return thing;
-  }
+    @Override
+    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
+            ThingUID bridgeUID) {
 
-  @Override
-  protected ThingHandler createHandler(Thing thing) {
+        Thing thing = null;
 
-    ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
 
-    ThingHandler handler = null;
+            if (thingTypeUID.equals(PHCBindingConstants.THING_TYPE_BRIDGE)) {
+                thing = super.createThing(thingTypeUID, configuration, thingUID, null);
 
-    if (thingTypeUID.equals(PHCBindingConstants.THING_TYPE_BRIDGE)) {
-      handler = new PHCBridgeHandler((Bridge) thing);
-    } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-      handler = new PHCHandler(thing);
+            } else {
+                ThingUID phcThingUID = new ThingUID(thingTypeUID,
+                        configuration.get(PHCBindingConstants.ADDRESS).toString().toUpperCase());
+                thing = super.createThing(thingTypeUID, configuration, phcThingUID, bridgeUID);
+            }
+
+        } else {
+            throw new IllegalArgumentException(
+                    "The thing type " + thingTypeUID + " is not supported by the phc binding.");
+        }
+
+        return thing;
     }
 
-    return handler;
-  }
+    @Override
+    protected ThingHandler createHandler(Thing thing) {
+
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+
+        ThingHandler handler = null;
+
+        if (thingTypeUID.equals(PHCBindingConstants.THING_TYPE_BRIDGE)) {
+            handler = new PHCBridgeHandler((Bridge) thing);
+        } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            handler = new PHCHandler(thing);
+        }
+
+        return handler;
+    }
 }

@@ -20,40 +20,40 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 
 public class PHCHelper {
 
-  /**
-   * Get the ThingUID by the given parameters.
-   *
-   * @param thingTypeUID
-   * @param moduleAddr reverse (to the reverse address - DIP switches)
-   * @return
-   */
-  public static ThingUID getThingUIDreverse(ThingTypeUID thingTypeUID, byte moduleAddr) {
-    // convert to 5-bit binary string and reverse in second step
-    String thingID = StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(moduleAddr & 0xFF)), 5, '0');
-    thingID = new StringBuilder(thingID).reverse().toString();
+    /**
+     * Get the ThingUID by the given parameters.
+     *
+     * @param thingTypeUID
+     * @param moduleAddr reverse (to the reverse address - DIP switches)
+     * @return
+     */
+    public static ThingUID getThingUIDreverse(ThingTypeUID thingTypeUID, byte moduleAddr) {
+        // convert to 5-bit binary string and reverse in second step
+        String thingID = StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(moduleAddr & 0xFF)), 5, '0');
+        thingID = new StringBuilder(thingID).reverse().toString();
 
-    ThingUID thingUID = new ThingUID(thingTypeUID, thingID);
+        ThingUID thingUID = new ThingUID(thingTypeUID, thingID);
 
-    return thingUID;
-  }
+        return thingUID;
+    }
 
-  /**
-   * Convert the byte b into an binary String
-   *
-   * @param b
-   * @return
-   */
-  public static Object byteToBinaryString(byte b) {
-    return StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(b & 0xFF)), 8, '0') + " ";
-  }
+    /**
+     * Convert the byte b into an binary String
+     *
+     * @param b
+     * @return
+     */
+    public static Object byteToBinaryString(byte b) {
+        return StringUtils.leftPad(StringUtils.trim(Integer.toBinaryString(b & 0xFF)), 8, '0') + " ";
+    }
 
-  /**
-   * Convert the byte b into an hex String
-   *
-   * @param b
-   * @return
-   */
-  public static Object byteToHexString(byte b) {
-    return Integer.toHexString(b & 0xFF) + " ";
-  }
+    /**
+     * Convert the byte b into an hex String
+     *
+     * @param b
+     * @return
+     */
+    public static Object byteToHexString(byte b) {
+        return Integer.toHexString(b & 0xFF) + " ";
+    }
 }

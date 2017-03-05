@@ -32,78 +32,78 @@ import org.slf4j.LoggerFactory;
  */
 public class PHCHandler extends BaseThingHandler {
 
-  private Logger logger = LoggerFactory.getLogger(PHCHandler.class);
+    private Logger logger = LoggerFactory.getLogger(PHCHandler.class);
 
-  String moduleAddress; // like DIP switches
-  PHCBridgeHandler bridgeHandler = null;
+    String moduleAddress; // like DIP switches
+    PHCBridgeHandler bridgeHandler = null;
 
-  public PHCHandler(Thing thing) {
-    super(thing);
+    public PHCHandler(Thing thing) {
+        super(thing);
 
-  }
-
-  @Override
-  public void initialize() {
-
-    logger.debug("Initializing PHC thing.");
-    try {
-
-      moduleAddress = getConfig().get(PHCBindingConstants.ADDRESS).toString();
-
-      if (getPHCBridgeHandler() == null) {
-        return;
-      }
-      if (getBridge().getStatus() == ThingStatus.ONLINE) {
-        updateStatus(ThingStatus.ONLINE);
-      } else {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-      }
-
-    } catch (Exception e) {
-      logger.error("Exception while initializing. ", e);
-    }
-  }
-
-  public void handleIncoming(String type, OnOffType state) {
-    postCommand(type, state);
-  }
-
-  @Override
-  public void handleCommand(ChannelUID channelUID, Command command) {
-    if (!channelUID.getGroupId().equals(PHCBindingConstants.CHANNELS_EM)) {
-      getPHCBridgeHandler().send(channelUID.getGroupId(), new StringBuilder(moduleAddress).reverse().toString(),
-          channelUID.getIdWithoutGroup(), command);
-    }
-  }
-
-  @Override
-  public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-    if (configurationParameters.containsKey(PHCBindingConstants.UP_DOWN_TIME)) {
-      if (configurationParameters.containsKey(PHCBindingConstants.ADDRESS)) {
-        configurationParameters.remove(PHCBindingConstants.ADDRESS);
-        super.handleConfigurationUpdate(configurationParameters);
-      }
-    }
-  }
-
-  private PHCBridgeHandler getPHCBridgeHandler() {
-    if (bridgeHandler == null) {
-      Bridge bridge = getBridge();
-      if (bridge == null) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-            "The Thing requires to select a Bridge");
-        return null;
-      }
-
-      ThingHandler handler = bridge.getHandler();
-      if (handler instanceof PHCBridgeHandler) {
-        bridgeHandler = (PHCBridgeHandler) handler;
-      } else {
-        logger.debug("No available bridge handler for {}.", bridge.getUID());
-        return null;
-      }
     }
 
-    return bridgeHandler;
-  }
+    @Override
+    public void initialize() {
+
+        logger.debug("Initializing PHC thing.");
+        try {
+
+            moduleAddress = getConfig().get(PHCBindingConstants.ADDRESS).toString();
+
+            if (getPHCBridgeHandler() == null) {
+                return;
+            }
+            if (getBridge().getStatus() == ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
+
+        } catch (Exception e) {
+            logger.error("Exception while initializing. ", e);
+        }
+    }
+
+    public void handleIncoming(String type, OnOffType state) {
+        postCommand(type, state);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (!channelUID.getGroupId().equals(PHCBindingConstants.CHANNELS_EM)) {
+            getPHCBridgeHandler().send(channelUID.getGroupId(), new StringBuilder(moduleAddress).reverse().toString(),
+                    channelUID.getIdWithoutGroup(), command);
+        }
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        if (configurationParameters.containsKey(PHCBindingConstants.UP_DOWN_TIME)) {
+            if (configurationParameters.containsKey(PHCBindingConstants.ADDRESS)) {
+                configurationParameters.remove(PHCBindingConstants.ADDRESS);
+                super.handleConfigurationUpdate(configurationParameters);
+            }
+        }
+    }
+
+    private PHCBridgeHandler getPHCBridgeHandler() {
+        if (bridgeHandler == null) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "The Thing requires to select a Bridge");
+                return null;
+            }
+
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof PHCBridgeHandler) {
+                bridgeHandler = (PHCBridgeHandler) handler;
+            } else {
+                logger.debug("No available bridge handler for {}.", bridge.getUID());
+                return null;
+            }
+        }
+
+        return bridgeHandler;
+    }
 }
