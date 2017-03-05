@@ -11,6 +11,7 @@ package org.openhab.binding.vitotronic.handler;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -118,6 +119,9 @@ public class VitotronicThingHandler extends BaseThingHandler {
         switch (channel.getAcceptedItemType()) {
             case "Number":
                 this.updateState(channelId, new DecimalType(value));
+                break;
+            case "String":
+                this.updateState(channelId, new StringType(value));
                 break;
             case "Switch":
                 if (value.toUpperCase().contains("ON")) {

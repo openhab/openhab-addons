@@ -102,8 +102,9 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
 
     private void createThing(String thingType, String thingID) {
         logger.trace("Create thing Type='{}' id='{}'", thingType, thingID);
-        if (discoveryService != null)
+        if (discoveryService != null) {
             discoveryService.addVitotronicThing(thingType, thingID);
+        }
     }
 
     // Managing ThingHandler
@@ -281,8 +282,9 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE);
             isConnect = false;
             try {
-                if (!socket.isClosed())
+                if (!socket.isClosed()) {
                     socket.close();
+                }
             } catch (Exception e) {
             }
             logger.trace("Connection to optolink adapter is died ... wait for restart");
@@ -307,8 +309,14 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
 
         try {
             logger.trace("Send Message {}", message);
-            if (isConnect)
+            if (isConnect) {
+                if (message.matches("^set.*REFRESH$")) {
+                    String[] msgParts = message.split(" ");
+                    String[] thingChannel = msgParts[1].split(":");
+                    message = "get " + thingChannel[0] + " " + thingChannel[1];
+                }
                 out.write((message + "\n").getBytes());
+            }
         } catch (IOException e) {
             logger.error("Error in sending data to optolink addapter");
             logger.trace("Diagnostic: ", e);
@@ -354,8 +362,9 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
                         break;
                     case "thing":
                         isThing = true;
-                        if (isDefine)
+                        if (isDefine) {
                             thingType = attr.getValue("type");
+                        }
                         thingID = attr.getValue("id");
                         channels.clear();
                         thingHandler = thingHandlerMap.get(thingID);
@@ -396,8 +405,9 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
                     ;
                     break;
                 case "thing":
-                    if (isDefine)
+                    if (isDefine) {
                         createThing(thingType, thingID);
+                    }
                     isThing = false;
                     thingHandler = null;
                     break;

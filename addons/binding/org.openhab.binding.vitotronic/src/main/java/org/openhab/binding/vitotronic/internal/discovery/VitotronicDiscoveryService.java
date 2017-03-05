@@ -45,6 +45,9 @@ public class VitotronicDiscoveryService extends AbstractDiscoveryService  {
 		case VitotronicBindingConstants.THING_ID_HEATING : 
 			thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_HEATING, bridgeUID, thingID);
 			break;
+		case VitotronicBindingConstants.THING_ID_GASBURNER : 
+			thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_GASBURNER, bridgeUID, thingID);
+			break;
 		case VitotronicBindingConstants.THING_ID_PELLETBURNER : 
 			thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_PELLETBURNER, bridgeUID, thingID);
 			break;
