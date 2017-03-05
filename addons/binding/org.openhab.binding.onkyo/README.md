@@ -153,6 +153,96 @@ Here after are the ID values of the input sources:
 * 48: MULTICH
 * 50: SIRIUS
 
+## Item Configuration
+
+demo.items
+
+```
+Switch avr1Z1_Power  "Power"       <switch>      { channel="onkyo:onkyoAVR:avr1:zone1#power" }
+Switch avr1Z1_Mute   "Mute"        <soundvolume> { channel="onkyo:onkyoAVR:avr1:zone1#mute" }
+Number avr1Z1_Input  "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr1:zone1#input" }
+Dimmer avr1Z1_Volume "Volume [%d]" <soundvolume> { channel="onkyo:onkyoAVR:avr1:zone1#volume" }
+
+Switch avr1Z2_Power  "Power [%s]"  <switch>      { channel="onkyo:onkyoAVR:avr1:zone2#power" }
+Switch avr1Z2_Mute   "Mute [%s]"                 { channel="onkyo:onkyoAVR:avr1:zone2#mute" }
+Number avr1Z2_Input  "Input [%s]"  <text>        { channel="onkyo:onkyoAVR:avr1:zone2#input" }
+Dimmer avr1Z2_Volume "Volume [%s]" <soundvolume> { channel="onkyo:onkyoAVR:avr1:zone2#volume" }
+
+Player avr1Player_Control            "Control"                 <text>        { channel="onkyo:onkyoAVR:avr1:player#control" }
+String avr1Player_Title              "Title [%s]"              <text>        { channel="onkyo:onkyoAVR:avr1:player#title" }
+String avr1Player_Album              "Album [%s]"              <text>        { channel="onkyo:onkyoAVR:avr1:player#album" }
+String avr1Player_Artist             "Artist [%s]"             <parents_2_5> { channel="onkyo:onkyoAVR:avr1:player#artist" }
+String avr1Player_CurrentPlayingTime "CurrentPlayingTime [%s]" <clock>       { channel="onkyo:onkyoAVR:avr1:player#currentPlayingTime" }
+Number avr1Player_Listenmode         "Listenmode [%d]"         <text>        { channel="onkyo:onkyoAVR:avr1:player#listenmode" }
+String avr1Player_PlayURI            "PlayURI [%s]"            <text>        { channel="onkyo:onkyoAVR:avr1:player#playuri" }
+Image  avr1Player_AlbumArt           "AlbumArt [%s]"           <text>        { channel="onkyo:onkyoAVR:avr1:player#albumArt" }
+String avr1Player_AlbumArtUrl        "AlbumArtUrl [%s]"        <text>        { channel="onkyo:onkyoAVR:avr1:player#albumArtUrl" }
+
+String avr1Net_Title     "Title [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#title" }
+String avr1Net_Control   "Control"        <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#control" }
+Number avr1Net_Selection "Selection [%d]" <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#selection" }
+String avr1Net_Item0     "Item0 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item0" }
+String avr1Net_Item1     "Item1 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item1" }
+String avr1Net_Item2     "Item2 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item2" }
+String avr1Net_Item3     "Item3 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item3" }
+String avr1Net_Item4     "Item4 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item4" }
+String avr1Net_Item5     "Item5 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item5" }
+String avr1Net_Item6     "Item6 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item6" }
+String avr1Net_Item7     "Item7 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item7" }
+String avr1Net_Item8     "Item8 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item8" }
+String avr1Net_Item9     "Item9 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr1:netmenu#item9" }
+```
+
+## Sitemap Configuration
+
+demo.sitemap
+
+```
+sitemap demo label="Onkyo AVR"
+{
+    Frame label="Zone1" {
+        Switch    item=avr1Z1_Power
+        Switch    item=avr1Z1_Mute
+        Selection item=avr1Z1_Input  mappings=[ 0='DVR/VCR', 1='SATELLITE/CABLE', 2='GAME', 3='AUX', 4='GAME', 5='PC', 16='BLURAY/DVD', 32='TAPE1', 33='TAPE2', 34='PHONO', 35='CD', 36='FM', 37='AM', 38='TUNER', 39='MUSICSERVER', 40='INTE
+RNETRADIO', 41='USB', 42='USB_BACK', 43='NETWORK', 45='AIRPLAY', 48='MULTICH', 50='SIRIUS' ]
+        Slider    item=avr1Z1_Volume
+    }
+
+    Frame label="Zone 2" {
+        Switch    item=avr1Z2_Power
+        Switch    item=avr1Z2_Mute
+        Selection item=avr1Z2_Input  mappings=[ 0='DVR/VCR', 1='SATELLITE/CABLE', 2='GAME', 3='AUX', 4='GAME', 5='PC', 16='BLURAY/DVD', 32='TAPE1', 33='TAPE2', 34='PHONO', 35='CD', 36='FM', 37='AM', 38='TUNER', 39='MUSICSERVER', 40='INTE
+RNETRADIO', 41='USB', 42='USB_BACK', 43='NETWORK', 45='AIRPLAY', 48='MULTICH', 50='SIRIUS' ]
+        Slider    item=avr1Z2_Volume
+    }
+
+    Frame label="Player" {
+        Default   item=avr1Player_Control
+        Text      item=avr1Player_Title
+        Text      item=avr1Player_Album
+        Text      item=avr1Player_Artist
+        Text      item=avr1Player_CurrentPlayingTime
+        Selection item=avr1Player_Listenmode mappings=[0=Stereo, 1=Direct, 2=Surround, 15=Mono, 31="Whole House", 66="THX Cinema"]
+    }
+    Frame label="NetMenu" {
+        Text      item=avr1Net_Title
+        Selection item=avr1Net_Control   mappings=[ Up='Up', Down='Down', Select='Select', Back='Back', PageUp='PageUp', PageDown='PageDow', Select0='Select0', Select1='Select1', Select2='Select2', Select3='Select3', Select4='Select4', S
+elect5='Select5', Select6='Select6', Select7='Select7', Select8='Select8', Select9='Select9' ]
+        Selection item=avr1Net_Selection mappings=[ 0='Item0', 1='Item1', 2='Item2', 3='Item3', 4='Item4', 5='Item5', 6='Item6', 7='Item7', 8='Item8', 9='Item9' ]
+        Text      item=avr1Net_Item0
+        Text      item=avr1Net_Item1
+        Text      item=avr1Net_Item2
+        Text      item=avr1Net_Item3
+        Text      item=avr1Net_Item4
+        Text      item=avr1Net_Item5
+        Text      item=avr1Net_Item6
+        Text      item=avr1Net_Item7
+        Text      item=avr1Net_Item8
+        Text      item=avr1Net_Item9
+    }
+}
+```
+
 ## Audio Support
 
 + All supported Onkyo AVRs are registered as an audio sink in the framework.
