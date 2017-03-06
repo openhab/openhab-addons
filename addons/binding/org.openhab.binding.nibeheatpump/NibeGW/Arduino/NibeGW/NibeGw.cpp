@@ -263,9 +263,9 @@ int NibeGw::checkNibeMessage(const byte* const data, byte len)
     if (data[0] != 0x5C)
       return -1;
 
-    if (len >= 3)
+    if (len >= 2)
     {
-      if (!(data[1] == 0x00 && (data[2] == RMU40 || data[2] == SMS40 || data[2] == MODBUS40)))
+      if (data[1] != 0x00)
         return -1;
     }
 
