@@ -20,6 +20,7 @@ For easy using are the main things of a heating system are already define in thi
 * heating (Vitotronic core system)
 * pelletburner (Pellet Fireplace, works for wood also)
 * oilburner (Oil Fireplace)
+* gasburner (Gas Fireplace)
 * storagetank (Storage Tank, stores heat in a water tank on 3 levels: bottom, middle, top=hot water)
 * circuit (Heating circuit controls the flow between the heating system and the radiators in the rooms)
 * solar (Solar water heating (SWH): Convert sunlight into energy for water heating)
@@ -67,6 +68,8 @@ The follow channels are implemented:
 | systemtime | DateTime | DateTime of the heating system |
 | outside_temp | Number | Outside temperature sensor |
 | boiler_temp | Number | Temperature sensor of boiler (fireplace) |
+| malfunction | Switch | General malfunction state of the heating system |
+| exhaust_temp| Number | Exhaust temperature |
 | flowuprating | Switch | Pump state of flow up rating |
 | flame_temp | Number | Temperature of flame |
 | airshutter_prim | Number | Position of the primary air shutter |
@@ -79,12 +82,13 @@ The follow channels are implemented:
 | ontime | Number | Ontime in hours |
 | consumedpellets | Number | Consumed Pellets since start of heating in tons |
 | power | Number | Power of the pellet burner |
-| powerlevel | Number | Power of the oil burner |
+| powerlevel | Number | Power of the oil/gas burner |
 | actualpower | Number | Actual power of the burner  |
 | ontimelevel1 | Number | Ontime in hours |
 | ontimelevel2 | Number | Ontime in hours |
 | consumedoil | Number | Consumed Oil since start of heating in Liter |
-| hotwater_temp | Number | Temperature sensor of the hot water | 
+| hotwater_temp | Number | Temperature sensor of the hot water |
+| hotwater_temp_setpoint | Number | Hot water temperature setpoint(target) | 
 | middle_temp | Number | Temperature sensor in the middle of the storage tank |
 | bottom_temp | Number | Temperature sensor at the bottom of the storage tank |
 | circuitpump | Switch | Circuit pump state |
@@ -94,10 +98,27 @@ The follow channels are implemented:
 | savemode | Switch | Savemode on/off |
 | partymode | Switch | Partymode on/off |
 | party_temp | Number | Target temperature of party mode |
+| party_temp_setpoint | Number | Party mode temperature setpoint(target) | 
 | room_temp | Number | Target temperature of rooms |
+| room_temp_setpoint | Number | Room temperature setpoint(target) | 
 | save_temp | Number | Target temperature of save mode |
+| save_temp_setpoint | Number | Save mode temperature setpoint(target) | 
 | gradient | Number | The gradient relativ to outside temperature |
 | niveau | Number | The niveau relativ to outside temperature |
+| timer_MO | String | Heating timer for Monday |
+| timer_TU | String | Heating timer for Tuesday |
+| timer_WE | String | Heating timer for Wednesday |
+| timer_TH | String | Heating timer for Thursday |
+| timer_FR | String | Heating timer for Friday |
+| timer_SA | String | Heating timer for Saturday |
+| timer_SU | String | Heating timer for Sunday |
+| timer_ww_MO | String | Hot water timer for Monday |
+| timer_ww_TU | String | Hot water timer for Tuesday |
+| timer_ww_WE | String | Hot water timer for Wednesday |
+| timer_ww_TH | String | Hot water timer for Thursday |
+| timer_ww_FR | String | Hot water timer for Friday |
+| timer_ww_SA | String | Hot water timer for Saturday |
+| timer_ww_SU | String | Hot water timer for Sunday |
 | collector_temp | Number | Actual temperature of the collector | 
 | storagetank_temp | Number | Actual temperature of the storage tank (solar sensor) | 
 | bufferload | Switch | State of the pump (on/off) | 

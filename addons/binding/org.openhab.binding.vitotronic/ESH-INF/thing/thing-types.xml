@@ -15,12 +15,41 @@
 
         <channels>
             <channel id="systemtime" typeId="systemtime"/>
-            <channel id="outside_temp" typeId="outside_temp"/>
-            <channel id="boiler_temp" typeId="boiler_temp"/>   
-            <channel id="flowuprating" typeId="flowuprating"/>   
+            <channel id="outside_temp" typeId="temperature_ro">
+		        <label>Outside Temperature</label>
+		        <description>Outside temperature sensor</description>
+            </channel>
+            <channel id="boiler_temp" typeId="temperature_ro_adv">
+		        <label>Boiler Temperature</label>
+		        <description>Temperature sensor of boiler (fireplace)</description>
+            </channel>   
+            <channel id="malfunction" typeId="bool_ro">   
+		        <label>Heating Malfunction</label>
+		        <description>General Malfunction state of the heating</description>
+		    </channel>
         </channels>
     </thing-type>
     
+    <thing-type id="gasburner">
+    	<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+	</supported-bridge-type-refs>
+		
+        <label>Gas Burner</label>
+        <description>Condensing Technology Gas Burner</description>
+
+        <channels>
+            <channel id="powerlevel" typeId="percent_ro">
+		        <label>Power Level</label>
+		        <description>Power of the gas burner</description>
+            </channel>
+            <channel id="exhaust_temp" typeId="temperature_ro">
+		        <label>Exhaust temperature</label>
+		        <description>Actual temperature of the exhaust</description>
+            </channel>
+        </channels>
+    </thing-type>
+
     <thing-type id="pelletburner">
     	<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
@@ -30,17 +59,41 @@
         <description>Pellet Fireplace, works for wood also </description>
 
         <channels>
-            <channel id="flame_temp" typeId="flame_temp"/>
-            <channel id="airshutter_prim" typeId="airshutter_prim"/>
-            <channel id="airshutter_sec" typeId="airshutter_sec"/>
+            <channel id="flame_temp" typeId="temperature_ro">
+		        <label>Flame</label>
+		        <description>Temperature of flame</description>
+            </channel>
+            <channel id="airshutter_prim" typeId="percent_ro_adv">
+		        <label>Primary Airshutter</label>
+		        <description>Position of the primary air shutter</description>
+            </channel>
+            <channel id="airshutter_sec" typeId="percent_ro_adv">
+		        <label>Secondary Airshutter</label>
+		        <description>Position of the secondary air shutter</description>
+            </channel>
             <channel id="lambdasensor" typeId="lambdasensor"/>
-            <channel id="fanspeed" typeId="fanspeed"/>
-            <channel id="fanspeed_target" typeId="fanspeed_target"/>
-            <channel id="error" typeId="error"/>
+            <channel id="fanspeed" typeId="speed_ro_adv">
+		        <label>Fan Speed</label>
+		        <description>Speed in rpm</description>
+            </channel>
+            <channel id="fanspeed_target" typeId="speed_ro_adv">
+		        <label>Fan Speed Target</label>
+		        <description>Speed in rpm</description>
+            </channel>
+            <channel id="error" typeId="bool_ro_adv">
+		        <label>Errors</label>
+		        <description>True, if errors for the burner exists</description>
+            </channel>
             <channel id="starts" typeId="starts"/>
-            <channel id="ontime" typeId="ontime"/>
+            <channel id="ontime" typeId="time_ro_adv">
+                <label>On Time</label>
+                <description>Ontime in hours</description>
+            </channel>
             <channel id="consumedpellets" typeId="consumedpellets"/>
-            <channel id="power" typeId="power"/>
+            <channel id="powerlevel" typeId="percent_ro">
+		        <label>Power Level</label>
+		        <description>Power of the pellet burner</description>
+            </channel>
             <channel id="flowuprating" typeId="flowuprating"/>
         </channels>
     </thing-type>
@@ -54,12 +107,27 @@
         <description>Oil Fireplace</description>
 
         <channels>
-            <channel id="powerlevel" typeId="powerlevel"/>
-            <channel id="actualpower" typeId="actualpower"/>
-            <channel id="error" typeId="error"/>
+            <channel id="powerlevel" typeId="percent_ro">
+		        <label>Power Level</label>
+		        <description>Power of the oil burner</description>
+            </channel>
+            <channel id="actualpower" typeId="percent_ro">
+		        <label>Actual Power Level</label>
+		        <description>Actual power of the burner</description>
+            </channel>
+            <channel id="error" typeId="bool_ro_adv">
+                <label>Errors</label>
+                <description>True, if errors for the burner exists</description>
+            </channel>
             <channel id="starts" typeId="starts"/>
-            <channel id="ontimelevel1" typeId="ontimelevel1"/>
-            <channel id="ontimelevel2" typeId="ontimelevel2"/>
+            <channel id="ontimelevel1" typeId="time_ro_adv">
+		        <label>On Time Level 1</label>
+		        <description>Ontime in hours</description>
+            </channel>
+            <channel id="ontimelevel2" typeId="time_ro_adv">
+		        <label>On Time Level 2</label>
+		        <description>Ontime in hours</description>
+            </channel>
             <channel id="consumedoil" typeId="consumedoil"/>
         </channels>
     </thing-type>
@@ -69,14 +137,27 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 		
-        <label>Storage Tank</label>
+        <label>Hot Water Storage Tank</label>
         <description>Storage Tank, stores heat in a water tank on 3 levels: bottom, middle, top=hot water</description>
 
         <channels>
-            <channel id="hotwater_temp" typeId="hotwater_temp"/>
-            <channel id="middle_temp" typeId="middle_temp"/>
-            <channel id="bottom_temp" typeId="bottom_temp"/>
-            <channel id="circuitpump" typeId="circuitpump"/>
+            <channel id="hotwater_temp" typeId="temperature_ro">
+		        <label>Hot Water Temperature</label>
+		        <description>Temperature sensor of the hot water</description>
+            </channel>
+            <channel id="hotwater_temp_setpoint" typeId="hotwater_temp_setpoint"/>
+            <channel id="middle_temp" typeId="temperature_ro_adv">
+		        <label>Middle</label>
+		        <description>Temperature sensor in the middle of the storage tank</description>
+            </channel>
+            <channel id="bottom_temp" typeId="temperature_ro_adv">
+		        <label>Bottom</label>
+		        <description>Temperature sensor at the bottom of the storage tank</description>
+            </channel>
+            <channel id="circuitpump" typeId="bool_ro_adv">
+		        <label>Circuit Pump</label>
+		        <description>Circuit pump state</description>
+            </channel>
         </channels>
     </thing-type>
     
@@ -89,17 +170,165 @@
         <description>Heating circuit controls the flow of heating water between the heating system and the radiators in the rooms</description>
 
         <channels>
-            <channel id="flowtemperature" typeId="flow_temp"/>
-            <channel id="pump" typeId="pump"/>
+            <channel id="flowtemperature" typeId="temperature_ro">
+		        <label>Flow</label>
+		        <description>Temperature sensor of the ciruit flow</description>
+            </channel>
+            <channel id="pump" typeId="bool_ro">
+		        <label>Pump</label>
+		        <description>Pump state</description>
+            </channel>
             <channel id="operationmode" typeId="operationmode"/>
-            <channel id="savemode" typeId="savemode"/>
-            <channel id="partymode" typeId="partymode"/>
-            <channel id="party_temp" typeId="party_temp"/>
-            <channel id="room_temp" typeId="room_temp"/>
-            <channel id="save_temp" typeId="save_temp"/>  
-            <channel id="gradient" typeId="gradient"/>
-            <channel id="niveau" typeId="niveau"/>
-        </channels>
+            <channel id="savemode" typeId="bool_rw_adv">
+		        <label>Savemode</label>
+		        <description>Savemode on/off</description>
+            </channel>
+            <channel id="partymode" typeId="bool_rw_adv">
+		        <label>Partymode</label>
+		        <description>Partymode on/off</description>
+            </channel>
+            <channel id="party_temp_setpoint" typeId="party_temp_setpoint"/>
+            <channel id="room_temp" typeId="temperature_ro">
+		        <label>Room Temperature</label>
+		        <description>Temperature of the room</description>
+            </channel>
+            <channel id="room_temp_setpoint" typeId="room_temp_setpoint"/>
+            <channel id="save_temp_setpoint" typeId="save_temp_setpoint"/>  
+            <channel id="gradient" typeId="number_ro_adv">
+		        <label>Gradient</label>
+		        <description>The gradient relative to outside temperature</description>
+            </channel>
+            <channel id="niveau" typeId="number_ro_adv">
+		        <label>Niveau</label>
+		        <description>The niveau relative to outside temperature</description>
+            </channel>
+            <channel id="timer_MO" typeId="timer">
+				<label>Monday timer heating</label>
+				<description>On/Off timer for Monday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">3000</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_TU" typeId="timer">
+				<label>Tuesday timer heating</label>
+				<description>On/Off timer for Tuesday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">3008</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_WE" typeId="timer">
+				<label>Wednesday timer heating</label>
+				<description>On/Off timer for Wednesday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">3010</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_TH" typeId="timer">
+				<label>Thursday timer heating</label>
+				<description>On/Off timer for Thursday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">3018</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_FR" typeId="timer">
+				<label>Friday timer heating</label>
+				<description>On/Off timer for Friday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">3020</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_SA" typeId="timer">
+				<label>Saturday timer heating</label>
+				<description>On/Off timer for Saturday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">3028</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_SU" typeId="timer">
+				<label>Sunday timer heating</label>
+				<description>On/Off timer for Sunday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">3030</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_ww_MO" typeId="timer">
+				<label>Monday timer warm water</label>
+				<description>On/Off timer for Monday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">2100</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_ww_TU" typeId="timer">
+				<label>Tuesday timer warm water</label>
+				<description>On/Off timer for Tuesday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">2108</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_ww_WE" typeId="timer">
+				<label>Wednesday timer warm water</label>
+				<description>On/Off timer for Wednesday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">2110</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_ww_TH" typeId="timer">
+				<label>Thursday timer warm water</label>
+				<description>On/Off timer for Thursday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">2118</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_ww_FR" typeId="timer">
+				<label>Friday timer warm water</label>
+				<description>On/Off timer for Friday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">2120</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_ww_SA" typeId="timer">
+				<label>Saturday timer warm water</label>
+				<description>On/Off timer for Saturday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">2128</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+            <channel id="timer_ww_SU" typeId="timer">
+				<label>Sunday timer warm water</label>
+				<description>On/Off timer for Sunday. Up to 4 timers can be set</description>
+				<properties>
+					<property name="address">2130</property>
+					<property name="type">timer</property>
+					<property name="divider">1</property>
+				</properties>
+			</channel>
+       </channels>
     </thing-type>
     
     <thing-type id="solar">
@@ -111,11 +340,26 @@
         <description>Solar water heating (SWH): Convert sunlight into energy for water heating</description>
 
         <channels>
-            <channel id="collector_temp" typeId="collector_temp"/>
-            <channel id="storagetank_temp" typeId="storagetank_temp"/>
-            <channel id="bufferload" typeId="bufferload"/>
-            <channel id="loadsuppression" typeId="loadsuppression"/>
-            <channel id="ontime" typeId="ontime"/>
+            <channel id="collector_temp" typeId="temperature_ro">
+		        <label>Collector</label>
+		        <description>Actual temperature of the collector</description>
+            </channel>
+            <channel id="storagetank_temp" typeId="temperature_ro">
+		        <label>Storagetank</label>
+		        <description>Actual temperature of the storage tank (solar sensor)</description>
+            </channel>
+            <channel id="bufferload" typeId="bool_ro">
+		        <label>Buffer load pump</label>
+		        <description>State of the pump (on/off)</description>
+            </channel>
+            <channel id="loadsuppression" typeId="bool_ro_adv">
+		        <label>Load suppression</label>
+		        <description>State of the load suppression (on/off)</description>
+            </channel>
+            <channel id="ontime" typeId="time_ro_adv">
+                <label>On Time</label>
+                <description>Ontime in hours</description>
+            </channel>
             <channel id="producedheat" typeId="producedheat"/>
         </channels>
     </thing-type>
@@ -129,7 +373,10 @@
         <label>Temperature Sensor</label>
         <description>Single temperature sensor</description>
         <channels>
-            <channel id="value" typeId="temperature"/>
+            <channel id="value" typeId="temperature_ro">
+		        <label>Temperature</label>
+		        <description>Generic temperature sensor</description>
+            </channel>
         </channels>
     </thing-type>
     
@@ -140,7 +387,10 @@
         <label>Pump</label>
         <description>Single pump</description>
         <channels>
-            <channel id="value" typeId="pump"/>
+            <channel id="value" typeId="bool_rw">
+		        <label>Pump</label>
+		        <description>Pump state</description>
+            </channel>
         </channels>
     </thing-type>
     
@@ -152,7 +402,10 @@
         <label>Valve</label>
         <description>Single valve</description>
         <channels>
-            <channel id="valve" typeId="valve"/>
+            <channel id="valve" typeId="bool_rw">
+		        <label>Valve</label>
+		        <description>Value of a generic valve</description>
+            </channel>
         </channels>
     </thing-type>
     
@@ -161,72 +414,65 @@
     
     <!--  Channel Types for heating -->
     
-    <channel-type id="systemtime" advanced="true">
+    <channel-type id="systemtime">
         <item-type>DateTime</item-type>
         <label>DateTime of the heating system</label>
         <state readOnly="true"/>
     </channel-type>
  
-    <channel-type id="outside_temp">
+    <channel-type id="temperature_ro">
         <item-type>Number</item-type>
-        <label>Outside</label>
-        <description>Outside temperature sensor</description>
+        <label>Temperature Info Channel</label>
         <category>Temperature</category>
         <state pattern="%.1f °C" readOnly="true"/>
     </channel-type>
     
-    <channel-type id="boiler_temp">
+    <channel-type id="temperature_ro_adv" advanced="true">
         <item-type>Number</item-type>
-        <label>Boiler</label>
-        <description>Temperature sensor of boiler (fireplace)</description>
+        <label>Temperature Info Channel Advanced</label>
         <category>Temperature</category>
         <state pattern="%.1f °C" readOnly="true"/>
     </channel-type>
     
         
-    <channel-type id="flowuprating" advanced="true">
+    <channel-type id="bool_ro">
         <item-type>Switch</item-type>
-        <label>Pump</label>
-        <description>Pump state</description>
+        <label>Boolean Info Channel</label>
         <state readOnly="true"/>
     </channel-type>
   
+    <channel-type id="bool_ro_adv" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Boolean Info Channel Advanced</label>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="bool_rw_adv" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Boolean Set Channel Advanced</label>
+        <state readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="bool_rw" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Boolean Set Channel</label>
+        <state readOnly="false"/>
+    </channel-type>
+    
+    <!-- Channel Types for Gas Burner -->
     
     <!-- Channel Types for Pellet Burner -->
     
-    <channel-type id="flame_temp">
-        <item-type>Number</item-type>
-        <label>Flame</label>
-        <description>Temperature of flame</description>
-        <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="true"/>
-    </channel-type>
-    
-        <channel-type id="lambdasensor" advanced="true">
+    <channel-type id="lambdasensor" advanced="true">
         <item-type>Number</item-type>
         <label>Lambdasensor (O2)</label>
         <description>Oxygen content of the exhaust air</description>
         <state pattern="%.2f %%" readOnly="true"/>
     </channel-type>
      
-    <channel-type id="airshutter_prim" advanced="true">
+    <channel-type id="percent_ro_adv" advanced="true">
         <item-type>Number</item-type>
-        <label>Primary Airshutter</label>
-        <description>Position of the primary air shutter</description>
-        <state pattern="%d %%" readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="airshutter_sec" advanced="true">
-        <item-type>Number</item-type>
-        <label>Secondary Airshutter</label>
-        <description>Position of the secondary air shutter</description>
-        <state pattern="%d %%" readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="power">
-        <item-type>Number</item-type>
-        <label>Power</label>
-        <description>Power of the pellet burner</description>
+        <label>Percent Info Channel Advenced</label>
         <state pattern="%d %%" readOnly="true"/>
     </channel-type>
     
@@ -237,25 +483,10 @@
         <state pattern="%d" readOnly="true"/>
     </channel-type>
 
-    <channel-type id="fanspeed">
+    <channel-type id="speed_ro_adv" advanced="true">
         <item-type>Number</item-type>
-        <label>Fan speed</label>
-        <description>Fan Speed in rpm</description>
+        <label>Speed Info Channel Advanced</label>
         <state pattern="%d rpm" readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="fanspeed_target" advanced="true">
-        <item-type>Number</item-type>
-        <label>Target Fan speed</label>
-        <description>Fan Speed in rpm</description>
-        <state pattern="%d rpm" readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="ontime" advanced="true">
-        <item-type>Number</item-type>
-        <label>On Time</label>
-        <description>Ontime in hours</description>
-        <state pattern="%.2f h" readOnly="true"/>
     </channel-type>
     
     <channel-type id="consumedpellets"  advanced="true">
@@ -265,44 +496,28 @@
         <state pattern="%.2f t" readOnly="true"/>
     </channel-type>
             
-    <!-- Channel Types for Oil Burner -->
-    
-    <channel-type id="powerlevel">
-        <item-type>Number</item-type>
-        <label>Power Level</label>
-        <description>Power of the oil burner</description>
-        <state pattern="%d %%" readOnly="true" max="100" min="0" />
+    <channel-type id="flowuprating" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Pump</label>
+        <description>Pump state</description>
+        <state readOnly="true"/>
     </channel-type>
 
-    <channel-type id="actualpower">
-        <item-type>Number</item-type>
-        <label>Actual Power Level</label>
-        <description>Actual power of the burner</description>
-        <state pattern="%d %%" readOnly="true" max="100" min="0" />
-    </channel-type>
+    <!-- Channel Types for Oil Burner -->
     
-    <channel-type id="error" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Errors</label>
-        <description>True, if errors for the burner exists</description>
-        <state  readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="ontimelevel1" advanced="true">
+    <channel-type id="percent_ro">
         <item-type>Number</item-type>
-        <label>On Time Level 1</label>
-        <description>Ontime in hours</description>
+        <label>Power Level Info Channel</label>
+        <state pattern="%d %%" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="time_ro_adv" advanced="true">
+        <item-type>Number</item-type>
+        <label>Time Info channel</label>
         <state pattern="%.2f h" readOnly="true"/>
     </channel-type>
   
-    <channel-type id="ontimelevel2" advanced="true">
-        <item-type>Number</item-type>
-        <label>On Time Level 2</label>
-        <description>Ontime in hours</description>
-        <state pattern="%.2f h" readOnly="true"/>
-    </channel-type>
-   
-    <channel-type id="consumedoil"  advanced="true">
+    <channel-type id="consumedoil">
         <item-type>Number</item-type>
         <label>Consumed Oil</label>
         <description>Consumed Oil since start of heating in Liter</description>
@@ -311,147 +526,61 @@
       
     <!-- Channel Types for storagetank -->   
     
-    <channel-type id="circuitpump">
-        <item-type>Switch</item-type>
-        <label>Circuit Pump</label>
-        <description>Circuit pump state</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="middle_temp">
+    <channel-type id="hotwater_temp_setpoint">
         <item-type>Number</item-type>
-        <label>Middle</label>
-        <description>Temperature sensor in the middle of the storage tank</description>
+        <label>Hot Water Temperature Setpoint</label>
+        <description>Set the hot water temperature</description>
         <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="true"/>
+        <state pattern="%d °C" readOnly="false" max="60" min="30" step="1"/>
     </channel-type>
-    
-    <channel-type id="bottom_temp">
-        <item-type>Number</item-type>
-        <label>Bottom</label>
-        <description>Temperature sensor at the bottom of the storage tank</description>
-        <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="hotwater_temp">
-        <item-type>Number</item-type>
-        <label>Hot Water</label>
-        <description>Temperature sensor of the hot water</description>
-        <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="true"/>
-    </channel-type>
-         
+	
     <!-- Channel Types for circuit -->   
     
-    <channel-type id="flow_temp"> 
-        <item-type>Number</item-type>
-        <label>Flow</label>
-        <description>Temperature sensor of the ciruit flow</description>
-        <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="pump">
-        <item-type>Switch</item-type>
-        <label>Pump</label>
-        <description>Pump state</description>
-        <state readOnly="true"/>
-    </channel-type>
-
-    <channel-type id="operationmode" advanced="true">
+    <channel-type id="operationmode">
         <item-type>Number</item-type>
         <label>Operationmode</label>
         <description>Operationmode</description>
-        <state pattern="%d" readOnly="true"/>
+        <state pattern="%d" readOnly="false" max="4" min="0" step="1"/>
     </channel-type>
     
-    <channel-type id="partymode">
-        <item-type>Switch</item-type>
-        <label>Partymode</label>
-        <description>Partymode on/off</description>
-        <state readOnly="false"/>
-    </channel-type>
-    
-    <channel-type id="savemode">
-        <item-type>Switch</item-type>
-        <label>Savemode</label>
-        <description>Savemode on/off</description>
-        <state readOnly="false"/>
-    </channel-type>
-    
-    <channel-type id="party_temp" advanced="true">
+    <channel-type id="party_temp_setpoint" advanced="true">
         <item-type>Number</item-type>
-        <label>Party</label>
+        <label>Party Mode Temperature Setpoint</label>
         <description>Target temperature of party mode</description>
         <category>Temperature</category>
-        <state min="4.5" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
+        <state min="15" max="25" step="1" pattern="%.1f °C" readOnly="false"/>
     </channel-type>
     
-     <channel-type id="save_temp" advanced="true">
+     <channel-type id="save_temp_setpoint" advanced="true">
         <item-type>Number</item-type>
-        <label>Save</label>
+        <label>Save Mode Temperature Setpoint</label>
         <description>Target temperature of save mode</description>
         <category>Temperature</category>
-        <state  min="4.5" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
+        <state  min="5" max="15" step="1" pattern="%.1f °C" readOnly="false"/>
     </channel-type>
     
-    <channel-type id="room_temp" advanced="true">
+    <channel-type id="room_temp_setpoint">
         <item-type>Number</item-type>
-        <label>Room</label>
+        <label>Room Temperature Setpoint</label>
         <description>Target temperature of rooms</description>
         <category>Temperature</category>
-        <state  min="4.5" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
+        <state  min="15" max="25" step="1" pattern="%.1f °C" readOnly="false"/>
     </channel-type>
-    
-    <channel-type id="gradient" advanced="true">
+
+    <channel-type id="number_ro_adv" advanced="true">
         <item-type>Number</item-type>
-        <label>Gradient</label>
-        <description>The gradient relativ to outside temperature</description>
+        <label>Number Info channel</label>
         <state pattern="%.1f" readOnly="true"/>
     </channel-type>
     
-    <channel-type id="niveau" advanced="true">
-        <item-type>Number</item-type>
-        <label>Niveau</label>
-        <description>The niveau relativ to outside temperature</description>
-        <state pattern="%.1f" readOnly="true"/>
+    <channel-type id="timer" advanced="true">
+        <item-type>String</item-type>
+		<label>Timer for heating or warm water</label>
+        <state pattern="%s" readOnly="true"/>
     </channel-type>
- 
-    
+	
     <!-- Channel Type for solar -->
 
-     <channel-type id="collector_temp">
-        <item-type>Number</item-type>
-        <label>Collector</label>
-        <description>Actual temperature of the collector</description>
-        <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="true"/>
-    </channel-type>
- 
-    <channel-type id="storagetank_temp">
-        <item-type>Number</item-type>
-        <label>Storagetank</label>
-        <description>Actual temperature of the storage tank (solar sensor)</description>
-        <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="true"/>
-    </channel-type>
-
-    <channel-type id="bufferload">
-        <item-type>Switch</item-type>
-        <label>Buffer load pump</label>
-        <description>State of the pump (on/off)</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="loadsuppression" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Load suppression</label>
-        <description>State of the load suppression (on/off)</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-     
     <channel-type id="producedheat" advanced="true">
         <item-type>Number</item-type>
         <label>Produced heat</label>
@@ -460,22 +589,6 @@
     </channel-type>
     
     <!-- single types -->
-    
-    
-    <channel-type id="temperature">
-        <item-type>Number</item-type>
-        <label>Temperature</label>
-        <description>Generic temperature sensor</description>
-        <category>Temperature</category>
-        <state pattern="%.1f °C" readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="valve">
-        <item-type>Number</item-type>
-        <label>Valve</label>
-        <description>Value of a generic valve</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
+   
 
 </thing:thing-descriptions>
