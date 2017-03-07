@@ -20,10 +20,8 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.weather.internal.common.LocationConfig;
-import org.openhab.binding.weather.internal.common.ProviderConfig;
-import org.openhab.binding.weather.internal.common.WeatherConfig;
-import org.openhab.binding.weather.internal.common.WeatherContext;
 import org.openhab.binding.weather.internal.model.Forecast;
 import org.openhab.binding.weather.internal.model.ProviderName;
 import org.openhab.binding.weather.internal.model.Weather;
@@ -42,7 +40,6 @@ public abstract class AbstractWeatherProvider implements WeatherProvider {
     private static final Logger logger = LoggerFactory.getLogger(AbstractWeatherProvider.class);
     private static HttpClient httpClient = null;
 
-    private WeatherConfig config = WeatherContext.getInstance().getConfig();
     private WeatherParser parser;
 
     static {
@@ -63,18 +60,18 @@ public abstract class AbstractWeatherProvider implements WeatherProvider {
      * {@inheritDoc}
      */
     @Override
-    public Weather getWeather(LocationConfig locationConfig) throws Exception {
+    public Weather getWeather(LocationConfig locationConfig, Thing thing) throws Exception {
         Weather weather = new Weather(getProviderName());
-        executeRequest(weather, prepareUrl(getWeatherUrl(), locationConfig), locationConfig);
+        executeRequest(weather, prepareUrl(getWeatherUrl(), locationConfig), locationConfig, thing);
 
         String forecastUrl = getForecastUrl();
         if (forecastUrl != null && !weather.hasError()) {
-            executeRequest(weather, prepareUrl(forecastUrl, locationConfig), locationConfig);
+            executeRequest(weather, prepareUrl(forecastUrl, locationConfig), locationConfig, thing);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("{}[{}]: {}", getProviderName(), locationConfig.getLocationId(), weather.toString());
+            logger.debug("{}[{}]: {}", getProviderName(), thing.getLabel(), weather.toString());
             for (Weather fc : weather.getForecast()) {
-                logger.debug("{}[{}]: {}", getProviderName(), locationConfig.getLocationId(), fc.toString());
+                logger.debug("{}[{}]: {}", getProviderName(), thing.getLabel(), fc.toString());
             }
         }
 
@@ -85,11 +82,8 @@ public abstract class AbstractWeatherProvider implements WeatherProvider {
      * Prepares the provider URL by setting the config.
      */
     private String prepareUrl(String url, LocationConfig locationConfig) {
-        ProviderConfig providerConfig = config.getProviderConfig(getProviderName());
-        if (providerConfig != null) {
-            url = StringUtils.replace(url, "[API_KEY]", providerConfig.getApiKey());
-            url = StringUtils.replace(url, "[API_KEY_2]", providerConfig.getApiKey2());
-        }
+        url = StringUtils.replace(url, "[API_KEY]", locationConfig.getApiKey());
+        url = StringUtils.replace(url, "[API_KEY_2]", locationConfig.getApiKey2());
         if (locationConfig.getLatitude() != null) {
             url = StringUtils.replace(url, "[LATITUDE]", locationConfig.getLatitude().toString());
         }
@@ -107,10 +101,11 @@ public abstract class AbstractWeatherProvider implements WeatherProvider {
     /**
      * Executes the http request and parses the returned stream.
      */
-    private void executeRequest(Weather weather, String url, LocationConfig locationConfig) throws Exception {
+    private void executeRequest(Weather weather, String url, LocationConfig locationConfig, Thing thing)
+            throws Exception {
         GetMethod get = null;
         try {
-            logger.trace("{}[{}]: request : {}", getProviderName(), locationConfig.getLocationId(), url);
+            logger.trace("{}[{}]: request : {}", getProviderName(), thing.getLabel(), url);
 
             get = new GetMethod(url);
             httpClient.executeMethod(get);
@@ -120,7 +115,7 @@ public abstract class AbstractWeatherProvider implements WeatherProvider {
                 String response = get.getResponseBodyAsString(100000);
                 response = StringUtils.remove(response, "\n");
                 response = StringUtils.trim(response);
-                logger.trace("{}[{}]: response: {}", getProviderName(), locationConfig.getLocationId(), response);
+                logger.trace("{}[{}]: response: {}", getProviderName(), thing.getLabel(), response);
                 is = new ByteArrayInputStream(response.getBytes(get.getResponseCharSet()));
             } else {
                 is = get.getResponseBodyAsStream();
@@ -140,8 +135,8 @@ public abstract class AbstractWeatherProvider implements WeatherProvider {
             }
 
             if (weather.hasError()) {
-                logger.error("{}[{}]: Can't retreive weather data: {}", getProviderName(),
-                        locationConfig.getLocationId(), weather.getError());
+                logger.error("{}[{}]: Can't retreive weather data: {}", getProviderName(), thing.getLabel(),
+                        weather.getError());
             } else {
                 setLastUpdate(weather);
             }

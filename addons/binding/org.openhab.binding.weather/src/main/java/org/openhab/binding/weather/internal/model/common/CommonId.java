@@ -45,4 +45,9 @@ public class CommonId {
     public String getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "CommonId [id=" + id + ", providers=" + providers + "]";
+    }
 }

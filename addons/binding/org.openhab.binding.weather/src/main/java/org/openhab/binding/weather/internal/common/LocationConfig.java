@@ -1,6 +1,5 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- *
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +12,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.openhab.binding.weather.internal.model.ProviderName;
 
 /**
- * Holds a location configuration from the openhab.cfg.
+ * Holds a location configuration for the bridge.
  *
  * @author Gerhard Riegler
  * @since 1.6.0
@@ -21,15 +20,16 @@ import org.openhab.binding.weather.internal.model.ProviderName;
 public class LocationConfig {
     private static final int DEFAULT_UPDATE_INTERVAL = 240;
 
-    private ProviderName providerName;
+    private String providerName;
     private String language = "en";
     private Double latitude;
     private Double longitude;
     private String woeid;
     private Integer updateInterval = DEFAULT_UPDATE_INTERVAL;
-    private String locationId;
     private String name;
     private String units = "si";
+    private String apikey;
+    private String apikey2;
 
     /**
      * Returns the language.
@@ -105,28 +105,17 @@ public class LocationConfig {
      * Returns the providerName.
      */
     public ProviderName getProviderName() {
-        return providerName;
+        if (providerName != null) {
+            return ProviderName.valueOf(providerName);
+        }
+        return null;
     }
 
     /**
      * Sets the providerName.
      */
     public void setProviderName(ProviderName providerName) {
-        this.providerName = providerName;
-    }
-
-    /**
-     * Returns the locationId.
-     */
-    public String getLocationId() {
-        return locationId;
-    }
-
-    /**
-     * Sets the locationId.
-     */
-    public void setLocationId(String locationId) {
-        this.locationId = locationId;
+        this.providerName = providerName.toString();
     }
 
     /**
@@ -158,19 +147,54 @@ public class LocationConfig {
     }
 
     /**
+     * Returns the apikey.
+     */
+    public String getApiKey() {
+        return apikey;
+    }
+
+    /**
+     * Sets the apikey.
+     */
+    public void setApiKey(String apiKey) {
+        this.apikey = apiKey;
+    }
+
+    /**
+     * Returns the apikey2.
+     */
+    public String getApiKey2() {
+        return apikey2;
+    }
+
+    /**
+     * Sets the apikey2.
+     */
+    public void setApiKey2(String apiKey2) {
+        this.apikey2 = apiKey2;
+    }
+
+    /**
      * Returns true, if this config is valid.
      */
     public boolean isValid() {
-        boolean valid = providerName != null && language != null && updateInterval != null && locationId != null;
+        boolean valid = providerName != null && language != null && updateInterval != null;
         if (!valid) {
             return false;
         }
 
-        if (providerName == ProviderName.Yahoo) {
-            return woeid != null;
-        } else {
-            return latitude != null && longitude != null;
+        if (providerName != null) {
+            ProviderName name = ProviderName.valueOf(providerName);
+            if (apikey != null && (name != ProviderName.HamWeather)
+                    || (name == ProviderName.HamWeather && apikey2 != null)) {
+                if (name == ProviderName.Yahoo) {
+                    return woeid != null;
+                } else {
+                    return latitude != null && longitude != null;
+                }
+            }
         }
+        return false;
     }
 
     /**
@@ -178,10 +202,13 @@ public class LocationConfig {
      */
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("providerName", providerName)
-                .append("language", language).append("updateInterval", updateInterval).append("latitude", latitude)
-                .append("longitude", longitude).append("woeid", woeid).append("locationId", locationId)
-                .append("name", name).toString();
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("providerName", providerName).append("apiKey", apikey);
+        if (apikey2 != null) {
+            tsb.append("apiKey2", apikey2);
+        }
+        return tsb.append("language", language).append("updateInterval", updateInterval).append("latitude", latitude)
+                .append("longitude", longitude).append("woeid", woeid).append("name", name).toString();
     }
 
 }

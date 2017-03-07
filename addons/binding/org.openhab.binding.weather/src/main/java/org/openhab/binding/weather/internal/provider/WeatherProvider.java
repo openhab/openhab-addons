@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.weather.internal.provider;
 
+import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.weather.internal.common.LocationConfig;
 import org.openhab.binding.weather.internal.model.ProviderName;
 import org.openhab.binding.weather.internal.model.Weather;
@@ -23,7 +24,7 @@ public interface WeatherProvider {
     /**
      * Returns the weather data for the specified location config.
      */
-    public Weather getWeather(LocationConfig locationConfig) throws Exception;
+    public Weather getWeather(LocationConfig locationConfig, Thing thing) throws Exception;
 
     /**
      * Returns the provider name.

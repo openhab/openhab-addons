@@ -3,9 +3,9 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="weather">
-		<label>Weather Details</label>
-		<description>Has all the details about the weather on a specific day channels</description>
+	<thing-type id="forecast" listed="false">
+		<label>Forecast Details</label>
+		<description>Has all the details about the forecast on a specific day.</description>
 
 		<channel-groups>
 			<channel-group typeId="atmosphere" id="atmosphere"></channel-group>

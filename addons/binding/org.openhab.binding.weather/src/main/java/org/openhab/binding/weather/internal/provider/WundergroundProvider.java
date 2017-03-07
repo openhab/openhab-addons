@@ -9,6 +9,7 @@
 package org.openhab.binding.weather.internal.provider;
 
 import org.openhab.binding.weather.internal.model.ProviderName;
+import org.openhab.binding.weather.internal.parser.CommonIdHandler;
 import org.openhab.binding.weather.internal.parser.JsonWeatherParser;
 
 /**
@@ -20,8 +21,8 @@ import org.openhab.binding.weather.internal.parser.JsonWeatherParser;
 public class WundergroundProvider extends AbstractWeatherProvider {
     private static final String URL = "http://api.wunderground.com/api/[API_KEY]/conditions/forecast10day/lang:[LANGUAGE]/q/[LATITUDE],[LONGITUDE].json";
 
-    public WundergroundProvider() {
-        super(new JsonWeatherParser());
+    public WundergroundProvider(CommonIdHandler commonIdHandler) {
+        super(new JsonWeatherParser(commonIdHandler));
     }
 
     /**

@@ -9,6 +9,7 @@
 package org.openhab.binding.weather.internal.provider;
 
 import org.openhab.binding.weather.internal.model.ProviderName;
+import org.openhab.binding.weather.internal.parser.CommonIdHandler;
 import org.openhab.binding.weather.internal.parser.JsonWeatherParser;
 
 /**
@@ -20,8 +21,8 @@ import org.openhab.binding.weather.internal.parser.JsonWeatherParser;
 public class HamweatherProvider extends AbstractWeatherProvider {
     private static final String URL = "http://api.aerisapi.com/batch?p=[LATITUDE],[LONGITUDE]&requests=/observations,/forecasts%3Ffilter=day%26to=+5days&client_id=[API_KEY]&client_secret=[API_KEY_2]";
 
-    public HamweatherProvider() {
-        super(new JsonWeatherParser());
+    public HamweatherProvider(CommonIdHandler commonIdHandler) {
+        super(new JsonWeatherParser(commonIdHandler));
     }
 
     /**

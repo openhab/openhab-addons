@@ -40,6 +40,11 @@ public abstract class AbstractWeatherParser implements WeatherParser {
     private static final String[] EMPTY_VALUES = new String[] { "NA", "N/A", "--", "" };
 
     private MetadataHandler metadataHandler = MetadataHandler.getInstance();
+    private final CommonIdHandler commonIdHandler;
+
+    public AbstractWeatherParser(CommonIdHandler commonIdHandler) {
+        this.commonIdHandler = commonIdHandler;
+    }
 
     /**
      * {@inheritDoc}
@@ -73,6 +78,8 @@ public abstract class AbstractWeatherParser implements WeatherParser {
                 Object valueToSet = preparedValue == null ? null : converter.convert(preparedValue);
                 if (valueToSet != null) {
                     FieldUtils.writeField(target, objectProperty, valueToSet, true);
+                } else {
+                    logger.error("VALUE NULL {} {} value {}", providerMappingInfo.getTarget(), propertyName, value);
                 }
 
             } catch (Exception ex) {
@@ -90,6 +97,7 @@ public abstract class AbstractWeatherParser implements WeatherParser {
     @Override
     public Weather startIfForecast(Weather weather, String propertyName) {
         if (metadataHandler.isForecast(weather.getProvider(), propertyName)) {
+            logger.error("Making new forecast {}", propertyName);
             return new Forecast(weather.getProvider());
         }
         return weather;
@@ -100,7 +108,8 @@ public abstract class AbstractWeatherParser implements WeatherParser {
      */
     @Override
     public boolean endIfForecast(Weather weather, Weather forecast, String propertyName) {
-        if (metadataHandler.isForecast(forecast.getProvider(), propertyName)) {
+        if (metadataHandler.isForecast(weather.getProvider(), propertyName)) {
+            logger.error("Unwinding forecast {}", propertyName);
             Forecast fc = (Forecast) forecast;
             fc.setDay(weather.getForecast().size());
             weather.getForecast().add(fc);
@@ -158,7 +167,7 @@ public abstract class AbstractWeatherParser implements WeatherParser {
             precip.setRain(0.0);
         }
 
-        CommonIdHandler.getInstance().setCommonId(weather);
+        commonIdHandler.setCommonId(weather);
     }
 
     /**

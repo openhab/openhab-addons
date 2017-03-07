@@ -32,6 +32,6 @@ public class ProviderNameAdapter extends XmlAdapter<String, ProviderName> {
      */
     @Override
     public ProviderName unmarshal(String providerName) throws Exception {
-        return ProviderName.parse(providerName);
+        return ProviderName.valueOf(providerName);
     }
 }

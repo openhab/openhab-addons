@@ -39,8 +39,7 @@ public class Weather {
 
     private ProviderName provider;
 
-    @ProviderMappings({
-            @Provider(name = ProviderName.HamWeather, property = "error.description"),
+    @ProviderMappings({ @Provider(name = ProviderName.HamWeather, property = "error.description"),
             @Provider(name = ProviderName.ForecastIO, property = "error"),
             @Provider(name = ProviderName.OpenWeatherMap, property = "message"),
             @Provider(name = ProviderName.WorldWeatherOnline, property = "data.error.msg"),
@@ -49,12 +48,10 @@ public class Weather {
             @Provider(name = ProviderName.MeteoBlue, property = "error_message") })
     private String error;
 
-    @ProviderMappings({
-            @Provider(name = ProviderName.OpenWeatherMap, property = "cod") })
+    @ProviderMappings({ @Provider(name = ProviderName.OpenWeatherMap, property = "cod") })
     private Integer responseCode;
 
-    @ForecastMappings({
-            @Forecast(provider = ProviderName.OpenWeatherMap, property = "list"),
+    @ForecastMappings({ @Forecast(provider = ProviderName.OpenWeatherMap, property = "list"),
             @Forecast(provider = ProviderName.Wunderground, property = "forecast.simpleforecast.forecastday"),
             @Forecast(provider = ProviderName.ForecastIO, property = "daily.data"),
             @Forecast(provider = ProviderName.WorldWeatherOnline, property = "data.weather"),
@@ -178,7 +175,10 @@ public class Weather {
             tsb.append("day", ((org.openhab.binding.weather.internal.model.Forecast) this).getDay());
         }
         tsb.append(temperature).append(atmosphere).append(clouds).append(condition).append(precipitation).append(wind)
-                .append(station).append(error);
+                .append(station).append(error).append("forecastLen=");
+        for (org.openhab.binding.weather.internal.model.Forecast forcast : this.forecast) {
+            tsb.append(forecast);
+        }
 
         return tsb.toString();
     }

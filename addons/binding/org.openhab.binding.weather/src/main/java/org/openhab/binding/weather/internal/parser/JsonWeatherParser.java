@@ -9,15 +9,18 @@
 package org.openhab.binding.weather.internal.parser;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Map.Entry;
 
 import org.openhab.binding.weather.internal.model.Weather;
 import org.openhab.binding.weather.internal.utils.PropertyResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Weather parser with JSON data in the InputStream.
@@ -27,18 +30,23 @@ import com.fasterxml.jackson.core.JsonToken;
  */
 public class JsonWeatherParser extends AbstractWeatherParser {
     private static final Logger logger = LoggerFactory.getLogger(JsonWeatherParser.class);
+    JsonParser parser = new JsonParser();
+
+    public JsonWeatherParser(CommonIdHandler commonIdHandler) {
+        super(commonIdHandler);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void parseInto(InputStream is, Weather weather) throws Exception {
-        JsonFactory jsonFactory = new JsonFactory();
-        JsonParser jp = jsonFactory.createParser(is);
+        InputStreamReader reader = new InputStreamReader(is);
 
-        jp.nextValue();
-        handleToken(jp, null, weather);
-        jp.close();
+        // JsonElement element = parser.parse(reader);
+        JsonElement element = parser.parse(reader);
+        handleToken(element, null, weather);
+        reader.close();
 
         super.parseInto(is, weather);
     }
@@ -46,28 +54,30 @@ public class JsonWeatherParser extends AbstractWeatherParser {
     /**
      * Iterates through the JSON structure and collects weather data.
      */
-    private void handleToken(JsonParser jp, String property, Weather weather) throws Exception {
-        JsonToken token = jp.getCurrentToken();
-        String prop = PropertyResolver.add(property, jp.getCurrentName());
-
-        if (token.isStructStart()) {
-            boolean isObject = token == JsonToken.START_OBJECT || token == JsonToken.END_OBJECT;
-
-            Weather forecast = !isObject ? weather : startIfForecast(weather, prop);
-            while (!jp.nextValue().isStructEnd()) {
-                handleToken(jp, prop, forecast);
+    private void handleToken(JsonElement element, String property, Weather weather) throws Exception {
+        if (element.isJsonArray()) {
+            // go through all the elements and send back to ourselves.
+            JsonArray array = (JsonArray) element;
+            for (JsonElement arrayElement : array) {
+                Weather forecast = startIfForecast(weather, property);
+                handleToken(arrayElement, property, forecast);
+                endIfForecast(weather, forecast, property);
             }
-            if (isObject) {
-                endIfForecast(weather, forecast, prop);
-            }
-        } else if (token != null) {
-            try {
-                setValue(weather, prop, jp.getValueAsString());
-            } catch (Exception ex) {
-                logger.error("Error setting property '{}' with value '{}' ({})", prop, jp.getValueAsString(),
-                        ex.getMessage());
+        } else if (element.isJsonObject()) {
+            JsonObject object = (JsonObject) element;
+            for (Entry<String, JsonElement> entry : object.entrySet()) {
+                String prop = PropertyResolver.add(property, entry.getKey());
+                if (entry.getValue().isJsonPrimitive()) {
+                    try {
+                        setValue(weather, prop, entry.getValue().getAsString());
+                    } catch (Exception ex) {
+                        logger.error("Error setting property '{}' with value '{}' ({})", prop,
+                                entry.getValue().getAsString(), ex.getMessage());
+                    }
+                } else {
+                    handleToken(entry.getValue(), prop, weather);
+                }
             }
         }
     }
-
 }

@@ -8,10 +8,12 @@
  */
 package org.openhab.binding.weather.internal.provider;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.weather.internal.model.ProviderName;
+import org.openhab.binding.weather.internal.parser.CommonIdHandler;
 
 /**
  * Simple factory which creates WeatherProvider objects based on the provider
@@ -36,10 +38,12 @@ public class WeatherProviderFactory {
     /**
      * Creates a WeatherProvider for the specified provider.
      */
-    public static WeatherProvider createWeatherProvider(ProviderName providerName) throws Exception {
+    public static WeatherProvider createWeatherProvider(ProviderName providerName, CommonIdHandler commonIdHandler)
+            throws Exception {
         Class<? extends WeatherProvider> provider = weatherProviders.get(providerName);
         if (provider != null) {
-            return provider.newInstance();
+            Constructor<? extends WeatherProvider> frog = provider.getConstructor(CommonIdHandler.class);
+            return frog.newInstance(commonIdHandler);
         }
         return null;
     }

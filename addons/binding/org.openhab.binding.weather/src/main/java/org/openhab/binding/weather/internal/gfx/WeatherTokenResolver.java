@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.openhab.binding.weather.internal.common.LocationConfig;
 import org.openhab.binding.weather.internal.common.Unit;
-import org.openhab.binding.weather.internal.common.WeatherContext;
 import org.openhab.binding.weather.internal.model.Weather;
 import org.openhab.binding.weather.internal.utils.PropertyUtils;
 import org.openhab.binding.weather.internal.utils.UnitUtils;
@@ -38,12 +37,10 @@ public class WeatherTokenResolver implements TokenResolver {
     private static final String PREFIX_TOKEN_PARAM = "param";
 
     private Weather weather;
-    private String locationId;
     private Map<String, String> params = new HashMap<String, String>();
 
     public WeatherTokenResolver(Weather weather, String locationId) {
         this.weather = weather;
-        this.locationId = locationId;
     }
 
     /**
@@ -57,7 +54,7 @@ public class WeatherTokenResolver implements TokenResolver {
      * {@inheritDoc}
      */
     @Override
-    public String resolveToken(String tokenName) {
+    public String resolveToken(String tokenName, LocationConfig locationConfig) {
         try {
             Token token = parseTokenName(tokenName);
 
@@ -66,7 +63,7 @@ public class WeatherTokenResolver implements TokenResolver {
             } else if (PREFIX_TOKEN_FORECAST.equals(token.prefix)) {
                 return replaceForecast(token);
             } else if (PREFIX_TOKEN_CONFIG.equals(token.prefix)) {
-                return replaceConfig(token);
+                return replaceConfig(token, locationConfig);
             } else if (PREFIX_TOKEN_PARAM.equals(token.prefix)) {
                 return replaceParameter(token);
             } else {
@@ -112,12 +109,7 @@ public class WeatherTokenResolver implements TokenResolver {
     /**
      * Replaces the token with properties of the weather LocationConfig object.
      */
-    private String replaceConfig(Token token) {
-        LocationConfig locationConfig = WeatherContext.getInstance().getConfig().getLocationConfig(locationId);
-        if (locationConfig == null) {
-            throw new RuntimeException("Weather locationId '" + locationId + "' does not exist");
-        }
-
+    private String replaceConfig(Token token, LocationConfig locationConfig) {
         if ("latitude".equals(token.name)) {
             return locationConfig.getLatitude().toString();
         } else if ("longitude".equals(token.name)) {
@@ -128,8 +120,6 @@ public class WeatherTokenResolver implements TokenResolver {
             return locationConfig.getLanguage();
         } else if ("updateInterval".equals(token.name)) {
             return ObjectUtils.toString(locationConfig.getUpdateInterval());
-        } else if ("locationId".equals(token.name)) {
-            return locationConfig.getLocationId();
         } else if ("providerName".equals(token.name)) {
             return ObjectUtils.toString(locationConfig.getProviderName());
         } else {

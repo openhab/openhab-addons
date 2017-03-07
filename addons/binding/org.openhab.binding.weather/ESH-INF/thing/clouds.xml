@@ -7,19 +7,13 @@
         <label>Clouds</label>
         <description>The clouds related channels</description>
         <channels>
-            <channel typeId="percent" id="percent" />
-            <channel typeId="visibility" id="visibility" />
-            <channel typeId="pressure" id="pressure" />
-            <channel typeId="pressureTrend" id="pressureTrend" />
-            <channel typeId="ozone" id="ozone" />
-            <channel typeId="uvIndex" id="uvIndex" />
+            <channel typeId="cloudCoverPercent" id="cloudCoverPercent" />
         </channels>
     </channel-group-type>
 
-    <channel-type id="percent">
+    <channel-type id="cloudCoverPercent">
         <item-type>Number</item-type>
-        <kind>Cloud Cover</kind>
-        <label>Humidity</label>
+        <label>Cloud cover</label>
         <description>The cloud cover as a percentage right now</description>
         <state min="0" max="100" />
     </channel-type>

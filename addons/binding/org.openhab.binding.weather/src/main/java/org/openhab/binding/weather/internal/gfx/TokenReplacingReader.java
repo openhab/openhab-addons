@@ -13,6 +13,8 @@ import java.io.PushbackReader;
 import java.io.Reader;
 import java.nio.CharBuffer;
 
+import org.openhab.binding.weather.internal.common.LocationConfig;
+
 /**
  * Reads character streams and replaces tokens in the format ${...}.
  *
@@ -25,10 +27,12 @@ public class TokenReplacingReader extends Reader {
     protected StringBuilder tokenNameBuffer = new StringBuilder();
     protected String tokenValue = null;
     protected int tokenValueIndex = 0;
+    protected final LocationConfig locationConfig;
 
-    public TokenReplacingReader(Reader source, TokenResolver resolver) {
+    public TokenReplacingReader(Reader source, TokenResolver resolver, LocationConfig locationConfig) {
         this.pushbackReader = new PushbackReader(source, 2);
         this.tokenResolver = resolver;
+        this.locationConfig = locationConfig;
     }
 
     /**
@@ -72,7 +76,7 @@ public class TokenReplacingReader extends Reader {
             data = pushbackReader.read();
         }
 
-        tokenValue = tokenResolver.resolveToken(tokenNameBuffer.toString());
+        tokenValue = tokenResolver.resolveToken(tokenNameBuffer.toString(), locationConfig);
 
         if (tokenValue == null) {
             tokenValue = "${" + tokenNameBuffer.toString() + "}";

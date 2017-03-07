@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.weather.internal.model.common;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -59,5 +61,11 @@ public class CommonIdProvider {
      */
     public String[] getIcons() {
         return icons;
+    }
+
+    @Override
+    public String toString() {
+        return "CommonIdProvider [name=" + name + ", ids=" + Arrays.toString(ids) + ", icons=" + Arrays.toString(icons)
+                + "]";
     }
 }

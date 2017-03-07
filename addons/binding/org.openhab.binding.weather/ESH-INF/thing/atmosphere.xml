@@ -18,7 +18,6 @@
 
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
-		<kind>Humidity</kind>
 		<label>Humidity</label>
 		<description>The humidity right now</description>
 		<state min="0" max="100" />

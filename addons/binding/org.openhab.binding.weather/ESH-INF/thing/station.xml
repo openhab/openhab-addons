@@ -7,15 +7,15 @@
         <label>Station</label>
         <description>The station related channels</description>
         <channels>
-            <channel typeId="name" id="name" />
-            <channel typeId="stationId" id="id" />
+            <channel typeId="stationName" id="stationName" />
+            <channel typeId="stationId" id="stationId" />
             <channel typeId="latitude" id="latitude" />
             <channel typeId="longitude" id="longitude" />
             <channel typeId="altitude" id="altitude" />
         </channels>
     </channel-group-type>
 
-    <channel-type id="name">
+    <channel-type id="stationName">
         <item-type>String</item-type>
         <label>Name</label>
         <description>The name of the station</description>

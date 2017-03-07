@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.weather.internal.gfx;
 
+import org.openhab.binding.weather.internal.common.LocationConfig;
+
 /**
  * Interface which is used by TokenReplacingReader to replace a token in a
  * stream.
@@ -21,6 +23,6 @@ public interface TokenResolver {
      * Returns the value to which the token is replaced, null to not replace the
      * token.
      */
-    public String resolveToken(String tokenName);
+    public String resolveToken(String tokenName, LocationConfig locationConfig);
 
 }

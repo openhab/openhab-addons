@@ -9,6 +9,7 @@
 package org.openhab.binding.weather.internal.provider;
 
 import org.openhab.binding.weather.internal.model.ProviderName;
+import org.openhab.binding.weather.internal.parser.CommonIdHandler;
 import org.openhab.binding.weather.internal.parser.JsonWeatherParser;
 
 /**
@@ -21,8 +22,8 @@ public class YahooProvider extends AbstractWeatherProvider {
     // SELECT * FROM weather.forecast WHERE woeid='[WOEID]'
     private static final String URL = "http://query.yahooapis.com/v1/public/yql?format=json&q=SELECT%20*%20FROM%20weather.forecast%20WHERE%20u%3D'c'%20AND%20woeid%20%3D%20'[WOEID]'";
 
-    public YahooProvider() {
-        super(new JsonWeatherParser());
+    public YahooProvider(CommonIdHandler commonIdHandler) {
+        super(new JsonWeatherParser(commonIdHandler));
     }
 
     /**

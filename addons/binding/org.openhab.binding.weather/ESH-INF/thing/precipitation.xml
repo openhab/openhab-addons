@@ -5,7 +5,7 @@
 
     <channel-group-type id="precipitation">
         <label>Precipitation</label>
-        <description>The p]recipitation related channels</description>
+        <description>The precipitation related channels</description>
         <channels>
             <channel typeId="rain" id="rain" />
             <channel typeId="snow" id="snow" />

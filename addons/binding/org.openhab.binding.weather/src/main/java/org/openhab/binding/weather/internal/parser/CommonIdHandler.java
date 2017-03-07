@@ -36,21 +36,10 @@ import org.slf4j.LoggerFactory;
  */
 public class CommonIdHandler {
     private static final Logger logger = LoggerFactory.getLogger(CommonIdHandler.class);
-    private static CommonIdHandler instance;
 
     private Map<ProviderName, Map<String, CommonId>> providerCommonIds = new HashMap<ProviderName, Map<String, CommonId>>();
 
-    private CommonIdHandler() {
-    }
-
-    /**
-     * Returns the singleton instance of the CommonIdHandler.
-     */
-    public static CommonIdHandler getInstance() {
-        if (instance == null) {
-            instance = new CommonIdHandler();
-        }
-        return instance;
+    public CommonIdHandler() {
     }
 
     /**
@@ -69,7 +58,6 @@ public class CommonIdHandler {
                     commonIds = new HashMap<String, CommonId>();
                     providerCommonIds.put(commonIdProvider.getName(), commonIds);
                 }
-
                 addCommonId(commonIdProvider.getIds(), "id", commonIdProvider, commonIds, commonId);
                 addCommonId(commonIdProvider.getIcons(), "icon", commonIdProvider, commonIds, commonId);
             }

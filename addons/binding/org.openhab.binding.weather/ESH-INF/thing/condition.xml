@@ -9,7 +9,7 @@
         <channels>
             <channel typeId="condition" id="condition" />
             <channel typeId="observationTime" id="observationTime" />
-            <channel typeId="id" id="id" />
+            <channel typeId="conditionId" id="conditionId" />
             <channel typeId="icon" id="icon" />
         </channels>
     </channel-group-type>
@@ -28,7 +28,7 @@
         <state min="0" max="100" />
     </channel-type>
     
-    <channel-type id="id">
+    <channel-type id="conditionId">
         <item-type>String</item-type>
         <label>Id</label>
         <description>The id of the condition</description>

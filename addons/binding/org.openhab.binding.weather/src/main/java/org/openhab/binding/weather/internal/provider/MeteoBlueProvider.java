@@ -9,6 +9,7 @@
 package org.openhab.binding.weather.internal.provider;
 
 import org.openhab.binding.weather.internal.model.ProviderName;
+import org.openhab.binding.weather.internal.parser.CommonIdHandler;
 import org.openhab.binding.weather.internal.parser.JsonWeatherParser;
 
 /**
@@ -20,8 +21,8 @@ import org.openhab.binding.weather.internal.parser.JsonWeatherParser;
 public class MeteoBlueProvider extends AbstractWeatherProvider {
     private static final String URL = "http://my.meteoblue.com/dataApi/dispatch.pl?apikey=[API_KEY]&type=json_7day_3h_firstday&lat=[LATITUDE]&lon=[LONGITUDE]&temperature=C&windspeed=ms-1&winddirection=degree&precipitationamount=mm&format=json";
 
-    public MeteoBlueProvider() {
-        super(new JsonWeatherParser());
+    public MeteoBlueProvider(CommonIdHandler commonIdHandler) {
+        super(new JsonWeatherParser(commonIdHandler));
     }
 
     /**

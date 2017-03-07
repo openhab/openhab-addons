@@ -9,6 +9,7 @@
 package org.openhab.binding.weather.internal.provider;
 
 import org.openhab.binding.weather.internal.model.ProviderName;
+import org.openhab.binding.weather.internal.parser.CommonIdHandler;
 import org.openhab.binding.weather.internal.parser.JsonWeatherParser;
 
 /**
@@ -20,8 +21,8 @@ import org.openhab.binding.weather.internal.parser.JsonWeatherParser;
 public class ForecastIoProvider extends AbstractWeatherProvider {
     private static final String URL = "https://api.darksky.net/forecast/[API_KEY]/[LATITUDE],[LONGITUDE]?units=[UNITS]&lang=[LANGUAGE]&exclude=hourly,flags";
 
-    public ForecastIoProvider() {
-        super(new JsonWeatherParser());
+    public ForecastIoProvider(CommonIdHandler commonIdHandler) {
+        super(new JsonWeatherParser(commonIdHandler));
     }
 
     /**
