@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -81,6 +81,8 @@ public class OceanicThingHandler extends SerialThingHandler {
 
         port = (String) getConfig().get(PORT);
 
+        sleep = 250;
+
         super.initialize();
 
         onUpdate();
@@ -91,10 +93,33 @@ public class OceanicThingHandler extends SerialThingHandler {
             int polling_interval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
             pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, polling_interval, TimeUnit.SECONDS);
         }
+
+        // Read out the properties
+        try {
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                for (Channel aChannel : getThing().getChannels()) {
+                    try {
+                        OceanicChannelSelector selector = OceanicChannelSelector.getValueSelector(
+                                aChannel.getUID().getId(), OceanicChannelSelector.ValueSelectorType.GET);
+
+                        if (selector != null && selector.isProperty()) {
+                            scheduler.schedule(new RequestRunnable(aChannel.getUID(), selector), 0,
+                                    TimeUnit.MILLISECONDS);
+                        }
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("An exception occurred while reading the properties the Oceanic Water Softener: '{}'",
+                    e.getMessage());
+        }
     }
 
     @Override
     public void onDataReceived(String line) {
+
+        logger.trace("Received '{}'", line);
 
         line = StringUtils.chomp(line);
 
@@ -111,14 +136,23 @@ public class OceanicThingHandler extends SerialThingHandler {
         public void run() {
             try {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
+
+                    long interval = (((BigDecimal) getConfig().get(INTERVAL)).intValue() * 1000)
+                            / getThing().getChannels().size();
+                    logger.trace("Sending a request every {} milliseconds", interval);
+                    long delay = 0;
+
                     for (Channel aChannel : getThing().getChannels()) {
-                        for (OceanicChannelSelector selector : OceanicChannelSelector.values()) {
-                            ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.toString());
-                            if (aChannel.getUID().equals(theChannelUID)
-                                    && selector.getTypeValue() == OceanicChannelSelector.ValueSelectorType.GET) {
-                                scheduler.schedule(new RequestRunnable(theChannelUID, selector), 0,
+                        try {
+                            OceanicChannelSelector selector = OceanicChannelSelector.getValueSelector(
+                                    aChannel.getUID().getId(), OceanicChannelSelector.ValueSelectorType.GET);
+
+                            if (selector != null) {
+                                scheduler.schedule(new RequestRunnable(aChannel.getUID(), selector), delay,
                                         TimeUnit.MILLISECONDS);
+                                delay = delay + interval;
                             }
+                        } catch (Exception e) {
                         }
                     }
                 }
@@ -142,6 +176,7 @@ public class OceanicThingHandler extends SerialThingHandler {
         public void run() {
             try {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    logger.trace("Requesting a response for {}", selector.name());
                     String response = requestResponse(selector.name());
                     if (response != "") {
                         if (selector.isProperty()) {
@@ -232,11 +267,12 @@ public class OceanicThingHandler extends SerialThingHandler {
     }
 
     private String requestResponse(String commandAsString) {
-        synchronized (this) {
-            SerialPortThrottler.lock(port);
 
+        SerialPortThrottler.lock(port);
+
+        String response = null;
+        try {
             lastLineReceived = "";
-            String response = null;
             writeString(commandAsString + "\r");
             long timeStamp = System.currentTimeMillis();
             while (lastLineReceived.equals("")) {
@@ -251,10 +287,11 @@ public class OceanicThingHandler extends SerialThingHandler {
                 }
             }
             response = lastLineReceived;
-
+        } finally {
             SerialPortThrottler.unlock(port);
-
-            return response;
         }
+
+        return response;
+
     }
 }

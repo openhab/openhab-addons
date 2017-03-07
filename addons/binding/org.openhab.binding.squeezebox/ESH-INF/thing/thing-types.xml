@@ -65,6 +65,7 @@
             <channel id="coverartdata" typeId="coverartdata" />
             <channel id="ircode" typeId="ircode" />
             <channel id="numberPlaylistTracks" typeId="numberPlaylistTracks" />
+            <channel id="notificationSoundVolume" typeId="notificationVolume" />
         </channels>
         <properties>
                <property name="vendor">Logitech</property>
@@ -234,5 +235,12 @@
         <label>Number of Playlist Tracks</label>
         <description>Number of playlist tracks</description>
         <state readOnly="true" pattern="%d"></state>
+    </channel-type>
+    <channel-type id="notificationVolume">
+        <item-type>Dimmer</item-type>
+        <label>Notification Volume</label>
+        <description>Volume of notifications</description>
+        <state min="0" max="100" step="1" pattern="%d %%">
+        </state>
     </channel-type>
 </thing:thing-descriptions>

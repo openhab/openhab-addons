@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,11 +41,11 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
      * Create the callback from the other {@link RioHandlerCallback}
      *
      * @param wrappedCallback a non-null {@link RioHandlerCallback}
-     * @throws NullPointerException if wrappedCallback is null
+     * @throws IllegalArgumentException if wrappedCallback is null
      */
     public StatefulHandlerCallback(RioHandlerCallback wrappedCallback) {
         if (wrappedCallback == null) {
-            throw new NullPointerException("wrappedCallback cannot be null");
+            throw new IllegalArgumentException("wrappedCallback cannot be null");
         }
 
         _wrappedCallback = wrappedCallback;

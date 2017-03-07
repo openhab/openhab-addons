@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2014-2016 by the respective copyright holders.
+    Copyright (c) 2010-2017 by the respective copyright holders.
 
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,11 @@
 
     <!-- binding -->
 
+    <feature name="openhab-binding-airquality" description="Air Quality Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.airquality/${project.version}</bundle>
+    </feature>
+    
     <feature name="openhab-binding-allplay" description="AllPlay Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.allplay/${project.version}</bundle>
@@ -26,6 +31,11 @@
     <feature name="openhab-binding-astro" description="Astro Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.astro/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-atlona" description="Atlona PRO3 Switch Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.atlona/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-autelis" description="Autelis Binding" version="${project.version}">
@@ -75,10 +85,20 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.feed/${project.version}</bundle>
     </feature>
     
+    <feature name="openhab-binding-folding" description="Folding Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.folding/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-freebox" description="Freebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.freebox/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-gardena" description="Gardena Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gardena/${project.version}</bundle>
     </feature>
 
      <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
@@ -133,6 +153,12 @@
         <feature>openhab-runtime-base</feature>
         <bundle
             start-level="80">mvn:org.openhab.binding/org.openhab.binding.kostalinverter/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-lgtvserial" description="LG TV Serial Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lgtvserial/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-lutron" description="Lutron Binding" version="${project.version}">
@@ -358,7 +384,7 @@
 
     <!-- ui -->
 
-    <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
+    <feature name="openhab-ui-cometvisu" description="CometVisu Backend" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>esh-model-item</feature>
         <feature>esh-model-sitemap</feature>

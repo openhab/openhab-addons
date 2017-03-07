@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gardena" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Gardena Smart Home Account -->
+	<bridge-type id="account">
+		<label>Gardena Smart Home Account</label>
+		<description>The Gardena Smart Home Account</description>
+
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<label>Email</label>
+				<description>Email address for logging in to Gardena Smart Home</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+				<description>Password for logging in to Gardena Smart Home</description>
+			</parameter>
+			<parameter name="sessionTimeout" type="integer">
+				<label>Session Timeout</label>
+				<description>The timeout in minutes for a session to Gardena Smart Home</description>
+				<advanced>true</advanced>
+				<default>30</default>
+			</parameter>
+			<parameter name="connectionTimeout" type="integer">
+				<label>Connection Timeout</label>
+				<description>The timeout in seconds for connections to Gardena Smart Home</description>
+				<advanced>true</advanced>
+				<default>10</default>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>The interval in seconds for refreshing the data from Gardena Smart Home</description>
+				<advanced>true</advanced>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

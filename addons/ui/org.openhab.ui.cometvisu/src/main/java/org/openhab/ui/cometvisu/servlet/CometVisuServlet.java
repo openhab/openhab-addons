@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.ui.cometvisu.servlet;
 
+import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -42,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.events.ItemEventFactory;
@@ -519,10 +521,13 @@ public class CometVisuServlet extends HttpServlet {
         }
         // Check if file actually exists in filesystem.
         if (!file.exists()) {
-            // Do your thing if the file appears to be non-existing.
-            // Throw an exception, or send 404, or show default/warning page, or
-            // just ignore it.
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            // show installation hints if the CometVisu-Clients main index.html is requested but cannot be found
+            if (file.getParent().equals(rootFolder.getCanonicalPath())
+                    && (file.getName().equalsIgnoreCase("index.html") || file.getName().length() == 0)) {
+                showInstallationHint(request, response);
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
             return;
         }
 
@@ -780,6 +785,20 @@ public class CometVisuServlet extends HttpServlet {
     }
 
     /**
+     * Show hints for solving installation problems
+     *
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    private void showInstallationHint(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        BufferedInputStream in = new BufferedInputStream(getClass().getResourceAsStream("/404.html"));
+        String everything = IOUtils.toString(in);
+        response.getWriter().write(everything);
+        response.flushBuffer();
+    }
+
+    /**
      * Save config file send by editor
      *
      * @param request
@@ -872,22 +891,24 @@ public class CometVisuServlet extends HttpServlet {
         } else if (file.getName().equals("list_all_icons.php")) {
             // all item names
             File iconDir = new File(rootFolder, "icon/knx-uf-iconset/128x128_white/");
-            FilenameFilter filter = new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    // TODO Auto-generated method stub
-                    return name.endsWith(".png");
-                }
-            };
-            File[] icons = iconDir.listFiles(filter);
-            Arrays.sort(icons);
-            for (File iconFile : icons) {
-                if (iconFile.isFile()) {
-                    String iconName = iconFile.getName().replace(".png", "");
-                    DataBean bean = new DataBean();
-                    bean.label = iconName;
-                    bean.value = iconName;
-                    beans.add(bean);
+            if (iconDir.exists() && iconDir.isDirectory()) {
+                FilenameFilter filter = new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        // TODO Auto-generated method stub
+                        return name.endsWith(".png");
+                    }
+                };
+                File[] icons = iconDir.listFiles(filter);
+                Arrays.sort(icons);
+                for (File iconFile : icons) {
+                    if (iconFile.isFile()) {
+                        String iconName = iconFile.getName().replace(".png", "");
+                        DataBean bean = new DataBean();
+                        bean.label = iconName;
+                        bean.value = iconName;
+                        beans.add(bean);
+                    }
                 }
             }
         } else if (file.getName().equals("list_all_plugins.php")) {
@@ -920,9 +941,14 @@ public class CometVisuServlet extends HttpServlet {
             // all item names
 
         }
-        response.setContentType(MediaType.APPLICATION_JSON);
-        response.getWriter().write(marshalJson(beans));
-        response.flushBuffer();
+        if (beans.size() == 0) {
+            // nothing found try the PHP files
+            processPhpRequest(file, request, response);
+        } else {
+            response.setContentType(MediaType.APPLICATION_JSON);
+            response.getWriter().write(marshalJson(beans));
+            response.flushBuffer();
+        }
     }
 
     private String marshalJson(Object bean) {

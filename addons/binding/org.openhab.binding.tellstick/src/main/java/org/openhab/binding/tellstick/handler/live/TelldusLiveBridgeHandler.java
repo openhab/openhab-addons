@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tellstick.conf.TelldusLiveConfiguration;
 import org.openhab.binding.tellstick.handler.DeviceStatusListener;
@@ -55,11 +56,14 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
     private TelldusLiveDeviceController controller = new TelldusLiveDeviceController();
     private List<DeviceStatusListener> deviceStatusListeners = new Vector<DeviceStatusListener>();
 
+    private static final int REFRESH_DELAY = 10;
+
     public TelldusLiveBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
     private ScheduledFuture<?> pollingJob;
+    private ScheduledFuture<?> immediateRefreshJob;
     private Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
@@ -98,6 +102,16 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
             pollingJob.cancel(true);
         }
         pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, refreshInterval, TimeUnit.MILLISECONDS);
+    }
+
+    private void scheduleImmediateRefresh() {
+        // We schedule in 10 sec, to avoid multiple updates
+        logger.debug("Current remaining delay {}", pollingJob.getDelay(TimeUnit.SECONDS));
+        if (pollingJob.getDelay(TimeUnit.SECONDS) > REFRESH_DELAY) {
+            if (immediateRefreshJob == null || immediateRefreshJob.isDone()) {
+                immediateRefreshJob = scheduler.schedule(pollingRunnable, REFRESH_DELAY, TimeUnit.SECONDS);
+            }
+        }
     }
 
     synchronized void refreshDeviceList() {
@@ -220,7 +234,9 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Need to stay for compile reasons
+        if (command instanceof RefreshType) {
+            scheduleImmediateRefresh();
+        }
     }
 
     @Override
@@ -300,6 +316,8 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
 
     @Override
     public void rescanTelldusDevices() {
+        this.deviceList = null;
+        this.sensorList = null;
         refreshDeviceList();
     }
 

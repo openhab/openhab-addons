@@ -85,6 +85,7 @@
 		<label>Start time</label>
 		<description>The start time of the event</description>
 		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<config-description-ref uri="channel-type:astro:config" />
 	</channel-type>
 
 	<channel-type id="end">
@@ -92,6 +93,7 @@
 		<label>End time</label>
 		<description>The end time of the event</description>
 		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<config-description-ref uri="channel-type:astro:config" />
 	</channel-type>
 
 	<channel-type id="duration">

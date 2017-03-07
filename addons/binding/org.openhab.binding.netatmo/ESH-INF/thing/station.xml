@@ -14,9 +14,11 @@
 
         <channels>
             <channel id="Co2" typeId="co2"/>
-            <channel id="Temperature" typeId="temperature" />            
+            <channel id="Temperature" typeId="temperature" />
+            <channel id="TempTrend" typeId="temperatureTrend" />            
             <channel id="Noise" typeId="noise" />
             <channel id="Pressure" typeId="pressure" />
+            <channel id="PressTrend" typeId="pressureTrend" />
             <channel id="AbsolutePressure" typeId="absolutePressure" />
             <channel id="TimeStamp" typeId="timeUtc" />
             <channel id="Humidity" typeId="humidity" />
@@ -51,6 +53,7 @@
 
         <channels>
             <channel id="Temperature" typeId="temperature" />
+            <channel id="TempTrend" typeId="temperatureTrend" />
             <channel id="Humidity" typeId="humidity" />
             <channel id="TimeStamp" typeId="timeUtc" />      
             <channel id="Humidex" typeId="humidex" />
@@ -116,6 +119,8 @@
 
         <channels>
             <channel id="Rain" typeId="rain"/> 
+            <channel id="SumRain1" typeId="rain1"/> 
+            <channel id="SumRain24" typeId="rain24"/> 
             <!--  Common to all modules -->
             <channel id="LastMessage" typeId="lastMessage" />
             <channel id="LowBattery" typeId="system.low-battery" />                    
@@ -143,6 +148,7 @@
 
         <channels>
             <channel id="Temperature" typeId="temperature" />
+            <channel id="TempTrend" typeId="temperatureTrend" />
             <channel id="TimeStamp" typeId="timeUtc" />          
             <channel id="Humidity" typeId="humidity" />
             <channel id="Humidex" typeId="humidex" />

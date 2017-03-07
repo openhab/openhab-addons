@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lgtvserial"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="lgtv">
+        <label>LG TV</label>
+        <description>LG television connected through a serial interface.</description>
+
+        <channels>
+            <channel id="power" typeId="power"/>
+            <channel id="input" typeId="input"/>
+            <channel id="volume" typeId="volume"/>
+            <channel id="mute" typeId="mute"/>
+            <channel id="backlight" typeId="backlight"/>
+            <channel id="color-temperature" typeId="color-temperature"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="port" type="text">
+                <label>Serial port</label>
+                <description>Select serial port (COM1, /dev/ttyS0, ...)</description>
+                <required>true</required>
+            </parameter>
+         </config-description>
+    </thing-type>
+
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>Power on/off</description>
+    </channel-type>
+
+    <channel-type id="input">
+        <item-type>String</item-type>
+        <label>Input</label>
+        <description>Input select</description>
+        <state>
+            <options>
+                <option value="144">HDMI1</option>
+                <option value="145">HDMI2</option>
+                <option value="146">HDMI3</option>
+                <option value="0">DTV</option>
+                <option value="16">Analog</option>
+                <option value="32">AV</option>
+                <option value="64">Component</option>
+                <option value="96">RGB</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Volume control (%)</description>
+        <category>SoundVolume</category>
+    </channel-type>
+
+    <channel-type id="mute">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Mute on/off</description>
+        <category>Mute</category>
+    </channel-type>
+    
+    <channel-type id="backlight">
+        <item-type>Dimmer</item-type>
+        <label>Backlight</label>
+        <description>Display backlight brightness</description>
+    </channel-type>
+    
+    <channel-type id="color-temperature">
+        <item-type>String</item-type>
+        <label>Color temperature</label>
+        <description>Color temperature of the display</description>
+        <state>
+	        <options>
+	            <option value="0">Cool</option>
+	            <option value="1">Normal</option>
+	            <option value="2">Warm</option>
+	        </options>
+        </state>
+    </channel-type>
+    
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,13 +21,16 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.tellstick.TellstickBindingConstants;
 import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
 import org.openhab.binding.tellstick.handler.live.xml.TellstickNetDevice;
+import org.openhab.binding.tellstick.handler.live.xml.TellstickNetSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.JNA;
+import org.tellstick.device.TellstickSensor;
 import org.tellstick.device.iface.Device;
 import org.tellstick.device.iface.DimmableDevice;
 import org.tellstick.device.iface.SwitchableDevice;
 import org.tellstick.device.iface.TellstickEvent;
+import org.tellstick.enums.DataType;
 
 /**
  * The {@link TellstickDiscoveryService} class is used to discover Tellstick
@@ -115,7 +118,8 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService
         ThingUID thingUID = null;
         switch (device.getDeviceType()) {
             case SENSOR:
-                thingUID = new ThingUID(TellstickBindingConstants.SENSOR_THING_TYPE, bridge.getUID(), device.getUUId());
+                ThingTypeUID sensorThingId = findSensorType(device);
+                thingUID = new ThingUID(sensorThingId, bridge.getUID(), device.getUUId());
                 break;
             case DEVICE:
                 if (device instanceof DimmableDevice) {
@@ -138,6 +142,30 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService
                 break;
         }
         return thingUID;
+    }
+
+    private ThingTypeUID findSensorType(Device device) {
+        ThingTypeUID sensorThingId;
+        if (device instanceof TellstickSensor) {
+            TellstickSensor sensor = (TellstickSensor) device;
+            if (sensor.getData(DataType.WINDAVERAGE) != null) {
+                sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
+            } else if (sensor.getData(DataType.RAINTOTAL) != null) {
+                sensorThingId = TellstickBindingConstants.RAINSENSOR_THING_TYPE;
+            } else {
+                sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
+            }
+        } else {
+            TellstickNetSensor sensor = (TellstickNetSensor) device;
+            if (sensor.isWindSensor()) {
+                sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
+            } else if (sensor.isRainSensor()) {
+                sensorThingId = TellstickBindingConstants.RAINSENSOR_THING_TYPE;
+            } else {
+                sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
+            }
+        }
+        return sensorThingId;
     }
 
     public void addBridgeHandler(TelldusBridgeHandler tellstickBridgeHandler) {

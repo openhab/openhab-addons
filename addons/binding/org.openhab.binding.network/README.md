@@ -22,8 +22,8 @@ network:device:devicename [ hostname="192.168.0.64", port="0", retry="1", timeou
 - **hostname:** IP address or hostname of the device
 - **port:** "0" to use ICMP ping or the number of an open TCP port on the device
 - **retry:** After how many ping retries shall the device be assumed as offline
-- **timeout:** How long shall the ping wait for an answer (in milliseconds, `60000` = one minute) 
-- **refresh_interval:** How often shall the device be checked  (in milliseconds, `5000` = 5 seconds)
+- **timeout:** How long shall the ping wait for an answer (in milliseconds, `5000` = 5 seconds) 
+- **refresh_interval:** How often shall the device be checked (in milliseconds, `60000` = one minute)
 - **use\_system\_ping:** Use the real ICMP ping program of the operating system, instead of the Java ping. Useful if the devices cannot be reached by Java ping. **Beware**: By setting this option to `true`, the **port option is ignored**.
 - **dhcplisten:** Listen for DHCP Request messages.
   If devices leave and reenter a network, they usually request their last IP address by a UDP broadcast message (DHCP, Message type Request).
@@ -104,8 +104,8 @@ demo.sitemap:
 sitemap demo label="Main Menu"
 {
 	Frame {
-		Switch item=MyDevice
-		Number item=MyDeviceResponseTime
+		Text item=MyDevice label="Device [%s]"
+		Text item=MyDeviceResponseTime label="Device Response Time [%s]"
 	}
 }
 ```
