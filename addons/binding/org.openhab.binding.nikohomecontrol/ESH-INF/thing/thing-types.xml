@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><!--Niko Home Control Gateway Bridge Type -->
 
 	<bridge-type id="bridge">
-		<label>NikoHomeControl Bridge</label>
+		<label>Niko Home Control Bridge</label>
 		<description>This bridge represents a Niko Home Control IP-interface</description>
 		<config-description>
 			<parameter name="ADDR" type="text" required="false">

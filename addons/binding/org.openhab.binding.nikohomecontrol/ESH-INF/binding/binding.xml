@@ -3,8 +3,8 @@
 	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>NikoHomeControl Binding</name>
-	<description>This is the binding for NikoHomeControl.</description>
+	<name>Niko Home Control Binding</name>
+	<description>This is the binding for the Niko Home Control system</description>
 	<author>Mark Herwege</author>
 
 </binding:binding>
