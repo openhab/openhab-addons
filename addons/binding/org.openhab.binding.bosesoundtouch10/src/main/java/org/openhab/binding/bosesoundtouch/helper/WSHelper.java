@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch10.helper;
+package org.openhab.binding.bosesoundtouch.helper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,8 +17,8 @@ import java.net.URL;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.openhab.binding.bosesoundtouch10.handler.BoseSoundTouch10Handler.BSTKeys;
-import org.openhab.binding.bosesoundtouch10.handler.BoseSoundTouch10Handler.KeyState;
+import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler.BSTKeys;
+import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler.KeyState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,7 @@ public class WSHelper implements WSHelperInterface {
                 response.append(inputLine);
             }
         } catch (IOException e) {
-            logger.debug("IOException on sending message to WS: " + message);
+            logger.debug("IOException on sending message to webservice: ", message);
             response.append("<error");
         } finally {
             try {
@@ -110,7 +110,7 @@ public class WSHelper implements WSHelperInterface {
         } catch (ProtocolException e) {
             logger.debug("Error in GET protocol");
         }
-        connection.setRequestProperty("Content-type", "text/xml");
+        connection.setRequestProperty("Content-Type", "text/xml");
     }
 
     private void sendPostMessage(HttpURLConnection connection, String message) {
@@ -120,7 +120,7 @@ public class WSHelper implements WSHelperInterface {
             pr.flush();
             pr.close();
         } catch (IOException e) {
-            logger.debug("Error on writing POST Message: " + message);
+            logger.debug("Error on writing POST Message: ", message);
         }
 
     }

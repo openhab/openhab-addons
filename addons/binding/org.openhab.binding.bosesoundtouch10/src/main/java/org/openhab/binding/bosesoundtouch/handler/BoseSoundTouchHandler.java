@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch10.handler;
+package org.openhab.binding.bosesoundtouch.handler;
 
 import java.net.URI;
 import java.util.Set;
@@ -26,30 +26,54 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.bosesoundtouch10.BoseSoundTouch10BindingConstants;
-import org.openhab.binding.bosesoundtouch10.helper.SimpleCallBackInterface;
-import org.openhab.binding.bosesoundtouch10.helper.SimpleSocketListener;
-import org.openhab.binding.bosesoundtouch10.helper.WSHelper;
-import org.openhab.binding.bosesoundtouch10.helper.WSHelperInterface;
-import org.openhab.binding.bosesoundtouch10.helper.XmlHelper;
-import org.openhab.binding.bosesoundtouch10.helper.XmlResult;
+import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
+import org.openhab.binding.bosesoundtouch.helper.SimpleCallBackInterface;
+import org.openhab.binding.bosesoundtouch.helper.SimpleSocketListener;
+import org.openhab.binding.bosesoundtouch.helper.WSHelper;
+import org.openhab.binding.bosesoundtouch.helper.WSHelperInterface;
+import org.openhab.binding.bosesoundtouch.helper.XmlHelper;
+import org.openhab.binding.bosesoundtouch.helper.XmlResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BoseSoundTouch10Handler} is responsible for handling commands, which are
+ * The {@link BoseSoundTouchHandler} is responsible for handling commands, which are
  * sent to one of the channels, and handling messages coming from the speaker.
  *
  * @author syracom - Initial contribution
  */
-public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleCallBackInterface {
+public class BoseSoundTouchHandler extends BaseThingHandler implements SimpleCallBackInterface {
 
-    private Logger logger = LoggerFactory.getLogger(BoseSoundTouch10Handler.class);
+    private Logger logger = LoggerFactory.getLogger(BoseSoundTouchHandler.class);
     private String soundTouchURL;
     private WebSocketClient client;
     private WebSocketListener socketListener;
     private WSHelperInterface wsHelper;
     private XmlHelper xmlHelper;
+
+    private static final String PROTOCOL_HTTP = "http";
+    private static final String PROTOCOL_WS = "ws";
+    private static final String HTTP_PORT = "8090";
+    private static final String WS_PORT = "8080";
+
+    private static final String SOURCE_BLUETOOTH = "BLUETOOTH";
+    private static final String SOURCE_STANDBY = "STANDBY";
+    private static final String SOURCE_AUX = "AUX";
+    private static final String SOURCE_INTERNET_RADIO = "INTERNET_RADIO";
+    private static final String SOURCE_PRESET_1 = "PRESET_1";
+    private static final String SOURCE_PRESET_2 = "PRESET_2";
+    private static final String SOURCE_PRESET_3 = "PRESET_3";
+    private static final String SOURCE_PRESET_4 = "PRESET_4";
+    private static final String SOURCE_PRESET_5 = "PRESET_5";
+    private static final String SOURCE_PRESET_6 = "PRESET_6";
+    private static final String SOURCE_PRESET_PREFIX = "PRESET_";
+
+    private static final String REST_SERVICE_VOLUME = "/volume";
+    private static final String REST_SERVICE_BASS = "/bass";
+    private static final String REST_SERVICE_PRESETS = "/presets";
+    private static final String REST_SERVICE_NOWPLAYING = "/now_playing";
+
+    private static final String ERROR_STRING = "error";
 
     public enum KeyState {
         PRESS("press"),
@@ -66,13 +90,6 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
         }
     }
 
-    public enum Sources {
-        STANDBY,
-        AUX,
-        BLUETOOTH,
-        INTERNET_RADIO
-    }
-
     public enum BSTKeys {
         PLAY,
         PAUSE,
@@ -85,7 +102,7 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
         PRESET_6,
     }
 
-    public BoseSoundTouch10Handler(Thing thing) {
+    public BoseSoundTouchHandler(Thing thing) {
         super(thing);
     }
 
@@ -94,20 +111,20 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
         String response = "";
         checkForReInit();
         switch (channelUID.getId()) {
-            case BoseSoundTouch10BindingConstants.CHANNEL_POWER:
+            case BoseSoundTouchBindingConstants.CHANNEL_POWER:
                 if (command instanceof OnOffType) {
                     response = wsHelper.pressAndReleaseButtonOnSpeaker(BSTKeys.POWER);
                 }
                 break;
-            case BoseSoundTouch10BindingConstants.CHANNEL_VOLUME:
+            case BoseSoundTouchBindingConstants.CHANNEL_VOLUME:
                 if (command instanceof RefreshType) {
-                    response = wsHelper.get("/volume");
-                    if (response.equals("error")) {
+                    response = wsHelper.get(REST_SERVICE_VOLUME);
+                    if (response.equals(ERROR_STRING)) {
                         break;
                     }
-                    String volume = xmlHelper.parsePath("/volume/actualvolume", response);
+                    String volume = xmlHelper.parsePath(XmlHelper.REST_CURRENT_VOLUME, response);
                     if (!volume.isEmpty()) {
-                        updateState(BoseSoundTouch10BindingConstants.CHANNEL_VOLUME, new PercentType(volume));
+                        updateState(BoseSoundTouchBindingConstants.CHANNEL_VOLUME, new PercentType(volume));
                     }
                 }
                 if (command instanceof PercentType) {
@@ -115,10 +132,10 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
                     response = wsHelper.setVolume(num);
                 }
                 break;
-            case BoseSoundTouch10BindingConstants.CHANNEL_BASS:
+            case BoseSoundTouchBindingConstants.CHANNEL_BASS:
                 if (command instanceof RefreshType) {
                     response = getBassAndUpdateUI();
-                    if (response.equals("error")) {
+                    if (response.equals(ERROR_STRING)) {
                         break;
                     }
                 }
@@ -127,51 +144,53 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
                     response = wsHelper.setBass(num);
                 }
                 break;
-            case BoseSoundTouch10BindingConstants.CHANNEL_CONTROL:
+            case BoseSoundTouchBindingConstants.CHANNEL_CONTROL:
                 if (command instanceof PlayPauseType) {
                     PlayPauseType playPause = (PlayPauseType) command;
-                    switch (playPause.toString()) {
-                        case "PLAY":
+                    switch (playPause) {
+                        case PLAY:
                             response = wsHelper.pressAndReleaseButtonOnSpeaker(BSTKeys.PLAY);
                             break;
-                        case "PAUSE":
+                        case PAUSE:
                             response = wsHelper.pressAndReleaseButtonOnSpeaker(BSTKeys.PAUSE);
                             break;
                         default:
                             break;
                     }
                 }
-            case BoseSoundTouch10BindingConstants.CHANNEL_SOURCE:
+            case BoseSoundTouchBindingConstants.CHANNEL_SOURCE:
                 if (command instanceof RefreshType) {
-                    response = wsHelper.get("/now_playing");
-                    if (response.equals("error")) {
+                    response = wsHelper.get(REST_SERVICE_NOWPLAYING);
+                    if (response.equals(ERROR_STRING)) {
                         break;
                     }
-                    String source = xmlHelper.parseSource("/nowPlaying", response, "source");
-                    if (source.equals(Sources.STANDBY.toString())) {
-                        updateState(BoseSoundTouch10BindingConstants.CHANNEL_POWER, OnOffType.OFF);
-                        updateState(BoseSoundTouch10BindingConstants.CHANNEL_NOW_PLAYING, new StringType(""));
+                    String source = xmlHelper.parseSource(XmlHelper.REST_NOWPLAYING, response,
+                            XmlHelper.NODE_ATTRIBUTE_SOURCE);
+                    if (source.equals(SOURCE_STANDBY)) {
+                        updateState(BoseSoundTouchBindingConstants.CHANNEL_POWER, OnOffType.OFF);
+                        updateState(BoseSoundTouchBindingConstants.CHANNEL_NOW_PLAYING, new StringType(""));
                     } else {
-                        String sourceName = xmlHelper.parsePath("/nowPlaying/ContentItem/itemName", response);
-                        response = wsHelper.get("/presets");
-                        if (response.equals("error")) {
+                        String sourceName = xmlHelper.parsePath(XmlHelper.REST_NOWPLAYING_ITEMNAME, response);
+                        response = wsHelper.get(REST_SERVICE_PRESETS);
+                        if (response.equals(ERROR_STRING)) {
                             break;
                         }
                         switch (source) {
-                            case "BLUETOOTH":
-                                refreshChannels(OnOffType.ON, new StringType(Sources.BLUETOOTH.toString()), sourceName,
+                            case SOURCE_BLUETOOTH:
+                                refreshChannels(OnOffType.ON, new StringType(SOURCE_BLUETOOTH), sourceName,
                                         PlayPauseType.PLAY);
                                 break;
-                            case "AUX":
-                                refreshChannels(OnOffType.ON, new StringType(Sources.AUX.toString()), sourceName,
+                            case SOURCE_AUX:
+                                refreshChannels(OnOffType.ON, new StringType(SOURCE_AUX), sourceName,
                                         PlayPauseType.PLAY);
                                 break;
-                            case "INTERNET_RADIO":
+                            case SOURCE_INTERNET_RADIO:
                                 if (!sourceName.isEmpty()) {
-                                    String id = xmlHelper.parsePresets("/presets/preset", response, sourceName);
+                                    String id = xmlHelper.parsePresets(XmlHelper.REST_CURRENT_PRESET, response,
+                                            sourceName);
                                     if (!id.isEmpty()) {
-                                        refreshChannels(OnOffType.ON, new StringType("PRESET_" + id), sourceName,
-                                                PlayPauseType.PLAY);
+                                        refreshChannels(OnOffType.ON, new StringType(SOURCE_PRESET_PREFIX + id),
+                                                sourceName, PlayPauseType.PLAY);
                                     }
                                 }
                                 break;
@@ -183,28 +202,28 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
                 if (command instanceof StringType) {
                     StringType strintType = (StringType) command;
                     switch (strintType.toString()) {
-                        case "PRESET_1":
+                        case SOURCE_PRESET_1:
                             response = wsHelper.pressAndReleaseButtonOnSpeaker(BSTKeys.PRESET_1);
                             break;
-                        case "PRESET_2":
+                        case SOURCE_PRESET_2:
                             response = wsHelper.pressAndReleaseButtonOnSpeaker(BSTKeys.PRESET_2);
                             break;
-                        case "PRESET_3":
+                        case SOURCE_PRESET_3:
                             response = wsHelper.pressAndReleaseButtonOnSpeaker(BSTKeys.PRESET_3);
                             break;
-                        case "PRESET_4":
+                        case SOURCE_PRESET_4:
                             response = wsHelper.pressAndReleaseButtonOnSpeaker(BSTKeys.PRESET_4);
                             break;
-                        case "PRESET_5":
+                        case SOURCE_PRESET_5:
                             response = wsHelper.pressAndReleaseButtonOnSpeaker(BSTKeys.PRESET_5);
                             break;
-                        case "PRESET_6":
+                        case SOURCE_PRESET_6:
                             response = wsHelper.pressAndReleaseButtonOnSpeaker(BSTKeys.PRESET_6);
                             break;
-                        case "AUX":
+                        case SOURCE_AUX:
                             response = wsHelper.selectAUX();
                             break;
-                        case "BLUETOOTH":
+                        case SOURCE_BLUETOOTH:
                             response = wsHelper.selectBluetooth();
                             break;
                         default:
@@ -219,7 +238,7 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
     }
 
     private void checkResponseForError(String response) {
-        if (response.startsWith("error")) {
+        if (response.startsWith(ERROR_STRING)) {
             socketListener = null;
             try {
                 if (client != null) {
@@ -245,21 +264,21 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
 
     private synchronized void refreshChannels(OnOffType power, StringType preset, String sourceName,
             PlayPauseType playPause) {
-        updateState(BoseSoundTouch10BindingConstants.CHANNEL_POWER, power);
-        updateState(BoseSoundTouch10BindingConstants.CHANNEL_SOURCE, preset);
-        updateState(BoseSoundTouch10BindingConstants.CHANNEL_NOW_PLAYING, new StringType(sourceName));
+        updateState(BoseSoundTouchBindingConstants.CHANNEL_POWER, power);
+        updateState(BoseSoundTouchBindingConstants.CHANNEL_SOURCE, preset);
+        updateState(BoseSoundTouchBindingConstants.CHANNEL_NOW_PLAYING, new StringType(sourceName));
 
-        updateState(BoseSoundTouch10BindingConstants.CHANNEL_CONTROL, playPause);
+        updateState(BoseSoundTouchBindingConstants.CHANNEL_CONTROL, playPause);
     }
 
     private synchronized String getBassAndUpdateUI() {
-        String response = wsHelper.get("/bass");
-        if (response.equals("error")) {
-            return "error";
+        String response = wsHelper.get(REST_SERVICE_BASS);
+        if (response.equals(ERROR_STRING)) {
+            return ERROR_STRING;
         }
-        String bass = xmlHelper.parsePath("/bass/actualbass", response);
+        String bass = xmlHelper.parsePath(XmlHelper.REST_CURRENT_BASS, response);
         if (!bass.isEmpty()) {
-            updateState(BoseSoundTouch10BindingConstants.CHANNEL_BASS, new DecimalType(bass));
+            updateState(BoseSoundTouchBindingConstants.CHANNEL_BASS, new DecimalType(bass));
         }
         return "";
     }
@@ -269,49 +288,49 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
         Set<XmlResult> xmlResultSet = xmlHelper.parseMessage(message);
         for (XmlResult xmlResult : xmlResultSet) {
             switch (xmlResult.getKey()) {
-                case XmlHelper.VOLUME:
+                case XmlHelper.WS_UPDATE_VOLUME:
                     if (!xmlResult.getValue().isEmpty()) {
-                        updateState(BoseSoundTouch10BindingConstants.CHANNEL_VOLUME,
+                        updateState(BoseSoundTouchBindingConstants.CHANNEL_VOLUME,
                                 new PercentType(xmlResult.getValue()));
                     }
                     break;
-                case XmlHelper.NOWPLAYING:
+                case XmlHelper.WS_UPDATE_NOWPLAYING:
                     if (xmlResult.getValue() != null && !xmlResult.getValue().isEmpty()) {
-                        updateState(BoseSoundTouch10BindingConstants.CHANNEL_POWER, OnOffType.ON);
-                        updateState(BoseSoundTouch10BindingConstants.CHANNEL_CONTROL, PlayPauseType.PLAY);
-                        updateState(BoseSoundTouch10BindingConstants.CHANNEL_NOW_PLAYING,
+                        updateState(BoseSoundTouchBindingConstants.CHANNEL_POWER, OnOffType.ON);
+                        updateState(BoseSoundTouchBindingConstants.CHANNEL_CONTROL, PlayPauseType.PLAY);
+                        updateState(BoseSoundTouchBindingConstants.CHANNEL_NOW_PLAYING,
                                 new StringType(xmlResult.getValue()));
                     }
                     break;
-                case XmlHelper.SOURCE:
+                case XmlHelper.WS_UPDATE_SOURCE:
                     switch (xmlResult.getValue()) {
-                        case "STANDBY":
-                            updateState(BoseSoundTouch10BindingConstants.CHANNEL_POWER, OnOffType.OFF);
-                            updateState(BoseSoundTouch10BindingConstants.CHANNEL_NOW_PLAYING, new StringType(""));
+                        case SOURCE_STANDBY:
+                            updateState(BoseSoundTouchBindingConstants.CHANNEL_POWER, OnOffType.OFF);
+                            updateState(BoseSoundTouchBindingConstants.CHANNEL_NOW_PLAYING, new StringType(""));
                             break;
-                        case "BLUETOOTH":
-                            updateState(BoseSoundTouch10BindingConstants.CHANNEL_POWER, OnOffType.ON);
-                            updateState(BoseSoundTouch10BindingConstants.CHANNEL_CONTROL, PlayPauseType.PLAY);
-                            updateState(BoseSoundTouch10BindingConstants.CHANNEL_SOURCE,
-                                    new StringType(Sources.BLUETOOTH.toString()));
+                        case SOURCE_BLUETOOTH:
+                            updateState(BoseSoundTouchBindingConstants.CHANNEL_POWER, OnOffType.ON);
+                            updateState(BoseSoundTouchBindingConstants.CHANNEL_CONTROL, PlayPauseType.PLAY);
+                            updateState(BoseSoundTouchBindingConstants.CHANNEL_SOURCE,
+                                    new StringType(SOURCE_BLUETOOTH));
                             break;
-                        case "AUX":
-                            updateState(BoseSoundTouch10BindingConstants.CHANNEL_POWER, OnOffType.ON);
-                            updateState(BoseSoundTouch10BindingConstants.CHANNEL_CONTROL, PlayPauseType.PLAY);
-                            updateState(BoseSoundTouch10BindingConstants.CHANNEL_SOURCE,
-                                    new StringType(Sources.AUX.toString()));
+                        case SOURCE_AUX:
+                            updateState(BoseSoundTouchBindingConstants.CHANNEL_POWER, OnOffType.ON);
+                            updateState(BoseSoundTouchBindingConstants.CHANNEL_CONTROL, PlayPauseType.PLAY);
+                            updateState(BoseSoundTouchBindingConstants.CHANNEL_SOURCE, new StringType(SOURCE_AUX));
                             break;
                         default:
                             break;
                     }
                     break;
-                case XmlHelper.BASS:
+                case XmlHelper.WS_UPDATE_BASS:
                     getBassAndUpdateUI();
                     break;
-                case XmlHelper.SELECTION:
+                case XmlHelper.WS_UPDATE_SELECTION:
                     String id = xmlResult.getValue();
                     if (!id.isEmpty()) {
-                        updateState(BoseSoundTouch10BindingConstants.CHANNEL_SOURCE, new StringType("PRESET_" + id));
+                        updateState(BoseSoundTouchBindingConstants.CHANNEL_SOURCE,
+                                new StringType(SOURCE_PRESET_PREFIX + id));
                     }
                     break;
                 default:
@@ -339,7 +358,7 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
             client = new WebSocketClient();
             try {
                 client.start();
-                URI echoUri = new URI(soundTouchURL.replace("http", "ws").replace("8090", "8080"));
+                URI echoUri = new URI(soundTouchURL.replace(PROTOCOL_HTTP, PROTOCOL_WS).replace(HTTP_PORT, WS_PORT));
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setSubProtocols("gabbo");
                 client.connect(socketListener, echoUri, request);
@@ -359,7 +378,7 @@ public class BoseSoundTouch10Handler extends BaseThingHandler implements SimpleC
 
     private void reinit() {
         Configuration config = getThing().getConfiguration();
-        soundTouchURL = (String) config.get(BoseSoundTouch10BindingConstants.DEVICEURL);
+        soundTouchURL = (String) config.get(BoseSoundTouchBindingConstants.DEVICEURL);
         wsHelper = new WSHelper(soundTouchURL);
         socketListener = new SimpleSocketListener(this);
         xmlHelper = new XmlHelper();

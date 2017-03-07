@@ -6,7 +6,7 @@ layout: documentation
 
 # Bose SoundTouch10 Binding
 
-The binding integrates Bose SoundTouch10 devices. It is explicitly created for the Bose SoundTouch10 device. Other SoundTouch devices may work too, but are not completly supported by this binding.
+The binding integrates Bose SoundTouch10 devices. It is explicitly created for the Bose SoundTouch10 device. Other SoundTouch devices may work too, but are not completely supported by this binding.
 
 The binding communicates via the REST API of the devices and receives message via websockets.
 

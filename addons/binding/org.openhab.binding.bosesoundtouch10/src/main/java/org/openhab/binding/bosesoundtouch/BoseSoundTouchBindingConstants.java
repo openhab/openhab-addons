@@ -5,22 +5,22 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch10;
+package org.openhab.binding.bosesoundtouch;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link BoseSoundTouch10Binding} class defines common constants, which are
+ * The {@link BoseSoundTouchBinding} class defines common constants, which are
  * used across the whole binding.
  *
  * @author syracom - Initial contribution
  */
-public class BoseSoundTouch10BindingConstants {
+public class BoseSoundTouchBindingConstants {
 
-    public static final String BINDING_ID = "bosesoundtouch10";
+    public static final String BINDING_ID = "bosesoundtouch";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SOUNDTOUCH10 = new ThingTypeUID(BINDING_ID, "bosesoundtouch10");
+    public final static ThingTypeUID THING_TYPE_SOUNDTOUCH = new ThingTypeUID(BINDING_ID, "bosesoundtouch");
 
     // List of all Channel ids
     public final static String CHANNEL_POWER = "power";

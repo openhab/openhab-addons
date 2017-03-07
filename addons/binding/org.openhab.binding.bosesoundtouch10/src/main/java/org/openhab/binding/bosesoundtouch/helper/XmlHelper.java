@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch10.helper;
+package org.openhab.binding.bosesoundtouch.helper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,28 +36,37 @@ import org.xml.sax.SAXException;
 public class XmlHelper {
     private Logger logger = LoggerFactory.getLogger(XmlHelper.class);
 
-    public static final String VOLUME = "/updates/volumeUpdated/volume/actualvolume";
-    public static final String BASS = "/updates/bassUpdated";
-    public static final String NOWPLAYING = "/updates/nowPlayingUpdated/nowPlaying/ContentItem/itemName";
-    public static final String SOURCE = "/updates/nowPlayingUpdated/nowPlaying/ContentItem"; // source
+    public static final String WS_UPDATE_VOLUME = "/updates/volumeUpdated/volume/actualvolume";
+    public static final String WS_UPDATE_BASS = "/updates/bassUpdated";
+    public static final String WS_UPDATE_NOWPLAYING = "/updates/nowPlayingUpdated/nowPlaying/ContentItem/itemName";
+    public static final String WS_UPDATE_SOURCE = "/updates/nowPlayingUpdated/nowPlaying/ContentItem"; // source
 
-    public static final String SELECTION = "/updates/nowSelectionUpdated/preset"; // id
+    public static final String WS_UPDATE_SELECTION = "/updates/nowSelectionUpdated/preset"; // id
+
+    public static final String REST_CURRENT_VOLUME = "/volume/actualvolume";
+    public static final String REST_CURRENT_BASS = "/bass/actualbass";
+    public static final String REST_NOWPLAYING = "/nowPlaying";
+    public static final String REST_NOWPLAYING_ITEMNAME = "/nowPlaying/ContentItem/itemName";
+    public static final String REST_CURRENT_PRESET = "/presets/preset";
+
+    public static final String NODE_ATTRIBUTE_ID = "id";
+    public static final String NODE_ATTRIBUTE_SOURCE = "source";
 
     private static final Set<String> SUPPORTED_MESSAGES_TYPE0 = new HashSet<>();
     static {
-        SUPPORTED_MESSAGES_TYPE0.add(BASS);
+        SUPPORTED_MESSAGES_TYPE0.add(WS_UPDATE_BASS);
     }
 
     private static final Set<String> SUPPORTED_MESSAGES_TYPE1 = new HashSet<>();
     static {
-        SUPPORTED_MESSAGES_TYPE1.add(VOLUME);
-        SUPPORTED_MESSAGES_TYPE1.add(NOWPLAYING);
+        SUPPORTED_MESSAGES_TYPE1.add(WS_UPDATE_VOLUME);
+        SUPPORTED_MESSAGES_TYPE1.add(WS_UPDATE_NOWPLAYING);
     }
 
     private static final Set<String> SUPPORTED_MESSAGES_TYPE2 = new HashSet<>();
     static {
-        SUPPORTED_MESSAGES_TYPE2.add(SOURCE);
-        SUPPORTED_MESSAGES_TYPE2.add(SELECTION);
+        SUPPORTED_MESSAGES_TYPE2.add(WS_UPDATE_SOURCE);
+        SUPPORTED_MESSAGES_TYPE2.add(WS_UPDATE_SELECTION);
     }
 
     private synchronized Document createXmlDocument(String message) {
@@ -105,12 +114,12 @@ public class XmlHelper {
                     node = nodeList.item(i);
                     if (node.getNodeType() == Node.ELEMENT_NODE) {
                         element = (Element) node;
-                        if (!element.getAttribute("source").isEmpty()) {
-                            result = element.getAttribute("source");
+                        if (!element.getAttribute(NODE_ATTRIBUTE_SOURCE).isEmpty()) {
+                            result = element.getAttribute(NODE_ATTRIBUTE_SOURCE);
                             resultSet.add(new XmlResult(expression, result));
                         }
-                        if (!element.getAttribute("id").isEmpty()) {
-                            result = element.getAttribute("id");
+                        if (!element.getAttribute(NODE_ATTRIBUTE_ID).isEmpty()) {
+                            result = element.getAttribute(NODE_ATTRIBUTE_ID);
                             resultSet.add(new XmlResult(expression, result));
                         }
                     }
@@ -150,7 +159,7 @@ public class XmlHelper {
             for (int i = 0; i < presets.getLength(); i++) {
                 Node nNode = presets.item(i);
                 Element eElement = (Element) nNode;
-                id = eElement.getAttribute("id");
+                id = eElement.getAttribute(NODE_ATTRIBUTE_ID);
                 NodeList childNodes = nNode.getChildNodes(); // ContentItems
                 Node node = childNodes.item(0).getChildNodes().item(0);// itemName
                 String value = node.getTextContent();

@@ -1,4 +1,4 @@
-package org.openhab.binding.bosesoundtouch10.internal.discovery;
+package org.openhab.binding.bosesoundtouch.internal.discovery;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,14 +12,14 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
-import org.openhab.binding.bosesoundtouch10.BoseSoundTouch10BindingConstants;
+import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 
 /**
- * The {@link BoseSoundTouch10DiscoveryParticipant} class is responsible for discovering the device.
+ * The {@link BoseSoundTouchDiscoveryParticipant} class is responsible for discovering the device.
  *
  * @author syracom - Initial contribution
  */
-public class BoseSoundTouch10DiscoveryParticipant implements MDNSDiscoveryParticipant {
+public class BoseSoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_soundtouch._tcp.local.";
     private static final String SERVICE_PROTOCOL = "http";
@@ -28,7 +28,7 @@ public class BoseSoundTouch10DiscoveryParticipant implements MDNSDiscoveryPartic
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         Set<ThingTypeUID> uids = new HashSet<ThingTypeUID>();
-        uids.add(BoseSoundTouch10BindingConstants.THING_TYPE_SOUNDTOUCH10);
+        uids.add(BoseSoundTouchBindingConstants.THING_TYPE_SOUNDTOUCH);
         return uids;
     }
 
@@ -49,18 +49,16 @@ public class BoseSoundTouch10DiscoveryParticipant implements MDNSDiscoveryPartic
         if (serviceName == null) {
             serviceName = "name not available";
         }
-        properties.put(BoseSoundTouch10BindingConstants.DEVICEURL,
-                SERVICE_PROTOCOL + "://" + host + ":" + SERVICE_PORT);
-        return DiscoveryResultBuilder.create(uid)
-                .withThingType(BoseSoundTouch10BindingConstants.THING_TYPE_SOUNDTOUCH10).withProperties(properties)
-                .withLabel(serviceName).build();
+        properties.put(BoseSoundTouchBindingConstants.DEVICEURL, SERVICE_PROTOCOL + "://" + host + ":" + SERVICE_PORT);
+        return DiscoveryResultBuilder.create(uid).withThingType(BoseSoundTouchBindingConstants.THING_TYPE_SOUNDTOUCH)
+                .withProperties(properties).withLabel(serviceName).build();
     }
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
         String macAddr = service.getPropertyString("MAC");
         if (macAddr != null) {
-            return new ThingUID(BoseSoundTouch10BindingConstants.THING_TYPE_SOUNDTOUCH10, macAddr);
+            return new ThingUID(BoseSoundTouchBindingConstants.THING_TYPE_SOUNDTOUCH, macAddr);
         } else {
             return null;
         }

@@ -5,11 +5,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch10.helper;
+package org.openhab.binding.bosesoundtouch.helper;
 
 /**
  * The {@link SimpleCallBackInterface} interface is a interface for callback from the websocketlistenere to the
- * BoseSoundTouch10Handler to update the UI or signal errors on the websocket.
+ * BoseSoundTouchHandler to update the UI or signal errors on the websocket.
  *
  * @author syracom - Initial contribution
  */

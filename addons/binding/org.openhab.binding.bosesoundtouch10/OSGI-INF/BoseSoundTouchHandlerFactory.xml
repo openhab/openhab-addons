@@ -8,9 +8,9 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="binding.bosesoundtouch10">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="binding.bosesoundtouch">
 
-   <implementation class="org.openhab.binding.bosesoundtouch10.internal.BoseSoundTouch10HandlerFactory"/>
+   <implementation class="org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>

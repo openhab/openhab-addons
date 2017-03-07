@@ -5,11 +5,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch10.helper;
+package org.openhab.binding.bosesoundtouch.helper;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.openhab.binding.bosesoundtouch10.handler.BoseSoundTouch10Handler.BSTKeys;
+import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler.BSTKeys;
 
 /**
  * The {@link WSHelperInterface} class defines methods to be implemented to communicate with the REST API of the

@@ -5,11 +5,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch10.helper;
+package org.openhab.binding.bosesoundtouch.helper;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.openhab.binding.bosesoundtouch10.handler.BoseSoundTouch10Handler;
+import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class SimpleSocketListener implements WebSocketListener {
     private Logger logger = LoggerFactory.getLogger(SimpleSocketListener.class);
     private SimpleCallBackInterface callbackHandler;
 
-    public SimpleSocketListener(BoseSoundTouch10Handler callback) {
+    public SimpleSocketListener(BoseSoundTouchHandler callback) {
         this.callbackHandler = callback;
     }
 

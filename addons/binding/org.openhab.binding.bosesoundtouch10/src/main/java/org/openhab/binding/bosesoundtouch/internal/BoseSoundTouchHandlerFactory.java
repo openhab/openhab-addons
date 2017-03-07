@@ -5,9 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch10.internal;
-
-import static org.openhab.binding.bosesoundtouch10.BoseSoundTouch10BindingConstants.THING_TYPE_SOUNDTOUCH10;
+package org.openhab.binding.bosesoundtouch.internal;
 
 import java.util.Collections;
 import java.util.Set;
@@ -16,17 +14,19 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.bosesoundtouch10.handler.BoseSoundTouch10Handler;
+import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
+import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
 
 /**
- * The {@link BoseSoundTouch10HandlerFactory} is responsible for creating things and thing
+ * The {@link BoseSoundTouchHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author syracom - Initial contribution
  */
-public class BoseSoundTouch10HandlerFactory extends BaseThingHandlerFactory {
+public class BoseSoundTouchHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SOUNDTOUCH10);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(BoseSoundTouchBindingConstants.THING_TYPE_SOUNDTOUCH);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -38,8 +38,8 @@ public class BoseSoundTouch10HandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SOUNDTOUCH10)) {
-            return new BoseSoundTouch10Handler(thing);
+        if (thingTypeUID.equals(BoseSoundTouchBindingConstants.THING_TYPE_SOUNDTOUCH)) {
+            return new BoseSoundTouchHandler(thing);
         }
 
         return null;
