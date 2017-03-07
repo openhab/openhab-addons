@@ -151,33 +151,65 @@ public class ExecHandler extends BaseThingHandler {
         @Override
         public String lookup(String key) {
             try {
-                if (key.contains("exec-time")) {
+                String transform = null;
+                String format = null;
+                String subkey = "";
+                if (key.contains(":")) {
+                    String parts[] = key.split(":");
+                    subkey = parts[0];
+
+                    if (parts.length == 2) {
+                        format = parts[1];
+                    } else if (parts.length == 3) {
+                        transform = parts[1];
+                        format = parts[2];
+                    }
+                } else {
+                    subkey = key;
+                }
+
+                if (subkey.equals("exec-time")) {
                     try {
-                        String format = key.split(":")[1];
-                        return String.format(format, Calendar.getInstance().getTime());
+                        // Transform is not relevant here, as our source is a Date
+                        if (format != null) {
+                            return String.format(format, Calendar.getInstance().getTime());
+                        } else {
+                            return null;
+                        }
                     } catch (PatternSyntaxException e) {
                         logger.warn("Invalid substitution key '{}'", key);
                         return null;
                     }
-                } else if (key.contains("exec-input") && !execInput.equals("")) {
+                } else if (subkey.equals("exec-input") && !execInput.equals("")) {
                     try {
-                        String format = key.split(":")[1];
-                        return String.format(format, execInput);
+                        String transformedInput = execInput;
+                        if (transform != null) {
+                            transformedInput = transformString(transformedInput, transform);
+                        }
+                        if (format != null) {
+                            return String.format(format, transformedInput);
+                        } else {
+                            return execInput;
+                        }
                     } catch (PatternSyntaxException e) {
-                        logger.warn("Invalid substitution key '{}'", key);
-                        return null;
-                    }
-                } else if (key.contains(":")) {
-                    try {
-                        String item = key.split(":")[0];
-                        String format = key.split(":")[1];
-                        return String.format(format, itemRegistry.getItem(item).getState().toString());
-                    } catch (PatternSyntaxException | ItemNotFoundException e) {
                         logger.warn("Invalid substitution key '{}'", key);
                         return null;
                     }
                 } else {
-                    return itemRegistry.getItem(key).getState().toString();
+                    try {
+                        String transformedInput = itemRegistry.getItem(subkey).getState().toString();
+                        if (transform != null) {
+                            transformedInput = transformString(transformedInput, transform);
+                        }
+                        if (format != null) {
+                            return String.format(format, transformedInput);
+                        } else {
+                            return transformedInput;
+                        }
+                    } catch (PatternSyntaxException e) {
+                        logger.warn("Invalid substitution key '{}'", key);
+                        return null;
+                    }
                 }
             } catch (ItemNotFoundException e) {
                 return null;
@@ -240,7 +272,8 @@ public class ExecHandler extends BaseThingHandler {
                         ((ExecStrLookup) substitutor.getVariableResolver()).setInput(input);
                         commandLine = substitutor.replace(commandLine);
                     } catch (Exception e) {
-                        logger.error("An exception occurred while formatting the command line : '{}'", e.getMessage());
+                        logger.error("An exception occurred while formatting the command line : '{}'", e.getMessage(),
+                                e);
                         updateState(RUN, OnOffType.OFF);
                         return;
                     }
@@ -322,13 +355,11 @@ public class ExecHandler extends BaseThingHandler {
 
                     outputBuilder.append(errorBuilder.toString());
 
-                    outputBuilder.append(errorBuilder.toString());
-
                     String transformedResponse = StringUtils.chomp(outputBuilder.toString());
                     String transformation = (String) getConfig().get(TRANSFORM);
 
                     if (transformation != null && transformation.length() > 0) {
-                        transformedResponse = transformResponse(transformedResponse, transformation);
+                        transformedResponse = transformString(transformedResponse, transformation);
                     }
 
                     updateState(OUTPUT, new StringType(transformedResponse));
@@ -347,7 +378,7 @@ public class ExecHandler extends BaseThingHandler {
 
     };
 
-    protected String transformResponse(String response, String transformation) {
+    protected String transformString(String response, String transformation) {
         String transformedResponse;
 
         try {

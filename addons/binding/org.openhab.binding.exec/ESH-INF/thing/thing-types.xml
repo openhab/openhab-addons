@@ -24,7 +24,6 @@
             <parameter name="transform" type="text" required="false">
                 <label>Transform</label>
                 <description>The transformation to apply on the execution result, e.g. REGEX((.*))</description>
-                <default>REGEX((.*))</default>
             </parameter>
             <parameter name="interval" type="integer"  required="false">
                 <label>Interval</label>
