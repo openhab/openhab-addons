@@ -182,8 +182,8 @@ public class MessageFactory {
      * @throws FieldException
      * @throws IOException
      */
-    public Message makeStandardMessage(byte flags, byte cmd1, byte cmd2, InsteonAddress address)
-            throws FieldException, IOException {
+    public Message makeStandardMessage(InsteonFlags flags, StandardInsteonMessages cmd1, byte cmd2,
+            InsteonAddress address) throws FieldException, IOException {
         return (makeStandardMessage(flags, cmd1, cmd2, -1, address));
     }
 
@@ -198,20 +198,23 @@ public class MessageFactory {
      * @throws FieldException
      * @throws IOException
      */
-    public Message makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group, InsteonAddress address)
-            throws FieldException, IOException {
+    public Message makeStandardMessage(InsteonFlags flags, StandardInsteonMessages cmd1, byte cmd2, int group,
+            InsteonAddress address) throws FieldException, IOException {
         Message m = makeMessage("SendStandardMessage");
         InsteonAddress addr = null;
+        flags.setExtended(false);
         if (group != -1) {
-            flags |= 0xc0; // mark message as group message
+            flags.setGroup(true);
+            ; // mark message as group message
+            flags.setAcknowledge(true);
             // and stash the group number into the address
             addr = new InsteonAddress((byte) 0, (byte) 0, (byte) (group & 0xff));
         } else {
             addr = address;
         }
         m.setAddress("toAddress", addr);
-        m.setByte("messageFlags", flags);
-        m.setByte("command1", cmd1);
+        m.setByte("messageFlags", flags.getByte());
+        m.setByte("command1", cmd1.getCmd());
         m.setByte("command2", cmd2);
         return m;
     }
@@ -234,7 +237,7 @@ public class MessageFactory {
      * @throws FieldException
      * @throws IOException
      */
-    public Message makeExtendedMessage(byte flags, byte cmd1, byte cmd2, InsteonAddress address)
+    public Message makeExtendedMessage(InsteonFlags flags, byte cmd1, byte cmd2, InsteonAddress address)
             throws FieldException, IOException {
         return makeExtendedMessage(flags, cmd1, cmd2, new byte[] {}, address);
     }
@@ -250,11 +253,12 @@ public class MessageFactory {
      * @throws FieldException
      * @throws IOException
      */
-    public Message makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data, InsteonAddress address)
+    public Message makeExtendedMessage(InsteonFlags flags, byte cmd1, byte cmd2, byte[] data, InsteonAddress address)
             throws FieldException, IOException {
+        flags.setExtended(true);
         Message m = makeMessage("SendExtendedMessage");
         m.setAddress("toAddress", address);
-        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
+        m.setByte("messageFlags", flags.getByte());
         m.setByte("command1", cmd1);
         m.setByte("command2", cmd2);
         m.setUserData(data);

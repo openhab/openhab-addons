@@ -9,7 +9,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,14 +33,14 @@ public class FastOnOffCommandHandler extends CommandHandler {
         try {
             if (cmd == OnOffType.ON) {
                 int level = getMaxLightLevel(conf, 0xff);
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x12, (byte) level,
-                        conf.getInsteonGroup(), conf.getAddress());
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                        StandardInsteonMessages.LightOnFast, (byte) level, conf.getInsteonGroup(), conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent fast on to switch {} level {}", nm(), conf.getAddress(),
                         level == 0xff ? "on" : level);
             } else if (cmd == OnOffType.OFF) {
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x14, (byte) 0x00,
-                        conf.getInsteonGroup(), conf.getAddress());
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                        StandardInsteonMessages.LightOffFast, (byte) 0x00, conf.getInsteonGroup(), conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent fast off to switch {}", nm(), conf.getAddress());
             }

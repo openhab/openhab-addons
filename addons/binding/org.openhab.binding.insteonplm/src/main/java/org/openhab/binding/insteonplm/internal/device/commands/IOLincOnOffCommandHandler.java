@@ -11,7 +11,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +34,13 @@ public class IOLincOnOffCommandHandler extends CommandHandler {
     public void handleCommand(final InsteonThingHandler conf, final ChannelUID channel, Command cmd) {
         try {
             if (cmd == OnOffType.ON) {
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x11, (byte) 0xff,
-                        conf.getAddress());
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                        StandardInsteonMessages.LightOn, (byte) 0xff, conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to switch {} on", nm(), conf.getAddress());
             } else if (cmd == OnOffType.OFF) {
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x13, (byte) 0x00,
-                        conf.getAddress());
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                        StandardInsteonMessages.LightOff, (byte) 0x00, conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to switch {} off", nm(), conf.getAddress());
             }

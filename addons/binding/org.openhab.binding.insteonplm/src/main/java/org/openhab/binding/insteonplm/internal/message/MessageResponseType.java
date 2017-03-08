@@ -16,7 +16,7 @@ import java.util.HashMap;
  * @author Daniel Pfrommer
  * @since 1.5.0
  */
-public enum MessageType {
+public enum MessageResponseType {
     /*
      * From the official Insteon docs: the message flags are as follows:
      *
@@ -39,7 +39,7 @@ public enum MessageType {
     ALL_LINK_CLEANUP_NACK(0xe0),
     INVALID(0xff); // should never happen
 
-    private static HashMap<Integer, MessageType> s_hash = new HashMap<Integer, MessageType>();
+    private static HashMap<Integer, MessageResponseType> s_hash = new HashMap<Integer, MessageResponseType>();
 
     private byte m_byteValue = 0;
 
@@ -48,12 +48,12 @@ public enum MessageType {
      *
      * @param b byte with insteon message type flags set
      */
-    MessageType(int b) {
+    MessageResponseType(int b) {
         m_byteValue = (byte) b;
     }
 
     static {
-        for (MessageType t : MessageType.values()) {
+        for (MessageResponseType t : MessageResponseType.values()) {
             Integer i = new Integer(t.getByteValue() & 0xff);
             s_hash.put(i, t);
         }
@@ -63,9 +63,9 @@ public enum MessageType {
         return m_byteValue;
     }
 
-    public static MessageType s_fromValue(byte b) throws IllegalArgumentException {
+    public static MessageResponseType s_fromValue(byte b) throws IllegalArgumentException {
         Integer i = new Integer((b & 0xe0));
-        MessageType mt = s_hash.get(i);
+        MessageResponseType mt = s_hash.get(i);
         if (mt == null) {
             throw new IllegalArgumentException("msg type of byte value " + i + " not found");
         }

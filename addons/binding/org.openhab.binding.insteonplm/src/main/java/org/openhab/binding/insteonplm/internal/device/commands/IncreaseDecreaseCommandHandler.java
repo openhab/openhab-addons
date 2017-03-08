@@ -9,7 +9,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +32,13 @@ public class IncreaseDecreaseCommandHandler extends CommandHandler {
     public void handleCommand(InsteonThingHandler conf, ChannelUID channel, Command cmd) {
         try {
             if (cmd == IncreaseDecreaseType.INCREASE) {
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x15, (byte) 0x00,
-                        conf.getAddress());
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                        StandardInsteonMessages.Bright, (byte) 0x00, conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to brighten {}", nm(), conf.getAddress());
             } else if (cmd == IncreaseDecreaseType.DECREASE) {
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x16, (byte) 0x00,
-                        conf.getAddress());
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                        StandardInsteonMessages.Dim, (byte) 0x00, conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to dimm {}", nm(), conf.getAddress());
             }

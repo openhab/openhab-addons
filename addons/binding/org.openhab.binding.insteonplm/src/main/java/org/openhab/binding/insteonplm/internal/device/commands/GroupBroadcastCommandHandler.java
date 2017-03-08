@@ -9,7 +9,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,16 +32,17 @@ public class GroupBroadcastCommandHandler extends CommandHandler {
     public void handleCommand(InsteonThingHandler conf, ChannelUID channel, Command cmd) {
         try {
             if (cmd == OnOffType.ON || cmd == OnOffType.OFF) {
-                byte cmd1 = (byte) ((cmd == OnOffType.ON) ? 0x11 : 0x13);
+                StandardInsteonMessages cmd1 = ((cmd == OnOffType.ON) ? StandardInsteonMessages.LightOn
+                        : StandardInsteonMessages.LightOff);
                 byte value = (byte) ((cmd == OnOffType.ON) ? 0xFF : 0x00);
                 int group = conf.getInsteonGroup();
                 if (group == -1) {
                     logger.error("no group=xx specified in item {}", conf.getThing().getLabel());
                     return;
                 }
-                logger.info("{}: sending {} broadcast to group {}", nm(), (cmd1 == 0x11) ? "ON" : "OFF",
-                        conf.getInsteonGroup());
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, cmd1, value, group,
+                logger.info("{}: sending {} broadcast to group {}", nm(),
+                        StandardInsteonMessages.LightOn == cmd1 ? "ON" : "OFF", conf.getInsteonGroup());
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), cmd1, value, group,
                         conf.getAddress());
                 conf.enqueueMessage(m);
             }
