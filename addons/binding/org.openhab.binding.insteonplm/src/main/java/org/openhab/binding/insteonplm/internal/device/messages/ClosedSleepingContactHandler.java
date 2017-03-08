@@ -8,7 +8,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +29,8 @@ public class ClosedSleepingContactHandler extends MessageHandler {
     public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
         handler.updateFeatureState(f, OpenClosedType.CLOSED);
         try {
-            Message mess = handler.getMessageFactory().makeExtendedMessage((byte) 0x1F, (byte) 0x2e, (byte) 00,
-                    handler.getAddress());
+            Message mess = handler.getMessageFactory().makeExtendedMessage(new InsteonFlags(),
+                    StandardInsteonMessages.LightOnWithRamp, (byte) 00, handler.getAddress());
             mess.setQuietTime(500);
             handler.enqueueMessage(mess);
         } catch (FieldException | IOException e) {

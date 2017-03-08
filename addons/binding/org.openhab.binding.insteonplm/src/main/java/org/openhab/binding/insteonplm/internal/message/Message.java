@@ -61,23 +61,13 @@ public class Message {
         }
     }
 
-    public enum MessageType {
-        PureNack(0x15),
-        StandardMessageReceived(0x50),
-        ExtendedMessageReceived(0x51),
-        X10Received(0x52),
-        AllLinkingCompleted(0x53),
-        ButtonEventReport(0x54),
-        UserResetDetected(0x55),
-
-    }
-
     private int m_headerLength = -1;
     private byte[] m_data = null;
     private MessageDefinition m_definition = new MessageDefinition();
     private Direction m_direction = Direction.TO_MODEM;
     private long m_quietTime = 0;
-    private MessageResponseType messageType;
+    // Filled in when requested.
+    private InsteonFlags flags = null;
 
     /**
      * Constructor
@@ -179,47 +169,43 @@ public class Message {
         return isPureNack() || !isUnsolicited();
     }
 
-    public boolean isOfType(MessageResponseType mt) {
-        try {
-            MessageResponseType t = MessageResponseType.s_fromValue(getByte("messageFlags"));
-            return (t == mt);
-        } catch (FieldException e) {
-            return false;
+    public InsteonFlags getFlags() {
+        if (flags != null) {
+            return flags;
         }
-    }
-
-    public MessageResponseType getType() {
         try {
-            return MessageResponseType.s_fromValue(getByte("messageFlags"));
+            flags = new InsteonFlags(getByte("messageFlags"));
+            return flags;
         } catch (FieldException e) {
-            return MessageResponseType.INVALID;
+            return null;
         }
     }
 
     public boolean isBroadcast() {
-        return isOfType(MessageResponseType.ALL_LINK_BROADCAST) || isOfType(MessageResponseType.BROADCAST);
+        return getFlags() != null ? getFlags().isBroadcast() : false;
     }
 
     public boolean isCleanup() {
-        return isOfType(MessageResponseType.ALL_LINK_CLEANUP);
+        return getFlags() != null ? getFlags().isAllLinkCleanup() : false;
     }
 
     public boolean isAllLink() {
-        return isOfType(MessageResponseType.ALL_LINK_BROADCAST) || isOfType(MessageResponseType.ALL_LINK_CLEANUP);
+        return getFlags() != null ? getFlags().isAllLink() : false;
     }
 
     public boolean isAckOfDirect() {
-        return isOfType(MessageResponseType.ACK_OF_DIRECT);
+        return getFlags() != null ? getFlags().isAckOfDirect() : false;
     }
 
     public boolean isAllLinkCleanupAckOrNack() {
-        return isOfType(MessageResponseType.ALL_LINK_CLEANUP_ACK) || isOfType(MessageResponseType.ALL_LINK_CLEANUP_NACK);
+        return getFlags() != null ? getFlags().isAllLinkCleanupAck() || getFlags().isAllLinkCleanupNack() : false;
     }
 
     public boolean isX10() {
         try {
             int cmd = getByte("Cmd") & 0xff;
-            if (cmd == 0x63 || cmd == 0x52) {
+            if (cmd == ModemMessageType.X10MessageReceived.getCommand()
+                    || cmd == ModemMessageType.X10MessageReceived.getCommand()) {
                 return true;
             }
         } catch (FieldException e) {
@@ -274,6 +260,7 @@ public class Message {
         } else {
             logger.error("intialize(): Offset out of bounds!");
         }
+        flags = null;
     }
 
     /**
@@ -488,7 +475,7 @@ public class Message {
                 byte b;
                 try {
                     b = f.getByte(m_data);
-                    MessageResponseType t = MessageResponseType.s_fromValue(b);
+                    InsteonFlags t = new InsteonFlags(b);
                     s += f.toString(m_data) + "=" + t.toString() + ":" + (b & 0x03) + ":" + ((b & 0x0c) >> 2) + "|";
                 } catch (FieldException e) {
                     logger.error("toString error: ", e);

@@ -94,4 +94,46 @@ public class InsteonFlags {
         this.maxHopsLeft = maxHopsLeft;
     }
 
+    public boolean isAllLinkCleanup() {
+        return isGroup() && !isAcknowledge() && !isBroadcast() && !isExtended();
+    }
+
+    public boolean isAllLinkBroadcast() {
+        return isGroup() && !isAcknowledge() && !isExtended() && isBroadcast();
+    }
+
+    public boolean isAllLink() {
+        return isGroup() && !isAcknowledge() && !isExtended();
+    }
+
+    public boolean isAckOfDirect() {
+        return !isGroup() && isAcknowledge() && !isBroadcast() && !isExtended();
+    }
+
+    public boolean isAllLinkCleanupAck() {
+        return isGroup() && isAcknowledge() && !isBroadcast() && !isExtended();
+    }
+
+    public boolean isAllLinkCleanupNack() {
+        return isGroup() && isAcknowledge() && isBroadcast() && !isExtended();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("InsteonFlags [broadcast=");
+        builder.append(broadcast);
+        builder.append(", extended=");
+        builder.append(extended);
+        builder.append(", group=");
+        builder.append(group);
+        builder.append(", acknowledge=");
+        builder.append(acknowledge);
+        builder.append(", maxHops=");
+        builder.append(maxHops);
+        builder.append(", maxHopsLeft=");
+        builder.append(maxHopsLeft);
+        builder.append("]");
+        return builder.toString();
+    }
 }

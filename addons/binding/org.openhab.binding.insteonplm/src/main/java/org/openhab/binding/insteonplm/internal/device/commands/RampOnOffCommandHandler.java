@@ -9,6 +9,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class RampOnOffCommandHandler extends RampCommandHandler {
                 double ramptime = conf.getRampTime();
                 int ramplevel = getRampLevel(conf, 100);
                 byte cmd2 = encode(ramptime, ramplevel);
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2,
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), getOnCmd(), cmd2,
                         conf.getInsteonGroup(), conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent ramp on to switch {} time {} level {} cmd1 {}", nm(), conf.getAddress(), ramptime,
@@ -42,7 +43,7 @@ public class RampOnOffCommandHandler extends RampCommandHandler {
                 double ramptime = conf.getRampTime();
                 int ramplevel = getRampLevel(conf, 0 /* ignored */);
                 byte cmd2 = encode(ramptime, ramplevel);
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOffCmd(), cmd2,
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), getOffCmd(), cmd2,
                         conf.getInsteonGroup(), conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent ramp off to switch {} time {} cmd1 {}", nm(), conf.getAddress(), ramptime,

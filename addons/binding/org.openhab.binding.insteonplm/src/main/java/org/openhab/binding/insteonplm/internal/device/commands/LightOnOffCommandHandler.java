@@ -9,7 +9,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,20 +70,23 @@ public class LightOnOffCommandHandler extends CommandHandler {
     @Override
     public void handleCommand(InsteonThingHandler conf, ChannelUID channelId, Command cmd) {
         try {
-            int direc = 0x00;
+            StandardInsteonMessages direc;
             int level = 0x00;
             Message m = null;
             if (cmd == OnOffType.ON) {
                 level = getMaxLightLevel(conf, 0xff);
-                direc = 0x11;
+                direc = StandardInsteonMessages.LightOn;
                 logger.info("{}: sent msg to switch {} to {}", nm(), conf.getAddress(), level == 0xff ? "on" : level);
             } else if (cmd == OnOffType.OFF) {
-                direc = 0x13;
+                direc = StandardInsteonMessages.LightOff;
                 logger.info("{}: sent msg to switch {} off", nm(), conf.getAddress());
+            } else {
+                logger.error("Invalid command {}", cmd);
+                return;
             }
             if (extended != ExtendedData.extendedNone) {
                 byte[] data = new byte[] { data1, data2, data3 };
-                m = conf.getMessageFactory().makeExtendedMessage((byte) 0x0f, (byte) direc, (byte) level, data,
+                m = conf.getMessageFactory().makeExtendedMessage(new InsteonFlags(), direc, (byte) level, data,
                         conf.getAddress());
                 logger.info("{}: was an extended message for device {}", nm(), conf.getAddress());
                 if (extended == ExtendedData.extendedCrc1) {
@@ -90,7 +95,7 @@ public class LightOnOffCommandHandler extends CommandHandler {
                     m.setCRC2();
                 }
             } else {
-                m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) direc, (byte) level,
+                m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), direc, (byte) level,
                         conf.getInsteonGroup(), conf.getAddress());
             }
             logger.info("Sending message to {}", conf.getAddress());

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +21,8 @@ public abstract class RampCommandHandler extends CommandHandler {
     private static double[] halfRateRampTimes = new double[] { 0.1, 0.3, 2, 6.5, 19, 23.5, 28, 32, 38.5, 47, 90, 150,
             210, 270, 360, 480 };
 
-    private byte onCmd = 0x2E;
-    private byte offCmd = 0x2F;
+    private StandardInsteonMessages onCmd = StandardInsteonMessages.LightOnWithRamp;
+    private StandardInsteonMessages offCmd = StandardInsteonMessages.LightOffWithRamp;
 
     RampCommandHandler(DeviceFeature f) {
         super(f);
@@ -31,7 +32,7 @@ public abstract class RampCommandHandler extends CommandHandler {
 
     public void setOnCmd(String on) {
         try {
-            onCmd = Byte.valueOf(on);
+            onCmd = StandardInsteonMessages.fromByte(Integer.valueOf(on));
         } catch (NumberFormatException e) {
             logger.error("Unable to parse {}", e, on);
         }
@@ -40,18 +41,18 @@ public abstract class RampCommandHandler extends CommandHandler {
 
     public void setOffCmd(String off) {
         try {
-            offCmd = Byte.valueOf(off);
+            offCmd = StandardInsteonMessages.fromByte(Integer.valueOf(off));
         } catch (NumberFormatException e) {
             logger.error("Unable to parse {}", e, off);
         }
 
     }
 
-    protected final byte getOnCmd() {
+    protected final StandardInsteonMessages getOnCmd() {
         return onCmd;
     }
 
-    protected final byte getOffCmd() {
+    protected final StandardInsteonMessages getOffCmd() {
         return offCmd;
     }
 

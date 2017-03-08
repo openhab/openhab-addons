@@ -8,6 +8,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
+import org.openhab.binding.insteonplm.internal.message.ExtendedInsteonMessage;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
@@ -55,13 +56,15 @@ public class LEDOnOffCommandHandler extends CommandHandler {
         try {
             // Get from the channel properties, default 0 if no button exists.
             if (cmd == OnOffType.ON) {
-                Message m = conf.getMessageFactory().makeExtendedMessage(new InsteonFlags(), (byte) 0x2e, (byte) 0x00,
-                        new byte[] { buttonNumber, (byte) 0x09, (byte) 0x01 }, conf.getAddress());
+                Message m = conf.getMessageFactory().makeExtendedMessage(new InsteonFlags(),
+                        ExtendedInsteonMessage.ExtendedGetSet, new byte[] { buttonNumber, (byte) 0x09, (byte) 0x01 },
+                        conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to switch {} on", nm(), conf.getAddress());
             } else if (cmd == OnOffType.OFF) {
-                Message m = conf.getMessageFactory().makeExtendedMessage(new InsteonFlags(), (byte) 0x2e, (byte) 0x00,
-                        new byte[] { buttonNumber, (byte) 0x09, (byte) 0x00 }, conf.getAddress());
+                Message m = conf.getMessageFactory().makeExtendedMessage(new InsteonFlags(),
+                        ExtendedInsteonMessage.ExtendedGetSet, new byte[] { buttonNumber, (byte) 0x09, (byte) 0x00 },
+                        conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to switch {} off", nm(), conf.getAddress());
             }

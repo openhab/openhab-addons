@@ -146,6 +146,9 @@ public class Port {
         }
         logger.debug("all threads for port {} stopped.", ioStream.toString());
         running = false;
+        // Close the streams.
+        reader = null;
+        writer = null;
         synchronized (messageListeners) {
             messageListeners.clear();
         }

@@ -237,9 +237,25 @@ public class MessageFactory {
      * @throws FieldException
      * @throws IOException
      */
-    public Message makeExtendedMessage(InsteonFlags flags, byte cmd1, byte cmd2, InsteonAddress address)
+    public Message makeExtendedMessage(InsteonFlags flags, ExtendedInsteonMessage message, InsteonAddress address)
             throws FieldException, IOException {
-        return makeExtendedMessage(flags, cmd1, cmd2, new byte[] {}, address);
+        flags.setExtended(true);
+        return makeExtendedMessage(flags, message, new byte[] {}, address);
+    }
+
+    /**
+     * Helper method to make extended message
+     *
+     * @param flags
+     * @param cmd1
+     * @param cmd2
+     * @return extended message
+     * @throws FieldException
+     * @throws IOException
+     */
+    public Message makeExtendedMessage(InsteonFlags flags, StandardInsteonMessages message, byte cmd2,
+            InsteonAddress address) throws FieldException, IOException {
+        return makeExtendedMessage(flags, message.getCmd(), cmd2, new byte[] {}, address);
     }
 
     /**
@@ -253,9 +269,41 @@ public class MessageFactory {
      * @throws FieldException
      * @throws IOException
      */
-    public Message makeExtendedMessage(InsteonFlags flags, byte cmd1, byte cmd2, byte[] data, InsteonAddress address)
-            throws FieldException, IOException {
+    public Message makeExtendedMessage(InsteonFlags flags, ExtendedInsteonMessage message, byte[] data,
+            InsteonAddress address) throws FieldException, IOException {
         flags.setExtended(true);
+        return makeExtendedMessage(flags, message.getCmd1(), message.getCmd2(), data, address);
+    }
+
+    /**
+     * Helper method to make extended message
+     *
+     * @param flags
+     * @param cmd1
+     * @param cmd2
+     * @param data array with userdata
+     * @return extended message
+     * @throws FieldException
+     * @throws IOException
+     */
+    public Message makeExtendedMessage(InsteonFlags flags, StandardInsteonMessages message, byte cmd2, byte[] data,
+            InsteonAddress address) throws FieldException, IOException {
+        return makeExtendedMessage(flags, message.getCmd(), cmd2, data, address);
+    }
+
+    /**
+     * Helper method to make extended message
+     *
+     * @param flags
+     * @param cmd1
+     * @param cmd2
+     * @param data array with userdata
+     * @return extended message
+     * @throws FieldException
+     * @throws IOException
+     */
+    private Message makeExtendedMessage(InsteonFlags flags, byte cmd1, byte cmd2, byte[] data, InsteonAddress address)
+            throws FieldException, IOException {
         Message m = makeMessage("SendExtendedMessage");
         m.setAddress("toAddress", address);
         m.setByte("messageFlags", flags.getByte());

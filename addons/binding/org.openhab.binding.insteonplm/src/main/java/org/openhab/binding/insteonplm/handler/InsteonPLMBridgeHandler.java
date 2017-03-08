@@ -32,6 +32,7 @@ import org.openhab.binding.insteonplm.internal.driver.hub.HubIOStream;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.MessageFactory;
+import org.openhab.binding.insteonplm.internal.message.ModemMessageType;
 import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,7 +153,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
 
         // Start downloading the link db.
         try {
-            port.writeMessage(messageFactory.makeMessage("GetFirstALLLinkRecord"));
+            port.writeMessage(messageFactory.makeMessage("GetIMInfo"));
         } catch (IOException e) {
             logger.error("error sending link record query ", e);
         }
@@ -178,18 +179,35 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
             messageQueueThread.start();
         }
         Bridge bridge = getThing();
+
+        ModemMessageType messageType;
+        try {
+            messageType = ModemMessageType.fromCommand(message.getByte("Cmd"));
+        } catch (FieldException e1) {
+            // TODO Auto-generated catch block
+            logger.error("Unable to get modem message type from command {}", message);
+            return;
+        }
         try {
             if (doingLinking) {
                 if (handleLinkingMessages(message)) {
                     return;
                 }
             } else {
-                switch (message.getByte("Cmd")) {
-                    case 0x60:
+                switch (ModemMessageType.fromCommand(message.getByte("Cmd"))) {
+                    case GetImInfo:
                         // add the modem to the device list
                         modemAddress = new InsteonAddress(message.getAddress("IMAddress"));
-                        logger.info("Found the modem address", modemAddress);
+                        logger.info("Found the modem address {}", modemAddress);
+                        try {
+                            port.writeMessage(messageFactory.makeMessage("GetFirstALLLinkRecord"));
+                            doingLinking = true;
+                        } catch (IOException e) {
+                            logger.error("Unable to send first linking message");
+                        }
                         return;
+                    default:
+                        break;
                 }
             }
         } catch (FieldException e) {
@@ -197,16 +215,19 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
         }
 
         try {
-            InsteonAddress fromAddress = message.getAddress("fromAddress");
-            InsteonAddress toAddress = message.getAddress("toAddress");
+            if (messageType == ModemMessageType.ExtendedMessageReceived
+                    || messageType == ModemMessageType.StandardMessageReceived) {
+                InsteonAddress fromAddress = message.getAddress("fromAddress");
+                InsteonAddress toAddress = message.getAddress("toAddress");
 
-            // Send the message to all the handlers. This is a little inefficent, leave it for now.
-            for (Thing thing : bridge.getThings()) {
-                if (thing.getHandler() instanceof InsteonThingHandler) {
-                    InsteonThingHandler handler = (InsteonThingHandler) thing.getHandler();
-                    // Only send on messages to that specific thing.
-                    if (fromAddress.equals(handler.getAddress()) || toAddress.equals(handler.getAddress())) {
-                        handler.handleMessage(message);
+                // Send the message to all the handlers. This is a little inefficent, leave it for now.
+                for (Thing thing : bridge.getThings()) {
+                    if (thing.getHandler() instanceof InsteonThingHandler) {
+                        InsteonThingHandler handler = (InsteonThingHandler) thing.getHandler();
+                        // Only send on messages to that specific thing.
+                        if (fromAddress.equals(handler.getAddress()) || toAddress.equals(handler.getAddress())) {
+                            handler.handleMessage(message);
+                        }
                     }
                 }
             }
@@ -216,24 +237,33 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
 
     }
 
-    private boolean handleLinkingMessages(Message message) {
-        switch (message.getByte("Cmd")) {
-            case 0x57:
+    private boolean handleLinkingMessages(Message message) throws FieldException {
+        switch (ModemMessageType.fromCommand(message.getByte("Cmd"))) {
+            case AllLinkRecordResponse:
                 // Found a device msg.getAddress("LinkAddr")
-                logger.error("Found device ", message.getAddress("LinkAddr"));
+                logger.error("Found device {}", message.getAddress("LinkAddr"));
                 // Send a request for the next one.
+                try {
+                    port.writeMessage(messageFactory.makeMessage("GetNextALLLinkRecord"));
+                } catch (IOException e) {
+                    logger.error("Unable to send next all link record");
+                }
                 return true;
-            case 0x15:
+            case PureNack:
                 // Explicit nack.
+                logger.info("Pure nack recieved.");
                 break;
-            case 0x69:
-            case 0x6a:
-                if (msg.getByte("ACK/NACK") == 0x15) {
+            case GetFirstAllLinkRecord:
+            case GetNextAllLinkRecord:
+                if (message.getByte("ACK/NACK") == ModemMessageType.PureNack.getCommand()) {
                     logger.debug("got all link records.");
                     doingLinking = false;
                 }
                 return true;
+            default:
+                break;
         }
+        return false;
     }
 
     private void startLinking() {

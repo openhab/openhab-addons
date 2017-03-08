@@ -63,7 +63,9 @@ public enum StandardInsteonMessages {
     ThermostatControl(0x6B),
     ThermostatSetCoolSetpoint(0x6C),
     ThermostatSetHeatSetpoint(0x6D),
-    AssignToCompanionGroup(0x81);
+    ResetPowerMeter(0x80),
+    AssignToCompanionGroup(0x81),
+    UpdatePowerMeter(0x82);
 
     private final int cmd;
 
@@ -81,5 +83,19 @@ public enum StandardInsteonMessages {
      */
     public byte getCmd() {
         return (byte) (cmd & 0xff);
+    }
+
+    /**
+     * Find the message from the cmd number.
+     *
+     * @return The message for the command.
+     */
+    public static StandardInsteonMessages fromByte(int cmd) {
+        for (StandardInsteonMessages mess : StandardInsteonMessages.values()) {
+            if (mess.getCmd() == cmd) {
+                return mess;
+            }
+        }
+        return null;
     }
 }

@@ -26,9 +26,9 @@ import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
 import org.openhab.binding.insteonplm.internal.device.PollHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.MessageFactory;
-import org.openhab.binding.insteonplm.internal.message.MessageResponseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,21 +121,25 @@ public class InsteonThingHandler extends BaseThingHandler {
         int group = (message.isCleanup() ? message.getByte("command2") : toAddress.getLowByte()) & 0xff;
 
         GroupMessage groupMessage;
-        MessageResponseType messageType = message.getType();
-        if (messageType == MessageResponseType.ALL_LINK_BROADCAST) {
-            // if the command is 0x06, then it's success message
-            // from the original broadcaster, with which the device
-            // confirms that it got all cleanup replies successfully.
-            if (command1 == 0x06) {
-                groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
+        InsteonFlags flags = message.getFlags();
+        if (flags != null) {
+            if (flags.isAllLinkBroadcast()) {
+                // if the command is 0x06, then it's success message
+                // from the original broadcaster, with which the device
+                // confirms that it got all cleanup replies successfully.
+                if (command1 == 0x06) {
+                    groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
+                } else {
+                    groupMessage = GroupMessageStateMachine.GroupMessage.SUCCESS;
+                }
+            } else if (flags.isAllLinkCleanup()) {
+                groupMessage = GroupMessageStateMachine.GroupMessage.CLEAN;
+                // the cleanup messages are direct messages, so the
+                // group # is not in the toAddress, but in cmd2
+                group = message.getByte("command2") & 0xff;
             } else {
-                groupMessage = GroupMessageStateMachine.GroupMessage.SUCCESS;
+                groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
             }
-        } else if (messageType == MessageResponseType.ALL_LINK_CLEANUP) {
-            groupMessage = GroupMessageStateMachine.GroupMessage.CLEAN;
-            // the cleanup messages are direct messages, so the
-            // group # is not in the toAddress, but in cmd2
-            group = message.getByte("command2") & 0xff;
         } else {
             groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
         }

@@ -9,7 +9,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +36,13 @@ public class PercentHandler extends CommandHandler {
             int level = (int) Math.ceil((pc.intValue() * 255.0) / 100); // round up
             if (level > 0) { // make light on message with given level
                 level = getMaxLightLevel(conf, level);
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x11, (byte) level,
-                        conf.getAddress());
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                        StandardInsteonMessages.LightOn, (byte) level, conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to set {} to {}", nm(), conf.getAddress(), level);
             } else { // switch off
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x13, (byte) 0x00,
-                        conf.getAddress());
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                        StandardInsteonMessages.LightOff, (byte) 0x00, conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to set {} to zero by switching off", nm(), conf.getAddress());
             }

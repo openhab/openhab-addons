@@ -7,6 +7,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.types.RampOnOffType;
 import org.slf4j.Logger;
@@ -34,13 +35,13 @@ public class RampPercentHandler extends RampCommandHandler {
             if (level > 0) { // make light on message with given level
                 level = getMaxLightLevel(conf, level);
                 byte cmd2 = encode(ramptime, level);
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2,
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), getOnCmd(), cmd2,
                         conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to set {} to {} with {} second ramp time.", nm(), conf.getAddress(), level,
                         ramptime);
             } else { // switch off
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, getOffCmd(), (byte) 0x00,
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), getOffCmd(), (byte) 0x00,
                         conf.getAddress());
                 conf.enqueueMessage(m);
                 logger.info("{}: sent msg to set {} to zero by switching off with {} ramp time.", nm(),

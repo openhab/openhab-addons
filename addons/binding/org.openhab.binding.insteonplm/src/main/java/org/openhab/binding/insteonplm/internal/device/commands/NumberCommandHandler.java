@@ -9,7 +9,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +28,7 @@ public class NumberCommandHandler extends CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(NumberCommandHandler.class);
 
     private int factor = 1;
-    private byte cmd1 = 0;
+    private StandardInsteonMessages cmd1;
     private byte cmd2 = 0;
     private byte data1;
     private byte data2;
@@ -60,7 +62,7 @@ public class NumberCommandHandler extends CommandHandler {
 
     public void setCmd1(String factor) {
         try {
-            cmd1 = Byte.valueOf(factor);
+            cmd1 = StandardInsteonMessages.fromByte(Integer.valueOf(factor));
         } catch (NumberFormatException e) {
             logger.error("Unable to parse {}", e, factor);
         }
@@ -124,7 +126,8 @@ public class NumberCommandHandler extends CommandHandler {
             Message m = null;
             if (extended != ExtendedData.extendedNone) {
                 byte[] data = new byte[] { data1, data2, data3 };
-                m = conf.getMessageFactory().makeExtendedMessage((byte) 0x0f, cmd1, cmd2, data, conf.getAddress());
+                m = conf.getMessageFactory().makeExtendedMessage(new InsteonFlags(), cmd1, cmd2, data,
+                        conf.getAddress());
                 m.setByte(fieldForValue, level);
                 if (extended == ExtendedData.extendedCrc1) {
                     m.setCRC();
@@ -132,7 +135,7 @@ public class NumberCommandHandler extends CommandHandler {
                     m.setCRC2();
                 }
             } else {
-                m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, cmd1, cmd2, conf.getAddress());
+                m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), cmd1, cmd2, conf.getAddress());
                 m.setByte(fieldForValue, level);
             }
             conf.enqueueMessage(m);

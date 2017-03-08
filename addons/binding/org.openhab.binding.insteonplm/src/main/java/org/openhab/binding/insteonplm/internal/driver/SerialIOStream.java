@@ -138,6 +138,7 @@ public class SerialIOStream extends IOStream {
 
     @Override
     public void close() {
+        logger.error("Closing port");
         if (m_port != null) {
             m_port.close();
         }

@@ -49,11 +49,11 @@ public enum ModemMessageType {
         this.num = num;
     }
 
-    int getCommand() {
+    public int getCommand() {
         return num;
     }
 
-    ModemMessageType fromCommand(int num) {
+    public static ModemMessageType fromCommand(int num) {
         for (ModemMessageType ty : ModemMessageType.values()) {
             if (ty.getCommand() == num) {
                 return ty;

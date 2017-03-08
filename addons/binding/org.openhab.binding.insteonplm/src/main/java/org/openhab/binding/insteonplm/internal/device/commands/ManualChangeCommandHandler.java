@@ -9,7 +9,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,12 +33,13 @@ public class ManualChangeCommandHandler extends CommandHandler {
         try {
             if (cmd instanceof DecimalType) {
                 int v = ((DecimalType) cmd).intValue();
-                int cmd1 = (v != 1) ? 0x17 : 0x18; // start or stop
+                StandardInsteonMessages cmd1 = (v != 1) ? StandardInsteonMessages.StartManualChange
+                        : StandardInsteonMessages.StopManualChange; // start or stop
                 int cmd2 = (v == 2) ? 0x01 : 0; // up or down
-                Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2,
+                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), cmd1, (byte) cmd2,
                         conf.getInsteonGroup(), conf.getAddress());
                 conf.enqueueMessage(m);
-                logger.info("{}: cmd {} sent manual change {} {} to {}", nm(), v, (cmd1 == 0x17) ? "START" : "STOP",
+                logger.info("{}: cmd {} sent manual change {} {} to {}", nm(), v, cmd1.toString(),
                         (cmd2 == 0x01) ? "UP" : "DOWN", conf.getAddress());
             } else {
                 logger.error("{}: invalid command type: {}", nm(), cmd);

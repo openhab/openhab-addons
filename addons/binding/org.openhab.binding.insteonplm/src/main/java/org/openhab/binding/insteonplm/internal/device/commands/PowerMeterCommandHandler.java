@@ -9,7 +9,9 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +38,14 @@ public class PowerMeterCommandHandler extends CommandHandler {
         try {
             if (cmd == OnOffType.ON) {
                 if (cmdParam.equals("reset")) {
-                    Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x80, (byte) 0x00,
-                            conf.getAddress());
+                    Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                            StandardInsteonMessages.ResetPowerMeter, (byte) 0x00, conf.getAddress());
                     conf.enqueueMessage(m);
                     logger.info("{}: sent reset msg to power meter {}", nm(), conf.getAddress());
                     conf.handleUpdate(channelId, OnOffType.OFF);
                 } else if (cmdParam.equals("update")) {
-                    Message m = conf.getMessageFactory().makeStandardMessage((byte) 0x0f, (byte) 0x82, (byte) 0x00,
-                            conf.getAddress());
+                    Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
+                            StandardInsteonMessages.UpdatePowerMeter, (byte) 0x00, conf.getAddress());
                     conf.enqueueMessage(m);
                     logger.info("{}: sent update msg to power meter {}", nm(), conf.getAddress());
                     conf.handleUpdate(channelId, OnOffType.ON);
