@@ -9,8 +9,6 @@
         <description>The Command encapsulates a shell command to be executed</description>
 
         <channels>
-            <channel id="input" typeId="input" />
-            <channel id="output" typeId="output" /> 
             <channel id="exit" typeId="exit"/>
             <channel id="run" typeId="run"/>
             <channel id="lastexecution" typeId="lastexecution" />
@@ -48,18 +46,6 @@
         
     </thing-type>
 
-    <channel-type id="input">
-        <item-type>String</item-type>
-        <label>Input</label>
-        <description>Input for command to be executed</description>
-        <state readOnly="false"></state>  
-    </channel-type>
-    <channel-type id="output">
-        <item-type>String</item-type>        
-        <label>Output</label>
-        <description>Output of the last execution of the command</description>
-        <state readOnly="true"></state>  
-    </channel-type>
     <channel-type id="exit">
         <item-type>Number</item-type>
         <label>Exit Value</label>

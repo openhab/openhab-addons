@@ -67,6 +67,7 @@ public class ExecHandler extends BaseThingHandler {
     private ScheduledFuture<?> periodicExecutionJob;
     private ItemRegistry itemRegistry;
     private String currentInput = "";
+    private String previousInput = null;
     private StrSubstitutor substitutor;
     private ReentrantLock lock;
 
@@ -119,7 +120,6 @@ public class ExecHandler extends BaseThingHandler {
                     }
                 }
             } else if (channelUID.getId().equals(INPUT)) {
-                String previousInput = currentInput;
                 currentInput = command.toString();
                 if (getConfig().get(RUN_ON_INPUT) != null && ((Boolean) getConfig().get(RUN_ON_INPUT)).booleanValue()) {
                     if (currentInput != null && currentInput.equals(previousInput)
@@ -129,7 +129,8 @@ public class ExecHandler extends BaseThingHandler {
                                 getConfig().get(COMMAND), command.toString());
                         scheduler.schedule(new ExecutionRunnable(currentInput), 0, TimeUnit.SECONDS);
                     } else {
-                        if (currentInput != null && !currentInput.equals(previousInput)) {
+                        if (currentInput != null && previousInput != null && !currentInput.equals(previousInput)
+                                || (previousInput == null && currentInput != null)) {
                             logger.trace("Executing command '{}' after a change of the input channel to '{}'",
                                     getConfig().get(COMMAND), command.toString());
                             scheduler.schedule(new ExecutionRunnable(currentInput), 0, TimeUnit.SECONDS);
