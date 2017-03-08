@@ -37,6 +37,10 @@ public class InsteonConfigProvider implements ConfigDescriptionProvider, ConfigO
 
     private static Set<ThingTypeUID> insteonThingTypeUIDList = new HashSet<ThingTypeUID>();
 
+    public InsteonConfigProvider() {
+        logger.error("Loaded config provider");
+    }
+
     @Override
     public Collection<ParameterOption> getParameterOptions(URI uri, String param, Locale locale) {
         // TODO Auto-generated method stub

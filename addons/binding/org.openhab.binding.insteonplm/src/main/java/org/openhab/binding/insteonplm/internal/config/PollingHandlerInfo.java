@@ -1,4 +1,4 @@
-package org.openhab.binding.insteonplm.config;
+package org.openhab.binding.insteonplm.internal.config;
 
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;

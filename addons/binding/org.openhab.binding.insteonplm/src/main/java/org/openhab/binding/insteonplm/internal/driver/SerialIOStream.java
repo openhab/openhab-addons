@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.insteonplm.config.InsteonPLMBridgeConfiguration;
+import org.openhab.binding.insteonplm.internal.config.InsteonPLMBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class SerialIOStream extends IOStream {
     private String m_devName = null;
 
     public SerialIOStream(InsteonPLMBridgeConfiguration config) {
-        m_devName = config.serialPort;
+        m_devName = config.getSerialPort();
     }
 
     @Override

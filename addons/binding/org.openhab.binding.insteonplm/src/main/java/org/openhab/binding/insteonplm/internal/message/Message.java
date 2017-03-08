@@ -61,6 +61,17 @@ public class Message {
         }
     }
 
+    public enum MessageType {
+        PureNack(0x15),
+        StandardMessageReceived(0x50),
+        ExtendedMessageReceived(0x51),
+        X10Received(0x52),
+        AllLinkingCompleted(0x53),
+        ButtonEventReport(0x54),
+        UserResetDetected(0x55),
+
+    }
+
     private int m_headerLength = -1;
     private byte[] m_data = null;
     private MessageDefinition m_definition = new MessageDefinition();

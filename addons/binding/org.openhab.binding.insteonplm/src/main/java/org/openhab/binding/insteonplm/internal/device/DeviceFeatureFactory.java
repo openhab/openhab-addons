@@ -28,6 +28,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.Maps;
+
 /**
  * Methods for creating DeviceFeature classes from the resource xml file.
  *
@@ -36,9 +38,10 @@ import org.xml.sax.SAXException;
 public class DeviceFeatureFactory {
     private Logger logger = LoggerFactory.getLogger(InsteonPLMBridgeHandler.class);
 
-    Map<String, DeviceFeatureBuilder> m_features;
+    Map<String, DeviceFeatureBuilder> features;
 
     public DeviceFeatureFactory() {
+        features = Maps.newHashMap();
         // read features from xml file and store them in a map
         InputStream input = DeviceFeature.class.getResourceAsStream("/device_features.xml");
         readFeatureTemplates(input);
@@ -52,8 +55,8 @@ public class DeviceFeatureFactory {
      */
     public DeviceFeature makeDeviceFeature(String s) {
         DeviceFeature f = null;
-        if (m_features.containsKey(s)) {
-            f = m_features.get(s).build();
+        if (features.containsKey(s)) {
+            f = features.get(s).build();
         } else {
             logger.error("unimplemented feature requested: {}", s);
         }
@@ -67,9 +70,9 @@ public class DeviceFeatureFactory {
      */
     private void readFeatureTemplates(InputStream input) {
         try {
-            ArrayList<DeviceFeatureBuilder> features = readTemplates(input);
-            for (DeviceFeatureBuilder f : features) {
-                m_features.put(f.getName(), f);
+            ArrayList<DeviceFeatureBuilder> featuresFromTemplate = readTemplates(input);
+            for (DeviceFeatureBuilder f : featuresFromTemplate) {
+                features.put(f.getName(), f);
             }
         } catch (IOException e) {
             logger.error("IOException while reading device features", e);
@@ -85,7 +88,7 @@ public class DeviceFeatureFactory {
      * @return true/false
      */
     public boolean isDeviceFeature(String value) {
-        return m_features.containsKey(value);
+        return features.containsKey(value);
     }
 
     /**

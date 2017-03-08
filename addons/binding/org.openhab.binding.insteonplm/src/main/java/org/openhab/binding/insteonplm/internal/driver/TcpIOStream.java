@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.openhab.binding.insteonplm.config.InsteonPLMBridgeConfiguration;
+import org.openhab.binding.insteonplm.internal.config.InsteonPLMBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +38,8 @@ public class TcpIOStream extends IOStream {
      * @param port port to connect to
      */
     public TcpIOStream(InsteonPLMBridgeConfiguration config) {
-        m_host = config.host;
-        m_port = config.port;
+        m_host = config.getHost();
+        m_port = config.getPort();
     }
 
     @Override

@@ -14,17 +14,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpResponse;
 import org.eclipse.jetty.client.api.AuthenticationStore;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.BasicAuthentication;
-import org.openhab.binding.insteonplm.config.InsteonPLMBridgeConfiguration;
+import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.insteonplm.internal.config.InsteonPLMBridgeConfiguration;
 import org.openhab.binding.insteonplm.internal.driver.IOStream;
-import org.openhab.binding.insteonplm.internal.driver.hub.HubIOStream.HubInputStream;
-import org.openhab.binding.insteonplm.internal.driver.hub.HubIOStream.HubOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +65,11 @@ public class HubIOStream extends IOStream implements Runnable {
      * @param pass hub password
      */
     public HubIOStream(InsteonPLMBridgeConfiguration config) {
-        m_host = config.host;
-        m_port = config.port;
-        m_pollTime = config.pollTime;
-        m_user = config.user;
-        m_pass = config.password;
+        m_host = config.getHost();
+        m_port = config.getPort();
+        m_pollTime = config.getPollTime();
+        m_user = config.getUser();
+        m_pass = config.getPassword();
     }
 
     @Override
@@ -75,7 +77,13 @@ public class HubIOStream extends IOStream implements Runnable {
         m_client = new HttpClient();
 
         if (m_user != null && m_pass != null) {
-            URI uri = new URI("http://" + m_host + ":" + m_port);
+            URI uri;
+            try {
+                uri = new URI("http://" + m_host + ":" + m_port);
+            } catch (URISyntaxException e) {
+                logger.error("Exception making url to talk to the hub");
+                return false;
+            }
             AuthenticationStore store = m_client.getAuthenticationStore();
             store.addAuthentication(new BasicAuthentication(uri, "Insteon", m_user, m_pass));
         }
@@ -213,10 +221,15 @@ public class HubIOStream extends IOStream implements Runnable {
             }
             b.append(resource);
 
-            HttpResponse response = m_client.newRequest(b.toString()).method(HttpMethod.GET)
-                    .timeout(5, TimeUnit.SECONDS).send();
-            if (response.getStatus() == 200) {
-                return response.getContentAsString();
+            ContentResponse response;
+            try {
+                response = m_client.newRequest(b.toString()).method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS).send();
+                if (response.getStatus() == 200) {
+                    return response.getContentAsString();
+                }
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             return null;
         }

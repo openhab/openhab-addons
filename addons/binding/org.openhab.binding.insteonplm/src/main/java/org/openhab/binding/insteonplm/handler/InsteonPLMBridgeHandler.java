@@ -10,6 +10,7 @@ package org.openhab.binding.insteonplm.handler;
 import static org.openhab.binding.insteonplm.InsteonPLMBindingConstants.CHANNEL_1;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -19,7 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.insteonplm.config.InsteonPLMBridgeConfiguration;
+import org.openhab.binding.insteonplm.internal.config.InsteonPLMBridgeConfiguration;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeatureFactory;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.driver.IOStream;
@@ -50,6 +51,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
     private PriorityQueue<InsteonBridgeThingQEntry> messagesToSend = new PriorityQueue<>();
     private Thread messageQueueThread;
     private InsteonAddress modemAddress;
+    private boolean doingLinking = false;
 
     public InsteonPLMBridgeHandler(Bridge thing) {
         super(thing);
@@ -69,25 +71,65 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
 
     @Override
     public void initialize() {
-        InsteonPLMBridgeConfiguration config = getConfigAs(InsteonPLMBridgeConfiguration.class);
         // Connect to the port.
         try {
             deviceFeatureFactory = new DeviceFeatureFactory();
             messageFactory = new MessageFactory();
         } catch (IOException e) {
             logger.error("Exception loading xml", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to load xml for devices");
+            return;
         } catch (FieldException f) {
             logger.error("Exception with the field {}", f);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error with the field " + f.getMessage());
+            return;
         } catch (ParsingException p) {
             logger.error("Exception with the parsing xml {}", p);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unable to parse the xml for devices");
+            return;
         }
 
-        switch (config.portType) {
+        startupPort();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (this.port != null) {
+            this.port.stop();
+        }
+        this.port = null;
+        if (this.ioStream != null) {
+            this.ioStream.close();
+        }
+        this.ioStream = null;
+        this.deviceFeatureFactory = null;
+        this.messageFactory = null;
+        this.messagesToSend.clear();
+        this.messagesToSend = null;
+        if (this.messageQueueThread != null) {
+            this.messageQueueThread.interrupt();
+        }
+        this.messageQueueThread = null;
+    }
+
+    private void startupPort() {
+        InsteonPLMBridgeConfiguration config = getConfigAs(InsteonPLMBridgeConfiguration.class);
+        logger.error("config {}", config);
+
+        switch (config.getPortType()) {
             case Hub:
                 ioStream = new HubIOStream(config);
                 break;
             case SerialPort:
                 ioStream = new SerialIOStream(config);
+                if (!ioStream.open()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unable to open port " + config.getSerialPort());
+                    return;
+                }
                 break;
             case Tcp:
                 ioStream = new TcpIOStream(config);
@@ -97,10 +139,34 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid type of port");
                 return;
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Connecting to port");
         port = new Port(ioStream, messageFactory);
         port.addListener(this);
         modemAddress = null;
+        if (port.start()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Port Started");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unable to start communicating on " + config.getSerialPort());
+        }
+
+        // Start downloading the link db.
+        try {
+            port.writeMessage(messageFactory.makeMessage("GetFirstALLLinkRecord"));
+        } catch (IOException e) {
+            logger.error("error sending link record query ", e);
+        }
+
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        // Stop the port then restart it to pick up the new configuration.
+        if (this.port != null) {
+            this.port.stop();
+        }
+        startupPort();
     }
 
     @Override
@@ -113,10 +179,18 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
         }
         Bridge bridge = getThing();
         try {
-            if (message.getByte("Cmd") == 0x60) {
-                // add the modem to the device list
-                modemAddress = new InsteonAddress(message.getAddress("IMAddress"));
-                logger.info("Found the modem address", modemAddress);
+            if (doingLinking) {
+                if (handleLinkingMessages(message)) {
+                    return;
+                }
+            } else {
+                switch (message.getByte("Cmd")) {
+                    case 0x60:
+                        // add the modem to the device list
+                        modemAddress = new InsteonAddress(message.getAddress("IMAddress"));
+                        logger.info("Found the modem address", modemAddress);
+                        return;
+                }
             }
         } catch (FieldException e) {
             logger.error("Unable to parse modem message", e);
@@ -139,6 +213,35 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
         } catch (FieldException e) {
             logger.error("Unable to get the address from the message {}", message, e);
         }
+
+    }
+
+    private boolean handleLinkingMessages(Message message) {
+        switch (message.getByte("Cmd")) {
+            case 0x57:
+                // Found a device msg.getAddress("LinkAddr")
+                logger.error("Found device ", message.getAddress("LinkAddr"));
+                // Send a request for the next one.
+                return true;
+            case 0x15:
+                // Explicit nack.
+                break;
+            case 0x69:
+            case 0x6a:
+                if (msg.getByte("ACK/NACK") == 0x15) {
+                    logger.debug("got all link records.");
+                    doingLinking = false;
+                }
+                return true;
+        }
+    }
+
+    private void startLinking() {
+
+    }
+
+    private void handleAllLinkDatabaseResponse(Message message) {
+        // Pull the data out of the all link record.
 
     }
 
@@ -207,7 +310,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
         public void run() {
             logger.debug("starting request queue thread");
             // Run while we are online.
-            while (getBridge().getStatus() == ThingStatus.ONLINE) {
+            while (getThing().getStatus() == ThingStatus.ONLINE) {
                 InsteonBridgeThingQEntry entry = messagesToSend.peek();
                 try {
                     if (messagesToSend.size() > 0) {
@@ -248,6 +351,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                     break;
                 }
             }
+            logger.error("exiting request queue thread");
         }
     }
 }

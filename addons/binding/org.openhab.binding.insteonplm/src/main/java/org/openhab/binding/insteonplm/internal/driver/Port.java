@@ -59,11 +59,9 @@ public class Port {
     private Thread readThread = null;
     private Thread writeThread = null;
     private boolean running = false;
-    private boolean modemDBComplete = false;
-    private AllLinkModemDB mdbb = null;
     private MessageFactory messageFactory;
     private LinkedBlockingQueue<Message> writeQueue = new LinkedBlockingQueue<Message>();
-    private List<MessageListener> messageListeners;
+    private List<MessageListener> messageListeners = Lists.newArrayList();
 
     /**
      * Constructor
@@ -78,16 +76,8 @@ public class Port {
         this.messageFactory = messageFactory;
     }
 
-    public synchronized boolean isModemDBComplete() {
-        return (modemDBComplete);
-    }
-
     public boolean isRunning() {
         return running;
-    }
-
-    public void setModemDBRetryTimeout(int timeout) {
-        mdbb.setRetryTimeout(timeout);
     }
 
     /**
@@ -106,7 +96,7 @@ public class Port {
     }
 
     /**
-     * Starts threads necessary for reading and writing
+     * Starts threads necessary for reading and writing. Assume the iostream is already open.
      */
     public boolean start() {
         logger.debug("starting port {}", ioStream.toString());
@@ -114,17 +104,12 @@ public class Port {
             logger.debug("port {} already running, not started again", ioStream.toString());
             return true;
         }
-        if (!ioStream.open()) {
-            logger.debug("failed to open port {}", ioStream.toString());
-            return false;
-        }
         readThread = new Thread(reader);
         writeThread = new Thread(writer);
         readThread.setName(ioStream.toString() + " Reader");
         writeThread.setName(ioStream.toString() + " Writer");
         readThread.start();
         writeThread.start();
-        mdbb.start(); // start downloading the device list
         running = true;
         return true;
     }
@@ -136,9 +121,6 @@ public class Port {
         if (!running) {
             logger.debug("port {} not running, no need to stop it", ioStream.toString());
             return;
-        }
-        if (mdbb != null) {
-            mdbb = null;
         }
         if (readThread != null) {
             readThread.interrupt();
@@ -163,7 +145,6 @@ public class Port {
             logger.debug("got interrupted waiting for write thread to exit.");
         }
         logger.debug("all threads for port {} stopped.", ioStream.toString());
-        ioStream.close();
         running = false;
         synchronized (messageListeners) {
             messageListeners.clear();
@@ -227,6 +208,11 @@ public class Port {
                     if (m_dropRandomBytes && rng.nextInt(100) < 20) {
                         len = dropBytes(buffer, len);
                     }
+                    final StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < len; i++) {
+                        builder.append(String.format("%02x", buffer[i]));
+                    }
+                    logger.error("Read {}", builder.toString());
                     messageFactory.addData(buffer, len);
                     processMessages();
                 }

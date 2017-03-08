@@ -17,6 +17,9 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.handler.InsteonPLMBridgeHandler;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
+import org.openhab.binding.insteonplm.internal.config.InsteonConfigProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link InsteonPLMHandlerFactory} is responsible for creating things and thing
@@ -25,6 +28,8 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
  * @author David Bennett - Initial contribution
  */
 public class InsteonPLMHandlerFactory extends BaseThingHandlerFactory {
+    private static Logger logger = LoggerFactory.getLogger(InsteonConfigProvider.class);
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return InsteonPLMBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId());

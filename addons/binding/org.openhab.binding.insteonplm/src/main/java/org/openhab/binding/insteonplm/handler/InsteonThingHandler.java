@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.joda.time.DateTime;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
-import org.openhab.binding.insteonplm.config.PollingHandlerInfo;
+import org.openhab.binding.insteonplm.internal.config.PollingHandlerInfo;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.GroupMessageStateMachine;
 import org.openhab.binding.insteonplm.internal.device.GroupMessageStateMachine.GroupMessage;
