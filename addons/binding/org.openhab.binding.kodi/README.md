@@ -1,7 +1,7 @@
 # Kodi Binding
 
 [Kodi](https://kodi.tv) (formerly known as XBMC) is an free and open source (GPL) software media center for playing videos, music, pictures, games, and more.
-Kodi runs on Linux, OS X, Windows, iOS, and Android.
+Kodi runs on Linux, OS X, BSD, Windows, iOS, and Android.
 It allows users to play and view most videos, music, podcasts, and other digital media files from local and network storage media and the internet.
 
 The Kodi Binding integrated Kodi media center support with openHAB, allowing both controlling the player as well as retrieving player status data like the currently played movie title.
@@ -79,20 +79,20 @@ The Kodi thing supports the following channels:
 demo.items
 
 ```
-Switch myKodi_mute          "Stumm"                 { channel="kodi:kodi:myKodi:mute" }
-Dimmer myKodi_volume        "Lautstärke [%d]"       { channel="kodi:kodi:myKodi:volume" }
-Player myKodi_control       "Kontrolle [%s]"        { channel="kodi:kodi:myKodi:control" }
+Switch myKodi_mute          "Mute"                  { channel="kodi:kodi:myKodi:mute" }
+Dimmer myKodi_volume        "Volume [%d]"           { channel="kodi:kodi:myKodi:volume" }
+Player myKodi_control       "Control"               { channel="kodi:kodi:myKodi:control" }
 Switch myKodi_stop          "Stop"                  { channel="kodi:kodi:myKodi:stop" }
-String myKodi_title         "Titel [%s]"            { channel="kodi:kodi:myKodi:title" }
-String myKodi_showtitle     "Showtitel [%s]"        { channel="kodi:kodi:myKodi:showtitle" }
+String myKodi_title         "Title [%s]"            { channel="kodi:kodi:myKodi:title" }
+String myKodi_showtitle     "Show title [%s]"       { channel="kodi:kodi:myKodi:showtitle" }
 String myKodi_album         "Album [%s]"            { channel="kodi:kodi:myKodi:album" }
 String myKodi_artist        "Artist [%s]"           { channel="kodi:kodi:myKodi:artist" }
 String myKodi_playuri       "PlayerURI [%s]"        { channel="kodi:kodi:myKodi:playuri" }
-String myKodi_notification  "Benachrichtigung [%s]" { channel="kodi:kodi:myKodi:shownotification" }
-String myKodi_input         "Input [%s]"            { channel="kodi:kodi:myKodi:input" }
-String myKodi_inputtext     "Inputtext [%s]"        { channel="kodi:kodi:myKodi:inputtext" }
-String myKodi_systemcommand "Systemcommand [%s]"    { channel="kodi:kodi:myKodi:systemcommand" }
-String myKodi_mediatype     "Mediatyp [%s]"         { channel="kodi:kodi:myKodi:mediatype" }
+String myKodi_notification  "Notification [%s]"     { channel="kodi:kodi:myKodi:shownotification" }
+String myKodi_input         "Input"                 { channel="kodi:kodi:myKodi:input" }
+String myKodi_inputtext     "Inputtext"             { channel="kodi:kodi:myKodi:inputtext" }
+String myKodi_systemcommand "Systemcommand"         { channel="kodi:kodi:myKodi:systemcommand" }
+String myKodi_mediatype     "Mediatype [%s]"        { channel="kodi:kodi:myKodi:mediatype" }
 ```
 
 ## Sitemap Configuration
@@ -105,16 +105,15 @@ sitemap demo label="myKodi"
     Frame label="myKodi" {
         Switch    item=myKodi_mute
         Slider    item=myKodi_volume
-        Selection item=myKodi_control mappings=[PLAY='Play', PAUSE='Pause', NEXT='Next', PREVIOUSE'Previous', FFWARD='Fastforward', REWIND='Rewind']
+        Selection item=myKodi_control mappings=[PLAY='Play', PAUSE='Pause', NEXT='Next', PREVIOUS='Previous', FASTFORWARD='Fastforward', REWIND='Rewind']
+        Default   item=myKodi_control
         Switch    item=myKodi_stop
         Text      item=myKodi_title
         Text      item=myKodi_showtitle
         Text      item=myKodi_album
         Text      item=myKodi_artist
         Text      item=myKodi_playuri
-        Text      item=myKodi_notification
-        Text      item=myKodi_input
-        Text      item=myKodi_inputtext
+        Selection item=myKodi_input mappings=[Up='Up', Down='Down', Left='Left', Right='Right', Select='Select', Back='Back', Home='Home', ContextMenu='ContextMenu', Info='Info', ShowCodec='ShowCodec', ShowOSD='ShowOSD']
         Selection item=myKodi_systemcommand mappings=[Shutdown='Herunterfahren', Suspend='Bereitschaft', Reboot='Neustart']
         Text      item=myKodi_mediatype
     }
