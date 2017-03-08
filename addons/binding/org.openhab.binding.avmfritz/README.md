@@ -80,8 +80,8 @@ demo.items:
 ```
 Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:outlet" }
 Number Temperature1 "Actual measured temperature [%.1f °C]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:temperature" }
-Number Energy1 "Accumulated energy consumption [%.3 Wh]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:energy" }
-Number Power1 "Current power consumption [%.2 W]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:power" }
+Number Energy1 "Accumulated energy consumption [%.3f Wh]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:energy" }
+Number Power1 "Current power consumption [%.2f W]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:power" }
 
 Switch Outlet2 { channel="avmfritz:FRITZ_Powerline_546E:1:PL1:outlet" }
 ```
@@ -91,13 +91,13 @@ demo.sitemap:
 ```
 sitemap demo label="Main Menu"
 {
-	Frame "FRITZ!DECT 200 switchable outlet" {
-		Switch item=Outlet1 icon="PowerOutlet"
+	Frame label="FRITZ!DECT 200 switchable outlet" {
+		Switch item=Outlet1 icon="poweroutlet"
 		Text item=Temperature1 icon="temperature"
 		Text item=Energy1 icon="energy"
 		Text item=Power1 icon="energy"
 	}
-	Frame "FRITZ!Powerline 546E switchable outlet" {
+	Frame label="FRITZ!Powerline 546E switchable outlet" {
 		Switch item=Outlet2
 	}
 }
