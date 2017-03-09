@@ -93,14 +93,10 @@ public class MulticastListener {
         try {
             socket.receive(msgPacket);
             beaconFound = true;
-            logger.trace("Multicast listener got datagram of length {} from multicast port", msgPacket.getLength());
+            logger.trace("Multicast listener got datagram of length {} from multicast port: {}", msgPacket.getLength(),
+                    msgPacket.toString());
 
         } catch (SocketTimeoutException e) {
-            beaconFound = false;
-        }
-
-        if (msgPacket.getLength() < GC_BEACON_MIN_LENGTH) {
-            logger.debug("Multicast listener beacon length is too short, length is {}", msgPacket.getLength());
             beaconFound = false;
         }
 
@@ -138,8 +134,10 @@ public class MulticastListener {
             parseItachAnnouncementBeacon(beacon);
         } else if (beacon.contains(GC_MODEL_GC_100)) {
             parseGC100AnnouncementBeacon(beacon);
+        } else if (beacon.contains(GC_MODEL_ZMOTE)) {
+            parseZmoteAnnouncementBeacon(beacon);
         } else {
-            logger.info("Multicast listener doesn't know how to parse beacon");
+            logger.info("Multicast listener doesn't know how to parse beacon: {}", beacon);
         }
     }
 
@@ -200,6 +198,36 @@ public class MulticastListener {
                 ipAddress = keyValue[1].substring(keyValue[1].indexOf("://") + 3, keyValue[1].length() - 1);
             }
         }
+        hardwareRevision = "N/A";
+        lastUpdate = new Date(System.currentTimeMillis());
+    }
+
+    /*
+     * AMXB<-UUID=CI00a1b2c3><-Type=ZMT2><-Make=zmote.io><-Model=ZV-2><-Revision=2.1.4><-Config-URL=http://192.168.1.12>
+     */
+    private void parseZmoteAnnouncementBeacon(String beacon) {
+        String[] parameterList = beacon.split("<-");
+
+        for (String parameter : parameterList) {
+            String[] keyValue = parameter.split("=");
+            if (keyValue.length != 2) {
+                continue;
+            }
+
+            if (keyValue[0].contains("UUID")) {
+                uid = keyValue[1].substring(0, keyValue[1].length() - 1);
+                serialNumber = uid;
+            } else if (keyValue[0].contains("Make")) {
+                vendor = keyValue[1].substring(0, keyValue[1].length() - 1);
+            } else if (keyValue[0].contains("Model")) {
+                model = keyValue[1].substring(0, keyValue[1].length() - 1);
+            } else if (keyValue[0].contains("Revision")) {
+                softwareRevision = keyValue[1].substring(0, keyValue[1].length() - 1);
+            } else if (keyValue[0].contains("Config-URL")) {
+                ipAddress = keyValue[1].substring(keyValue[1].indexOf("://") + 3, keyValue[1].length() - 1);
+            }
+        }
+
         hardwareRevision = "N/A";
         lastUpdate = new Date(System.currentTimeMillis());
     }
@@ -285,6 +313,9 @@ public class MulticastListener {
 
             case GC_MODEL_GC_100_12:
                 return THING_TYPE_GC_100_12;
+
+            case GC_MODEL_ZMOTE:
+                return THING_TYPE_ZMOTE;
 
             default:
                 return THING_TYPE_UNKNOWN;

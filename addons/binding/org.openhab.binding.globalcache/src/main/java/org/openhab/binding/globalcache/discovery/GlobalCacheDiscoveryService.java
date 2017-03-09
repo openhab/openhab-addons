@@ -170,7 +170,8 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
                                     gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
 
                             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                                    .withLabel("GlobalCache " + gcMulticastListener.getModel()).build();
+                                    .withLabel(gcMulticastListener.getVendor() + " " + gcMulticastListener.getModel())
+                                    .build();
 
                             thingDiscovered(result);
                         }
