@@ -1,5 +1,5 @@
 # openhab2-addon-hs110
-OpenHAB Addon for TP-Link HS100/HS110 (Development Project)
+OpenHAB Addon for TP-Link HS100/HS110
 
 
 # Issues and Contribution
@@ -23,6 +23,11 @@ Just use Paper-UI to set up your basic configuration.
 # Known Bugs
 I was not able to test this Plugin with HS100 Plugs.
 The Discovery might work, but they will be registered as HS110 Plugs.
+
+# FAQ
+
+- Are other TP-Link devices supported?
+Currently not, but if using the same communication protocol it should be easy to implement. Please open an issue at the development project.
 
 # Development
 
