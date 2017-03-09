@@ -240,7 +240,7 @@ public class LightifyLink {
         buffer.get(); // always 0
 
         int numOfZones = buffer.getShort();
-        logger.info("Found {} zones...", numOfZones);
+        logger.debug("Found {} zones...", numOfZones);
         for (int i = 0; i < numOfZones; i++) {
             int zoneId = buffer.getShort();
 

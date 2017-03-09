@@ -74,7 +74,7 @@ public class DeviceHandler extends BaseThingHandler {
             }
         };
 
-        scheduler.scheduleWithFixedDelay(statusUpdater, 1, 60, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(statusUpdater, 1, 10, TimeUnit.SECONDS);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class DeviceHandler extends BaseThingHandler {
     private LightifyLuminary getLuminary() {
         GatewayHandler gatewayHandler = getGatewayHandler();
         LightifyLink lightifyLink = gatewayHandler.getLightifyLink();
-        if (getThing().getThingTypeUID() == THING_TYPE_LIGHTIFY_BULB) {
+        if (getThing().getThingTypeUID().equals(THING_TYPE_LIGHTIFY_BULB)) {
             return lightifyLink.findDevice(getThing().getUID().getId());
         }
         String zoneId = getThing().getProperties().get(PROPERTY_ZONE_ID);
