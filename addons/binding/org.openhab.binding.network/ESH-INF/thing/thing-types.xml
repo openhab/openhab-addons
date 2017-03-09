@@ -45,9 +45,17 @@
 				<label>Use System Ping</label>
 				<description>Uses the ping program from the system</description>
 				<default>false</default>
-			</parameter>		
+			</parameter>
+			<parameter name="arping" type="boolean">
+				<label>Use arping</label>
+				<description>Use arping instead of regular ping. Only works on Unix and arping needs to be installed. When using arping it is required to specify a network interface.</description><default>false</default>
+				</parameter><parameter name="interface" type="text">
+				<label>Network interface</label>
+				<description>When using arping, specify the network interface to use (e.g. eth0, wlan0)</description>
+				<required>false</required></parameter>
+			
 
-            <parameter name="dhcplisten" type="boolean">
+			<parameter name="dhcplisten" type="boolean">
                 <label>Listen for DHCP requests</label>
                 <description>Whether to use DHCP listen or not (may require running as root)</description>
                 <default>false</default>

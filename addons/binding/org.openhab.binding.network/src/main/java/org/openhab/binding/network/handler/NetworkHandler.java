@@ -138,6 +138,16 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
             networkService.setUseSystemPing(confValueToBoolean(value));
         }
 
+        value = conf.get(PARAMETER_ARPING);
+        if (value != null) {
+            networkService.setArping(confValueToBoolean(value));
+        }
+
+        value = conf.get(PARAMETER_NETWORK_INTERFACE);
+        if (value != null) {
+            networkService.setNetworkInterface(String.valueOf(conf.get(PARAMETER_NETWORK_INTERFACE)));
+        }
+
         networkService.startAutomaticRefresh(scheduler, this);
     }
 

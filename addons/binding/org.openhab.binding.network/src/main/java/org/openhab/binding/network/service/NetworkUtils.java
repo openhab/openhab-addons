@@ -167,4 +167,25 @@ public class NetworkUtils {
         return exitValue == 0;
     }
 
+    public static boolean arping(String hostname, int timeout, String networkInterface)
+            throws InvalidConfigurationException, IOException, InterruptedException {
+        Process proc;
+        if (SystemUtils.IS_OS_UNIX) {
+            proc = new ProcessBuilder("arping", "-I", networkInterface, "-w", String.valueOf(timeout / 1000), "-c", "1",
+                    hostname).start();
+        } else {
+            throw new InvalidConfigurationException("Arping not supported");
+        }
+
+        int exitValue = proc.waitFor();
+        if (exitValue != 0) {
+            throw new IOException("Ping stopped with Error Number: " + exitValue + " on Command :" + "ping"
+                    + (SystemUtils.IS_OS_UNIX ? " -I " + String.valueOf(networkInterface) : "")
+                    + (SystemUtils.IS_OS_UNIX ? " -t " : " -w ")
+                    + (SystemUtils.IS_OS_UNIX ? String.valueOf(timeout / 1000) : String.valueOf(timeout))
+                    + (SystemUtils.IS_OS_UNIX ? " -c" : " -n") + " 1 " + hostname);
+        }
+        return exitValue == 0;
+    }
+
 }

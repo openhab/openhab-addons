@@ -41,13 +41,15 @@ public class NetworkService {
     private long refreshInterval;
     private int timeout;
     private boolean useSystemPing;
+    private boolean arping;
+    private String networkInterface;
 
     public NetworkService() {
-        this("", 0, 1, true, 60000, 5000, false);
+        this("", 0, 1, true, 60000, 5000, false, false, "eth0");
     }
 
     public NetworkService(String hostname, int port, int retry, boolean dhcplisten, long refreshInterval, int timeout,
-            boolean useSystemPing) {
+            boolean useSystemPing, boolean arping, String networkInterface) {
         super();
         this.hostname = hostname;
         this.port = port;
@@ -56,6 +58,8 @@ public class NetworkService {
         this.refreshInterval = refreshInterval;
         this.timeout = timeout;
         this.useSystemPing = useSystemPing;
+        this.arping = arping;
+        this.networkInterface = networkInterface;
     }
 
     public String getHostname() {
@@ -110,6 +114,14 @@ public class NetworkService {
         this.useSystemPing = useSystemPing;
     }
 
+    public void setArping(boolean arping) {
+        this.arping = arping;
+    }
+
+    public void setNetworkInterface(String networkInterface) {
+        this.networkInterface = networkInterface;
+    }
+
     public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
             final StateUpdate stateUpdate) {
         Runnable runnable = new Runnable() {
@@ -155,8 +167,10 @@ public class NetworkService {
                 pingTime = System.nanoTime();
                 if (!useSystemPing) {
                     success = Ping.checkVitality(hostname, port, timeout);
-                } else {
+                } else if (!arping) {
                     success = NetworkUtils.nativePing(hostname, port, timeout);
+                } else {
+                    success = NetworkUtils.arping(hostname, timeout, networkInterface);
                 }
                 pingTime = System.nanoTime() - pingTime;
                 if (success) {
