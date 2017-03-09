@@ -24,6 +24,11 @@ Just use Paper-UI to set up your basic configuration.
 I was not able to test this Plugin with HS100 Plugs.
 The Discovery might work, but they will be registered as HS110 Plugs.
 
+# FAQ
+
+- Are other TP-Link devices supported?
+Currently not, but if using the same communication protocol it should be easy to implement. Please open an issue at the development project.
+
 # Development
 
 ## Release Cycle
