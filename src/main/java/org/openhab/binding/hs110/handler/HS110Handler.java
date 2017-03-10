@@ -77,6 +77,9 @@ public class HS110Handler extends ConfigStatusThingHandler {
                     case CHANNEL_WATTAGE:
                         updateState(channelUID, getWattage());
                         break;
+                    case CHANNEL_TOTAL:
+                        updateState(channelUID, getTotal());
+                        break;
                     case CHANNEL_SWITCH:
                         updateState(channelUID, getState());
                         break;
@@ -134,6 +137,7 @@ public class HS110Handler extends ConfigStatusThingHandler {
                     if (success) {
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_SWITCH), getState());
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_WATTAGE), getWattage());
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_TOTAL), getTotal());
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_SYSINFO), getSysinfo());
                     }
                 } catch (Exception e) {
@@ -188,6 +192,16 @@ public class HS110Handler extends ConfigStatusThingHandler {
             BigDecimal wattage = HS110.parseWattage(energyData);
             if (wattage != null) {
                 return new DecimalType(wattage);
+            }
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private State getTotal() {
+        if (energyData != null) {
+            BigDecimal total = HS110.parseTotal(energyData);
+            if (total != null) {
+                return new DecimalType(total);
             }
         }
         return UnDefType.UNDEF;

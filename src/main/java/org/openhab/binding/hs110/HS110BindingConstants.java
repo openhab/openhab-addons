@@ -34,6 +34,7 @@ public class HS110BindingConstants {
     public final static String CHANNEL_SWITCH = "switch";
     public final static String CHANNEL_SYSINFO = "sysinfo";
     public final static String CHANNEL_WATTAGE = "wattage";
+    public final static String CHANNEL_TOTAL = "total";
 
     public final static String CONFIG_IP = "ip";
     public final static String CONFIG_REFRESH = "refresh";

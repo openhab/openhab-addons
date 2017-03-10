@@ -111,6 +111,10 @@ public class HS110 {
         return parseEnergyObject(data).get("power").getAsBigDecimal();
     }
 
+    public static BigDecimal parseTotal(String data) {
+        return parseEnergyObject(data).get("total").getAsBigDecimal();
+    }
+
     public String sendCommand(Command command) throws IOException, ConnectException {
 
         log.debug("Executing command {}", command.value);
