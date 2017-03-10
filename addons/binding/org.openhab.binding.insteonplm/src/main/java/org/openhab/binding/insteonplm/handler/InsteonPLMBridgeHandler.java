@@ -20,7 +20,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.insteonplm.internal.config.InsteonConfigProvider;
 import org.openhab.binding.insteonplm.internal.config.InsteonPLMBridgeConfiguration;
+import org.openhab.binding.insteonplm.internal.config.InsteonProduct;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeatureFactory;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.driver.IOStream;
@@ -29,13 +31,18 @@ import org.openhab.binding.insteonplm.internal.driver.Port;
 import org.openhab.binding.insteonplm.internal.driver.SerialIOStream;
 import org.openhab.binding.insteonplm.internal.driver.TcpIOStream;
 import org.openhab.binding.insteonplm.internal.driver.hub.HubIOStream;
+import org.openhab.binding.insteonplm.internal.message.ExtendedInsteonMessage;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.openhab.binding.insteonplm.internal.message.ModemMessageType;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Maps;
 
 /**
  * The {@link InsteonPLMBridgeHandler} is responsible for dealing with talking to the serial
@@ -53,6 +60,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
     private Thread messageQueueThread;
     private InsteonAddress modemAddress;
     private boolean doingLinking = false;
+    private Map<InsteonAddress, InsteonNodeDetails> foundDevices = Maps.newHashMap();
 
     public InsteonPLMBridgeHandler(Bridge thing) {
         super(thing);
@@ -194,7 +202,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                     return;
                 }
             } else {
-                switch (ModemMessageType.fromCommand(message.getByte("Cmd"))) {
+                switch (messageType) {
                     case GetImInfo:
                         // add the modem to the device list
                         modemAddress = new InsteonAddress(message.getAddress("IMAddress"));
@@ -203,9 +211,63 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                             port.writeMessage(messageFactory.makeMessage("GetFirstALLLinkRecord"));
                             doingLinking = true;
                         } catch (IOException e) {
-                            logger.error("Unable to send first linking message");
+                            logger.error("Unable to send first linking message", e);
                         }
                         return;
+                    case ExtendedMessageReceived:
+                        byte cmd1 = message.getByte("command1");
+                        byte cmd2 = message.getByte("command2");
+                        int cmd = cmd1 << 8 | cmd2;
+                        InsteonAddress address = message.getAddress("fromAddress");
+                        ExtendedInsteonMessage extendedMessage = ExtendedInsteonMessage.fromCmd(cmd);
+                        if (extendedMessage != null) {
+                            switch (extendedMessage) {
+                                case ProductDataResponse:
+                                    byte productKeyMsb = message.getByte("data2");
+                                    byte productKeyMsb2 = message.getByte("data3");
+                                    byte productKeyLsb = message.getByte("data4");
+                                    byte deviceCategory = message.getByte("data5");
+                                    byte deviceSubcategory = message.getByte("data6");
+                                    InsteonNodeDetails details = foundDevices.get(address);
+                                    if (details == null) {
+                                        details = new InsteonNodeDetails();
+                                        foundDevices.put(address, details);
+                                    }
+                                    details.setQueried(true);
+                                    details.setDeviceCategory(deviceCategory);
+                                    details.setDeviceSubcategory(deviceSubcategory);
+                                    details.setProductKey(
+                                            (productKeyMsb << 16) | (productKeyMsb2 << 8) | productKeyLsb);
+                                    // Query the string details, product data request with a 0x02 is a string request.
+                                    try {
+                                        port.writeMessage(messageFactory.makeStandardMessage(new InsteonFlags(),
+                                                StandardInsteonMessages.ProductDataRequest, (byte) 0x02, address));
+                                    } catch (IOException e) {
+                                        logger.error("Unable to write request for device text string", e);
+                                    }
+
+                                    logger.error("Details {}", details);
+                                    // Lets see if we can find this device.
+                                    InsteonProduct product = InsteonConfigProvider
+                                            .getInsteonProduct(details.getProductKey());
+                                    if (product != null) {
+                                        logger.error("Found insteon product {} {}", product.getModel(),
+                                                product.getThingTypeUID());
+                                    }
+                                    return;
+                                case DeviceTextStringResponse:
+                                    StringBuilder builder = new StringBuilder();
+
+                                    for (int i = 1; i < 15; i++) {
+                                        builder.append((char) message.getByte("userData" + i));
+                                    }
+                                    logger.error("Received device desc {}", builder.toString());
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -240,8 +302,12 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
     private boolean handleLinkingMessages(Message message) throws FieldException {
         switch (ModemMessageType.fromCommand(message.getByte("Cmd"))) {
             case AllLinkRecordResponse:
+                InsteonAddress address = message.getAddress("LinkAddr");
                 // Found a device msg.getAddress("LinkAddr")
-                logger.error("Found device {}", message.getAddress("LinkAddr"));
+                logger.error("Found device {}", address);
+                if (!foundDevices.containsKey(address)) {
+                    foundDevices.put(address, new InsteonNodeDetails());
+                }
                 // Send a request for the next one.
                 try {
                     port.writeMessage(messageFactory.makeMessage("GetNextALLLinkRecord"));
@@ -258,6 +324,19 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                 if (message.getByte("ACK/NACK") == ModemMessageType.PureNack.getCommand()) {
                     logger.debug("got all link records.");
                     doingLinking = false;
+                    // Now request the details for the various devices we found.
+                    for (InsteonAddress key : foundDevices.keySet()) {
+                        InsteonNodeDetails details = foundDevices.get(key);
+                        if (!details.isQueried()) {
+                            try {
+                                port.writeMessage(messageFactory.makeStandardMessage(new InsteonFlags(),
+                                        StandardInsteonMessages.ProductDataRequest, (byte) 0x00, key));
+                            } catch (IOException e) {
+                                logger.error("Error trying to query product data for {}", key);
+
+                            }
+                        }
+                    }
                 }
                 return true;
             default:

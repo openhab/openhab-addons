@@ -6,7 +6,9 @@ package org.openhab.binding.insteonplm.internal.message;
  * @author David Bennett - Initial Contribution
  */
 public enum ExtendedInsteonMessage {
+    ProductDataResponse(0x0300),
     FxUsernameResponse(0x0301),
+    DeviceTextStringResponse(0x0302),
     SetDeviceTextString(0x0303),
     SetAllLinkCommandAlias(0x0304),
     SetAllLinkCommandAlisExtended(0x0305),
@@ -64,5 +66,14 @@ public enum ExtendedInsteonMessage {
      */
     public byte getCmd2() {
         return (byte) (cmd & 0xff);
+    }
+
+    public static ExtendedInsteonMessage fromCmd(int cmd) {
+        for (ExtendedInsteonMessage mess : ExtendedInsteonMessage.values()) {
+            if (mess.getFullCmd() == cmd) {
+                return mess;
+            }
+        }
+        return null;
     }
 }

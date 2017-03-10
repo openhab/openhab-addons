@@ -131,6 +131,11 @@ public class InsteonConfigProvider implements ConfigDescriptionProvider, ConfigO
         return thingTypeRegistry.getThingType(thingTypeUID);
     }
 
+    public static InsteonProduct getInsteonProduct(int productKey) {
+        String product = String.format("0x%06X", productKey);
+        return getInsteonProduct(product);
+    }
+
     public static InsteonProduct getInsteonProduct(String productKey) {
         for (InsteonProduct product : productIndex) {
             if (product.match(productKey)) {

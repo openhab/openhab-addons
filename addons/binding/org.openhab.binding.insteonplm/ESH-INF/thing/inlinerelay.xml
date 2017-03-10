@@ -25,7 +25,7 @@
 		</channels>
 
 		<properties>
-			<property name="productKey">F00.00.1A</property>
+			<property name="productKey">0x00001A</property>
 			<property name="model">2475SDB</property>
 		</properties>
 	</thing-type>

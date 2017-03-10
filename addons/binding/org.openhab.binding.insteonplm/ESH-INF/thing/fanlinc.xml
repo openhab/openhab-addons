@@ -31,7 +31,7 @@
         </channels>
 
         <properties>
-            <property name="productKey">F00.00.1C</property>
+            <property name="productKey">0x00001C</property>
             <property name="model">2475F</property>
         </properties>
     </thing-type>

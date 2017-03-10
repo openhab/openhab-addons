@@ -50,7 +50,7 @@
         </channels>
         
         <properties>
-            <property name="productKey">F00.00.14</property>
+            <property name="productKey">0x000014</property>
             <property name="model">2487S</property>
         </properties>
     </thing-type>

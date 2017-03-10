@@ -25,7 +25,7 @@
 		</channels>
 
 		<properties>
-			<property name="productKey">F00.00.05</property>
+			<property name="productKey">0x000005</property>
 			<property name="model">2456D3</property>
 		</properties>
 	</thing-type>
