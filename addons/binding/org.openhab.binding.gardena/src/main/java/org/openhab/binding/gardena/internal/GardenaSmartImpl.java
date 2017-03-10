@@ -44,6 +44,7 @@ import org.openhab.binding.gardena.internal.model.NoResult;
 import org.openhab.binding.gardena.internal.model.Property;
 import org.openhab.binding.gardena.internal.model.Session;
 import org.openhab.binding.gardena.internal.model.SessionWrapper;
+import org.openhab.binding.gardena.internal.model.command.Command;
 import org.openhab.binding.gardena.internal.model.command.MowerParkUntilFurtherNoticeCommand;
 import org.openhab.binding.gardena.internal.model.command.MowerParkUntilNextTimerCommand;
 import org.openhab.binding.gardena.internal.model.command.MowerStartOverrideTimerCommand;
@@ -69,19 +70,7 @@ import com.google.gson.GsonBuilder;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaSmartImpl implements GardenaSmart {
-
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
-
-    private static final String MOWER_COMMAND_PARK_UNTIL_NEXT_TIMER = "park_until_next_timer_command";
-    private static final String MOWER_COMMAND_PARK_UNTIL_FURTHER_NOTICE = "park_until_further_notice_command";
-    private static final String MOWER_COMMAND_START_RESUME_SCHEDULE = "start_resume_schedule_command";
-    private static final String MOWER_COMMAND_START_OVERRIDE_TIMER = "start_override_timer_command";
-    private static final String MOWER_COMMAND_DURATION = "mower_command_duration";
-
-    private static final String SENSOR_COMMAND_MEASURE_AMBIENT_TEMPERATURE = "measure_ambient_temperature_command";
-    private static final String SENSOR_COMMAND_MEASURE_LIGHT = "measure_light_command";
-    private static final String SENSOR_COMMAND_MEASURE_SOIL_HUMIDITY = "measure_soil_humidity_command";
-    private static final String SENSOR_COMMAND_MEASURE_SOIL_TEMPERATURE = "measure_soil_temperature";
 
     private static final String ABILITY_MOWER = "mower";
     private static final String ABILITY_OUTLET = "outlet";
@@ -91,11 +80,9 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String ABILITY_SOIL_TEMPERATURE = "soil_temperature";
 
     private static final String PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME = "button_manual_override_time";
-    private static final String PROPERTY_VALVE_OPEN = "valve_open";
 
     private static final String DEVICE_CATEGORY_MOWER = "mower";
     private static final String DEVICE_CATEGORY_GATEWAY = "gateway";
-    private static final String DEVICE_CATEGORY_SENSOR = "sensor";
 
     private static final String DEFAULT_MOWER_DURATION = "180";
 
@@ -271,24 +258,12 @@ public class GardenaSmartImpl implements GardenaSmart {
 
             if (DEVICE_CATEGORY_MOWER.equals(device.getCategory())) {
                 Ability mower = device.getAbility(ABILITY_MOWER);
-                mower.addProperty(new Property(MOWER_COMMAND_PARK_UNTIL_NEXT_TIMER, "false"));
-                mower.addProperty(new Property(MOWER_COMMAND_PARK_UNTIL_FURTHER_NOTICE, "false"));
-                mower.addProperty(new Property(MOWER_COMMAND_START_RESUME_SCHEDULE, "false"));
-                mower.addProperty(new Property(MOWER_COMMAND_START_OVERRIDE_TIMER, "false"));
+                mower.addProperty(new Property(GardenaSmartCommandName.PARK_UNTIL_NEXT_TIMER, "false"));
+                mower.addProperty(new Property(GardenaSmartCommandName.PARK_UNTIL_FURTHER_NOTICE, "false"));
+                mower.addProperty(new Property(GardenaSmartCommandName.START_RESUME_SCHEDULE, "false"));
+                mower.addProperty(new Property(GardenaSmartCommandName.START_OVERRIDE_TIMER, "false"));
 
-                mower.addProperty(new Property(MOWER_COMMAND_DURATION, mowerDuration));
-            } else if (DEVICE_CATEGORY_SENSOR.equals(device.getCategory())) {
-                Ability humidity = device.getAbility(ABILITY_HUMIDITY);
-                humidity.addProperty(new Property(SENSOR_COMMAND_MEASURE_SOIL_HUMIDITY, "false"));
-
-                Ability light = device.getAbility(ABILITY_LIGHT);
-                light.addProperty(new Property(SENSOR_COMMAND_MEASURE_LIGHT, "false"));
-
-                Ability ambientTemp = device.getAbility(ABILITY_AMBIENT_TEMPERATURE);
-                ambientTemp.addProperty(new Property(SENSOR_COMMAND_MEASURE_AMBIENT_TEMPERATURE, "false"));
-
-                Ability soilTemp = device.getAbility(ABILITY_SOIL_TEMPERATURE);
-                soilTemp.addProperty(new Property(SENSOR_COMMAND_MEASURE_SOIL_TEMPERATURE, "false"));
+                mower.addProperty(new Property(GardenaSmartCommandName.DURATION_PROPERTY, mowerDuration));
             }
         }
         return devices;
@@ -298,63 +273,85 @@ public class GardenaSmartImpl implements GardenaSmart {
      * {@inheritDoc}
      */
     @Override
-    public void sendCommand(Property property, Object value) throws GardenaException {
-        Device device = property.getAbility().getDevice();
-        String commandUrl = String.format(URL_COMMAND, device.getId(), property.getAbility().getName(),
-                device.getLocation().getId());
+    public void sendCommand(Device device, GardenaSmartCommandName commandName, Object value) throws GardenaException {
+        Ability ability = null;
+        Command command = null;
 
-        switch (property.getName()) {
-            case MOWER_COMMAND_DURATION:
-                mowerDuration = String.valueOf(value);
+        switch (commandName) {
+            case PARK_UNTIL_NEXT_TIMER:
+                ability = device.getAbility(ABILITY_MOWER);
+                command = new MowerParkUntilNextTimerCommand();
+                break;
+            case PARK_UNTIL_FURTHER_NOTICE:
+                ability = device.getAbility(ABILITY_MOWER);
+                command = new MowerParkUntilFurtherNoticeCommand();
+                break;
+            case START_RESUME_SCHEDULE:
+                ability = device.getAbility(ABILITY_MOWER);
+                command = new MowerStartResumeScheduleCommand();
+                break;
+            case START_OVERRIDE_TIMER:
+                ability = device.getAbility(ABILITY_MOWER);
+                command = new MowerStartOverrideTimerCommand(mowerDuration);
+                break;
+            case DURATION_PROPERTY:
+                if (value == null) {
+                    throw new GardenaException("Command '" + commandName + "' requires a value");
+                }
+                mowerDuration = ObjectUtils.toString(value);
                 return;
-            case MOWER_COMMAND_PARK_UNTIL_NEXT_TIMER:
-                executeRequest(HttpMethod.POST, commandUrl, new MowerParkUntilNextTimerCommand(), NoResult.class);
+            case MEASURE_AMBIENT_TEMPERATURE:
+                ability = device.getAbility(ABILITY_AMBIENT_TEMPERATURE);
+                command = new SensorMeasureAmbientTemperatureCommand();
                 break;
-            case MOWER_COMMAND_PARK_UNTIL_FURTHER_NOTICE:
-                executeRequest(HttpMethod.POST, commandUrl, new MowerParkUntilFurtherNoticeCommand(), NoResult.class);
+            case MEASURE_LIGHT:
+                ability = device.getAbility(ABILITY_LIGHT);
+                command = new SensorMeasureLightCommand();
                 break;
-            case MOWER_COMMAND_START_RESUME_SCHEDULE:
-                executeRequest(HttpMethod.POST, commandUrl, new MowerStartResumeScheduleCommand(), NoResult.class);
+            case MEASURE_SOIL_HUMIDITY:
+                ability = device.getAbility(ABILITY_HUMIDITY);
+                command = new SensorMeasureSoilHumidityCommand();
                 break;
-            case MOWER_COMMAND_START_OVERRIDE_TIMER:
-                executeRequest(HttpMethod.POST, commandUrl, new MowerStartOverrideTimerCommand(mowerDuration),
-                        NoResult.class);
+            case MEASURE_SOIL_TEMPERATURE:
+                ability = device.getAbility(ABILITY_SOIL_TEMPERATURE);
+                command = new SensorMeasureSoilTemperatureCommand();
                 break;
-            case PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME:
-                SimpleProperties prop = new SimpleProperties(property.getName(), ObjectUtils.toString(value));
-                String propertyUrl = String.format(URL_PROPERTY, device.getId(), property.getAbility().getName(),
-                        property.getName(), device.getLocation().getId());
+            case OUTLET_MANUAL_OVERRIDE_TIME:
+                if (value == null) {
+                    throw new GardenaException("Command '" + commandName + "' requires a value");
+                }
+                SimpleProperties prop = new SimpleProperties(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME,
+                        ObjectUtils.toString(value));
+                String propertyUrl = String.format(URL_PROPERTY, device.getId(), ABILITY_OUTLET,
+                        PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME, device.getLocation().getId());
                 executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
                 break;
-            case PROPERTY_VALVE_OPEN:
+            case OUTLET_VALVE:
+                ability = device.getAbility(ABILITY_OUTLET);
                 if (value != null && value == Boolean.TRUE) {
                     String wateringDuration = device.getAbility(ABILITY_OUTLET)
                             .getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME).getValue();
-                    executeRequest(HttpMethod.POST, commandUrl, new WateringManualOverrideCommand(wateringDuration),
-                            NoResult.class);
+                    command = new WateringManualOverrideCommand(wateringDuration);
                 } else {
-                    executeRequest(HttpMethod.POST, commandUrl, new WateringCancelOverrideCommand(), NoResult.class);
+                    command = new WateringCancelOverrideCommand();
                 }
-                break;
-            case SENSOR_COMMAND_MEASURE_AMBIENT_TEMPERATURE:
-                executeRequest(HttpMethod.POST, commandUrl, new SensorMeasureAmbientTemperatureCommand(),
-                        NoResult.class);
-                break;
-            case SENSOR_COMMAND_MEASURE_LIGHT:
-                executeRequest(HttpMethod.POST, commandUrl, new SensorMeasureLightCommand(), NoResult.class);
-                break;
-            case SENSOR_COMMAND_MEASURE_SOIL_HUMIDITY:
-                executeRequest(HttpMethod.POST, commandUrl, new SensorMeasureSoilHumidityCommand(), NoResult.class);
-                break;
-            case SENSOR_COMMAND_MEASURE_SOIL_TEMPERATURE:
-                executeRequest(HttpMethod.POST, commandUrl, new SensorMeasureSoilTemperatureCommand(), NoResult.class);
                 break;
 
             default:
-                throw new GardenaException(
-                        "Unknown command " + property.getAbility().getName() + "/" + property.getName());
+                throw new GardenaException("Unknown command " + commandName);
+        }
+
+        if (command != null) {
+            executeRequest(HttpMethod.POST, getCommandUrl(device, ability), command, NoResult.class);
         }
         scheduleIntermediateRefresh();
+    }
+
+    /**
+     * Returns the command url.
+     */
+    private String getCommandUrl(Device device, Ability ability) throws GardenaException {
+        return String.format(URL_COMMAND, device.getId(), ability.getName(), device.getLocation().getId());
     }
 
     /**

@@ -68,11 +68,11 @@
 			<channel id="source_for_next_start" typeId="sourceForNextStart" />
 			<channel id="timestamp_next_start" typeId="timestampNextStart" />
 			<channel id="override_end_time" typeId="overrideEndTime" />
-			<channel id="park_until_further_notice_command" typeId="parkUntilFurtherNotice" />
-			<channel id="park_until_next_timer_command" typeId="parkUntilNextTimerCommand" />
-			<channel id="start_resume_schedule_command" typeId="startResumeSchedule" />
-			<channel id="start_override_timer_command" typeId="startOverrideTimer" />
-			<channel id="mower_command_duration" typeId="mowerCommandDuration" />
+			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice" />
+			<channel id="park_until_next_timer" typeId="parkUntilNextTimer" />
+			<channel id="start_override_timer" typeId="startOverrideTimer" />
+			<channel id="start_resume_schedule" typeId="startResumeSchedule" />
+			<channel id="duration_property" typeId="mowerDurationProperty" />
 		</channels>
 	</channel-group-type>
 
@@ -85,7 +85,7 @@
 	</channel-group-type>
 
 
-	<channel-type id="mowerCommandDuration">
+	<channel-type id="mowerDurationProperty">
 		<item-type>Number</item-type>
 		<label>Mowing time</label>
 		<description>Mowing time in minutes</description>
@@ -98,7 +98,7 @@
 		<description>Park and pause all timers</description>
 	</channel-type>
 
-	<channel-type id="parkUntilNextTimerCommand">
+	<channel-type id="parkUntilNextTimer">
 		<item-type>Switch</item-type>
 		<label>Park Until Next Timer</label>
 		<description>Park until next timer</description>
@@ -406,7 +406,7 @@
 		<item-type>Number</item-type>
 		<label>Button Manual Override</label>
 		<description>The time the valve is open when you press the button on the device</description>
-		<state pattern="%d min" min="1" max="180" step="1" />
+		<state pattern="%d min" min="1" max="59" step="1" />
 	</channel-type>
 
 	<channel-type id="frostWarning" advanced="true">
@@ -435,7 +435,7 @@
 			<channel-group id="device_info" typeId="deviceInfo" />
 			<channel-group id="battery" typeId="battery" />
 			<channel-group id="radio" typeId="radio" />
-			<channel-group id="ambient_temperature" typeId="ambientTemperatureSensor" />
+			<channel-group id="ambient_temperature" typeId="ambientTemperature" />
 			<channel-group id="soil_temperature" typeId="soilTemperature" />
 			<channel-group id="humidity" typeId="humidity" />
 			<channel-group id="light" typeId="light" />
@@ -458,7 +458,6 @@
 			<channel id="temperature" typeId="temperature">
 				<label>Soil Temperature</label>
 			</channel>
-			<channel id="measure_soil_temperature" typeId="measureSoilTemperature" />
 		</channels>
 	</channel-group-type>
 
@@ -467,7 +466,6 @@
 		<description>The humidity</description>
 		<channels>
 			<channel id="humidity" typeId="humidity" />
-			<channel id="measure_soil_humidity_command" typeId="measureSoilHumidity" />
 		</channels>
 	</channel-group-type>
 
@@ -476,19 +474,6 @@
 		<description>The brightness</description>
 		<channels>
 			<channel id="light" typeId="light" />
-			<channel id="measure_light_command" typeId="measureLight" />
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="ambientTemperatureSensor">
-		<label>Ambient Temperature</label>
-		<description>Ambient Temperature</description>
-		<channels>
-			<channel id="temperature" typeId="temperature">
-				<label>Ambient Temperature</label>
-			</channel>
-			<channel id="frost_warning" typeId="frostWarning" />
-			<channel id="measure_ambient_temperature_command" typeId="measureAmbientTemperature" />
 		</channels>
 	</channel-group-type>
 
@@ -504,30 +489,6 @@
 		<label>Brightness</label>
 		<description>The brightness</description>
 		<state pattern="%d lx" readOnly="true" />
-	</channel-type>
-
-	<channel-type id="measureAmbientTemperature">
-		<item-type>Switch</item-type>
-		<label>Measure Ambiet Temperature</label>
-		<description>Measure Ambiet Temperature</description>
-	</channel-type>
-
-	<channel-type id="measureSoilHumidity">
-		<item-type>Switch</item-type>
-		<label>Measure Soil Humidity</label>
-		<description>Measure Soil Humidity</description>
-	</channel-type>
-
-	<channel-type id="measureLight">
-		<item-type>Switch</item-type>
-		<label>Measure Light</label>
-		<description>Measure Light</description>
-	</channel-type>
-
-	<channel-type id="measureSoilTemperature">
-		<item-type>Switch</item-type>
-		<label>Measure Soil Temperature</label>
-		<description>Measure Soil Temperature</description>
 	</channel-type>
 
 </thing:thing-descriptions>
