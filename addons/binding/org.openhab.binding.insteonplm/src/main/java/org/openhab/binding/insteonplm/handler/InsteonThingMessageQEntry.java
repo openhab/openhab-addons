@@ -1,6 +1,6 @@
 package org.openhab.binding.insteonplm.handler;
 
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 
 /**
  * Queue entry helper class
@@ -8,10 +8,10 @@ import org.openhab.binding.insteonplm.internal.message.Message;
  * @author Bernd Pfrommer
  */
 class InsteonThingMessageQEntry implements Comparable<InsteonThingMessageQEntry> {
-    private Message m_msg = null;
+    private SendInsteonMessage m_msg = null;
     private long m_expirationTime = 0L;
 
-    public Message getMsg() {
+    public SendInsteonMessage getMsg() {
         return m_msg;
     }
 
@@ -19,8 +19,8 @@ class InsteonThingMessageQEntry implements Comparable<InsteonThingMessageQEntry>
         return m_expirationTime;
     }
 
-    public InsteonThingMessageQEntry(Message m, long t) {
-        m_msg = m;
+    public InsteonThingMessageQEntry(SendInsteonMessage message, long t) {
+        m_msg = message;
         m_expirationTime = t;
     }
 

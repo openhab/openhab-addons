@@ -6,7 +6,7 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,15 +28,16 @@ public class HiddenDoorSensorDataBatteryLevelReplyHandler extends MessageHandler
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
-        if (!msg.isExtended()) {
+    public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
+        if (!msg.getFlags().isExtended()) {
             logger.trace("{} device {} ignoring non-extended msg {}", nm(), handler.getAddress(), msg);
             return;
         }
         try {
-            int cmd2 = msg.getByte("command2") & 0xff;
+            int cmd2 = msg.getCmd2();
             switch (cmd2) {
                 case 0x00: // this is a product data response message
+                    byte[] userData = msg.getData();
                     int batteryLevel = msg.getByte("userData4") & 0xff;
                     int batteryWatermark = msg.getByte("userData7") & 0xff;
                     logger.debug("{}: {} got light level: {}, battery level: {}", nm(), handler.getAddress(),

@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.MessageFactory;
+import org.openhab.binding.insteonplm.internal.message.modem.BaseModemMessage;
+import org.openhab.binding.insteonplm.internal.message.modem.PureNack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,9 +60,9 @@ public class Port {
     private Thread readThread = null;
     private Thread writeThread = null;
     private boolean running = false;
-    private MessageFactory messageFactory;
-    private LinkedBlockingQueue<Message> writeQueue = new LinkedBlockingQueue<Message>();
+    private LinkedBlockingQueue<BaseModemMessage> writeQueue = new LinkedBlockingQueue<BaseModemMessage>();
     private List<MessageListener> messageListeners = Lists.newArrayList();
+    private DataParser parser;
 
     /**
      * Constructor
@@ -73,7 +74,7 @@ public class Port {
         ioStream = stream;
         reader = new IOStreamReader();
         writer = new IOStreamWriter();
-        this.messageFactory = messageFactory;
+        this.parser = new DataParser();
     }
 
     public boolean isRunning() {
@@ -160,12 +161,12 @@ public class Port {
      * @param m message to be added to the write queue
      * @throws IOException
      */
-    public void writeMessage(Message m) throws IOException {
+    public void writeMessage(BaseModemMessage m) throws IOException {
         if (m == null) {
             logger.error("trying to write null message!");
             throw new IOException("trying to write null message!");
         }
-        if (m.getData() == null) {
+        if (m.getPayload() == null) {
             logger.error("trying to write message without data!");
             throw new IOException("trying to write message without data!");
         }
@@ -188,9 +189,10 @@ public class Port {
      */
     class IOStreamReader implements Runnable {
 
-        private ReplyType m_reply = ReplyType.GOT_ACK;
-        private Object m_replyLock = new Object();
-        private boolean m_dropRandomBytes = false; // set to true for fault injection
+        private ReplyType reply = ReplyType.GOT_ACK;
+        private Object replyLock = new Object();
+        private boolean dropRandomBytes = false; // set to true for fault injection
+        private BaseModemMessage waitingFor = null;
 
         /**
          * Helper function for implementing synchronization between reader and writer
@@ -198,7 +200,7 @@ public class Port {
          * @return reference to the RequesReplyLock
          */
         public Object getRequestReplyLock() {
-            return m_replyLock;
+            return replyLock;
         }
 
         @Override
@@ -208,15 +210,15 @@ public class Port {
             Random rng = new Random();
             try {
                 for (int len = -1; (len = ioStream.read(buffer, 0, readSize)) > 0;) {
-                    if (m_dropRandomBytes && rng.nextInt(100) < 20) {
+                    if (dropRandomBytes && rng.nextInt(100) < 20) {
                         len = dropBytes(buffer, len);
                     }
                     final StringBuilder builder = new StringBuilder();
                     for (int i = 0; i < len; i++) {
                         builder.append(String.format("%02x", buffer[i]));
                     }
-                    logger.error("Read {}", builder.toString());
-                    messageFactory.addData(buffer, len);
+                    logger.debug("Read {}", builder.toString());
+                    parser.addData(buffer, len);
                     processMessages();
                 }
             } catch (InterruptedException e) {
@@ -226,35 +228,35 @@ public class Port {
         }
 
         private void processMessages() {
-            try {
-                // must call processData() until we get a null pointer back
-                for (Message m = messageFactory.processData(); m != null; m = messageFactory.processData()) {
+            // must call processData() until we get a null pointer back
+            for (BaseModemMessage m : parser.getPendingMessages()) {
+                if (m != null) {
                     toAllListeners(m);
                     notifyWriter(m);
-                }
-            } catch (IOException e) {
-                // got bad data from modem,
-                // unblock those waiting for ack
-                logger.warn("bad data received: {}", e.getMessage());
-                synchronized (getRequestReplyLock()) {
-                    if (m_reply == ReplyType.WAITING_FOR_ACK) {
-                        logger.warn("got bad data back, must assume message was acked.");
-                        m_reply = ReplyType.GOT_ACK;
-                        getRequestReplyLock().notify();
+                } else {
+                    // got bad data from modem,
+                    // unblock those waiting for ack
+                    logger.warn("bad data received");
+                    synchronized (getRequestReplyLock()) {
+                        if (reply == ReplyType.WAITING_FOR_ACK) {
+                            logger.warn("got bad data back, must assume message was acked.");
+                            reply = ReplyType.GOT_ACK;
+                            getRequestReplyLock().notify();
+                        }
                     }
                 }
             }
         }
 
-        private void notifyWriter(Message msg) {
+        private void notifyWriter(BaseModemMessage msg) {
             synchronized (getRequestReplyLock()) {
-                if (m_reply == ReplyType.WAITING_FOR_ACK) {
-                    if (!msg.isUnsolicited()) {
-                        m_reply = (msg.isPureNack() ? ReplyType.GOT_NACK : ReplyType.GOT_ACK);
-                        logger.trace("signaling receipt of ack: {}", (m_reply == ReplyType.GOT_ACK));
+                if (reply == ReplyType.WAITING_FOR_ACK) {
+                    if (waitingFor.equals(msg)) {
+                        reply = (msg instanceof PureNack ? ReplyType.GOT_NACK : ReplyType.GOT_ACK);
+                        logger.trace("signaling receipt of ack: {}", (reply == ReplyType.GOT_ACK));
                         getRequestReplyLock().notify();
-                    } else if (msg.isPureNack()) {
-                        m_reply = ReplyType.GOT_NACK;
+                    } else if (msg instanceof PureNack) {
+                        reply = ReplyType.GOT_NACK;
                         logger.trace("signaling receipt of pure nack");
                         getRequestReplyLock().notify();
                     } else {
@@ -287,7 +289,7 @@ public class Port {
             return (l.size());
         }
 
-        private void toAllListeners(Message msg) {
+        private void toAllListeners(BaseModemMessage msg) {
             // When we deliver the message, the recipient
             // may in turn call removeListener() or addListener(),
             // thereby corrupting the very same list we are iterating
@@ -308,9 +310,10 @@ public class Port {
          *
          * @return true if retransmission is necessary
          */
-        public boolean waitForReply() {
-            m_reply = ReplyType.WAITING_FOR_ACK;
-            while (m_reply == ReplyType.WAITING_FOR_ACK) {
+        public boolean waitForReply(BaseModemMessage mess, byte data[]) {
+            reply = ReplyType.WAITING_FOR_ACK;
+            waitingFor = mess;
+            while (reply == ReplyType.WAITING_FOR_ACK) {
                 try {
                     logger.trace("writer waiting for ack.");
                     // There have been cases observed, in particular for
@@ -318,19 +321,19 @@ public class Port {
                     // to hang in the wait() below, because unsolicited messages
                     // do not trigger a notify(). For this reason we request retransmission
                     // if the wait() times out.
-                    getRequestReplyLock().wait(30000); // be patient for 30 msec
-                    if (m_reply == ReplyType.WAITING_FOR_ACK) { // timeout expired without getting ACK or NACK
+                    getRequestReplyLock().wait(3000); // be patient for 30 sec
+                    if (reply == ReplyType.WAITING_FOR_ACK) { // timeout expired without getting ACK or NACK
                         logger.trace("writer timeout expired, asking for retransmit!");
-                        m_reply = ReplyType.GOT_NACK;
+                        reply = ReplyType.GOT_NACK;
                         break;
                     } else {
-                        logger.trace("writer got ack: {}", (m_reply == ReplyType.GOT_ACK));
+                        logger.trace("writer got ack: {}", (reply == ReplyType.GOT_ACK));
                     }
                 } catch (InterruptedException e) {
                     break; // done for the day...
                 }
             }
-            return (m_reply == ReplyType.GOT_NACK);
+            return (reply == ReplyType.GOT_NACK);
         }
     }
 
@@ -350,21 +353,27 @@ public class Port {
                 try {
                     logger.trace("writer checking message queue");
                     // this call blocks until the lock on the queue is released
-                    Message msg = writeQueue.take();
-                    if (msg.getData() == null) {
+                    BaseModemMessage msg = writeQueue.take();
+                    byte[] payload = msg.getPayload();
+                    if (payload == null) {
                         logger.error("found null message in write queue!");
                     } else {
+                        byte[] header = new byte[2];
+                        header[0] = 0x02;
+                        header[1] = (byte) msg.getMessageType().getCommand();
                         logger.debug("writing ({}): {}", msg.getQuietTime(), msg);
                         // To debug race conditions during startup (i.e. make the .items
                         // file definitions be available *before* the modem link records,
                         // slow down the modem traffic with the following statement:
                         // Thread.sleep(500);
                         synchronized (reader.getRequestReplyLock()) {
-                            ioStream.write(msg.getData());
-                            while (reader.waitForReply()) {
+                            ioStream.write(header);
+                            ioStream.write(payload);
+                            while (reader.waitForReply(msg, payload)) {
                                 Thread.sleep(WAIT_TIME);
                                 logger.trace("retransmitting msg: {}", msg);
-                                ioStream.write(msg.getData());
+                                ioStream.write(header);
+                                ioStream.write(payload);
                             }
 
                         }
@@ -383,60 +392,4 @@ public class Port {
             logger.debug("exiting writer thread!");
         }
     }
-
-    /**
-     * Class to get info about the modem
-     * class Modem implements MsgListener {
-     * private InsteonDevice m_device = null;
-     *
-     * InsteonAddress getAddress() {
-     * return (m_device == null) ? new InsteonAddress() : (m_device.getAddress());
-     * }
-     *
-     * InsteonDevice getDevice() {
-     * return m_device;
-     * }
-     *
-     * @Override
-     *           public void msg(Msg msg, String fromPort) {
-     *           try {
-     *           if (msg.isPureNack()) {
-     *           return;
-     *           }
-     *           if (msg.getByte("Cmd") == 0x60) {
-     *           // add the modem to the device list
-     *           InsteonAddress a = new InsteonAddress(msg.getAddress("IMAddress"));
-     *           String prodKey = "0x000045";
-     *           DeviceType dt = DeviceTypeFactory.s_instance().getDeviceType(prodKey);
-     *           if (dt == null) {
-     *           logger.error("unknown modem product key: {} for modem: {}.", prodKey, a);
-     *           } else {
-     *           m_device = InsteonDevice.s_makeDevice(dt);
-     *           m_device.setAddress(a);
-     *           m_device.setProductKey(prodKey);
-     *           m_device.setDriver(m_driver);
-     *           m_device.setIsModem(true);
-     *           m_device.addPort(fromPort);
-     *           logger.debug("found modem {} in device_types: {}", a, m_device.toString());
-     *           m_mdbb.updateModemDB(a, Port.this, null);
-     *           }
-     *           // can unsubscribe now
-     *           removeListener(this);
-     *           }
-     *           } catch (FieldException e) {
-     *           logger.error("error parsing im info reply field: ", e);
-     *           }
-     *           }
-     *
-     *           public void initialize() {
-     *           try {
-     *           Msg m = Msg.s_makeMessage("GetIMInfo");
-     *           writeMessage(m);
-     *           } catch (IOException e) {
-     *           logger.error("modem init failed!", e);
-     *           }
-     *           }
-     *           }
-     */
-
 }

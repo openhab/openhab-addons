@@ -33,7 +33,12 @@ import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.openhab.binding.insteonplm.internal.message.ModemMessageType;
-import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
+import org.openhab.binding.insteonplm.internal.message.modem.AllLinkRecordResponse;
+import org.openhab.binding.insteonplm.internal.message.modem.BaseModemMessage;
+import org.openhab.binding.insteonplm.internal.message.modem.GetFirstAllLinkingRecord;
+import org.openhab.binding.insteonplm.internal.message.modem.GetIMInfo;
+import org.openhab.binding.insteonplm.internal.message.modem.GetNextAllLinkingRecord;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,24 +78,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
     @Override
     public void initialize() {
         // Connect to the port.
-        try {
-            deviceFeatureFactory = new DeviceFeatureFactory();
-            messageFactory = new MessageFactory();
-        } catch (IOException e) {
-            logger.error("Exception loading xml", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to load xml for devices");
-            return;
-        } catch (FieldException f) {
-            logger.error("Exception with the field {}", f);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error with the field " + f.getMessage());
-            return;
-        } catch (ParsingException p) {
-            logger.error("Exception with the parsing xml {}", p);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to parse the xml for devices");
-            return;
-        }
+        deviceFeatureFactory = new DeviceFeatureFactory();
 
         startupPort();
     }
@@ -153,7 +141,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
 
         // Start downloading the link db.
         try {
-            port.writeMessage(messageFactory.makeMessage("GetIMInfo"));
+            port.writeMessage(new GetIMInfo());
         } catch (IOException e) {
             logger.error("error sending link record query ", e);
         }
@@ -171,7 +159,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
     }
 
     @Override
-    public void processMessage(Message message) {
+    public void processMessage(BaseModemMessage message) {
         // Got a message, go online. Yay!
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
@@ -179,62 +167,64 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
             messageQueueThread.start();
         }
         Bridge bridge = getThing();
-
-        ModemMessageType messageType;
-        try {
-            messageType = ModemMessageType.fromCommand(message.getByte("Cmd"));
-        } catch (FieldException e1) {
-            // TODO Auto-generated catch block
-            logger.error("Unable to get modem message type from command {}", message);
-            return;
-        }
-        try {
-            if (doingLinking) {
-                if (handleLinkingMessages(message)) {
-                    return;
-                }
-            } else {
-                switch (ModemMessageType.fromCommand(message.getByte("Cmd"))) {
-                    case GetImInfo:
-                        // add the modem to the device list
-                        modemAddress = new InsteonAddress(message.getAddress("IMAddress"));
-                        logger.info("Found the modem address {}", modemAddress);
-                        try {
-                            port.writeMessage(messageFactory.makeMessage("GetFirstALLLinkRecord"));
-                            doingLinking = true;
-                        } catch (IOException e) {
-                            logger.error("Unable to send first linking message");
-                        }
-                        return;
-                    default:
-                        break;
-                }
-            }
-        } catch (FieldException e) {
-            logger.error("Unable to parse modem message", e);
-        }
-
-        try {
-            if (messageType == ModemMessageType.ExtendedMessageReceived
-                    || messageType == ModemMessageType.StandardMessageReceived) {
-                InsteonAddress fromAddress = message.getAddress("fromAddress");
-                InsteonAddress toAddress = message.getAddress("toAddress");
-
+        switch (message.getMessageType()) {
+            case StandardMessageReceived:
+                StandardMessageReceived messReceived = (StandardMessageReceived) message;
+                // Go and find the device to send this message to.
                 // Send the message to all the handlers. This is a little inefficent, leave it for now.
                 for (Thing thing : bridge.getThings()) {
                     if (thing.getHandler() instanceof InsteonThingHandler) {
                         InsteonThingHandler handler = (InsteonThingHandler) thing.getHandler();
                         // Only send on messages to that specific thing.
-                        if (fromAddress.equals(handler.getAddress()) || toAddress.equals(handler.getAddress())) {
-                            handler.handleMessage(message);
+                        if (messReceived.getFromAddress().equals(handler.getAddress())
+                                || messReceived.getToAddress().equals(handler.getAddress())) {
+                            try {
+                                handler.handleMessage(messReceived);
+                            } catch (FieldException e) {
+                                logger.error("Error handling message {}", message, e);
+                            }
                         }
                     }
                 }
-            }
-        } catch (FieldException e) {
-            logger.error("Unable to get the address from the message {}", message, e);
+                break;
+            case GetImInfo:
+                GetIMInfo info = (GetIMInfo) message;
+                // add the modem to the device list
+                modemAddress = info.getModemAddress();
+                logger.info("Found the modem address {}", modemAddress);
+                try {
+                    port.writeMessage(new GetFirstAllLinkingRecord());
+                    doingLinking = true;
+                } catch (IOException e) {
+                    logger.error("Unable to send first linking message");
+                }
+                return;
+            case AllLinkRecordResponse:
+                AllLinkRecordResponse response = (AllLinkRecordResponse) message;
+                // Found a device msg.getAddress("LinkAddr")
+                logger.error("Found device {}", response.getAddress());
+                // Send a request for the next one.
+                try {
+                    port.writeMessage(new GetNextAllLinkingRecord());
+                } catch (IOException e) {
+                    logger.error("Unable to send next all link record");
+                }
+                return;
+            case PureNack:
+                // Explicit nack.
+                logger.info("Pure nack recieved.");
+                break;
+            case GetFirstAllLinkRecord:
+            case GetNextAllLinkRecord:
+                if (message.isNack()) {
+                    logger.debug("got all link records.");
+                    doingLinking = false;
+                }
+                return;
+            default:
+                logger.warn("Unhandled insteon message {}", message.getMessageType());
+                break;
         }
-
     }
 
     private boolean handleLinkingMessages(Message message) throws FieldException {

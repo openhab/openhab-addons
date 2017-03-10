@@ -5,8 +5,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,18 +21,9 @@ public class ContactRequestReplyHandler extends MessageHandler {
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
-        byte cmd = 0x00;
-        byte cmd2 = 0x00;
-        try {
-            cmd = msg.getByte("Cmd");
-            cmd2 = msg.getByte("command2");
-        } catch (FieldException e) {
-            logger.debug("{} no cmd found, dropping msg {}", nm(), msg);
-            return;
-        }
-        if (msg.isAckOfDirect() && cmd == 0x50) {
-            OpenClosedType oc = (cmd2 == 0) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+    public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
+        if (msg.getFlags().isAckOfDirect()) {
+            OpenClosedType oc = (msg.getCmd2() == 0) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             logger.info("{}: set contact {} to: {}", nm(), handler.getAddress(), oc);
             handler.updateFeatureState(f, oc);
         }
