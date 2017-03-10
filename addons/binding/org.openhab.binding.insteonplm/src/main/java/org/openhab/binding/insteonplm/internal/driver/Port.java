@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.openhab.binding.insteonplm.internal.message.modem.BaseModemMessage;
 import org.openhab.binding.insteonplm.internal.message.modem.PureNack;
 import org.slf4j.Logger;
@@ -70,7 +69,7 @@ public class Port {
      * @param devName the name of the port, i.e. '/dev/insteon'
      * @param d The Driver object that manages this port
      */
-    public Port(IOStream stream, MessageFactory messageFactory) {
+    public Port(IOStream stream) {
         ioStream = stream;
         reader = new IOStreamReader();
         writer = new IOStreamWriter();
