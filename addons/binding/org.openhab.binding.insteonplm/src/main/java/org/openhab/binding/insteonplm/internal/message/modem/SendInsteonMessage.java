@@ -30,18 +30,16 @@ public class SendInsteonMessage extends BaseModemMessage {
         // Incoming message.
         this.toAddress = new InsteonAddress(data[0], data[1], data[2]);
         this.flags = new InsteonFlags(data[3]);
+        this.cmd1 = StandardInsteonMessages.fromByte((data[4] << 8) | data[5]);
+        if (cmd1 == null) {
+            this.cmd1 = StandardInsteonMessages.fromByte((data[4] << 8));
+            cmd2 = data[5];
+        }
         if (flags.isExtended()) {
-            this.cmd1 = StandardInsteonMessages.fromByte((data[4] << 8) | data[5]);
-            if (cmd1 == null) {
-                this.cmd1 = StandardInsteonMessages.fromByte((data[4] << 8));
-                cmd2 = data[5];
-            }
             this.data = new byte[14];
             System.arraycopy(data, 6, this.data, 0, 14);
             setAckNackByte(data[20]);
         } else {
-            this.cmd1 = StandardInsteonMessages.fromByte(data[4]);
-            this.cmd2 = data[5];
             setAckNackByte(data[6]);
         }
     }
@@ -56,9 +54,26 @@ public class SendInsteonMessage extends BaseModemMessage {
      */
     public SendInsteonMessage(InsteonAddress toAddress, InsteonFlags flags, StandardInsteonMessages cmd1, byte cmd2) {
         super(ModemMessageType.SendInsteonMessage);
+        flags.setExtended(false);
         this.toAddress = toAddress;
         this.cmd1 = cmd1;
         this.cmd2 = cmd2;
+        this.flags = flags;
+    }
+
+    /**
+     * Standard basic message.
+     *
+     * @param toAddress The address to send to
+     * @param flags the flags
+     * @param cmd1 the cmd to use
+     * @param cmd2 the second cmd field
+     */
+    public SendInsteonMessage(InsteonAddress toAddress, InsteonFlags flags, StandardInsteonMessages cmd1) {
+        super(ModemMessageType.SendInsteonMessage);
+        flags.setExtended(false);
+        this.toAddress = toAddress;
+        this.cmd1 = cmd1;
         this.flags = flags;
     }
 
@@ -73,7 +88,7 @@ public class SendInsteonMessage extends BaseModemMessage {
     public SendInsteonMessage(InsteonAddress toAddress, InsteonFlags flags, StandardInsteonMessages cmd1, byte[] data) {
         super(ModemMessageType.SendInsteonMessage);
         assert (data.length == 14);
-        assert (cmd1.isExtended());
+        flags.setExtended(true);
         this.toAddress = toAddress;
         this.cmd2 = null;
         this.flags = flags;
@@ -92,7 +107,7 @@ public class SendInsteonMessage extends BaseModemMessage {
             byte[] data) {
         super(ModemMessageType.SendInsteonMessage);
         assert (data.length == 14);
-        assert (cmd1.isExtended());
+        flags.setExtended(true);
         this.toAddress = toAddress;
         this.cmd1 = cmd1;
         this.cmd2 = cmd2;
