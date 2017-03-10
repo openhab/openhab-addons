@@ -65,7 +65,39 @@ public enum StandardInsteonMessages {
     ThermostatSetHeatSetpoint(0x6D),
     ResetPowerMeter(0x80),
     AssignToCompanionGroup(0x81),
-    UpdatePowerMeter(0x82);
+    UpdatePowerMeter(0x82),
+    ExtendedFxUsernameResponse(0x0301),
+    ExtendedSetDeviceTextString(0x0303),
+    ExtendedSetAllLinkCommandAlias(0x0304),
+    ExtendedSetAllLinkCommandAlisExtended(0x0305),
+    ExtendedBlockDataTransferFailure(0x2A00),
+    ExtendedBlockDataTransferCompleteOneByte(0x2A01),
+    ExtendedBlockDataTransferCompleteTwoBytes(0x2A02),
+    ExtendedBlockDataTransferCompleteThreeBytes(0x2A03),
+    ExtendedBlockDataTransferCompleteFourBytes(0x2A04),
+    ExtendedBlockDataTransferCompleteFiveBytes(0x2A05),
+    ExtendedBlockDataTransferCompleteSixBytes(0x2A06),
+    ExtendedBlockDataTransferCompleteSevenBytes(0x2A07),
+    ExtendedBlockDataTransferCompleteEightBytes(0x2A08),
+    ExtendedBlockDataTransferCompleteNineBytes(0x2A09),
+    ExtendedBlockDataTransferCompleteTenBytes(0x2A0A),
+    ExtendedBlockDataTransferCompleteElevenBytes(0x2A0B),
+    ExtendedBlockDataTransferCompleteTwelveBytes(0x2A0C),
+    ExtendedBlockDataTransferContinues(0x2A0D),
+    ExtendedBlockDataTransferRequest(0x2AFF),
+    ExtendedExtendedGetSet(0x2E00),
+    ExtendedReadWriteAllLinkDatabase(0x2F00),
+    ExtendedTriggerAllLinkCommand(0x3000),
+    ExtendedSetSpinklerProgram(0x4000),
+    ExtendedGetSpinklerProgramResponse(0x4100),
+    ExtendedIOSetSensorNominal(0x4B00),
+    ExtendedIOAlarmDataResponse(0x4C00),
+    ExtendedPoolSetDeviceTemperature(0x5000),
+    ExtendedPoolSetDeviveHysteresis(0x5001),
+    ExtendedThermostatZoneTemperatureUp(0x6800),
+    ExtendedThermostatZoneTemperatureDown(0x6900),
+    ExtendedThermostatSetZoneCoolSetpoint(0x6C00),
+    ExtendedThemostatSetZoneHeatSetpoint(0x6D00);
 
     private final int cmd;
 
@@ -81,8 +113,26 @@ public enum StandardInsteonMessages {
     /**
      * Get the command as a byte.
      */
-    public byte getCmd() {
+    public byte getCmd1() {
+        if (cmd > 0xff) {
+            return (byte) ((cmd >> 8) & 0xff);
+        } else {
+            return (byte) (cmd & 0xff);
+        }
+    }
+
+    /**
+     * Get the command as a byte.
+     */
+    public byte getCmd2() {
         return (byte) (cmd & 0xff);
+    }
+
+    /**
+     * @return True if this is an extended message data
+     */
+    public boolean isExtended() {
+        return this.cmd > 0xff;
     }
 
     /**

@@ -5,8 +5,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,30 +24,26 @@ public class DimmerRequestReplyHandler extends MessageHandler {
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
-        try {
-            int cmd2 = msg.getByte("command2") & 0xff;
-            if (cmd2 == 0xfe) {
-                // sometimes dimmer devices are returning 0xfe when on instead of 0xff
-                cmd2 = 0xff;
-            }
+    public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
+        int cmd2 = msg.getCmd2();
+        if (cmd2 == 0xfe) {
+            // sometimes dimmer devices are returning 0xfe when on instead of 0xff
+            cmd2 = 0xff;
+        }
 
-            if (cmd2 == 0) {
-                logger.info("{}: set device {} to level 0", nm(), handler.getAddress());
-                handler.updateFeatureState(f, PercentType.ZERO);
-            } else if (cmd2 == 0xff) {
-                logger.info("{}: set device {} to level 100", nm(), handler.getAddress());
-                handler.updateFeatureState(f, PercentType.HUNDRED);
-            } else {
-                int level = cmd2 * 100 / 255;
-                if (level == 0) {
-                    level = 1;
-                }
-                logger.info("{}: set device {} to level {}", nm(), handler.getAddress(), level);
-                handler.updateFeatureState(f, new PercentType(level));
+        if (cmd2 == 0) {
+            logger.info("{}: set device {} to level 0", nm(), handler.getAddress());
+            handler.updateFeatureState(f, PercentType.ZERO);
+        } else if (cmd2 == 0xff) {
+            logger.info("{}: set device {} to level 100", nm(), handler.getAddress());
+            handler.updateFeatureState(f, PercentType.HUNDRED);
+        } else {
+            int level = cmd2 * 100 / 255;
+            if (level == 0) {
+                level = 1;
             }
-        } catch (FieldException e) {
-            logger.error("{}: error parsing {}: ", nm(), msg, e);
+            logger.info("{}: set device {} to level {}", nm(), handler.getAddress(), level);
+            handler.updateFeatureState(f, new PercentType(level));
         }
     }
 }

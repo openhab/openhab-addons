@@ -1,6 +1,6 @@
 package org.openhab.binding.insteonplm.internal.driver;
 
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.BaseModemMessage;
 
 /**
  * Processes the message received on the port.
@@ -9,5 +9,5 @@ import org.openhab.binding.insteonplm.internal.message.Message;
  *
  */
 public interface MessageListener {
-    void processMessage(Message message);
+    void processMessage(BaseModemMessage msg);
 }

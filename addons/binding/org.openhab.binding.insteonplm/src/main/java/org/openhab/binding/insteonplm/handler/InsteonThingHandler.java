@@ -28,7 +28,9 @@ import org.openhab.binding.insteonplm.internal.device.PollHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
-import org.openhab.binding.insteonplm.internal.message.MessageFactory;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
+import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,56 +169,37 @@ public class InsteonThingHandler extends BaseThingHandler {
      *
      * @throws FieldException
      */
-    public void handleMessage(Message message) throws FieldException {
+    public void handleMessage(StandardMessageReceived message) throws FieldException {
         lastMessageReceived = DateTime.now();
 
         if (!isX10Device) {
-            byte cmd = message.getByte("Cmd");
-            byte command1 = message.getByte("command1");
+            StandardInsteonMessages cmd1 = message.getCmd1();
             // All link message for this thing.
-            if (message.isAllLink()) {
-                handlerAllLinkMessage(message);
-                return;
-            }
-
-            if (message.isAllLinkCleanupAckOrNack()) {
-                // Had cases when a KeypadLinc would send an ALL_LINK_CLEANUP_ACK
-                // in response to a direct status query message
-                return;
-            }
-
             // We have an ack and we have a request message. Yay.
             int key = -1;
-            if (message.isAckOfDirect() && requestMessage != null) {
-                // The request message is good, for us.
-                if (cmd == 0x50) {
-                    // Grab from the request message.
-                    key = requestMessage.getByte("command1");
-                }
+            if (message.getFlags().isAckOfDirect() && requestMessage != null) {
                 // We have the request message and this is an ack for it. Yay.
                 requestMessage = null;
-            } else {
-                key = command1;
+                return;
             }
 
-            // For direct acks and for normal direct messages we do this. Yay!
-            if (key != -1) {
-                for (ChannelUID channelId : featureChannelMapping.keySet()) {
-                    List<DeviceFeature> features = featureChannelMapping.get(channelId);
-                    for (DeviceFeature feature : features) {
-                        List<MessageHandler> allHandlers = feature.getMsgHandlers().get(command1 & 0xff);
-                        if (allHandlers != null) {
-                            for (MessageHandler handler : allHandlers) {
-                                if (handler.matches(message)) {
-                                    handler.handleMessage(this, -1, command1, message,
-                                            getThing().getChannel(channelId.getId()));
-                                }
+            // For normal direct messages we do this. Yay!
+            for (ChannelUID channelId : featureChannelMapping.keySet()) {
+                List<DeviceFeature> features = featureChannelMapping.get(channelId);
+                for (DeviceFeature feature : features) {
+                    List<MessageHandler> allHandlers = feature.getMsgHandlers().get(message.getCmd1().getCmd1());
+                    if (allHandlers != null) {
+                        for (MessageHandler handler : allHandlers) {
+                            if (handler.matches(message)) {
+                                handler.handleMessage(this, -1, message, getThing().getChannel(channelId.getId()));
                             }
                         }
                     }
                 }
             }
-        } else {
+        } else
+
+        {
             // X10 Message.
             byte rawX10 = message.getByte("rawX10");
             int cmd = (rawX10 & 0x0f);
@@ -293,19 +276,14 @@ public class InsteonThingHandler extends BaseThingHandler {
         return (InsteonPLMBridgeHandler) getBridge();
     }
 
-    /** The message factory to use when making messages. */
-    public MessageFactory getMessageFactory() {
-        return getInsteonBridge().getMessageFactory();
-    }
-
     /**
      * Adds this message into the output queue for this thing.
      *
-     * @param message The message to queue
+     * @param mess The message to queue
      * @param feature The feature it is associated with (for acks)
      */
-    public void enqueueMessage(Message message) {
-        enqueueDelayedMessage(message, 0L);
+    public void enqueueMessage(SendInsteonMessage mess) {
+        enqueueDelayedMessage(mess, 0L);
     }
 
     /**
@@ -314,11 +292,11 @@ public class InsteonThingHandler extends BaseThingHandler {
      * @param message The message to queue
      * @param feature The feature it is associated with (for acks)
      */
-    public void enqueueDelayedMessage(Message message, long delay) {
+    public void enqueueDelayedMessage(SendInsteonMessage message, long delay) {
         synchronized (requestQueue) {
             requestQueue.add(new InsteonThingMessageQEntry(message, System.currentTimeMillis() + delay));
         }
-        if (!message.isBroadcast()) {
+        if (!message.getFlags().isBroadcast()) {
             message.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
         getInsteonBridge().addThingToSendingQueue(this, requestQueue.peek().getExpirationTime());
@@ -452,7 +430,7 @@ public class InsteonThingHandler extends BaseThingHandler {
                 }
             }
             InsteonThingMessageQEntry entry = requestQueue.poll();
-            if (entry.getMsg().isBroadcast()) {
+            if (entry.getMsg().getFlags().isBroadcast()) {
                 // Broadcast message. Yay!
                 logger.debug("Broadcast message on queue {} {}", getAddress(), entry.getMsg());
             } else {

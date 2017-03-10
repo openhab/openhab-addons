@@ -8,14 +8,11 @@
  */
 package org.openhab.binding.insteonplm.internal.device;
 
-import java.io.IOException;
-
 import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.messages.MessageHandlerData;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +49,8 @@ public abstract class MessageHandler {
      * @param msg the received insteon message
      * @param channel the DeviceFeature to which this message handler is attached
      */
-    public abstract void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel channel);
+    public abstract void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived message,
+            Channel channel);
 
     /**
      * Method to send an extended insteon message for querying a device
@@ -60,19 +58,19 @@ public abstract class MessageHandler {
      * @param f DeviceFeature that is being currently handled
      * @param aCmd1 cmd1 for message to be sent
      * @param aCmd2 cmd2 for message to be sent
+     *            public void sendExtendedQuery(InsteonThingHandler handler, DeviceFeature f, byte aCmd1, byte aCmd2) {
+     *            try {
+     *            Message m = handler.getMessageFactory().makeExtendedMessage((byte) 0x1f, aCmd1, aCmd2,
+     *            handler.getAddress());
+     *            m.setQuietTime(500L);
+     *            handler.enqueueMessage(m);
+     *            } catch (IOException e) {
+     *            logger.warn("i/o problem sending query message to device {}", handler.getAddress());
+     *            } catch (FieldException e) {
+     *            logger.warn("field exception sending query message to device {}", handler.getAddress());
+     *            }
+     *            }
      */
-    public void sendExtendedQuery(InsteonThingHandler handler, DeviceFeature f, byte aCmd1, byte aCmd2) {
-        try {
-            Message m = handler.getMessageFactory().makeExtendedMessage((byte) 0x1f, aCmd1, aCmd2,
-                    handler.getAddress());
-            m.setQuietTime(500L);
-            handler.enqueueMessage(m);
-        } catch (IOException e) {
-            logger.warn("i/o problem sending query message to device {}", handler.getAddress());
-        } catch (FieldException e) {
-            logger.warn("field exception sending query message to device {}", handler.getAddress());
-        }
-    }
 
     /**
      * Check if group matches
@@ -176,7 +174,7 @@ public abstract class MessageHandler {
      * @param f device feature to test
      * @return true if we have no button configured or the message is for this button
      */
-    protected boolean isMybutton(Message msg) {
+    protected boolean isMybutton(StandardMessageReceived msg) {
         // if there is no button configured for this handler
         // the message is assumed to refer to this feature
         // no matter what button is addressed in the message
@@ -191,39 +189,31 @@ public abstract class MessageHandler {
     /**
      * Test if message matches the filter parameters
      *
-     * @param msg message to be tested against
+     * @param message message to be tested against
      * @return true if message matches
      */
-    public boolean matches(Message msg) {
-        try {
-            if (data.extended != ExtendedData.extendedNone) {
-                if ((msg.isExtended() && data.extended != ExtendedData.extendedCrc1)
-                        || (!msg.isExtended() && data.extended != ExtendedData.extendedNone)) {
-                    return (false);
-                }
-                byte value = msg.getByte("command1");
-                if (data.cmd1 != -1 && value != data.cmd1) {
-                    return (false);
-                }
-            }
-            byte value = msg.getByte("command2");
-            if (data.cmd2 != -1 && value != data.cmd2) {
+    public boolean matches(StandardMessageReceived message) {
+        if (data.extended != ExtendedData.extendedNone) {
+            if ((message.getFlags().isExtended() && data.extended != ExtendedData.extendedCrc1)
+                    || (!message.getFlags().isExtended() && data.extended != ExtendedData.extendedNone)) {
                 return (false);
             }
-            value = msg.getByte("userData1");
-            if (data.data1 != -1 && value != data.data1) {
+            if (data.cmd1 != -1 && message.getCmd1().getCmd1() != data.cmd1) {
                 return (false);
             }
-            value = msg.getByte("userData2");
-            if (data.data2 != -1 && value != data.data2) {
-                return (false);
-            }
-            value = msg.getByte("userData3");
-            if (data.data3 != -1 && value != data.data3) {
-                return (false);
-            }
-        } catch (FieldException e) {
-            logger.error("error matching message: {}", msg, e);
+        }
+        byte value = message.getCmd2();
+        if (data.cmd2 != -1 && value != data.cmd2) {
+            return (false);
+        }
+        byte[] userData = message.getData();
+        if (data.data1 != -1 && userData[0] != data.data1) {
+            return (false);
+        }
+        if (data.data2 != -1 && userData[1] != data.data2) {
+            return (false);
+        }
+        if (data.data3 != -1 && userData[2] != data.data3) {
             return (false);
         }
         return (true);
@@ -236,17 +226,15 @@ public abstract class MessageHandler {
      * @param the device feature (needed for debug printing)
      * @return the button number or -1 if no button found
      */
-    protected int getButtonInfo(Message msg) {
+    protected int getButtonInfo(StandardMessageReceived msg) {
         // the cleanup messages have the button number in the command2 field
         // the broadcast messages have it as the lsb of the toAddress
-        try {
-            int bclean = msg.getByte("command2") & 0xff;
-            int bbcast = msg.getAddress("toAddress").getLowByte() & 0xff;
-            int button = msg.isCleanup() ? bclean : bbcast;
-            logger.trace("{} button: {} bclean: {} bbcast: {}", msg.getAddress("fromAddress"), button, bclean, bbcast);
-            return button;
-        } catch (FieldException e) {
-            logger.error("field exception while parsing msg {}: ", msg, e);
+        logger.trace("{} button: {} bclean: {} bbcast: {}", msg.getFromAddress(), msg.getFlags().isBroadcast(),
+                msg.getCmd2(), msg.getToAddress().getLowByte());
+        if (msg.getFlags().isBroadcast()) {
+            return msg.getToAddress().getLowByte();
+        } else {
+            return msg.getCmd2();
         }
         return -1;
     }
