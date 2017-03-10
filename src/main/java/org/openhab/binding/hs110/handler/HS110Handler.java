@@ -58,13 +58,15 @@ public class HS110Handler extends ConfigStatusThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_SWITCH)) {
-            log.debug("Switching {} {}", thing.getUID().getAsString(), command.toFullString());
-            try {
-                plug.sendSwitch((OnOffType) command);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        if (command instanceof OnOffType) {
+            if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+                log.debug("Switching {} {}", thing.getUID().getAsString(), command.toFullString());
+                try {
+                    plug.sendSwitch((OnOffType) command);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -130,6 +132,7 @@ public class HS110Handler extends ConfigStatusThingHandler {
                 try {
                     boolean success = updateData();
                     if (success) {
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SWITCH), getState());
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_WATTAGE), getWattage());
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_SYSINFO), getSysinfo());
                     }
