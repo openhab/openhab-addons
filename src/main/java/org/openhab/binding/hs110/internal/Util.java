@@ -23,8 +23,7 @@ public class Util {
             key = nextKey;
             sb.append((char) in);
         }
-        System.out.println(sb.length());
-        log.info("{}", sb.length());
+        log.trace("Length of decrypted String {}", sb.length());
         if (broadcast) {
             return "{" + sb.toString().substring(1, sb.length() - 1) + "}";
         } else {
