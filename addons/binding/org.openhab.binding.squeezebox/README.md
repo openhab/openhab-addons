@@ -87,7 +87,23 @@ rule "Garage Door Open Notification"
 when
     Item GarageDoorOpenNotification received command ON
 then
+    // Play the notification on the default sink
+    say("The garage door is open!", "voicerss:enUS")
+    // Play the notification on a specific sink
     say("The garage door is open!", "voicerss:enUS", "squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510")
+end
+```
+
+And, you can play sounds from the conf/sounds directory.
+```
+rule "Play Sounds"
+when
+    Item PlaySounds received command ON
+then
+    // Play the sound on the default sink
+    playsound("doorbell.mp3")
+    // Play the sound on a specific sink
+    playsound("squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510", "doorbell.mp3")
 end
 ```
 
