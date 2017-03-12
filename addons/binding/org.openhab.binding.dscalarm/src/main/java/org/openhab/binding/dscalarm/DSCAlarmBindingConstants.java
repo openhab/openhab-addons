@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -97,11 +97,16 @@ public class DSCAlarmBindingConstants {
     public final static String KEYPAD_FIRE_LED = "keypad_fire_led";
     public final static String KEYPAD_BACKLIGHT_LED = "keypad_backlight_led";
     public final static String KEYPAD_AC_LED = "keypad_ac_led";
+    public final static String KEYPAD_LCD_UPDATE = "keypad_lcd_update";
+    public final static String KEYPAD_LCD_CURSOR = "keypad_lcd_cursor";
 
     // Set of all supported Thing Type UIDs
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE, PANEL_THING_TYPE, PARTITION_THING_TYPE, ZONE_THING_TYPE, KEYPAD_THING_TYPE);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ENVISALINKBRIDGE_THING_TYPE,
+            IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE, PANEL_THING_TYPE, PARTITION_THING_TYPE, ZONE_THING_TYPE,
+            KEYPAD_THING_TYPE);
 
     // Set of all supported Bridge Type UIDs
-    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE);
+    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet
+            .of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE);
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * Used to map thing types from the binding string to a ENUM value.
- * 
+ *
  * @author Russell Stephens - Initial Contribution
  */
 public enum DSCAlarmThingType {
@@ -31,7 +31,7 @@ public enum DSCAlarmThingType {
 
     /**
      * Constructor.
-     * 
+     *
      * @param label
      */
     private DSCAlarmThingType(String label) {
@@ -42,7 +42,7 @@ public enum DSCAlarmThingType {
      * Creates a HashMap that maps the string label to a DSCAlarmDeviceType enum value.
      */
     private static void initMapping() {
-        labelToDSCAlarmThingType = new HashMap<String, DSCAlarmThingType>();
+        labelToDSCAlarmThingType = new HashMap<>();
         for (DSCAlarmThingType s : values()) {
             labelToDSCAlarmThingType.put(s.label, s);
         }
@@ -50,7 +50,7 @@ public enum DSCAlarmThingType {
 
     /**
      * Returns the label of the DSCAlarmItemType Values enumeration.
-     * 
+     *
      * @return the label
      */
     public String getLabel() {
@@ -59,7 +59,7 @@ public enum DSCAlarmThingType {
 
     /**
      * Lookup function based on the binding type label. Returns null if the binding type is not found.
-     * 
+     *
      * @param label
      * @return enum value
      */

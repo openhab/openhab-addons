@@ -14,9 +14,11 @@
 
         <channels>
             <channel id="Co2" typeId="co2"/>
-            <channel id="Temperature" typeId="temperature" />            
+            <channel id="Temperature" typeId="temperature" />
+            <channel id="TempTrend" typeId="temperatureTrend" />            
             <channel id="Noise" typeId="noise" />
             <channel id="Pressure" typeId="pressure" />
+            <channel id="PressTrend" typeId="pressureTrend" />
             <channel id="AbsolutePressure" typeId="absolutePressure" />
             <channel id="TimeStamp" typeId="timeUtc" />
             <channel id="Humidity" typeId="humidity" />
@@ -27,12 +29,15 @@
             <!--  Common to all devices -->
             <channel id="LastStatusStore" typeId="lastStatusStore" />
             <channel id="WifiStatus" typeId="system.signal-strength" />
-            <channel id="Location" typeId="location" />                     
+            <channel id="Location" typeId="location" />     
+            <!--  Global configuration channels -->
+            <channel id="Unit" typeId="unit" />
+            <channel id="WindUnit" typeId="windUnit" />
+            <channel id="PressureUnit" typeId="pressureUnit" />
         </channels>
         
         <properties>
              <property name="signalLevels">86,71,56</property>
-             <property name="actualApp">app_station</property>
         </properties>         
         
         <config-description-ref uri="thing-type:netatmo:device" />        
@@ -48,6 +53,7 @@
 
         <channels>
             <channel id="Temperature" typeId="temperature" />
+            <channel id="TempTrend" typeId="temperatureTrend" />
             <channel id="Humidity" typeId="humidity" />
             <channel id="TimeStamp" typeId="timeUtc" />      
             <channel id="Humidex" typeId="humidex" />
@@ -66,7 +72,6 @@
              <property name="batteryLow">4500</property>
              <property name="batteryMax">6000</property>
              <property name="signalLevels">90,80,70,60</property>
-             <property name="actualApp">app_station</property>
         </properties> 
        
         <config-description-ref uri="thing-type:netatmo:module" />
@@ -98,7 +103,6 @@
              <property name="batteryLow">4770</property>
              <property name="batteryMax">6000</property>
              <property name="signalLevels">90,80,70,60</property>
-             <property name="actualApp">app_station</property>
         </properties>         
        
         <config-description-ref uri="thing-type:netatmo:module" />
@@ -115,6 +119,8 @@
 
         <channels>
             <channel id="Rain" typeId="rain"/> 
+            <channel id="SumRain1" typeId="rain1"/> 
+            <channel id="SumRain24" typeId="rain24"/> 
             <!--  Common to all modules -->
             <channel id="LastMessage" typeId="lastMessage" />
             <channel id="LowBattery" typeId="system.low-battery" />                    
@@ -127,7 +133,6 @@
              <property name="batteryLow">4500</property>
              <property name="batteryMax">6000</property>
              <property name="signalLevels">90,80,70,60</property>
-             <property name="actualApp">app_station</property>
         </properties>           
         
         <config-description-ref uri="thing-type:netatmo:module" />
@@ -143,6 +148,7 @@
 
         <channels>
             <channel id="Temperature" typeId="temperature" />
+            <channel id="TempTrend" typeId="temperatureTrend" />
             <channel id="TimeStamp" typeId="timeUtc" />          
             <channel id="Humidity" typeId="humidity" />
             <channel id="Humidex" typeId="humidex" />
@@ -162,7 +168,6 @@
              <property name="batteryLow">4920</property>
              <property name="batteryMax">6000</property>
              <property name="signalLevels">90,80,70,60</property>
-             <property name="actualApp">app_station</property>
         </properties>          
         
         <config-description-ref uri="thing-type:netatmo:module" />

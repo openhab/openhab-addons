@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.rfxcom.internal.messages;
+
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING2;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting2Message.Commands.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -27,6 +30,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for lighting2 message.
@@ -39,9 +43,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
         AC(0),
         HOME_EASY_EU(1),
         ANSLUT(2),
-        KAMBROOK(3),
-
-        UNKNOWN(255);
+        KAMBROOK(3);
 
         private final int subType;
 
@@ -49,12 +51,18 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
         public byte toByte() {
             return (byte) subType;
+        }
+
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
@@ -64,9 +72,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
         SET_LEVEL(2),
         GROUP_OFF(3),
         GROUP_ON(4),
-        SET_GROUP_LEVEL(5),
-
-        UNKNOWN(255);
+        SET_GROUP_LEVEL(5);
 
         private final int command;
 
@@ -74,12 +80,18 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
             this.command = command;
         }
 
-        Commands(byte command) {
-            this.command = command;
-        }
-
         public byte toByte() {
             return (byte) command;
+        }
+
+        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
+            for (Commands c : Commands.values()) {
+                if (c.command == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(Commands.class, input);
         }
     }
 
@@ -90,19 +102,19 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
             .asList(RFXComValueSelector.COMMAND, RFXComValueSelector.DIMMING_LEVEL);
 
-    public SubType subType = SubType.AC;
-    public int sensorId = 0;
-    public byte unitCode = 0;
-    public Commands command = Commands.OFF;
-    public byte dimmingLevel = 0;
-    public byte signalLevel = 0;
-    public boolean group = false;
+    public SubType subType;
+    public int sensorId;
+    public byte unitCode;
+    public Commands command;
+    public byte dimmingLevel;
+    public byte signalLevel;
+    public boolean group;
 
     public RFXComLighting2Message() {
         packetType = PacketType.LIGHTING2;
     }
 
-    public RFXComLighting2Message(byte[] data) {
+    public RFXComLighting2Message(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -121,23 +133,13 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
-
+    public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
-
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 24 | (data[5] & 0xFF) << 16 | (data[6] & 0xFF) << 8 | (data[7] & 0xFF);
+        command = Commands.fromByte(data[9]);
 
-        try {
-            command = Commands.values()[data[9]];
-        } catch (Exception e) {
-            command = Commands.UNKNOWN;
-        }
         if ((command == Commands.GROUP_ON) || (command == Commands.GROUP_OFF)) {
             unitCode = 0;
         } else {
@@ -154,7 +156,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
         byte[] data = new byte[12];
 
         data[0] = 0x0B;
-        data[1] = RFXComBaseMessage.PacketType.LIGHTING2.toByte();
+        data[1] = LIGHTING2.toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
         data[4] = (byte) ((sensorId >> 24) & 0xFF);
@@ -190,7 +192,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     /**
      * Convert a 0-15 scale value to a percent type.
      *
-     * @param pt
+     * @param value
      *            percent type to convert
      * @return converted value 0-15
      */
@@ -315,7 +317,7 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
             case COMMAND:
                 if (type instanceof OnOffType) {
                     if (group) {
-                        command = (type == OnOffType.ON ? Commands.GROUP_ON : Commands.GROUP_OFF);
+                        command = (type == OnOffType.ON ? GROUP_ON : GROUP_OFF);
                     } else {
                         command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                     }
@@ -362,11 +364,10 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 

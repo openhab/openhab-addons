@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -62,31 +62,6 @@ public class VitotronicThingHandler extends BaseThingHandler {
     @Override
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        logger.debug("Bridge Handler for {} initialized", getThing().getUID().getId());
-
-        if (thingHandler instanceof VitotronicBridgeHandler) {
-            this.bridgeHandler = (VitotronicBridgeHandler) thingHandler;
-        } else {
-            logger.debug("No available ThingHandler handler found. Handler: {}", thingHandler.toString());
-            this.bridgeHandler = null;
-        }
-        registerVitotronicThingListener(this.bridgeHandler);
-    }
-
-    public void bridgeHandlerDispose(ThingHandler thingHandler, Bridge bridge) {
-        logger.debug("Bridge Handler for {} disposed", getThing().getUID().getId());
-
-        if (thingHandler instanceof VitotronicBridgeHandler) {
-            this.bridgeHandler = (VitotronicBridgeHandler) thingHandler;
-        } else {
-            logger.debug("No available ThingHandler handler found. Handler: {}", thingHandler.toString());
-            this.bridgeHandler = null;
-        }
-        unregisterVitotronicThingListener(this.bridgeHandler);
     }
 
     private synchronized VitotronicBridgeHandler getBridgeHandler() {

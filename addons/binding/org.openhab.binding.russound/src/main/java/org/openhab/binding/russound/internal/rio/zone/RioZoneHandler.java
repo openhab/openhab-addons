@@ -1,0 +1,389 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.russound.internal.rio.zone;
+
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.russound.internal.net.SocketSession;
+import org.openhab.binding.russound.internal.rio.AbstractBridgeHandler;
+import org.openhab.binding.russound.internal.rio.RioConstants;
+import org.openhab.binding.russound.internal.rio.RioHandlerCallback;
+import org.openhab.binding.russound.internal.rio.StatefulHandlerCallback;
+import org.openhab.binding.russound.internal.rio.controller.RioControllerHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The bridge handler for a Russound Zone. A zone is the main receiving area for music. This implementation must be
+ * attached to a {@link RioControllerHandler} bridge.
+ *
+ * @author Tim Roberts
+ */
+public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
+    // Logger
+    private Logger logger = LoggerFactory.getLogger(RioZoneHandler.class);
+
+    /**
+     * The controller identifier we are attached to
+     */
+    private int _controller;
+
+    /**
+     * The zone identifier for this instance
+     */
+    private int _zone;
+
+    /**
+     * Constructs the handler from the {@link Bridge}
+     *
+     * @param bridge a non-null {@link Bridge} the handler is for
+     */
+    public RioZoneHandler(Bridge bridge) {
+        super(bridge);
+    }
+
+    /**
+     * Returns the controller identifier
+     *
+     * @return the controller identifier
+     */
+    public int getController() {
+        return _controller;
+    }
+
+    /**
+     * Returns the zone identifier
+     *
+     * @return the zone identifier
+     */
+    public int getZone() {
+        return _zone;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Handles commands to specific channels. This implementation will offload much of its work to the
+     * {@link RioZoneProtocol}. Basically we validate the type of command for the channel then call the
+     * {@link RioZoneProtocol} to handle the actual protocol. Special use case is the {@link RefreshType}
+     * where we call {{@link #handleRefresh(String)} to handle a refresh of the specific channel (which in turn calls
+     * {@link RioZoneProtocol} to handle the actual refresh
+     */
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+
+        if (command instanceof RefreshType) {
+            handleRefresh(channelUID.getId());
+            return;
+        }
+
+        // if (getThing().getStatus() != ThingStatus.ONLINE) {
+        // // Ignore any command if not online
+        // return;
+        // }
+
+        String id = channelUID.getId();
+
+        if (id == null) {
+            logger.debug("Called with a null channel id - ignoring");
+            return;
+        }
+
+        if (id.equals(RioConstants.CHANNEL_ZONEBASS)) {
+            if (command instanceof DecimalType) {
+                getProtocolHandler().setZoneBass(((DecimalType) command).intValue());
+            } else {
+                logger.debug("Received a ZONE BASS channel command with a non DecimalType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONETREBLE)) {
+            if (command instanceof DecimalType) {
+                getProtocolHandler().setZoneTreble(((DecimalType) command).intValue());
+            } else {
+                logger.debug("Received a ZONE TREBLE channel command with a non DecimalType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEBALANCE)) {
+            if (command instanceof DecimalType) {
+                getProtocolHandler().setZoneBalance(((DecimalType) command).intValue());
+            } else {
+                logger.debug("Received a ZONE BALANCE channel command with a non DecimalType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONETURNONVOLUME)) {
+            if (command instanceof DecimalType) {
+                getProtocolHandler().setZoneTurnOnVolume(((DecimalType) command).intValue());
+            } else {
+                logger.debug("Received a ZONE TURN ON VOLUME channel command with a non DecimalType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONELOUDNESS)) {
+            if (command instanceof OnOffType) {
+                getProtocolHandler().setZoneLoudness(command == OnOffType.ON);
+            } else {
+                logger.debug("Received a ZONE TURN ON VOLUME channel command with a non OnOffType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONESLEEPTIMEREMAINING)) {
+            if (command instanceof DecimalType) {
+                getProtocolHandler().setZoneSleepTimeRemaining(((DecimalType) command).intValue());
+            } else {
+                logger.debug("Received a ZONE SLEEP TIME REMAINING channel command with a non DecimalType: {}",
+                        command);
+            }
+        } else if (id.equals(RioConstants.CHANNEL_ZONESOURCE)) {
+            if (command instanceof DecimalType) {
+                getProtocolHandler().setZoneSource(((DecimalType) command).intValue());
+            } else {
+                logger.debug("Received a ZONE SOURCE channel command with a non DecimalType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONESTATUS)) {
+            if (command instanceof OnOffType) {
+                getProtocolHandler().setZoneStatus(command == OnOffType.ON);
+            } else {
+                logger.debug("Received a ZONE STATUS channel command with a non OnOffType: {}", command);
+            }
+        } else if (id.equals(RioConstants.CHANNEL_ZONEPARTYMODE)) {
+            if (command instanceof StringType) {
+                getProtocolHandler().setZonePartyMode(((StringType) command).toString());
+            } else {
+                logger.debug("Received a ZONE PARTY MODE channel command with a non StringType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEDONOTDISTURB)) {
+            if (command instanceof StringType) {
+                getProtocolHandler().setZoneDoNotDisturb(((StringType) command).toString());
+            } else {
+                logger.debug("Received a ZONE DO NOT DISTURB channel command with a non StringType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEMUTE)) {
+            if (command instanceof OnOffType) {
+                getProtocolHandler().toggleZoneMute();
+            } else {
+                logger.debug("Received a ZONE MUTE channel command with a non OnOffType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEREPEAT)) {
+            if (command instanceof OnOffType) {
+                getProtocolHandler().toggleZoneRepeat();
+            } else {
+                logger.debug("Received a ZONE REPEAT channel command with a non OnOffType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONESHUFFLE)) {
+            if (command instanceof OnOffType) {
+                getProtocolHandler().toggleZoneShuffle();
+            } else {
+                logger.debug("Received a ZONE SHUFFLE channel command with a non OnOffType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEVOLUME)) {
+            if (command instanceof OnOffType) {
+                getProtocolHandler().setZoneStatus(command == OnOffType.ON);
+            } else if (command instanceof IncreaseDecreaseType) {
+                getProtocolHandler().setZoneVolume(command == IncreaseDecreaseType.INCREASE);
+            } else if (command instanceof PercentType) {
+                getProtocolHandler().setZoneVolume(((PercentType) command).intValue() / 2); // only support 0-50
+            } else {
+                logger.debug(
+                        "Received a ZONE VOLUME channel command with a non OnOffType/IncreaseDecreaseType/PercentType: {}",
+                        command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONERATING)) {
+            if (command instanceof OnOffType) {
+                getProtocolHandler().setZoneRating(command == OnOffType.ON);
+            } else {
+                logger.debug("Received a ZONE RATING channel command with a non OnOffType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEKEYPRESS)) {
+            if (command instanceof StringType) {
+                getProtocolHandler().sendKeyPress(((StringType) command).toString());
+            } else {
+                logger.debug("Received a ZONE KEYPRESS channel command with a non StringType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEKEYRELEASE)) {
+            if (command instanceof StringType) {
+                getProtocolHandler().sendKeyRelease(((StringType) command).toString());
+            } else {
+                logger.debug("Received a ZONE KEYRELEASE channel command with a non StringType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEKEYHOLD)) {
+            if (command instanceof StringType) {
+                getProtocolHandler().sendKeyHold(((StringType) command).toString());
+            } else {
+                logger.debug("Received a ZONE KEYHOLD channel command with a non StringType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEKEYCODE)) {
+            if (command instanceof StringType) {
+                getProtocolHandler().sendKeyCode(((StringType) command).toString());
+            } else {
+                logger.debug("Received a ZONE KEYCODE channel command with a non StringType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEEVENT)) {
+            if (command instanceof StringType) {
+                getProtocolHandler().sendEvent(((StringType) command).toString());
+            } else {
+                logger.debug("Received a ZONE EVENT channel command with a non StringType: {}", command);
+            }
+
+        } else {
+            logger.debug("Unknown/Unsupported Channel id: {}", id);
+        }
+    }
+
+    /**
+     * Method that handles the {@link RefreshType} command specifically. Calls the {@link RioZoneProtocol} to
+     * handle the actual refresh based on the channel id.
+     *
+     * @param id a non-null, possibly empty channel id to refresh
+     */
+    private void handleRefresh(String id) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            return;
+        }
+
+        if (getProtocolHandler() == null) {
+            return;
+        }
+
+        // Remove the cache'd value to force a refreshed value
+        ((StatefulHandlerCallback) getProtocolHandler().getCallback()).removeState(id);
+
+        if (id.equals(RioConstants.CHANNEL_ZONENAME)) {
+            getProtocolHandler().refreshZoneName();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONESOURCE)) {
+            getProtocolHandler().refreshZoneSource();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONEBASS)) {
+            getProtocolHandler().refreshZoneBass();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONETREBLE)) {
+            getProtocolHandler().refreshZoneTreble();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONEBALANCE)) {
+            getProtocolHandler().refreshZoneBalance();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONELOUDNESS)) {
+            getProtocolHandler().refreshZoneLoudness();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONETURNONVOLUME)) {
+            getProtocolHandler().refreshZoneTurnOnVolume();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONEDONOTDISTURB)) {
+            getProtocolHandler().refreshZoneDoNotDisturb();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONEPARTYMODE)) {
+            getProtocolHandler().refreshZonePartyMode();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONESTATUS)) {
+            getProtocolHandler().refreshZoneStatus();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONEVOLUME)) {
+            getProtocolHandler().refreshZoneVolume();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONEMUTE)) {
+            getProtocolHandler().refreshZoneMute();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONEPAGE)) {
+            getProtocolHandler().refreshZonePage();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONESHAREDSOURCE)) {
+            getProtocolHandler().refreshZoneSharedSource();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONESLEEPTIMEREMAINING)) {
+            getProtocolHandler().refreshZoneSleepTimeRemaining();
+        } else if (id.startsWith(RioConstants.CHANNEL_ZONELASTERROR)) {
+            getProtocolHandler().refreshZoneLastError();
+        } else {
+            // Can't refresh any others...
+        }
+    }
+
+    /**
+     * Initializes the bridge. Confirms the configuration is valid and that our parent bridge is a
+     * {@link RioControllerHandler}. Once validated, a {@link RioZoneProtocol} is set via
+     * {@link #setProtocolHandler(RioZoneProtocol)} and the bridge comes online.
+     */
+    @Override
+    public void initialize() {
+        final Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Cannot be initialized without a bridge");
+            return;
+        }
+        if (bridge.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
+        final ThingHandler handler = bridge.getHandler();
+        if (handler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "No handler specified (null) for the bridge!");
+            return;
+        }
+
+        if (!(handler instanceof RioControllerHandler)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Source must be attached to a controller bridge: " + handler.getClass());
+            return;
+        }
+
+        final RioZoneConfig config = getThing().getConfiguration().as(RioZoneConfig.class);
+        if (config == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
+            return;
+        }
+
+        _zone = config.getZone();
+        if (_zone < 1 || _zone > 6) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Source must be between 1 and 8: " + _zone);
+            return;
+        }
+
+        _controller = ((RioControllerHandler) handler).getController();
+
+        // Get the socket session from the
+        final SocketSession socketSession = getSocketSession();
+        if (socketSession == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "No socket session found");
+            return;
+        }
+
+        setProtocolHandler(new RioZoneProtocol(_zone, _controller, socketSession,
+                new StatefulHandlerCallback(new RioHandlerCallback() {
+                    @Override
+                    public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
+                        updateStatus(status, detail, msg);
+                    }
+
+                    @Override
+                    public void stateChanged(String channelId, State state) {
+                        updateState(channelId, state);
+                    }
+
+                    @Override
+                    public void setProperty(String propertyName, String propertyValue) {
+                        getThing().setProperty(propertyName, propertyValue);
+                    }
+                })));
+        updateStatus(ThingStatus.ONLINE);
+        getProtocolHandler().watchZone(true);
+        getProtocolHandler().refreshZoneEnabled();
+    }
+
+}

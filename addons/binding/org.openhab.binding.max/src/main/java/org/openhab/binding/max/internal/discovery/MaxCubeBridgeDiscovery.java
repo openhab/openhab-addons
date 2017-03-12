@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.max.internal.discovery;
+
+import static org.openhab.binding.max.MaxBinding.CUBEBRIDGE_THING_TYPE;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -45,7 +47,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
     private final static int SEARCH_TIME = 15;
 
-    private final static Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
     static boolean discoveryRunning = false;
 
@@ -187,7 +189,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             if (uid != null) {
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                         .withRepresentationProperty(MaxBinding.PROPERTY_SERIAL_NUMBER)
-                        .withLabel("MAX! Cube LAN Gateway").build();
+                        .withThingType(CUBEBRIDGE_THING_TYPE).withLabel("MAX! Cube LAN Gateway").build();
                 thingDiscovered(result);
             }
         }

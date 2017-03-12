@@ -159,7 +159,9 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 <br/>
 0=OFF<br/>
 1=ON<br/>
-2=Flashing<br/></td></tr>    
+2=Flashing<br/></td></tr>
+    <tr><td>keypad_lcd_update</td><td>String</td><td>Text Changes of the IT-100 LCD Menu.</td></tr>
+    <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>    
 </table>
 
 ## Full Example

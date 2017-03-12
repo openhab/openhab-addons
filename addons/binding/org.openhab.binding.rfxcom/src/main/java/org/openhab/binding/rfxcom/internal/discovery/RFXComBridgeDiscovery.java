@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -112,16 +112,16 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
             logger.debug("Discovery done");
 
         } catch (IOException e) {
-            logger.error("Error occured during discovery", e);
+            logger.error("Error occurred during discovery", e);
         } catch (UnsatisfiedLinkError e) {
             if (unsatisfiedLinkErrorLogged) {
                 logger.debug(
-                        "Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
+                        "Error occurred when trying to load native library for OS '{}' version '{}', processor '{}'",
                         System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"),
                         e);
             } else {
                 logger.error(
-                        "Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
+                        "Error occurred when trying to load native library for OS '{}' version '{}', processor '{}'",
                         System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"),
                         e);
                 unsatisfiedLinkErrorLogged = true;

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="astro"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="astro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -9,23 +8,51 @@
 		<description>Provides astronomical data from the sun</description>
 
 		<channel-groups>
-			<channel-group id="rise" typeId="sunRange" />
-			<channel-group id="set" typeId="sunRange" />
-			<channel-group id="noon" typeId="sunRange" />
-			<channel-group id="night" typeId="sunRange" />
-			<channel-group id="morningNight" typeId="sunRange" />
-			<channel-group id="astroDawn" typeId="sunRange" />
-			<channel-group id="nauticDawn" typeId="sunRange" />
-			<channel-group id="civilDawn" typeId="sunRange" />
-			<channel-group id="astroDusk" typeId="sunRange" />
-			<channel-group id="nauticDusk" typeId="sunRange" />
-			<channel-group id="civilDusk" typeId="sunRange" />
-			<channel-group id="eveningNight" typeId="sunRange" />
-			<channel-group id="daylight" typeId="sunRange" />
+			<channel-group id="rise" typeId="sunRange">
+				<label>Sunrise</label>
+			</channel-group>
+			<channel-group id="set" typeId="sunRange">
+				<label>Sunset</label>
+			</channel-group>
+			<channel-group id="noon" typeId="sunRange">
+				<label>Noon</label>
+			</channel-group>
+			<channel-group id="night" typeId="sunRange">
+				<label>Night</label>
+			</channel-group>
+			<channel-group id="morningNight" typeId="sunRange">
+				<label>Morning Night</label>
+			</channel-group>
+			<channel-group id="astroDawn" typeId="sunRange">
+				<label>Astro Dawn</label>
+			</channel-group>
+			<channel-group id="nauticDawn" typeId="sunRange">
+				<label>Nautic Dawn</label>
+			</channel-group>
+			<channel-group id="civilDawn" typeId="sunRange">
+				<label>Civil Dawn</label>
+			</channel-group>
+			<channel-group id="astroDusk" typeId="sunRange">
+				<label>Astro Dusk</label>
+			</channel-group>
+			<channel-group id="nauticDusk" typeId="sunRange">
+				<label>Nautic Dusk</label>
+			</channel-group>
+			<channel-group id="civilDusk" typeId="sunRange">
+				<label>Civil Dusk</label>
+			</channel-group>
+			<channel-group id="eveningNight" typeId="sunRange">
+				<label>Evening Night</label>
+			</channel-group>
+			<channel-group id="daylight" typeId="sunRange">
+				<label>Daylight</label>
+			</channel-group>
 			<channel-group id="position" typeId="position" />
+			<channel-group id="radiation" typeId="radiation" />
 			<channel-group id="zodiac" typeId="sunZodiac" />
 			<channel-group id="season" typeId="season" />
 			<channel-group id="eclipse" typeId="sunEclipse" />
+			<channel-group id="phase" typeId="sunPhase" />
 		</channel-groups>
 		<config-description-ref uri="thing-type:astro:config" />
 	</thing-type>

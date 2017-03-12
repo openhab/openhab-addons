@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,12 +29,6 @@ public abstract class AbstractToonHandler extends BaseThingHandler {
 
     public AbstractToonHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void bridgeHandlerInitialized(ThingHandler thingHandler, Bridge bridge) {
-        super.bridgeHandlerInitialized(thingHandler, bridge);
-        bridgeHandler = (ToonBridgeHandler) thingHandler;
     }
 
     protected void updateChannel(String channelName, State state) {

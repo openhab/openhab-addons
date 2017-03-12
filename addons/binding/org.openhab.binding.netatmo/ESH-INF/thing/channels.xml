@@ -27,12 +27,21 @@
         </state>
     </channel-type>
     
+    <channel-type id="temperatureTrend" advanced="true">
+        <item-type>String</item-type>
+        <label>Temp Trend</label>
+        <description>Temperature Evolution Trend</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%s">
+        </state>
+    </channel-type>
+    
     <channel-type id="setpointTemp">
         <item-type>Number</item-type>
         <label>Setpoint</label>
         <description>Thermostat temperature setpoint</description>
         <category>Temperature</category>
-        <state min="4.5" max="30" step="0.1" pattern="%.1f °C" readOnly="false">
+        <state min="4.5" max="30" step="0.5" pattern="%.1f °C" readOnly="false">
         </state>
     </channel-type>
     
@@ -58,20 +67,34 @@
         <description>Chosen setpoint_mode (program, away, hg, manual, off, max)</description>
         <state readOnly="false">
             <options>
-                <option value="program">program</option>
-                <option value="away">away</option>
-                <option value="hg">hg</option>
-                <option value="manual">manual</option>
-                <option value="off">off</option>
-                <option value="max">max</option>
+                <option value="program">Following a weekly schedule</option>
+                <option value="away">Applying the -away- temperature as defined by the user</option>
+                <option value="hg">Frost-guard</option>
+                <option value="manual">Applying a manually set temperature setpoint</option>
+                <option value="off">Currently off</option>
+                <option value="max">Heating continuously</option>
             </options>
         </state>
+    </channel-type>
+    
+    <channel-type id="ThermRelayCmd" advanced="false">
+        <item-type>Switch</item-type>
+        <label>Heating status</label>
+        <description>Indicates whether the furnace is heating or not</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="ThermOrientation" advanced="true">
+        <item-type>Number</item-type>
+        <label>Orientation</label>
+        <description>Physical orientation of the thermostat module</description>
+        <state readOnly="true" pattern="%d" />
     </channel-type>
     
     <channel-type id="timeUtc" advanced="true">
         <item-type>DateTime</item-type>
         <label>Measurement Time</label>
-        <description>Timestamp when last data was measured</description>
+        <description>Timestamp when data was measured</description>
         <state readOnly="true"/>
     </channel-type>      
     
@@ -89,10 +112,10 @@
         <state readOnly="true"/>
     </channel-type>    
     
-    <channel-type id="setpointEndTime">
+    <channel-type id="setpointEndTime" advanced="true">
         <item-type>DateTime</item-type>
-        <label>Setpoint set until</label>
-        <description>Time until when the setpoint is active</description>
+        <label>Setpoint end</label>
+        <description>Thermostat goes back to schedule after that timestamp.</description>
         <state readOnly="true"/>
     </channel-type>    
     
@@ -126,6 +149,14 @@
         <description>Current pressure in hPa</description>
         <category>Pressure</category>
         <state readOnly="true" pattern="%.1f hPa"></state>                
+    </channel-type>
+    
+    <channel-type id="pressureTrend" advanced="true">
+        <item-type>String</item-type>
+        <label>Pressure Trend</label>
+        <description>Pressure evolution trend for last 12h (up, down, stable)</description>
+        <category>Pressure</category>
+        <state readOnly="true" pattern="%s"></state>                
     </channel-type>
     
     <channel-type id="absolutePressure" advanced="true">
@@ -186,6 +217,22 @@
         <description>Quantity of water</description>
         <category>Rain</category>
         <state readOnly="true" pattern="%d mm"/>
+    </channel-type>
+    
+    <channel-type id="rain1" advanced="true">
+        <item-type>Number</item-type>
+        <label>Rain 1h</label>
+        <description>Quantity of water on last hour</description>
+        <category>Rain</category>
+        <state readOnly="true" pattern="%d mm / 1h"/>
+    </channel-type>
+    
+    <channel-type id="rain24" advanced="true">
+        <item-type>Number</item-type>
+        <label>Rain 24h</label>
+        <description>Quantity of water on last day</description>
+        <category>Rain</category>
+        <state readOnly="true" pattern="%d mm / 24h"/>
     </channel-type>
     
     <channel-type id="WindAngle">

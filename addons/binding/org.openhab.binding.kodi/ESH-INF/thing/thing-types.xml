@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="kodi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Kodi Thing Type -->
+	<thing-type id="kodi">
+		<label>Kodi Mediacenter</label>
+		<description>Kodi Mediacenter Binding</description>
+
+		<channels>
+			<channel id="volume" typeId="volume" />
+			<channel id="mute" typeId="mute" />
+			<channel id="control" typeId="control" />
+			<channel id="stop" typeId="stop" />
+			<channel id="playuri" typeId="playuri" />
+			<channel id="shownotification" typeId="shownotification" />
+			<channel id="input" typeId="input" />
+			<channel id="inputtext" typeId="inputtext" />
+			<channel id="systemcommand" typeId="systemcommand" />
+			<channel id="title" typeId="title" />
+			<channel id="showtitle" typeId="showtitle" />
+			<channel id="album" typeId="album" />
+			<channel id="artist" typeId="artist" />
+			<channel id="mediatype" typeId="mediatype" />
+		</channels>
+
+		<properties>
+			<property name="version">unknown</property>
+		</properties>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>Network Address</label>
+				<description>The IP or host name of the kodi</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" required="true" min="1" max="65335">
+				<label>Web socket service port</label>
+				<description>Port for the web socket service</description>
+				<default>9090</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Kodi Commands -->
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute/unmute your device</description>
+	</channel-type>
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Volume of your device</description>
+		<state min="0" max="100" step="1" pattern="%d %%">
+		</state>
+	</channel-type>
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Control the Kodi Player, e.g. start/stop/next/previous/ffward/rewind</description>
+		<category>Player</category>
+	</channel-type>
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stops the player. ON if the player is stopped.</description>
+	</channel-type>
+	<channel-type id="playuri" advanced="true">
+		<item-type>String</item-type>
+		<label>Play URI</label>
+		<description>Play the given URI</description>
+	</channel-type>
+	<channel-type id="shownotification" advanced="true">
+		<item-type>String</item-type>
+		<label>Show Notification</label>
+		<description>Shows a notification on the UI</description>
+	</channel-type>
+	<channel-type id="input" advanced="true">
+		<item-type>String</item-type>
+		<label>Send a key</label>
+		<description>Sends a key stroke to the Kodi Player to navigate in the UI</description>
+		<state>
+			<options>
+				<option value="Left">Left</option>
+				<option value="Right">Right</option>
+				<option value="Up">Up</option>
+				<option value="Down">Down</option>
+				<option value="Select">Select</option>
+				<option value="Back">Back</option>
+				<option value="Home">Home</option>
+				<option value="ContextMenu">Context Menu</option>
+				<option value="Info">Info</option>
+				<option value="ShowCodec">Show Codec</option>
+				<option value="ShowOSD">Show OSD</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="inputtext" advanced="true">
+		<item-type>String</item-type>
+		<label>Sends text as input</label>
+		<description>Sends a text to the Kodi Player to simulate keyboard text entry</description>
+	</channel-type>
+	<channel-type id="systemcommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Send system command</label>
+		<description>Sends a system command to kodi. This allows to shutdown/suspend/hibernate/reboot kodi</description>
+		<state>
+			<options>
+				<option value="Shutdown">Shutdown</option>
+				<option value="Suspend">Suspend</option>
+				<option value="Hibernate">Hibernate</option>
+				<option value="Reboot">Reboot</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Kodi variables -->
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Title of the current song</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="showtitle">
+		<item-type>String</item-type>
+		<label>Show Title</label>
+		<description>Title of the current show</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="album">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Album name of the current song</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="artist">
+		<item-type>String</item-type>
+		<label>Artist</label>
+		<description>Artist name of the current song</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="mediatype">
+		<item-type>String</item-type>
+		<label>Media Type</label>
+		<description>Media type of the current file</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+</thing:thing-descriptions>

@@ -62,7 +62,7 @@
 			<channel id="dataSent" typeId="dataSent" />
 			<channel id="dataReceived" typeId="dataReceived" />
 			<channel id="packagesSent" typeId="packagesSent" />
-			<channel id="packagesReceied" typeId="packagesReceived" />
+			<channel id="packagesReceived" typeId="packagesReceived" />
 			<channel id="mac" typeId="mac"></channel>
 		</channels>
 	</channel-group-type>

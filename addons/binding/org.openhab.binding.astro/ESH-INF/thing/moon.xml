@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="astro"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="astro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -9,13 +8,21 @@
 		<description>Provides astronomical data from the moon</description>
 
 		<channel-groups>
-			<channel-group id="rise" typeId="moonRange" />
-			<channel-group id="set" typeId="moonRange" />
+			<channel-group id="rise" typeId="moonRange">
+				<label>Moonrise</label>
+			</channel-group>
+			<channel-group id="set" typeId="moonRange">
+				<label>Moonset</label>
+			</channel-group>
 			<channel-group id="phase" typeId="moonPhase" />
 			<channel-group id="eclipse" typeId="moonEclipse" />
 			<channel-group id="distance" typeId="distance" />
-			<channel-group id="perigee" typeId="distance" />
-			<channel-group id="apogee" typeId="distance" />
+			<channel-group id="perigee" typeId="distance">
+				<label>Perigee</label>
+			</channel-group>
+			<channel-group id="apogee" typeId="distance">
+				<label>Apogee</label>
+			</channel-group>
 			<channel-group id="position" typeId="position" />
 			<channel-group id="zodiac" typeId="moonZodiac" />
 		</channel-groups>

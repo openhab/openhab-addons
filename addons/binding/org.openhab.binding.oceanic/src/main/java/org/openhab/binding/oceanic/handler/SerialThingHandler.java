@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.oceanic.handler;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
@@ -59,6 +60,9 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     protected int baud;
     protected String port;
     protected int bufferSize;
+    protected long sleep = 100;
+    protected long interval = 0;
+    Thread readerThread = null;
 
     public SerialThingHandler(Thing thing) {
         super(thing);
@@ -94,43 +98,39 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
     }
 
     @Override
-    public void serialEvent(SerialPortEvent event) {
-
-        switch (event.getEventType()) {
-            case SerialPortEvent.BI:
-            case SerialPortEvent.OE:
-            case SerialPortEvent.FE:
-            case SerialPortEvent.PE:
-            case SerialPortEvent.CD:
-            case SerialPortEvent.CTS:
-            case SerialPortEvent.DSR:
-            case SerialPortEvent.RI:
-            case SerialPortEvent.OUTPUT_BUFFER_EMPTY:
-                break;
-            case SerialPortEvent.DATA_AVAILABLE:
-                try {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(inputStream), bufferSize);
-                    while (br.ready()) {
-                        String line = br.readLine();
-                        logger.debug("Receiving '{}' on '{}'", line, getConfig().get(PORT));
-                        onDataReceived(line);
-                    }
-                } catch (IOException e) {
-                    String port = (String) getConfig().get(PORT);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error receiving data on serial port " + port + " : " + e.getMessage());
-                }
-                break;
+    public void serialEvent(SerialPortEvent arg0) {
+        try {
+            /*
+             * The short select() timeout in the native code of the nrjavaserial lib does cause a high CPU load, despite
+             * the fix published (see https://github.com/NeuronRobotics/nrjavaserial/issues/22). A workaround for this
+             * problem is to (1) put the Thread initiated by the nrjavaserial library to sleep forever, so that the
+             * number of calls to the select() function gets minimized, and (2) implement a Threaded streamreader
+             * directly in java
+             */
+            logger.trace("RXTX library CPU load workaround, sleep forever");
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (InterruptedException e) {
         }
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing serial thing handler.");
+        if (serialPort != null) {
+            serialPort.removeEventListener();
+        }
         IOUtils.closeQuietly(inputStream);
         IOUtils.closeQuietly(outputStream);
         if (serialPort != null) {
             serialPort.close();
+        }
+
+        if (readerThread != null) {
+            try {
+                readerThread.interrupt();
+                readerThread.join();
+            } catch (InterruptedException e) {
+            }
         }
     }
 
@@ -157,7 +157,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
             if (portId != null) {
                 // initialize serial port
                 try {
-                    serialPort = portId.open(this.getThing().getUID().getBindingId(), 2000);
+                    serialPort = portId.open("openHAB", 2000);
                 } catch (PortInUseException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Could not open serial port " + serialPort + ": " + e.getMessage());
@@ -204,6 +204,9 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                     return;
                 }
 
+                readerThread = new SerialPortReader(inputStream);
+                readerThread.start();
+
             } else {
                 StringBuilder sb = new StringBuilder();
                 portList = CommPortIdentifier.getPortIdentifiers();
@@ -224,5 +227,113 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         // by default, we write anything we received as a string to the serial
         // port
         writeString(command.toString());
+    }
+
+    public class SerialPortReader extends Thread {
+
+        private boolean interrupted = false;
+        private InputStream inputStream;
+        private boolean hasInterval = interval == 0 ? false : true;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss,SSS");
+
+        public SerialPortReader(InputStream in) {
+            this.inputStream = in;
+            this.setName("SerialPortReader-" + getThing().getUID());
+        }
+
+        @Override
+        public void interrupt() {
+
+            interrupted = true;
+            super.interrupt();
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+            } // quietly close
+        }
+
+        @Override
+        public void run() {
+
+            byte[] dataBuffer = new byte[bufferSize];
+            byte[] tmpData = new byte[bufferSize];
+            int index = 0;
+            int len = -1;
+            boolean foundStart = false;
+
+            final byte LINE_FEED = (byte) '\n';
+            final byte CARRIAGE_RETURN = (byte) '\r';
+
+            logger.debug("Serial port listener for serial port '{}' has started", port);
+
+            try {
+                while (interrupted != true) {
+                    long startOfRead = System.currentTimeMillis();
+
+                    if ((len = inputStream.read(tmpData)) > 0) {
+                        foundStart = false;
+                        for (int i = 0; i < len; i++) {
+                            if (hasInterval && i > 0) {
+                                if (tmpData[i] != LINE_FEED && tmpData[i] != CARRIAGE_RETURN) {
+                                    if (tmpData[i - 1] == LINE_FEED || tmpData[i - 1] == CARRIAGE_RETURN) {
+                                        index = 0;
+                                        foundStart = true;
+                                    }
+                                }
+                            }
+
+                            if (tmpData[i] != LINE_FEED && tmpData[i] != CARRIAGE_RETURN) {
+                                dataBuffer[index++] = tmpData[i];
+                            }
+
+                            if (tmpData[i] == LINE_FEED || tmpData[i] == CARRIAGE_RETURN) {
+                                if (index > 1) {
+                                    if (hasInterval) {
+                                        if (foundStart) {
+                                            onDataReceived(new String(Arrays.copyOf(dataBuffer, index)));
+                                            break;
+                                        } else {
+                                            index = 0;
+                                            foundStart = true;
+                                        }
+                                    } else {
+                                        onDataReceived(new String(Arrays.copyOf(dataBuffer, index)));
+                                        index = 0;
+                                    }
+
+                                }
+                            }
+
+                            if (index == bufferSize) {
+                                if (!hasInterval) {
+                                    onDataReceived(new String(Arrays.copyOf(dataBuffer, index)));
+                                }
+                                index = 0;
+                            }
+                        }
+
+                        if (hasInterval) {
+                            try {
+                                Thread.sleep(Math.max(interval - (System.currentTimeMillis() - startOfRead), 0));
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                    }
+
+                    try {
+                        Thread.sleep(sleep);
+                    } catch (InterruptedException e) {
+                    }
+
+                }
+            } catch (InterruptedIOException e) {
+                Thread.currentThread().interrupt();
+            } catch (IOException e) {
+                logger.error("An exception occurred while reading serial port '{}' : {}", port, e.getMessage(), e);
+            }
+
+            logger.debug("Serial port listener for serial port '{}' has stopped", port);
+        }
     }
 }

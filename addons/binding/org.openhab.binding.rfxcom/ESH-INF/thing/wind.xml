@@ -37,6 +37,7 @@
 					<option value="WIND4">TFA</option>
 					<option value="WIND5">UPM WDS500</option>
 					<option value="WIND6">WS2300</option>
+					<option value="WIND7">Alecto WS4500, Auriol H13726, Hama EWS1500, Meteoscan W155/W160, Ventus WS155</option>
 				</options>
 			</parameter>
 		</config-description>

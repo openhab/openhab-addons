@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="astro"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="astro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -11,6 +10,16 @@
 		<channels>
 			<channel id="azimuth" typeId="azimuth" />
 			<channel id="elevation" typeId="elevation" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="radiation">
+		<label>Radiation</label>
+		<description>The radiation level of the sun</description>
+		<channels>
+			<channel id="direct" typeId="directRadiation" />
+			<channel id="diffuse" typeId="diffuseRadiation" />
+			<channel id="total" typeId="totalRadiation" />
 		</channels>
 	</channel-group-type>
 
@@ -28,6 +37,27 @@
 		<state readOnly="true" pattern="%.2f °" />
 	</channel-type>
 
+	<channel-type id="directRadiation">
+		<item-type>Number</item-type>
+		<label>Direct Radiation</label>
+		<description>Level of radiation after penetration of the atmospheric layer</description>
+		<state readOnly="true" pattern="%.2f W/m²" />
+	</channel-type>
+
+	<channel-type id="diffuseRadiation">
+		<item-type>Number</item-type>
+		<label>Diffuse Radiation</label>
+		<description>Level of radiation diffracted by clouds and atmosphere</description>
+		<state readOnly="true" pattern="%.2f W/m²" />
+	</channel-type>
+
+	<channel-type id="totalRadiation">
+		<item-type>Number</item-type>
+		<label>Total Radiation</label>
+		<description>Total quantity of radiation on the ground</description>
+		<state readOnly="true" pattern="%.2f W/m²" />
+	</channel-type>
+
 	<!-- sun range -->
 	<channel-group-type id="sunRange">
 		<label>Range</label>
@@ -36,6 +66,7 @@
 			<channel id="start" typeId="start" />
 			<channel id="end" typeId="end" />
 			<channel id="duration" typeId="duration" />
+			<channel id="event" typeId="rangeEvent" />
 		</channels>
 	</channel-group-type>
 
@@ -45,6 +76,7 @@
 		<channels>
 			<channel id="start" typeId="start" />
 			<channel id="end" typeId="end" />
+			<channel id="event" typeId="rangeEvent" />
 		</channels>
 	</channel-group-type>
 
@@ -53,6 +85,7 @@
 		<label>Start time</label>
 		<description>The start time of the event</description>
 		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<config-description-ref uri="channel-type:astro:config" />
 	</channel-type>
 
 	<channel-type id="end">
@@ -60,6 +93,7 @@
 		<label>End time</label>
 		<description>The end time of the event</description>
 		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<config-description-ref uri="channel-type:astro:config" />
 	</channel-type>
 
 	<channel-type id="duration">
@@ -67,6 +101,19 @@
 		<label>Duration</label>
 		<description>The duration time in minutes of the event</description>
 		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="rangeEvent">
+		<kind>trigger</kind>
+		<label>Range event</label>
+		<description>Range event</description>
+		<event>
+			<options>
+				<option value="START">start</option>
+				<option value="END">end</option>
+			</options>
+		</event>
+		<config-description-ref uri="channel-type:astro:config" />
 	</channel-type>
 
 	<!-- sunZodiac -->
@@ -99,7 +146,7 @@
 				<option value="AQUARIUS">Aquarius</option>
 				<option value="PISCES">Pisces</option>
 			</options>
- 		</state>
+		</state>
 	</channel-type>
 
 	<!-- season -->
@@ -125,7 +172,7 @@
 				<option value="SUMMER">Summer</option>
 				<option value="AUTUMN">Autumn</option>
 				<option value="WINTER">Winter</option>
-        	</options>
+			</options>
 		</state>
 	</channel-type>
 
@@ -157,7 +204,6 @@
 		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
-
 	<!-- sun eclipse -->
 	<channel-group-type id="sunEclipse">
 		<label>Eclipses</label>
@@ -166,9 +212,10 @@
 			<channel id="total" typeId="total" />
 			<channel id="partial" typeId="partial" />
 			<channel id="ring" typeId="ring" />
+			<channel id="event" typeId="sunEclipseEvent" />
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-type id="total">
 		<item-type>DateTime</item-type>
 		<label>Total eclipse</label>
@@ -189,7 +236,51 @@
 		<description>The DateTime of the next ring eclipse</description>
 		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
-	
+
+	<channel-type id="sunEclipseEvent">
+		<kind>trigger</kind>
+		<label>Sun eclipse event</label>
+		<description>Sun eclipse event</description>
+		<event>
+			<options>
+				<option value="TOTAL">total</option>
+				<option value="PARTIAL">partial</option>
+				<option value="RING">ring</option>
+			</options>
+		</event>
+		<config-description-ref uri="channel-type:astro:config" />
+	</channel-type>
+
+	<!-- sunphase -->
+	<channel-group-type id="sunPhase">
+		<label>Sunphases</label>
+		<description>Sunphases</description>
+		<channels>
+			<channel id="name" typeId="sunPhaseName" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="sunPhaseName">
+		<item-type>String</item-type>
+		<label>The current sun phase</label>
+		<description>The name of the current sun phase</description>
+		<state readOnly="true">
+			<options>
+				<option value="SUN_RISE">Sunrise</option>
+				<option value="ASTRO_DAWN">Astro dawn</option>
+				<option value="NAUTIC_DAWN">Nautic dawn</option>
+				<option value="CIVIL_DAWN">Civil dawn</option>
+				<option value="CIVIL_DUSK">Civil dusk</option>
+				<option value="NAUTIC_DUSK">Nautic dusk</option>
+				<option value="ASTRO_DUSK">Astro dusk</option>
+				<option value="SUN_SET">Sunset</option>
+				<option value="DAYLIGHT">Daylight</option>
+				<option value="NOON">Noon</option>
+				<option value="NIGHT">Night</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<!-- moonphase -->
 	<channel-group-type id="moonPhase">
 		<label>Moonphases</label>
@@ -202,6 +293,7 @@
 			<channel id="age" typeId="age" />
 			<channel id="illumination" typeId="illumination" />
 			<channel id="name" typeId="phaseName" />
+			<channel id="event" typeId="phaseEvent" />
 		</channels>
 	</channel-group-type>
 
@@ -258,12 +350,28 @@
 				<option value="FIRST_QUARTER">First quarter</option>
 				<option value="WAXING_GIBBOUS">Waxing gibbous</option>
 				<option value="FULL">Full moon</option>
-				<option value="WANING_GIBBOUS">Wanning gibbous</option>
+				<option value="WANING_GIBBOUS">Waning gibbous</option>
 				<option value="THIRD_QUARTER">Third quarter</option>
 				<option value="WANING_CRESCENT">Waning crescent</option>
-        	</options>
- 		</state>
+			</options>
+		</state>
 	</channel-type>
+
+	<channel-type id="phaseEvent">
+		<kind>trigger</kind>
+		<label>Moon phase event</label>
+		<description>Moon phase event</description>
+		<event>
+			<options>
+				<option value="FIRST_QUARTER">first quarter</option>
+				<option value="THIRD_QUARTER">third quarter</option>
+				<option value="FULL">full</option>
+				<option value="NEW">new</option>
+			</options>
+		</event>
+		<config-description-ref uri="channel-type:astro:config" />
+	</channel-type>
+
 
 	<!-- moon eclipse -->
 	<channel-group-type id="moonEclipse">
@@ -272,8 +380,22 @@
 		<channels>
 			<channel id="total" typeId="total" />
 			<channel id="partial" typeId="partial" />
+			<channel id="event" typeId="moonEclipseEvent" />
 		</channels>
 	</channel-group-type>
+
+	<channel-type id="moonEclipseEvent">
+		<kind>trigger</kind>
+		<label>Moon eclipse event</label>
+		<description>Moon eclipse event</description>
+		<event>
+			<options>
+				<option value="TOTAL">total</option>
+				<option value="PARTIAL">partial</option>
+			</options>
+		</event>
+		<config-description-ref uri="channel-type:astro:config" />
+	</channel-type>
 
 	<!-- distance -->
 	<channel-group-type id="distance">
@@ -283,6 +405,7 @@
 			<channel id="date" typeId="distanceDate" />
 			<channel id="miles" typeId="miles" />
 			<channel id="kilometer" typeId="kilometer" />
+			<channel id="event" typeId="distanceEvent" />
 		</channels>
 	</channel-group-type>
 
@@ -304,7 +427,20 @@
 		<item-type>Number</item-type>
 		<label>Kilometer</label>
 		<description>The distance in kilometers</description>
-		<state readOnly="true" pattern="%d km"/>
+		<state readOnly="true" pattern="%d km" />
+	</channel-type>
+
+	<channel-type id="distanceEvent">
+		<kind>trigger</kind>
+		<label>Moon distance event</label>
+		<description>Moon distance event</description>
+		<event>
+			<options>
+				<option value="PERIGEE">perigee</option>
+				<option value="APOGEE">apogee</option>
+			</options>
+		</event>
+		<config-description-ref uri="channel-type:astro:config" />
 	</channel-type>
 
 	<!-- moonZodiac -->

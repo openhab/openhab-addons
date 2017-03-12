@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -103,12 +103,12 @@ public class MaryTTSService implements TTSService {
          * However, the TTSService interface allows the AudioFormat and
          * the Voice to vary independently. Thus, an external user does
          * not know about the requirement that a given voice is paired
-         * with a given AudioFormat. The test below inforces this.
+         * with a given AudioFormat. The test below enforces this.
          *
          * However, this leads to a problem. The user has no way to
          * know which AudioFormat is apropos for a give Voice. Thus,
          * throwing a TTSException for the wrong AudioFormat makes
-         * the user guess the right AudioFormat, a apinful process.
+         * the user guess the right AudioFormat, a painful process.
          * Alternatively, we can get the right AudioFormat for the
          * Voice and ignore what the user requests, also wrong.
          *

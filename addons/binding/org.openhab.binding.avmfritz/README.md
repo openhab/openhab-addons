@@ -9,9 +9,13 @@ The binding integrates the AHA ( [AVM Home Automation](http://avm.de/ratgeber/sm
 
 The well known FRITZ!Boxes are supported as bridge for accessing other AHA devices. It is planned to support some channels directly at the bridge like call monitoring and others - but these things are under current development by now. The Box has to run at least on firmware FRITZ!OS 6.00 and hast to support the "Smart Home" service.
 
-### FRITZ!DECT 200
+### FRITZ!DECT 200 / FRITZ!DECT 210
 
-This [switchable outlet](http://avm.de/produkte/fritzdect/fritzdect-200/) has to be connected to a FRITZ!Box by DECT protocol. It supports switching the outlet, current power and accumulated energy consumption and temperature readings.
+This switchable outlets [FRITZ!DECT 210](https://avm.de/produkte/fritzdect/fritzdect-210/) and [FRITZ!DECT 200](https://avm.de/produkte/fritzdect/fritzdect-200/) have to be connected to a FRITZ!Box by DECT protocol. They support switching the outlet, current power and accumulated energy consumption and temperature readings.
+
+### FRITZ!DECT Repeater 100
+
+This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) has to be connected to a FRITZ!Box by DECT protocol. It only supports temperature readings.
 
 ### FRITZ!Powerline 546E
 
@@ -55,10 +59,10 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 | Channel Type ID | Item Type    | Description  | Available on thing |
 |-------------|--------|-----------------------------|------------------------------------|
-| temperature | Number | Actual measured temperature | FRITZ!DECT 200 |
-| energy | Number | Accumulated energy consumption | FRITZ!DECT 200, FRITZ!Powerline 546E |
-| power | Number | Current power consumption | FRITZ!DECT 200, FRITZ!Powerline 546E |
-| outlet | Switch | Switchable outlet | FRITZ!DECT 200, FRITZ!Powerline 546E |
+| temperature | Number | Actual measured temperature (in °C) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100 |
+| energy | Number | Accumulated energy consumption (in Wh) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
+| power | Number | Current power consumption (in W) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
+| outlet | Switch | Switchable outlet (ON/OFF) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
 
 ## Full Example
 
@@ -74,7 +78,11 @@ Bridge avmfritz:fritzbox:1 [ ipAddress="192.168.xxx.xxx", password ="xxx", user=
 demo.items:
 
 ```
-Number Temp { channel="avmfritz:FRITZ_DECT_200:1:DECT1:temperature" }
+Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:outlet" }
+Number Temperature1 "Actual measured temperature [%.1f °C]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:temperature" }
+Number Energy1 "Accumulated energy consumption [%.3f Wh]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:energy" }
+Number Power1 "Current power consumption [%.2f W]" { channel="avmfritz:FRITZ_DECT_200:1:DECT1:power" }
+
 Switch Outlet2 { channel="avmfritz:FRITZ_Powerline_546E:1:PL1:outlet" }
 ```
 
@@ -83,8 +91,13 @@ demo.sitemap:
 ```
 sitemap demo label="Main Menu"
 {
-	Frame {
-		Text item=Temp
+	Frame label="FRITZ!DECT 200 switchable outlet" {
+		Switch item=Outlet1 icon="poweroutlet"
+		Text item=Temperature1 icon="temperature"
+		Text item=Energy1 icon="energy"
+		Text item=Power1 icon="energy"
+	}
+	Frame label="FRITZ!Powerline 546E switchable outlet" {
 		Switch item=Outlet2
 	}
 }

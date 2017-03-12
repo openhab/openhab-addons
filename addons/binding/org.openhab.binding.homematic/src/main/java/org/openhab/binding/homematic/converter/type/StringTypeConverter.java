@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,7 @@
 package org.openhab.binding.homematic.converter.type;
 
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -24,8 +25,8 @@ public class StringTypeConverter extends AbstractTypeConverter<StringType> {
      * {@inheritDoc}
      */
     @Override
-    protected boolean toBindingValidation(HmDatapoint dp) {
-        return dp.isStringType() || dp.isEnumType();
+    protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
+        return (dp.isStringType() || dp.isEnumType()) && typeClass.isAssignableFrom(StringType.class);
     }
 
     /**
@@ -50,8 +51,7 @@ public class StringTypeConverter extends AbstractTypeConverter<StringType> {
      */
     @Override
     protected boolean fromBindingValidation(HmDatapoint dp) {
-        return (dp.isStringType() && dp.getValue() instanceof String)
-                || (dp.isEnumType() && dp.getValue() instanceof Number);
+        return (dp.isStringType()) || (dp.isEnumType() && dp.getValue() instanceof Number);
     }
 
     /**
@@ -60,7 +60,7 @@ public class StringTypeConverter extends AbstractTypeConverter<StringType> {
     @Override
     protected StringType fromBinding(HmDatapoint dp) throws ConverterException {
         if (dp.isStringType()) {
-            return new StringType(dp.getValue().toString());
+            return new StringType(String.valueOf(dp.getValue()));
         } else {
             String value = dp.getOptionValue();
             if (value == null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -27,7 +28,6 @@ import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayFactory;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayListener;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
-import org.openhab.binding.homematic.internal.misc.LocalNetworkInterface;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.type.HomematicTypeGenerator;
@@ -63,32 +63,38 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      */
     @Override
     public void initialize() {
-        try {
-            String id = getThing().getUID().getId();
-            config = createHomematicConfig();
+        config = createHomematicConfig();
+        registerDeviceDiscoveryService();
+        final HomematicBridgeHandler instance = this;
+        scheduler.execute(new Runnable() {
 
-            gateway = HomematicGatewayFactory.createGateway(id, config, this);
-            gateway.initialize();
+            @Override
+            public void run() {
+                try {
+                    String id = getThing().getUID().getId();
+                    gateway = HomematicGatewayFactory.createGateway(id, config, instance);
+                    gateway.initialize();
 
-            registerDeviceDiscoveryService();
-            scheduler.submit(new Runnable() {
-
-                @Override
-                public void run() {
                     discoveryService.startScan(null);
                     discoveryService.waitForScanFinishing();
                     updateStatus(ThingStatus.ONLINE);
-                    for (Thing hmThing : getThing().getThings()) {
-                        hmThing.getHandler().thingUpdated(hmThing);
+                    if (!config.getGatewayInfo().isHomegear()) {
+                        try {
+                            gateway.loadRssiValues();
+                        } catch (IOException ex) {
+                            logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
+                            logger.error(ex.getMessage(), ex);
+                        }
                     }
-                }
-            });
 
-        } catch (IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-            dispose();
-            scheduleReinitialize();
-        }
+                } catch (IOException ex) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                    dispose();
+                    scheduleReinitialize();
+                }
+            }
+        });
+
     }
 
     /**
@@ -119,7 +125,8 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             gateway.dispose();
         }
         if (config != null) {
-            portPool.release(config.getCallbackPort());
+            portPool.release(config.getXmlCallbackPort());
+            portPool.release(config.getBinCallbackPort());
         }
     }
 
@@ -127,18 +134,20 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * Registers the DeviceDiscoveryService.
      */
     private void registerDeviceDiscoveryService() {
-        logger.trace("Registering HomematicDeviceDiscoveryService for bridge '{}'", getThing().getUID().getId());
-        discoveryService = new HomematicDeviceDiscoveryService(this);
-        discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<String, Object>());
-        discoveryService.activate();
+        if (bundleContext != null) {
+            logger.trace("Registering HomematicDeviceDiscoveryService for bridge '{}'", getThing().getUID().getId());
+            discoveryService = new HomematicDeviceDiscoveryService(this);
+            discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
+                    discoveryService, new Hashtable<String, Object>());
+            discoveryService.activate();
+        }
     }
 
     /**
      * Unregisters the DeviceDisoveryService.
      */
     private void unregisterDeviceDiscoveryService() {
-        if (discoveryServiceRegistration != null) {
+        if (discoveryServiceRegistration != null && bundleContext != null) {
             HomematicDeviceDiscoveryService service = (HomematicDeviceDiscoveryService) bundleContext
                     .getService(discoveryServiceRegistration.getReference());
             service.deactivate();
@@ -157,7 +166,9 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             try {
                 gateway.getDevice(UidUtils.getHomematicAddress(hmThing));
             } catch (HomematicClientException e) {
-                ((HomematicThingHandler) hmThing.getHandler()).updateStatus(ThingStatus.OFFLINE);
+                if (hmThing.getHandler() != null) {
+                    ((HomematicThingHandler) hmThing.getHandler()).updateStatus(ThingStatus.OFFLINE);
+                }
             }
         }
     }
@@ -168,12 +179,17 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     private HomematicConfig createHomematicConfig() {
         HomematicConfig homematicConfig = getThing().getConfiguration().as(HomematicConfig.class);
         if (homematicConfig.getCallbackHost() == null) {
-            homematicConfig.setCallbackHost(LocalNetworkInterface.getLocalNetworkInterface());
+            homematicConfig.setCallbackHost(NetUtil.getLocalIpv4HostAddress());
         }
-        if (homematicConfig.getCallbackPort() == 0) {
-            homematicConfig.setCallbackPort(portPool.getNextPort());
+        if (homematicConfig.getXmlCallbackPort() == 0) {
+            homematicConfig.setXmlCallbackPort(portPool.getNextPort());
         } else {
-            portPool.setInUse(homematicConfig.getCallbackPort());
+            portPool.setInUse(homematicConfig.getXmlCallbackPort());
+        }
+        if (homematicConfig.getBinCallbackPort() == 0) {
+            homematicConfig.setBinCallbackPort(portPool.getNextPort());
+        } else {
+            portPool.setInUse(homematicConfig.getBinCallbackPort());
         }
         logger.debug(homematicConfig.toString());
         return homematicConfig;
@@ -209,7 +225,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      */
     public void updateThing(HmDevice device) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
-        if (hmThing != null) {
+        if (hmThing != null && hmThing.getHandler() != null) {
             hmThing.getHandler().thingUpdated(hmThing);
         }
     }
@@ -285,10 +301,10 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      */
     @Override
     public void reloadDeviceValues(HmDevice device) {
+        updateThing(device);
         if (device.isGatewayExtras()) {
             typeGenerator.generate(device);
         }
-        updateThing(device);
     }
 
     /**

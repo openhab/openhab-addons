@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,6 +40,7 @@ public class NetatmoBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_TEMPERATURE = "Temperature";
+    public final static String CHANNEL_TEMP_TREND = "TempTrend";
     public final static String CHANNEL_HUMIDITY = "Humidity";
     public final static String CHANNEL_HUMIDEX = "Humidex";
     public final static String CHANNEL_TIMEUTC = "TimeStamp";
@@ -59,9 +60,10 @@ public class NetatmoBindingConstants {
     public final static String CHANNEL_CO2 = "Co2";
     public final static String CHANNEL_NOISE = "Noise";
     public final static String CHANNEL_PRESSURE = "Pressure";
+    public final static String CHANNEL_PRESS_TREND = "PressTrend";
     public final static String CHANNEL_RAIN = "Rain";
-    public final static String CHANNEL_SUM_RAIN1 = "sum_rain_1";
-    public final static String CHANNEL_SUM_RAIN24 = "sum_rain_24";
+    public final static String CHANNEL_SUM_RAIN1 = "SumRain1";
+    public final static String CHANNEL_SUM_RAIN24 = "SumRain24";
     public final static String CHANNEL_WIND_ANGLE = "WindAngle";
     public final static String CHANNEL_WIND_STRENGTH = "WindStrength";
     public final static String CHANNEL_GUST_ANGLE = "GustAngle";
@@ -76,15 +78,16 @@ public class NetatmoBindingConstants {
 
     // Thermostat specific channels
     public final static String CHANNEL_SETPOINT_MODE = "SetpointMode";
-    public final static String CHANNEL_SETPOINT_TEMP = "SetpointTemperature";
-    // public final static String CHANNEL_SETPOINT_END_TIME = "setpoint_endtime";
+    public final static String CHANNEL_SETPOINT_END_TIME = "SetpointEndTime";
+    public final static String CHANNEL_SETPOINT_TEMP = "Sp_Temperature";
+    public final static String CHANNEL_THERM_RELAY = "ThermRelayCmd";
+    public final static String CHANNEL_THERM_ORIENTATION = "ThermOrientation";
 
     // Module Properties
     public final static String PROPERTY_BATTERY_MIN = "batteryMin";
     public final static String PROPERTY_BATTERY_MAX = "batteryMax";
     public final static String PROPERTY_BATTERY_LOW = "batteryLow";
     public final static String PROPERTY_SIGNAL_LEVELS = "signalLevels";
-    public final static String PROPERTY_ACTUAL_APP = "actualApp";
 
     // List of all supported physical devices and modules
     public final static Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
@@ -95,5 +98,7 @@ public class NetatmoBindingConstants {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
             MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE, PLUG_THING_TYPE,
             THERM1_THING_TYPE, APIBRIDGE_THING_TYPE);
+
+    public final static Set<String> MEASURABLE_CHANNELS = ImmutableSet.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF);
 
 }

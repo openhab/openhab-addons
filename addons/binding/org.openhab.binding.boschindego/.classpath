@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.8.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.8.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.8.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpclient-4.5.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpcore-4.4.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bosch-indego-controller-lib-0.8.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
