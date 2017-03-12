@@ -10,6 +10,7 @@
         <channels>
             <channel id="online" typeId="online"></channel>
             <channel id="time" typeId="time"></channel>
+            <channel id="last_seen" typeId="last_seen"></channel>
         </channels>
         <config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -77,5 +78,11 @@
         <category>Number</category>
 	    <state readOnly="true"></state>
     </channel-type>
+    <channel-type id="last_seen">
+    	<item-type>DateTime</item-type>
+    	<label>Last seen</label>
+    	<description>States the last time the device has been seen online</description>
+    	<category>DateTime</category>
+    	<state readOnly="true"></state></channel-type>
 
 </thing:thing-descriptions>

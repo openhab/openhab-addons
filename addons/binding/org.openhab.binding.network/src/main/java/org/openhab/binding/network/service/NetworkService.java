@@ -165,12 +165,12 @@ public class NetworkService {
 
             try {
                 pingTime = System.nanoTime();
-                if (!useSystemPing) {
-                    success = Ping.checkVitality(hostname, port, timeout);
-                } else if (!arping) {
+                if (useSystemPing) {
                     success = NetworkUtils.nativePing(hostname, port, timeout);
-                } else {
+                } else if (arping) {
                     success = NetworkUtils.arping(hostname, timeout, networkInterface);
+                } else {
+                    success = Ping.checkVitality(hostname, port, timeout);
                 }
                 pingTime = System.nanoTime() - pingTime;
                 if (success) {

@@ -85,6 +85,7 @@ All devices support some of the following channels:
 |-----------------|--------------|----------------------------------------------- |
 | online          | Switch       | This channel indicates whether a device is online or not |
 | time            | Number       | This channel indicates the ping time in milliseconds. May be 0 if no time is available. |
+| last_seen       | DateTime     | This channel indicates the last time the device was seen online. |
 
 
 ## Full Example
@@ -100,6 +101,7 @@ demo.items:
 ```xtend
 Switch MyDevice { channel="network:device:devicename:online" }
 Number MyDeviceResponseTime { channel="network:device:devicename:time" }
+DateTime MyDeviceLastSeen { channel="network:device:devicename:last_seen" }
 ```
 
 demo.sitemap:
@@ -110,6 +112,7 @@ sitemap demo label="Main Menu"
 	Frame {
 		Text item=MyDevice label="Device [%s]"
 		Text item=MyDeviceResponseTime label="Device Response Time [%s]"
+		Text item=MyDeviceLastSeen label="Device Response Time [%tc]"
 	}
 }
 ```
