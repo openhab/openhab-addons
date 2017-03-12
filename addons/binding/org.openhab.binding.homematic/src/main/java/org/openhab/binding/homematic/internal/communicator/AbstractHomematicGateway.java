@@ -41,6 +41,7 @@ import org.openhab.binding.homematic.internal.communicator.virtual.BatteryTypeVi
 import org.openhab.binding.homematic.internal.communicator.virtual.DeleteDeviceModeVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.DeleteDeviceVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.DisplayOptionsVirtualDatapointHandler;
+import org.openhab.binding.homematic.internal.communicator.virtual.DisplayTextVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.FirmwareVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeDurationVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeVirtualDatapoint;
@@ -115,6 +116,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         virtualDatapointHandlers.add(new ReloadRssiVirtualDatapointHandler());
         virtualDatapointHandlers.add(new StateContactVirtualDatapointHandler());
         virtualDatapointHandlers.add(new SignalStrengthVirtualDatapointHandler());
+        virtualDatapointHandlers.add(new DisplayTextVirtualDatapoint());
     }
 
     public AbstractHomematicGateway(String id, HomematicConfig config, HomematicGatewayListener eventListener) {

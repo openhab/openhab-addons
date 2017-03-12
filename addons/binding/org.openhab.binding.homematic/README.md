@@ -266,6 +266,52 @@ Duplicate options: TONE3 is ignored, because TONE1 is specified previously.
 smarthome send Display_Options "TEXT, TONE1, BLINK_FAST, TONE3"
 ```
 
+#### DISPLAY_SUBMIT
+Adds multiple virtual datapoints to the HM-Dis-WM55 device to easily send colored text and icons to the display 
+
+Example: Display text at line 1,3 and 5 when the bottom button on the display is pressed
+- Items
+
+```
+String Display_line_1   "Line 1"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_LINE_1" }
+String Display_line_3   "Line 3"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_LINE_3" }
+String Display_line_5   "Line 5"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_LINE_5" }
+
+String Display_color_1  "Color 1"   { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_COLOR_1" }
+String Display_color_3  "Color 3"   { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_COLOR_3" }
+String Display_color_5  "Color 5"   { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_COLOR_5" }
+
+String Display_icon_1   "Icon 1"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_ICON_1" }
+String Display_icon_3   "Icon 3"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_ICON_3" }
+String Display_icon_5   "Icon 5"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_ICON_5" }
+
+Switch Button_bottom    "Button"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#PRESS_SHORT" }
+Switch Display_submit   "Submit"    { channel="homematic:HM-Dis-WM55:ccu:NEQ0123456:1#DISPLAY_SUBMIT" }
+```
+
+- Rule
+
+```
+rule "Display Test"
+when
+    Item Button_bottom received update ON
+then
+    sendCommand(Display_line_1, "Line 1")
+    sendCommand(Display_line_3, "Line 3")
+    sendCommand(Display_line_5, "Line 5")
+
+    sendCommand(Display_icon_1, "NONE")
+    sendCommand(Display_icon_3, "OPEN")
+    sendCommand(Display_icon_5, "INFO")
+
+    sendCommand(Display_color_1, "NONE")
+    sendCommand(Display_color_3, "RED")
+    sendCommand(Display_color_5, "BLUE")
+
+    sendCommand(Display_submit, ON)
+end
+```
+
 ### Troubleshooting
 **SHORT & LONG_PRESS events of push buttons do not occur on the event bus**  
 
@@ -292,7 +338,7 @@ e.g you have a item linked to a variable with the name Var_1
 In the console:
 
 ```
-smarthome send Var_1 REFRESH
+smarthome:send Var_1 REFRESH
 ```
 
 In scripts:
