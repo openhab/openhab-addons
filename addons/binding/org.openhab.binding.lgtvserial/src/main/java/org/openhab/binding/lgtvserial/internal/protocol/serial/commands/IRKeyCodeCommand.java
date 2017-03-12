@@ -9,7 +9,7 @@ import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
 public class IRKeyCodeCommand extends BaseStringCommand {
 
     protected IRKeyCodeCommand(int setId) {
-        super('f', 'z', setId);
+        super('m', 'c', setId);
     }
 
     @Override
