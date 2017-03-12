@@ -342,7 +342,7 @@
 		<message-handler cmd="0x82">PowerMeterUpdateHandler</message-handler>
 		<command-handler command="OnOffType">PowerMeterCommandHandler</command-handler>
 	</feature>
-	<feature name="X10Dimmer" timeout="0">
+	<feature name="X10Dimmer" timeout="0" x10="true">
 		<message-handler cmd="0x02">X10OnHandler</message-handler>
 		<message-handler cmd="0x03">X10OffHandler</message-handler>
 		<message-handler cmd="0x05">X10BrightHandler</message-handler>
@@ -352,7 +352,7 @@
 		<command-handler command="PercentType">X10PercentCommandHandler</command-handler>
 		<command-handler command="IncreaseDecreaseType">X10IncreaseDecreaseCommandHandler</command-handler>
 	</feature>
-	<feature name="X10Switch" timeout="0">
+	<feature name="X10Switch" timeout="0" x10="true">
 		<message-handler cmd="0x02">X10OnHandler</message-handler>
 		<message-handler cmd="0x03">X10OffHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
@@ -360,7 +360,7 @@
 		<command-handler command="PercentType">NoOpCommandHandler</command-handler>
 		<command-handler command="IncreaseDecreaseType">NoOpCommandHandler</command-handler>
 	</feature>
-	<feature name="X10Contact">
+	<feature name="X10Contact" x10="true">
 		<message-handler cmd="0x02">X10OpenHandler</message-handler>
 		<message-handler cmd="0x03">X10ClosedHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
@@ -368,13 +368,13 @@
 	</feature>
 	<feature name="ThermostatCoolSetPoint">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="userData7">NumberMsgHandler
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[7]">NumberMsgHandler
 		</message-handler>
 		<!-- handles direct ack after set point has been changed -->
-		<message-handler cmd="0x19" ext="0" match_cmd1="0x6c" low_byte="command2" factor="0.5">NumberMsgHandler
+		<message-handler cmd="0x19" ext="0" match_cmd1="0x6c" low_byte="Cmd2" factor="0.5">NumberMsgHandler
 		</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x71" ext="0" match_cmd1="0x71" low_byte="command2">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x71" ext="0" match_cmd1="0x71" low_byte="Cmd2">NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x6c" factor="2" value="command2">NumberCommandHandler
 		</command-handler>
@@ -382,13 +382,13 @@
 	</feature>
 	<feature name="ThermostatHeatSetPoint">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="userData12">NumberMsgHandler
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[12]">NumberMsgHandler
 		</message-handler>
 		<!-- handles direct ack after set point has been changed -->
-		<message-handler cmd="0x19" ext="0" match_cmd1="0x6d" low_byte="command2" factor="0.5">NumberMsgHandler
+		<message-handler cmd="0x19" ext="0" match_cmd1="0x6d" low_byte="Cmd2" factor="0.5">NumberMsgHandler
 		</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x72" ext="0" match_cmd1="0x72" low_byte="command2">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x72" ext="0" match_cmd1="0x72" low_byte="Cm2">NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x6d" factor="2" value="command2">NumberCommandHandler
 		</command-handler>
@@ -396,13 +396,13 @@
 	</feature>
 	<feature name="ThermostatSystemMode">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="userData6"
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[6]"
 			mask="0xf0" rshift="4">ThermostatSystemModeMsgHandler</message-handler>
 		<!-- handles direct ack after system mode has been changed -->
-		<message-handler cmd="0x19" ext="0" match_cmd1="0x6b" low_byte="command2">ThermostatSystemModeReplyHandler
+		<message-handler cmd="0x19" ext="0" match_cmd1="0x6b" low_byte="Cmd2">ThermostatSystemModeReplyHandler
 		</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="command2" mask="0x0f">NumberMsgHandler
+		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="Cmd2" mask="0x0f">NumberMsgHandler
 		</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="DecimalType" ext="1" cmd1="0x6b" value="command2">ThermostatSystemModeCommandHandler
@@ -411,13 +411,13 @@
 	</feature>
 	<feature name="ThermostatFanMode">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="userData6"
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[6]"
 			mask="0x0f">NumberMsgHandler</message-handler>
 		<!-- handles direct ack after fan mode has been changed -->
-		<message-handler cmd="0x19" ext="0" match_cmd1="0x6b" low_byte="command2">ThermostatFanModeReplyHandler
+		<message-handler cmd="0x19" ext="0" match_cmd1="0x6b" low_byte="Cmd2">ThermostatFanModeReplyHandler
 		</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="command2" mask="0xf0" rshift="4">NumberMsgHandler
+		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="Cmd2" mask="0xf0" rshift="4">NumberMsgHandler
 		</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="DecimalType" ext="1" cmd1="0x6b" value="command2">ThermostatFanModeCommandHandler
@@ -426,59 +426,59 @@
 	</feature>
 	<feature name="ThermostatIsHeating">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="userData11"
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[11]"
 			mask="0x02" rshift="1">NumberMsgHandler</message-handler>
 		<!-- handles all-link broadcast message OFF -->
-		<message-handler cmd="0x13" ext="0" group="2" mask="0x00" low_byte="command1">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x13" ext="0" group="2" mask="0x00" low_byte="Cmd1">NumberMsgHandler</message-handler>
 		<!-- handles all-link broadcast message ON -->
-		<message-handler cmd="0x11" ext="0" group="2" mask="0x01" low_byte="command1">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x11" ext="0" group="2" mask="0x01" low_byte="Cmd1">NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 	</feature>
 	<feature name="ThermostatIsCooling">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="userData11"
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[11]"
 			mask="0x01">NumberMsgHandler</message-handler>
 		<!-- handles all-link broadcast message OFF -->
-		<message-handler cmd="0x13" ext="0" group="1" mask="0x00" low_byte="command1">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x13" ext="0" group="1" mask="0x00" low_byte="Cmd1">NumberMsgHandler</message-handler>
 		<!-- handles all-link broadcast message ON -->
-		<message-handler cmd="0x11" ext="0" group="1" mask="0x01" low_byte="command1">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x11" ext="0" group="1" mask="0x01" low_byte="Cmd1">NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 	</feature>
 	<feature name="ThermostatTemperatureCelsius">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="userData10"
-			high_byte="userData9" factor="0.1">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[10]"
+			high_byte="Data[9]" factor="0.1">NumberMsgHandler</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x6e" ext="0" match_cmd1="0x6e" low_byte="command2" offset="-17.7777778" factor="0.2777778">
+		<message-handler cmd="0x6e" ext="0" match_cmd1="0x6e" low_byte="Cmd2" offset="-17.7777778" factor="0.2777778">
 			NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 	</feature>
 	<feature name="ThermostatTemperatureFahrenheit">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="userData10"
-			high_byte="userData9" offset="32" factor="0.18">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[10]"
+			high_byte="Data[9]" offset="32" factor="0.18">NumberMsgHandler</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x6e" ext="0" match_cmd1="0x6e" low_byte="command2" offset="0" factor="0.5">NumberMsgHandler
+		<message-handler cmd="0x6e" ext="0" match_cmd1="0x6e" low_byte="Cmd2" offset="0" factor="0.5">NumberMsgHandler
 		</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 	</feature>
 	<feature name="ThermostatHumidity">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="userData8">NumberMsgHandler
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[8]">NumberMsgHandler
 		</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x6f" ext="0" match_cmd1="0x6f" low_byte="command2">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x6f" ext="0" match_cmd1="0x6f" low_byte="Cmd2">NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 	</feature>
 	<feature name="ThermostatBackLightDuration">
 		<!-- handles direct extended message after query -->
 		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x00"
-			low_byte="userData10">NumberMsgHandler</message-handler>
+			low_byte="Data[10]">NumberMsgHandler</message-handler>
 		<!-- handles direct ack after backlight duration has been changed -->
 		<message-handler cmd="0x19">TriggerPollMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
@@ -489,7 +489,7 @@
 	<feature name="ThermostatACDelay">
 		<!-- handles direct extended message after query -->
 		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x00"
-			low_byte="userData11">NumberMsgHandler</message-handler>
+			low_byte="Data[11]">NumberMsgHandler</message-handler>
 		<!-- handles direct ack after backlight duration has been changed -->
 		<message-handler cmd="0x19">TriggerPollMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
@@ -500,7 +500,7 @@
 	<feature name="ThermostatHumidityHigh">
 		<!-- handles direct extended message after query -->
 		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x01"
-			low_byte="userData4">NumberMsgHandler</message-handler>
+			low_byte="Data[4]">NumberMsgHandler</message-handler>
 		<!-- handles direct ack after value has been changed -->
 		<message-handler cmd="0x19">TriggerPollMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
@@ -511,7 +511,7 @@
 	<feature name="ThermostatHumidityLow">
 		<!-- handles direct extended message after query -->
 		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x01"
-			low_byte="userData5">NumberMsgHandler</message-handler>
+			low_byte="Data[5]">NumberMsgHandler</message-handler>
 		<!-- handles direct ack after value has been changed -->
 		<message-handler cmd="0x19">TriggerPollMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
@@ -522,7 +522,7 @@
 	<feature name="ThermostatStage1Duration">
 		<!-- handles direct extended message after query -->
 		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x01"
-			low_byte="userData11">NumberMsgHandler</message-handler>
+			low_byte="Data[11]">NumberMsgHandler</message-handler>
 		<!-- handles direct ack after value has been changed -->
 		<message-handler cmd="0x19">TriggerPollMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
@@ -531,7 +531,7 @@
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 	</feature>
 	<feature name="FanLincFan">
-		<message-handler cmd="0x19" ext="0" low_byte="command2">FanLincFanReplyHandler</message-handler>
+		<message-handler cmd="0x19" ext="0" low_byte="Cmd2">FanLincFanReplyHandler</message-handler>
 		<command-handler command="DecimalType" ext="1" cmd1="0x11" d1="0x02" value="command2">FanLincFanCommandHandler
 		</command-handler>
 	</feature>
@@ -541,13 +541,13 @@
 	</feature>
 	<feature name="VenstarCoolSetPoint">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="userData6">NumberMsgHandler
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[6]">NumberMsgHandler
 		</message-handler>
 		<!-- handles direct ack after set point has been changed -->
-		<message-handler cmd="0x19" ext="0" match_cmd1="0x6c" low_byte="command2" factor="0.5">NumberMsgHandler
+		<message-handler cmd="0x19" ext="0" match_cmd1="0x6c" low_byte="Cmd2" factor="0.5">NumberMsgHandler
 		</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x71" ext="0" match_cmd1="0x71" low_byte="command2">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x71" ext="0" match_cmd1="0x71" low_byte="Cmd2">NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x6c" factor="2" value="command2">NumberCommandHandler
 		</command-handler>
@@ -555,13 +555,13 @@
 	</feature>
 	<feature name="VenstarHeatSetPoint">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="userData7">NumberMsgHandler
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[7]">NumberMsgHandler
 		</message-handler>
 		<!-- handles direct ack after set point has been changed -->
-		<message-handler cmd="0x19" ext="0" match_cmd1="0x6d" low_byte="command2" factor="0.5">NumberMsgHandler
+		<message-handler cmd="0x19" ext="0" match_cmd1="0x6d" low_byte="Cmd2" factor="0.5">NumberMsgHandler
 		</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x72" ext="0" match_cmd1="0x72" low_byte="command2">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x72" ext="0" match_cmd1="0x72" low_byte="Cmd2">NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x6d" factor="2" value="command2">NumberCommandHandler
 		</command-handler>
@@ -571,13 +571,13 @@
 		<!-- handles direct extended message after query - use NumberMsgHandler because this adapator directly reports the correct 
 			number -->
 		<!-- 0=OFF, 1=HEAT, 2=COOL, 3= Auto, 4=Program 5=Program Heat 6=Program Cool -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" low_byte="userData3">NumberMsgHandler
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" low_byte="Data[3]">NumberMsgHandler
 		</message-handler>
 		<!-- handles direct ack after system mode has been changed -->
-		<message-handler cmd="0x19" ext="0" match_cmd1="0x6b" low_byte="command2">ThermostatSystemModeReplyHandler
+		<message-handler cmd="0x19" ext="0" match_cmd1="0x6b" low_byte="Cmd2">ThermostatSystemModeReplyHandler
 		</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="command2" mask="0x0f">NumberMsgHandler
+		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="Cmd2" mask="0x0f">NumberMsgHandler
 		</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="DecimalType" ext="1" cmd1="0x6b" value="command2">ThermostatSystemModeCommandHandler
@@ -586,13 +586,13 @@
 	</feature>
 	<feature name="VenstarFanMode">
 		<!-- handles direct extended message after query mask for second bit -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="userData9" mask="0x10"
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[9]" mask="0x10"
 			rshift="4">NumberMsgHandler</message-handler>
 		<!-- handles direct ack after fan mode has been changed -->
-		<message-handler cmd="0x19" ext="0" match_cmd1="0x6b" low_byte="command2">ThermostatFanModeReplyHandler
+		<message-handler cmd="0x19" ext="0" match_cmd1="0x6b" low_byte="Cmd2">ThermostatFanModeReplyHandler
 		</message-handler>
 		<!-- handles out-of band status messages -->
-		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="command2" mask="0xf0" rshift="4">NumberMsgHandler
+		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="Cmd2" mask="0xf0" rshift="4">NumberMsgHandler
 		</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler command="DecimalType" ext="1" cmd1="0x6b" value="command2">ThermostatFanModeCommandHandler
@@ -601,7 +601,7 @@
 	</feature>
 	<feature name="VenstarTemperatureFahrenheit"> <!-- All temperatures reported in units currently set on thermostat -->
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" low_byte="userData5">NumberMsgHandler
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" low_byte="Data[5]">NumberMsgHandler
 		</message-handler>
 		<!-- handles direct ack after value has been changed -->
 		<message-handler cmd="0x19">TriggerPollMsgHandler</message-handler>
@@ -612,7 +612,7 @@
 	</feature>
 	<feature name="VenstarHumidity">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" low_byte="userData4">NumberMsgHandler
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" low_byte="Data[4]">NumberMsgHandler
 		</message-handler>
 		<!-- handles direct ack after value has been changed -->
 		<message-handler cmd="0x19">TriggerPollMsgHandler</message-handler>
@@ -623,23 +623,23 @@
 	</feature>
 	<feature name="VenstarIsHeating">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="userData8" mask="0x02"
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[8]" mask="0x02"
 			rshift="1">NumberMsgHandler</message-handler>
 		<!-- handles all-link broadcast message OFF -->
-		<message-handler cmd="0x13" ext="0" group="2" mask="0x00" low_byte="command1">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x13" ext="0" group="2" mask="0x00" low_byte="Cmd1">NumberMsgHandler</message-handler>
 		<!-- handles all-link broadcast message ON -->
-		<message-handler cmd="0x11" ext="0" group="2" mask="0x01" low_byte="command1">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x11" ext="0" group="2" mask="0x01" low_byte="Cmd1">NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 	</feature>
 	<feature name="VenstarIsCooling">
 		<!-- handles direct extended message after query -->
-		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="userData8" mask="0x01">NumberMsgHandler
+		<message-handler cmd="0x2e" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[8]" mask="0x01">NumberMsgHandler
 		</message-handler>
 		<!-- handles all-link broadcast message OFF -->
-		<message-handler cmd="0x13" ext="0" group="1" mask="0x00" low_byte="command1">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x13" ext="0" group="1" mask="0x00" low_byte="Cmd1">NumberMsgHandler</message-handler>
 		<!-- handles all-link broadcast message ON -->
-		<message-handler cmd="0x11" ext="0" group="1" mask="0x01" low_byte="command1">NumberMsgHandler</message-handler>
+		<message-handler cmd="0x11" ext="0" group="1" mask="0x01" low_byte="Cmd1">NumberMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 	</feature>

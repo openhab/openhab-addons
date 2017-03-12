@@ -4,7 +4,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 
 /**
  * Triggers a poll when a message comes in. Use this handler to react
@@ -23,7 +23,7 @@ public class TriggerPollMsgHandler extends MessageHandler {
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
+    public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
         handler.pollChannel(f, false);
     }
 }

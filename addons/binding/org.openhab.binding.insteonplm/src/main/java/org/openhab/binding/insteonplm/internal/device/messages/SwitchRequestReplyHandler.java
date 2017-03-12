@@ -6,8 +6,7 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,20 +27,17 @@ public class SwitchRequestReplyHandler extends MessageHandler {
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
-        try {
-            InsteonAddress a = handler.getAddress();
-            int cmd2 = msg.getByte("command2") & 0xff;
-            if (getButton() < 0) {
-                handleNoButtons(handler, f, cmd2, a, msg);
-            } else {
-                boolean isOn = isLEDLit(cmd2, getButton());
-                logger.info("{}: dev {} button {} switched to {}", nm(), a, getButton(), isOn ? "ON" : "OFF");
-                handler.updateFeatureState(f, isOn ? OnOffType.ON : OnOffType.OFF);
-            }
-        } catch (FieldException e) {
-            logger.error("{} error parsing {}: ", nm(), msg, e);
+    public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
+        InsteonAddress a = handler.getAddress();
+        int cmd2 = msg.getCmd2();
+        if (getButton() < 0) {
+            handleNoButtons(handler, f, cmd2, a, msg);
+        } else {
+            boolean isOn = isLEDLit(cmd2, getButton());
+            logger.info("{}: dev {} button {} switched to {}", nm(), a, getButton(), isOn ? "ON" : "OFF");
+            handler.updateFeatureState(f, isOn ? OnOffType.ON : OnOffType.OFF);
         }
+
     }
 
     /**
@@ -51,7 +47,8 @@ public class SwitchRequestReplyHandler extends MessageHandler {
      *
      * @param cmd2
      */
-    void handleNoButtons(InsteonThingHandler handler, Channel f, int cmd2, InsteonAddress a, Message msg) {
+    void handleNoButtons(InsteonThingHandler handler, Channel f, int cmd2, InsteonAddress a,
+            StandardMessageReceived msg) {
         if (cmd2 == 0) {
             logger.info("{}: set device {} to OFF", nm(), a);
             handler.updateFeatureState(f, OnOffType.OFF);

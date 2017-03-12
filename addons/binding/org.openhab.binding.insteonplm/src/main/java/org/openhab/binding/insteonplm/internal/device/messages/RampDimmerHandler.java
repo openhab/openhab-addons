@@ -6,8 +6,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +50,8 @@ public class RampDimmerHandler extends MessageHandler {
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
-        if (cmd1 == onCmd) {
+    public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
+        if (msg.getCmd1().getCmd1() == onCmd) {
             int level = getLevel(msg);
             logger.info("{}: device {} was switched on using ramp to level {}.", nm(), handler.getAddress(), level);
             if (level == 100) {
@@ -68,19 +67,14 @@ public class RampDimmerHandler extends MessageHandler {
                 // rather than turn if OFF.
                 handler.updateFeatureState(f, new PercentType(level));
             }
-        } else if (cmd1 == offCmd) {
+        } else if (msg.getCmd1().getCmd1() == offCmd) {
             logger.info("{}: device {} was switched off using ramp.", nm(), handler.getAddress());
             handler.updateFeatureState(f, OnOffType.OFF);
         }
     }
 
-    private int getLevel(Message msg) {
-        try {
-            byte cmd2 = msg.getByte("command2");
-            return (int) Math.round(((cmd2 >> 4) & 0x0f) * (100 / 15d));
-        } catch (FieldException e) {
-            logger.error("Can't access command2 byte", e);
-            return 0;
-        }
+    private int getLevel(StandardMessageReceived msg) {
+        byte cmd2 = msg.getCmd2();
+        return (int) Math.round(((cmd2 >> 4) & 0x0f) * (100 / 15d));
     }
 }

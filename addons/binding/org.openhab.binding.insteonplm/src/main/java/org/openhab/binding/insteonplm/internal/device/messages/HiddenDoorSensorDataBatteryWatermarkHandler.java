@@ -5,8 +5,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,27 +21,23 @@ public class HiddenDoorSensorDataBatteryWatermarkHandler extends MessageHandler 
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
-        if (!msg.isExtended()) {
+    public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
+        if (!msg.getFlags().isExtended()) {
             logger.trace("{} device {} ignoring non-extended msg {}", nm(), handler.getAddress(), msg);
             return;
         }
-        try {
-            int cmd2 = msg.getByte("command2") & 0xff;
-            switch (cmd2) {
-                case 0x00: // this is a product data response message
-                    int batteryLevel = msg.getByte("userData4") & 0xff;
-                    int batteryWatermark = msg.getByte("userData7") & 0xff;
-                    logger.debug("{}: {} got light level: {}, battery level: {}", nm(), handler.getAddress(),
-                            batteryWatermark, batteryLevel);
-                    handler.updateFeatureState(f, new DecimalType(batteryWatermark));
-                    break;
-                default:
-                    logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
-                    break;
-            }
-        } catch (FieldException e) {
-            logger.error("error parsing {}: ", msg, e);
+        int cmd2 = msg.getCmd2();
+        switch (cmd2) {
+            case 0x00: // this is a product data response message
+                int batteryLevel = msg.getData()[4] & 0xff;
+                int batteryWatermark = msg.getData()[7] & 0xff;
+                logger.debug("{}: {} got light level: {}, battery level: {}", nm(), handler.getAddress(),
+                        batteryWatermark, batteryLevel);
+                handler.updateFeatureState(f, new DecimalType(batteryWatermark));
+                break;
+            default:
+                logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
+                break;
         }
     }
 }

@@ -21,12 +21,10 @@ import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.internal.config.PollingHandlerInfo;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.GroupMessageStateMachine;
-import org.openhab.binding.insteonplm.internal.device.GroupMessageStateMachine.GroupMessage;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
 import org.openhab.binding.insteonplm.internal.device.PollHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
@@ -54,7 +52,6 @@ public class InsteonThingHandler extends BaseThingHandler {
     private InsteonAddress address;
     private Message requestMessage;
     private long lastTimeQueried = 0;
-    private boolean isX10Device = false;
 
     public InsteonThingHandler(Thing thing) {
         super(thing);
@@ -76,11 +73,6 @@ public class InsteonThingHandler extends BaseThingHandler {
         if (productKey == null) {
             logger.error("Product Key is not set in {}", this.getThing().getUID());
             return;
-        }
-
-        String x10Key = this.getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_X10);
-        if (x10Key != null && "true".equals(x10Key)) {
-            isX10Device = true;
         }
 
         // TODO: Shouldn't the framework do this for us???
@@ -112,57 +104,57 @@ public class InsteonThingHandler extends BaseThingHandler {
     /**
      * Handle all the all link message cases.
      */
-    private void handlerAllLinkMessage(Message message) throws FieldException {
-        int command1 = message.getByte("command1");
-        InsteonAddress toAddress = message.getAddress("toAddress");
-
-        if (!message.isCleanup() && command1 == 0x06) {
-            command1 = toAddress.getHighByte();
-        }
-
-        int group = (message.isCleanup() ? message.getByte("command2") : toAddress.getLowByte()) & 0xff;
-
-        GroupMessage groupMessage;
-        InsteonFlags flags = message.getFlags();
-        if (flags != null) {
-            if (flags.isAllLinkBroadcast()) {
-                // if the command is 0x06, then it's success message
-                // from the original broadcaster, with which the device
-                // confirms that it got all cleanup replies successfully.
-                if (command1 == 0x06) {
-                    groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
-                } else {
-                    groupMessage = GroupMessageStateMachine.GroupMessage.SUCCESS;
-                }
-            } else if (flags.isAllLinkCleanup()) {
-                groupMessage = GroupMessageStateMachine.GroupMessage.CLEAN;
-                // the cleanup messages are direct messages, so the
-                // group # is not in the toAddress, but in cmd2
-                group = message.getByte("command2") & 0xff;
-            } else {
-                groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
-            }
-        } else {
-            groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
-        }
-        if (shouldPublishForGroup(group, groupMessage, message.getHopsLeft())) {
-            // See if we can find the right handler for this group message.
-            for (ChannelUID channelId : featureChannelMapping.keySet()) {
-                List<DeviceFeature> features = featureChannelMapping.get(channelId);
-                for (DeviceFeature feature : features) {
-                    List<MessageHandler> allHandlers = feature.getMsgHandlers().get(command1 & 0xff);
-                    if (allHandlers != null) {
-                        for (MessageHandler handler : allHandlers) {
-                            if (handler.matchesGroup(group) && handler.matches(message)) {
-                                handler.handleMessage(this, group, (byte) command1, message,
-                                        getThing().getChannel(channelId.getId()));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // private void handlerAllLinkMessage(Message message) throws FieldException {
+    // int command1 = message.getByte("command1");
+    // InsteonAddress toAddress = message.getAddress("toAddress");
+    //
+    // if (!message.isCleanup() && command1 == 0x06) {
+    // command1 = toAddress.getHighByte();
+    // }
+    //
+    // int group = (message.isCleanup() ? message.getByte("command2") : toAddress.getLowByte()) & 0xff;
+    //
+    // GroupMessage groupMessage;
+    // InsteonFlags flags = message.getFlags();
+    // if (flags != null) {
+    // if (flags.isAllLinkBroadcast()) {
+    // // if the command is 0x06, then it's success message
+    // // from the original broadcaster, with which the device
+    // // confirms that it got all cleanup replies successfully.
+    // if (command1 == 0x06) {
+    // groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
+    // } else {
+    // groupMessage = GroupMessageStateMachine.GroupMessage.SUCCESS;
+    // }
+    // } else if (flags.isAllLinkCleanup()) {
+    // groupMessage = GroupMessageStateMachine.GroupMessage.CLEAN;
+    // // the cleanup messages are direct messages, so the
+    // // group # is not in the toAddress, but in cmd2
+    // group = message.getByte("command2") & 0xff;
+    // } else {
+    // groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
+    // }
+    // } else {
+    // groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
+    // }
+    // if (shouldPublishForGroup(group, groupMessage, message.getHopsLeft())) {
+    // // See if we can find the right handler for this group message.
+    // for (ChannelUID channelId : featureChannelMapping.keySet()) {
+    // List<DeviceFeature> features = featureChannelMapping.get(channelId);
+    // for (DeviceFeature feature : features) {
+    // List<MessageHandler> allHandlers = feature.getMsgHandlers().get(command1 & 0xff);
+    // if (allHandlers != null) {
+    // for (MessageHandler handler : allHandlers) {
+    // if (handler.matchesGroup(group) && handler.matches(message)) {
+    // handler.handleMessage(this, group, (byte) command1, message,
+    // getThing().getChannel(channelId.getId()));
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
+    // }
 
     /**
      * Handles the message received over the channel to the modem.
@@ -172,55 +164,37 @@ public class InsteonThingHandler extends BaseThingHandler {
     public void handleMessage(StandardMessageReceived message) throws FieldException {
         lastMessageReceived = DateTime.now();
 
-        if (!isX10Device) {
-            StandardInsteonMessages cmd1 = message.getCmd1();
-            // All link message for this thing.
-            // We have an ack and we have a request message. Yay.
-            int key = -1;
-            if (message.getFlags().isAckOfDirect() && requestMessage != null) {
-                // We have the request message and this is an ack for it. Yay.
-                requestMessage = null;
-                return;
-            }
+        StandardInsteonMessages cmd1 = message.getCmd1();
+        // All link message for this thing.
+        // We have an ack and we have a request message. Yay.
+        int key = -1;
+        if (message.getFlags().isAckOfDirect() && requestMessage != null) {
+            // We have the request message and this is an ack for it. Yay.
+            requestMessage = null;
+            return;
+        }
 
-            // For normal direct messages we do this. Yay!
-            for (ChannelUID channelId : featureChannelMapping.keySet()) {
-                List<DeviceFeature> features = featureChannelMapping.get(channelId);
-                for (DeviceFeature feature : features) {
-                    List<MessageHandler> allHandlers = feature.getMsgHandlers().get(message.getCmd1().getCmd1());
-                    if (allHandlers != null) {
-                        for (MessageHandler handler : allHandlers) {
-                            if (handler.matches(message)) {
-                                handler.handleMessage(this, -1, message, getThing().getChannel(channelId.getId()));
-                            }
-                        }
-                    }
-                }
-            }
-        } else
-
-        {
-            // X10 Message.
-            byte rawX10 = message.getByte("rawX10");
-            int cmd = (rawX10 & 0x0f);
-            for (ChannelUID channelId : featureChannelMapping.keySet()) {
-                List<DeviceFeature> features = featureChannelMapping.get(channelId);
-                for (DeviceFeature feature : features) {
-                    List<MessageHandler> allHandlers = feature.getMsgHandlers().get(cmd & 0xff);
-                    if (allHandlers != null) {
-                        for (MessageHandler handler : allHandlers) {
-                            if (handler.matches(message)) {
-                                handler.handleMessage(this, -1, (byte) cmd, message,
-                                        getThing().getChannel(channelId.getId()));
-                            }
+        // For normal direct messages we do this. Yay!
+        for (ChannelUID channelId : featureChannelMapping.keySet()) {
+            List<DeviceFeature> features = featureChannelMapping.get(channelId);
+            for (DeviceFeature feature : features) {
+                List<MessageHandler> allHandlers = feature.getMsgHandlers().get(message.getCmd1().getCmd1());
+                if (allHandlers != null) {
+                    for (MessageHandler handler : allHandlers) {
+                        if (handler.matches(message)) {
+                            handler.handleMessage(this, -1, message, getThing().getChannel(channelId.getId()));
                         }
                     }
                 }
             }
         }
+    }else
 
-        // Update the status of the last message received channel.
-        updateState(new ChannelUID("lastMessageReceived"), new DateTimeType(lastMessageReceived.toGregorianCalendar()));
+    {
+    }
+
+    // Update the status of the last message received channel.
+    updateState(new ChannelUID("lastMessageReceived"), new DateTimeType(lastMessageReceived.toGregorianCalendar()));
     }
 
     /** The address for this thing. */

@@ -5,7 +5,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ public class StopManualChangeHandler extends MessageHandler {
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
+    public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
         logger.info("{}: dev {} manual state change: {}", nm(), handler.getAddress(), 0);
         handler.updateFeatureState(f, new DecimalType(1));
 

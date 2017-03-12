@@ -1,12 +1,16 @@
 package org.openhab.binding.insteonplm.internal.device.messages;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +75,7 @@ public class NumberMsgHandler extends MessageHandler {
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, int group, byte cmd1, Message msg, Channel f) {
+    public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
         try {
             // first do the bit manipulations to focus on the right area
             int rawValue = extractValue(msg, group);
@@ -90,7 +94,7 @@ public class NumberMsgHandler extends MessageHandler {
         return (raw);
     }
 
-    private int extractValue(Message msg, int group) throws FieldException {
+    private int extractValue(StandardMessageReceived msg, int group) throws FieldException {
         if (!lowByte.equals("")) {
             logger.error("{} handler misconfigured, missing low_byte!", nm());
             return 0;
@@ -99,11 +103,44 @@ public class NumberMsgHandler extends MessageHandler {
         if (lowByte.equals("group")) {
             value = group;
         } else {
-            value = msg.getByte(lowByte) & 0xFF;
+            // Turn into a get call on the object.
+            value = getValue(msg, lowByte);
         }
         if (!highByte.equals("")) {
-            value |= (msg.getByte(highByte) & 0xFF) << 8;
+            value |= (getValue(msg, highByte) & 0xFF) << 8;
+
         }
         return (value);
+    }
+
+    private byte getValue(StandardMessageReceived obj, String ref) {
+        Method method;
+        try {
+            int index = 0;
+            if (ref.startsWith("Data")) {
+                // Pull the index off.
+                String num = ref.substring(6, ref.length() - 2);
+                index = Integer.valueOf(num);
+                ref = "Data";
+            }
+            method = StandardMessageReceived.class.getMethod("get" + ref);
+            Object ret = method.invoke(obj);
+            if (ret instanceof StandardInsteonMessages) {
+                return ((StandardInsteonMessages) ret).getCmd1();
+            } else if (ret instanceof byte[]) {
+                return ((byte[]) ret)[index];
+            } else if (ret.getClass().isPrimitive()) {
+                return (byte) ret;
+            } else {
+                logger.error("Unknown return value {} on {} calling {}", ret, obj, ref);
+                return 0;
+            }
+        } catch (NoSuchMethodException | SecurityException e) {
+            logger.error("Unable to find method get{} on {}", lowByte, obj);
+            return 0;
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            logger.error("Unable to call method get{} on {}", lowByte, obj);
+            return 0;
+        }
     }
 }

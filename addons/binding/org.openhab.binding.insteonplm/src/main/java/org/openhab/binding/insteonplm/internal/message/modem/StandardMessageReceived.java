@@ -33,15 +33,17 @@ public class StandardMessageReceived extends BaseModemMessage {
             StandardInsteonMessages tmp = StandardInsteonMessages.fromByte((data[7] << 8) | data[8]);
             if (tmp == null) {
                 tmp = StandardInsteonMessages.fromByte((data[7] << 8));
-                cmd2 = data[8];
-            } else {
-                cmd2 = null;
             }
+            cmd2 = data[8];
             cmd1 = tmp;
             System.arraycopy(data, 9, this.data, 0, 14);
             crc = data[22];
         } else {
-            cmd1 = StandardInsteonMessages.fromByte(data[7]);
+            StandardInsteonMessages tmp = StandardInsteonMessages.fromByte((data[7] << 8) | data[8]);
+            if (tmp == null) {
+                tmp = StandardInsteonMessages.fromByte((data[7] << 8));
+            }
+            cmd1 = tmp;
             cmd2 = data[8];
             this.data = new byte[0];
             crc = data[9];
