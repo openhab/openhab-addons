@@ -84,7 +84,7 @@ You can send a REFRESH command to items linked to these Sensor channels:
 In the console:
 
 ```
-smarthome send ITEM_NAME REFRESH
+smarthome:send ITEM_NAME REFRESH
 ```
 
 In scripts:
