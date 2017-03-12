@@ -119,8 +119,6 @@ public class LgTvSerialHandler extends BaseThingHandler {
             @Override
             public void onFailure(ChannelUID channel, LGSerialResponse response) {
                 logger.error("Received error response for channel " + channel + " : " + response.getState());
-                // Let's update it to null, there is little chance the command response would mean anything useful
-                updateState(channel, null);
             }
 
         };
