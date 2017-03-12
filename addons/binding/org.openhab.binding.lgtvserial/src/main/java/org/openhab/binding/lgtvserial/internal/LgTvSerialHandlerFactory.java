@@ -12,42 +12,38 @@
  */
 package org.openhab.binding.lgtvserial.internal;
 
-import static org.openhab.binding.lgtvserial.LgTvSerialBindingConstants.*;
-
-import java.util.Collections;
-import java.util.Set;
-
-import org.openhab.binding.lgtvserial.handler.LgTvSerialHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.lgtvserial.LgTvSerialBindingConstants;
+import org.openhab.binding.lgtvserial.handler.LgTvSerialHandler;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.SerialCommunicatorFactory;
 
 /**
- * The {@link LgTvSerialHandlerFactory} is responsible for creating things and thing 
+ * The {@link LgTvSerialHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Marius Bjoernstad - Initial contribution
+ * @author Richard Lavoie - Added communicator to support daisy chained TV
  */
 public class LgTvSerialHandlerFactory extends BaseThingHandlerFactory {
-    
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_LGTV);
-    
+
+    private final static SerialCommunicatorFactory FACTORY = new SerialCommunicatorFactory();
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return thingTypeUID.getBindingId().equals(LgTvSerialBindingConstants.BINDING_ID);
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_LGTV)) {
-            return new LgTvSerialHandler(thing);
+        if (thingTypeUID.getBindingId().equals(LgTvSerialBindingConstants.BINDING_ID)) {
+            return new LgTvSerialHandler(thing, FACTORY);
         }
 
         return null;
     }
 }
-
