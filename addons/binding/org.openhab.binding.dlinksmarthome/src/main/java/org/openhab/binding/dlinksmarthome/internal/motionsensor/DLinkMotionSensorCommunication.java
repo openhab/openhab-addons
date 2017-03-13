@@ -1,0 +1,436 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.dlinksmarthome.internal.motionsensor;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+
+import org.openhab.binding.dlinksmarthome.internal.DLinkHNAPCommunication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+/**
+ * The {@link DLinkMotionSensorCommunication} is responsible for communicating with a DCH-S150
+ * motion sensor.
+ *
+ * Motion is detected by polling the last detection time via the HNAP interface.
+ *
+ * Reverse engineered from Login.html and soapclient.js retrieved from the device.
+ *
+ * @author Mike Major - Initial contribution
+ */
+public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
+
+    // SOAP actions
+    private static final String DETECTION_ACTION = "\"http://purenetworks.com/HNAP1/GetLatestDetection\"";
+    private static final String REBOOT_ACTION = "\"http://purenetworks.com/HNAP1/Reboot\"";
+
+    // Communication timeout
+    private static final int DETECT_TIMEOUT_MS = 5000;
+    private static final int REBOOT_TIMEOUT_MS = 60000;
+
+    private static final int DETECT_POLL_S = 1;
+    private static final int REBOOT_WAIT_S = 35;
+
+    /**
+     * Indicates the device status
+     *
+     */
+    public enum DeviceStatus {
+        /**
+         * Starting communication with device
+         */
+        INITIALISING,
+        /**
+         * Successfully communicated with device
+         */
+        ONLINE,
+        /**
+         * Problem communicating with device
+         */
+        COMMUNICATION_ERROR,
+        /**
+         * Device is being rebooted
+         */
+        REBOOTING,
+        /**
+         * Internal error
+         */
+        INTERNAL_ERROR,
+        /**
+         * Error due to unsupported firmware
+         */
+        UNSUPPORTED_FIRMWARE,
+        /**
+         * Error due to invalid pin code
+         */
+        INVALID_PIN,
+        /**
+         * Error due to invalid reboot time
+         */
+        INVALID_TIME
+    }
+
+    /**
+     * Use to log connection issues
+     */
+    private final Logger logger = LoggerFactory.getLogger(DLinkMotionSensorCommunication.class);
+
+    private final DLinkMotionSensorListener listener;
+    private final ScheduledExecutorService scheduler;
+
+    private int rebootHour;
+    private int rebootMinute;
+    private final int rebootInterval;
+
+    private SOAPMessage detectionAction;
+    private SOAPMessage rebootAction;
+
+    private boolean loginSuccess;
+    private boolean detectSuccess;
+
+    private long prevDetection;
+    private long lastDetection;
+
+    private ScheduledFuture<?> detectFuture;
+    private ScheduledFuture<?> rebootFuture;
+
+    private boolean online = true;
+    private DeviceStatus status = DeviceStatus.INITIALISING;
+
+    /**
+     * Inform the listener if motion is detected
+     */
+    private final Runnable detect = new Runnable() {
+        @Override
+        public void run() {
+            boolean updateStatus = false;
+
+            switch (status) {
+                case INITIALISING:
+                    online = false;
+                    updateStatus = true;
+                    // FALL-THROUGH
+                case REBOOTING:
+                    loginSuccess = false;
+                    // FALL-THROUGH
+                case COMMUNICATION_ERROR:
+                case ONLINE:
+                    if (!loginSuccess) {
+                        login(detectionAction, DETECT_TIMEOUT_MS);
+                    }
+
+                    if (!getLastDetection(false)) {
+                        // Try login again in case the session has timed out
+                        login(detectionAction, DETECT_TIMEOUT_MS);
+                        getLastDetection(true);
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            if (loginSuccess && detectSuccess) {
+                status = DeviceStatus.ONLINE;
+                if (!online) {
+                    online = true;
+                    listener.sensorStatus(status);
+
+                    // Ignore old detections
+                    prevDetection = lastDetection;
+                }
+
+                if (lastDetection != prevDetection) {
+                    listener.motionDetected();
+                }
+            } else {
+                if (online || updateStatus) {
+                    online = false;
+                    listener.sensorStatus(status);
+                }
+            }
+        }
+    };
+
+    /**
+     * Reboot the device
+     */
+    private final Runnable reboot = new Runnable() {
+        @Override
+        public void run() {
+            detectFuture.cancel(true);
+
+            online = false;
+            status = DeviceStatus.REBOOTING;
+            listener.sensorStatus(status);
+
+            login(rebootAction, REBOOT_TIMEOUT_MS);
+            reboot();
+
+            detectFuture = scheduler.scheduleWithFixedDelay(detect, REBOOT_WAIT_S, DETECT_POLL_S, TimeUnit.SECONDS);
+            rebootFuture = scheduler.schedule(reboot, getNextRebootTime(), TimeUnit.MILLISECONDS);
+        }
+    };
+
+    public DLinkMotionSensorCommunication(final DLinkMotionSensorConfig config,
+            final DLinkMotionSensorListener listener, final ScheduledExecutorService scheduler) {
+        super(config.ipAddress, config.pin);
+        this.rebootInterval = config.rebootInterval;
+        this.listener = listener;
+        this.scheduler = scheduler;
+
+        if (getHNAPStatus() == HNAPStatus.INTERNAL_ERROR) {
+            status = DeviceStatus.INTERNAL_ERROR;
+        }
+
+        try {
+            final DateFormat sdf = new SimpleDateFormat("HH:mm");
+            final Date date = sdf.parse(config.rebootTime);
+            final Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            rebootHour = cal.get(Calendar.HOUR_OF_DAY);
+            rebootMinute = cal.get(Calendar.MINUTE);
+
+            if (rebootInterval < 0 || rebootInterval > 24) {
+                status = DeviceStatus.INVALID_TIME;
+            }
+
+            final MessageFactory messageFactory = MessageFactory.newInstance();
+            detectionAction = messageFactory.createMessage();
+            rebootAction = messageFactory.createMessage();
+
+            buildDetectionAction();
+            buildRebootAction();
+
+        } catch (final SOAPException e) {
+            logger.debug("DLinkMotionSensorCommunication - Internal error", e);
+            status = DeviceStatus.INTERNAL_ERROR;
+        } catch (final ParseException e) {
+            logger.debug("DLinkMotionSensorCommunication - Invalid reboot time", e);
+            status = DeviceStatus.INVALID_TIME;
+        }
+
+        detectFuture = scheduler.scheduleWithFixedDelay(detect, 0, DETECT_POLL_S, TimeUnit.SECONDS);
+
+        if (rebootInterval > 0) {
+            rebootFuture = scheduler.schedule(reboot, getNextRebootTime(), TimeUnit.MILLISECONDS);
+        }
+    }
+
+    /**
+     * Stop communicating with the device
+     */
+    public void dispose() {
+        detectFuture.cancel(true);
+        if (rebootFuture != null) {
+            rebootFuture.cancel(true);
+        }
+    }
+
+    /**
+     * This is the SOAP message used to retrieve the last detection time. This message will
+     * only receive a successful response after the login process has been completed and the
+     * authentication data has been set.
+     *
+     * @throws SOAPException
+     */
+    private void buildDetectionAction() throws SOAPException {
+        detectionAction.getSOAPHeader().detachNode();
+        final SOAPBody soapBody = detectionAction.getSOAPBody();
+        final SOAPElement soapBodyElem = soapBody.addChildElement("GetLatestDetection", "", HNAP_XMLNS);
+        soapBodyElem.addChildElement("ModuleID").addTextNode("1");
+
+        final MimeHeaders headers = detectionAction.getMimeHeaders();
+        headers.addHeader(SOAPACTION, DETECTION_ACTION);
+    }
+
+    /**
+     * This is the SOAP message used to reboot the device. This message will
+     * only receive a successful response after the login process has been completed and the
+     * authentication data has been set. Device needs rebooting as it eventually becomes
+     * unresponsive.
+     *
+     * @throws SOAPException
+     */
+    private void buildRebootAction() throws SOAPException {
+        rebootAction.getSOAPHeader().detachNode();
+        final SOAPBody soapBody = rebootAction.getSOAPBody();
+        soapBody.addChildElement("Reboot", "", HNAP_XMLNS);
+
+        final MimeHeaders headers = rebootAction.getMimeHeaders();
+        headers.addHeader(SOAPACTION, REBOOT_ACTION);
+    }
+
+    /**
+     * Get the number of milliseconds to the next reboot time
+     *
+     * @return Time in ms to next reboot
+     */
+    private long getNextRebootTime() {
+        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime todayStart = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(),
+                rebootHour, rebootMinute, 0);
+
+        LocalDateTime next = todayStart;
+        LocalDateTime nextStart = todayStart;
+
+        if (now.isBefore(todayStart)) {
+            final LocalDateTime yesterday = now.minusDays(1);
+            // Start from yesterday's reboot time
+            next = LocalDateTime.of(yesterday.getYear(), yesterday.getMonth(), yesterday.getDayOfMonth(), rebootHour,
+                    rebootMinute, 0);
+        } else {
+            final LocalDateTime tomorrow = now.plusDays(1);
+            // End at tomorrow's reboot time
+            nextStart = LocalDateTime.of(tomorrow.getYear(), tomorrow.getMonth(), tomorrow.getDayOfMonth(), rebootHour,
+                    rebootMinute, 0);
+        }
+
+        // Add intervals until we are past the current time
+        while (next.isBefore(now)) {
+            next = next.plusHours(rebootInterval);
+        }
+
+        // Each day starts at the reboot time
+        if (next.isAfter(nextStart)) {
+            next = nextStart;
+        }
+
+        return now.until(next, ChronoUnit.MILLIS);
+    }
+
+    /**
+     * Output unexpected responses to the debug log and sets the FIRMWARE error.
+     *
+     * @param message
+     * @param soapResponse
+     */
+    private void unexpectedResult(final String message, final Document soapResponse) {
+        logUnexpectedResult(message, soapResponse);
+
+        // Best guess when receiving unexpected responses
+        status = DeviceStatus.UNSUPPORTED_FIRMWARE;
+    }
+
+    /**
+     * Sends the two login messages and sets the authentication header for the action
+     * message.
+     *
+     * @param action
+     * @param timeout
+     */
+    private void login(final SOAPMessage action, final int timeout) {
+        loginSuccess = false;
+
+        login(timeout);
+        setAuthenticationHeaders(action);
+
+        switch (getHNAPStatus()) {
+            case LOGGED_IN:
+                loginSuccess = true;
+                break;
+            case COMMUNICATION_ERROR:
+                status = DeviceStatus.COMMUNICATION_ERROR;
+                break;
+            case INVALID_PIN:
+                status = DeviceStatus.INVALID_PIN;
+                break;
+            case INTERNAL_ERROR:
+                status = DeviceStatus.INTERNAL_ERROR;
+                break;
+            case UNSUPPORTED_FIRMWARE:
+                status = DeviceStatus.UNSUPPORTED_FIRMWARE;
+                break;
+            case INITIALISED:
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Sends the detection message
+     *
+     * @param isRetry - Has this been called as a result of a login retry
+     * @return true, if the last detection time was successfully retrieved, otherwise false
+     */
+    private boolean getLastDetection(final boolean isRetry) {
+        detectSuccess = false;
+
+        if (loginSuccess) {
+            try {
+                final Document soapResponse = sendReceive(detectionAction, DETECT_TIMEOUT_MS);
+
+                final Node result = soapResponse.getElementsByTagName("GetLatestDetectionResult").item(0);
+
+                if (result != null) {
+                    if (OK.equals(result.getTextContent())) {
+                        final Node timeNode = soapResponse.getElementsByTagName("LatestDetectTime").item(0);
+
+                        if (timeNode != null) {
+                            prevDetection = lastDetection;
+                            lastDetection = Long.valueOf(timeNode.getTextContent());
+                            detectSuccess = true;
+                        } else {
+                            unexpectedResult("getLastDetection - Unexpected response", soapResponse);
+                        }
+                    } else if (isRetry) {
+                        unexpectedResult("getLastDetection - Unexpected response", soapResponse);
+                    }
+                } else {
+                    unexpectedResult("getLastDetection - Unexpected response", soapResponse);
+                }
+            } catch (final Exception e) {
+                // Assume there has been some problem trying to send one of the messages
+                if (status != DeviceStatus.COMMUNICATION_ERROR) {
+                    logger.debug("getLastDetection - Communication error", e);
+                    status = DeviceStatus.COMMUNICATION_ERROR;
+                }
+            }
+        }
+
+        return detectSuccess;
+    }
+
+    /**
+     * Sends the reboot message
+     *
+     */
+    private void reboot() {
+        if (loginSuccess) {
+            try {
+                final Document soapResponse = sendReceive(rebootAction, REBOOT_TIMEOUT_MS);
+
+                final Node result = soapResponse.getElementsByTagName("RebootResult").item(0);
+
+                if (result == null || !OK.equals(result.getTextContent())) {
+                    unexpectedResult("reboot - Unexpected response", soapResponse);
+                }
+            } catch (final Exception e) {
+                logger.debug("reboot - Communication error", e);
+            }
+        }
+    }
+}
