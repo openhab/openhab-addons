@@ -75,7 +75,9 @@ Number Battery_Level "Battery [%d %%]" {channel="gardena:mower:home:myMower:batt
 ```
 
 ## Sensor refresh
+
 You can send a REFRESH command to items linked to these Sensor channels: 
+
 * ambient_temperature#temperature
 * soil_temperature#temperature
 * humidity#humidity
