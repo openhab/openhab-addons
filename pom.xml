@@ -53,7 +53,7 @@
         <ohc.version>2.1.0-SNAPSHOT</ohc.version>
         <ohcp2.version>2.1.x</ohcp2.version>
         <ohdr.version>1.0.10</ohdr.version>
-        <sat.version>0.0.1</sat.version>
+        <sat.version>0.0.2</sat.version>
         <karaf.version>4.0.8</karaf.version>
         <jackson.version>1.9.13</jackson.version>
         <tycho-version>1.0.0</tycho-version>
@@ -355,33 +355,11 @@
           <plugin>
               <groupId>org.openhab.tools</groupId>
               <artifactId>static-code-analysis</artifactId>
-            <configuration>
-              <ruleset>bundle</ruleset>
-            </configuration>
+              <version>${sat.version}</version>
           </plugin>
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>check-bindings</id>
-      <activation>
-        <file>
-          <exists>ESH-INF/binding/binding.xml</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-              <groupId>org.openhab.tools</groupId>
-              <artifactId>static-code-analysis</artifactId>
-            <configuration>
-              <ruleset>binding</ruleset>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
     </profiles>
 
     <pluginRepositories>
