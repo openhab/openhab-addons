@@ -41,7 +41,7 @@ public class NetworkService {
     private long refreshInterval;
     private int timeout;
     private boolean useSystemPing;
-    private boolean arping;
+    private boolean useArping;
     private String networkInterface;
 
     public NetworkService() {
@@ -49,7 +49,7 @@ public class NetworkService {
     }
 
     public NetworkService(String hostname, int port, int retry, boolean dhcplisten, long refreshInterval, int timeout,
-            boolean useSystemPing, boolean arping, String networkInterface) {
+            boolean useSystemPing, boolean useArping, String networkInterface) {
         super();
         this.hostname = hostname;
         this.port = port;
@@ -58,7 +58,7 @@ public class NetworkService {
         this.refreshInterval = refreshInterval;
         this.timeout = timeout;
         this.useSystemPing = useSystemPing;
-        this.arping = arping;
+        this.useArping = useArping;
         this.networkInterface = networkInterface;
     }
 
@@ -114,8 +114,8 @@ public class NetworkService {
         this.useSystemPing = useSystemPing;
     }
 
-    public void setArping(boolean arping) {
-        this.arping = arping;
+    public void setUseArping(boolean useArping) {
+        this.useArping = useArping;
     }
 
     public void setNetworkInterface(String networkInterface) {
@@ -167,7 +167,7 @@ public class NetworkService {
                 pingTime = System.nanoTime();
                 if (useSystemPing) {
                     success = NetworkUtils.nativePing(hostname, port, timeout);
-                } else if (arping) {
+                } else if (useArping) {
                     success = NetworkUtils.arping(hostname, timeout, networkInterface);
                 } else {
                     success = Ping.checkVitality(hostname, port, timeout);

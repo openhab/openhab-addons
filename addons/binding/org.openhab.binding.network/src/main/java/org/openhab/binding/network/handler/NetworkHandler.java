@@ -157,9 +157,9 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
             networkService.setUseSystemPing(confValueToBoolean(value));
         }
 
-        value = conf.get(PARAMETER_ARPING);
+        value = conf.get(PARAMETER_USE_ARPING);
         if (value != null) {
-            networkService.setArping(confValueToBoolean(value));
+            networkService.setUseArping(confValueToBoolean(value));
         }
 
         value = conf.get(PARAMETER_NETWORK_INTERFACE);

@@ -170,6 +170,10 @@ public class NetworkUtils {
     public static boolean arping(String hostname, int timeout, String networkInterface)
             throws InvalidConfigurationException, IOException, InterruptedException {
         Process proc;
+        if (networkInterface != null) {
+            throw new InvalidConfigurationException(
+                    "Arping requires the network interface to be set (e.g. eth0, wlan0).");
+        }
         if (SystemUtils.IS_OS_UNIX) {
             proc = new ProcessBuilder("arping", "-I", networkInterface, "-w", String.valueOf(timeout / 1000), "-c", "1",
                     hostname).start();

@@ -47,7 +47,7 @@
 				<default>false</default>
 			</parameter>
 
-			<parameter name="arping" type="boolean">
+			<parameter name="use_arping" type="boolean">
 				<label>Use arping</label>
 				<description>Use arping instead of regular ping. Only works on Unix and arping needs to be installed. When using arping it is required to specify a network interface.</description>
 				<default>false</default>

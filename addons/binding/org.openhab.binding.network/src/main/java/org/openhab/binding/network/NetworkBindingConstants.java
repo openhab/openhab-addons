@@ -40,7 +40,7 @@ public class NetworkBindingConstants {
     public final static String PARAMETER_TIMEOUT = "timeout";
     public final static String PARAMETER_REFRESH_INTERVAL = "refresh_interval";
     public final static String PARAMETER_USE_SYSTEM_PING = "use_system_ping";
-    public final static String PARAMETER_ARPING = "arping";
+    public final static String PARAMETER_USE_ARPING = "use_arping";
     public final static String PARAMETER_NETWORK_INTERFACE = "interface";
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
