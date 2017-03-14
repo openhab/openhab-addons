@@ -174,16 +174,15 @@ public class NetworkUtils {
             proc = new ProcessBuilder("arping", "-I", networkInterface, "-w", String.valueOf(timeout / 1000), "-c", "1",
                     hostname).start();
         } else {
-            throw new InvalidConfigurationException("Arping not supported");
+            throw new InvalidConfigurationException(
+                    "Arping is only supported on Unix/Linux. Disable arping on other operating systems to use regular ping.'");
         }
 
         int exitValue = proc.waitFor();
         if (exitValue != 0) {
-            throw new IOException("Ping stopped with Error Number: " + exitValue + " on Command :" + "ping"
-                    + (SystemUtils.IS_OS_UNIX ? " -I " + String.valueOf(networkInterface) : "")
-                    + (SystemUtils.IS_OS_UNIX ? " -t " : " -w ")
-                    + (SystemUtils.IS_OS_UNIX ? String.valueOf(timeout / 1000) : String.valueOf(timeout))
-                    + (SystemUtils.IS_OS_UNIX ? " -c" : " -n") + " 1 " + hostname);
+            throw new IOException("Arping stopped with Error Number: " + exitValue + " on Command :" + "arping" + " -I "
+                    + String.valueOf(networkInterface) + " -t " + String.valueOf(timeout / 1000) + " -c" + " 1 "
+                    + hostname);
         }
         return exitValue == 0;
     }
