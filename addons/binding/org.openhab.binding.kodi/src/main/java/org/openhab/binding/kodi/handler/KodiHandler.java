@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
+import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,14 +140,18 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             break;
         case CHANNEL_PVROPENTV:
             if (command instanceof StringType) {
-                playPVR(command, "tv");
+                KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                        .as(KodiChannelConfig.class);
+                playPVR(command, "tv", config);
             } else if (command.equals(RefreshType.REFRESH)) {
                 // updateState(CHANNEL_PVROPENTV, new StringType(""));
             }
             break;
         case CHANNEL_PVROPENRADIO:
             if (command instanceof StringType) {
-                playPVR(command, "radio");
+                KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                        .as(KodiChannelConfig.class);
+                playPVR(command, "radio", config);
             } else if (command.equals(RefreshType.REFRESH)) {
                 // updateState(CHANNEL_PVROPENRADIO, new StringType(""));
             }
@@ -218,11 +223,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         connection.playURI(command.toString());
     }
 
-    public void playPVR(Command command, String channeltype) {
-        // connection.getChannelGroups(channeltype);
-        // TODO config???
-        // int channelgroupid = connection.getChannelGroupID("Alle Kanäle");
-        int channelgroupid = (channeltype == "radio") ? 2 : 1;
+    public void playPVR(Command command, String channeltype, KodiChannelConfig config) {
+        connection.getChannelGroups(channeltype);
+        int channelgroupid = connection.getChannelGroupID(config.getGroup());
         if (channelgroupid > 0) {
             connection.getChannels(channelgroupid);
             int channelid = connection.getChannelID(command.toString());
@@ -232,7 +235,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 logger.warn("Received unknown PVR channel {}", command.toString());
             }
         } else {
-            logger.warn("Received unknown PVR channeltype {}", channeltype);
+            logger.warn("Received unknown PVR channel group {}", config.getGroup());
         }
     }
 
