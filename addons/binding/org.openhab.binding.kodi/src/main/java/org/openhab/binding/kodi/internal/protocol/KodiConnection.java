@@ -212,14 +212,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
         /*
          * try {
          *
-         * String encodedURL = URLEncoder.encode(imagePath, "UTF-8"); String
-         * decodedURL = URLDecoder.decode(imagePath, "UTF-8");
+         * String encodedURL = URLEncoder.encode(imagePath, "UTF-8");
+         * String decodedURL = URLDecoder.decode(imagePath, "UTF-8");
          *
-         * JsonObject params = new JsonObject(); params.addProperty("path", "");
-         * JsonElement response = socket.callMethod("Files.PrepareDownload",
-         * params);
+         * JsonObject params = new JsonObject();
+         * params.addProperty("path", "");
+         * JsonElement response = socket.callMethod("Files.PrepareDownload", params);
          *
-         * } catch (Exception e) { logger.error("updateFanartUrl error", e); }
+         * } catch (Exception e) {
+         * logger.error("updateFanartUrl error", e);
+         * }
          */
     }
 
@@ -372,6 +374,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 if (mediaType.equals("channel") && item.has("channeltype")) {
                     String channelType = item.get("channeltype").getAsString();
                     if (channelType.equals("radio")) {
+                        mediaType = "radio";
                     }
                 }
                 listener.updateMediaType(mediaType);
@@ -534,8 +537,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 return false;
             }
         } else {
-            // Ping kodi with the get version command. This prevents the idle
-            // timeout on the websocket
+            // Ping kodi with the get version command. This prevents the idle timeout on the websocket
             return !getVersion().isEmpty();
         }
     }
