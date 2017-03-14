@@ -3,6 +3,12 @@ package org.openhab.binding.insteonplm.internal.message.modem;
 import org.openhab.binding.insteonplm.internal.message.ModemMessageType;
 import org.openhab.binding.insteonplm.internal.message.X10Command;
 
+/**
+ * The X10 message sent over the wire.
+ *
+ * @author David Bennett - Initial Contribution
+ *
+ */
 public class SendX10Message extends BaseModemMessage {
     private byte houseCode;
     private byte keyCode;
@@ -11,12 +17,20 @@ public class SendX10Message extends BaseModemMessage {
 
     public SendX10Message(byte[] data) {
         super(ModemMessageType.SendX10);
-        rawX10 = data[0];
-        x10Flags = data[1];
+        houseCode = (byte) (data[0] >> 4);
+        if ((data[1] & 0x80) == 0) {
+            int pos = data[0] & 0xf;
+            isCommand = true;
+            cmd = X10Command.values()[pos];
+        } else {
+            isCommand = false;
+            keyCode = (byte) (data[0] & 0xf);
+        }
         setAckNackByte(data[2]);
     }
 
     public SendX10Message(X10Command cmd, byte houseCode) {
+        super(ModemMessageType.SendX10);
         this.cmd = cmd;
         this.houseCode = houseCode;
         this.isCommand = true;
@@ -29,27 +43,32 @@ public class SendX10Message extends BaseModemMessage {
         this.isCommand = false;
     }
 
-    public byte getRawX10() {
-        return rawX10;
+    public byte getHouseCode() {
+        return houseCode;
     }
 
-    public void setRawX10(byte rawX10) {
-        this.rawX10 = rawX10;
+    public byte getKeyCode() {
+        return keyCode;
     }
 
-    public byte getX10Flags() {
-        return x10Flags;
+    public X10Command getCmd() {
+        return cmd;
     }
 
-    public void setX10Flags(byte x10Flags) {
-        this.x10Flags = x10Flags;
+    public boolean isCommand() {
+        return isCommand;
     }
 
     @Override
     public byte[] getPayload() {
         byte[] data = new byte[2];
-        data[0] = rawX10;
-        data[1] = x10Flags;
+        if (isCommand) {
+            data[0] = (byte) ((houseCode << 4) | (cmd.ordinal()));
+            data[1] = (byte) 0x80;
+        } else {
+            data[0] = (byte) ((houseCode << 4) | keyCode);
+            data[1] = 0;
+        }
         return data;
     }
 }

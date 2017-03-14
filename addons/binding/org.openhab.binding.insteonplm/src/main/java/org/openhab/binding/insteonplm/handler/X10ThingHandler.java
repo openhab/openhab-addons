@@ -11,19 +11,25 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.internal.config.PollingHandlerInfo;
-import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.device.MessageHandler;
+import org.openhab.binding.insteonplm.internal.device.X10MessageHandler;
 import org.openhab.binding.insteonplm.internal.message.modem.X10MessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
+/**
+ * Handler for all the x10 devices.
+ *
+ * @author David Bennett - Initial Contribution
+ */
 public class X10ThingHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(X10ThingHandler.class);
-    private Map<ChannelUID, List<DeviceFeature>> featureChannelMapping = Maps.newHashMap();
+    private Map<ChannelUID, List<X10DeviceFeature>> featureChannelMapping = Maps.newHashMap();
     private Map<ChannelUID, PollingHandlerInfo> pollHandlers = Maps.newHashMap();
     private PriorityQueue<InsteonThingMessageQEntry> requestQueue = new PriorityQueue<InsteonThingMessageQEntry>();
+    private byte houseCode;
+    private byte keyCode;
 
     public X10ThingHandler(Thing thing) {
         super(thing);
@@ -50,24 +56,21 @@ public class X10ThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Lookup the features to do stuff.
-        for (DeviceFeature feature : featureChannelMapping.get(channelUID)) {
+        for (X10DeviceFeature feature : featureChannelMapping.get(channelUID)) {
             feature.handleCommand(this, channelUID, command);
         }
     }
 
     public void handlerX10Message(X10MessageReceived x10Mess) {
         // X10 Message.
-        byte rawX10 = x10Mess.getRawX10();
-        int cmd = (rawX10 & 0x0f);
         for (ChannelUID channelId : featureChannelMapping.keySet()) {
-            List<DeviceFeature> features = featureChannelMapping.get(channelId);
-            for (DeviceFeature feature : features) {
-                List<MessageHandler> allHandlers = feature.getMsgHandlers().get(cmd & 0xff);
+            List<X10DeviceFeature> features = featureChannelMapping.get(channelId);
+            for (X10DeviceFeature feature : features) {
+                List<X10MessageHandler> allHandlers = feature.getMsgHandlers().get(cmd);
                 if (allHandlers != null) {
-                    for (MessageHandler handler : allHandlers) {
+                    for (X10MessageHandler handler : allHandlers) {
                         if (handler.matches(x10Mess)) {
-                            handler.handleMessage(this, -1, (byte) cmd, message,
-                                    getThing().getChannel(channelId.getId()));
+                            handler.handleMessage(this, x10Mess, getThing().getChannel(channelId.getId()));
                         }
                     }
                 }

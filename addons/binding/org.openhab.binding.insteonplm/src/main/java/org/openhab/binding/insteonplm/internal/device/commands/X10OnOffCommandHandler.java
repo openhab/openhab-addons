@@ -6,7 +6,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
-import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.X10;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Pfrommer
  * @author Bernd Pfrommer
  */
-public class X10OnOffCommandHandler extends CommandHandler {
+public class X10OnOffCommandHandler extends X10CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(X10OnOffCommandHandler.class);
 
     X10OnOffCommandHandler(DeviceFeature f) {
