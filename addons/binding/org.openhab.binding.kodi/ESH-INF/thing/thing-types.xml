@@ -14,6 +14,8 @@
 			<channel id="control" typeId="control" />
 			<channel id="stop" typeId="stop" />
 			<channel id="playuri" typeId="playuri" />
+			<channel id="pvropentv" typeId="pvropentv" />
+			<channel id="pvropenradio" typeId="pvropenradio" />
 			<channel id="shownotification" typeId="shownotification" />
 			<channel id="input" typeId="input" />
 			<channel id="inputtext" typeId="inputtext" />
@@ -72,6 +74,16 @@
 		<label>Play URI</label>
 		<description>Play the given URI</description>
 	</channel-type>
+    <channel-type id="pvropentv" advanced="true">
+        <item-type>String</item-type>
+        <label>Play PVR tv</label>
+        <description>Play the given PVR TV channel</description>
+    </channel-type>
+    <channel-type id="pvropenradio" advanced="true">
+        <item-type>String</item-type>
+        <label>Play PVR radio</label>
+        <description>Play the given PVR Radio channel</description>
+    </channel-type>
 	<channel-type id="shownotification" advanced="true">
 		<item-type>String</item-type>
 		<label>Show Notification</label>
