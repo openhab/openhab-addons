@@ -219,15 +219,21 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     public void playPVR(Command command, String channeltype) {
-        // TODO
         // connection.getChannelGroups(channeltype);
-        int channelgroupid = channeltype.equals("radio") ? 2 : 1; // 2: radio;
-                                                                  // 1: tv
-        // connection.getChannels(channelgroupid);
-        int channelid = channeltype.equals("radio") ? 100 : 11; // 100: Radio
-                                                                // Herford; 11:
-                                                                // Das Erste HD
-        connection.playPVR(channelid);
+        // TODO config???
+        // int channelgroupid = connection.getChannelGroupID("Alle Kanäle");
+        int channelgroupid = (channeltype == "radio") ? 2 : 1;
+        if (channelgroupid > 0) {
+            connection.getChannels(channelgroupid);
+            int channelid = connection.getChannelID(command.toString());
+            if (channelid > 0) {
+                connection.playPVR(channelid);
+            } else {
+                logger.warn("Received unknown PVR channel {}", command.toString());
+            }
+        } else {
+            logger.warn("Received unknown PVR channeltype {}", channeltype);
+        }
     }
 
     public void playNotificationSoundURI(Command command) {

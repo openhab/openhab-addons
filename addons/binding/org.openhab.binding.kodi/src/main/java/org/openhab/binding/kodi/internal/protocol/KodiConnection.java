@@ -9,8 +9,10 @@
 package org.openhab.binding.kodi.internal.protocol;
 
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
 import org.slf4j.Logger;
@@ -38,6 +40,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private int volume = 0;
     private KodiState currentState = KodiState.Stop;
+    private JsonArray channelgroups = null;
+    private JsonArray channels = null;
 
     private final KodiEventListener listener;
 
@@ -212,16 +216,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
         /*
          * try {
          *
-         * String encodedURL = URLEncoder.encode(imagePath, "UTF-8");
-         * String decodedURL = URLDecoder.decode(imagePath, "UTF-8");
+         * String encodedURL = URLEncoder.encode(imagePath, "UTF-8"); String
+         * decodedURL = URLDecoder.decode(imagePath, "UTF-8");
          *
-         * JsonObject params = new JsonObject();
-         * params.addProperty("path", "");
-         * JsonElement response = socket.callMethod("Files.PrepareDownload", params);
+         * JsonObject params = new JsonObject(); params.addProperty("path", "");
+         * JsonElement response = socket.callMethod("Files.PrepareDownload",
+         * params);
          *
-         * } catch (Exception e) {
-         * logger.error("updateFanartUrl error", e);
-         * }
+         * } catch (Exception e) { logger.error("updateFanartUrl error", e); }
          */
     }
 
@@ -498,12 +500,52 @@ public class KodiConnection implements KodiClientSocketEventListener {
         JsonObject params = new JsonObject();
         params.addProperty("channeltype", channeltype);
         JsonElement response = socket.callMethod("PVR.GetChannelGroups", params);
+
+        if (response instanceof JsonObject) {
+            JsonObject result = (JsonObject) response;
+            if (result.has("channelgroups")) {
+                this.channelgroups = result.get("channelgroups").getAsJsonArray();
+            }
+        }
+    }
+
+    public int getChannelGroupID(String channelGroupName) {
+        if (this.channelgroups instanceof JsonArray) {
+            for (JsonElement x : this.channelgroups) {
+                JsonObject channelgroup = (JsonObject) x;
+                String label = channelgroup.get("label").getAsString();
+                if (StringUtils.equalsIgnoreCase(label, channelGroupName)) {
+                    return channelgroup.get("channelgroupid").getAsInt();
+                }
+            }
+        }
+        return 0;
     }
 
     public synchronized void getChannels(int channelgroupid) {
         JsonObject params = new JsonObject();
         params.addProperty("channelgroupid", channelgroupid);
         JsonElement response = socket.callMethod("PVR.GetChannels", params);
+
+        if (response instanceof JsonObject) {
+            JsonObject result = (JsonObject) response;
+            if (result.has("channels")) {
+                this.channels = result.get("channels").getAsJsonArray();
+            }
+        }
+    }
+
+    public int getChannelID(String channelName) {
+        if (this.channels instanceof JsonArray) {
+            for (JsonElement x : this.channels) {
+                JsonObject channel = (JsonObject) x;
+                String label = channel.get("label").getAsString();
+                if (StringUtils.equalsIgnoreCase(label, channelName)) {
+                    return channel.get("channelid").getAsInt();
+                }
+            }
+        }
+        return 0;
     }
 
     public synchronized void playPVR(int channelid) {
