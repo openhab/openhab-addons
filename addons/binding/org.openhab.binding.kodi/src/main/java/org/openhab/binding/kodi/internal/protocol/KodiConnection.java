@@ -252,12 +252,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
 
         String mediaType = item.get("type").getAsString();
-		if (mediaType.equals("channel") && item.has("channeltype")) {
-			String channelType = item.get("channeltype").getAsString();
-			if (channelType.equals("radio")) {
-				mediaType = "radio";
-			}
-		}
+        if (mediaType.equals("channel") && item.has("channeltype")) {
+            String channelType = item.get("channeltype").getAsString();
+            if (channelType.equals("radio")) {
+                mediaType = "radio";
+            }
+        }
 
         String artist = "";
         if (mediaType.equals("movie")) {
@@ -371,13 +371,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
             if (data.has("item")) {
                 JsonObject item = data.get("item").getAsJsonObject();
                 String mediaType = item.get("type").getAsString();
-				if (mediaType.equals("channel") && item.has("channeltype")) {
-					String channelType = item.get("channeltype").getAsString();
-					if (channelType.equals("radio")) {
-						mediaType = "radio";
-					}
-				}
-				listener.updateMediaType(mediaType);
+                if (mediaType.equals("channel") && item.has("channeltype")) {
+                    String channelType = item.get("channeltype").getAsString();
+                    if (channelType.equals("radio")) {
+                        mediaType = "radio";
+                    }
+                }
+                listener.updateMediaType(mediaType);
             }
             requestPlayerUpdate(playerId, false);
         } else if ("Player.OnPause".equals(method)) {
@@ -494,6 +494,27 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Player.Open", params);
     }
 
+    public synchronized void getChannelGroups(String channeltype) {
+        JsonObject params = new JsonObject();
+        params.addProperty("channeltype", channeltype);
+        JsonElement response = socket.callMethod("PVR.GetChannelGroups", params);
+    }
+
+    public synchronized void getChannels(int channelgroupid) {
+        JsonObject params = new JsonObject();
+        params.addProperty("channelgroupid", channelgroupid);
+        JsonElement response = socket.callMethod("PVR.GetChannels", params);
+    }
+
+    public synchronized void playPVR(int channelid) {
+        JsonObject item = new JsonObject();
+        item.addProperty("channelid", channelid);
+
+        JsonObject params = new JsonObject();
+        params.add("item", item);
+        socket.callMethod("Player.Open", params);
+    }
+
     public synchronized void showNotification(String message) {
         JsonObject params = new JsonObject();
         params.addProperty("title", "openHAB");
@@ -516,7 +537,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 return false;
             }
         } else {
-            // Ping kodi with the get version command. This prevents the idle timeout on the websocket
+            // Ping kodi with the get version command. This prevents the idle
+            // timeout on the websocket
             return !getVersion().isEmpty();
         }
     }
