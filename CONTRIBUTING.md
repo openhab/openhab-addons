@@ -12,7 +12,7 @@ Do not worry, if you are not clear, which category your issue belongs to - we wi
 ## Build Environment
 
 For instructions on setting up your development environment, please
-see our dedicated [IDE setup guide](https://github.com/openhab/openhab/wiki/IDE-Setup).
+see our dedicated [IDE setup guide](http://docs.openhab.org/developers/development/ide.html).
 
 ## Contribution guidelines
 
