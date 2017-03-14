@@ -26,7 +26,7 @@ network:device:devicename [ hostname="192.168.0.64", port="0", retry="1", timeou
 - **refresh_interval:** How often shall the device be checked (in milliseconds, `60000` = one minute)
 - **use\_system\_ping:** Use the real ICMP ping program of the operating system, instead of the Java ping. Useful if the devices cannot be reached by Java ping. **Beware**: By setting this option to `true`, the **port option is ignored**.
 - **dhcplisten:** Listen for DHCP Request messages.
-- **arping (optional):** Use arping instead of regular ping. Only works on Unix and arping needs to be installed. When using arping it is required to specify a network interface.
+- **arping (optional):** Use arping instead of regular ping. Only works on Unix and arping needs to be installed. By setting this option to `true`, the **port option is ignored** and it is **required to specify a network interface**. Arping works on a lower level then a regular ping and might get a reply when a regular ping does not. This might be the case when a device with a recent version of Android goes to sleep.
 - **interface (optional, required when using arping):** When using arping, specify the network interface to use (e.g. eth0, wlan0).
   If devices leave and reenter a network, they usually request their last IP address by a UDP broadcast message (DHCP, Message type Request).
   If we listen for those messages, we can make the status update more "real-time" and do not have to wait for the next refresh cycle.
@@ -60,7 +60,7 @@ In this example, there are four suitable ports to use.
 The port 554 is open on most Windows PCs, providing streaming capabilities, the other three shown ports are provided by a famous media center software installed on this PC.
 If your device does not have any open ports, you may open one yourself, for example by installing a [minimal webserver](https://github.com/cesanta/mongoose).
 
-If other methods are not working you can try using arping.
+If other methods are not working you can try using arping. 
 
 ## Permissions
 If you want to use "dhcplisten":
