@@ -27,6 +27,8 @@
 		<properties>
 			<property name="productKey">0x000004</property>
 			<property name="model">2876S</property>
+            <property name="deviceCategory">0x02</property>
+            <property name="deviceSubCategory">0x0B</property>
 		</properties>
 	</thing-type>
 </thing:thing-descriptions>

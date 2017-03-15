@@ -27,6 +27,8 @@
         <properties>
             <property name="productKey">F00.00.09</property>
             <property name="model">2458-A1</property>
+            <property name="deviceCategory">0x0F</property>
+            <property name="deviceSubCategory">0x06</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

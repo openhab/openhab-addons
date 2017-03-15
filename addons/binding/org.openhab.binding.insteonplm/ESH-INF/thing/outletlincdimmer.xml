@@ -26,6 +26,8 @@
 
 		<properties>
 			<property name="productKey">0x000068</property>
+            <property name="deviceCategory">0x01</property>
+            <property name="deviceSubCategory">0x21</property>
 			<property name="model">2472D</property>
 		</properties>
 	</thing-type>

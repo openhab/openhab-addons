@@ -33,6 +33,8 @@
         <properties>
             <property name="productKey">0x00001C</property>
             <property name="model">2475F</property>
+            <property name="deviceCategory">0x01</property>
+            <property name="deviceSubCategory">0x2E</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

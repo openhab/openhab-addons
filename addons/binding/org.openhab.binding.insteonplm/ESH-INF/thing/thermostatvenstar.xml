@@ -61,6 +61,8 @@
         <properties>
             <property name="productKey">F00.00.21</property>
             <property name="model">2441V</property>
+            <property name="deviceCategory">0x05</property>
+            <property name="deviceSubCategory">0x03</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

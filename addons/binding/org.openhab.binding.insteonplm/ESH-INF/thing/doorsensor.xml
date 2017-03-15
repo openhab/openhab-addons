@@ -36,6 +36,8 @@
         <properties>
             <property name="productKey">0x000003</property>
             <property name="model">2845-222</property>
+            <property name="deviceCategory">0x10</property>
+            <property name="deviceSubCategory">0x11,0x14,0x15</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

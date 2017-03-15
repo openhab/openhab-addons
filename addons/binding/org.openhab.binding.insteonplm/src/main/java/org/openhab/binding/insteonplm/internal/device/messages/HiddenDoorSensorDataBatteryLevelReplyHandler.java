@@ -20,10 +20,6 @@ public class HiddenDoorSensorDataBatteryLevelReplyHandler extends MessageHandler
         super(p);
     }
 
-    public void setBatteryWatermarkChannel(String channel) {
-        batteryWatermarkChannel = channel;
-    }
-
     @Override
     public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
         if (!msg.getFlags().isExtended()) {

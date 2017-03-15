@@ -27,6 +27,8 @@
 		<properties>
 			<property name="productKey">0x000019</property>
 			<property name="model">2457D2</property>
+            <property name="deviceCategory">0x01</property>
+            <property name="deviceSubCategory">0x0E,0x22,0x23</property>
 		</properties>
 	</thing-type>
 </thing:thing-descriptions>

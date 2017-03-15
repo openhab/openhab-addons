@@ -31,6 +31,8 @@
         
         <properties>
             <property name="productKey">0x000039</property>
+            <property name="deviceCategory">0x02</property>
+            <property name="deviceSubCategory">0x08</property>
             <property name="model">2663-222</property>
         </properties>
     </thing-type>

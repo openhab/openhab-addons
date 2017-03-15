@@ -27,6 +27,8 @@
         <properties>
             <property name="productKey">F00.00.22</property>
             <property name="model">2982-222</property>
+            <property name="deviceCategory">0x10</property>
+            <property name="deviceSubCategory">0x0A</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

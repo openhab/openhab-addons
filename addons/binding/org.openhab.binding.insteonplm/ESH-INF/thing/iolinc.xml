@@ -33,6 +33,8 @@
 		<properties>
 			<property name="productKey">0x00001A</property>
 			<property name="model">2450</property>
+            <property name="deviceCategory">0x07</property>
+            <property name="deviceSubCategory">0x00</property>
 		</properties>
 	</thing-type>
 </thing:thing-descriptions>

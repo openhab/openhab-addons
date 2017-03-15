@@ -27,6 +27,8 @@
         <properties>
             <property name="productKey">0x000013</property>
             <property name="model">2672-422</property>
+            <property name="deviceCategory">0x01</property>
+            <property name="deviceSubCategory">0x3A,0x3B,0x3C,0x49,0x4A,0x4B,0x4C,0x4D,0x4E,0x4F,0x51</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

@@ -61,6 +61,8 @@
         <properties>
             <property name="productKey">F00.00.20</property>
             <property name="model">2342-222</property>
+            <property name="deviceCategory">0x00</property>
+            <property name="deviceSubCategory">0x16,0x18,0x1A</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

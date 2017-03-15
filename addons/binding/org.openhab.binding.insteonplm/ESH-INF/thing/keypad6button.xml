@@ -57,6 +57,8 @@
         <properties>
             <property name="productKey">0x000050</property>
             <property name="model">2486DWH6</property>
+            <property name="deviceCategory">0x02</property>
+            <property name="deviceSubCategory">0x0F</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

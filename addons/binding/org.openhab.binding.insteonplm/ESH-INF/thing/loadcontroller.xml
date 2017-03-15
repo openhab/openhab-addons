@@ -27,6 +27,8 @@
         <properties>
             <property name="productKey">0x00001F</property>
             <property name="model">2477SA1</property>
+            <property name="deviceCategory">0x09</property>
+            <property name="deviceSubCategory">0x0A,0x0B</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

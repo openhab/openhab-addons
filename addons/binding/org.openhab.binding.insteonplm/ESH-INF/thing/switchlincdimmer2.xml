@@ -27,6 +27,8 @@
 		<properties>
 			<property name="productKey">F00.00.0C</property>
 			<property name="model">2476D</property>
+            <property name="deviceCategory">0x01</property>
+            <property name="deviceSubCategory">0x30</property>
 		</properties>
 	</thing-type>
 </thing:thing-descriptions>

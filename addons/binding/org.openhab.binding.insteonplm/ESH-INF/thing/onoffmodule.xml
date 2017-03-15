@@ -26,6 +26,7 @@
 
         <properties>
             <property name="productKey">F00.00.1B</property>
+            <property name="deviceCategory">0x02</property>
             <property name="model">2635-222</property>
         </properties>
     </thing-type>

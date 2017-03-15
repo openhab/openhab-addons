@@ -41,6 +41,8 @@
         <properties>
             <property name="productKey">F00.00.10</property>
             <property name="model">2342-2</property>
+            <property name="deviceCategory">0x00</property>
+            <property name="deviceSubCategory">0x14,0x17,0x1B</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

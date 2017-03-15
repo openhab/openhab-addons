@@ -26,6 +26,8 @@
 		
 		<properties>
             <property name="productKey">0x000041</property>
+            <property name="deviceCategory">0x01</property>
+            <property name="deviceSubCategory">0x05</property>
             <property name="model">2484DWH8</property>
         </properties>
 		

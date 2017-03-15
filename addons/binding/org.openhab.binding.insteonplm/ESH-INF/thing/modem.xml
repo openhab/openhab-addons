@@ -21,6 +21,7 @@
         <properties>
             <property name="productKey">0x000045</property>
             <property name="model">2413U</property>
+            <property name="deviceCategory">0x03</property>
         </properties>
         
     </thing-type>

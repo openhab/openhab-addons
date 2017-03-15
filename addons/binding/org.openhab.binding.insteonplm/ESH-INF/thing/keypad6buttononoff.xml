@@ -52,6 +52,8 @@
         <properties>
             <property name="productKey">0x000014</property>
             <property name="model">2487S</property>
+            <property name="deviceCategory">0x02</property>
+            <property name="deviceSubCategory">0x1E</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>

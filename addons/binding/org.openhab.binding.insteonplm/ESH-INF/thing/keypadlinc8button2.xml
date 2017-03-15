@@ -74,6 +74,8 @@
         <properties>
             <property name="productKey">0x000016</property>
             <property name="model">2334-232</property>
+            <property name="deviceCategory">0x01</property>
+            <property name="deviceSubCategory">0x41</property>
         </properties>
     </thing-type>
 </thing:thing-descriptions>
