@@ -41,6 +41,14 @@ public class ChromecastBindingConstants {
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_PLAY_URI = "playuri";
 
+    public static final String CHANNEL_TITLE = "title";
+    public static final String CHANNEL_ALBUM = "album";
+    public static final String CHANNEL_ARTIST = "artist";
+
+    public static final String CHANNEL_APP = "app";
+    public static final String CHANNEL_STATUSTEXT = "statustext";
+
+    public static final String CHANNEL_ONLINESTATUS = "onlinestatus";
     // config parameters
     public static final String HOST = "ipAddress";
     public static final String PORT = "port";

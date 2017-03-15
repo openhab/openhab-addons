@@ -31,6 +31,11 @@ Chromecast devices can also be manually added. The only configuration parameter 
 | control | Player | Player control; currently only supports play/pause and does not correctly update, if the state changes on the device itself |
 | volume | Dimmer | Control the volume, this is also updated if the volume is changed by another app |
 | playuri | String | Can be used to tell the Chromecast to play media from a given url |
+| title | String | The title of media playing on chromecast |
+| album | String | The current album from chromecast (Spotify) |
+| artist | String | The current artist from chromecast (Spotify) |
+| app | String | The current app that is casting to the chromecast |
+| statustext | String | The current casting apps status |
 
 ## Full Example
 

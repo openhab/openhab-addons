@@ -42,8 +42,11 @@ import org.slf4j.LoggerFactory;
 
 import su.litvak.chromecast.api.v2.Application;
 import su.litvak.chromecast.api.v2.ChromeCast;
+import su.litvak.chromecast.api.v2.ChromeCastConnectionEvent;
+import su.litvak.chromecast.api.v2.ChromeCastConnectionEventListener;
 import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent;
 import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEventListener;
+import su.litvak.chromecast.api.v2.Media;
 import su.litvak.chromecast.api.v2.MediaStatus;
 import su.litvak.chromecast.api.v2.MediaStatus.IdleReason;
 import su.litvak.chromecast.api.v2.MediaStatus.PlayerState;
@@ -59,7 +62,8 @@ import su.litvak.chromecast.api.v2.Volume;
  * @author Daniel Walters - Online status fix, handle playuri channel and refactor play media code
  *
  */
-public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpontaneousEventListener, AudioSink {
+public class ChromecastHandler extends BaseThingHandler
+        implements ChromeCastSpontaneousEventListener, ChromeCastConnectionEventListener, AudioSink {
 
     private static final String MEDIA_PLAYER = "CC1AD845";
 
@@ -79,9 +83,11 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
     private AudioHTTPServer audioHTTPServer;
     private ChromeCast chromecast;
     private ScheduledFuture<?> futureConnect;
+    private ScheduledFuture<?> immediateRefreshJob;
     private PercentType volume;
     private String callbackUrl;
     private String appSessionId;
+    private static final int REFRESH_DELAY = 10;
 
     /**
      * Constructor.
@@ -101,8 +107,9 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
             logger.debug("Connecting to Chromecast: {} {}", address, port);
             chromecast = new ChromeCast(address, port);
             chromecast.registerListener(this);
+            chromecast.registerConnectionListener(this);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to connect ", e);
         }
     }
 
@@ -167,7 +174,6 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         } else {
             port = 8009;
         }
-
         if (chromecast != null && (!chromecast.getAddress().equals(host) || (chromecast.getPort() != port))) {
             destroyChromecast();
         }
@@ -176,6 +182,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         }
 
         scheduleConnect(true);
+
     }
 
     @Override
@@ -298,6 +305,32 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         }, 0, TimeUnit.MILLISECONDS);
     }
 
+    private Runnable pollingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                logger.debug("Chromeupdate Poll");
+                handleCcStatus(chromecast.getStatus());
+                Application app = chromecast.getRunningApp();
+                if (app != null) {
+                    handleCcMediaStatus(chromecast.getMediaStatus());
+                } else {
+                    updateMediaStatus(null);
+                }
+                handleApp(app);
+            } catch (IOException e) {
+                logger.warn("Failed to get media status", e);
+            }
+        }
+    };
+
+    private void scheduleImmediateRefresh() {
+        // We schedule in 10 sec, to avoid multiple updates
+        if (immediateRefreshJob == null || immediateRefreshJob.isDone()) {
+            immediateRefreshJob = scheduler.schedule(pollingRunnable, REFRESH_DELAY, TimeUnit.SECONDS);
+        }
+    }
+
     private void handleCcStatus(final Status status) {
         logger.debug("STATUS {}", status);
         if (status.applications == null) {
@@ -326,6 +359,33 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
             default:
                 break;
         }
+        if (mediaStatus.media != null && mediaStatus.media.metadata != null) {
+            updateMediaStatus(mediaStatus.media);
+        }
+    }
+
+    private void updateMediaStatus(Media media) {
+        Object title = media != null ? media.metadata.getOrDefault("title", "") : "";
+        Object albumName = media != null ? media.metadata.getOrDefault("albumName", "") : "";
+        Object artist = media != null ? media.metadata.getOrDefault("artist", "") : "";
+        updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_TITLE),
+                new StringType(title.toString()));
+        updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_ALBUM),
+                new StringType(albumName.toString()));
+        updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_ARTIST),
+                new StringType(artist.toString()));
+    }
+
+    private void handleApp(Application app) {
+        String name = "";
+        String statusText = "";
+        if (app != null) {
+            name = app.name;
+            statusText = app.statusText;
+        }
+        updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_APP), new StringType(name));
+        updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_STATUSTEXT),
+                new StringType(statusText));
     }
 
     private void handleCcVolume(final Volume volume) {
@@ -355,6 +415,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
                 break;
 
         }
+        scheduleImmediateRefresh();
     }
 
     @Override
@@ -429,4 +490,25 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         handleVolume(volume);
     }
 
+    @Override
+    public void connectionEventReceived(ChromeCastConnectionEvent event) {
+        if (event.isConnected()) {
+            scheduleImmediateRefresh();
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+        if (status == ThingStatus.ONLINE) {
+            updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_ONLINESTATUS),
+                    OnOffType.ON);
+        } else {
+            updateState(new ChannelUID(getThing().getUID(), ChromecastBindingConstants.CHANNEL_ONLINESTATUS),
+                    OnOffType.OFF);
+        }
+        super.updateStatus(status, statusDetail, description);
+    }
 }
