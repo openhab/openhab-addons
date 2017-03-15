@@ -115,7 +115,7 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
             properties.put(IsyProgramConfiguration.NAME, program.getName());
 
             ThingTypeUID theThingTypeUid = IsyBindingConstants.PROGRAM_THING_TYPE;
-            String thingID = program.getName().replace(" ", "").replaceAll("\\.", "").replaceAll("-", "_");
+            String thingID = removeInvalidUidChars(program.getName());
             ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withProperties(properties).withBridge(bridgeUID).withLabel(program.getName()).build();
@@ -124,6 +124,10 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
             // TODO remove
             // logger.warn("Only discovering 1 program per scan for now, until more program functionality exists");
         }
+    }
+
+    private static String removeInvalidUidChars(String original) {
+        return original.replace(" ", "").replaceAll("\\.", "").replace(",", "_").replaceAll("-", "_");
     }
 
     private void discoverScenes() {
@@ -137,7 +141,7 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
             properties.put(IsyInsteonDeviceConfiguration.NAME, scene.name);
 
             ThingTypeUID theThingTypeUid = IsyBindingConstants.SCENE_THING_TYPE;
-            String thingID = scene.name.replace(" ", "").replaceAll("\\.", "");
+            String thingID = removeInvalidUidChars(scene.name);
             ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withProperties(properties).withBridge(bridgeUID).withLabel(scene.name).build();
@@ -199,7 +203,7 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
                     theThingTypeUid = IsyBindingConstants.UNRECOGNIZED_SWITCH_THING_TYPE;
                 }
 
-                String thingID = node.getName().replace(" ", "").replaceAll("\\.", "");
+                String thingID = removeInvalidUidChars(node.getName());
                 ThingUID thingUID = new ThingUID(theThingTypeUid, bridgeUID, thingID);
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                         .withProperties(properties).withBridge(bridgeUID).withLabel(node.getName()).build();

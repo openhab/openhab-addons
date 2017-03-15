@@ -5,7 +5,4 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true"
 	name="org.openhab.binding.isy.discovery">
 	<implementation class="org.openhab.binding.isy.discovery.IsyBridgeDiscoveryService" />
-	 <service>
-      <provide interface="org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant"/>
-   </service>
 </scr:component>
