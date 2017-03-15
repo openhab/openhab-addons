@@ -12,7 +12,7 @@ import org.openhab.binding.insteonplm.internal.message.ModemMessageType;
  */
 public abstract class BaseModemMessage {
     private final ModemMessageType messageType;
-    private int quietTime = 0;
+    private long quietTime = 0;
     private byte ackNackByte = 0;
     public static final int ACK_MESSAGE = 0x06;
     public static final int NACK_MESSAGE = 0x15;
@@ -27,12 +27,12 @@ public abstract class BaseModemMessage {
 
     public abstract byte[] getPayload();
 
-    public int getQuietTime() {
+    public long getQuietTime() {
         // TODO Auto-generated method stub
         return quietTime;
     }
 
-    public void setQuietTime(int quietTime) {
+    public void setQuietTime(long quietTime) {
         // TODO Auto-generated method stub
         this.quietTime = quietTime;
     }
@@ -51,7 +51,7 @@ public abstract class BaseModemMessage {
 
     /**
      * Check and see if they are equal.
-     * 
+     *
      * @param mess
      * @return
      */

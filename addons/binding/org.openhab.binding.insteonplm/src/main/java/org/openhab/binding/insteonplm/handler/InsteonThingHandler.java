@@ -188,13 +188,9 @@ public class InsteonThingHandler extends BaseThingHandler {
                 }
             }
         }
-    }else
 
-    {
-    }
-
-    // Update the status of the last message received channel.
-    updateState(new ChannelUID("lastMessageReceived"), new DateTimeType(lastMessageReceived.toGregorianCalendar()));
+        // Update the status of the last message received channel.
+        updateState(new ChannelUID("lastMessageReceived"), new DateTimeType(lastMessageReceived.toGregorianCalendar()));
     }
 
     /** The address for this thing. */
@@ -207,6 +203,20 @@ public class InsteonThingHandler extends BaseThingHandler {
      */
     public String getProductKey() {
         return getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_PRODUCT_KEY);
+    }
+
+    /**
+     * The device category key for this specific thing.
+     */
+    public String getDeviceCategory() {
+        return getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_CATEGORY);
+    }
+
+    /**
+     * The device category key for this specific thing.
+     */
+    public String getDeviceSubCategory() {
+        return getThing().getProperties().get(InsteonPLMBindingConstants.PROPERTY_INSTEON_SUBCATEGORY);
     }
 
     /**
@@ -223,7 +233,7 @@ public class InsteonThingHandler extends BaseThingHandler {
             int spacing = 0;
             for (PollingHandlerInfo i : pollHandlers.values()) {
                 PollHandler pollHandler = i.getPollHandler();
-                Message message = pollHandler.makeMsg(this);
+                SendInsteonMessage message = pollHandler.makeMsg(this);
                 l.add(new InsteonThingMessageQEntry(message, now + timeDelayPollRelatedMsec + spacing));
                 spacing += TIME_BETWEEN_POLL_MESSAGES;
             }
@@ -322,7 +332,7 @@ public class InsteonThingHandler extends BaseThingHandler {
         // Find the channel the feature is on.
         PollingHandlerInfo handler = pollHandlers.get(channel.getUID().getId());
         if (handler != null) {
-            Message mess = handler.getPollHandler().makeMsg(this);
+            SendInsteonMessage mess = handler.getPollHandler().makeMsg(this);
             if (doItNow) {
                 enqueueMessage(mess);
             } else {

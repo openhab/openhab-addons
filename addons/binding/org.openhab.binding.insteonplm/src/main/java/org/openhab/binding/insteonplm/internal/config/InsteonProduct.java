@@ -1,5 +1,7 @@
 package org.openhab.binding.insteonplm.internal.config;
 
+import java.util.List;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -12,12 +14,23 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class InsteonProduct {
     private ThingTypeUID thingTypeUID;
     private String productKey;
+    private int category;
+    private List<Integer> subCategory;
     private String model;
 
-    public InsteonProduct(ThingTypeUID thingTypeUID, String productKey, String model) {
+    public enum MatchResult {
+        CompleteMatch,
+        CategoryOnly,
+        NoMatch
+    }
+
+    public InsteonProduct(ThingTypeUID thingTypeUID, String productKey, String model, int category,
+            List<Integer> subCategory) {
         this.thingTypeUID = thingTypeUID;
         this.productKey = productKey;
         this.model = model;
+        this.category = category;
+        this.subCategory = subCategory;
     }
 
     /**
@@ -25,6 +38,21 @@ public class InsteonProduct {
      */
     public boolean match(String productKey) {
         return this.productKey.equals(productKey);
+    }
+
+    /**
+     * See if this product matches the known product key off the thing.
+     */
+    public MatchResult match(int category, int subCategory) {
+        if (this.category == category) {
+            if (this.subCategory.size() == 0) {
+                return MatchResult.CategoryOnly;
+            }
+            if (this.subCategory.contains(subCategory)) {
+                return MatchResult.CompleteMatch;
+            }
+        }
+        return MatchResult.NoMatch;
     }
 
     public ThingTypeUID getThingTypeUID() {

@@ -20,8 +20,11 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
+import org.openhab.binding.insteonplm.internal.config.InsteonProduct.MatchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 /**
  * Handlers the configuration of the insteon system.
@@ -109,12 +112,30 @@ public class InsteonConfigProvider implements ConfigDescriptionProvider, ConfigO
                     continue;
                 }
 
+                String category = thingProperties.get(InsteonPLMBindingConstants.PROPERTY_INSTEON_CATEGORY);
+                if (category == null) {
+                    logger.error("Invalid insteon thing in registry {}", thingType.getUID().toString());
+                    continue;
+                }
+                int categoryId = Integer.valueOf(category);
+
+                String subCategory = thingProperties.get(InsteonPLMBindingConstants.PROPERTY_INSTEON_SUBCATEGORY);
+                List<Integer> subCategoryId = Lists.newArrayList();
+                if (subCategory != null) {
+                    String[] bits = subCategory.split(",");
+                    for (String bit : bits) {
+                        int val = Integer.valueOf(bit);
+                        subCategoryId.add(val);
+                    }
+                }
+
                 String model = thingProperties.get(InsteonPLMBindingConstants.PROPERTY_INSTEON_MODEL);
                 if (model == null) {
                     logger.error("Invalid model for thing in registry {}", thingType.getUID().toString());
                     continue;
                 }
-                InsteonProduct product = new InsteonProduct(thingType.getUID(), productkey, model);
+                InsteonProduct product = new InsteonProduct(thingType.getUID(), productkey, model, categoryId,
+                        subCategoryId);
                 InsteonConfigProvider.productIndex.add(product);
             }
         }
@@ -131,25 +152,25 @@ public class InsteonConfigProvider implements ConfigDescriptionProvider, ConfigO
         return thingTypeRegistry.getThingType(thingTypeUID);
     }
 
-    public static InsteonProduct getInsteonProduct(int productKey) {
-        String product = String.format("0x%06X", productKey);
-        return getInsteonProduct(product);
-    }
+    public static InsteonProduct getInsteonProduct(int category, int subCategory) {
+        InsteonProduct partialMatch = null;
 
-    public static InsteonProduct getInsteonProduct(String productKey) {
         for (InsteonProduct product : productIndex) {
-            if (product.match(productKey)) {
+            InsteonProduct.MatchResult result = product.match(category, subCategory);
+            if (result == MatchResult.CompleteMatch) {
                 return product;
+            } else if (result == MatchResult.CategoryOnly) {
+                partialMatch = product;
             }
         }
-        return null;
+        return partialMatch;
     }
 
-    public static ThingType getThingType(String productKey) {
+    public static ThingType getThingType(int category, int subCategory) {
         if (thingTypeRegistry == null) {
             return null;
         }
-        InsteonProduct product = getInsteonProduct(productKey);
+        InsteonProduct product = getInsteonProduct(category, subCategory);
         if (product != null) {
             return thingTypeRegistry.getThingType(product.getThingTypeUID());
         }

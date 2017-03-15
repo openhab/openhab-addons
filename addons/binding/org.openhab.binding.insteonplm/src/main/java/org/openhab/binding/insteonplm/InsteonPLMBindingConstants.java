@@ -28,6 +28,8 @@ public class InsteonPLMBindingConstants {
     // Properties to track information about the thing.
     public final static String PROPERTY_INSTEON_ADDRESS = "address";
     public final static String PROPERTY_INSTEON_PRODUCT_KEY = "productkey";
+    public final static String PROPERTY_INSTEON_CATEGORY = "deviceCategory";
+    public final static String PROPERTY_INSTEON_SUBCATEGORY = "deviceSubCategory";
     public static final String PROPERTY_INSTEON_MODEL = "model";
 
     // Properties for channels to help configure them.
@@ -37,9 +39,7 @@ public class InsteonPLMBindingConstants {
     public final static String PROPERTY_ONOFF_EXTENDED_DATA3 = "d3";
 
     public static final Object PROPERTY_CHANNEL_FEATURE = "feature";
-
     public static final Object PROPERTY_CHANNEL_POLL_HANDLER = "pollHandler";
-
     public static final Object PROPERTY_INSTEON_X10 = "x10";
 
     public enum ExtendedData {

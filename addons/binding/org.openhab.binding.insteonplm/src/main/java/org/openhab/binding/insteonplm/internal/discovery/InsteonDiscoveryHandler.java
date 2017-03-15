@@ -41,24 +41,26 @@ public class InsteonDiscoveryHandler extends AbstractDiscoveryService {
      * @param address The address of the thing
      * @param productKey The product key of the thing
      */
-    public void doThingDiscovered(InsteonAddress address, String productKey) {
-        InsteonProduct product = InsteonConfigProvider.getInsteonProduct(productKey);
+    public void doThingDiscovered(InsteonAddress address, String productKey, int category, int subCategory) {
+        InsteonProduct product = InsteonConfigProvider.getInsteonProduct(category, subCategory);
         if (product == null) {
-            logger.error("Unable to find product for {}", productKey);
+            logger.error("Unable to find product for {} {}", category, subCategory);
             return;
         }
 
         // Make the discovery result up.
         ThingUID thingUID = new ThingUID(InsteonPLMBindingConstants.BINDING_ID, bridge.getThing().getUID(),
                 address.toString());
-        ThingType type = InsteonConfigProvider.getThingType(productKey);
+        ThingType type = InsteonConfigProvider.getThingType(category, subCategory);
         if (type == null) {
-            logger.error("Unable to find thing type for {}", productKey);
+            logger.error("Unable to find thing type for {} {}", category, subCategory);
             return;
         }
         Map<String, Object> properties = Maps.newHashMap();
         properties.put(InsteonPLMBindingConstants.PROPERTY_INSTEON_ADDRESS, address.toString());
         properties.put(InsteonPLMBindingConstants.PROPERTY_INSTEON_PRODUCT_KEY, productKey);
+        properties.put(InsteonPLMBindingConstants.PROPERTY_INSTEON_CATEGORY, category);
+        properties.put(InsteonPLMBindingConstants.PROPERTY_INSTEON_SUBCATEGORY, subCategory);
         properties.put(InsteonPLMBindingConstants.PROPERTY_INSTEON_MODEL, product.getModel());
         String label = "Insteon " + type.getLabel() + " " + address.toString();
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)

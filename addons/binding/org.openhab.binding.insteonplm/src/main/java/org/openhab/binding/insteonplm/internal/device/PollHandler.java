@@ -8,13 +8,12 @@
  */
 package org.openhab.binding.insteonplm.internal.device;
 
-import java.io.IOException;
-
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.MessageFactory;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
+import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,7 @@ public abstract class PollHandler {
     private static final Logger logger = LoggerFactory.getLogger(PollHandler.class);
     DeviceFeature m_feature = null;
     ExtendedData extended = ExtendedData.extendedNone;
-    byte cmd1;
+    StandardInsteonMessages cmd1;
     byte cmd2;
     byte data1;
     byte data2;
@@ -51,13 +50,13 @@ public abstract class PollHandler {
      * @param device reference to the insteon device to be polled
      * @return Insteon query message or null if creation failed
      */
-    public abstract Message makeMsg(InsteonThingHandler device);
+    public abstract SendInsteonMessage makeMsg(InsteonThingHandler device);
 
     public void setExtended(ExtendedData data) {
         extended = data;
     }
 
-    public void setCmd1(byte value) {
+    public void setCmd1(StandardInsteonMessages value) {
         cmd1 = value;
     }
 
@@ -90,26 +89,22 @@ public abstract class PollHandler {
         }
 
         @Override
-        public Message makeMsg(InsteonThingHandler d) {
-            Message m = null;
-            try {
-                if (extended != ExtendedData.extendedNone) {
-                    m = d.getMessageFactory().makeExtendedMessage((byte) 0x0f, cmd1, cmd2,
-                            new byte[] { data1, data2, data3 }, d.getAddress());
-                    if (extended == ExtendedData.extendedCrc1) {
-                        m.setCRC();
-                    } else if (extended == ExtendedData.extendedCrc2) {
-                        m.setCRC2();
-                    }
-                } else {
-                    m = d.getMessageFactory().makeStandardMessage((byte) 0x0f, cmd1, cmd2, d.getAddress());
-                }
-                m.setQuietTime(500L);
-            } catch (FieldException e) {
-                logger.warn("error setting field in msg: ", e);
-            } catch (IOException e) {
-                logger.error("poll failed with exception ", e);
+        public SendInsteonMessage makeMsg(InsteonThingHandler d) {
+            SendInsteonMessage m = null;
+            if (extended != ExtendedData.extendedNone) {
+                m = new SendInsteonMessage(d.getAddress(), new InsteonFlags(), cmd1, cmd2,
+                        new byte[] { data1, data2, data3 });
+                /**
+                 * if (extended == ExtendedData.extendedCrc1) {
+                 * m.setCRC();
+                 * } else if (extended == ExtendedData.extendedCrc2) {
+                 * m.setCRC2();
+                 * }
+                 */
+            } else {
+                m = new SendInsteonMessage(d.getAddress(), new InsteonFlags(), cmd1, cmd2);
             }
+            m.setQuietTime(500L);
             return m;
         }
     }
@@ -120,7 +115,7 @@ public abstract class PollHandler {
         }
 
         @Override
-        public Message makeMsg(InsteonThingHandler d) {
+        public SendInsteonMessage makeMsg(InsteonThingHandler d) {
             return null;
         }
     }
