@@ -1,23 +1,47 @@
 package org.openhab.binding.insteonplm.internal.message.modem;
 
 import org.openhab.binding.insteonplm.internal.message.ModemMessageType;
+import org.openhab.binding.insteonplm.internal.message.X10Command;
 
+/**
+ * The X10 message received over the wire.
+ *
+ * @author David Bennett - Initial Contribution
+ *
+ */
 public class X10MessageReceived extends BaseModemMessage {
-    byte rawX10;
-    byte x10Flag;
+    private byte houseCode;
+    private byte keyCode;
+    private X10Command cmd;
+    private boolean isCommand;
 
     public X10MessageReceived(byte[] data) {
         super(ModemMessageType.X10MessageReceived);
-        rawX10 = data[0];
-        x10Flag = data[1];
+        houseCode = (byte) (data[0] >> 4);
+        if ((data[1] & 0x80) == 0) {
+            int pos = data[0] & 0xf;
+            isCommand = true;
+            cmd = X10Command.values()[pos];
+        } else {
+            isCommand = false;
+            keyCode = (byte) (data[0] & 0xf);
+        }
     }
 
-    public byte getRawX10() {
-        return rawX10;
+    public byte getHouseCode() {
+        return houseCode;
     }
 
-    public byte getX10Flag() {
-        return x10Flag;
+    public byte getKeyCode() {
+        return keyCode;
+    }
+
+    public X10Command getCmd() {
+        return cmd;
+    }
+
+    public boolean isCommand() {
+        return isCommand;
     }
 
     @Override

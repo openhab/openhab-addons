@@ -5,12 +5,14 @@ import java.io.IOException;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
-import org.openhab.binding.insteonplm.internal.device.CommandHandler;
-import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.device.X10;
+import org.openhab.binding.insteonplm.handler.X10ThingHandler;
+import org.openhab.binding.insteonplm.internal.device.X10Address;
+import org.openhab.binding.insteonplm.internal.device.X10CommandHandler;
+import org.openhab.binding.insteonplm.internal.device.X10DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.X10Command;
+import org.openhab.binding.insteonplm.internal.message.modem.SendX10Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,36 +22,32 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Pfrommer
  * @author Bernd Pfrommer
  */
-public class X10PercentCommandHandler extends CommandHandler {
+public class X10PercentCommandHandler extends X10CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(X10PercentCommandHandler.class);
 
-    X10PercentCommandHandler(DeviceFeature f) {
+    X10PercentCommandHandler(X10DeviceFeature f) {
         super(f);
     }
 
     @Override
-    public void handleCommand(InsteonThingHandler conf, ChannelUID channelId, Command cmd) {
+    public void handleCommand(X10ThingHandler conf, ChannelUID channelId, Command cmd) {
         try {
             //
             // I did not have hardware that would respond to the PRESET_DIM codes.
             // This code path needs testing.
             //
-            byte houseCode = conf.getX10HouseCode();
-            byte houseUnitCode = (byte) (houseCode << 4 | conf.getX10UnitCode());
-            Message munit = conf.getMessageFactory().makeX10Message(houseUnitCode, (byte) 0x00); // send unit code
-            conf.enqueueMessage(munit);
+            SendX10Message mess = new SendX10Message(conf.getAddress());
+            conf.enqueueMessage(mess);
             PercentType pc = (PercentType) cmd;
             logger.debug("{}: changing level of {} to {}", nm(), conf.getAddress(), pc.intValue());
             int level = (pc.intValue() * 32) / 100;
-            byte cmdCode = (level >= 16) ? X10.Command.PRESET_DIM_2.code() : X10.Command.PRESET_DIM_1.code();
+            X10Command cmdCode = (level >= 16) ? X10Command.PreSetDim2) : X10Command.PreSetDim;
             level = level % 16;
             if (level <= 0) {
                 level = 0;
             }
-            houseCode = (byte) s_X10CodeForLevel[level];
-            cmdCode |= (houseCode << 4);
-            Message mcmd = conf.getMessageFactory().makeX10Message(cmdCode, (byte) 0x80); // send command code
-            conf.enqueueMessage(mcmd);
+            SendX10Message sendMessage = new SendX10Message(cmdCode, (byte) level);
+            conf.enqueueMessage(sendMessage);
         } catch (IOException e) {
             logger.error("{}: command send i/o error: ", nm(), e);
         } catch (FieldException e) {

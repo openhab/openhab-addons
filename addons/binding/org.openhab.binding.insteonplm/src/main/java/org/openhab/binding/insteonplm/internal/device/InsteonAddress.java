@@ -16,68 +16,54 @@ import org.openhab.binding.insteonplm.internal.utils.Utils;
  * @author Daniel Pfrommer
  * @since 1.5.0
  */
-
 public class InsteonAddress {
     private byte highByte;
     private byte middleByte;
     private byte lowByte;
-    private boolean x10;
 
     public InsteonAddress() {
         highByte = 0x00;
         middleByte = 0x00;
         lowByte = 0x00;
-        x10 = false;
     }
 
     public InsteonAddress(InsteonAddress a) {
         highByte = a.highByte;
         middleByte = a.middleByte;
         lowByte = a.lowByte;
-        x10 = a.x10;
     }
 
     public InsteonAddress(byte high, byte middle, byte low) {
         highByte = high;
         middleByte = middle;
         lowByte = low;
-        x10 = false;
     }
 
     /**
      * Constructor
-     * 
+     *
      * @param address string must have format of e.g. '2a.3c.40' or (for X10) 'H.UU'
      */
     public InsteonAddress(String address) throws IllegalArgumentException {
-        if (X10.s_isValidAddress(address)) {
-            highByte = 0;
-            middleByte = 0;
-            lowByte = X10.s_addressToByte(address);
-            x10 = true;
-        } else {
-            String[] parts = address.split("\\.");
-            if (parts.length != 3) {
-                throw new IllegalArgumentException("Address string must have 3 bytes, has: " + parts.length);
-            }
-            highByte = (byte) Utils.fromHexString(parts[0]);
-            middleByte = (byte) Utils.fromHexString(parts[1]);
-            lowByte = (byte) Utils.fromHexString(parts[2]);
-            x10 = false;
+        String[] parts = address.split("\\.");
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Address string must have 3 bytes, has: " + parts.length);
         }
+        highByte = (byte) Utils.fromHexString(parts[0]);
+        middleByte = (byte) Utils.fromHexString(parts[1]);
+        lowByte = (byte) Utils.fromHexString(parts[2]);
     }
 
     /**
      * Constructor for an InsteonAddress that wraps an X10 address.
      * Simply stuff the X10 address into the lowest byte.
-     * 
+     *
      * @param aX10HouseUnit the house & unit number as encoded by the X10 protocol
      */
     public InsteonAddress(byte aX10HouseUnit) {
         highByte = 0;
         middleByte = 0;
         lowByte = aX10HouseUnit;
-        x10 = true;
     }
 
     public void setHighByte(byte h) {
@@ -112,10 +98,6 @@ public class InsteonAddress {
         return (byte) ((lowByte & 0x0f));
     }
 
-    public boolean isX10() {
-        return x10;
-    }
-
     public void storeBytes(byte[] bytes, int offset) {
         bytes[offset] = getHighByte();
         bytes[offset + 1] = getMiddleByte();
@@ -131,14 +113,7 @@ public class InsteonAddress {
     @Override
     public String toString() {
         String s = null;
-        if (isX10()) {
-            byte house = (byte) (((getLowByte() & 0xf0) >> 4) & 0xff);
-            byte unit = (byte) ((getLowByte() & 0x0f) & 0xff);
-            s = X10.s_houseToString(house) + "." + X10.s_unitToInt(unit);
-            // s = Utils.getHexString(lowByte);
-        } else {
-            s = Utils.getHexString(highByte) + "." + Utils.getHexString(middleByte) + "." + Utils.getHexString(lowByte);
-        }
+        s = Utils.getHexString(highByte) + "." + Utils.getHexString(middleByte) + "." + Utils.getHexString(lowByte);
         return s;
     }
 
@@ -163,9 +138,6 @@ public class InsteonAddress {
         if (middleByte != other.middleByte) {
             return false;
         }
-        if (x10 != other.x10) {
-            return false;
-        }
         return true;
     }
 
@@ -176,20 +148,19 @@ public class InsteonAddress {
         result = prime * result + highByte;
         result = prime * result + lowByte;
         result = prime * result + middleByte;
-        result = prime * result + (x10 ? 1231 : 1237);
         return result;
     }
 
     /**
      * Test if Insteon address is valid
-     * 
+     *
      * @return true if address is in valid AB.CD.EF or (for X10) H.UU format
      */
     public static boolean s_isValid(String addr) {
         if (addr == null) {
             return false;
         }
-        if (X10.s_isValidAddress(addr)) {
+        if (X10Address.s_isValidAddress(addr)) {
             return true;
         }
         String[] fields = addr.split("\\.");
@@ -205,28 +176,5 @@ public class InsteonAddress {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Turn string into address
-     * 
-     * @param val the string to convert
-     * @return the corresponding insteon address
-     */
-    public static InsteonAddress s_parseAddress(String val) {
-        return new InsteonAddress(val);
-    }
-
-    /**
-     * Function for unit testing
-     * 
-     * @param args ignored
-     */
-    public static void main(String[] args) {
-        // debug/test code
-        InsteonAddress a1 = new InsteonAddress();
-        InsteonAddress a2 = new InsteonAddress();
-        System.out.println(a1.equals(a2));
-        System.out.println(new InsteonAddress("0f.0f.0a"));
     }
 }

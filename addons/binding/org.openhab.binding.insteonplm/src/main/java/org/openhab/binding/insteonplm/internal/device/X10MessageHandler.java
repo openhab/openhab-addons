@@ -1,8 +1,8 @@
 package org.openhab.binding.insteonplm.internal.device;
 
 import org.eclipse.smarthome.core.thing.Channel;
-import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
-import org.openhab.binding.insteonplm.internal.device.messages.MessageHandlerData;
+import org.openhab.binding.insteonplm.handler.X10ThingHandler;
+import org.openhab.binding.insteonplm.internal.message.X10Command;
 import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.openhab.binding.insteonplm.internal.message.modem.X10MessageReceived;
 import org.slf4j.Logger;
@@ -11,15 +11,17 @@ import org.slf4j.LoggerFactory;
 public abstract class X10MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
-    MessageHandlerData data = new MessageHandlerData();
+    X10Command cmd;
+    int cmd2 = -1;
+    X10DeviceFeature feature;
 
     /**
      * Constructor
      *
      * @param p state publishing object for dissemination of state changes
      */
-    protected X10MessageHandler(DeviceFeature p) {
-        data.feature = p;
+    protected X10MessageHandler(X10DeviceFeature p) {
+        this.feature = p;
     }
 
     /**
@@ -30,18 +32,27 @@ public abstract class X10MessageHandler {
      * @param message the x10 message
      * @param channel the DeviceFeature to which this message handler is attached
      */
-    public abstract void handleMessage(InsteonThingHandler handler, X10MessageReceived message, Channel channel);
+    public abstract void handleMessage(X10ThingHandler handler, X10MessageReceived message, Channel channel);
 
     /**
      * The feature associated with this message.
      */
     public DeviceFeature getFeature() {
-        return data.feature;
+        return feature;
     }
 
     public void setCmd1(String factor) {
         try {
-            data.cmd1 = Byte.valueOf(factor);
+            cmd = X10Command.valueOf(factor);
+        } catch (NumberFormatException e) {
+            logger.error("Unable to parse {}", e, factor);
+        }
+
+    }
+
+    public void setCmd2(String factor) {
+        try {
+            cmd2 = Byte.valueOf(factor);
         } catch (NumberFormatException e) {
             logger.error("Unable to parse {}", e, factor);
         }
@@ -55,21 +66,12 @@ public abstract class X10MessageHandler {
      * @return true if message matches
      */
     public boolean matches(X10MessageReceived message) {
-        byte value = message.getRawX10() & 0x0f;
-        if (data.cmd2 != -1 && value != data.cmd2) {
-            return (false);
+        if (message.isCommand()) {
+            if (message.getCmd() == cmd) {
+                return true;
+            }
         }
-        byte[] userData = message.getData();
-        if (data.data1 != -1 && userData[0] != data.data1) {
-            return (false);
-        }
-        if (data.data2 != -1 && userData[1] != data.data2) {
-            return (false);
-        }
-        if (data.data3 != -1 && userData[2] != data.data3) {
-            return (false);
-        }
-        return (true);
+        return false;
     }
 
     /**
@@ -89,7 +91,6 @@ public abstract class X10MessageHandler {
         } else {
             return msg.getCmd2();
         }
-        return -1;
     }
 
     /**
