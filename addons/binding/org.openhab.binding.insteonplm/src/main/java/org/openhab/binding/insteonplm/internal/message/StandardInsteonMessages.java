@@ -66,7 +66,7 @@ public enum StandardInsteonMessages {
     ResetPowerMeter(0x80),
     AssignToCompanionGroup(0x81),
     UpdatePowerMeter(0x82),
-    ExtendedProductDataResponse(0x0300),
+    ExtendedProductDataRequest(0x0300),
     ExtendedFxUsernameResponse(0x0301),
     ExtendedDeviceTextStringResponse(0x0302),
     ExtendedSetDeviceTextString(0x0303),

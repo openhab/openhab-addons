@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.joda.time.DateTime;
 import org.openhab.binding.insteonplm.internal.config.InsteonConfigProvider;
 import org.openhab.binding.insteonplm.internal.config.InsteonPLMBridgeConfiguration;
 import org.openhab.binding.insteonplm.internal.config.InsteonProduct;
@@ -33,7 +34,6 @@ import org.openhab.binding.insteonplm.internal.driver.TcpIOStream;
 import org.openhab.binding.insteonplm.internal.driver.hub.HubIOStream;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
-import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.openhab.binding.insteonplm.internal.message.modem.AllLinkRecordResponse;
 import org.openhab.binding.insteonplm.internal.message.modem.BaseModemMessage;
@@ -61,8 +61,8 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
     private PriorityQueue<InsteonBridgeThingQEntry> messagesToSend = new PriorityQueue<>();
     private Thread messageQueueThread;
     private InsteonAddress modemAddress;
-    private boolean doingLinking = false;
     private Map<InsteonAddress, InsteonNodeDetails> foundDevices = Maps.newHashMap();
+    private DateTime lastRequested;
 
     public InsteonPLMBridgeHandler(Bridge thing) {
         super(thing);
@@ -186,42 +186,45 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                         logger.error("Error sending message to get data for {}", messReceived.getFromAddress());
                     }
                 }
-                if (messReceived.getCmd1() == StandardInsteonMessages.ProductDataRequest) {
-                    if (messReceived.getCmd2() == 0) {
-                        byte productKeyMsb = messReceived.getData()[2];
-                        byte productKeyMsb2 = messReceived.getData()[3];
-                        byte productKeyLsb = messReceived.getData()[4];
-                        byte deviceCategory = messReceived.getData()[5];
-                        byte deviceSubcategory = messReceived.getData()[6];
-                        InsteonNodeDetails details = foundDevices.get(messReceived.getFromAddress());
+                if (messReceived.getCmd1() == StandardInsteonMessages.ExtendedProductDataRequest) {
+                    byte productKeyMsb = messReceived.getData()[2];
+                    byte productKeyMsb2 = messReceived.getData()[3];
+                    byte productKeyLsb = messReceived.getData()[4];
+                    byte deviceCategory = messReceived.getData()[5];
+                    byte deviceSubcategory = messReceived.getData()[6];
+                    InsteonNodeDetails details;
+                    synchronized (foundDevices) {
+                        details = foundDevices.get(messReceived.getFromAddress());
                         details.setQueried(true);
                         details.setDeviceCategory(deviceCategory);
                         details.setDeviceSubcategory(deviceSubcategory);
                         details.setProductKey((productKeyMsb << 16) | (productKeyMsb2 << 8) | productKeyLsb);
-                        // Query the string details, product data request with a 0x02 is a string request.
-                        try {
-                            port.writeMessage(new SendInsteonMessage(messReceived.getFromAddress(), new InsteonFlags(),
-                                    StandardInsteonMessages.ProductDataRequest, (byte) 0x02));
-                        } catch (IOException e) {
-                            logger.error("Unable to write request for device text string", e);
-                        }
-
-                        logger.error("Details {}", details);
-                        // Lets see if we can find this device.
-                        InsteonProduct product = InsteonConfigProvider.getInsteonProduct(details.getProductKey());
-                        if (product != null) {
-                            logger.error("Found insteon product {} {}", product.getModel(), product.getThingTypeUID());
-                        }
-                        return;
-                    } else if (messReceived.getCmd2() == 0x02) {
-                        StringBuilder builder = new StringBuilder();
-
-                        for (int i = 1; i < 15; i++) {
-                            builder.append((char) messReceived.getData()[i]);
-                        }
-                        logger.error("Received device desc {}", builder.toString());
-                        return;
                     }
+                    // Query the string details, product data request with a 0x02 is a string request.
+                    try {
+                        port.writeMessage(new SendInsteonMessage(messReceived.getFromAddress(), new InsteonFlags(),
+                                StandardInsteonMessages.ProductDataRequest, (byte) 0x02));
+                    } catch (IOException e) {
+                        logger.error("Unable to write request for device text string", e);
+                    }
+
+                    logger.error("Details {}", details);
+                    // Lets see if we can find this device.
+                    InsteonProduct product = InsteonConfigProvider.getInsteonProduct(details.getDeviceCategory(),
+                            details.getDeviceSubcategory());
+                    if (product != null) {
+                        logger.error("Found insteon product {} {}", product.getModel(), product.getThingTypeUID());
+                    }
+                    return;
+                } else if (messReceived.getCmd1() == StandardInsteonMessages.ExtendedDeviceTextStringResponse) {
+                    StringBuilder builder = new StringBuilder();
+
+                    for (int i = 1; i < 15; i++) {
+                        builder.append((char) messReceived.getData()[i]);
+                    }
+                    logger.error("Received device desc {}", builder.toString());
+                    sendNextInfoRequest();
+                    return;
                 }
 
                 // Go and find the device to send this message to.
@@ -250,7 +253,6 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                 logger.info("Found the modem address {}", modemAddress);
                 try {
                     port.writeMessage(new GetFirstAllLinkingRecord());
-                    doingLinking = true;
                 } catch (IOException e) {
                     logger.error("Unable to send first linking message");
                 }
@@ -259,11 +261,14 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                 AllLinkRecordResponse response = (AllLinkRecordResponse) message;
                 // Found a device msg.getAddress("LinkAddr")
                 logger.error("Found device {}", response.getAddress());
+                InsteonNodeDetails details = new InsteonNodeDetails();
+                synchronized (foundDevices) {
+                    foundDevices.put(response.getAddress(), details);
+                }
+                details.setQueried(false);
                 // Send a request for the next one.
                 try {
                     port.writeMessage(new GetNextAllLinkingRecord());
-                    port.writeMessage(new SendInsteonMessage(response.getAddress(), new InsteonFlags(),
-                            StandardInsteonMessages.ProductDataRequest, (byte) 0x00));
                 } catch (IOException e) {
                     logger.error("Unable to send next all link record");
                 }
@@ -277,22 +282,36 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
             case GetNextAllLinkRecord:
                 if (message.isNack()) {
                     logger.debug("got all link records.");
-                    doingLinking = false;
                 }
+                lastRequested = DateTime.now();
+                // Now request the data for all the devices. Yay.
+                sendNextInfoRequest();
                 return;
             default:
                 logger.warn("Unhandled insteon message {}", message.getMessageType());
                 break;
         }
-    }
-
-    private void startLinking() {
 
     }
 
-    private void handleAllLinkDatabaseResponse(Message message) {
-        // Pull the data out of the all link record.
-
+    private void sendNextInfoRequest() {
+        synchronized (foundDevices) {
+            for (InsteonAddress address : foundDevices.keySet()) {
+                InsteonNodeDetails detail = foundDevices.get(address);
+                if (!detail.isQueried()) {
+                    try {
+                        port.writeMessage(new SendInsteonMessage(address, new InsteonFlags(),
+                                StandardInsteonMessages.ExtendedProductDataRequest));
+                    } catch (IOException e) {
+                        logger.error("Unable to send the request for data", e);
+                    }
+                    detail.setQueried(true);
+                    return;
+                }
+            }
+        }
+        // Don't request anything again for a while...
+        lastRequested = DateTime.now().plusHours(6);
     }
 
     /** Gets the thing associated with this address. */
@@ -358,6 +377,10 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
             while (getThing().getStatus() == ThingStatus.ONLINE) {
                 InsteonBridgeThingQEntry entry = messagesToSend.peek();
                 try {
+                    // See if we have any info requests to send.
+                    if (lastRequested.isBefore(DateTime.now().minusSeconds(2))) {
+                        sendNextInfoRequest();
+                    }
                     if (messagesToSend.size() > 0) {
                         long now = System.currentTimeMillis();
                         long expTime = entry.getExpirationTime();
