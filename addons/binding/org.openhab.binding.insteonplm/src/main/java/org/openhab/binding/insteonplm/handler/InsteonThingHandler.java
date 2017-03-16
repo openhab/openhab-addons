@@ -26,7 +26,6 @@ import org.openhab.binding.insteonplm.internal.device.MessageHandler;
 import org.openhab.binding.insteonplm.internal.device.PollHandler;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
-import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
@@ -164,10 +163,7 @@ public class InsteonThingHandler extends BaseThingHandler {
     public void handleMessage(StandardMessageReceived message) throws FieldException {
         lastMessageReceived = DateTime.now();
 
-        StandardInsteonMessages cmd1 = message.getCmd1();
-        // All link message for this thing.
         // We have an ack and we have a request message. Yay.
-        int key = -1;
         if (message.getFlags().isAckOfDirect() && requestMessage != null) {
             // We have the request message and this is an ack for it. Yay.
             requestMessage = null;
@@ -178,7 +174,7 @@ public class InsteonThingHandler extends BaseThingHandler {
         for (ChannelUID channelId : featureChannelMapping.keySet()) {
             List<DeviceFeature> features = featureChannelMapping.get(channelId);
             for (DeviceFeature feature : features) {
-                List<MessageHandler> allHandlers = feature.getMsgHandlers().get(message.getCmd1().getCmd1());
+                List<MessageHandler> allHandlers = feature.getMsgHandlers().get(message.getCmd1());
                 if (allHandlers != null) {
                     for (MessageHandler handler : allHandlers) {
                         if (handler.matches(message)) {

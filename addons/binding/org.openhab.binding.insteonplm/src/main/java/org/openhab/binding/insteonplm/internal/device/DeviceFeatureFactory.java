@@ -16,7 +16,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonPLMBridgeHandler;
-import org.openhab.binding.insteonplm.internal.utils.Utils;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.openhab.binding.insteonplm.internal.utils.Utils.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,8 +175,8 @@ public class DeviceFeatureFactory {
             f.setDefaultMessageHandler(he);
         } else {
             String attr = e.getAttribute("cmd");
-            int command = (attr == null) ? 0 : Utils.from0xHexString(attr);
-            f.addMessageHandler(command, he);
+            StandardInsteonMessages cmdParsed = StandardInsteonMessages.valueOf(attr);
+            f.addMessageHandler(cmdParsed, he);
         }
     }
 

@@ -9,13 +9,15 @@
 package org.openhab.binding.insteonplm.internal.device;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Maps;
 
 /**
  * A simple class which contains the basic info needed to create a device feature.
@@ -35,8 +37,8 @@ public class DeviceFeatureBuilder {
     private HandlerEntry m_pollHandler = null;
     private HandlerEntry m_defaultMsgHandler = null;
     private HandlerEntry m_defaultCmdHandler = null;
-    private HashMap<Integer, HandlerEntry> m_messageHandlers = new HashMap<Integer, HandlerEntry>();
-    private HashMap<Class<? extends Command>, HandlerEntry> m_commandHandlers = new HashMap<Class<? extends Command>, HandlerEntry>();
+    private Map<StandardInsteonMessages, HandlerEntry> m_messageHandlers = Maps.newHashMap();
+    private Map<Class<? extends Command>, HandlerEntry> m_commandHandlers = Maps.newHashMap();
 
     // simple getters
     public String getName() {
@@ -68,7 +70,7 @@ public class DeviceFeatureBuilder {
      *
      * @return a Hashmap from Integer to String representing the command codes and the associated message handlers
      */
-    public HashMap<Integer, HandlerEntry> getMessageHandlers() {
+    public Map<StandardInsteonMessages, HandlerEntry> getMessageHandlers() {
         return m_messageHandlers;
     }
 
@@ -79,7 +81,7 @@ public class DeviceFeatureBuilder {
      * @see #getMessageHandlers()
      * @return a HashMap from Command Classes to CommandHandler names
      */
-    public HashMap<Class<? extends Command>, HandlerEntry> getCommandHandlers() {
+    public Map<Class<? extends Command>, HandlerEntry> getCommandHandlers() {
         return m_commandHandlers;
     }
 
@@ -115,7 +117,7 @@ public class DeviceFeatureBuilder {
      * @param cmd command to be mapped
      * @param he handler entry to map to
      */
-    public void addMessageHandler(int cmd, HandlerEntry he) {
+    public void addMessageHandler(StandardInsteonMessages cmd, HandlerEntry he) {
         m_messageHandlers.put(cmd, he);
     }
 
@@ -208,7 +210,7 @@ public class DeviceFeatureBuilder {
             f.setDefaultMsgHandler(
                     makeMessageHandler(m_defaultMsgHandler.getHandlerName(), m_defaultMsgHandler.getParameters(), f));
         }
-        for (Entry<Integer, HandlerEntry> mH : m_messageHandlers.entrySet()) {
+        for (Entry<StandardInsteonMessages, HandlerEntry> mH : m_messageHandlers.entrySet()) {
             f.addMessageHandler(mH.getKey(),
                     makeMessageHandler(mH.getValue().getHandlerName(), mH.getValue().getParameters(), f));
         }

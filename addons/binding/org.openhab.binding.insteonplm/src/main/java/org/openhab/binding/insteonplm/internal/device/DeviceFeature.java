@@ -18,6 +18,7 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.commands.NoOpCommandHandler;
 import org.openhab.binding.insteonplm.internal.device.messages.DefaultMsgHandler;
 import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ public class DeviceFeature {
     private MessageHandler m_defaultMsgHandler = new DefaultMsgHandler(this);
     private CommandHandler m_defaultCommandHandler = new NoOpCommandHandler(this);
 
-    private Map<Integer, List<MessageHandler>> m_msgHandlers = Maps.newHashMap();
+    private Map<StandardInsteonMessages, List<MessageHandler>> m_msgHandlers = Maps.newHashMap();
     private Map<Class<? extends Command>, CommandHandler> m_commandHandlers = Maps.newHashMap();
 
     /**
@@ -87,7 +88,7 @@ public class DeviceFeature {
         return m_defaultMsgHandler;
     }
 
-    public Map<Integer, List<MessageHandler>> getMsgHandlers() {
+    public Map<StandardInsteonMessages, List<MessageHandler>> getMsgHandlers() {
         return this.m_msgHandlers;
     }
 
@@ -131,7 +132,7 @@ public class DeviceFeature {
      * @param cm1 The insteon cmd1 of the incoming message for which the handler should be used
      * @param handler the handler to invoke
      */
-    public void addMessageHandler(int cm1, MessageHandler handler) {
+    public void addMessageHandler(StandardInsteonMessages cm1, MessageHandler handler) {
         synchronized (m_msgHandlers) {
             List<MessageHandler> handlers = m_msgHandlers.get(cm1);
             if (handlers == null) {
