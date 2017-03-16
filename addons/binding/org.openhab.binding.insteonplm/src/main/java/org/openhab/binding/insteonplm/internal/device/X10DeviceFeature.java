@@ -6,6 +6,7 @@ import java.util.Map;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.X10ThingHandler;
+import org.openhab.binding.insteonplm.internal.device.commands.X10NoOpCommandHandler;
 import org.openhab.binding.insteonplm.internal.device.messages.X10DefaultMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class X10DeviceFeature {
-    private static final Logger logger = LoggerFactory.getLogger(DeviceFeature.class);
+    private static final Logger logger = LoggerFactory.getLogger(X10DeviceFeature.class);
 
     private String name = "INVALID_FEATURE_NAME";
     private int directAckTimeout = 6000;
@@ -23,14 +24,14 @@ public class X10DeviceFeature {
     private X10CommandHandler defaultCommandHandler = new X10NoOpCommandHandler(this);
 
     private Map<Integer, List<X10MessageHandler>> msgHandlers = Maps.newHashMap();
-    private Map<Class<? extends Command>, CommandHandler> commandHandlers = Maps.newHashMap();
+    private Map<Class<? extends Command>, X10CommandHandler> commandHandlers = Maps.newHashMap();
 
     /**
      * Constructor
      *
      * @param name descriptive name for that feature
      */
-    public DeviceFeature(String name) {
+    public X10DeviceFeature(String name) {
         this.name = name;
     }
 
@@ -43,7 +44,7 @@ public class X10DeviceFeature {
         return directAckTimeout;
     }
 
-    public MessageHandler getDefaultMsgHandler() {
+    public X10MessageHandler getDefaultMsgHandler() {
         return defaultMsgHandler;
     }
 
@@ -52,11 +53,11 @@ public class X10DeviceFeature {
     }
 
     // various simple setters
-    public void setDefaultCommandHandler(CommandHandler ch) {
+    public void setDefaultCommandHandler(X10CommandHandler ch) {
         defaultCommandHandler = ch;
     }
 
-    public void setDefaultMsgHandler(MessageHandler mh) {
+    public void setDefaultMsgHandler(X10MessageHandler mh) {
         defaultMsgHandler = mh;
     }
 
@@ -93,7 +94,7 @@ public class X10DeviceFeature {
      */
     public void addMessageHandler(int cm1, X10MessageHandler handler) {
         synchronized (msgHandlers) {
-            List<MessageHandler> handlers = msgHandlers.get(cm1);
+            List<X10MessageHandler> handlers = msgHandlers.get(cm1);
             if (handlers == null) {
                 handlers = Lists.newArrayList();
                 msgHandlers.put(cm1, handlers);

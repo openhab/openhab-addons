@@ -6,9 +6,13 @@ import org.openhab.binding.insteonplm.internal.device.X10DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.X10MessageHandler;
 import org.openhab.binding.insteonplm.internal.message.modem.X10MessageReceived;
 
+/**
+ * @author Daniel Pfrommer
+ * @author Bernd Pfrommer
+ */
 public class X10DefaultMessageHandler extends X10MessageHandler {
 
-    protected X10DefaultMessageHandler(X10DeviceFeature p) {
+    public X10DefaultMessageHandler(X10DeviceFeature p) {
         super(p);
     }
 

@@ -5,9 +5,10 @@ import java.io.IOException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
-import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.device.X10;
+import org.openhab.binding.insteonplm.handler.X10ThingHandler;
+import org.openhab.binding.insteonplm.internal.device.X10Address;
+import org.openhab.binding.insteonplm.internal.device.X10CommandHandler;
+import org.openhab.binding.insteonplm.internal.device.X10DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.Message;
 import org.slf4j.Logger;
@@ -22,18 +23,18 @@ import org.slf4j.LoggerFactory;
 public class X10OnOffCommandHandler extends X10CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(X10OnOffCommandHandler.class);
 
-    X10OnOffCommandHandler(DeviceFeature f) {
+    X10OnOffCommandHandler(X10DeviceFeature f) {
         super(f);
     }
 
     @Override
-    public void handleCommand(InsteonThingHandler conf, ChannelUID channelId, Command cmd) {
+    public void handleCommand(X10ThingHandler conf, ChannelUID channelId, Command cmd) {
         try {
             byte houseCode = conf.getX10HouseCode();
             byte houseUnitCode = (byte) (houseCode << 4 | conf.getX10UnitCode());
             if (cmd == OnOffType.ON || cmd == OnOffType.OFF) {
                 byte houseCommandCode = (byte) (houseCode << 4
-                        | (cmd == OnOffType.ON ? X10.Command.ON.code() : X10.Command.OFF.code()));
+                        | (cmd == OnOffType.ON ? X10Address.Command.ON.code() : X10Address.Command.OFF.code()));
                 Message munit = conf.getMessageFactory().makeX10Message(houseUnitCode, (byte) 0x00); // send unit code
                 conf.enqueueMessage(munit);
                 Message mcmd = conf.getMessageFactory().makeX10Message(houseCommandCode, (byte) 0x80); // send command

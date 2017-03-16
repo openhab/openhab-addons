@@ -2,7 +2,6 @@ package org.openhab.binding.insteonplm.handler;
 
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -10,8 +9,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
-import org.openhab.binding.insteonplm.internal.config.PollingHandlerInfo;
+import org.openhab.binding.insteonplm.internal.device.X10Address;
+import org.openhab.binding.insteonplm.internal.device.X10DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.X10MessageHandler;
+import org.openhab.binding.insteonplm.internal.message.modem.SendX10Message;
 import org.openhab.binding.insteonplm.internal.message.modem.X10MessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +27,7 @@ import com.google.common.collect.Maps;
 public class X10ThingHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(X10ThingHandler.class);
     private Map<ChannelUID, List<X10DeviceFeature>> featureChannelMapping = Maps.newHashMap();
-    private Map<ChannelUID, PollingHandlerInfo> pollHandlers = Maps.newHashMap();
-    private PriorityQueue<InsteonThingMessageQEntry> requestQueue = new PriorityQueue<InsteonThingMessageQEntry>();
-    private byte houseCode;
-    private byte keyCode;
+    private X10Address address;
 
     public X10ThingHandler(Thing thing) {
         super(thing);
@@ -66,7 +64,7 @@ public class X10ThingHandler extends BaseThingHandler {
         for (ChannelUID channelId : featureChannelMapping.keySet()) {
             List<X10DeviceFeature> features = featureChannelMapping.get(channelId);
             for (X10DeviceFeature feature : features) {
-                List<X10MessageHandler> allHandlers = feature.getMsgHandlers().get(cmd);
+                List<X10MessageHandler> allHandlers = feature.getMsgHandlers().get(x10Mess.getCmd().ordinal());
                 if (allHandlers != null) {
                     for (X10MessageHandler handler : allHandlers) {
                         if (handler.matches(x10Mess)) {
@@ -76,5 +74,13 @@ public class X10ThingHandler extends BaseThingHandler {
                 }
             }
         }
+    }
+
+    public void enqueueMessage(SendX10Message message) {
+
+    }
+
+    public X10Address getAddress() {
+        return this.address;
     }
 }
