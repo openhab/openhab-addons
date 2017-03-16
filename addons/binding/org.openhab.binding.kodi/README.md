@@ -80,6 +80,17 @@ The Kodi thing supports the following channels:
 
 **group** The PVR channels can be put into userdefined PVR channel groups. There are two default PVR channel groups. One for PVR TV channels and one for PVR radio channels. The default labels are "All channels" (in german systems "Alle Kanäle"). You have to adjust this configuration to use the `pvropentv` and `pvropenradio` channels properly. You can optionally configure an userdefined PVR channel group.
 
+A manual setup through a `things/kodi.things` file could look like this:
+
+```
+kodi:kodi:myKodi [ipAddress="192.168.1.100", port="9090"] {
+    Channels:
+        Type pvropentv : pvropentv [
+            group="All channels"
+        ]
+}
+```
+
 ## Item Configuration
 
 demo.items
