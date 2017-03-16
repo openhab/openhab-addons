@@ -261,7 +261,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         if (command instanceof PercentType) {
             final PercentType num = (PercentType) command;
             try {
-                chromecast.setVolume(num.floatValue() / 100);
+                chromecast.setVolumeByIncrement(num.floatValue() / 100);
                 updateStatus(ThingStatus.ONLINE);
             } catch (final IOException ex) {
                 logger.debug("Set volume failed: {}", ex.getMessage());
