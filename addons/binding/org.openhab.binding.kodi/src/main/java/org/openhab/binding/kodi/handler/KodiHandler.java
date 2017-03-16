@@ -224,11 +224,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     public void playPVR(Command command, String channeltype, KodiChannelConfig config) {
-        connection.getChannelGroups(channeltype);
-        int channelgroupid = connection.getChannelGroupID(config.getGroup());
+        int channelgroupid = connection.getChannelGroupID(channeltype, config.getGroup());
         if (channelgroupid > 0) {
-            connection.getChannels(channelgroupid);
-            int channelid = connection.getChannelID(command.toString());
+            int channelid = connection.getChannelID(channelgroupid, command.toString());
             if (channelid > 0) {
                 connection.playPVR(channelid);
             } else {

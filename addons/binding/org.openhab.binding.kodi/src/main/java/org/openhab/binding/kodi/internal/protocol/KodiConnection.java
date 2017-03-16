@@ -40,8 +40,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private int volume = 0;
     private KodiState currentState = KodiState.Stop;
-    private JsonArray channelgroups = null;
-    private JsonArray channels = null;
 
     private final KodiEventListener listener;
 
@@ -126,7 +124,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Player.SetSpeed", params);
 
         updatePlayerStatus();
-
     }
 
     public synchronized void playerFastForward() {
@@ -496,22 +493,25 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Player.Open", params);
     }
 
-    public synchronized void getChannelGroups(String channeltype) {
+    private synchronized JsonArray getChannelGroups(String channeltype) {
         JsonObject params = new JsonObject();
         params.addProperty("channeltype", channeltype);
         JsonElement response = socket.callMethod("PVR.GetChannelGroups", params);
 
+        JsonArray channelgroups = null;
         if (response instanceof JsonObject) {
             JsonObject result = (JsonObject) response;
             if (result.has("channelgroups")) {
-                this.channelgroups = result.get("channelgroups").getAsJsonArray();
+                channelgroups = result.get("channelgroups").getAsJsonArray();
             }
         }
+        return channelgroups;
     }
 
-    public int getChannelGroupID(String channelGroupName) {
-        if (this.channelgroups instanceof JsonArray) {
-            for (JsonElement x : this.channelgroups) {
+    public int getChannelGroupID(String channeltype, String channelGroupName) {
+        JsonArray channelgroups = this.getChannelGroups(channeltype);
+        if (channelgroups instanceof JsonArray) {
+            for (JsonElement x : channelgroups) {
                 JsonObject channelgroup = (JsonObject) x;
                 String label = channelgroup.get("label").getAsString();
                 if (StringUtils.equalsIgnoreCase(label, channelGroupName)) {
@@ -522,22 +522,25 @@ public class KodiConnection implements KodiClientSocketEventListener {
         return 0;
     }
 
-    public synchronized void getChannels(int channelgroupid) {
+    private synchronized JsonArray getChannels(int channelgroupid) {
         JsonObject params = new JsonObject();
         params.addProperty("channelgroupid", channelgroupid);
         JsonElement response = socket.callMethod("PVR.GetChannels", params);
 
+        JsonArray channels = null;
         if (response instanceof JsonObject) {
             JsonObject result = (JsonObject) response;
             if (result.has("channels")) {
-                this.channels = result.get("channels").getAsJsonArray();
+                channels = result.get("channels").getAsJsonArray();
             }
         }
+        return channels;
     }
 
-    public int getChannelID(String channelName) {
-        if (this.channels instanceof JsonArray) {
-            for (JsonElement x : this.channels) {
+    public int getChannelID(int channelgroupid, String channelName) {
+        JsonArray channels = this.getChannels(channelgroupid);
+        if (channels instanceof JsonArray) {
+            for (JsonElement x : channels) {
                 JsonObject channel = (JsonObject) x;
                 String label = channel.get("label").getAsString();
                 if (StringUtils.equalsIgnoreCase(label, channelName)) {
