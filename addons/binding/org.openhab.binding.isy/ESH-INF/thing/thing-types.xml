@@ -146,17 +146,71 @@
             </parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="togglelinc">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge" />
+        </supported-bridge-type-refs>
+        <label>Togglelinc</label>
+        <description>Controls loads with On/Off switch</description>
+        <channels>
+            <channel id="state" typeId="switchState" />
+            <channel id="paddleaction" typeId="paddleAction" />
+        </channels>
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <label>Insteon Address</label>
+                <description>Insteon Address of device.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Text description of device.</description>
+            </parameter>
+            <parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
 	<thing-type id="triggerlinc">
         <supported-bridge-type-refs>
             <bridge-type-ref id="ipbridge" />
         </supported-bridge-type-refs>
 
-        <label>Leak Detector</label>
-        <description>Provide Leak Detection</description>
+        <label>Triggerlinc</label>
+        <description>Triggerlinc</description>
 
         <channels>
             <channel id="open" typeId="open_sensor" />
             <channel id="closed" typeId="closed_sensor" />
+            <channel id="heartbeat" typeId="heartbeat" />
+        </channels>
+
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <label>Insteon Address</label>
+                <description>Insteon Address of device.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Text description of device.</description>
+            </parameter>
+            <parameter name="deviceid" type="text" readOnly="true">
+                <label>Device Id</label>
+                <description>Insteon device ID.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="hiddendoorsensor">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="ipbridge" />
+        </supported-bridge-type-refs>
+
+        <label>Hidden Door Sensor</label>
+        <description>Hidden Door Sensor</description>
+
+        <channels>
+            <channel id="open" typeId="open_sensor" />
+            <channel id="low_battery" typeId="low_battery_sensor" />
             <channel id="heartbeat" typeId="heartbeat" />
         </channels>
 

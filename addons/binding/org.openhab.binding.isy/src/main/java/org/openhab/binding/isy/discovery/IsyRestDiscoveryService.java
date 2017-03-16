@@ -45,6 +45,7 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
         mMapDeviceTypeThingType.put("01.0E", IsyBindingConstants.DIMMER_THING_TYPE);
         mMapDeviceTypeThingType.put("01.19", IsyBindingConstants.DIMMER_THING_TYPE);
         mMapDeviceTypeThingType.put("21.12", IsyBindingConstants.DIMMER_THING_TYPE);
+        mMapDeviceTypeThingType.put("01.1F", IsyBindingConstants.DIMMER_THING_TYPE);
         mMapDeviceTypeThingType.put("07.00", IsyBindingConstants.GARAGEDOORKIT_THING_TYPE);
         mMapDeviceTypeThingType.put("10.02", IsyBindingConstants.TRIGGERLINC_THING_TYPE);
         mMapDeviceTypeThingType.put("02.2A", IsyBindingConstants.SWITCH_THING_TYPE);
@@ -64,6 +65,8 @@ public class IsyRestDiscoveryService extends AbstractDiscoveryService {
         mMapDeviceTypeThingType.put("01.41", IsyBindingConstants.KEYPADLINC_8_THING_TYPE);
         mMapDeviceTypeThingType.put("02.1F", IsyBindingConstants.INLINELINC_SWITCH_THING_TYPE);
         mMapDeviceTypeThingType.put("02.08", IsyBindingConstants.OUTLETLINC_DIMMER_THING_TYPE);
+        mMapDeviceTypeThingType.put("02.1A", IsyBindingConstants.TOGGLELINC_THING_TYPE);
+        mMapDeviceTypeThingType.put("10.11", IsyBindingConstants.HIDDENDOORSENSOR_THING_TYPE);
 
     }
 

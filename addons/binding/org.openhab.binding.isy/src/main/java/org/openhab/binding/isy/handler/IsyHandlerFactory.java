@@ -42,7 +42,7 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
             GARAGEDOORKIT_THING_TYPE, KEYPAD_LINC_6_THING_TYPE, KEYPAD_LINC_5_THING_TYPE, REMOTELINC_8_THING_TYPE,
             INLINELINC_SWITCH_THING_TYPE, PROGRAM_THING_TYPE, VARIABLE_THING_TYPE, SCENE_THING_TYPE,
             UNRECOGNIZED_SWITCH_THING_TYPE, KEYPADLINC_8_THING_TYPE, OUTLETLINC_DIMMER_THING_TYPE,
-            TRIGGERLINC_THING_TYPE);
+            TRIGGERLINC_THING_TYPE, TOGGLELINC_THING_TYPE, HIDDENDOORSENSOR_THING_TYPE);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
@@ -66,6 +66,10 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_MOTION_MOTION, 1)
                     .addChannelforDeviceId(CHANNEL_MOTION_DUSK, 2).addChannelforDeviceId(CHANNEL_MOTION_BATTERY, 3)
                     .build();
+        } else if (thingTypeUID.equals(HIDDENDOORSENSOR_THING_TYPE)) {
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_OPEN_SENSOR, 1)
+                    .addChannelforDeviceId(CHANNEL_MOTION_BATTERY, 3).addChannelforDeviceId(CHANNEL_HEARTBEAT, 4)
+                    .build();
         } else if (thingTypeUID.equals(TRIGGERLINC_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_CLOSED_SENSOR, 1)
                     .addChannelforDeviceId(CHANNEL_OPEN_SENSOR, 2).addChannelforDeviceId(CHANNEL_HEARTBEAT, 4).build();
@@ -80,6 +84,9 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(OUTLETLINC_DIMMER_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_SWITCH, 1).build();
         } else if (thingTypeUID.equals(SWITCH_THING_TYPE)) {
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_SWITCH, 1)
+                    .addControlChannel(CHANNEL_PADDLEACTION).build();
+        } else if (thingTypeUID.equals(TOGGLELINC_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_SWITCH, 1)
                     .addControlChannel(CHANNEL_PADDLEACTION).build();
         } else if (thingTypeUID.equals(DIMMER_THING_TYPE)) {
