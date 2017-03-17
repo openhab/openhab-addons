@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+  <config-description uri="mihome:gateway">
+    <parameter name="userName" type="text" required="true">
+      <label>Username</label>
+      <description>User's email address</description>
+      <context>email</context>
+    </parameter>
+    <parameter name="password" type="text" required="true">
+      <label>Password</label>
+      <description>User's password</description>
+      <context>password</context>
+    </parameter>
+    <parameter name="gatewayCode" type="text" required="true">
+      <label>Gateway code</label>
+      <description>Gateway code consisting of 10 capital letters</description>
+    </parameter>
+    <parameter name="updateInterval" type="integer" min="1" step="1" required="true" unit="s">
+      <label>Update interval</label>
+      <description>Update interval to pool data from a device</description>
+      <default>30</default>
+      <unitLabel>seconds</unitLabel>
+    </parameter>
+  </config-description>
+</config-description:config-descriptions>
