@@ -17,10 +17,13 @@ Import-Package: groovy.json,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
  org.openhab.binding.max,
  org.osgi.service.device,
  org.slf4j
-Require-Bundle: org.junit;bundle-version="4.11.0"
 Export-Package: org.openhab.binding.max.internal.message;x-internal:=true,
  org.openhab.binding.max.test;uses:="org.eclipse.smarthome.test"
+
 
