@@ -65,7 +65,7 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(MOTION_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_MOTION_MOTION, 1)
                     .addChannelforDeviceId(CHANNEL_MOTION_DUSK, 2).addChannelforDeviceId(CHANNEL_MOTION_BATTERY, 3)
-                    .build();
+                    .addControlChannel(CHANNEL_CONTROL_ACTION).build();
         } else if (thingTypeUID.equals(HIDDENDOORSENSOR_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_OPEN_SENSOR, 1)
                     .addChannelforDeviceId(CHANNEL_MOTION_BATTERY, 3).addChannelforDeviceId(CHANNEL_HEARTBEAT, 4)

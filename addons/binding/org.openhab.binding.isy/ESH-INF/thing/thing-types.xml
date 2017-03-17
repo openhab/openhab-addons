@@ -98,6 +98,7 @@
 
 		<channels>
 			<channel id="motion" typeId="motion_sensor" />
+			<channel id="control" typeId="paddleAction" />
 			<channel id="dusk_dawn" typeId="dusk_sensor" />
 			<channel id="low_battery" typeId="low_battery_sensor" />
 		</channels>
