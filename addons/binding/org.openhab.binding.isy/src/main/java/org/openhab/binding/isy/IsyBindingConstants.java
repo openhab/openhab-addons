@@ -49,6 +49,7 @@ public class IsyBindingConstants {
     // public final static String CHANNEL_ONOFFSENSOR = "OL";
     public final static String CHANNEL_DIMMERLEVEL = "loadlevel";
     public final static String CHANNEL_PADDLEACTION = "paddleaction";
+    public final static String CHANNEL_CONTROL_ACTION = "control";
 
     public final static String CHANNEL_SWITCH = "state";
     // motion

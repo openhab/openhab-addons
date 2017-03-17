@@ -180,8 +180,9 @@
         <description>Triggerlinc</description>
 
         <channels>
-            <channel id="open" typeId="open_sensor" />
-            <channel id="closed" typeId="closed_sensor" />
+            <channel id="control" typeId="paddleAction" />
+            <channel id="open_sensor" typeId="open_sensor" />
+            <!--   <channel id="closed_sensor" typeId="closed_sensor" /> -->
             <channel id="heartbeat" typeId="heartbeat" />
         </channels>
 
@@ -209,7 +210,8 @@
         <description>Hidden Door Sensor</description>
 
         <channels>
-            <channel id="open" typeId="open_sensor" />
+            <channel id="open_sensor" typeId="open_sensor" />
+            <channel id="control" typeId="paddleAction" />
             <channel id="low_battery" typeId="low_battery_sensor" />
             <channel id="heartbeat" typeId="heartbeat" />
         </channels>

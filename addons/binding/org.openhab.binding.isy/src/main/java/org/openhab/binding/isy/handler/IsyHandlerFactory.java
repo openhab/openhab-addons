@@ -69,10 +69,10 @@ public class IsyHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(HIDDENDOORSENSOR_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_OPEN_SENSOR, 1)
                     .addChannelforDeviceId(CHANNEL_MOTION_BATTERY, 3).addChannelforDeviceId(CHANNEL_HEARTBEAT, 4)
-                    .build();
+                    .addControlChannel(CHANNEL_CONTROL_ACTION).build();
         } else if (thingTypeUID.equals(TRIGGERLINC_THING_TYPE)) {
-            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_CLOSED_SENSOR, 1)
-                    .addChannelforDeviceId(CHANNEL_OPEN_SENSOR, 2).addChannelforDeviceId(CHANNEL_HEARTBEAT, 4).build();
+            return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_OPEN_SENSOR, 1)
+                    .addChannelforDeviceId(CHANNEL_HEARTBEAT, 4).addControlChannel(CHANNEL_CONTROL_ACTION).build();
         } else if (thingTypeUID.equals(LEAKDETECTOR_THING_TYPE)) {
             return IsyHandlerBuilder.builder(thing).addChannelforDeviceId(CHANNEL_LEAK_DRY, 1)
                     .addChannelforDeviceId(CHANNEL_LEAK_WET, 2).addChannelforDeviceId(CHANNEL_HEARTBEAT, 4).build();
