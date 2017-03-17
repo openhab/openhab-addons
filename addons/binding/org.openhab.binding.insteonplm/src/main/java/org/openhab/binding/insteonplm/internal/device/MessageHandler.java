@@ -236,7 +236,6 @@ public abstract class MessageHandler {
         } else {
             return msg.getCmd2();
         }
-        return -1;
     }
 
     /**

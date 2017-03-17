@@ -43,6 +43,9 @@ public class DataParser {
     private boolean lastMessageExtended = false;
     private ModemMessageType messageType = null;
 
+    private ReplyType reply;
+    private BaseModemMessage sendMessage = null;
+
     public void addData(byte[] data, int len) {
         for (int i = 0; i < len; i++) {
             addByte(data[i]);
@@ -77,7 +80,7 @@ public class DataParser {
                         // Make a new message.
                         BaseModemMessage mess = createMessage(messageType, new byte[0]);
                         if (mess != null) {
-                            pendingMessages.add(mess);
+                            addPendingMessage(mess);
                         }
                         currentState = ParsingState.LookingForStart;
                     } else {
@@ -95,7 +98,7 @@ public class DataParser {
                     System.arraycopy(incomingData, 0, dataBytes, 0, currentIndex);
                     BaseModemMessage mess = createMessage(messageType, dataBytes);
                     if (mess != null) {
-                        pendingMessages.add(mess);
+                        addPendingMessage(mess);
                     }
                     currentState = ParsingState.LookingForStart;
                 }
@@ -125,6 +128,20 @@ public class DataParser {
         }
     }
 
+    private void addPendingMessage(BaseModemMessage mess) {
+        synchronized (pendingMessages) {
+            this.pendingMessages.add(mess);
+            if (mess.getMessageType() == this.sendMessage.getMessageType()) {
+                if (mess.isAck()) {
+                    reply = ReplyType.GOT_ACK;
+                } else if (mess.isNack()) {
+                    reply = ReplyType.GOT_NACK;
+                }
+            }
+            this.pendingMessages.notify();
+        }
+    }
+
     /**
      * Blocking wait for ack or nack from modem.
      * Called by IOStreamWriter for flow control.
@@ -132,8 +149,11 @@ public class DataParser {
      * @return true if retransmission is necessary
      */
     public boolean waitForReply(BaseModemMessage mess, byte data[]) {
-        m_reply = ReplyType.WAITING_FOR_ACK;
-        while (m_reply == ReplyType.WAITING_FOR_ACK) {
+        synchronized (pendingMessages) {
+            sendMessage = mess;
+            reply = ReplyType.WAITING_FOR_ACK;
+        }
+        while (reply == ReplyType.WAITING_FOR_ACK) {
             try {
                 logger.trace("writer waiting for ack.");
                 // There have been cases observed, in particular for
@@ -141,18 +161,18 @@ public class DataParser {
                 // to hang in the wait() below, because unsolicited messages
                 // do not trigger a notify(). For this reason we request retransmission
                 // if the wait() times out.
-                getRequestReplyLock().wait(3000); // be patient for 30 sec
-                if (m_reply == ReplyType.WAITING_FOR_ACK) { // timeout expired without getting ACK or NACK
+                pendingMessages.wait(3000); // be patient for 30 sec
+                if (reply == ReplyType.WAITING_FOR_ACK) { // timeout expired without getting ACK or NACK
                     logger.trace("writer timeout expired, asking for retransmit!");
-                    m_reply = ReplyType.GOT_NACK;
+                    reply = ReplyType.GOT_NACK;
                     break;
                 } else {
-                    logger.trace("writer got ack: {}", (m_reply == ReplyType.GOT_ACK));
+                    logger.trace("writer got ack: {}", (reply == ReplyType.GOT_ACK));
                 }
             } catch (InterruptedException e) {
                 break; // done for the day...
             }
         }
-        return (m_reply == ReplyType.GOT_NACK);
+        return (reply == ReplyType.GOT_NACK);
     }
 }

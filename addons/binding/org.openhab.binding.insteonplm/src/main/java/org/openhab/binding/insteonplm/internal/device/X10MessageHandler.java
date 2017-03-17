@@ -37,7 +37,7 @@ public abstract class X10MessageHandler {
     /**
      * The feature associated with this message.
      */
-    public DeviceFeature getFeature() {
+    public X10DeviceFeature getFeature() {
         return feature;
     }
 

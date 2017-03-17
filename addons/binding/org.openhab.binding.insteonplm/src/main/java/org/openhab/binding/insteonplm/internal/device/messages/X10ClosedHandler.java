@@ -2,8 +2,8 @@ package org.openhab.binding.insteonplm.internal.device.messages;
 
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Channel;
-import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
-import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
+import org.openhab.binding.insteonplm.handler.X10ThingHandler;
+import org.openhab.binding.insteonplm.internal.device.X10Address;
 import org.openhab.binding.insteonplm.internal.device.X10DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.X10MessageHandler;
 import org.openhab.binding.insteonplm.internal.message.modem.X10MessageReceived;
@@ -22,8 +22,8 @@ public class X10ClosedHandler extends X10MessageHandler {
     }
 
     @Override
-    public void handleMessage(InsteonThingHandler handler, X10MessageReceived msg, Channel f) {
-        InsteonAddress a = handler.getAddress();
+    public void handleMessage(X10ThingHandler handler, X10MessageReceived msg, Channel f) {
+        X10Address a = handler.getAddress();
         logger.info("{}: set X10 device {} to CLOSED", nm(), a);
         handler.updateFeatureState(f, OpenClosedType.CLOSED);
     }

@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.internal.device.X10Address;
 import org.openhab.binding.insteonplm.internal.device.X10DeviceFeature;
@@ -74,6 +76,17 @@ public class X10ThingHandler extends BaseThingHandler {
                 }
             }
         }
+    }
+
+    /**
+     * Updates the channel based on the new input state. This will lookup the correct channel
+     * from the feature details and then update it.
+     *
+     * @param f the feature details to use for lookup
+     * @param newState the new state to broadcast
+     */
+    public void updateFeatureState(Channel channel, State newState) {
+        updateState(channel.getUID(), newState);
     }
 
     public void enqueueMessage(SendX10Message message) {

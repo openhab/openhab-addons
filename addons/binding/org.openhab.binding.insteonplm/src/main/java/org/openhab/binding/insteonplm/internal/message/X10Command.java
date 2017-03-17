@@ -1,5 +1,11 @@
 package org.openhab.binding.insteonplm.internal.message;
 
+/**
+ * The list of x10 commands for connecting to the device.
+ * 
+ * @author Bernd Pfrommer
+ * @since 1.7.0
+ */
 public enum X10Command {
     AllUnitsOff, // 0
     AllUnitsOn, // 1

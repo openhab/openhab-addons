@@ -144,7 +144,7 @@ public enum StandardInsteonMessages {
      */
     public static StandardInsteonMessages fromByte(int cmd) {
         for (StandardInsteonMessages mess : StandardInsteonMessages.values()) {
-            if (mess.getCmd() == cmd) {
+            if (mess.getCmd1() == cmd) {
                 return mess;
             }
         }
