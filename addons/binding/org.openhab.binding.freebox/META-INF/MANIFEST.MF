@@ -34,5 +34,3 @@ Import-Package: com.google.common.base,
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.freebox,
  org.openhab.binding.freebox.handler
-Require-Bundle: org.apache.commons.io,
- org.apache.commons.codec
