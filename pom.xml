@@ -60,7 +60,7 @@
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.version>3.1</maven.compiler.version>
+        <maven.compiler.version>3.6.1</maven.compiler.version>
         <groovy.eclipse.compiler.version>2.8.0-01</groovy.eclipse.compiler.version>
         <groovy.eclipse.batch.version>2.1.5-03</groovy.eclipse.batch.version>
     </properties>
@@ -188,6 +188,7 @@
                     <version>${maven.compiler.version}</version>
                     <configuration>
                         <compilerId>groovy-eclipse-compiler</compilerId>
+                        <maxmem>256m</maxmem>
                     </configuration>
                     <executions>
                         <execution>
