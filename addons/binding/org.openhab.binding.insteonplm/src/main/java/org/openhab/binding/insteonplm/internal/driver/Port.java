@@ -128,23 +128,23 @@ public class Port {
         if (writeThread != null) {
             writeThread.interrupt();
         }
-        logger.debug("waiting for read thread to exit for port {}", ioStream.toString());
+        logger.error("waiting for read thread to exit for port {}", ioStream.toString());
         try {
             if (readThread != null) {
-                readThread.join();
+                readThread.join(1000);
             }
         } catch (InterruptedException e) {
             logger.debug("got interrupted waiting for read thread to exit.");
         }
-        logger.debug("waiting for write thread to exit for port {}", ioStream.toString());
+        logger.error("waiting for write thread to exit for port {}", ioStream.toString());
         try {
-            if (writeThread != null) {
-                writeThread.join();
+            if (writeThread != null && writeThread.isAlive()) {
+                writeThread.join(1000);
             }
         } catch (InterruptedException e) {
             logger.debug("got interrupted waiting for write thread to exit.");
         }
-        logger.debug("all threads for port {} stopped.", ioStream.toString());
+        logger.error("all threads for port {} stopped.", ioStream.toString());
         running = false;
         // Close the streams.
         reader = null;
@@ -212,14 +212,10 @@ public class Port {
                     if (dropRandomBytes && rng.nextInt(100) < 20) {
                         len = dropBytes(buffer, len);
                     }
-                    final StringBuilder builder = new StringBuilder();
-                    for (int i = 0; i < len; i++) {
-                        builder.append(String.format("%02x", buffer[i]));
-                    }
-                    logger.debug("Read {}", builder.toString());
                     parser.addData(buffer, len);
                     processMessages();
                 }
+                logger.error("Read 0 bytes?");
             } catch (InterruptedException e) {
                 logger.debug("reader thread got interrupted!");
             }
@@ -228,7 +224,7 @@ public class Port {
 
         private void processMessages() {
             // must call processData() until we get a null pointer back
-            for (BaseModemMessage m : parser.getPendingMessages()) {
+            for (BaseModemMessage m : parser.getAndClearPendingMessages()) {
                 if (m != null) {
                     toAllListeners(m);
                     notifyWriter(m);
@@ -360,7 +356,7 @@ public class Port {
                         byte[] header = new byte[2];
                         header[0] = 0x02;
                         header[1] = (byte) msg.getMessageType().getCommand();
-                        logger.debug("writing ({}): {}", msg.getQuietTime(), msg);
+                        logger.error("writing ({}): {}", msg.getQuietTime(), msg);
                         // To debug race conditions during startup (i.e. make the .items
                         // file definitions be available *before* the modem link records,
                         // slow down the modem traffic with the following statement:
@@ -374,7 +370,6 @@ public class Port {
                                 ioStream.write(header);
                                 ioStream.write(payload);
                             }
-
                         }
                         // if rate limited, need to sleep now.
                         if (msg.getQuietTime() > 0) {
@@ -388,7 +383,7 @@ public class Port {
                     logger.error("got exception in write thread:", e);
                 }
             }
-            logger.debug("exiting writer thread!");
+            logger.error("exiting writer thread!");
         }
     }
 }

@@ -1,17 +1,13 @@
 package org.openhab.binding.insteonplm.internal.device.commands;
 
-import java.io.IOException;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
-import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
+import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,25 +26,20 @@ public class FastOnOffCommandHandler extends CommandHandler {
 
     @Override
     public void handleCommand(InsteonThingHandler conf, ChannelUID channel, Command cmd) {
-        try {
-            if (cmd == OnOffType.ON) {
-                int level = getMaxLightLevel(conf, 0xff);
-                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
-                        StandardInsteonMessages.LightOnFast, (byte) level, conf.getInsteonGroup(), conf.getAddress());
-                conf.enqueueMessage(m);
-                logger.info("{}: sent fast on to switch {} level {}", nm(), conf.getAddress(),
-                        level == 0xff ? "on" : level);
-            } else if (cmd == OnOffType.OFF) {
-                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
-                        StandardInsteonMessages.LightOffFast, (byte) 0x00, conf.getInsteonGroup(), conf.getAddress());
-                conf.enqueueMessage(m);
-                logger.info("{}: sent fast off to switch {}", nm(), conf.getAddress());
-            }
-            // expect to get a direct ack after this!
-        } catch (IOException e) {
-            logger.error("{}: command send i/o error: ", nm(), e);
-        } catch (FieldException e) {
-            logger.error("{}: command send message creation error ", nm(), e);
+        if (cmd == OnOffType.ON) {
+            int level = getMaxLightLevel(conf, 0xff);
+            // In this case the address on the thing is the group address.
+            SendInsteonMessage m = new SendInsteonMessage(conf.getAddress(), conf.getDefaultFlags(),
+                    StandardInsteonMessages.LightOnFast, (byte) level);
+            conf.enqueueMessage(m);
+            logger.info("{}: sent fast on to switch {} level {}", nm(), conf.getAddress(),
+                    level == 0xff ? "on" : level);
+        } else if (cmd == OnOffType.OFF) {
+            SendInsteonMessage m = new SendInsteonMessage(conf.getAddress(), conf.getDefaultFlags(),
+                    StandardInsteonMessages.LightOffFast, (byte) 0x00);
+            conf.enqueueMessage(m);
+            logger.info("{}: sent fast off to switch {}", nm(), conf.getAddress());
         }
+        // expect to get a direct ack after this!
     }
 }

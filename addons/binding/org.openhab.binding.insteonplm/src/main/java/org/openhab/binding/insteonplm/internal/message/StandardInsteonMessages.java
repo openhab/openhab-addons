@@ -87,7 +87,7 @@ public enum StandardInsteonMessages {
     ExtendedBlockDataTransferCompleteTwelveBytes(0x2A0C),
     ExtendedBlockDataTransferContinues(0x2A0D),
     ExtendedBlockDataTransferRequest(0x2AFF),
-    ExtendedExtendedGetSet(0x2E00),
+    ExtendedGetSet(0x2E00),
     ExtendedReadWriteAllLinkDatabase(0x2F00),
     ExtendedTriggerAllLinkCommand(0x3000),
     ExtendedSetSpinklerProgram(0x4000),

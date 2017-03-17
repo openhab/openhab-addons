@@ -62,7 +62,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
     private Thread messageQueueThread;
     private InsteonAddress modemAddress;
     private Map<InsteonAddress, InsteonNodeDetails> foundDevices = Maps.newHashMap();
-    private DateTime lastRequested;
+    private DateTime lastRequested = DateTime.now().minusDays(2);
 
     public InsteonPLMBridgeHandler(Bridge thing) {
         super(thing);
@@ -90,15 +90,16 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
 
     @Override
     public void dispose() {
+        logger.error("Disposing the bridge");
         super.dispose();
-        if (this.port != null) {
-            this.port.stop();
-        }
-        this.port = null;
         if (this.ioStream != null) {
             this.ioStream.close();
         }
         this.ioStream = null;
+        if (this.port != null) {
+            this.port.stop();
+        }
+        this.port = null;
         this.deviceFeatureFactory = null;
 
         this.messagesToSend.clear();
@@ -257,13 +258,16 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                     logger.error("Unable to send first linking message");
                 }
                 return;
+
             case AllLinkRecordResponse:
                 AllLinkRecordResponse response = (AllLinkRecordResponse) message;
                 // Found a device msg.getAddress("LinkAddr")
-                logger.error("Found device {}", response.getAddress());
                 InsteonNodeDetails details = new InsteonNodeDetails();
                 synchronized (foundDevices) {
-                    foundDevices.put(response.getAddress(), details);
+                    if (!foundDevices.containsKey(response.getAddress())) {
+                        foundDevices.put(response.getAddress(), details);
+                        logger.error("Found device {}", response.getAddress());
+                    }
                 }
                 details.setQueried(false);
                 // Send a request for the next one.
@@ -273,6 +277,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                     logger.error("Unable to send next all link record");
                 }
                 return;
+
             case PureNack:
                 // Explicit nack.
                 logger.info("Pure nack recieved.");
@@ -287,6 +292,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                 // Now request the data for all the devices. Yay.
                 sendNextInfoRequest();
                 return;
+
             default:
                 logger.warn("Unhandled insteon message {}", message.getMessageType());
                 break;
@@ -300,6 +306,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                 InsteonNodeDetails detail = foundDevices.get(address);
                 if (!detail.isQueried()) {
                     try {
+                        logger.error("Sending info request for {}", address);
                         port.writeMessage(new SendInsteonMessage(address, new InsteonFlags(),
                                 StandardInsteonMessages.ExtendedProductDataRequest));
                     } catch (IOException e) {
@@ -400,16 +407,21 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                         // The head of the queue has expired and can be processed!
                         //
                         entry = messagesToSend.poll(); // remove front element
-                        long nextExp = entry.getThingHandler().processRequestQueue(now);
-                        if (nextExp > 0) {
-                            InsteonBridgeThingQEntry newEntry = new InsteonBridgeThingQEntry(entry.getThingHandler(),
-                                    nextExp);
-                            messagesToSend.add(newEntry);
-                            logger.trace("device queue for {} rescheduled in {} msec",
-                                    entry.getThingHandler().getAddress(), nextExp - now);
-                        } else {
-                            // remove from hash since queue is no longer scheduled
-                            logger.debug("device queue for {} is empty!", entry.getThingHandler().getAddress());
+                        long nextExp;
+                        try {
+                            nextExp = entry.getThingHandler().processRequestQueue(port, now);
+                            if (nextExp > 0) {
+                                InsteonBridgeThingQEntry newEntry = new InsteonBridgeThingQEntry(
+                                        entry.getThingHandler(), nextExp);
+                                messagesToSend.add(newEntry);
+                                logger.trace("device queue for {} rescheduled in {} msec",
+                                        entry.getThingHandler().getAddress(), nextExp - now);
+                            } else {
+                                // remove from hash since queue is no longer scheduled
+                                logger.debug("device queue for {} is empty!", entry.getThingHandler().getAddress());
+                            }
+                        } catch (IOException e) {
+                            logger.error("request queue thread unable to write to port..", e);
                         }
                     }
                     logger.trace("waiting for request queues to fill");

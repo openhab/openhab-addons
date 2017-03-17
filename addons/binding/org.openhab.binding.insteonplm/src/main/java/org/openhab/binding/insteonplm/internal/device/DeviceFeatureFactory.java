@@ -117,7 +117,10 @@ public class DeviceFeatureFactory {
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element e = (Element) node;
                     if (e.getTagName().equals("feature")) {
-                        features.add(parseFeature(e));
+                        DeviceFeatureBuilder builder = parseFeature(e);
+                        if (builder != null) {
+                            features.add(builder);
+                        }
                     }
                 }
             }
@@ -131,27 +134,31 @@ public class DeviceFeatureFactory {
 
     private DeviceFeatureBuilder parseFeature(Element e) throws ParsingException {
         String name = e.getAttribute("name");
-        DeviceFeatureBuilder feature = new DeviceFeatureBuilder();
-        feature.setName(name);
-        feature.setTimeout(e.getAttribute("timeout"));
+        if (e.getAttribute("x10") != null) {
+            return null;
+        } else {
+            DeviceFeatureBuilder feature = new DeviceFeatureBuilder();
+            feature.setName(name);
+            feature.setTimeout(e.getAttribute("timeout"));
 
-        NodeList nodes = e.getChildNodes();
+            NodeList nodes = e.getChildNodes();
 
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element child = (Element) node;
-                if (child.getTagName().equals("message-handler")) {
-                    parseMessageHandler(child, feature);
-                } else if (child.getTagName().equals("command-handler")) {
-                    parseCommandHandler(child, feature);
-                } else if (child.getTagName().equals("message-dispatcher")) {
-                    parseMessageDispatcher(child, feature);
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element child = (Element) node;
+                    if (child.getTagName().equals("message-handler")) {
+                        parseMessageHandler(child, feature);
+                    } else if (child.getTagName().equals("command-handler")) {
+                        parseCommandHandler(child, feature);
+                    } else if (child.getTagName().equals("message-dispatcher")) {
+                        parseMessageDispatcher(child, feature);
+                    }
                 }
             }
-        }
 
-        return feature;
+            return feature;
+        }
     }
 
     private HandlerEntry makeHandlerEntry(Element e) throws ParsingException {

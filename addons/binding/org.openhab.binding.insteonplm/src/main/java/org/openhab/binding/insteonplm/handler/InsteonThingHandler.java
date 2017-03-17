@@ -1,5 +1,6 @@
 package org.openhab.binding.insteonplm.handler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,9 @@ import org.openhab.binding.insteonplm.internal.device.GroupMessageStateMachine;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
 import org.openhab.binding.insteonplm.internal.device.PollHandler;
+import org.openhab.binding.insteonplm.internal.driver.Port;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
 import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
@@ -49,7 +51,7 @@ public class InsteonThingHandler extends BaseThingHandler {
     // Default to 10 days ago.
     private DateTime lastMessageReceived = DateTime.now().minusDays(10);
     private InsteonAddress address;
-    private Message requestMessage;
+    private SendInsteonMessage requestMessage;
     private long lastTimeQueried = 0;
 
     public InsteonThingHandler(Thing thing) {
@@ -393,8 +395,9 @@ public class InsteonThingHandler extends BaseThingHandler {
      * Goes through the request queue and handles sending the next message, or not.
      *
      * @return the updated wait time for this queue
+     * @throws IOException
      */
-    public long processRequestQueue(long now) {
+    public long processRequestQueue(Port port, long now) throws IOException {
         synchronized (requestQueue) {
             if (requestQueue.isEmpty()) {
                 return 0;
@@ -417,6 +420,8 @@ public class InsteonThingHandler extends BaseThingHandler {
                 // Direct message, exciting.
                 logger.debug("Direct message on queue {} {}", getAddress(), entry.getMsg());
                 lastTimeQueried = now;
+                requestMessage = entry.getMsg();
+                port.writeMessage(entry.getMsg());
             }
         }
         return 0;
@@ -426,5 +431,16 @@ public class InsteonThingHandler extends BaseThingHandler {
     public double getRampTime() {
 
         return 1;
+    }
+
+    /**
+     * @return The default flags to send the message with.
+     */
+    public InsteonFlags getDefaultFlags() {
+        InsteonFlags flags = new InsteonFlags();
+        if (getInsteonGroup() != -1) {
+            flags.setGroup(true);
+        }
+        return flags;
     }
 }

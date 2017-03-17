@@ -7,6 +7,7 @@ import org.openhab.binding.insteonplm.internal.message.ModemMessageType;
 import org.openhab.binding.insteonplm.internal.message.modem.AllLinkRecordResponse;
 import org.openhab.binding.insteonplm.internal.message.modem.BaseModemMessage;
 import org.openhab.binding.insteonplm.internal.message.modem.GetFirstAllLinkingRecord;
+import org.openhab.binding.insteonplm.internal.message.modem.GetIMInfo;
 import org.openhab.binding.insteonplm.internal.message.modem.PureNack;
 import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
@@ -25,7 +26,7 @@ import com.google.common.collect.Lists;
  * @author David Bennett
  */
 public class DataParser {
-    private static final Logger logger = LoggerFactory.getLogger(Port.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataParser.class);
 
     private List<BaseModemMessage> pendingMessages = Lists.newArrayList();
     private int currentIndex;
@@ -52,11 +53,17 @@ public class DataParser {
         }
     }
 
-    public List<BaseModemMessage> getPendingMessages() {
-        return pendingMessages;
+    public List<BaseModemMessage> getAndClearPendingMessages() {
+        synchronized (pendingMessages) {
+            List<BaseModemMessage> mess = Lists.newArrayList(pendingMessages);
+            pendingMessages.clear();
+            return mess;
+        }
     }
 
     private void addByte(byte data) {
+        logger.error("Read {} {} index: {} length: {}", String.format("%02x", data), currentState.toString(),
+                currentIndex, lengthToLookFor);
         switch (currentState) {
             case LookingForStart:
                 if (data == START_OF_MESSAGE) {
@@ -71,7 +78,7 @@ public class DataParser {
                         if (lastMessageExtended) {
                             lengthToLookFor = 23;
                         } else {
-                            lengthToLookFor = 9;
+                            lengthToLookFor = 10;
                         }
                     } else {
                         lengthToLookFor = messageType.getReceiveLength() - 2;
@@ -122,6 +129,8 @@ public class DataParser {
                 return new StandardMessageReceived(bs);
             case ExtendedMessageReceived:
                 return new StandardMessageReceived(bs);
+            case GetImInfo:
+                return new GetIMInfo(bs);
             default:
                 logger.warn("Unsupported insteon message {}", messageType.toString());
                 return null;
@@ -131,7 +140,7 @@ public class DataParser {
     private void addPendingMessage(BaseModemMessage mess) {
         synchronized (pendingMessages) {
             this.pendingMessages.add(mess);
-            if (mess.getMessageType() == this.sendMessage.getMessageType()) {
+            if (this.sendMessage != null && mess.getMessageType() == this.sendMessage.getMessageType()) {
                 if (mess.isAck()) {
                     reply = ReplyType.GOT_ACK;
                 } else if (mess.isNack()) {

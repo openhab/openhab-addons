@@ -136,10 +136,10 @@ public class NumberMsgHandler extends MessageHandler {
                 return 0;
             }
         } catch (NoSuchMethodException | SecurityException e) {
-            logger.error("Unable to find method get{} on {}", lowByte, obj);
+            logger.error("Unable to find method get{} on {}", ref, obj);
             return 0;
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            logger.error("Unable to call method get{} on {}", lowByte, obj);
+            logger.error("Unable to call method get{} on {}", ref, obj);
             return 0;
         }
     }

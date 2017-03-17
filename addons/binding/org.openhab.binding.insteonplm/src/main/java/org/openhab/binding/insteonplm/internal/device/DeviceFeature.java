@@ -17,8 +17,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.commands.NoOpCommandHandler;
 import org.openhab.binding.insteonplm.internal.device.messages.DefaultMsgHandler;
-import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
+import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,7 +163,7 @@ public class DeviceFeature {
         return m_name + " (" + m_commandHandlers.size() + ":" + m_msgHandlers.size() + ")";
     }
 
-    public void handleGroupMessage(InsteonThingHandler insteonThingHandler, int group, byte command, Message message,
-            Channel channel) {
+    public void handleGroupMessage(InsteonThingHandler insteonThingHandler, int group, byte command,
+            StandardMessageReceived message, Channel channel) {
     }
 }

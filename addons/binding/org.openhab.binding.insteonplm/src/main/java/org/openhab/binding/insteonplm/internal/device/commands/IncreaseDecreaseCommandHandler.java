@@ -1,17 +1,13 @@
 package org.openhab.binding.insteonplm.internal.device.commands;
 
-import java.io.IOException;
-
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
-import org.openhab.binding.insteonplm.internal.message.Message;
 import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
+import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,22 +26,16 @@ public class IncreaseDecreaseCommandHandler extends CommandHandler {
 
     @Override
     public void handleCommand(InsteonThingHandler conf, ChannelUID channel, Command cmd) {
-        try {
-            if (cmd == IncreaseDecreaseType.INCREASE) {
-                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
-                        StandardInsteonMessages.Bright, (byte) 0x00, conf.getAddress());
-                conf.enqueueMessage(m);
-                logger.info("{}: sent msg to brighten {}", nm(), conf.getAddress());
-            } else if (cmd == IncreaseDecreaseType.DECREASE) {
-                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(),
-                        StandardInsteonMessages.Dim, (byte) 0x00, conf.getAddress());
-                conf.enqueueMessage(m);
-                logger.info("{}: sent msg to dimm {}", nm(), conf.getAddress());
-            }
-        } catch (IOException e) {
-            logger.error("{}: command send i/o error: ", nm(), e);
-        } catch (FieldException e) {
-            logger.error("{}: command send message creation error ", nm(), e);
+        if (cmd == IncreaseDecreaseType.INCREASE) {
+            SendInsteonMessage m = new SendInsteonMessage(conf.getAddress(), conf.getDefaultFlags(),
+                    StandardInsteonMessages.Bright, (byte) 0x00);
+            conf.enqueueMessage(m);
+            logger.info("{}: sent msg to brighten {}", nm(), conf.getAddress());
+        } else if (cmd == IncreaseDecreaseType.DECREASE) {
+            SendInsteonMessage m = new SendInsteonMessage(conf.getAddress(), conf.getDefaultFlags(),
+                    StandardInsteonMessages.Dim, (byte) 0x00);
+            conf.enqueueMessage(m);
+            logger.info("{}: sent msg to dimm {}", nm(), conf.getAddress());
         }
     }
 }

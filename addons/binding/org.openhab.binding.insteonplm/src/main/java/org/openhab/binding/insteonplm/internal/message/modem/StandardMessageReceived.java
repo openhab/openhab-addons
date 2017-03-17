@@ -19,7 +19,6 @@ public class StandardMessageReceived extends BaseModemMessage {
     private final InsteonFlags flags;
     private final StandardInsteonMessages cmd1;
     private final Byte cmd2;
-    private final byte crc;
     private final byte[] data;
 
     public StandardMessageReceived(byte[] data) {
@@ -46,9 +45,7 @@ public class StandardMessageReceived extends BaseModemMessage {
             cmd1 = tmp;
             cmd2 = data[8];
             this.data = new byte[0];
-            crc = data[9];
         }
-        checkCrc();
     }
 
     public InsteonAddress getFromAddress() {
@@ -71,16 +68,8 @@ public class StandardMessageReceived extends BaseModemMessage {
         return cmd2;
     }
 
-    public byte getCrc() {
-        return crc;
-    }
-
     public byte[] getData() {
         return data;
-    }
-
-    private void checkCrc() {
-
     }
 
     @Override

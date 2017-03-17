@@ -1,17 +1,13 @@
 package org.openhab.binding.insteonplm.internal.device.commands;
 
-import java.io.IOException;
-
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.CommandHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
-import org.openhab.binding.insteonplm.internal.message.ExtendedInsteonMessage;
-import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
+import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,25 +49,17 @@ public class LEDOnOffCommandHandler extends CommandHandler {
 
     @Override
     public void handleCommand(InsteonThingHandler conf, ChannelUID channelId, Command cmd) {
-        try {
-            // Get from the channel properties, default 0 if no button exists.
-            if (cmd == OnOffType.ON) {
-                Message m = conf.getMessageFactory().makeExtendedMessage(new InsteonFlags(),
-                        ExtendedInsteonMessage.ExtendedGetSet, new byte[] { buttonNumber, (byte) 0x09, (byte) 0x01 },
-                        conf.getAddress());
-                conf.enqueueMessage(m);
-                logger.info("{}: sent msg to switch {} on", nm(), conf.getAddress());
-            } else if (cmd == OnOffType.OFF) {
-                Message m = conf.getMessageFactory().makeExtendedMessage(new InsteonFlags(),
-                        ExtendedInsteonMessage.ExtendedGetSet, new byte[] { buttonNumber, (byte) 0x09, (byte) 0x00 },
-                        conf.getAddress());
-                conf.enqueueMessage(m);
-                logger.info("{}: sent msg to switch {} off", nm(), conf.getAddress());
-            }
-        } catch (IOException e) {
-            logger.error("{}: command send i/o error: ", nm(), e);
-        } catch (FieldException e) {
-            logger.error("{}: command send message creation error ", nm(), e);
+        // Get from the channel properties, default 0 if no button exists.
+        if (cmd == OnOffType.ON) {
+            SendInsteonMessage m = new SendInsteonMessage(conf.getAddress(), conf.getDefaultFlags(),
+                    StandardInsteonMessages.ExtendedGetSet, new byte[] { buttonNumber, (byte) 0x09, (byte) 0x01 });
+            conf.enqueueMessage(m);
+            logger.info("{}: sent msg to switch {} on", nm(), conf.getAddress());
+        } else if (cmd == OnOffType.OFF) {
+            SendInsteonMessage m = new SendInsteonMessage(conf.getAddress(), conf.getDefaultFlags(),
+                    StandardInsteonMessages.ExtendedGetSet, new byte[] { buttonNumber, (byte) 0x09, (byte) 0x00 });
+            conf.enqueueMessage(m);
+            logger.info("{}: sent msg to switch {} off", nm(), conf.getAddress());
         }
     }
 }

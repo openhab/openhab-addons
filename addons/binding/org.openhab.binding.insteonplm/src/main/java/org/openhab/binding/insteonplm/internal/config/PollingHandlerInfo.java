@@ -3,6 +3,7 @@ package org.openhab.binding.insteonplm.internal.config;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
 import org.openhab.binding.insteonplm.internal.device.PollHandler;
+import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ public class PollingHandlerInfo {
     byte data1 = 0;
     byte data2 = 0;
     byte data3 = 0;
-    byte cmd1 = 0;
+    StandardInsteonMessages cmd1;
     byte cmd2 = 0;
     ExtendedData extendedData;
     String pollHandlerType;
@@ -32,7 +33,7 @@ public class PollingHandlerInfo {
             pollHandlerType = typeArgs[0];
             String[] args = typeArgs[1].split(",");
             extendedData = InsteonPLMBindingConstants.ExtendedData.valueOf(args[0]);
-            cmd1 = fromHexString(args[1]);
+            cmd1 = StandardInsteonMessages.fromByte(fromHexString(args[1]));
             cmd2 = fromHexString(args[2]);
             if (args.length > 3) {
                 data1 = fromHexString(args[3]);

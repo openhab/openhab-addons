@@ -11,7 +11,6 @@ package org.openhab.binding.insteonplm.internal.device;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
-import org.openhab.binding.insteonplm.internal.message.MessageFactory;
 import org.openhab.binding.insteonplm.internal.message.StandardInsteonMessages;
 import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.slf4j.Logger;
@@ -39,7 +38,7 @@ public abstract class PollHandler {
      *
      * @param feature The device feature being polled
      */
-    PollHandler(DeviceFeature feature, MessageFactory messageFactory) {
+    PollHandler(DeviceFeature feature) {
         m_feature = feature;
     }
 
@@ -84,8 +83,8 @@ public abstract class PollHandler {
 
     public static class FlexPollHandler extends PollHandler {
 
-        FlexPollHandler(DeviceFeature f, MessageFactory factory) {
-            super(f, factory);
+        FlexPollHandler(DeviceFeature f) {
+            super(f);
         }
 
         @Override
@@ -110,8 +109,8 @@ public abstract class PollHandler {
     }
 
     public static class NoPollHandler extends PollHandler {
-        NoPollHandler(DeviceFeature f, MessageFactory messageFactory) {
-            super(f, messageFactory);
+        NoPollHandler(DeviceFeature f) {
+            super(f);
         }
 
         @Override

@@ -1,6 +1,5 @@
 package org.openhab.binding.insteonplm.internal.device.commands;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -9,8 +8,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
-import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
-import org.openhab.binding.insteonplm.internal.message.Message;
+import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +32,8 @@ public class RampOnOffCommandHandler extends RampCommandHandler {
                 double ramptime = conf.getRampTime();
                 int ramplevel = getRampLevel(conf, 100);
                 byte cmd2 = encode(ramptime, ramplevel);
-                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), getOnCmd(), cmd2,
-                        conf.getInsteonGroup(), conf.getAddress());
+                SendInsteonMessage m = new SendInsteonMessage(conf.getAddress(), conf.getDefaultFlags(), getOnCmd(),
+                        cmd2);
                 conf.enqueueMessage(m);
                 logger.info("{}: sent ramp on to switch {} time {} level {} cmd1 {}", nm(), conf.getAddress(), ramptime,
                         ramplevel, getOnCmd());
@@ -43,15 +41,13 @@ public class RampOnOffCommandHandler extends RampCommandHandler {
                 double ramptime = conf.getRampTime();
                 int ramplevel = getRampLevel(conf, 0 /* ignored */);
                 byte cmd2 = encode(ramptime, ramplevel);
-                Message m = conf.getMessageFactory().makeStandardMessage(new InsteonFlags(), getOffCmd(), cmd2,
-                        conf.getInsteonGroup(), conf.getAddress());
+                SendInsteonMessage m = new SendInsteonMessage(conf.getAddress(), conf.getDefaultFlags(), getOffCmd(),
+                        cmd2);
                 conf.enqueueMessage(m);
                 logger.info("{}: sent ramp off to switch {} time {} cmd1 {}", nm(), conf.getAddress(), ramptime,
                         getOffCmd());
             }
             // expect to get a direct ack after this!
-        } catch (IOException e) {
-            logger.error("{}: command send i/o error: ", nm(), e);
         } catch (FieldException e) {
             logger.error("{}: command send message creation error ", nm(), e);
         }

@@ -138,7 +138,11 @@ public class SendInsteonMessage extends BaseModemMessage {
             payload[2] = toAddress.getLowByte();
             payload[3] = flags.getByte();
             payload[4] = cmd1.getCmd1();
-            payload[5] = cmd2;
+            if (cmd2 == null) {
+                payload[5] = cmd1.getCmd2();
+            } else {
+                payload[5] = cmd2;
+            }
             return payload;
         }
     }
@@ -161,5 +165,20 @@ public class SendInsteonMessage extends BaseModemMessage {
 
     public byte[] getData() {
         return data;
+    }
+
+    public void setCRC() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void setCRC2() {
+        // TODO Auto-generated method stub
+
+    }
+
+    // 10 seconds
+    public long getDirectAckTimeout() {
+        return 10000;
     }
 }
