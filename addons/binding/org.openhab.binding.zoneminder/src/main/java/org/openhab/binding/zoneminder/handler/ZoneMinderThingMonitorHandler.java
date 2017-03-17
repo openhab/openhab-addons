@@ -778,13 +778,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
 
                     logger.warn("{}: HTTP Response AnalysisDaemon: Code='{}', Message='{}'", getLogIdentifier(),
                             analysisDaemon.getHttpResponseCode(), analysisDaemon.getHttpResponseMessage());
-
                 }
                 if (frameDaemon.getHttpResponseCode() != 200) {
                     channelDaemonFrame = false;
                     logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
                             frameDaemon.getHttpResponseCode(), frameDaemon.getHttpResponseMessage());
-
                 }
 
             } else {
@@ -816,17 +814,14 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
                     channelDaemonFrame = false;
                 }
             }
-        } finally
-
-        {
+        } finally {
             releaseSession();
         }
 
         RecalculateChannelStates();
 
-        if ((channelForceAlarm == false) && (channelAlarmedState == false) && (DataRefreshPriorityEnum.HIGH_PRIORITY ==
-
-        getRefreshPriority())) {
+        if ((channelForceAlarm == false) && (channelAlarmedState == false)
+                && (DataRefreshPriorityEnum.HIGH_PRIORITY == getRefreshPriority())) {
             stopPriorityRefresh();
         }
 

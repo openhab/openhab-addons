@@ -669,9 +669,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     statusDescription = "Session lost connection to ZoneMinder Server";
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
 
-                    if (curBridgeStatus != ThingStatus.OFFLINE) {
-                        logger.error("{}: {}", getLogIdentifier(), statusDescription);
-                    }
                     return;
                 }
 
@@ -684,7 +681,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
                     statusDescription = "ZoneMinder Server Daemon not running";
 
-                    logger.error("{}: {} (state='{}' and ResponseCode='{}')", getLogIdentifier(), statusDescription,
+                    logger.debug("{}: {} (state='{}' and ResponseCode='{}')", getLogIdentifier(), statusDescription,
                             daemonStatus.getStatus(), daemonStatus.getHttpResponseCode());
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
@@ -712,10 +709,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "Configuration not found";
-
-                    if (curBridgeStatus != ThingStatus.OFFLINE) {
-                        logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
-                    }
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
 
@@ -723,16 +716,12 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "Host not found in configuration";
-                    if (curBridgeStatus != ThingStatus.OFFLINE) {
-                        logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
-                    }
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 } else if (config.getProtocol() == null) {
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "Unknown protocol in configuration";
-                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
@@ -741,9 +730,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "Invalid HTTP port";
-                    if (curBridgeStatus != ThingStatus.OFFLINE) {
-                        logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
-                    }
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
@@ -752,18 +738,12 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "Invalid telnet port";
-                    if (curBridgeStatus != ThingStatus.OFFLINE) {
-                        logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
-                    }
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 } else if (!ZoneMinderFactory.isZoneMinderUrl(connection)) {
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "URL not a ZoneMinder Server";
-                    if (curBridgeStatus != ThingStatus.OFFLINE) {
-                        logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
-                    }
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
@@ -772,9 +752,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "Cannot access ZoneMinder Server. Check provided usercredentials";
-                    if (curBridgeStatus != ThingStatus.OFFLINE) {
-                        logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
-                    }
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
@@ -807,9 +784,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "ZoneMinder Server 'OPT_USE_API' not enabled";
-                    if (curBridgeStatus != ThingStatus.OFFLINE) {
-                        logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
-                    }
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
 
@@ -817,7 +791,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "ZoneMinder Server Daemon not running";
-                    logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 }
@@ -826,9 +799,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                     newStatus = ThingStatus.OFFLINE;
                     statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
                     statusDescription = "ZoneMinder Server option 'OPT_TRIGGERS' not enabled";
-                    if (curBridgeStatus != ThingStatus.OFFLINE) {
-                        logger.error("{}: Bridge OFFLINE because of '{}'", getLogIdentifier(), statusDescription);
-                    }
                     updateBridgeStatus(newStatus, statusDetail, statusDescription);
                     return;
                 } else {
