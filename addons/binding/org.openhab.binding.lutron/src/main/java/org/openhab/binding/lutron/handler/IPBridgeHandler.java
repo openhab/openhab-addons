@@ -301,7 +301,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
             Matcher matcher = STATUS_REGEX.matcher(line);
 
-            if (matcher.matches()) {
+            if (matcher.find()) {
                 LutronCommandType type = LutronCommandType.valueOf(matcher.group(1));
 
                 if (type == LutronCommandType.SYSTEM) {
