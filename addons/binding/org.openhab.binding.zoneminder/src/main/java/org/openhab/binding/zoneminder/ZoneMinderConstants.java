@@ -89,6 +89,7 @@ public class ZoneMinderConstants {
 
     public final static String PARAMETER_MONITOR_EVENTNOTE_DEFAULTVALUE = "openHAB triggered event";
 
+    // ZoneMinder Event types
     public final static String MONITOR_EVENT_NONE = "";
     public final static String MONITOR_EVENT_SIGNAL = "Signal";
     public final static String MONITOR_EVENT_MOTION = "Motion";
