@@ -22,7 +22,7 @@
 			</channel>
 			<channel id="panel_command" typeId="panel_command">
 				<label>Panel Command</label>
-				<description>Send Command</description>
+				<description>Send Selected Command</description>
 			</channel>
 			<channel id="panel_system_error" typeId="message">
 				<label>Panel System Error</label>

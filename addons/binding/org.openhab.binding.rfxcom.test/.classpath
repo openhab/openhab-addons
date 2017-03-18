@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.smarthome.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.smarthome.core.thing"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.smarthome.core.thing.xml.test"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

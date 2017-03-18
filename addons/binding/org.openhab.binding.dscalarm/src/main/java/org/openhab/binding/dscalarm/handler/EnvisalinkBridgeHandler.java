@@ -101,8 +101,8 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.debug("openConnection(): Connecting to Envisalink ");
 
             tcpSocket = new Socket();
-            SocketAddress TPIsocketAddress = new InetSocketAddress(ipAddress, tcpPort);
-            tcpSocket.connect(TPIsocketAddress, connectionTimeout);
+            SocketAddress tpiSocketAddress = new InetSocketAddress(ipAddress, tcpPort);
+            tcpSocket.connect(tpiSocketAddress, connectionTimeout);
             tcpOutput = new OutputStreamWriter(tcpSocket.getOutputStream(), "US-ASCII");
             tcpInput = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
 

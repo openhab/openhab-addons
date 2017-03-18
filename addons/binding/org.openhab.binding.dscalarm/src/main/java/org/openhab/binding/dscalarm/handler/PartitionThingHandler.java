@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
@@ -97,37 +98,42 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (dscAlarmBridgeHandler == null) {
-            logger.warn("DSC Alarm bridge handler not available. Cannot handle command without bridge.");
+
+        logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
+
+        if (command instanceof RefreshType) {
             return;
         }
 
-        if (dscAlarmBridgeHandler.isConnected()) {
-            switch (channelUID.getId()) {
-                case PARTITION_ARM_MODE:
-                    int partitionNumber = getPartitionNumber();
-                    if (command.toString().equals("0")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionDisarmControl,
-                                String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("1")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlAway,
-                                String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("2")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlStay,
-                                String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("3")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
-                                String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("4")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
-                                String.valueOf(partitionNumber));
-                    } else if (command.toString().equals("5")) {
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlWithUserCode,
-                                String.valueOf(partitionNumber));
-                    }
-                    break;
-                default:
-                    break;
+        if (dscAlarmBridgeHandler != null) {
+
+            if (dscAlarmBridgeHandler.isConnected()) {
+                switch (channelUID.getId()) {
+                    case PARTITION_ARM_MODE:
+                        int partitionNumber = getPartitionNumber();
+                        if (command.toString().equals("0")) {
+                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionDisarmControl,
+                                    String.valueOf(partitionNumber));
+                        } else if (command.toString().equals("1")) {
+                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlAway,
+                                    String.valueOf(partitionNumber));
+                        } else if (command.toString().equals("2")) {
+                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlStay,
+                                    String.valueOf(partitionNumber));
+                        } else if (command.toString().equals("3")) {
+                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
+                                    String.valueOf(partitionNumber));
+                        } else if (command.toString().equals("4")) {
+                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
+                                    String.valueOf(partitionNumber));
+                        } else if (command.toString().equals("5")) {
+                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlWithUserCode,
+                                    String.valueOf(partitionNumber));
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
