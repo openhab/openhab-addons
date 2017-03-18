@@ -31,7 +31,7 @@ The DSC Alarm binding incorporates several discovery modes in order to find DSC 
 
 ## Thing Configuration
 
-DSC Alarm things can be configured either through the online configuration utility via discovery, or manually through the 'dscalarm.thing' configuration file.  The following table shows the available configuration parameters for each thing.
+DSC Alarm things can be configured either through the online configuration utility via discovery, or manually through the 'dscalarm.things' configuration file.  The following table shows the available configuration parameters for each thing.
 
 <table>
 	<tr><td><b>Thing</b></td><td><b>Configuration Parameters</b></td></tr>	
@@ -44,7 +44,7 @@ DSC Alarm things can be configured either through the online configuration utili
 	<tr><td>keypad</td><td>No parameters</td></tr>
 </table>
 
-The binding can be configured manually if discovery is not used.  A thing configuration file in the format 'bindingName.thing' would need to be created, and placed in the 'conf/things' folder.  Here is an example of a thing configuration file called 'dscalarm.thing':
+The binding can be configured manually if discovery is not used.  A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.  Here is an example of a thing configuration file called 'dscalarm.things':
 
 ```
 Bridge dscalarm:envisalink:MyBridgeName [ ipAddress="192.168.0.100" ]
