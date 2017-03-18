@@ -31,18 +31,19 @@ import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
 /**
- * The {@link DisplayTextVirtualDatapoint} adds multiple virtual datapoints to the HM-Dis-WM55 device to easily send
- * colored text and icons to the display.
+ * The {@link DisplayTextVirtualDatapoint} adds multiple virtual datapoints to the HM-Dis-WM55 and HM-Dis-EP-WM55
+ * devices to easily handle colored text, icons, the led and the beeper of the display.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 
 public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler {
-    private static final int DISPLAY_LINES = 5;
 
     private static final String DATAPOINT_NAME_DISPLAY_LINE = "DISPLAY_LINE_";
     private static final String DATAPOINT_NAME_DISPLAY_COLOR = "DISPLAY_COLOR_";
     private static final String DATAPOINT_NAME_DISPLAY_ICON = "DISPLAY_ICON_";
+    private static final String DATAPOINT_NAME_DISPLAY_LED = "DISPLAY_LED";
+    private static final String DATAPOINT_NAME_DISPLAY_BEEPER = "DISPLAY_BEEPER";
     private static final String DATAPOINT_NAME_DISPLAY_SUBMIT = "DISPLAY_SUBMIT";
 
     private static final String START = "0x02";
@@ -51,6 +52,9 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
     private static final String COLOR = "0x11";
     private static final String LF = "0x0a";
     private static final String ICON = "0x13";
+
+    private static final String BEEPER_START = "0x14";
+    private static final String BEEPER_END = "0x1c";
 
     private static Map<String, String> replaceMap = new HashMap<String, String>();
 
@@ -98,7 +102,6 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                 return null;
             }
         }
-
     }
 
     /**
@@ -139,7 +142,71 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                 return null;
             }
         }
+    }
 
+    /**
+     * Available Beeper codes.
+     */
+    private enum Beeper {
+        OFF("0xc0"),
+        LONG_LONG("0xc1"),
+        LONG_SHORT("0xc2"),
+        LONG_SHORT_SHORT("0xc3"),
+        SHORT("0xc4"),
+        SHORT_SHORT("0xc5"),
+        LONG("0xc6");
+
+        private final String code;
+
+        private Beeper(String code) {
+            this.code = code;
+        }
+
+        protected String getCode() {
+            return code;
+        }
+
+        /**
+         * Returns the color code.
+         */
+        public static String getCode(String name) {
+            try {
+                return valueOf(name).getCode();
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Available LED colors.
+     */
+    private enum Led {
+        OFF("0xf0"),
+        RED("0xf1"),
+        GREEN("0xf2"),
+        ORANGE("0xf3");
+
+        private final String code;
+
+        private Led(String code) {
+            this.code = code;
+        }
+
+        protected String getCode() {
+            return code;
+        }
+
+        /**
+         * Returns the color code.
+         */
+        public static String getCode(String name) {
+            try {
+                return valueOf(name).getCode();
+            } catch (Exception ex) {
+                return null;
+            }
+        }
     }
 
     /**
@@ -155,30 +222,39 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
      */
     @Override
     public void initialize(HmDevice device) {
-        if (device.getType().equals(DEVICE_TYPE_STATUS_DISPLAY)) {
+        if (device.getType().equals(DEVICE_TYPE_STATUS_DISPLAY) || isEpDisplay(device)) {
             for (HmChannel channel : device.getChannels()) {
                 if (channel.hasDatapoint(new HmDatapointInfo(HmParamsetType.VALUES, channel, DATAPOINT_NAME_SUBMIT))) {
-                    for (int i = 1; i <= DISPLAY_LINES; i++) {
+                    for (int i = 1; i <= getLineCount(device); i++) {
                         addDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_LINE + i, HmValueType.STRING,
                                 null, false);
-                        HmDatapoint dpColor = addDatapoint(device, channel.getNumber(),
-                                DATAPOINT_NAME_DISPLAY_COLOR + i, HmValueType.ENUM, null, false);
-                        dpColor.setOptions(getEnumNames(Color.class));
-                        dpColor.setMinValue(0);
-                        dpColor.setMaxValue(Color.values().length);
 
-                        HmDatapoint dpIcon = addDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_ICON + i,
-                                HmValueType.ENUM, null, false);
-                        dpIcon.setOptions(getEnumNames(Icon.class));
-                        dpIcon.setMinValue(0);
-                        dpIcon.setMaxValue(Icon.values().length);
-
+                        addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_COLOR + i,
+                                Color.class);
+                        addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_ICON + i,
+                                Icon.class);
+                    }
+                    if (isEpDisplay(device)) {
+                        addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_BEEPER,
+                                Beeper.class);
+                        addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_LED, Led.class);
                     }
                     addDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_SUBMIT, HmValueType.BOOL, false,
                             false);
                 }
             }
         }
+    }
+
+    /**
+     * Adds a Datapoint to the device with the values of the given enum.
+     */
+    private void addEnumDisplayDatapoint(HmDevice device, int channelNumber, String datapointName,
+            Class<? extends Enum<?>> e) {
+        HmDatapoint dpEnum = addDatapoint(device, channelNumber, datapointName, HmValueType.ENUM, null, false);
+        dpEnum.setOptions(getEnumNames(e));
+        dpEnum.setMinValue(0);
+        dpEnum.setMaxValue(e.getEnumConstants().length);
     }
 
     /**
@@ -189,14 +265,31 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
     }
 
     /**
+     * Returns the number of lines of the display.
+     */
+    private int getLineCount(HmDevice device) {
+        return (DEVICE_TYPE_STATUS_DISPLAY.equals(device.getType()) ? 5 : 3);
+    }
+
+    /**
+     * Returns true, if the display is a EP display.
+     */
+    private boolean isEpDisplay(HmDevice device) {
+        return DEVICE_TYPE_EP_STATUS_DISPLAY.equals(device.getType());
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public boolean canHandleCommand(HmDatapoint dp, Object value) {
-        return dp.getChannel().getDevice().getType().equals(DEVICE_TYPE_STATUS_DISPLAY)
+        HmDevice device = dp.getChannel().getDevice();
+        return (device.getType().equals(DEVICE_TYPE_STATUS_DISPLAY) || isEpDisplay(device))
                 && (getName().equals(dp.getName()) || dp.getName().startsWith(DATAPOINT_NAME_DISPLAY_LINE)
                         || dp.getName().startsWith(DATAPOINT_NAME_DISPLAY_COLOR)
-                        || dp.getName().startsWith(DATAPOINT_NAME_DISPLAY_ICON));
+                        || dp.getName().startsWith(DATAPOINT_NAME_DISPLAY_ICON)
+                        || dp.getName().equals(DATAPOINT_NAME_DISPLAY_LED)
+                        || dp.getName().equals(DATAPOINT_NAME_DISPLAY_BEEPER));
     }
 
     /**
@@ -214,7 +307,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
             message.add(START);
             message.add(LF);
 
-            for (int i = 1; i <= DISPLAY_LINES; i++) {
+            for (int i = 1; i <= getLineCount(channel.getDevice()); i++) {
                 String line = ObjectUtils.toString(
                         channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_LINE + i).getValue());
                 if (StringUtils.isEmpty(line)) {
@@ -238,6 +331,24 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                 }
                 message.add(LF);
             }
+
+            if (isEpDisplay(channel.getDevice())) {
+                String beeper = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_BEEPER)
+                        .getOptionValue();
+                String beeperCode = Beeper.getCode(beeper);
+                if (StringUtils.isNotBlank(beeperCode)) {
+                    message.add(BEEPER_START);
+                    message.add(beeperCode);
+                    message.add(BEEPER_END);
+                }
+
+                String led = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_LED).getOptionValue();
+                String ledCode = Led.getCode(led);
+                if (StringUtils.isNotBlank(ledCode)) {
+                    message.add(ledCode);
+                }
+            }
+
             message.add(STOP);
 
             gateway.sendDatapoint(channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_SUBMIT),
