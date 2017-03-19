@@ -134,8 +134,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         case CHANNEL_PLAYURI:
             if (command instanceof StringType) {
                 playURI(command);
+                updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
             } else if (command.equals(RefreshType.REFRESH)) {
-                // updateState(CHANNEL_PLAYURI, new StringType(""));
+                updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
             }
             break;
         case CHANNEL_PVROPENTV:
@@ -143,8 +144,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
                         .as(KodiChannelConfig.class);
                 playPVR(command, "tv", config);
+                updateState(CHANNEL_PVROPENTV, UnDefType.UNDEF);
             } else if (command.equals(RefreshType.REFRESH)) {
-                // updateState(CHANNEL_PVROPENTV, new StringType(""));
+                updateState(CHANNEL_PVROPENTV, UnDefType.UNDEF);
             }
             break;
         case CHANNEL_PVROPENRADIO:
@@ -152,15 +154,17 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
                         .as(KodiChannelConfig.class);
                 playPVR(command, "radio", config);
+                updateState(CHANNEL_PVROPENRADIO, UnDefType.UNDEF);
             } else if (command.equals(RefreshType.REFRESH)) {
-                // updateState(CHANNEL_PVROPENRADIO, new StringType(""));
+                updateState(CHANNEL_PVROPENRADIO, UnDefType.UNDEF);
             }
             break;
         case CHANNEL_SHOWNOTIFICATION:
             if (command instanceof StringType) {
                 connection.showNotification(command.toString());
+                updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
             } else if (command.equals(RefreshType.REFRESH)) {
-                // updateState(CHANNEL_SHOWNOTIFICATION, new StringType(""));
+                updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
             }
             break;
         case CHANNEL_INPUT:

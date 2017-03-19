@@ -97,5 +97,4 @@ public class KodiAudioSink implements AudioSink {
     public void setVolume(PercentType volume) {
         handler.setNotificationSoundVolume(volume);
     }
-
 }
