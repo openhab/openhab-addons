@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -214,7 +215,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
 
     private void handlePlayUri(Command command) {
         if (command instanceof StringType) {
-            playMedia(null, null, command.toString(), null);
+            playMedia(null, command.toString(), null);
         }
     }
 
@@ -272,7 +273,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
 
     private void handleMute(final Command command) {
         if (command instanceof OnOffType) {
-            final boolean mute = ((OnOffType) command) == OnOffType.ON;
+            final boolean mute = command == OnOffType.ON;
             try {
                 chromecast.setMuted(mute);
                 updateStatus(ThingStatus.ONLINE);
@@ -369,7 +370,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
 
     @Override
     public void process(AudioStream audioStream) throws UnsupportedAudioFormatException {
-        String url = null;
+        String url;
         if (audioStream instanceof URLAudioStream) {
             // it is an external URL, the speaker can access it itself and play it.
             URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
@@ -389,11 +390,12 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
                 return;
             }
         }
-        String mimeType = audioStream.getFormat().getCodec() == AudioFormat.CODEC_MP3 ? "audio/mpeg" : "audio/wav";
-        playMedia("Notification", null, url, mimeType);
+        String mimeType =
+            Objects.equals(audioStream.getFormat().getCodec(), AudioFormat.CODEC_MP3) ? "audio/mpeg" : "audio/wav";
+        playMedia("Notification", url, mimeType);
     }
 
-    private void playMedia(String title, String imgUrl, String url, String mimeType) {
+    private void playMedia(String title, String url, String mimeType) {
         try {
             if (chromecast.isAppAvailable(MEDIA_PLAYER)) {
                 if (!chromecast.isAppRunning(MEDIA_PLAYER)) {
@@ -402,7 +404,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
                     logger.debug("Application launched: {}", app);
                 }
                 if (url != null) {
-                    chromecast.load(title, imgUrl, url, mimeType);
+                    chromecast.load(title, null, url, mimeType);
                 }
             } else {
                 logger.warn("Missing media player app - cannot process media.");
