@@ -185,7 +185,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
         }
 
         if (command instanceof RefreshType) {
-            // TODO handle command RefreshType
+            handleRefresh();
             return;
         }
 
@@ -205,6 +205,28 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
             default:
                 logger.debug("Received command {} for unknown channel: {}", command, channelUID);
                 break;
+        }
+    }
+
+    private void handleRefresh() {
+        Status status;
+        try {
+            status = chromecast.getStatus();
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IOException ex) {
+            logger.debug("Failed to request status: {}", ex.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            return;
+        }
+
+        try {
+            if (status.getRunningApp() != null) {
+                chromecast.getMediaStatus();
+            }
+
+        } catch (IOException ex) {
+            logger.debug("Failed to request media status with a running app: {}", ex.getMessage());
+            // We were just able to request status, so let's not put the device OFFLINE.
         }
     }
 
