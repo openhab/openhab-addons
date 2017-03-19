@@ -8,15 +8,6 @@
  */
 package org.openhab.binding.chromecast.handler;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
@@ -40,7 +31,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.chromecast.ChromecastBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import su.litvak.chromecast.api.v2.Application;
 import su.litvak.chromecast.api.v2.ChromeCast;
 import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent;
@@ -50,6 +40,15 @@ import su.litvak.chromecast.api.v2.MediaStatus.IdleReason;
 import su.litvak.chromecast.api.v2.MediaStatus.PlayerState;
 import su.litvak.chromecast.api.v2.Status;
 import su.litvak.chromecast.api.v2.Volume;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The {@link ChromecastHandler} is responsible for handling commands, which are
@@ -182,10 +181,6 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (chromecast == null) {
-            return;
-        }
-        if (!chromecast.isConnected()) {
-            logger.debug("{} command ignored because binding not connected to the device", command);
             return;
         }
 
