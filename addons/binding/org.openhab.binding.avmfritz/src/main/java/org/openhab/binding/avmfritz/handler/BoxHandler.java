@@ -176,7 +176,21 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                     logger.warn("unknown state " + device.getSwitch().getState() + " for channel " + channel.getUID());
                 }
             }
-        } else {
+            if (device.isDectThermostat()) {
+                Channel channelSetTemperature = thing.getChannel(CHANNEL_SET_TEMP);
+                this.updateState(channelSetTemperature.getUID(),
+                        new DecimalType(device.getHkr().getTargetTemperatureCelsius()));
+                Channel channel = thing.getChannel(CHANNEL_SWITCH_THERMOSTAT);
+                if (device.getHkr().isClosed()) {
+                    this.updateState(channel.getUID(), OnOffType.ON);
+                } else {
+                    this.updateState(channel.getUID(), OnOffType.OFF);
+                    thing.getConfiguration().put(SET_TEMPERATURE_CELSIUS, device.getHkr().getTargetTemperatureCelsius());
+                }
+            }
+        } else
+
+        {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, null));
         }
     }

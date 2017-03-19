@@ -10,6 +10,7 @@ package org.openhab.binding.avmfritz.handler;
 
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,8 +31,10 @@ import org.openhab.binding.avmfritz.BindingConstants;
 import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.ThermostatModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetTemperatureCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,6 +158,59 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                     fritzBox.asyncGet(callback);
                 }
             }
+        } else if (channelUID.getId().equals(CHANNEL_SET_TEMP)) {
+            logger.debug("update " + channelUID.getAsString() + " with " + command.toString());
+            FritzahaWebInterface fritzBox = null;
+            Bridge bridge = this.getBridge();
+            if (bridge != null && bridge.getHandler() instanceof BoxHandler) {
+                fritzBox = ((BoxHandler) bridge.getHandler()).getWebInterface();
+            }
+            if (fritzBox != null && this.getThing().getConfiguration().get(THING_AIN) != null) {
+                if (command instanceof DecimalType) {
+                    Channel channel = thing.getChannel(CHANNEL_SWITCH_THERMOSTAT);
+                    this.updateState(channel.getUID(), OnOffType.OFF);
+                    thing.getConfiguration().put(SET_TEMPERATURE_CELSIUS, ((DecimalType) command).toBigDecimal());
+                    FritzAhaSetTemperatureCallback callback = new FritzAhaSetTemperatureCallback(fritzBox,
+                            this.getThing().getConfiguration().get(THING_AIN).toString(),
+                            new DecimalType(ThermostatModel
+                                    .CovertCelsiusToSetTemperture(((DecimalType) command).toBigDecimal())));
+                    fritzBox.asyncGet(callback);
+
+                }
+            }
+        } else if (channelUID.getId().equals(CHANNEL_SWITCH_THERMOSTAT)) {
+            logger.debug("update " + channelUID.getAsString() + " with " + command.toString());
+            if (command instanceof OnOffType) {
+                FritzahaWebInterface fritzBox = null;
+                Bridge bridge = this.getBridge();
+                if (bridge != null && bridge.getHandler() instanceof BoxHandler) {
+                    fritzBox = ((BoxHandler) bridge.getHandler()).getWebInterface();
+                }
+                if (fritzBox != null && this.getThing().getConfiguration().get(THING_AIN) != null) {
+                    DecimalType setTemperature;
+                    Channel channel = thing.getChannel(CHANNEL_SET_TEMP);
+                    if (command.equals(OnOffType.ON)) {
+                        logger.debug("Close Thermostat");
+                        setTemperature = new DecimalType(ThermostatModel.TSOLL_OFF_VALUE);
+                        this.updateState(channel.getUID(), new DecimalType(ThermostatModel.CELSIUS_MIN_VALUE));
+                    } else {
+                        logger.debug("Open Thermostat");
+                        BigDecimal setTemperatureCelisus = (BigDecimal) thing.getConfiguration()
+                                .get(SET_TEMPERATURE_CELSIUS);
+                        if (setTemperatureCelisus == null) {
+                            setTemperature = new DecimalType(ThermostatModel.TSOLL_MIN_VALUE);
+                            this.updateState(channel.getUID(), new DecimalType(ThermostatModel.CELSIUS_MIN_VALUE));
+                        } else {
+                            setTemperature = new DecimalType(
+                                    ThermostatModel.CovertCelsiusToSetTemperture(setTemperatureCelisus));
+                            this.updateState(channel.getUID(), new DecimalType(setTemperatureCelisus));
+                        }
+                    }
+                    FritzAhaSetTemperatureCallback callback = new FritzAhaSetTemperatureCallback(fritzBox,
+                            this.getThing().getConfiguration().get(THING_AIN).toString(), setTemperature);
+                    fritzBox.asyncGet(callback);
+                }
+            }
         } else {
             logger.error("unknown channel uid " + channelUID);
         }
@@ -200,6 +256,20 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                     } else {
                         logger.warn(
                                 "unknown state " + model.getSwitch().getState() + " for channel " + channel.getUID());
+                    }
+                }
+                if (model.isDectThermostat()) {
+                    Channel channelSetTemperature = thing.getChannel(CHANNEL_SET_TEMP);
+                    this.updateState(channelSetTemperature.getUID(),
+                            new DecimalType(model.getHkr().getTargetTemperatureCelsius()));
+
+                    Channel channel = thing.getChannel(CHANNEL_SWITCH_THERMOSTAT);
+                    if (model.getHkr().isClosed()) {
+                        this.updateState(channel.getUID(), OnOffType.ON);
+                    } else {
+                        thing.getConfiguration().put(SET_TEMPERATURE_CELSIUS,
+                                model.getHkr().getTargetTemperatureCelsius());
+                        this.updateState(channel.getUID(), OnOffType.OFF);
                     }
                 }
                 // save AIN to config for PL546E standalone
