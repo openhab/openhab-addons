@@ -9,7 +9,6 @@
 package org.openhab.binding.kodi.internal.protocol;
 
 import java.net.URI;
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.commons.lang.StringUtils;
@@ -226,7 +225,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void requestPlayerUpdate(int activePlayer, boolean updateMediaType) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
-                "showtitle", "streamdetails" };
+                "showtitle", "streamdetails", "channel", "channeltype" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
