@@ -384,9 +384,8 @@ public class TeslaHandler extends BaseThingHandler {
 
     protected String invokeAndParse(String command, String payLoad, WebTarget target) {
 
-        logger.warn("connecting to tesla:" + command + "key=" + getStorageKey());
-
-
+        logger.debug("invoking: " + command);
+        
         if (vehicle.id != null) {
             Response response;
 
