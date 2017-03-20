@@ -70,6 +70,7 @@ The Kodi thing supports the following channels:
 | playuri                 | String       | Plays the file with the provided URI |
 | pvropentv               | String       | Opens the PVR TV channel with the provided name |
 | pvropenradio            | String       | Opens the PVR Radio channel with the provided name |
+| pvrchannel              | String       | Title of the currently played PVR channel |
 | shownotification        | String       | Shows the provided notification message on the screen |
 | input                   | String       | Allows to control Kodi. Valid values are: `Up`, `Down`, `Left`, `Right`, `Select`, `Back`, `Home`, `ContextMenu`, `Info`, `ShowCodec`, `ShowOSD` |
 | inputtext               | String       | This channel emulates a keyboard input |
@@ -107,6 +108,7 @@ String myKodi_artist        "Artist [%s]"           { channel="kodi:kodi:myKodi:
 String myKodi_playuri       "PlayerURI"             { channel="kodi:kodi:myKodi:playuri" }
 String myKodi_pvropentv     "PVR TV channel"        { channel="kodi:kodi:myKodi:pvropentv" }
 String myKodi_pvropenradio  "PVR Radio channel"     { channel="kodi:kodi:myKodi:pvropenradio" }
+String myKodi_pvrchannel    "PVR channel [%s]"           { channel="kodi:kodi:myKodi:pvrchannel" }
 String myKodi_notification  "Notification"          { channel="kodi:kodi:myKodi:shownotification" }
 String myKodi_input         "Input"                 { channel="kodi:kodi:myKodi:input" }
 String myKodi_inputtext     "Inputtext"             { channel="kodi:kodi:myKodi:inputtext" }
@@ -133,6 +135,7 @@ sitemap demo label="myKodi"
         Text      item=myKodi_artist
         Selection item=myKodi_pvropentv mappings=[Add your PVR TV channels here ...]
         Selection item=myKodi_pvropenchannel mappings=[Add your PVR radio channels here ...]
+        Text      item=myKodi_pvrchannel
         Selection item=myKodi_input mappings=[Up='Up', Down='Down', Left='Left', Right='Right', Select='Select', Back='Back', Home='Home', ContextMenu='ContextMenu', Info='Info', ShowCodec='ShowCodec', ShowOSD='ShowOSD']
         Selection item=myKodi_systemcommand mappings=[Shutdown='Herunterfahren', Suspend='Bereitschaft', Reboot='Neustart']
         Text      item=myKodi_mediatype

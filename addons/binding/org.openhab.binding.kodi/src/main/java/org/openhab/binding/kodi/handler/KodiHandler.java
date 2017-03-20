@@ -216,6 +216,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 connection.updatePlayerStatus();
             }
             break;
+        case CHANNEL_PVRCHANNEL:
+            if (command.equals(RefreshType.REFRESH)) {
+                connection.updatePlayerStatus();
+            }
+            break;
         default:
             logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
             break;
@@ -370,6 +375,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateMediaType(String mediaType) {
         updateState(CHANNEL_MEDIATYPE, new StringType(mediaType));
+    }
+
+    @Override
+    public void updatePVRChannel(String channel) {
+        updateState(CHANNEL_PVRCHANNEL, new StringType(channel));
     }
 
 }

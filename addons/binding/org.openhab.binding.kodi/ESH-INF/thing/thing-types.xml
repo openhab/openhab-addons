@@ -16,6 +16,7 @@
 			<channel id="playuri" typeId="playuri" />
 			<channel id="pvropentv" typeId="pvropentv" />
 			<channel id="pvropenradio" typeId="pvropenradio" />
+			<channel id="pvrchannel" typeId="pvrchannel" />
 			<channel id="shownotification" typeId="shownotification" />
 			<channel id="input" typeId="input" />
 			<channel id="inputtext" typeId="inputtext" />
@@ -131,6 +132,12 @@
 	</channel-type>
 
 	<!-- Kodi variables -->
+    <channel-type id="pvrchannel">
+        <item-type>String</item-type>
+        <label>PVR channel title</label>
+        <description>Title of the current PVR channel</description>
+        <state readOnly="true" pattern="%s"></state>
+    </channel-type>
 	<channel-type id="title">
 		<item-type>String</item-type>
 		<label>Title</label>

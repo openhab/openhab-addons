@@ -259,12 +259,16 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
         String artist = "";
         if (mediaType.equals("movie")) {
-
             artist = convertFromArray(item.get("director").getAsJsonArray());
         } else {
             if (item.has("artist")) {
                 artist = convertFromArray(item.get("artist").getAsJsonArray());
             }
+        }
+
+        String channel = "";
+        if (item.has("channel")) {
+            channel = item.get("channel").getAsString();
         }
 
         try {
@@ -275,6 +279,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             if (updateMediaType) {
                 listener.updateMediaType(mediaType);
             }
+            listener.updatePVRChannel(channel);
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
         }
@@ -323,9 +328,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
             // if this is a Stop then clear everything else
             if (state == KodiState.Stop) {
                 listener.updateAlbum("");
-                listener.updateArtist("");
                 listener.updateTitle("");
+                listener.updateShowTitle("");
+                listener.updateArtist("");
                 listener.updateMediaType("");
+                listener.updatePVRChannel("");
             }
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
