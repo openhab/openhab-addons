@@ -51,7 +51,7 @@ public class TeslaBindingConstants {
     public static final String TESLA_COMMAND_AUTO_COND_STOP = "auto_conditioning_stop";
     public static final String TESLA_COMMAND_SUN_ROOF = "sun_roof_control";
 
-    // Tesla REST API vehcile states
+    // Tesla REST API vehicle states
     public static final String TESLA_DRIVE_STATE = "drive_state";
     public static final String TESLA_CHARGE_STATE = "charge_state";
     public static final String TESLA_CLIMATE_STATE = "climate_state";
