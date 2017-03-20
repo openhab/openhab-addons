@@ -15,7 +15,6 @@ package org.openhab.binding.harmonyhub.config;
  *
  */
 public class HarmonyHubConfig {
-    public String name;
     public String host;
     public int discoveryTimeout;
     public int heartBeatInterval;

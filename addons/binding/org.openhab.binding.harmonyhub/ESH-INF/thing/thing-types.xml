@@ -11,20 +11,15 @@
             <channel id="currentActivity" typeId="currentActivity" />
         </channels>
         <properties>
-            <property name="host"></property>
+            <property name="name"></property>
             <property name="accountId"></property>
             <property name="sessionId"></property>
             <property name="id"></property>
         </properties>
         <config-description>
-	        <parameter name="name" type="text" required="false">
-	                <label>Name (optional)</label>
-	                <description>The name given to the hub when first setup (case insensitive). If name is supplied then the binding will use discovery to find the hub on the network. Leave blank if host option is supplied.
-	                </description>
-	        </parameter>
 	         <parameter name="host" type="text" required="false">
-                    <label>Host (optional)</label>
-                    <description>Host or IP address of hub, leave blank if name option is supplied.
+                    <label>Host</label>
+                    <description>Host or IP address of hub.
                     </description>
             </parameter>
             <parameter name="discoveryTimeout" type="integer" required="false">
