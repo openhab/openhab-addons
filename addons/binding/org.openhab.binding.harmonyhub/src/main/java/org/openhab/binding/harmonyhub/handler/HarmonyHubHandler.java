@@ -18,8 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -80,8 +78,6 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
 
     private static final int HEARTBEAT_INTERVAL = 30;
 
-    private ScheduledExecutorService buttonExecutor = Executors.newSingleThreadScheduledExecutor();
-
     private List<HubStatusListener> listeners = new CopyOnWriteArrayList<HubStatusListener>();
 
     private HarmonyClient client;
@@ -141,7 +137,6 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
     @Override
     public void dispose() {
         listeners.clear();
-        buttonExecutor.shutdownNow();
         disconnectFromHub();
         factory.removeChannelTypesForThing(getThing().getUID());
     }
@@ -228,7 +223,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
                 genericConfig.put("host", host);
                 updateConfiguration(genericConfig);
             } else {
-                logger.error("host not configured");
+                logger.debug("host not configured");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "host not configured");
                 return;
             }
@@ -392,7 +387,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
      * @param button
      */
     public void pressButton(int device, String button) {
-        buttonExecutor.execute(new Runnable() {
+        scheduler.execute(new Runnable() {
             @Override
             public void run() {
                 if (client != null) {
@@ -409,7 +404,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
      * @param button
      */
     public void pressButton(String device, String button) {
-        buttonExecutor.execute(new Runnable() {
+        scheduler.execute(new Runnable() {
             @Override
             public void run() {
                 if (client != null) {

@@ -19,8 +19,8 @@
         <config-description>
 	         <parameter name="host" type="text" required="false">
                     <label>Host</label>
-                    <description>Host or IP address of hub.
-                    </description>
+                    <description>Host or IP address of hub.</description>
+                    <context>network-address</context>
             </parameter>
             <parameter name="discoveryTimeout" type="integer" required="false">
                 <label>Discovery Timeout</label>
@@ -31,7 +31,7 @@
             <parameter name="heartBeatInterval" type="integer" required="false">
                 <label>Heart Beat Interval</label>
                 <default>60</default>
-                <description>Heart beat keep alive time in seconds.
+                <description>Heartbeat keep alive time in seconds.
                 </description>
             </parameter>
         </config-description>
