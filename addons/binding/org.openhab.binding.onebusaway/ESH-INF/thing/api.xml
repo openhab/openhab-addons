@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onebusaway"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="api">
+        <label>OneBusAway API</label>
+        <description>A bridge with general settings to talk to OneBusAway.</description>
+        <config-description-ref uri="bridge-type:onebusaway:api-config" />
+    </bridge-type>
+
+</thing:thing-descriptions>
