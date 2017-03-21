@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -14,7 +15,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.joda.time.DateTime;
@@ -28,6 +28,7 @@ import org.openhab.binding.insteonplm.internal.device.PollHandler;
 import org.openhab.binding.insteonplm.internal.driver.Port;
 import org.openhab.binding.insteonplm.internal.message.FieldException;
 import org.openhab.binding.insteonplm.internal.message.InsteonFlags;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags.MessageType;
 import org.openhab.binding.insteonplm.internal.message.modem.SendInsteonMessage;
 import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
@@ -36,8 +37,9 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class InsteonThingHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(InsteonThingHandler.class);
+public class InsteonThingHandler extends InsteonPlmBaseThing {
+    private static Logger logger = LoggerFactory.getLogger(InsteonThingHandler.class);
+
     /** need to wait after query to avoid misinterpretation of duplicate replies */
     private static final int QUIET_TIME_DIRECT_MESSAGE = 2000;
     /** how far to space out poll messages */
@@ -45,14 +47,18 @@ public class InsteonThingHandler extends BaseThingHandler {
 
     private Map<ChannelUID, List<DeviceFeature>> featureChannelMapping = Maps.newHashMap();
     private Map<ChannelUID, PollingHandlerInfo> pollHandlers = Maps.newHashMap();
-    private PriorityQueue<InsteonThingMessageQEntry> requestQueue = new PriorityQueue<InsteonThingMessageQEntry>();
     public Map<Integer, GroupMessageStateMachine> groupState = Maps.newHashMap();
     private Long lastTimePolled;
     // Default to 10 days ago.
     private DateTime lastMessageReceived = DateTime.now().minusDays(10);
     private InsteonAddress address;
     private SendInsteonMessage requestMessage;
+    private PriorityQueue<InsteonThingMessageQEntry> requestQueue = new PriorityQueue<InsteonThingMessageQEntry>();
     private long lastTimeQueried = 0;
+    private int noReplyToRequest = 0;
+    private int directMessageSent = 0;
+    private int broadcastMessageSent = 0;
+    private int messagesReceived = 0;
 
     public InsteonThingHandler(Thing thing) {
         super(thing);
@@ -92,84 +98,19 @@ public class InsteonThingHandler extends BaseThingHandler {
     }
 
     /**
-     * True if we should process this message. False if it is a duplicate or we should ignore it.
-     */
-    private boolean shouldPublishForGroup(int group, GroupMessageStateMachine.GroupMessage type, int hops) {
-        GroupMessageStateMachine state = groupState.get(group);
-        if (state == null) {
-            state = new GroupMessageStateMachine();
-        }
-        return state.action(type, hops);
-    }
-
-    /**
-     * Handle all the all link message cases.
-     */
-    // private void handlerAllLinkMessage(Message message) throws FieldException {
-    // int command1 = message.getByte("command1");
-    // InsteonAddress toAddress = message.getAddress("toAddress");
-    //
-    // if (!message.isCleanup() && command1 == 0x06) {
-    // command1 = toAddress.getHighByte();
-    // }
-    //
-    // int group = (message.isCleanup() ? message.getByte("command2") : toAddress.getLowByte()) & 0xff;
-    //
-    // GroupMessage groupMessage;
-    // InsteonFlags flags = message.getFlags();
-    // if (flags != null) {
-    // if (flags.isAllLinkBroadcast()) {
-    // // if the command is 0x06, then it's success message
-    // // from the original broadcaster, with which the device
-    // // confirms that it got all cleanup replies successfully.
-    // if (command1 == 0x06) {
-    // groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
-    // } else {
-    // groupMessage = GroupMessageStateMachine.GroupMessage.SUCCESS;
-    // }
-    // } else if (flags.isAllLinkCleanup()) {
-    // groupMessage = GroupMessageStateMachine.GroupMessage.CLEAN;
-    // // the cleanup messages are direct messages, so the
-    // // group # is not in the toAddress, but in cmd2
-    // group = message.getByte("command2") & 0xff;
-    // } else {
-    // groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
-    // }
-    // } else {
-    // groupMessage = GroupMessageStateMachine.GroupMessage.BCAST;
-    // }
-    // if (shouldPublishForGroup(group, groupMessage, message.getHopsLeft())) {
-    // // See if we can find the right handler for this group message.
-    // for (ChannelUID channelId : featureChannelMapping.keySet()) {
-    // List<DeviceFeature> features = featureChannelMapping.get(channelId);
-    // for (DeviceFeature feature : features) {
-    // List<MessageHandler> allHandlers = feature.getMsgHandlers().get(command1 & 0xff);
-    // if (allHandlers != null) {
-    // for (MessageHandler handler : allHandlers) {
-    // if (handler.matchesGroup(group) && handler.matches(message)) {
-    // handler.handleMessage(this, group, (byte) command1, message,
-    // getThing().getChannel(channelId.getId()));
-    // }
-    // }
-    // }
-    // }
-    // }
-    // }
-    // }
-
-    /**
      * Handles the message received over the channel to the modem.
      *
      * @throws FieldException
      */
     public void handleMessage(StandardMessageReceived message) throws FieldException {
         lastMessageReceived = DateTime.now();
+        messagesReceived++;
 
         // We have an ack and we have a request message. Yay.
-        if (message.getFlags().isAckOfDirect() && requestMessage != null) {
-            // We have the request message and this is an ack for it. Yay.
+        if (message.getFlags().getMessageType() == MessageType.AckOfDirect && requestMessage != null) {
+            // We have the request message and this is an ack for it. Yay. Let it fall
+            // all the way down to the handlers too.
             requestMessage = null;
-            return;
         }
 
         // For normal direct messages we do this. Yay!
@@ -188,7 +129,11 @@ public class InsteonThingHandler extends BaseThingHandler {
         }
 
         // Update the status of the last message received channel.
-        updateState(new ChannelUID("lastMessageReceived"), new DateTimeType(lastMessageReceived.toGregorianCalendar()));
+        updateState(InsteonPLMBindingConstants.CHANNEL_LAST_MESSAGE_RECIEVED,
+                new DateTimeType(lastMessageReceived.toGregorianCalendar()));
+        updateState(InsteonPLMBindingConstants.CHANNEL_SUCCESSFULY_SENT,
+                new DecimalType(this.directMessageSent - this.noReplyToRequest));
+        updateState(InsteonPLMBindingConstants.CHANNEL_LAST_MESSAGE_RECIEVED, new DecimalType(this.noReplyToRequest));
     }
 
     /** The address for this thing. */
@@ -277,8 +222,10 @@ public class InsteonThingHandler extends BaseThingHandler {
     public void enqueueDelayedMessage(SendInsteonMessage message, long delay) {
         synchronized (requestQueue) {
             requestQueue.add(new InsteonThingMessageQEntry(message, System.currentTimeMillis() + delay));
+            updateState(InsteonPLMBindingConstants.CHANNEL_PENDING_WRITE, new DecimalType(this.requestQueue.size()));
         }
-        if (!message.getFlags().isBroadcast()) {
+        if (message.getFlags().getMessageType() != InsteonFlags.MessageType.BroadcastMessage
+                && message.getFlags().getMessageType() != InsteonFlags.MessageType.GroupBroadcastMessage) {
             message.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
         getInsteonBridge().addThingToSendingQueue(this, requestQueue.peek().getExpirationTime());
@@ -384,6 +331,23 @@ public class InsteonThingHandler extends BaseThingHandler {
         doPoll(0);
     }
 
+    /** Work out the ramp time from another channel. */
+    public double getRampTime() {
+
+        return 1;
+    }
+
+    /**
+     * @return The default flags to send the message with.
+     */
+    public InsteonFlags getDefaultFlags() {
+        InsteonFlags flags = new InsteonFlags();
+        if (getInsteonGroup() != -1) {
+            flags.setMessageType(InsteonFlags.MessageType.GroupBroadcastMessage);
+        }
+        return flags;
+    }
+
     /**
      * The request queue for all the pending messages to be sent.
      */
@@ -397,6 +361,7 @@ public class InsteonThingHandler extends BaseThingHandler {
      * @return the updated wait time for this queue
      * @throws IOException
      */
+    @Override
     public long processRequestQueue(Port port, long now) throws IOException {
         synchronized (requestQueue) {
             if (requestQueue.isEmpty()) {
@@ -407,40 +372,31 @@ public class InsteonThingHandler extends BaseThingHandler {
                 long dt = now - (lastTimeQueried + requestMessage.getDirectAckTimeout());
                 if (dt < 0) {
                     logger.debug("Still waiting for query reply from {} for another {} usec", getAddress(), -dt);
+                    // Try again in -dt milliseconds
+                    return System.currentTimeMillis() - dt + 20;
                 } else {
                     logger.debug("gave up waiting for query reply from device {}", getAddress());
                     // TODO: track stats on how often messages fail to various devices.
+                    noReplyToRequest++;
                 }
             }
             InsteonThingMessageQEntry entry = requestQueue.poll();
-            if (entry.getMsg().getFlags().isBroadcast()) {
+            if (entry.getMsg().getFlags().getMessageType() == MessageType.BroadcastMessage
+                    || entry.getMsg().getFlags().getMessageType() == MessageType.GroupBroadcastMessage) {
                 // Broadcast message. Yay!
                 logger.debug("Broadcast message on queue {} {}", getAddress(), entry.getMsg());
+                requestMessage = null;
+                broadcastMessageSent++;
             } else {
                 // Direct message, exciting.
                 logger.debug("Direct message on queue {} {}", getAddress(), entry.getMsg());
                 lastTimeQueried = now;
                 requestMessage = entry.getMsg();
-                port.writeMessage(entry.getMsg());
+                directMessageSent++;
             }
+            port.writeMessage(entry.getMsg());
+            updateState(InsteonPLMBindingConstants.CHANNEL_PENDING_WRITE, new DecimalType(this.requestQueue.size()));
         }
         return 0;
-    }
-
-    /** Work out the ramp time from another channel. */
-    public double getRampTime() {
-
-        return 1;
-    }
-
-    /**
-     * @return The default flags to send the message with.
-     */
-    public InsteonFlags getDefaultFlags() {
-        InsteonFlags flags = new InsteonFlags();
-        if (getInsteonGroup() != -1) {
-            flags.setGroup(true);
-        }
-        return flags;
     }
 }

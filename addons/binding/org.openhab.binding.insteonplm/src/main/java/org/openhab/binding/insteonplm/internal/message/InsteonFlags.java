@@ -12,16 +12,58 @@ public class InsteonFlags {
      * Bit 5 ACK
      * Bit 6 0: not link related, 1: is ALL-Link message
      * Bit 7 Broadcast/NAK
+     *
+     * From http://www.madreporite.com/insteon/plm_basics.html
+     * 100 = Broadcast Message
+     *
+     * 000 = Direct Message
+     * 001 = ACK of Direct Message
+     * 101 = NAK of Direct Message
+     *
+     * 110 = Group Broadcast Message
+     * 010 = Group Cleanup Direct Message
+     * 011 = ACK of Group Cleanup Direct Message
+     * 111 = NAK of Group Cleanup Direct Message
      */
-    private boolean broadcast;
+    public enum MessageType {
+        BroadcastMessage(4),
+        DirectMessage(0),
+        AckOfDirect(1),
+        NackOfDirect(5),
+        GroupBroadcastMessage(6),
+        GroupCleanupDirectMessage(2),
+        AckOfGroupCleanupDirectMessage(3),
+        NackOfGroupCleanupDirectMessage(7);
+        private int val;
+
+        MessageType(int val) {
+            this.val = val;
+        }
+
+        public int getVal() {
+            return val;
+        }
+
+        public static MessageType fromInt(int val) {
+            for (MessageType mess : MessageType.values()) {
+                if (mess.getVal() == val) {
+                    return mess;
+                }
+            }
+            return null;
+        }
+    }
+
+    private MessageType type;
     private boolean extended;
-    private boolean group;
-    private boolean acknowledge;
     private byte maxHops;
     private byte maxHopsLeft;
 
     public InsteonFlags(byte input) {
-
+        this.maxHops = (byte) (input & 0x3);
+        this.maxHopsLeft = (byte) ((input >> 2) & 0x3);
+        this.extended = (input & 0x10) != 0;
+        this.type = MessageType.fromInt(input >> 5);
     }
 
     /**
@@ -30,10 +72,8 @@ public class InsteonFlags {
      * @param extended If we are sending an extended message or not
      */
     public InsteonFlags() {
-        this.broadcast = false;
+        this.type = MessageType.DirectMessage;
         this.extended = false;
-        this.group = false;
-        this.acknowledge = false;
         this.maxHops = 0x3;
         this.maxHopsLeft = 0x3;
     }
@@ -42,16 +82,8 @@ public class InsteonFlags {
      * @return Turns the flags into a byte to send.
      */
     public byte getByte() {
-        return (byte) ((broadcast ? 0x80 : 0) | (group ? 0x40 : 0) | (acknowledge ? 0x20 : 0) | (extended ? 0x10 : 0)
-                | ((this.maxHopsLeft & 0x3) << 2) | (this.maxHops & 0x3));
-    }
-
-    public boolean isBroadcast() {
-        return broadcast;
-    }
-
-    public void setBroadcast(boolean broadcast) {
-        this.broadcast = broadcast;
+        return (byte) ((this.type.getVal() << 5) | (extended ? 0x10 : 0) | ((this.maxHopsLeft & 0x3) << 2)
+                | (this.maxHops & 0x3));
     }
 
     public boolean isExtended() {
@@ -60,22 +92,6 @@ public class InsteonFlags {
 
     public void setExtended(boolean extended) {
         this.extended = extended;
-    }
-
-    public boolean isGroup() {
-        return group;
-    }
-
-    public void setGroup(boolean group) {
-        this.group = group;
-    }
-
-    public boolean isAcknowledge() {
-        return acknowledge;
-    }
-
-    public void setAcknowledge(boolean acknowledge) {
-        this.acknowledge = acknowledge;
     }
 
     public byte getMaxHops() {
@@ -94,41 +110,21 @@ public class InsteonFlags {
         this.maxHopsLeft = maxHopsLeft;
     }
 
-    public boolean isAllLinkCleanup() {
-        return isGroup() && !isAcknowledge() && !isBroadcast() && !isExtended();
+    public MessageType getMessageType() {
+        return this.type;
     }
 
-    public boolean isAllLinkBroadcast() {
-        return isGroup() && !isAcknowledge() && !isExtended() && isBroadcast();
-    }
-
-    public boolean isAllLink() {
-        return isGroup() && !isAcknowledge() && !isExtended();
-    }
-
-    public boolean isAckOfDirect() {
-        return !isGroup() && isAcknowledge() && !isBroadcast() && !isExtended();
-    }
-
-    public boolean isAllLinkCleanupAck() {
-        return isGroup() && isAcknowledge() && !isBroadcast() && !isExtended();
-    }
-
-    public boolean isAllLinkCleanupNack() {
-        return isGroup() && isAcknowledge() && isBroadcast() && !isExtended();
+    public void setMessageType(MessageType type) {
+        this.type = type;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("InsteonFlags [broadcast=");
-        builder.append(broadcast);
+        builder.append("InsteonFlags [type=");
+        builder.append(type.toString());
         builder.append(", extended=");
         builder.append(extended);
-        builder.append(", group=");
-        builder.append(group);
-        builder.append(", acknowledge=");
-        builder.append(acknowledge);
         builder.append(", maxHops=");
         builder.append(maxHops);
         builder.append(", maxHopsLeft=");

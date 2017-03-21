@@ -12,6 +12,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants.ExtendedData;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.messages.MessageHandlerData;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags.MessageType;
 import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -229,9 +230,9 @@ public abstract class MessageHandler {
     protected int getButtonInfo(StandardMessageReceived msg) {
         // the cleanup messages have the button number in the command2 field
         // the broadcast messages have it as the lsb of the toAddress
-        logger.trace("{} button: {} bclean: {} bbcast: {}", msg.getFromAddress(), msg.getFlags().isBroadcast(),
-                msg.getCmd2(), msg.getToAddress().getLowByte());
-        if (msg.getFlags().isBroadcast()) {
+        logger.trace("{} button: {} bclean: {} type: {}", msg.getFromAddress(),
+                msg.getFlags().getMessageType().toString(), msg.getCmd2(), msg.getToAddress().getLowByte());
+        if (msg.getFlags().getMessageType() == MessageType.BroadcastMessage) {
             return msg.getToAddress().getLowByte();
         } else {
             return msg.getCmd2();

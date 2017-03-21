@@ -6,6 +6,7 @@ import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.InsteonAddress;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags.MessageType;
 import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class LightOnDimmerHandler extends MessageHandler {
             return;
         }
         InsteonAddress a = handler.getAddress();
-        if (msg.getFlags().isAckOfDirect()) {
+        if (msg.getFlags().getMessageType() == MessageType.AckOfDirect) {
             logger.error("{}: device {}: ignoring ack of direct.", nm(), a);
         } else {
             logger.info("{}: device {} was turned on. Sending poll request to get actual level", nm(), a);

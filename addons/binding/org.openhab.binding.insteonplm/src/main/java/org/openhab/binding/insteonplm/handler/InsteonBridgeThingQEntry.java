@@ -9,9 +9,9 @@ package org.openhab.binding.insteonplm.handler;
  */
 public class InsteonBridgeThingQEntry {
     private long expirationTime;
-    private final InsteonThingHandler thingHandler;
+    private final InsteonPlmBaseThing thingHandler;
 
-    public InsteonBridgeThingQEntry(InsteonThingHandler handler, long expirationTime) {
+    public InsteonBridgeThingQEntry(InsteonPlmBaseThing handler, long expirationTime) {
         this.expirationTime = expirationTime;
         this.thingHandler = handler;
     }
@@ -20,7 +20,7 @@ public class InsteonBridgeThingQEntry {
         return expirationTime;
     }
 
-    public InsteonThingHandler getThingHandler() {
+    public InsteonPlmBaseThing getThingHandler() {
         return thingHandler;
     }
 

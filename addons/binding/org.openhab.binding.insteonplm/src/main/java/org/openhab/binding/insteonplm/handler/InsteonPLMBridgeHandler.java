@@ -7,9 +7,8 @@
  */
 package org.openhab.binding.insteonplm.handler;
 
-import static org.openhab.binding.insteonplm.InsteonPLMBindingConstants.CHANNEL_1;
-
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
@@ -45,6 +44,7 @@ import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageRece
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -62,6 +62,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
     private Thread messageQueueThread;
     private InsteonAddress modemAddress;
     private Map<InsteonAddress, InsteonNodeDetails> foundDevices = Maps.newHashMap();
+    private Map<Integer, List<InsteonAddress>> groups = Maps.newHashMap();
     private DateTime lastRequested = DateTime.now().minusDays(2);
 
     public InsteonPLMBridgeHandler(Bridge thing) {
@@ -70,14 +71,6 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_1)) {
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
     }
 
     @Override
@@ -269,6 +262,16 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                         logger.error("Found device {}", response.getAddress());
                     }
                 }
+                // Group 1 is the default group everything is in.
+                if (response.getGroup() != 1) {
+                    synchronized (groups) {
+                        if (!groups.containsKey(response.getGroup())) {
+                            groups.put(Integer.valueOf(response.getGroup()), Lists.<InsteonAddress> newArrayList());
+                            logger.error("Found group {}", response.getGroup());
+                        }
+                        groups.get(response.getGroup()).add(response.getAddress());
+                    }
+                }
                 details.setQueried(false);
                 // Send a request for the next one.
                 try {
@@ -349,7 +352,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
      * @param dev the device to add
      * @param time the time when the queue should be processed
      */
-    public void addThingToSendingQueue(InsteonThingHandler handler, long time) {
+    public void addThingToSendingQueue(InsteonPlmBaseThing handler, long time) {
         synchronized (messagesToSend) {
             // See if we can find the entry first.
             for (InsteonBridgeThingQEntry entry : messagesToSend) {
@@ -361,12 +364,12 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                     messagesToSend.remove(entry);
                     messagesToSend.add(entry);
                     messagesToSend.notify();
-                    logger.trace("updating request for device {} in {} msec", handler.getAddress(),
+                    logger.trace("updating request for device {} in {} msec", handler.toString(),
                             time - System.currentTimeMillis());
                     return;
                 }
             }
-            logger.trace("scheduling request for device {} in {} msec", handler.getAddress(),
+            logger.trace("scheduling request for device {} in {} msec", handler.toString(),
                     time - System.currentTimeMillis());
             InsteonBridgeThingQEntry entry = new InsteonBridgeThingQEntry(handler, time);
             // add the queue back in after (maybe) having modified
@@ -396,7 +399,7 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                             // The head of the queue is not up for processing yet, wait().
                             //
                             logger.trace("request queue head: {} must wait for {} msec",
-                                    entry.getThingHandler().getAddress(), expTime - now);
+                                    entry.getThingHandler().toString(), expTime - now);
                             //
                             // note that the wait() can also return because of changes to
                             // the queue, not just because the time expired!
@@ -415,10 +418,10 @@ public class InsteonPLMBridgeHandler extends BaseBridgeHandler implements Messag
                                         entry.getThingHandler(), nextExp);
                                 messagesToSend.add(newEntry);
                                 logger.trace("device queue for {} rescheduled in {} msec",
-                                        entry.getThingHandler().getAddress(), nextExp - now);
+                                        entry.getThingHandler().toString(), nextExp - now);
                             } else {
                                 // remove from hash since queue is no longer scheduled
-                                logger.debug("device queue for {} is empty!", entry.getThingHandler().getAddress());
+                                logger.debug("device queue for {} is empty!", entry.getThingHandler().toString());
                             }
                         } catch (IOException e) {
                             logger.error("request queue thread unable to write to port..", e);

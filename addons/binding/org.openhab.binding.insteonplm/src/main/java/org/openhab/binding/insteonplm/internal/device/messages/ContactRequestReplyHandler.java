@@ -5,6 +5,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.InsteonThingHandler;
 import org.openhab.binding.insteonplm.internal.device.DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.MessageHandler;
+import org.openhab.binding.insteonplm.internal.message.InsteonFlags.MessageType;
 import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class ContactRequestReplyHandler extends MessageHandler {
 
     @Override
     public void handleMessage(InsteonThingHandler handler, int group, StandardMessageReceived msg, Channel f) {
-        if (msg.getFlags().isAckOfDirect()) {
+        if (msg.getFlags().getMessageType() == MessageType.AckOfDirect) {
             OpenClosedType oc = (msg.getCmd2() == 0) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             logger.info("{}: set contact {} to: {}", nm(), handler.getAddress(), oc);
             handler.updateFeatureState(f, oc);

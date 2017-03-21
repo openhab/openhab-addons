@@ -23,7 +23,10 @@ public class InsteonPLMBindingConstants {
     public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
     // List of all Channel ids
-    public final static String CHANNEL_1 = "channel1";
+    public final static String CHANNEL_LAST_MESSAGE_RECIEVED = "lastMessageReceived";
+    public final static String CHANNEL_SUCCESSFULY_SENT = "successfulySent";
+    public final static String CHANNEL_ERROR_SENDING = "errorSent";
+    public final static String CHANNEL_PENDING_WRITE = "pendingWrite";
 
     // Properties to track information about the thing.
     public final static String PROPERTY_INSTEON_ADDRESS = "address";

@@ -3,7 +3,6 @@ package org.openhab.binding.insteonplm.internal.device;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.insteonplm.handler.X10ThingHandler;
 import org.openhab.binding.insteonplm.internal.message.X10Command;
-import org.openhab.binding.insteonplm.internal.message.modem.StandardMessageReceived;
 import org.openhab.binding.insteonplm.internal.message.modem.X10MessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,25 +71,6 @@ public abstract class X10MessageHandler {
             }
         }
         return false;
-    }
-
-    /**
-     * Extract button information from message
-     *
-     * @param msg the message to extract from
-     * @param the device feature (needed for debug printing)
-     * @return the button number or -1 if no button found
-     */
-    protected int getButtonInfo(StandardMessageReceived msg) {
-        // the cleanup messages have the button number in the command2 field
-        // the broadcast messages have it as the lsb of the toAddress
-        logger.trace("{} button: {} bclean: {} bbcast: {}", msg.getFromAddress(), msg.getFlags().isBroadcast(),
-                msg.getCmd2(), msg.getToAddress().getLowByte());
-        if (msg.getFlags().isBroadcast()) {
-            return msg.getToAddress().getLowByte();
-        } else {
-            return msg.getCmd2();
-        }
     }
 
     /**

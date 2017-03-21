@@ -1,24 +1,27 @@
 package org.openhab.binding.insteonplm.handler;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.insteonplm.InsteonPLMBindingConstants;
 import org.openhab.binding.insteonplm.internal.device.X10Address;
 import org.openhab.binding.insteonplm.internal.device.X10DeviceFeature;
 import org.openhab.binding.insteonplm.internal.device.X10MessageHandler;
+import org.openhab.binding.insteonplm.internal.driver.Port;
 import org.openhab.binding.insteonplm.internal.message.modem.SendX10Message;
 import org.openhab.binding.insteonplm.internal.message.modem.X10MessageReceived;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -26,10 +29,13 @@ import com.google.common.collect.Maps;
  *
  * @author David Bennett - Initial Contribution
  */
-public class X10ThingHandler extends BaseThingHandler {
+public class X10ThingHandler extends InsteonPlmBaseThing {
     private Logger logger = LoggerFactory.getLogger(X10ThingHandler.class);
     private Map<ChannelUID, List<X10DeviceFeature>> featureChannelMapping = Maps.newHashMap();
+    private List<SendX10Message> messagesToSend = Lists.newArrayList();
     private X10Address address;
+    private long lastTimeQueried;
+    private int directMessageSent;
 
     public X10ThingHandler(Thing thing) {
         super(thing);
@@ -38,13 +44,6 @@ public class X10ThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-
-        String productKey = this.getThing().getProperties()
-                .get(InsteonPLMBindingConstants.PROPERTY_INSTEON_PRODUCT_KEY);
-        if (productKey == null) {
-            logger.error("Product Key is not set in {}", this.getThing().getUID());
-            return;
-        }
 
         // TODO: Shouldn't the framework do this for us???
         Bridge bridge = getBridge();
@@ -89,11 +88,36 @@ public class X10ThingHandler extends BaseThingHandler {
         updateState(channel.getUID(), newState);
     }
 
-    public void enqueueMessage(SendX10Message message) {
+    /** The bridge associated with this thing. */
+    InsteonPLMBridgeHandler getInsteonBridge() {
+        return (InsteonPLMBridgeHandler) getBridge();
+    }
 
+    public void enqueueMessage(SendX10Message message) {
+        synchronized (messagesToSend) {
+            messagesToSend.add(message);
+        }
+        getInsteonBridge().addThingToSendingQueue(this, System.currentTimeMillis() + 5000);
     }
 
     public X10Address getAddress() {
         return this.address;
+    }
+
+    @Override
+    public long processRequestQueue(Port port, long now) throws IOException {
+        synchronized (messagesToSend) {
+            if (messagesToSend.isEmpty()) {
+                return 0;
+            }
+            SendX10Message entry = messagesToSend.remove(0);
+            // Direct message, exciting.
+            logger.debug("Direct message on queue {} {}", getAddress(), entry);
+            lastTimeQueried = now;
+            directMessageSent++;
+            port.writeMessage(entry);
+            updateState(InsteonPLMBindingConstants.CHANNEL_PENDING_WRITE, new DecimalType(this.messagesToSend.size()));
+        }
+        return 0;
     }
 }
