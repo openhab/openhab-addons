@@ -41,7 +41,7 @@ public class HarmonyHubDiscoveryParticipant extends AbstractDiscoveryService imp
 
     public HarmonyHubDiscoveryParticipant() {
         super(HarmonyHubHandler.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
-        disco = new HarmonyHubDiscovery(TIMEOUT);
+        disco = new HarmonyHubDiscovery(TIMEOUT, null);
         disco.addListener(this);
     }
 
@@ -95,6 +95,8 @@ public class HarmonyHubDiscoveryParticipant extends AbstractDiscoveryService imp
                 result.getHost());
         Map<String, Object> properties = new HashMap<>(2);
         properties.put("name", result.getFriendlyName());
+        properties.put("host", result.getHost());
+
         ThingUID uid = new ThingUID(HarmonyHubBindingConstants.HARMONY_HUB_THING_TYPE,
                 result.getId().replaceAll("[^A-Za-z0-9\\-_]", ""));
         if (uid != null) {

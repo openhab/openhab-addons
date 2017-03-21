@@ -94,9 +94,9 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         logger.debug("Pressing button {} on {}", command, id > 0 ? 0 : name);
 
         if (id > 0) {
-            bridge.getClient().pressButton(id, command.toString());
+            bridge.pressButton(id, command.toString());
         } else {
-            bridge.getClient().pressButton(name, command.toString());
+            bridge.pressButton(name, command.toString());
         }
 
         // may need to ask the list if this can be set here?
@@ -145,10 +145,8 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             bridge = (HarmonyHubHandler) getBridge().getHandler();
             updateStatus(ThingStatus.ONLINE);
             updateChannel();
-        } else if (bridgeStatus == ThingStatus.OFFLINE) {
+        } else if (bridgeStatus != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        } else if (bridgeStatus == ThingStatus.UNKNOWN) {
-            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
