@@ -18,6 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -78,6 +80,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
 
     private static final int HEARTBEAT_INTERVAL = 30;
 
+    private ScheduledExecutorService buttonExecutor = Executors.newSingleThreadScheduledExecutor();
+
     private List<HubStatusListener> listeners = new CopyOnWriteArrayList<HubStatusListener>();
 
     private HarmonyClient client;
@@ -137,6 +141,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
     @Override
     public void dispose() {
         listeners.clear();
+        buttonExecutor.shutdownNow();
         disconnectFromHub();
         factory.removeChannelTypesForThing(getThing().getUID());
     }
@@ -387,7 +392,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
      * @param button
      */
     public void pressButton(int device, String button) {
-        scheduler.execute(new Runnable() {
+        buttonExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 if (client != null) {
@@ -404,7 +409,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubDi
      * @param button
      */
     public void pressButton(String device, String button) {
-        scheduler.execute(new Runnable() {
+        buttonExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 if (client != null) {
