@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="snapcast"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <bridge-type id="snapserver">
+        <label>Snapserver</label>
+        <description>Snapcast server thing</description>
+
+        <config-description>
+            <parameter name="HOST" type="text" required="true">
+                <label>Hostname</label>
+                <description>The hostname of the snapserver</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+    
+    <thing-type id="snapclient">
+        <label>Snapclient</label>
+        <description>Snapcast client thing</description>
+
+        <config-description>
+            <parameter name="HOST" type="text" required="true">
+                <label>Hostname</label>
+                <description>The hostname of the snapserver</description>
+            </parameter>
+            <parameter name="MAC" type="text" required="true">
+                <label>Client MAC Address</label>
+                <description>The MAC address of the client</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+
+
+    <channel-type id="stream">
+        <item-type>String</item-type>        
+        <label>Stream</label>
+        <description>Current Stream</description>
+    </channel-type>
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>        
+        <label>Volume</label>
+        <description>Current Volume</description>
+        <state min="0" max="100" step="1" pattern="%.1f %" /> 
+    </channel-type>
+    <channel-type id="mute">
+        <item-type>Switch</item-type>        
+        <label>Mute</label>
+        <description>Mute</description>
+    </channel-type>
+    <channel-type id="name">
+        <item-type>String</item-type>        
+        <label>Name</label>
+        <description>Name</description>
+    </channel-type>
+
+
+</thing:thing-descriptions>
