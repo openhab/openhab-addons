@@ -92,7 +92,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
                     addDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, handler.getThing().getUID(),
                             Integer.toString(actionID)), thingName, thingLocation);
                     break;
-                case 5: // rollershutter
+                case 4: // rollershutter
+                case 5:
                     addDevice(new ThingUID(THING_TYPE_BLIND, handler.getThing().getUID(), Integer.toString(actionID)),
                             thingName, thingLocation);
                     break;

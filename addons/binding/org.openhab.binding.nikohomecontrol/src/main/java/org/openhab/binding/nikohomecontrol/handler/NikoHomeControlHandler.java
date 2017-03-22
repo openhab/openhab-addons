@@ -104,20 +104,24 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                 if (command instanceof UpDownType) {
                     UpDownType s = (UpDownType) command;
                     if (s == UpDownType.UP) {
+                        nhcComm.executeAction(actionID, 253);
                         logger.debug("Niko Home Control: rollershutter {} up pressed", actionID);
                     } else {
+                        nhcComm.executeAction(actionID, 254);
                         logger.debug("Niko Home Control: rollershutter {} down pressed", actionID);
                     }
                 } else if (command instanceof StopMoveType) {
                     StopMoveType s = (StopMoveType) command;
-                    if (s == StopMoveType.MOVE) {
-                        logger.debug("Niko Home Control: rollershutter {} move pressed", actionID);
-                    } else {
+                    if (s == StopMoveType.STOP) {
+                        nhcComm.executeAction(actionID, 255);
                         logger.debug("Niko Home Control: rollershutter {} stop pressed", actionID);
+                    } else {
+                        logger.debug("Niko Home Control: rollershutter {} move pressed", actionID);
                     }
                 } else if (command instanceof PercentType) {
                     PercentType p = (PercentType) command;
                     nhcComm.executeAction(actionID, p.intValue());
+                    logger.debug("Niko Home Control: rollershutter {} percent {}", actionID, p.intValue());
                 }
                 updateStatus(ThingStatus.ONLINE);
                 break;
@@ -173,6 +177,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                     logger.debug("Niko Home Control: dimmer intialized {}", actionID);
                     updateStatus(ThingStatus.ONLINE);
                     break;
+                case 4:
                 case 5:
                     updateState(CHANNEL_ROLLERSHUTTER, new PercentType(actionState));
                     logger.debug("Niko Home Control: rollershutter intialized {}", actionID);
@@ -205,6 +210,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                 updateState(CHANNEL_BRIGHTNESS, new PercentType(actionState));
                 updateStatus(ThingStatus.ONLINE);
                 break;
+            case 4:
             case 5:
                 updateState(CHANNEL_ROLLERSHUTTER, new PercentType(actionState));
                 updateStatus(ThingStatus.ONLINE);

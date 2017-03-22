@@ -36,7 +36,8 @@ import com.google.gson.JsonSyntaxException;
  * <li>Listen to events from Niko Home Control.
  * </ul>
  *
- * Only switch an dimmer actions are currently implemented. There are placeholder procedures for some other types.
+ * Only switch, dimmer and rollershutter actions are currently implemented. There are placeholder methods for some other
+ * types.
  * This is most likely incomplete because I don't have all possible equipment and don't have access to protocol
  * documentation.
  *
@@ -96,6 +97,12 @@ public class NikoHomeControlCommunication {
         private Integer value1 = null;
         @SuppressWarnings("unused")
         private Integer value2 = null;
+        @SuppressWarnings("unused")
+        private Integer value3 = null;
+        @SuppressWarnings("unused")
+        private Integer startValue = null;
+        @SuppressWarnings("unused")
+        private Integer endValue = null;
 
         NHCCmd() {
         }
@@ -158,7 +165,7 @@ public class NikoHomeControlCommunication {
     /**
      * Get Niko Home Control IP-interface IP address.
      * <p>
-     * The function sends a UDP packet with content 0x44 to the local network on port 10000.
+     * The method sends a UDP packet with content 0x44 to the local network on port 10000.
      * The Niko Home Control IP-interface responds to this UDP packet.
      * The IP-address from the Niko Home Control IP-interface is then extracted from the response packet.
      *
@@ -257,7 +264,7 @@ public class NikoHomeControlCommunication {
      * <p>
      * The thread listens to the TCP socket opened at instantiation of the {@link NikoHomeControlCommunication} class
      * and interprets all inbound json messages. It triggers state updates for active channels linked to the Niko Home
-     * Control actions. It is started after initialization of the the communication.
+     * Control actions. It is started after initialization of the communication.
      *
      */
     private Runnable nhcEvents = new Runnable() {
@@ -266,8 +273,8 @@ public class NikoHomeControlCommunication {
         public void run() {
             String nhcMessage;
 
-            listenerStopped = false;
             logger.debug("Niko Home Control: listening for events");
+            listenerStopped = false;
 
             try {
                 while (!listenerStopped & ((nhcMessage = nhcIn.readLine()) != null)) {
@@ -548,16 +555,32 @@ public class NikoHomeControlCommunication {
      * @param percent - The allowed values depend on the action type.
      *            switch action: 0 or 100
      *            dimmer action: between 0 and 100, 254 for on, 255 for off
-     *            rollershutter action: between 0 and 100
+     *            rollershutter action: between 0 (closed) and 100 (open), 253 to open, 254 to close, 255 to stop
      */
     public void executeAction(int actionId, int percent) {
 
-        logger.debug("Niko Home Control: execute action {} {}", actionId, percent);
+        int actionType = getActionType(actionId);
+
+        logger.debug("Niko Home Control: execute action {} of type {} for {}", percent, actionType, actionId);
 
         NHCCmd nhcCmd = new NHCCmd();
         nhcCmd.cmd = "executeactions";
         nhcCmd.id = actionId;
         nhcCmd.value1 = percent;
+
+        // rollershutters have extra fields in the command
+        if ((actionType == 4) || (actionType == 5)) {
+            switch (percent) {
+                case 253: // open
+                    nhcCmd.endValue = 100;
+                    break;
+                case 254: // close
+                    nhcCmd.startValue = 100;
+                    break;
+                case 255: // stop
+                    nhcCmd.startValue = getActionState(actionId);
+            }
+        }
 
         sendMessage(nhcCmd);
 
@@ -795,8 +818,8 @@ public class NikoHomeControlCommunication {
     /**
      * Get state of action identified by actionID.
      * <p>
-     * State is a value between 0 and 100 for a dimmer.
-     * State is 0 or 100 for a switch or rollershutter.
+     * State is a value between 0 and 100 for a dimmer or rollershutter.
+     * State is 0 or 100 for a switch.
      *
      * @param actionID
      * @return action state
@@ -845,7 +868,7 @@ public class NikoHomeControlCommunication {
     }
 
     /**
-     * Function to check if communication with Niko Home Control IP-interface is active
+     * Method to check if communication with Niko Home Control IP-interface is active
      *
      * @return True if active
      */

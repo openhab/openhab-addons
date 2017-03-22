@@ -89,16 +89,19 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Switch control for action in Niko Home Control</description>
+		<category>Switch</category>
 	</channel-type>
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness control for dimmer action in Niko Home Control</description>
+        <category>DimmableLight</category>
 	</channel-type>
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<description>Rollershutter control for rollershutter action in Niko Home Control</description>
+        <category>Blinds</category>
 	</channel-type>
 
 </thing:thing-descriptions>
