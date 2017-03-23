@@ -69,6 +69,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
         ThingHandler handler = bridge.getHandler();
         if (!(handler instanceof SleepIQCloudHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect bridge thing found");
+            return;
         }
 
         SleepIQCloudHandler cloudHandler = (SleepIQCloudHandler) handler;
