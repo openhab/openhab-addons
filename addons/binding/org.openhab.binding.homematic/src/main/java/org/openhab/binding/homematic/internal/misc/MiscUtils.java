@@ -23,6 +23,9 @@ public class MiscUtils {
      * Replaces invalid characters of the text to fit into a openHab UID.
      */
     public static String validateCharacters(String text, String textType, String replaceChar) {
+        if (text == null) {
+            return "EMPTY";
+        }
         String cleanedText = text.replaceAll("[^A-Za-z0-9_-]", replaceChar);
         if (!text.equals(cleanedText)) {
             logger.info("{} '{}' contains invalid characters, new {} '{}'", textType, text, textType, cleanedText);
