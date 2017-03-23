@@ -91,10 +91,10 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays
+    private final static List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.COMMAND);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
+    private final static List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.SHUTTER);
 
     public SubType subType;
@@ -262,11 +262,11 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 }

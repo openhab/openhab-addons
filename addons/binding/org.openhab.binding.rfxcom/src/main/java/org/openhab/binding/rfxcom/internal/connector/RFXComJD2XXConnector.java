@@ -27,17 +27,13 @@ import jd2xx.JD2XXOutputStream;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComJD2XXConnector extends RFXComBaseConnector {
+    private final Logger logger = LoggerFactory.getLogger(RFXComJD2XXConnector.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(RFXComJD2XXConnector.class);
+    private JD2XX serialPort;
+    private JD2XXInputStream in;
+    private JD2XXOutputStream out;
 
-    JD2XX serialPort = null;
-    JD2XXInputStream in = null;
-    JD2XXOutputStream out = null;
-
-    Thread readerThread = null;
-
-    public RFXComJD2XXConnector() {
-    }
+    private Thread readerThread;
 
     @Override
     public void connect(RFXComBridgeConfiguration device) throws IOException {
