@@ -12,21 +12,12 @@
         </channels>
         <properties>
             <property name="name"></property>
-            <property name="accountId"></property>
-            <property name="sessionId"></property>
-            <property name="id"></property>
         </properties>
         <config-description>
 	         <parameter name="host" type="text" required="false">
                     <label>Host</label>
                     <description>Host or IP address of hub.</description>
                     <context>network-address</context>
-            </parameter>
-            <parameter name="discoveryTimeout" type="integer" required="false">
-                <label>Discovery Timeout</label>
-                <default>30</default>
-                <description>How long in seconds to search the network for this hub.
-                </description>
             </parameter>
             <parameter name="heartBeatInterval" type="integer" required="false">
                 <label>Heart Beat Interval</label>

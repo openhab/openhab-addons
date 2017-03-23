@@ -41,7 +41,7 @@ public class HarmonyHubDiscoveryParticipant extends AbstractDiscoveryService imp
 
     public HarmonyHubDiscoveryParticipant() {
         super(HarmonyHubHandler.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
-        disco = new HarmonyHubDiscovery(TIMEOUT, null);
+        disco = new HarmonyHubDiscovery(TIMEOUT);
         disco.addListener(this);
     }
 

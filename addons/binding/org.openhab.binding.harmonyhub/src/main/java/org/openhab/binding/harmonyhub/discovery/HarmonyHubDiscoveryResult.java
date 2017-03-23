@@ -17,30 +17,18 @@ package org.openhab.binding.harmonyhub.discovery;
  */
 public class HarmonyHubDiscoveryResult {
     private String host;
-    private String accountId;
-    private String sessionID;
     private String id;
     private String friendlyName;
 
-    public HarmonyHubDiscoveryResult(String host, String accountId, String sessionID, String id, String friendlyName) {
+    public HarmonyHubDiscoveryResult(String host, String id, String friendlyName) {
         super();
         this.host = host;
-        this.accountId = accountId;
-        this.sessionID = sessionID;
         this.id = id;
         this.friendlyName = friendlyName;
     }
 
     public String getHost() {
         return host;
-    }
-
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public String getSessionID() {
-        return sessionID;
     }
 
     public String getId() {
