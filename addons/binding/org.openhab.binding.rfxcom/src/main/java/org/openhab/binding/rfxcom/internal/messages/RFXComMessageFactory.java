@@ -21,7 +21,7 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
 public class RFXComMessageFactory {
 
     @SuppressWarnings("serial")
-    private static final Map<PacketType, Class<? extends RFXComMessage>> messageClasses = Collections
+    private static final Map<PacketType, Class<? extends RFXComMessage>> MESSAGE_CLASSES = Collections
             .unmodifiableMap(new HashMap<PacketType, Class<? extends RFXComMessage>>() {
                 {
                     put(PacketType.INTERFACE_CONTROL, RFXComControlMessage.class);
@@ -104,7 +104,7 @@ public class RFXComMessageFactory {
     public static RFXComMessage createMessage(PacketType packetType) throws RFXComException {
 
         try {
-            Class<? extends RFXComMessage> cl = messageClasses.get(packetType);
+            Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
             if (cl == null) {
                 throw new RFXComMessageNotImplementedException("Message " + packetType + " not implemented");
             }
@@ -118,7 +118,7 @@ public class RFXComMessageFactory {
         PacketType packetType = PacketType.fromByte(packet[1]);
 
         try {
-            Class<? extends RFXComMessage> cl = messageClasses.get(packetType);
+            Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
             if (cl == null) {
                 throw new RFXComMessageNotImplementedException("Message " + packetType + " not implemented");
             }

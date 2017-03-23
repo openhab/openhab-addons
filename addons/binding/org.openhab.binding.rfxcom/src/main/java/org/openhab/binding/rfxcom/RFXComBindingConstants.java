@@ -40,10 +40,10 @@ public class RFXComBindingConstants {
     public static final String BRIDGE_TYPE_RFXREC433 = "RFXrec433";
 
     // Transceiver types
-    public static final String TRANSCEIVER_310MHz = "310MHz";
-    public static final String TRANSCEIVER_315MHz = "315MHz";
-    public static final String TRANSCEIVER_433_92MHz = "433.92MHz";
-    public static final String TRANSCEIVER_433_92MHz_R = "433.92MHz receiver only";
+    public static final String TRANSCEIVER_310MHZ = "310MHz";
+    public static final String TRANSCEIVER_315MHZ = "315MHz";
+    public static final String TRANSCEIVER_433_92MHZ = "433.92MHz";
+    public static final String RECEIVER_433_92MHZ = "433.92MHz receiver only";
 
     public final static ThingTypeUID BRIDGE_MANUAL = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_MANUAL_BRIDGE);
     public final static ThingTypeUID BRIDGE_TCP = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_TCP_BRIDGE);
@@ -163,7 +163,7 @@ public class RFXComBindingConstants {
     /**
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
      */
-    public final static Map<PacketType, ThingTypeUID> packetTypeThingMap = ImmutableMap
+    public final static Map<PacketType, ThingTypeUID> PACKET_TYPE_THING_TYPE_UID_MAP = ImmutableMap
             .<PacketType, ThingTypeUID>builder()
             .put(PacketType.BAROMETRIC, RFXComBindingConstants.THING_TYPE_BAROMETRIC)
             .put(PacketType.BBQ1, RFXComBindingConstants.THING_TYPE_BBQ_TEMPERATURE)
