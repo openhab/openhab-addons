@@ -9,9 +9,9 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.tesla.internal.TeslaHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.tesla.command.TeslaCommandExtension">
 
-   <scr:implementation class="org.openhab.binding.tesla.internal.TeslaHandlerFactory"/>
+   <scr:implementation class="org.openhab.binding.tesla.command.TeslaCommandExtension"/>
 
    <scr:reference bind="setStorageService"
                   unbind="unsetStorageService"
@@ -21,7 +21,7 @@
                   name="StorageService"/>
 
    <service>
-      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+      <provide interface="org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension" />
    </service>
 
 </scr:component>
