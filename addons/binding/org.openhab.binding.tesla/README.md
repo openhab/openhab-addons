@@ -17,6 +17,7 @@ The binding uses a the owner's email address and password in order to access the
 
 After a successful connection (Thing is online), you can clear the username and password field from the configuration, leaving only the VIN. Instead of using the username and password, from now on, only the access token will be stored and used (access token + refresh token). This is a better approach for many reasons, one being that you cannot start the car without the password.
 If you really don't like the thought of your username and password being stored temporarily, there is also a third option: Leave username/password blank, go into the openHAB console (ssh -p 8101 openhab@localhost), and run the following command:
+
 ```
 openhab> smarthome:tesla logon 1
 Username (email): ****@***.com
