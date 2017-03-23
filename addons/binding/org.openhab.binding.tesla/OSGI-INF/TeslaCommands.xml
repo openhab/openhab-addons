@@ -14,10 +14,11 @@
    <scr:implementation class="org.openhab.binding.tesla.command.TeslaCommandExtension"/>
 
    <scr:reference bind="setStorageService"
-              cardinality="1..1"
-              interface="org.eclipse.smarthome.core.storage.StorageService"
-              policy="static"
-              name="StorageService"/>
+                  unbind="unsetStorageService"
+                  cardinality="1..1"
+                  interface="org.eclipse.smarthome.core.storage.StorageService"
+                  policy="static"
+                  name="StorageService"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension" />

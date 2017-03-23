@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 /**
  * The {@link TeslaHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Karel Goderis - Initial contribution
  * @author Nicolai Grødum - Adding token based auth
  */
@@ -54,4 +54,8 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 	public void setStorageService(StorageService storageService) {
 		this.storageService = storageService;
 	}
+
+    public void unsetStorageService(StorageService storageService) {
+        this.storageService = null;
+    }
 }
