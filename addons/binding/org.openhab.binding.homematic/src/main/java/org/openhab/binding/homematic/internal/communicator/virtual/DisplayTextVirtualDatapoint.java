@@ -173,7 +173,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
             try {
                 return valueOf(name).getCode();
             } catch (Exception ex) {
-                return null;
+                return OFF.getCode();
             }
         }
     }
@@ -340,11 +340,9 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                 String beeper = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_BEEPER)
                         .getOptionValue();
                 String beeperCode = Beeper.getCode(beeper);
-                if (StringUtils.isNotBlank(beeperCode)) {
-                    message.add(BEEPER_START);
-                    message.add(beeperCode);
-                    message.add(BEEPER_END);
-                }
+                message.add(BEEPER_START);
+                message.add(beeperCode);
+                message.add(BEEPER_END);
 
                 String led = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_LED).getOptionValue();
                 String ledCode = Led.getCode(led);
