@@ -222,19 +222,23 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
      */
     @Override
     public void initialize(HmDevice device) {
-        if (device.getType().equals(DEVICE_TYPE_STATUS_DISPLAY) || isEpDisplay(device)) {
+        boolean isEpDisplay = isEpDisplay(device);
+        if (device.getType().equals(DEVICE_TYPE_STATUS_DISPLAY) || isEpDisplay) {
             for (HmChannel channel : device.getChannels()) {
                 if (channel.hasDatapoint(new HmDatapointInfo(HmParamsetType.VALUES, channel, DATAPOINT_NAME_SUBMIT))) {
                     for (int i = 1; i <= getLineCount(device); i++) {
                         addDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_LINE + i, HmValueType.STRING,
                                 null, false);
 
-                        addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_COLOR + i,
-                                Color.class);
                         addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_ICON + i,
                                 Icon.class);
+
+                        if (!isEpDisplay) {
+                            addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_COLOR + i,
+                                    Color.class);
+                        }
                     }
-                    if (isEpDisplay(device)) {
+                    if (isEpDisplay) {
                         addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_BEEPER,
                                 Beeper.class);
                         addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_LED, Led.class);
