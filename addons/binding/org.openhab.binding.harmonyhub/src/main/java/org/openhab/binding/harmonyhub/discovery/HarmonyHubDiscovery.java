@@ -52,7 +52,7 @@ public class HarmonyHubDiscovery {
 
     private static final int DISCO_PORT = 5224;
 
-    static protected final ScheduledExecutorService scheduler = ThreadPoolManager
+    private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
             .getScheduledPool(HarmonyHubDiscovery.class.getName());
     private ScheduledFuture<?> broadcastFuture;
     private ScheduledFuture<?> timeoutFuture;
@@ -106,14 +106,14 @@ public class HarmonyHubDiscovery {
             server = new HarmonyServer(serverSocket);
             server.start();
 
-            broadcastFuture = scheduler.scheduleAtFixedRate(new Runnable() {
+            broadcastFuture = SCHEDULER.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
                     sendDiscoveryMessage(String.format(DISCO_STRING, serverSocket.getLocalPort()));
                 }
             }, 0, 2, TimeUnit.SECONDS);
 
-            timeoutFuture = scheduler.schedule(new Runnable() {
+            timeoutFuture = SCHEDULER.schedule(new Runnable() {
                 @Override
                 public void run() {
                     stopDiscovery();
