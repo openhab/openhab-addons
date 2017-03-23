@@ -29,7 +29,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +60,6 @@ public class HarmonyHubDiscovery {
     private HarmonyServer server;
     private int timeout;
     private boolean running;
-    private String optionalHost;
 
     private List<HarmonyHubDiscoveryListener> listeners = new CopyOnWriteArrayList<HarmonyHubDiscoveryListener>();
 
@@ -70,9 +68,8 @@ public class HarmonyHubDiscovery {
      * @param timeout
      *            how long we discover for
      */
-    public HarmonyHubDiscovery(int timeout, String optionalHost) {
+    public HarmonyHubDiscovery(int timeout) {
         this.timeout = timeout;
-        this.optionalHost = optionalHost;
         running = false;
         listeners = new LinkedList<HarmonyHubDiscoveryListener>();
     }
@@ -176,20 +173,8 @@ public class HarmonyHubDiscovery {
                     continue;
                 }
                 for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                    InetAddress[] broadcast = null;
-
-                    if (StringUtils.isNotBlank(optionalHost)) {
-                        try {
-                            broadcast = new InetAddress[] { InetAddress.getByName(optionalHost) };
-                        } catch (Exception e) {
-                            logger.error("Could not use host for hub discovery", e);
-                            return;
-                        }
-                    } else {
-                        broadcast = new InetAddress[] { InetAddress.getByName("224.0.0.1"),
-                                InetAddress.getByName("255.255.255.255"), interfaceAddress.getBroadcast() };
-                    }
-
+                    InetAddress[] broadcast = new InetAddress[] { InetAddress.getByName("224.0.0.1"),
+                            InetAddress.getByName("255.255.255.255"), interfaceAddress.getBroadcast() };
                     for (InetAddress bc : broadcast) {
                         // Send the broadcast package!
                         if (bc != null) {
@@ -259,7 +244,6 @@ public class HarmonyHubDiscovery {
                         if (!responses.contains(props.getProperty("friendlyName"))) {
                             responses.add(props.getProperty("friendlyName"));
                             HarmonyHubDiscoveryResult result = new HarmonyHubDiscoveryResult(props.getProperty("ip"),
-                                    props.getProperty("accountId"), props.getProperty("uuid"),
                                     props.getProperty("host_name").replaceAll("[^A-Za-z0-9\\-_]", ""),
                                     props.getProperty("friendlyName"));
                             for (HarmonyHubDiscoveryListener listener : listeners) {
