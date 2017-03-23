@@ -35,7 +35,9 @@ Besides adding automatically discovered things through PaperUI, you can add thin
 
 The Thing configuration for the bridge uses the following syntax:
 
-    Bridge nikohomecontrol:bridge:<bridgeID> [ ADDR="<IP-Address of bridge>", PORT=<listening port>, REFRESH="<Refresh interval>" ]
+```
+Bridge nikohomecontrol:bridge:<bridgeID> [ ADDR="<IP-Address of bridge>", PORT=<listening port>, REFRESH="<Refresh interval>" ]
+```
 
 `bridgeID` can have any value.
 
@@ -43,18 +45,24 @@ All parameters are optional. ADDR will trigger a search for a Niko Home Control 
 
 The Thing configuration for the actions has the following syntax:
 
-    Thing nikohomecontrol:<thing type>:<bridgeID>:<oHActionID>
+```
+Thing nikohomecontrol:<thing type>:<bridgeID>:<oHActionID>
                         [ ACTIONID=<Niko Home Control action ID>,
                           STEP=<dimmer increase/decrease step value> ]
+```
 
 or nested in the bridge configuration:
 
-    <thing type> <oHActionID> [ ACTIONID=<Niko Home Control action ID>,
-                                STEP=<dimmer increase/decrease step value> ]
-
+```
+<thing type> <oHActionID> [ ACTIONID=<Niko Home Control action ID>,
+                            STEP=<dimmer increase/decrease step value> ]
+```
+                               
 The following thing types are valid for configuration:
 
-    onOff, dimmer, blind
+```
+onOff, dimmer, blind
+```
 
 `oHActionID` can have any value, but will be set to the same value as the ACTIONID parameter if discovery is used.
 
@@ -85,23 +93,27 @@ Beyond action events, the Niko Home Control communication also supports thermost
 
 .things:
 
-    Bridge nikohomecontrol:bridge:nhc [ ADDR="192.168.0.70", PORT=8000, REFRESH=300 ] {
-        onOff 1 [ ACTIONID=1 ]
-        dimmer 2 [ ACTIONID=2, STEP=5 ]
-        blind 3 [ ACTIONID=3 ]
-    }
+```
+Bridge nikohomecontrol:bridge:nhc [ ADDR="192.168.0.70", PORT=8000, REFRESH=300 ] {
+    onOff 1 [ ACTIONID=1 ]
+    dimmer 2 [ ACTIONID=2, STEP=5 ]
+    blind 3 [ ACTIONID=3 ]
+}
+```
 
 .items:
 
-    Switch LivingRoom       {channel="nikohomecontrol:onOff:nhc:1#switch"}          # Switch for onOff type action
-    Dimmer TVRoom           {channel="nikohomecontrol:dimmer:nhc:2#brightness"}     # Changing brightness dimmer type action
-    Rollershutter Kitchen   {channel="nikohomecontrol:blind:nhc:3#rollershutter"}   # Controlling rollershutter or blind type action
-
+```
+Switch LivingRoom       {channel="nikohomecontrol:onOff:nhc:1#switch"}          # Switch for onOff type action
+Dimmer TVRoom           {channel="nikohomecontrol:dimmer:nhc:2#brightness"}     # Changing brightness dimmer type action
+Rollershutter Kitchen   {channel="nikohomecontrol:blind:nhc:3#rollershutter"}   # Controlling rollershutter or blind type action
+```
 
 .sitemap:
 
-    Switch item=LivingRoom
-    Slider item=TVRoom
-    Switch item=TVRoom          # allows switching dimmer item off or on (with controller defined behavior)
-    Rollershutter item=Kitchen
-
+```
+Switch item=LivingRoom
+Slider item=TVRoom
+Switch item=TVRoom          # allows switching dimmer item off or on (with controller defined behavior)
+Rollershutter item=Kitchen
+```
