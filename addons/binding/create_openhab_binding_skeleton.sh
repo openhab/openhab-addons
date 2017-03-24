@@ -13,8 +13,9 @@ mvn archetype:generate -N \
   -DartifactId=org.openhab.binding.$id \
   -Dpackage=org.openhab.binding.$id \
   -DarchetypeCatalog='file://../archetype-catalog.xml' \
-  -Dversion=2.0.0-SNAPSHOT \
+  -Dversion=2.1.0-SNAPSHOT \
   -DbindingId=$id \
   -DbindingIdCamelCase=$camelcaseId \
   -DvendorName=openHAB \
   -Dnamespace=org.openhab
+
