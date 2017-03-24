@@ -79,7 +79,11 @@ public class IsyInsteonDeviceHandler extends AbtractIsyThingHandler {
             updateState(mDeviceidToChannelMap.get(deviceId), newState);
         } else if (mControlUID != null && ("DOF".equals(parameters[0]) || "DFOF".equals(parameters[0])
                 || "DON".equals(parameters[0]) || "DFON".equals(parameters[0]))) {
-            updateState(mControlUID, new StringType((String) parameters[0]));
+            if (deviceId == 1) {
+                updateState(mControlUID, new StringType((String) parameters[0]));
+            } else {
+                logger.debug("control status ignored because device id was not 1, it was : " + deviceId);
+            }
         }
     }
 
