@@ -77,7 +77,6 @@ public class SnapclientHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        host = (String) thing.getConfiguration().get(SnapcastBindingConstants.CONFIG_HOST_NAME);
         mac = (String) thing.getConfiguration().get(SnapcastBindingConstants.CONFIG_MAC_ADDRESS);
 
         final UpdateHandler updateHandler = new UpdateHandler();

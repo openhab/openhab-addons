@@ -16,41 +16,44 @@
 
 package org.openhab.binding.snapcast.internal.types;
 
-
 /**
  * Generic POJO for Unmashalling Json Response from Snapcast
  */
 public class Host {
-	private String ip;
-	private String mac;
-	private String name;
-	private String arch;
-	private String os;
+    private String ip;
+    private String mac;
+    private String name;
+    private String arch;
+    private String os;
 
-	public Host() {
-	}
+    public Host() {
+    }
 
-	public String getMac() {
-		return mac;
-	}
+    public String getMac() {
+        return mac;
+    }
 
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setArch(String arch) {
-		this.arch = arch;
-	}
+    public void setArch(String arch) {
+        this.arch = arch;
+    }
 
-	public void setOs(String os) {
-		this.os = os;
-	}
+    public void setOs(String os) {
+        this.os = os;
+    }
 
-	public void setMac(String mac) {
-		this.mac = mac;
-	}
+    public void setMac(String mac) {
+        this.mac = mac;
+    }
+
+    public String getIp() {
+        return ip;
+    }
 }

@@ -57,10 +57,11 @@ public class SnapclientDiscoveryService extends AbstractDiscoveryService {
         for (Client client : controller.getClients()) {
             String clientName = client.getConfig().getName();
             String mac = client.getHost().getMac();
+            String ip = client.getHost().getIp();
             ThingUID uid = new ThingUID(SnapcastBindingConstants.THING_TYPE_SNAPCLIENT, mac.replaceAll(":", ""));
             properties.put(SnapcastBindingConstants.CONFIG_MAC_ADDRESS, mac);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(clientName)
-                    .withProperties(properties).withBridge(id).withLabel(clientName).build();
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(clientName + " " + ip)
+                    .withProperties(properties).withBridge(id).build();
             thingDiscovered(discoveryResult);
         }
 

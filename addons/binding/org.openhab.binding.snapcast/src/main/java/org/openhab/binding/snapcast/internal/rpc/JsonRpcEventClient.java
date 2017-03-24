@@ -55,8 +55,9 @@ public class JsonRpcEventClient {
         this.gson = new Gson();
     }
 
-    public void connect() throws InterruptedException {
+    public void connect() throws InterruptedException, IOException {
         this.connectionThread = new ConnectionThread();
+        this.connectionThread.connect();
         this.connectionExecutor.submit(connectionThread);
 
         Runtime.getRuntime().addShutdownHook(new ShutdownThread());
@@ -233,8 +234,7 @@ public class JsonRpcEventClient {
                     } else {
                         try {
                             logger.info("Connecting to control server {}:{}...", hostname, port);
-                            socket = new Socket();
-                            socket.connect(new InetSocketAddress(hostname, port), 30);
+                            connect();
                         } catch (IOException e) {
                             logger.info("Connection lost to control server {}:{} trying to reconnect...", hostname,
                                     port);
@@ -249,6 +249,11 @@ public class JsonRpcEventClient {
                 logger.info("Connection closed: {}", e.getMessage());
                 e.printStackTrace();
             }
+        }
+
+        private void connect() throws IOException {
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(hostname, port), 5);
         }
     }
 
