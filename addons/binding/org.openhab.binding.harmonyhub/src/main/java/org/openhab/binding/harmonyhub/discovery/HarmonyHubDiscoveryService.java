@@ -25,24 +25,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HarmonyHubDiscoveryParticipant} class discovers Harmony hubs and adds the results to the inbox.
+ * The {@link HarmonyHubDiscoveryService} class discovers Harmony hubs and adds the results to the inbox.
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
-public class HarmonyHubDiscoveryParticipant extends AbstractDiscoveryService implements HarmonyHubDiscoveryListener {
+public class HarmonyHubDiscoveryService extends AbstractDiscoveryService implements HarmonyHubDiscoveryListener {
 
-    private Logger logger = LoggerFactory.getLogger(HarmonyHubDiscoveryParticipant.class);
+    private Logger logger = LoggerFactory.getLogger(HarmonyHubDiscoveryService.class);
 
     private static final int TIMEOUT = 15;
     private static final long REFRESH = 600;
     private ScheduledFuture<?> discoFuture;
     private HarmonyHubDiscovery disco;
 
-    public HarmonyHubDiscoveryParticipant() {
+    public HarmonyHubDiscoveryService() {
         super(HarmonyHubHandler.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
-        disco = new HarmonyHubDiscovery(TIMEOUT);
-        disco.addListener(this);
+    }
+
+    protected void activate() {
+        this.disco = new HarmonyHubDiscovery(scheduler, TIMEOUT);
+        this.disco.addListener(this);
+    }
+
+    @Override
+    protected void deactivate() {
+        super.deactivate();
+        this.disco.removeListener(this);
+        this.disco = null;
     }
 
     @Override

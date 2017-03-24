@@ -29,7 +29,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +51,7 @@ public class HarmonyHubDiscovery {
 
     private static final int DISCO_PORT = 5224;
 
-    private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
-            .getScheduledPool(HarmonyHubDiscovery.class.getName());
+    private final ScheduledExecutorService scheduler;
     private ScheduledFuture<?> broadcastFuture;
     private ScheduledFuture<?> timeoutFuture;
     private ServerSocket serverSocket;
@@ -64,11 +62,11 @@ public class HarmonyHubDiscovery {
     private List<HarmonyHubDiscoveryListener> listeners = new CopyOnWriteArrayList<HarmonyHubDiscoveryListener>();
 
     /**
-     *
-     * @param timeout
-     *            how long we discover for
+     * @param scheduler a scheduler service that can be used for jobs
+     * @param timeout how long we discover for
      */
-    public HarmonyHubDiscovery(int timeout) {
+    public HarmonyHubDiscovery(ScheduledExecutorService scheduler, int timeout) {
+        this.scheduler = scheduler;
         this.timeout = timeout;
         running = false;
         listeners = new LinkedList<HarmonyHubDiscoveryListener>();
@@ -106,14 +104,14 @@ public class HarmonyHubDiscovery {
             server = new HarmonyServer(serverSocket);
             server.start();
 
-            broadcastFuture = SCHEDULER.scheduleAtFixedRate(new Runnable() {
+            broadcastFuture = scheduler.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
                     sendDiscoveryMessage(String.format(DISCO_STRING, serverSocket.getLocalPort()));
                 }
             }, 0, 2, TimeUnit.SECONDS);
 
-            timeoutFuture = SCHEDULER.schedule(new Runnable() {
+            timeoutFuture = scheduler.schedule(new Runnable() {
                 @Override
                 public void run() {
                     stopDiscovery();
