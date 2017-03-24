@@ -172,7 +172,7 @@ Because textual configuration isn't useful, follow the instructions in the [Gett
 
 - Z-Way device types (especially the probe types) supported by openHAB channels with detailed information (scale types and so on) are not complete.
 - Configuration of the Z-Wave network by the binding is currently not possible (device inclusion or physical device configuration)
-- Z-Way App "OpenHAB Connector" is required. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
+- Z-Way App "openHAB Connector" is required. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
 
 <br>
 <img src="doc/BMWi_4C_Gef_en.jpg" width="200">

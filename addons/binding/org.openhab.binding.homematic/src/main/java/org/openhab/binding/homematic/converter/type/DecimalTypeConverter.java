@@ -16,7 +16,7 @@ import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 
 /**
- * Converts between a Homematic datapoint value and a openHab DecimalType.
+ * Converts between a Homematic datapoint value and a openHAB DecimalType.
  *
  * @author Gerhard Riegler - Initial contribution
  */

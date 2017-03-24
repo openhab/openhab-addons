@@ -20,7 +20,7 @@ public class MiscUtils {
     private static final Logger logger = LoggerFactory.getLogger(MiscUtils.class);
 
     /**
-     * Replaces invalid characters of the text to fit into a openHab UID.
+     * Replaces invalid characters of the text to fit into a openHAB UID.
      */
     public static String validateCharacters(String text, String textType, String replaceChar) {
         if (text == null) {

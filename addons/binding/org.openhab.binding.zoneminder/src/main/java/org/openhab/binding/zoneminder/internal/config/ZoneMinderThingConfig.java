@@ -11,7 +11,7 @@ package org.openhab.binding.zoneminder.internal.config;
 import org.openhab.binding.zoneminder.ZoneMinderConstants;
 
 /**
- * Monitor configuration from OpenHAB.
+ * Monitor configuration from openHAB.
  *
  * @author Martin S. Eskildsen - Initial contribution
  */

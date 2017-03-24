@@ -112,7 +112,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Converts a Gardena property value to a openHab state.
+     * Converts a Gardena property value to a openHAB state.
      */
     private State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
         String abilityName = channelUID.getGroupId();
