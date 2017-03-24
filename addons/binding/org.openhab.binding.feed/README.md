@@ -1,6 +1,6 @@
 # Feed Binding
 
-This binding allows you to integrate feeds in the OpenHAB environment.
+This binding allows you to integrate feeds in the openHAB environment.
 The Feed binding downloads the content, tracks for changes, and displays information like feed author, feed title and description, number of entries, last update date.
 
 It can be used in combination with openHAB rules to trigger events on feed change.
