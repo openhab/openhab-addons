@@ -55,7 +55,7 @@ public abstract class AbstractMiHomeOSGiTest extends OSGiTest {
     //Gateway information used for the purposes of the tests
     public static final String TEST_PASSWORD = "pass"
     public static final String TEST_USERNAME = "test@my.com"
-    public static final String TEST_GATEWAY_CODE = "FGSGHRSDFS"
+    public static final String TEST_GATEWAY_CODE = "FGSG5RSDFS"
     public static final int TEST_UPDATE_INTERVAL = 10
     public static final int TEST_GATEWAY_ID = 4541
 

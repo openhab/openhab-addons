@@ -83,7 +83,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
     /** Pattern used to check if a given String is valid gateway code */
-    private static final String GATEWAY_CODE_PATTERN = "^[A-Z]{10}$";
+    private static final String GATEWAY_CODE_PATTERN = "^[A-Z0-9]{10}$";
 
     // Warning messages used when some unexpected behavior is encountered
     private static final String UNREGISTERED_GATEWAY = "The gateway has been unregistered";
@@ -92,7 +92,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     private static final String NOT_ACTIVE_GATEWAY = "The gateway has not been active in the last two minutes. Please check your connection.";
     private static final String CHANGING_LABEL_MESSAGE = "Mi|Home REST API does not allow to change gateway's label. Changing the thing's label will not affect the device label.";
     private static final String INVALID_USER_MESSAGE = "Invalid username. Email address expected.";
-    private static final String INVALID_GATEWAY_CODE = "Invalid gateway code. 10 capital letters expected";
+    private static final String INVALID_GATEWAY_CODE = "Invalid gateway code. 10 capital letters and numbers expected";
 
     /**
      * Initial refresh delay in seconds
@@ -380,11 +380,11 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     *  Sets the thing properties
+     * Sets the thing properties
      *
      * @param dataObj - JSON object containing all the needed information
      */
-        private void setProperties(JsonObject dataObj) {
+    private void setProperties(JsonObject dataObj) {
         logger.debug("Setting the thing properties...");
         Map<String, String> props = editProperties();
         setProperty(dataObj, DeviceConstants.GATEWAY_PORT_KEY, props, MiHomeBindingConstants.PROPERTY_PORT);
@@ -448,7 +448,8 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
         config.put(MiHomeBindingConstants.CONFIG_GATEWAY_CODE, gatewayCode);
         password = configurationParameters.get(MiHomeBindingConstants.CONFIG_PASSWORD).toString();
         config.put(MiHomeBindingConstants.CONFIG_PASSWORD, password);
-        updateInterval = Long.valueOf(configurationParameters.get(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL).toString());
+        updateInterval = Long
+                .valueOf(configurationParameters.get(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL).toString());
         config.put(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL, updateInterval);
         updateConfiguration(config);
         if (verifyThingConfiguration(thing.getConfiguration())) {

@@ -17,7 +17,7 @@
     </parameter>
     <parameter name="gatewayCode" type="text" required="true">
       <label>Gateway code</label>
-      <description>Gateway code consisting of 10 capital letters</description>
+      <description>Gateway code consisting of 10 capital letters and numbers</description>
     </parameter>
     <parameter name="updateInterval" type="integer" min="1" step="1" required="true" unit="s">
       <label>Update interval</label>
