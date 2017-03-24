@@ -132,7 +132,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     }
 
     /**
-     * Returns true, if the conversion from openHab to the binding is possible.
+     * Returns true, if the conversion from openHAB to the binding is possible.
      */
     protected abstract boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass);
 
@@ -142,12 +142,12 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     protected abstract Object toBinding(T type, HmDatapoint dp) throws ConverterException;
 
     /**
-     * Returns true, if the conversion from the binding to openHab is possible.
+     * Returns true, if the conversion from the binding to openHAB is possible.
      */
     protected abstract boolean fromBindingValidation(HmDatapoint dp);
 
     /**
-     * Converts the datapoint value to a openHab type.
+     * Converts the datapoint value to a openHAB type.
      */
     protected abstract T fromBinding(HmDatapoint dp) throws ConverterException;
 

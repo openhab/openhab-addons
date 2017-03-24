@@ -238,7 +238,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
 
     /**
      * This class is a worker which execute the commands sent to the TelldusCoreDeviceController.
-     * This enables separation between Telldus Core and OpenHAB for preventing latency on the bus.
+     * This enables separation between Telldus Core and openHAB for preventing latency on the bus.
      * The Tellstick have an send pace of 4 Hz which is far slower then the bus itself.
      *
      * @author Elias Gabrielsson

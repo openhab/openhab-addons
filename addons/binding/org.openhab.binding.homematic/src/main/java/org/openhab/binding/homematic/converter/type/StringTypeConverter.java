@@ -15,7 +15,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 
 /**
- * Converts between a Homematic datapoint value and a openHab StringType.
+ * Converts between a Homematic datapoint value and a openHAB StringType.
  *
  * @author Gerhard Riegler - Initial contribution
  */
