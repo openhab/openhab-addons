@@ -56,16 +56,4 @@
 		</config-description>
 	</bridge-type>
 
-	<channel-type id="reset">
-		<item-type>Switch</item-type>
-		<label>Reset</label>
-		<description>Reset Switch</description>
-	</channel-type>
-
-	<channel-type id="command">
-		<item-type>String</item-type>
-		<label>Send Command</label>
-		<description>Sends a DSC Alarm Command</description>
-	</channel-type>
-
 </thing:thing-descriptions>
