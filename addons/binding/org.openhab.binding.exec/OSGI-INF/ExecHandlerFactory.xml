@@ -16,5 +16,8 @@
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
+   
+    <reference bind="setItemRegistry" cardinality="1..1"
+        interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="dynamic" unbind="unsetItemRegistry" />
 
 </scr:component>
