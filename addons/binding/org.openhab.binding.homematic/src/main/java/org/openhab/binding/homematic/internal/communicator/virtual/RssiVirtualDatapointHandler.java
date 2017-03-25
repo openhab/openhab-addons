@@ -10,7 +10,6 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
-import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -59,7 +58,7 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
      * {@inheritDoc}
      */
     @Override
-    public void handleEvent(VirtualGateway gateway, HmDatapoint dp) throws HomematicClientException {
+    public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         HmChannel channel = dp.getChannel();
         Object value = getRssiValue(channel);
         HmDatapoint vdpRssi = getVirtualDatapoint(channel);
