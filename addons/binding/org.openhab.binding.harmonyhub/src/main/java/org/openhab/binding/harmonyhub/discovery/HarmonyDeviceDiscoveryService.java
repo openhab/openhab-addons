@@ -37,7 +37,7 @@ public class HarmonyDeviceDiscoveryService extends AbstractDiscoveryService impl
 
     private Logger logger = LoggerFactory.getLogger(HarmonyDeviceDiscoveryService.class);
 
-    private static int TIMEOUT = 5;
+    private static final int TIMEOUT = 5;
 
     HarmonyHubHandler bridge;
 

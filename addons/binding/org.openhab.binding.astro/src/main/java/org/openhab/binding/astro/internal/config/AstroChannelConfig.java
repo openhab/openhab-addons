@@ -9,7 +9,7 @@
 package org.openhab.binding.astro.internal.config;
 
 /**
- * Channel configuration from openHab.
+ * Channel configuration from openHAB.
  *
  * @author Gerhard Riegler - Initial contribution
  */

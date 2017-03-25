@@ -17,7 +17,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * Thing configuration from openHab.
+ * Thing configuration from openHAB.
  *
  * @author Gerhard Riegler - Initial contribution
  */

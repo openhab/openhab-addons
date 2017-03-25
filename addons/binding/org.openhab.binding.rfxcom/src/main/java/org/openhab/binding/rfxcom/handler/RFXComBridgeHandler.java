@@ -53,6 +53,7 @@ import gnu.io.NoSuchPortException;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComBridgeHandler extends BaseBridgeHandler {
+    private static final int TIMEOUT = 5000;
 
     private Logger logger = LoggerFactory.getLogger(RFXComBridgeHandler.class);
 
@@ -61,7 +62,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
     private List<DeviceMessageListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
-    private static final int timeout = 5000;
     private static byte seqNbr = 0;
     private static RFXComTransmitterMessage responseMessage = null;
     private Object notifierObject = new Object();
@@ -241,10 +241,10 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX315:
                     if (conf.transceiverType != null) {
                         switch (conf.transceiverType) {
-                            case RFXComBindingConstants.TRANSCEIVER_310MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_310MHZ:
                                 msg.transceiverType = TransceiverType._310MHZ;
                                 break;
-                            case RFXComBindingConstants.TRANSCEIVER_315MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_315MHZ:
                                 msg.transceiverType = TransceiverType._315MHZ;
                                 break;
                             default:
@@ -265,16 +265,16 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 case RFXComBindingConstants.BRIDGE_TYPE_TCP_BRIDGE:
                     if (conf.transceiverType != null) {
                         switch (conf.transceiverType) {
-                            case RFXComBindingConstants.TRANSCEIVER_433_92MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_433_92MHZ:
                                 msg.transceiverType = TransceiverType._433_92MHZ_TRANSCEIVER;
                                 break;
-                            case RFXComBindingConstants.TRANSCEIVER_433_92MHz_R:
+                            case RFXComBindingConstants.RECEIVER_433_92MHZ:
                                 msg.transceiverType = TransceiverType._433_92MHZ_RECEIVER_ONLY;
                                 break;
-                            case RFXComBindingConstants.TRANSCEIVER_310MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_310MHZ:
                                 msg.transceiverType = TransceiverType._310MHZ;
                                 break;
-                            case RFXComBindingConstants.TRANSCEIVER_315MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_315MHZ:
                                 msg.transceiverType = TransceiverType._315MHZ;
                                 break;
                             default:
@@ -336,9 +336,9 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
         try {
 
-            RFXComTransmitterMessage resp = null;
+            RFXComTransmitterMessage resp;
             synchronized (notifierObject) {
-                notifierObject.wait(timeout);
+                notifierObject.wait(TIMEOUT);
                 resp = getResponseMessage();
             }
 
@@ -358,7 +358,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             }
 
         } catch (InterruptedException ie) {
-            logger.error("No acknowledge received from RFXCOM controller, timeout {}ms ", timeout);
+            logger.error("No acknowledge received from RFXCOM controller, timeout {}ms ", TIMEOUT);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }

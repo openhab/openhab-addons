@@ -29,6 +29,8 @@ The DSC Alarm binding incorporates several discovery modes in order to find DSC 
 
 Note: The Envisalink Bridge discovery does a TCP scan across your local network to find the interface.  This may create issues on the network so it is suggested that caution be used when trying this discovery.  The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the PaperUI.  And then allow the binding to discover the DSC Alarm things.
 
+
+
 ## Thing Configuration
 
 DSC Alarm things can be configured either through the online configuration utility via discovery, or manually through the 'dscalarm.things' configuration file.  The following table shows the available configuration parameters for each thing.
@@ -589,13 +591,11 @@ Sample Rules for Sending a DSC Alarm Command
 
 ```
 rule "SendKeystrokeStringCommand"
-
 when   
     Item SwitchItemName received command ON
 then   
     sendCommand(SEND_DSC_ALARM_COMMAND, "071,1*101#")
 end
-
 
 rule "SendPollingCommand"
 
@@ -604,7 +604,6 @@ when
 then   
     sendCommand(SEND_DSC_ALARM_COMMAND, "000")
 end
-
 ```
 
 Notice the command variations in the examples. If a command has data, there needs to be a comma between the command and the data as seen above in the first example. If there is no data then it would only require the command itself as in the second example. 

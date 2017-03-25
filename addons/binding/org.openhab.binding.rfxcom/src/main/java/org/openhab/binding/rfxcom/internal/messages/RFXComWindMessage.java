@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.items.NumberItem;
@@ -57,11 +58,11 @@ public class RFXComWindMessage extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
+    private final static List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.WIND_DIRECTION,
             RFXComValueSelector.WIND_SPEED);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
+    private final static List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
     public SubType subType;
     public int sensorId;
@@ -118,13 +119,13 @@ public class RFXComWindMessage extends RFXComBaseMessage {
         data[4] = (byte) ((sensorId & 0xFF00) >> 8);
         data[5] = (byte) (sensorId & 0x00FF);
 
-        short WindD = (short) Math.abs(windDirection);
-        data[6] = (byte) ((WindD >> 8) & 0xFF);
-        data[7] = (byte) (WindD & 0xFF);
+        short absWindDirection = (short) Math.abs(windDirection);
+        data[6] = (byte) ((absWindDirection >> 8) & 0xFF);
+        data[7] = (byte) (absWindDirection & 0xFF);
 
-        int WindS = (short) Math.abs(windSpeed) * 10;
-        data[10] = (byte) ((WindS >> 8) & 0xFF);
-        data[11] = (byte) (WindS & 0xFF);
+        int absWindSpeedTimesTen = (short) Math.abs(windSpeed) * 10;
+        data[10] = (byte) ((absWindSpeedTimesTen >> 8) & 0xFF);
+        data[11] = (byte) (absWindSpeedTimesTen & 0xFF);
 
         data[16] = (byte) (((signalLevel & 0x0F) << 4) | (batteryLevel & 0x0F));
 
@@ -205,12 +206,12 @@ public class RFXComWindMessage extends RFXComBaseMessage {
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 
 }

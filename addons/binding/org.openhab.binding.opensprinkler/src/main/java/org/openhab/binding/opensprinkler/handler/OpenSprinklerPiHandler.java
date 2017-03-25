@@ -102,7 +102,7 @@ public class OpenSprinklerPiHandler extends OpenSprinklerHandler {
 
     /**
      * Threaded scheduled job that periodically syncs the state of the OpenSprinkler device with
-     * OpenHab.
+     * openHAB.
      */
     private Runnable refreshService = new Runnable() {
         @Override
