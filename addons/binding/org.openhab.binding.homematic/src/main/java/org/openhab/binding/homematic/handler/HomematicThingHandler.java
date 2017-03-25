@@ -74,23 +74,20 @@ public class HomematicThingHandler extends BaseThingHandler {
                 try {
                     HomematicGateway gateway = getHomematicGateway();
                     HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
+                    HmChannel channelZero = device.getChannel(0);
+                    loadHomematicChannelValues(channelZero);
                     updateStatus(device);
                     if (!device.isOffline()) {
-                        logger.debug("Initializing {} channels of thing '{}' from gateway '{}'",
-                                getThing().getChannels().size(), getThing().getUID(), gateway.getId());
-
-                        // update channel states
-                        for (Channel channel : getThing().getChannels()) {
-                            updateChannelState(channel.getUID());
-                        }
+                        logger.debug("Initializing thing '{}' from gateway '{}'", getThing().getUID(), gateway.getId());
 
                         // update properties
                         Map<String, String> properties = editProperties();
-                        setProperty(properties, device, PROPERTY_BATTERY_TYPE, VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE);
-                        setProperty(properties, device, Thing.PROPERTY_FIRMWARE_VERSION,
+                        setProperty(properties, channelZero, PROPERTY_BATTERY_TYPE,
+                                VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE);
+                        setProperty(properties, channelZero, Thing.PROPERTY_FIRMWARE_VERSION,
                                 VIRTUAL_DATAPOINT_NAME_FIRMWARE);
-                        setProperty(properties, device, Thing.PROPERTY_SERIAL_NUMBER, device.getAddress());
-                        setProperty(properties, device, PROPERTY_AES_KEY, DATAPOINT_NAME_AES_KEY);
+                        setProperty(properties, channelZero, Thing.PROPERTY_SERIAL_NUMBER, device.getAddress());
+                        setProperty(properties, channelZero, PROPERTY_AES_KEY, DATAPOINT_NAME_AES_KEY);
                         updateProperties(properties);
 
                         // update configurations
@@ -122,9 +119,8 @@ public class HomematicThingHandler extends BaseThingHandler {
     /**
      * Sets a thing property with a datapoint value.
      */
-    private void setProperty(Map<String, String> properties, HmDevice device, String propertyName,
+    private void setProperty(Map<String, String> properties, HmChannel channelZero, String propertyName,
             String datapointName) {
-        HmChannel channelZero = device.getChannel(0);
         HmDatapoint dp = channelZero
                 .getDatapoint(new HmDatapointInfo(HmParamsetType.VALUES, channelZero, datapointName));
         if (dp != null) {
@@ -249,8 +245,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void updateChannelState(final HmDatapoint dp, Channel channel)
             throws IOException, BridgeHandlerNotAvailableException, ConverterException {
 
-        boolean isChannelLinked = isLinked(channel);
-        if (isChannelLinked) {
+        if (isLinked(channel)) {
             loadHomematicChannelValues(dp.getChannel());
 
             TypeConverter<?> converter = ConverterFactory.createConverter(channel.getAcceptedItemType());
