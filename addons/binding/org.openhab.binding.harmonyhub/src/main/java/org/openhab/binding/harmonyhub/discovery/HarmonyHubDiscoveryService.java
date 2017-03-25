@@ -21,81 +21,96 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.harmonyhub.HarmonyHubBindingConstants;
+import org.openhab.binding.harmonyhub.handler.HarmonyHubHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HarmonyHubDiscovery} class discovers Logitech Harmony Hubs on the
- * network by broadcasting a discovery string to port 5224 on the
- * broadcast address. Hubs respond by making a TCP connection back to
- * the IP address that our packet was sent from and on the port we
- * advertised as part of the original discovery request.
+ * The {@link HarmonyHubDiscoveryService} class discovers Harmony hubs and adds the results to the inbox.
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
-public class HarmonyHubDiscovery {
+public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
-    private Logger logger = LoggerFactory.getLogger(HarmonyHubDiscovery.class);
+    private Logger logger = LoggerFactory.getLogger(HarmonyHubDiscoveryService.class);
 
     // notice the port appended to the end of the string
-    private static final String DISCO_STRING = "_logitech-reverse-bonjour._tcp.local.\n%d";
+    private static final String DISCOVERY_STRING = "_logitech-reverse-bonjour._tcp.local.\n%d";
+    private static final int DISCOVERY_PORT = 5224;
+    private static final int TIMEOUT = 15;
+    private static final long REFRESH = 600;
 
-    private static final int DISCO_PORT = 5224;
-
-    private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
-            .getScheduledPool(HarmonyHubDiscovery.class.getName());
     private ScheduledFuture<?> broadcastFuture;
     private ScheduledFuture<?> timeoutFuture;
     private ServerSocket serverSocket;
     private HarmonyServer server;
-    private int timeout;
     private boolean running;
 
-    private List<HarmonyHubDiscoveryListener> listeners = new CopyOnWriteArrayList<HarmonyHubDiscoveryListener>();
+    private ScheduledFuture<?> discoveryFuture;
 
-    /**
-     *
-     * @param timeout
-     *            how long we discover for
-     */
-    public HarmonyHubDiscovery(int timeout) {
-        this.timeout = timeout;
-        running = false;
-        listeners = new LinkedList<HarmonyHubDiscoveryListener>();
+    public HarmonyHubDiscoveryService() {
+        super(HarmonyHubHandler.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
     }
 
-    /**
-     * Adds a HarmonyHubDiscoveryListener
-     *
-     * @param listener
-     */
-    public void addListener(HarmonyHubDiscoveryListener listener) {
-        listeners.add(listener);
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypes() {
+        return HarmonyHubHandler.SUPPORTED_THING_TYPES_UIDS;
     }
 
-    /**
-     * Removes a HarmonyHubDiscoveryListener
+    @Override
+    public void startScan() {
+        logger.debug("StartScan called");
+        startDiscovery();
+    }
+
+    /*
+     * (non-Javadoc)
      *
-     * @param listener
+     * @see org.eclipse.smarthome.config.discovery.AbstractDiscoveryService#startBackgroundDiscovery()
      */
-    public void removeListener(HarmonyHubDiscoveryListener listener) {
-        listeners.remove(listener);
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start Harmony Hub background discovery");
+        if (discoveryFuture == null || discoveryFuture.isCancelled()) {
+            logger.debug("Start Scan");
+            discoveryFuture = scheduler.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    startScan();
+                }
+            }, 0, REFRESH, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop HarmonyHub background discovery");
+        if (discoveryFuture != null && !discoveryFuture.isCancelled()) {
+            discoveryFuture.cancel(true);
+            discoveryFuture = null;
+        }
+        stopDiscovery();
     }
 
     /**
      * Starts discovery for Harmony Hubs
      */
-    public synchronized void startDiscovery() {
+    private synchronized void startDiscovery() {
         if (running) {
             return;
         }
@@ -106,19 +121,19 @@ public class HarmonyHubDiscovery {
             server = new HarmonyServer(serverSocket);
             server.start();
 
-            broadcastFuture = SCHEDULER.scheduleAtFixedRate(new Runnable() {
+            broadcastFuture = scheduler.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    sendDiscoveryMessage(String.format(DISCO_STRING, serverSocket.getLocalPort()));
+                    sendDiscoveryMessage(String.format(DISCOVERY_STRING, serverSocket.getLocalPort()));
                 }
             }, 0, 2, TimeUnit.SECONDS);
 
-            timeoutFuture = SCHEDULER.schedule(new Runnable() {
+            timeoutFuture = scheduler.schedule(new Runnable() {
                 @Override
                 public void run() {
                     stopDiscovery();
                 }
-            }, timeout, TimeUnit.SECONDS);
+            }, TIMEOUT, TimeUnit.SECONDS);
 
             running = true;
         } catch (IOException e) {
@@ -129,7 +144,7 @@ public class HarmonyHubDiscovery {
     /**
      * Stops discovery of Harmony Hubs
      */
-    public synchronized void stopDiscovery() {
+    private synchronized void stopDiscovery() {
         if (broadcastFuture != null) {
             broadcastFuture.cancel(true);
         }
@@ -144,11 +159,7 @@ public class HarmonyHubDiscovery {
         } catch (Exception e) {
             logger.error("Could not stop harmony discovery socket", e);
         }
-        for (HarmonyHubDiscoveryListener listener : listeners) {
-            listener.hubDiscoveryFinished();
-        }
         running = false;
-
     }
 
     /**
@@ -162,7 +173,6 @@ public class HarmonyHubDiscovery {
         try {
             bcSend = new DatagramSocket();
             bcSend.setBroadcast(true);
-
             byte[] sendData = discoverString.getBytes();
 
             // Broadcast the message over all the network interfaces
@@ -180,7 +190,7 @@ public class HarmonyHubDiscovery {
                         if (bc != null) {
                             try {
                                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, bc,
-                                        DISCO_PORT);
+                                        DISCOVERY_PORT);
                                 bcSend.send(sendPacket);
                             } catch (IOException e) {
                                 logger.debug("IO error during HarmonyHub discovery: {}", e.getMessage());
@@ -193,7 +203,6 @@ public class HarmonyHubDiscovery {
                     }
                 }
             }
-
         } catch (IOException e) {
             logger.debug("IO error during HarmonyHub discovery: {}", e.getMessage());
         } finally {
@@ -205,7 +214,6 @@ public class HarmonyHubDiscovery {
                 // Ignore
             }
         }
-
     }
 
     /**
@@ -243,12 +251,10 @@ public class HarmonyHubDiscovery {
                         props.load(new StringReader(propsString));
                         if (!responses.contains(props.getProperty("friendlyName"))) {
                             responses.add(props.getProperty("friendlyName"));
-                            HarmonyHubDiscoveryResult result = new HarmonyHubDiscoveryResult(props.getProperty("ip"),
+                            hubDiscovered(props.getProperty("ip"),
                                     props.getProperty("host_name").replaceAll("[^A-Za-z0-9\\-_]", ""),
                                     props.getProperty("friendlyName"));
-                            for (HarmonyHubDiscoveryListener listener : listeners) {
-                                listener.hubDiscovered(result);
-                            }
+
                         }
                     }
                 } catch (IOException e) {
@@ -269,6 +275,21 @@ public class HarmonyHubDiscovery {
 
         public void setRunning(boolean running) {
             this.running = running;
+        }
+    }
+
+    private void hubDiscovered(String host, String id, String friendlyName) {
+        logger.trace("Adding HarmonyHub {} ({}) at host {}", friendlyName, id, host);
+        Map<String, Object> properties = new HashMap<>(2);
+        properties.put("name", friendlyName);
+        properties.put("host", host);
+
+        ThingUID uid = new ThingUID(HarmonyHubBindingConstants.HARMONY_HUB_THING_TYPE,
+                id.replaceAll("[^A-Za-z0-9\\-_]", ""));
+        if (uid != null) {
+            DiscoveryResult discoResult = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel("HarmonyHub " + friendlyName).build();
+            thingDiscovered(discoResult);
         }
     }
 }
