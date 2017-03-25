@@ -47,7 +47,9 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
 	 * @param handler Bridge handler taht will update things.
 	 */
 	public FritzAhaUpdateXmlCallback(FritzahaWebInterface webIface, IFritzHandler handler) {
-		super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
+		super(WEBSERVICE_PATH,
+				"switchcmd=getdevicelistinfos",
+				webIface, Method.GET, 1);
 		this.handler = handler;
 	}
 
