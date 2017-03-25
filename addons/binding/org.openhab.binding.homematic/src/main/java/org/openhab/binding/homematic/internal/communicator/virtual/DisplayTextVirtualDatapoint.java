@@ -44,6 +44,8 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
     private static final String DATAPOINT_NAME_DISPLAY_ICON = "DISPLAY_ICON_";
     private static final String DATAPOINT_NAME_DISPLAY_LED = "DISPLAY_LED";
     private static final String DATAPOINT_NAME_DISPLAY_BEEPER = "DISPLAY_BEEPER";
+    private static final String DATAPOINT_NAME_DISPLAY_BEEPCOUNT = "DISPLAY_BEEPCOUNT";
+    private static final String DATAPOINT_NAME_DISPLAY_BEEPINTERVAL = "DISPLAY_BEEPINTERVAL";
     private static final String DATAPOINT_NAME_DISPLAY_SUBMIT = "DISPLAY_SUBMIT";
 
     private static final String START = "0x02";
@@ -55,6 +57,8 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
 
     private static final String BEEPER_START = "0x14";
     private static final String BEEPER_END = "0x1c";
+    private static final String BEEPCOUNT_END = "0x1D";
+    private static final String BEEPINTERVAL_END = "0x16";
 
     private static Map<String, String> replaceMap = new HashMap<String, String>();
 
@@ -204,7 +208,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
             try {
                 return valueOf(name).getCode();
             } catch (Exception ex) {
-                return null;
+                return OFF.getCode();
             }
         }
     }
@@ -241,6 +245,15 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                     if (isEpDisplay) {
                         addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_BEEPER,
                                 Beeper.class);
+                        HmDatapoint bc = addDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_BEEPCOUNT,
+                                HmValueType.INTEGER, 1, false);
+                        bc.setMinValue(0);
+                        bc.setMaxValue(15);
+                        HmDatapoint bd = addDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_BEEPINTERVAL,
+                                HmValueType.INTEGER, 1, false);
+                        bd.setMinValue(10);
+                        bd.setMaxValue(160);
+                        bd.setStep(10);
                         addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_LED, Led.class);
                     }
                     addDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_SUBMIT, HmValueType.BOOL, false,
@@ -293,7 +306,9 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                         || dp.getName().startsWith(DATAPOINT_NAME_DISPLAY_COLOR)
                         || dp.getName().startsWith(DATAPOINT_NAME_DISPLAY_ICON)
                         || dp.getName().equals(DATAPOINT_NAME_DISPLAY_LED)
-                        || dp.getName().equals(DATAPOINT_NAME_DISPLAY_BEEPER));
+                        || dp.getName().equals(DATAPOINT_NAME_DISPLAY_BEEPER)
+                        || dp.getName().equals(DATAPOINT_NAME_DISPLAY_BEEPCOUNT)
+                        || dp.getName().equals(DATAPOINT_NAME_DISPLAY_BEEPINTERVAL));
     }
 
     /**
@@ -306,6 +321,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
 
         if (DATAPOINT_NAME_DISPLAY_SUBMIT.equals(dp.getName()) && MiscUtils.isTrueValue(dp.getValue())) {
             HmChannel channel = dp.getChannel();
+            boolean isEp = isEpDisplay(channel.getDevice());
 
             List<String> message = new ArrayList<String>();
             message.add(START);
@@ -319,15 +335,15 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                 }
                 message.add(LINE);
                 message.add(encodeText(line));
-                String color = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_COLOR + i)
-                        .getOptionValue();
+                if (!isEp) {
+                    String color = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_COLOR + i)
+                            .getOptionValue();
+                    message.add(COLOR);
+                    String colorCode = Color.getCode(color);
+                    message.add(StringUtils.isBlank(colorCode) ? Color.WHITE.getCode() : colorCode);
+                }
                 String icon = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_ICON + i)
                         .getOptionValue();
-
-                message.add(COLOR);
-                String colorCode = Color.getCode(color);
-                message.add(StringUtils.isBlank(colorCode) ? Color.WHITE.getCode() : colorCode);
-
                 String iconCode = Icon.getCode(icon);
                 if (StringUtils.isNotBlank(iconCode)) {
                     message.add(ICON);
@@ -336,26 +352,49 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                 message.add(LF);
             }
 
-            if (isEpDisplay(channel.getDevice())) {
+            if (isEp) {
                 String beeper = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_BEEPER)
                         .getOptionValue();
-                String beeperCode = Beeper.getCode(beeper);
                 message.add(BEEPER_START);
-                message.add(beeperCode);
+                message.add(Beeper.getCode(beeper));
                 message.add(BEEPER_END);
-
+                // set number of beeps
+                message.add(
+                        encodeBeepCount(channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_BEEPCOUNT)));
+                message.add(BEEPCOUNT_END);
+                // set interval between two beeps
+                message.add(encodeBeepInterval(
+                        channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_BEEPINTERVAL)));
+                message.add(BEEPINTERVAL_END);
+                // LED value must always set (same as beeps)
                 String led = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_LED).getOptionValue();
-                String ledCode = Led.getCode(led);
-                if (StringUtils.isNotBlank(ledCode)) {
-                    message.add(ledCode);
-                }
-            }
+                message.add(Led.getCode(led));
 
+            }
             message.add(STOP);
 
             gateway.sendDatapoint(channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_SUBMIT),
                     new HmDatapointConfig(), StringUtils.join(message, ","));
         }
+    }
+
+    /**
+     * Encodes the beep count value. Allowed values 0 - 15, where 0 means infinite.
+     */
+    private String encodeBeepCount(HmDatapoint dp) {
+        int counts = (int) (Number) dp.getValue();
+        if (counts == 0) {
+            counts = 16;
+        }
+        return String.format("0x%02x", 207 + counts);
+    }
+
+    /**
+     * Encodes the beep interval value in 10 s steps. Allowed values 10 - 160.
+     */
+    private String encodeBeepInterval(HmDatapoint dp) {
+        int interval = (int) (Number) dp.getValue();
+        return String.format("0x%02x", 224 + ((interval - 1) / 10));
     }
 
     /**

@@ -253,7 +253,13 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             if (dp.isNumberType()) {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-                BigDecimal step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
+
+                BigDecimal step = null;
+                if (dp.getStep() != null) {
+                    step = MetadataUtils.createBigDecimal(dp.getStep());
+                } else {
+                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
+                }
                 state = new StateDescription(min, max, step, MetadataUtils.getStatePattern(dp), dp.isReadOnly(),
                         options);
             } else {
