@@ -7,7 +7,7 @@ Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  lib/tchaikovsky.jar
-Bundle-NativeCode: lib/x64/win/alljoyn_java.dll;processor=amd64;osname=win32;osname=Windows8;osname=Windows 8;osname=Win8;osname=Windows10;osname=Windows 10;osname=Win10,
+Bundle-NativeCode: lib/x86-64/win/alljoyn_java.dll;processor=amd64;osname=win32;osname=Windows8;osname=Windows 8;osname=Win8;osname=Windows10;osname=Windows 10;osname=Win10,
  lib/x86/win/alljoyn_java.dll;processor=x86;osname=win32;osname=Windows8;osname=Windows 8;osname=Win8;osname=Windows10;osname=Windows 10;osname=Win10,  
  lib/x86/linux/liballjoyn_java.so;processor=x86;osname=linux,
  lib/x86-64/linux/liballjoyn_java.so;processor=amd64;osname=linux,
