@@ -21,6 +21,11 @@ This [DECT repeater](https://avm.de/produkte/fritzdect/fritzdect-repeater-100/) 
 
 This [powerline adapter](http://avm.de/produkte/fritzpowerline/fritzpowerline-546e/) can be used via the bridge or in standalone mode. It supports switching the outlet and current power and energy consumption readings. This device does not contain a temperature sensor.
 
+### Comet DECT
+
+This thermostat [Comet DECT](https://www.eurotronic.org/produkte/comet-dect.html) can be connected to a FRITZ!Box by DECT protocol. It supports temperature readings and controlling the thermostat set temperature. 
+
+
 ## Discovery
 
 The FRITZ!Box and the powerline adapter are discovered through UPNP in the local network. When added as things, a username/password has eventually to be set depending on your Box/Powerline security configuration. The credentials given in the settings must have HomeAuto permissions.
@@ -59,11 +64,12 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 | Channel Type ID | Item Type    | Description  | Available on thing |
 |-------------|--------|-----------------------------|------------------------------------|
-| temperature | Number | Actual measured temperature (in °C) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100 |
+| temperature | Number | Actual measured temperature (in °C) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, Comet DECT |
 | energy | Number | Accumulated energy consumption (in Wh) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
 | power | Number | Current power consumption (in W) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
 | outlet | Switch | Switchable outlet (ON/OFF) | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E |
-
+| set_temperature | Number | Set temperature of thermostat (in °C)| Comet DECT|
+| switch_thermostat | Switch | Closes the thermostat valve (ON/OFF) | Comet DECT |
 ## Full Example
 
 demo.Things:
