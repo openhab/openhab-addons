@@ -137,7 +137,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
         }
 
         /**
-         * Returns the color code.
+         * Returns the icon code.
          */
         public static String getCode(String name) {
             try {
@@ -171,7 +171,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
         }
 
         /**
-         * Returns the color code.
+         * Returns the beeper code.
          */
         public static String getCode(String name) {
             try {
@@ -202,7 +202,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
         }
 
         /**
-         * Returns the color code.
+         * Returns the LED code.
          */
         public static String getCode(String name) {
             try {
@@ -226,8 +226,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
      */
     @Override
     public void initialize(HmDevice device) {
-        boolean isEpDisplay = isEpDisplay(device);
-        if (device.getType().equals(DEVICE_TYPE_STATUS_DISPLAY) || isEpDisplay) {
+        if (isDisplay(device)) {
             for (HmChannel channel : device.getChannels()) {
                 if (channel.hasDatapoint(new HmDatapointInfo(HmParamsetType.VALUES, channel, DATAPOINT_NAME_SUBMIT))) {
                     for (int i = 1; i <= getLineCount(device); i++) {
@@ -237,12 +236,12 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
                         addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_ICON + i,
                                 Icon.class);
 
-                        if (!isEpDisplay) {
+                        if (!isEpDisplay(device)) {
                             addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_COLOR + i,
                                     Color.class);
                         }
                     }
-                    if (isEpDisplay) {
+                    if (isEpDisplay(device)) {
                         addEnumDisplayDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_BEEPER,
                                 Beeper.class);
                         HmDatapoint bc = addDatapoint(device, channel.getNumber(), DATAPOINT_NAME_DISPLAY_BEEPCOUNT,
@@ -293,6 +292,13 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
      */
     private boolean isEpDisplay(HmDevice device) {
         return DEVICE_TYPE_EP_STATUS_DISPLAY.equals(device.getType());
+    }
+
+    /**
+     * Returns true, if the device is a supported display.
+     */
+    private boolean isDisplay(HmDevice device) {
+        return device.getType().equals(DEVICE_TYPE_STATUS_DISPLAY) || isEpDisplay(device);
     }
 
     /**
