@@ -30,12 +30,13 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
+import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link KodiHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link KodiHandler} is responsible for handling commands, which are sent
+ * to one of the channels.
  *
  * @author Paul Frank - Initial contribution
  */
@@ -76,132 +77,168 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getIdWithoutGroup()) {
-            case CHANNEL_MUTE:
-                if (command.equals(OnOffType.ON)) {
-                    connection.setMute(true);
-                } else if (command.equals(OnOffType.OFF)) {
-                    connection.setMute(false);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    connection.updateVolume();
+        case CHANNEL_MUTE:
+            if (command.equals(OnOffType.ON)) {
+                connection.setMute(true);
+            } else if (command.equals(OnOffType.OFF)) {
+                connection.setMute(false);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                connection.updateVolume();
+            }
+            break;
+        case CHANNEL_VOLUME:
+            if (command instanceof PercentType) {
+                connection.setVolume(((PercentType) command).intValue());
+            } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                connection.increaseVolume();
+            } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
+                connection.decreaseVolume();
+            } else if (command.equals(OnOffType.OFF)) {
+                connection.setVolume(0);
+            } else if (command.equals(OnOffType.ON)) {
+                connection.setVolume(100);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                connection.updateVolume();
+            }
+            break;
+        case CHANNEL_CONTROL:
+            if (command instanceof PlayPauseType) {
+                if (command.equals(PlayPauseType.PLAY)) {
+                    connection.playerPlayPause();
+                } else if (command.equals(PlayPauseType.PAUSE)) {
+                    connection.playerPlayPause();
                 }
-                break;
-            case CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    connection.setVolume(((PercentType) command).intValue());
-                } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                    connection.increaseVolume();
-                } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
-                    connection.decreaseVolume();
-                } else if (command.equals(OnOffType.OFF)) {
-                    connection.setVolume(0);
-                } else if (command.equals(OnOffType.ON)) {
-                    connection.setVolume(100);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    connection.updateVolume();
+            } else if (command instanceof NextPreviousType) {
+                if (command.equals(NextPreviousType.NEXT)) {
+                    connection.playerNext();
+                } else if (command.equals(NextPreviousType.PREVIOUS)) {
+                    connection.playerPrevious();
                 }
-                break;
-            case CHANNEL_CONTROL:
-                if (command instanceof PlayPauseType) {
-                    if (command.equals(PlayPauseType.PLAY)) {
-                        connection.playerPlayPause();
-                    } else if (command.equals(PlayPauseType.PAUSE)) {
-                        connection.playerPlayPause();
-                    }
-                } else if (command instanceof NextPreviousType) {
-                    if (command.equals(NextPreviousType.NEXT)) {
-                        connection.playerNext();
-                    } else if (command.equals(NextPreviousType.PREVIOUS)) {
-                        connection.playerPrevious();
-                    }
-                } else if (command instanceof RewindFastforwardType) {
-                    if (command.equals(RewindFastforwardType.REWIND)) {
-                        connection.playerRewind();
-                    } else if (command.equals(RewindFastforwardType.FASTFORWARD)) {
-                        connection.playerFastForward();
-                    }
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
+            } else if (command instanceof RewindFastforwardType) {
+                if (command.equals(RewindFastforwardType.REWIND)) {
+                    connection.playerRewind();
+                } else if (command.equals(RewindFastforwardType.FASTFORWARD)) {
+                    connection.playerFastForward();
                 }
-                break;
-            case CHANNEL_STOP:
-                if (command.equals(OnOffType.ON)) {
-                    connection.playerStop();
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
-            case CHANNEL_PLAYURI:
-                if (command instanceof StringType) {
-                    playURI(command);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    // updateState(CHANNEL_PLAYURI, new StringType(""));
-                }
-                break;
-            case CHANNEL_SHOWNOTIFICATION:
-                if (command instanceof StringType) {
-                    connection.showNotification(command.toString());
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    // updateState(CHANNEL_SHOWNOTIFICATION, new StringType(""));
-                }
-                break;
-            case CHANNEL_INPUT:
-                if (command instanceof StringType) {
-                    connection.input(command.toString());
-                    updateState(CHANNEL_INPUT, UnDefType.UNDEF);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    updateState(CHANNEL_INPUT, UnDefType.UNDEF);
-                }
-                break;
-            case CHANNEL_INPUTTEXT:
-                if (command instanceof StringType) {
-                    connection.inputText(command.toString());
-                    updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
-                }
-                break;
-            case CHANNEL_SYSTEMCOMMAND:
-                if (command instanceof StringType) {
-                    connection.sendSystemCommand(command.toString());
-                    updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
-                }
-                break;
-            case CHANNEL_ARTIST:
-                if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
-            case CHANNEL_ALBUM:
-                if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
-            case CHANNEL_TITLE:
-                if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
-            case CHANNEL_SHOWTITLE:
-                if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
-            case CHANNEL_MEDIATYPE:
-                if (command.equals(RefreshType.REFRESH)) {
-                    connection.updatePlayerStatus();
-                }
-                break;
-            default:
-                logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
-                break;
+            } else if (command.equals(RefreshType.REFRESH)) {
+                connection.updatePlayerStatus();
+            }
+            break;
+        case CHANNEL_STOP:
+            if (command.equals(OnOffType.ON)) {
+                connection.playerStop();
+            } else if (command.equals(RefreshType.REFRESH)) {
+                connection.updatePlayerStatus();
+            }
+            break;
+        case CHANNEL_PLAYURI:
+            if (command instanceof StringType) {
+                playURI(command);
+                updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
+            }
+            break;
+        case CHANNEL_PVROPENTV:
+            if (command instanceof StringType) {
+                KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                        .as(KodiChannelConfig.class);
+                playPVR(command, "tv", config);
+                updateState(CHANNEL_PVROPENTV, UnDefType.UNDEF);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                updateState(CHANNEL_PVROPENTV, UnDefType.UNDEF);
+            }
+            break;
+        case CHANNEL_PVROPENRADIO:
+            if (command instanceof StringType) {
+                KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                        .as(KodiChannelConfig.class);
+                playPVR(command, "radio", config);
+                updateState(CHANNEL_PVROPENRADIO, UnDefType.UNDEF);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                updateState(CHANNEL_PVROPENRADIO, UnDefType.UNDEF);
+            }
+            break;
+        case CHANNEL_SHOWNOTIFICATION:
+            if (command instanceof StringType) {
+                connection.showNotification(command.toString());
+                updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
+            }
+            break;
+        case CHANNEL_INPUT:
+            if (command instanceof StringType) {
+                connection.input(command.toString());
+                updateState(CHANNEL_INPUT, UnDefType.UNDEF);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                updateState(CHANNEL_INPUT, UnDefType.UNDEF);
+            }
+            break;
+        case CHANNEL_INPUTTEXT:
+            if (command instanceof StringType) {
+                connection.inputText(command.toString());
+                updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
+            }
+            break;
+        case CHANNEL_SYSTEMCOMMAND:
+            if (command instanceof StringType) {
+                connection.sendSystemCommand(command.toString());
+                updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
+            } else if (command.equals(RefreshType.REFRESH)) {
+                updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
+            }
+            break;
+        case CHANNEL_ARTIST:
+            if (command.equals(RefreshType.REFRESH)) {
+                connection.updatePlayerStatus();
+            }
+            break;
+        case CHANNEL_ALBUM:
+            if (command.equals(RefreshType.REFRESH)) {
+                connection.updatePlayerStatus();
+            }
+            break;
+        case CHANNEL_TITLE:
+            if (command.equals(RefreshType.REFRESH)) {
+                connection.updatePlayerStatus();
+            }
+            break;
+        case CHANNEL_SHOWTITLE:
+            if (command.equals(RefreshType.REFRESH)) {
+                connection.updatePlayerStatus();
+            }
+            break;
+        case CHANNEL_MEDIATYPE:
+            if (command.equals(RefreshType.REFRESH)) {
+                connection.updatePlayerStatus();
+            }
+            break;
+        default:
+            logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
+            break;
         }
 
     }
 
     public void playURI(Command command) {
         connection.playURI(command.toString());
+    }
+
+    public void playPVR(Command command, String channeltype, KodiChannelConfig config) {
+        int channelgroupid = connection.getChannelGroupID(channeltype, config.getGroup());
+        if (channelgroupid > 0) {
+            int channelid = connection.getChannelID(channelgroupid, command.toString());
+            if (channelid > 0) {
+                connection.playPVR(channelid);
+            } else {
+                logger.warn("Received unknown PVR channel {}", command.toString());
+            }
+        } else {
+            logger.warn("Received unknown PVR channel group {}", config.getGroup());
+        }
     }
 
     public void playNotificationSoundURI(Command command) {
@@ -277,27 +314,27 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updatePlayerState(KodiState state) {
         switch (state) {
-            case Play:
-                updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
-                updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
-            case Pause:
-                updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
-                updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
-            case Stop:
-            case End:
-                updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
-                updateState(CHANNEL_STOP, OnOffType.ON);
-                break;
-            case FastForward:
-                updateState(CHANNEL_CONTROL, RewindFastforwardType.FASTFORWARD);
-                updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
-            case Rewind:
-                updateState(CHANNEL_CONTROL, RewindFastforwardType.REWIND);
-                updateState(CHANNEL_STOP, OnOffType.OFF);
-                break;
+        case Play:
+            updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
+            updateState(CHANNEL_STOP, OnOffType.OFF);
+            break;
+        case Pause:
+            updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+            updateState(CHANNEL_STOP, OnOffType.OFF);
+            break;
+        case Stop:
+        case End:
+            updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+            updateState(CHANNEL_STOP, OnOffType.ON);
+            break;
+        case FastForward:
+            updateState(CHANNEL_CONTROL, RewindFastforwardType.FASTFORWARD);
+            updateState(CHANNEL_STOP, OnOffType.OFF);
+            break;
+        case Rewind:
+            updateState(CHANNEL_CONTROL, RewindFastforwardType.REWIND);
+            updateState(CHANNEL_STOP, OnOffType.OFF);
+            break;
         }
     }
 
