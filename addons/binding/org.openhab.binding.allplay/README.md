@@ -6,8 +6,10 @@ The binding uses native libraries for the AllJoyn framework. Libraries for the f
 * Linux ARM
 * Linux x86 (32 bit)
 * Linux x86-64 (64 bit)
-* Windows x86 (32 bit)
-* Windows x86-64 (64 bit)
+* Windows x86 (32 bit, AllJoyn v16.04a)
+* Windows x86-64 (64 bit, AllJoyn v16.04a)
+
+The Windows libraries have a dependency on the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145). If you are using Windows, please make sure to install these components before using the AllPlay binding.
 
 If there is need for another architecture/platform, please open a [ticket on GitHub](https://github.com/openhab/openhab/issues) so the missing native library can be added.
 
