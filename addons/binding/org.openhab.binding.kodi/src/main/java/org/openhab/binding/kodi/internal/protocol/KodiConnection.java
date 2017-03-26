@@ -395,6 +395,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 updateState(KodiState.End);
             }
             updateState(KodiState.Stop);
+        } else if ("Player.OnPropertyChanged".equals(method)) {
+            // TODO
+            logger.debug("Player.OnPropertyChanged");
         } else if ("Player.OnSpeedChanged".equals(method)) {
             JsonObject data = json.get("data").getAsJsonObject();
             JsonObject player = data.get("player").getAsJsonObject();
@@ -497,6 +500,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
         JsonObject params = new JsonObject();
         params.add("item", item);
         socket.callMethod("Player.Open", params);
+
+        // updatePlayerStatus();
     }
 
     private synchronized JsonArray getChannelGroups(String channeltype) {
@@ -564,6 +569,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
         JsonObject params = new JsonObject();
         params.add("item", item);
         socket.callMethod("Player.Open", params);
+
+        // updatePlayerStatus();
     }
 
     public synchronized void showNotification(String message) {
