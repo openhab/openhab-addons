@@ -13,19 +13,15 @@ import java.util.EventListener;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 
 /**
- * Interface which has to be implemented by a class in order to get status updates from a {@link KodiConnection}
+ * Interface which has to be implemented by a class in order to get status
+ * updates from a {@link KodiConnection}
  *
  * @author Paul Frank
  *
  */
 public interface KodiEventListener extends EventListener {
     public enum KodiState {
-        Play,
-        Pause,
-        End,
-        Stop,
-        Rewind,
-        FastForward
+        Play, Pause, End, Stop, Rewind, FastForward
     }
 
     void updateConnectionState(boolean connected);
@@ -47,4 +43,6 @@ public interface KodiEventListener extends EventListener {
     void updateArtist(String artist);
 
     void updateMediaType(String mediaType);
+
+    void updatePVRChannel(String channel);
 }

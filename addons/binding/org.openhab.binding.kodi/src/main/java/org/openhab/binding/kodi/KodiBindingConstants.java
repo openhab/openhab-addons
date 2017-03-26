@@ -15,8 +15,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * The {@link KodiBinding} class defines common constants, which are
- * used across the whole binding.
+ * The {@link KodiBinding} class defines common constants, which are used across
+ * the whole binding.
  *
  * @author Paul Frank - Initial contribution
  */
@@ -38,6 +38,8 @@ public class KodiBindingConstants {
     public final static String CHANNEL_STOP = "stop";
     public final static String CHANNEL_CONTROL = "control";
     public final static String CHANNEL_PLAYURI = "playuri";
+    public final static String CHANNEL_PVROPENTV = "pvropentv";
+    public final static String CHANNEL_PVROPENRADIO = "pvropenradio";
     public final static String CHANNEL_SHOWNOTIFICATION = "shownotification";
 
     public final static String CHANNEL_INPUT = "input";
@@ -49,6 +51,7 @@ public class KodiBindingConstants {
     public final static String CHANNEL_SHOWTITLE = "showtitle";
     public final static String CHANNEL_ALBUM = "album";
     public final static String CHANNEL_MEDIATYPE = "mediatype";
+    public final static String CHANNEL_PVRCHANNEL = "pvrchannel";
 
     // Module Properties
     public final static String PROPERTY_VERSION = "version";
