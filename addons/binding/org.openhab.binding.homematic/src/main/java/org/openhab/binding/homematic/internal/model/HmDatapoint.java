@@ -30,6 +30,7 @@ public class HmDatapoint implements Cloneable {
     private HmParamsetType paramsetType;
     private Number minValue;
     private Number maxValue;
+    private Number step;
     private String[] options;
     private boolean readOnly;
     private boolean readable;
@@ -132,7 +133,7 @@ public class HmDatapoint implements Cloneable {
      * Returns the index of the value in a option list.
      */
     public int getOptionIndex(String option) {
-        if (options != null) {
+        if (options != null && option != null) {
             for (int i = 0; i < options.length; i++) {
                 String value = options[i];
                 if (option.equalsIgnoreCase(value)) {
@@ -187,6 +188,20 @@ public class HmDatapoint implements Cloneable {
      */
     public void setMinValue(Number minValue) {
         this.minValue = minValue;
+    }
+
+    /**
+     * Returns the step size.
+     */
+    public Number getStep() {
+        return step;
+    }
+
+    /**
+     * Sets the step size.
+     */
+    public void setStep(Number step) {
+        this.step = step;
     }
 
     /**
@@ -387,6 +402,7 @@ public class HmDatapoint implements Cloneable {
         dp.setChannel(channel);
         dp.setMinValue(minValue);
         dp.setMaxValue(maxValue);
+        dp.setStep(step);
         dp.setOptions(options);
         dp.setInfo(info);
         dp.setUnit(unit);
@@ -403,7 +419,7 @@ public class HmDatapoint implements Cloneable {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("name", name).append("value", value)
                 .append("defaultValue", defaultValue).append("type", type).append("minValue", minValue)
-                .append("maxValue", maxValue).append("options", StringUtils.join(options, ";"))
+                .append("maxValue", maxValue).append("step", step).append("options", StringUtils.join(options, ";"))
                 .append("readOnly", readOnly).append("readable", readable).append("unit", unit)
                 .append("description", description).append("info", info).append("paramsetType", paramsetType)
                 .append("virtual", virtual).toString();
