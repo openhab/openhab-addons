@@ -11,7 +11,7 @@ package org.openhab.binding.tesla.internal.protocol;
 /**
  * The {@link DriveState} is a datastructure to capture
  * variables sent by the Tesla Vehicle
- * 
+ *
  * @author Karel Goderis - Initial contribution
  */
 public class DriveState {
@@ -20,10 +20,10 @@ public class DriveState {
     public double longitude;
     public int heading;
     public int gps_as_of;
-    public String shift_state;   
+    public String shift_state;
     public String speed;
-    
-    DriveState() {  	
+
+    DriveState() {
     }
 
 }
