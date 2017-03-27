@@ -117,6 +117,7 @@ public class MiHomeSubdevicesHandlerOSGiTest extends AbstractMiHomeOSGiTest{
         unregisterServlet(PATH_CREATE_SUBDEVICE)
         unregisterServlet(PATH_SHOW_SUBDEVICE)
         unregisterServlet(PATH_CREATE_GATEWAY)
+        unregisterServlet(PATH_LIST_GATEWAYS)
         unregisterServlet(PATH_DELETE_SUBDEVICE)
         unregisterServlet(PATH_DELETE_GATEWAYS)
         unregisterServlet(PATH_UPDATE_SUBDEVICE)
