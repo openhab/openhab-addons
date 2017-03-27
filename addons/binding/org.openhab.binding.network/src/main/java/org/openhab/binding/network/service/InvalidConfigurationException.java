@@ -14,9 +14,9 @@ package org.openhab.binding.network.service;
  * @author David Graeff <david.graeff@web.de>
  */
 public class InvalidConfigurationException extends Exception {
-	private static final long serialVersionUID = -4913760031378662737L;
+    private static final long serialVersionUID = -4913760031378662737L;
 
-	public InvalidConfigurationException(String message) {
-		super(message);
-	}
+    public InvalidConfigurationException(String message) {
+        super(message);
+    }
 }
