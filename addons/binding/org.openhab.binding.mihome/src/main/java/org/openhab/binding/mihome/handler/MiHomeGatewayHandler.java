@@ -79,11 +79,11 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     private String gatewayLabel;
 
     /** Pattern used to check if a given String represents an email address */
-    private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+    public static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
     /** Pattern used to check if a given String is valid gateway code */
-    private static final String GATEWAY_CODE_PATTERN = "^[A-Z0-9]{10}$";
+    public static final String GATEWAY_CODE_PATTERN = "^[A-Z0-9]{10}$";
 
     // Warning messages used when some unexpected behavior is encountered
     private static final String UNREGISTERED_GATEWAY = "The gateway has been unregistered";
