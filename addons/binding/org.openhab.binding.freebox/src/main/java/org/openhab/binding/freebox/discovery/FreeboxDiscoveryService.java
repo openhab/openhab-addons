@@ -68,7 +68,7 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
             LanHostsConfig lanHostsConfiguration = bridgeHandler.getFbClient().getLanManager().getAllLanHostsConfig();
             onDataFetched(bridgeHandler.getThing().getUID(), lanHostsConfiguration);
         } catch (FreeboxException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
     }
 

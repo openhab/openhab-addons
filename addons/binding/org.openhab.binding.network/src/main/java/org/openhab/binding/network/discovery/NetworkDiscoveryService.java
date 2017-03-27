@@ -88,7 +88,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
      */
     @Override
     public void newDevice(String ip) {
-        logger.info("Found " + ip);
+        logger.info("Found {}", ip);
 
         // uid must not contains dots
         ThingUID uid = new ThingUID(THING_TYPE_DEVICE, ip.replace('.', '_'));

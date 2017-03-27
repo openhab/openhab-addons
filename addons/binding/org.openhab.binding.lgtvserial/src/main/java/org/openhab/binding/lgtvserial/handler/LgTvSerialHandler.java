@@ -59,7 +59,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to connect to serial port " + portName);
-                logger.debug("Failed to connect to serial port " + portName);
+                logger.debug("Failed to connect to serial port {}", portName);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port name not configured");

@@ -216,7 +216,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                         sb.append(id.getName() + "\n");
                     }
                 }
-                logger.error("Serial port '" + port + "' could not be found. Available ports are:\n" + sb.toString());
+                logger.error("Serial port '{}' could not be found. Available ports are:\n {}", port, sb);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
@@ -330,7 +330,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
             } catch (InterruptedIOException e) {
                 Thread.currentThread().interrupt();
             } catch (IOException e) {
-                logger.error("An exception occurred while reading serial port '{}' : {}", port, e.getMessage(), e);
+                logger.error("An exception occurred while reading serial port {} ", port, e);
             }
 
             logger.debug("Serial port listener for serial port '{}' has stopped", port);

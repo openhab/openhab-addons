@@ -113,9 +113,9 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                         completeInitialization();
                     } catch (Throwable t) {
                         if (t instanceof Exception) {
-                            logger.error(((Exception) t).getMessage());
+                            logger.error("{}", t.getMessage());
                         } else if (t instanceof Error) {
-                            logger.error(((Error) t).getMessage());
+                            logger.error("{}", t.getMessage());
                         } else {
                             logger.error("Unexpected error");
                         }

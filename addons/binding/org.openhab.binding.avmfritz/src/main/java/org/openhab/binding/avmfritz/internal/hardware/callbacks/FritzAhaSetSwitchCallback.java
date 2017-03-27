@@ -45,7 +45,7 @@ public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
     public void execute(int status, String response) {
         super.execute(status, response);
         if (this.isValidRequest()) {
-            logger.debug("Received State response " + response + " for item " + itemName);
+            logger.debug("Received State response {} for item {}", response, itemName);
         }
     }
 }

@@ -139,9 +139,9 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 }
             } catch (Throwable t) {
                 if (t instanceof Exception) {
-                    logger.error(((Exception) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else if (t instanceof Error) {
-                    logger.error(((Error) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else {
                     logger.error("Unexpected error");
                 }

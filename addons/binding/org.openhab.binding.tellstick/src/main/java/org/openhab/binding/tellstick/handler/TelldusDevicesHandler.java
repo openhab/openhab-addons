@@ -82,7 +82,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handle event " + command + " for " + channelUID);
+        logger.debug("Handle event {} for {}", command, channelUID);
         TelldusBridgeHandler bridgeHandler = getTellstickBridgeHandler();
         if (bridgeHandler == null) {
             logger.warn("Tellstick bridge handler not found. Cannot handle command without bridge.");

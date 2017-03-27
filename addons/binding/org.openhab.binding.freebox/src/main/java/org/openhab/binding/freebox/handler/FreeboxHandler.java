@@ -120,7 +120,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     setReboot(command);
             }
         } catch (FreeboxException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
     }
 
@@ -156,7 +156,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 logger.info("####################################################################");
                 logger.info("# Please accept activation request directly on your freebox        #");
                 logger.info("# Once done, record Apptoken in the Freebox Item configuration     #");
-                logger.info("# " + configuration.appToken + " #");
+                logger.info("# {} #", configuration.appToken);
                 logger.info("####################################################################");
 
                 do {
@@ -171,12 +171,12 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 return false;
             }
 
-            logger.debug("Apptoken valide : [" + configuration.appToken + "]");
+            logger.debug("Apptoken valide : [{}]", configuration.appToken);
             loginManager.setAppToken(configuration.appToken);
             loginManager.openSession();
             return true;
         } catch (FreeboxException | InterruptedException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
             return false;
         }
     }
@@ -305,7 +305,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 } else {
                     t.printStackTrace(new PrintWriter(sw));
                 }
-                logger.error(sw.toString());
+                logger.error("{}", sw);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }

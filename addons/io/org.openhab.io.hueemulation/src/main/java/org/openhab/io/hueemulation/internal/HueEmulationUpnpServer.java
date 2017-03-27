@@ -102,8 +102,8 @@ public class HueEmulationUpnpServer extends Thread {
                     recvSocket.receive(recv);
                     if (recv.getLength() > 0) {
                         String data = new String(recv.getData());
-                        logger.trace("Got SSDP Discovery packet from " + recv.getAddress().getHostAddress() + ":"
-                                + recv.getPort());
+                        logger.trace("Got SSDP Discovery packet from {}:{}", recv.getAddress().getHostAddress(),
+                                recv.getPort());
                         if (data.startsWith("M-SEARCH")) {
                             String msg = String
                                     .format(discoString,
@@ -113,7 +113,7 @@ public class HueEmulationUpnpServer extends Thread {
                             DatagramPacket response = new DatagramPacket(msg.getBytes(), msg.length(),
                                     recv.getAddress(), recv.getPort());
                             try {
-                                logger.trace("Sending to " + recv.getAddress().getHostAddress() + " : " + msg);
+                                logger.trace("Sending to {} : {}", recv.getAddress().getHostAddress(), msg);
                                 sendSocket.send(response);
                             } catch (IOException e) {
                                 logger.error("Could not send UPNP response", e);

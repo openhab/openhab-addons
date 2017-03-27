@@ -54,8 +54,8 @@ public class AvmUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
-            logger.debug("discovered: " + device.getDisplayString() + " at "
-                    + device.getIdentity().getDescriptorURL().getHost());
+            logger.debug("discovered: {} at {}", device.getDisplayString(),
+                    device.getIdentity().getDescriptorURL().getHost());
             Map<String, Object> properties = new HashMap<>();
             properties.put(IP_ADDRESS, device.getIdentity().getDescriptorURL().getHost());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
@@ -78,14 +78,14 @@ public class AvmUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 String modelName = modelDetails.getModelName();
                 if (modelName != null) {
                     if (modelName.startsWith(BRIDGE_MODEL_NAME)) {
-                        logger.debug("discovered on " + device.getIdentity().getDiscoveredOnLocalAddress());
+                        logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
                         return new ThingUID(BRIDGE_THING_TYPE,
                                 device.getIdentity().getDescriptorURL().getHost()
                                         // It world be better to use udn but in my case FB is discovered twice
                                         // .getIdentity().getUdn().getIdentifierString()
                                         .replaceAll("[^a-zA-Z0-9_]", "_"));
                     } else if (modelName.startsWith(PL546E_MODEL_NAME)) {
-                        logger.debug("discovered on " + device.getIdentity().getDiscoveredOnLocalAddress());
+                        logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
                         return new ThingUID(PL546E_STANDALONE_THING_TYPE,
                                 device.getIdentity().getDescriptorURL().getHost()
                                         // It world be better to use udn but in my case PL546E is discovered twice

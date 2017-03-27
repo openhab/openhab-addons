@@ -150,7 +150,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             logger.error("write(): {}", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("write(): Unable to write to serial port: {} ", exception.getMessage(), exception);
+            logger.error("write(): Unable to write to serial port: ", exception);
             setConnected(false);
         }
     }
@@ -169,7 +169,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             logger.error("read(): IO Exception: {} ", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("read(): Exception: {} ", exception.getMessage(), exception);
+            logger.error("read(): Exception: ", exception);
             setConnected(false);
         }
 

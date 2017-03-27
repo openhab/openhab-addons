@@ -838,7 +838,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             }
 
         } catch (Exception ex) {
-            logger.debug(ex.getMessage());
+            logger.debug("{}", ex.getMessage());
         }
 
         return state;
