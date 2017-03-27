@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.lightify.internal;
 
+import org.openhab.binding.lightify.internal.link.LightifyLink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.jmdns.ServiceInfo;
 import java.util.concurrent.Callable;
 
@@ -31,16 +35,28 @@ public final class LightifyUtils {
         try {
             return callable.call();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw handleException(e);
         }
     }
 
     public static void exceptional(Exceptional exceptional) {
+        exceptional(exceptional, true);
+    }
+
+    public static void exceptional(Exceptional exceptional, boolean handleException) {
         try {
             exceptional.call();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            if (handleException) {
+                throw handleException(e);
+            }
         }
+    }
+
+    private static RuntimeException handleException(Exception e) {
+        Logger logger = LoggerFactory.getLogger(LightifyLink.class);
+        logger.error("Error on execution", e);
+        return new RuntimeException("Error on execution", e);
     }
 
     public interface Exceptional {

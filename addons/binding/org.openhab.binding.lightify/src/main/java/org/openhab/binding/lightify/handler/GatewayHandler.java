@@ -101,7 +101,7 @@ public class GatewayHandler extends BaseBridgeHandler {
             futureConnect = null;
         }
         futureConnect = scheduler.schedule(() -> {
-            lightifyLink = new LightifyLink(address);
+            lightifyLink = new LightifyLink(address, scheduler);
             updateStatus(ThingStatus.ONLINE);
             searchDevices();
         }, delay, TimeUnit.SECONDS);

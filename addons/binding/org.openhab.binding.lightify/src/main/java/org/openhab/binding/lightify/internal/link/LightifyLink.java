@@ -21,6 +21,8 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -50,17 +52,14 @@ public class LightifyLink {
     private final Map<String, LightifyLuminary> devices = new ConcurrentHashMap<>();
     private final Map<String, LightifyZone> zones = new ConcurrentHashMap<>();
 
+    private final ScheduledExecutorService scheduler;
+
     private final String address;
-    private final Socket socket;
+    private volatile Connection connection;
 
-    private final OutputStream output;
-    private final InputStream input;
-
-    public LightifyLink(String address) {
+    public LightifyLink(String address, ScheduledExecutorService scheduler) {
         this.address = address;
-        this.socket = exceptional(() -> new Socket(address, 4000));
-        this.output = exceptional(socket::getOutputStream);
-        this.input = exceptional(socket::getInputStream);
+        this.scheduler = scheduler;
     }
 
     public LightifyLuminary findDevice(String address) {
@@ -73,28 +72,24 @@ public class LightifyLink {
 
     public void performSearch(Consumer<LightifyLuminary> consumer) {
         byte[] packet = new PacketBuilder(this).on(STATUS_ALL).data(new byte[]{0x01}).build();
-        sendPacket(packet);
-        readPacket(STATUS_ALL, consumer);
+        perform(packet, STATUS_ALL, (l) -> {
+            consumer.accept(l);
 
-        packet = new PacketBuilder(this).on(ZONE_LIST).build();
-
-        logger.debug("Searching Zones...");
-        sendPacket(packet);
-        readPacket(ZONE_LIST, consumer);
+            byte[] p = new PacketBuilder(this).on(ZONE_LIST).build();
+            logger.debug("Searching Zones...");
+            perform(p, ZONE_LIST, consumer);
+        });
     }
 
     public void performStatusUpdate(LightifyLuminary luminary, Consumer<LightifyLuminary> consumer) {
         byte[] packet = new PacketBuilder(this).on(STATUS_SINGLE).with(luminary).build();
-
-        sendPacket(packet);
-        readPacket(STATUS_SINGLE, consumer);
+        perform(packet, STATUS_SINGLE, consumer);
     }
 
     void performSwitch(LightifyLuminary lightifyLuminary, boolean activate, Consumer<LightifyLuminary> consumer) {
         byte[] packet = new PacketBuilder(this).on(LIGHT_SWITCH).with(lightifyLuminary).switching(activate).build();
 
-        sendPacket(packet);
-        readPacket(LIGHT_SWITCH, light -> {
+        perform(packet, LIGHT_SWITCH, light -> {
             light.updatePowered(activate);
             if (consumer != null) {
                 consumer.accept(light);
@@ -106,8 +101,7 @@ public class LightifyLink {
         byte[] packet = new PacketBuilder(this).on(LIGHT_LUMINANCE).with(lightifyLuminary).luminance(luminance)
                                                .millis(millis).build();
 
-        sendPacket(packet);
-        readPacket(LIGHT_LUMINANCE, light -> {
+        perform(packet, LIGHT_LUMINANCE, light -> {
             light.updateLuminance(luminance);
             light.updatePowered(true);
             if (consumer != null) {
@@ -122,8 +116,7 @@ public class LightifyLink {
         byte[] packet = new PacketBuilder(this).on(LIGHT_COLOR).with(lightifyLuminary).rgb(r, g, b).millis(millis)
                                                .build();
 
-        sendPacket(packet);
-        readPacket(LIGHT_COLOR, light -> {
+        perform(packet, LIGHT_COLOR, light -> {
             light.updateRGB(r, g, b);
             light.updatePowered(true);
             if (consumer != null) {
@@ -138,8 +131,7 @@ public class LightifyLink {
         byte[] packet = new PacketBuilder(this).on(LIGHT_TEMPERATURE).with(lightifyLuminary).temperature(temperature)
                                                .millis(millis).build();
 
-        sendPacket(packet);
-        readPacket(LIGHT_TEMPERATURE, light -> {
+        perform(packet, LIGHT_TEMPERATURE, light -> {
             light.updateTemperature(temperature);
             light.updatePowered(true);
             if (consumer != null) {
@@ -150,9 +142,20 @@ public class LightifyLink {
 
     void performZoneInfo(LightifyZone lightifyZone, Consumer<LightifyLuminary> consumer) {
         byte[] packet = new PacketBuilder(this).on(ZONE_INFO).with(lightifyZone).build();
+        perform(packet, ZONE_INFO, consumer);
+    }
 
-        sendPacket(packet);
-        readPacket(ZONE_INFO, consumer);
+    private void perform(byte[] packet, Command command, Consumer<LightifyLuminary> consumer) {
+        try {
+            sendPacket(packet);
+            readPacket(command, consumer);
+
+        } catch (IOException | NullPointerException e) {
+            if (connection != null) {
+                exceptional(connection::disconnect, false);
+            }
+            reconnect(() -> perform(packet, command, consumer));
+        }
     }
 
     byte nextSequence() {
@@ -338,6 +341,14 @@ public class LightifyLink {
 
             // Information (8)
             byte type = buffer.get();
+            DeviceType deviceType = DeviceType.findByTypeId(type);
+
+            // Only light blubs are supported for now
+            if (deviceType != DeviceType.Blub) {
+                logger.info("Found unsupported Lightify device, type id: {}", type);
+                return;
+            }
+
             int firmware = buffer.getInt();
             boolean online = buffer.get() == 1;
             short groupId = buffer.getShort();
@@ -372,40 +383,79 @@ public class LightifyLink {
         }
     }
 
-    private void sendPacket(byte[] packet) {
-        exceptional(() -> {
-            output.write(packet);
-            output.flush();
-        });
+    private void sendPacket(byte[] packet) throws IOException {
+        connection.write(packet);
     }
 
-    private void readPacket(Command command, Consumer<LightifyLuminary> consumer) {
-        ByteBuffer buffer = exceptional(() -> {
-            int length = 2;
-            ByteBuffer b = waitForBytes(length, ByteOrder.LITTLE_ENDIAN);
+    private void readPacket(Command command, Consumer<LightifyLuminary> consumer) throws IOException {
+        int length = 2;
+        ByteBuffer b = connection.read(length);
 
-            length = b.getShort();
-            return waitForBytes(length, ByteOrder.LITTLE_ENDIAN);
-        });
-
+        length = b.getShort();
+        ByteBuffer buffer = connection.read(length);
         onPacket(command, buffer, consumer);
     }
 
-    private ByteBuffer waitForBytes(int length, ByteOrder byteOrder)
-            throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(length).order(byteOrder);
-        int read = 0;
-        while (read != length) {
-            read += input.read(buffer.array(), read, length - read);
-        }
-        return buffer;
-    }
-
     public void disconnect() {
-        exceptional(socket::close);
+        exceptional(connection::disconnect);
+        //this.connection = null;
     }
 
     private String getZoneUID(int zoneId) {
         return "zone::" + zoneId;
+    }
+
+    private void reconnect() {
+        reconnect(null);
+    }
+
+    private void reconnect(Runnable afterConnect) {
+        reconnect(afterConnect, address, 0);
+    }
+
+    private void reconnect(Runnable afterConnect, String address, int retry) {
+        try {
+            logger.info("Reconnecting to lightify gateway: {}:4000", address);
+            this.connection = new Connection(address);
+            if (afterConnect != null) {
+                afterConnect.run();
+            }
+
+        } catch (IOException e) {
+            if (retry < 5) {
+                logger.info("Reconnection failed, retrying...");
+                scheduler.schedule(() -> reconnect(afterConnect, address, retry + 1), 1, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    private static class Connection {
+        private final Socket socket;
+        private final InputStream input;
+        private final OutputStream output;
+
+        private Connection(String address) throws IOException {
+            this.socket =  new Socket(address, 4000);
+            this.output = socket.getOutputStream();
+            this.input = socket.getInputStream();
+        }
+
+        private void disconnect() throws IOException {
+            socket.close();
+        }
+
+        private ByteBuffer read(int length) throws IOException {
+            ByteBuffer buffer = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
+            int read = 0;
+            while (read != length) {
+                read += input.read(buffer.array(), read, length - read);
+            }
+            return buffer;
+        }
+
+        private void write(byte[] packet) throws IOException {
+            output.write(packet);
+            output.flush();
+        }
     }
 }

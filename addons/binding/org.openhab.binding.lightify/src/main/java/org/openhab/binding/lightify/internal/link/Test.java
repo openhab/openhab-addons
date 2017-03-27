@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.lightify.internal.link;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
  * Not used in production code, simple class to quickly test / play around
  * with the protocol.
@@ -17,10 +20,12 @@ package org.openhab.binding.lightify.internal.link;
 public class Test {
 
     public static void main(String[] args) {
-        LightifyLink link = new LightifyLink("172.25.100.141");
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        LightifyLink link = new LightifyLink("172.25.100.141", scheduler);
         link.performSearch(l -> {
+            link.disconnect();
             if (l instanceof LightifyLight) {
-                l.setSwitch(!l.isPowered(), null);
+                link.performSwitch(l, !l.isPowered(), System.out::println);
             }
         });
     }

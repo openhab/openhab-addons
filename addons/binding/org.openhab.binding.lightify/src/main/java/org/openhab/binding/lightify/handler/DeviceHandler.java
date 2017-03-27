@@ -158,6 +158,9 @@ public class DeviceHandler extends BaseThingHandler {
         updateState(CHANNEL_ID_DIMMER, new PercentType(luminary.getLuminance()));
         updateState(CHANNEL_ID_TEMPERATURE, new DecimalType(luminary.getTemperature()));
         byte[] rgb = luminary.getRGB();
-        updateState(CHANNEL_ID_COLOR, HSBType.fromRGB(rgb[0], rgb[1], rgb[2]));
+        int r = Byte.toUnsignedInt(rgb[0]);
+        int g = Byte.toUnsignedInt(rgb[1]);
+        int b = Byte.toUnsignedInt(rgb[2]);
+        updateState(CHANNEL_ID_COLOR, HSBType.fromRGB(r, g, b));
     }
 }
