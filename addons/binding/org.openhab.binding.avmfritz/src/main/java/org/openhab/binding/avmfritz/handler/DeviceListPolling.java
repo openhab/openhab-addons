@@ -16,32 +16,33 @@ import org.slf4j.LoggerFactory;
  * Polling worker class.
  */
 public class DeviceListPolling implements Runnable {
-	/**
-	 * Logger
-	 */
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	/**
-	 * Handler for delegation to callbacks.
-	 */
-	private IFritzHandler handler;
-	/**
-	 * Constructor.
-	 * @param handler
-	 */
-	public DeviceListPolling(IFritzHandler handler) {
-		this.handler = handler;
-	}
-	/**
-	 * Poll the FRITZ!Box websevice one time. 
-	 */
-	@Override
-	public void run() {
-		if (handler.getWebInterface() != null) {
-			logger.debug("polling fritzbox "
-					+ handler.getWebInterface().getConfig().toString());
-			FritzAhaUpdateXmlCallback callback = new FritzAhaUpdateXmlCallback(
-					handler.getWebInterface(), this.handler);
-			handler.getWebInterface().asyncGet(callback);
-		}
-	}
+    /**
+     * Logger
+     */
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * Handler for delegation to callbacks.
+     */
+    private IFritzHandler handler;
+
+    /**
+     * Constructor.
+     *
+     * @param handler
+     */
+    public DeviceListPolling(IFritzHandler handler) {
+        this.handler = handler;
+    }
+
+    /**
+     * Poll the FRITZ!Box websevice one time.
+     */
+    @Override
+    public void run() {
+        if (handler.getWebInterface() != null) {
+            logger.debug("polling fritzbox " + handler.getWebInterface().getConfig().toString());
+            FritzAhaUpdateXmlCallback callback = new FritzAhaUpdateXmlCallback(handler.getWebInterface(), this.handler);
+            handler.getWebInterface().asyncGet(callback);
+        }
+    }
 }
