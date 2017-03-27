@@ -10,7 +10,10 @@ package org.openhab.binding.network.handler;
 
 import static org.openhab.binding.network.NetworkBindingConstants.*;
 
+import java.util.Calendar;
+
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -65,6 +68,16 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
                         updateStatus(ThingStatus.OFFLINE);
                     }
                     break;
+                case CHANNEL_LAST_SEEN:
+                    try {
+                        if (networkService.updateDeviceState() >= 0) {
+                            State state = new DateTimeType(Calendar.getInstance());
+                            updateState(CHANNEL_LAST_SEEN, state);
+                        }
+                    } catch (InvalidConfigurationException invalidConfigurationException) {
+                        updateStatus(ThingStatus.OFFLINE);
+                    }
+                    break;
                 default:
                     logger.debug("Command received for an unknown channel: {}", channelUID.getId());
                     break;
@@ -78,8 +91,14 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
     public void newState(double state) {
         State onlineState = state < 0 ? OnOffType.OFF : OnOffType.ON;
         State timeState = new DecimalType(state);
+
         updateState(CHANNEL_ONLINE, onlineState);
         updateState(CHANNEL_TIME, timeState);
+
+        if (state >= 0) {
+            State lastseenState = new DateTimeType(Calendar.getInstance());
+            updateState(CHANNEL_LAST_SEEN, lastseenState);
+        }
     }
 
     @Override
@@ -136,6 +155,16 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
         value = conf.get(PARAMETER_USE_SYSTEM_PING);
         if (value != null) {
             networkService.setUseSystemPing(confValueToBoolean(value));
+        }
+
+        value = conf.get(PARAMETER_USE_ARPING);
+        if (value != null) {
+            networkService.setUseArping(confValueToBoolean(value));
+        }
+
+        value = conf.get(PARAMETER_NETWORK_INTERFACE);
+        if (value != null) {
+            networkService.setNetworkInterface(String.valueOf(conf.get(PARAMETER_NETWORK_INTERFACE)));
         }
 
         networkService.startAutomaticRefresh(scheduler, this);

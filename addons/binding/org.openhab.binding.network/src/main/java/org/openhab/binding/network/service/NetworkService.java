@@ -41,13 +41,15 @@ public class NetworkService {
     private long refreshInterval;
     private int timeout;
     private boolean useSystemPing;
+    private boolean useArping;
+    private String networkInterface;
 
     public NetworkService() {
-        this("", 0, 1, true, 60000, 5000, false);
+        this("", 0, 1, true, 60000, 5000, false, false, "eth0");
     }
 
     public NetworkService(String hostname, int port, int retry, boolean dhcplisten, long refreshInterval, int timeout,
-            boolean useSystemPing) {
+            boolean useSystemPing, boolean useArping, String networkInterface) {
         super();
         this.hostname = hostname;
         this.port = port;
@@ -56,6 +58,8 @@ public class NetworkService {
         this.refreshInterval = refreshInterval;
         this.timeout = timeout;
         this.useSystemPing = useSystemPing;
+        this.useArping = useArping;
+        this.networkInterface = networkInterface;
     }
 
     public String getHostname() {
@@ -110,6 +114,14 @@ public class NetworkService {
         this.useSystemPing = useSystemPing;
     }
 
+    public void setUseArping(boolean useArping) {
+        this.useArping = useArping;
+    }
+
+    public void setNetworkInterface(String networkInterface) {
+        this.networkInterface = networkInterface;
+    }
+
     public void startAutomaticRefresh(ScheduledExecutorService scheduledExecutorService,
             final StateUpdate stateUpdate) {
         Runnable runnable = new Runnable() {
@@ -153,10 +165,12 @@ public class NetworkService {
 
             try {
                 pingTime = System.nanoTime();
-                if (!useSystemPing) {
-                    success = Ping.checkVitality(hostname, port, timeout);
-                } else {
+                if (useSystemPing) {
                     success = NetworkUtils.nativePing(hostname, port, timeout);
+                } else if (useArping) {
+                    success = NetworkUtils.arping(hostname, timeout, networkInterface);
+                } else {
+                    success = Ping.checkVitality(hostname, port, timeout);
                 }
                 pingTime = System.nanoTime() - pingTime;
                 if (success) {
