@@ -555,7 +555,7 @@ public class NikoHomeControlCommunication {
      * @param percent - The allowed values depend on the action type.
      *            switch action: 0 or 100
      *            dimmer action: between 0 and 100, 254 for on, 255 for off
-     *            rollershutter action: between 0 (closed) and 100 (open), 253 to open, 254 to close, 255 to stop
+     *            rollershutter action: between 0 (closed) and 100 (open), 255 to open, 254 to close, 253 to stop
      */
     public void executeAction(int actionId, int percent) {
 
@@ -571,13 +571,13 @@ public class NikoHomeControlCommunication {
         // rollershutters have extra fields in the command
         if ((actionType == 4) || (actionType == 5)) {
             switch (percent) {
-                case 253: // open
+                case 255: // open
                     nhcCmd.endValue = 100;
                     break;
                 case 254: // close
                     nhcCmd.startValue = 100;
                     break;
-                case 255: // stop
+                case 253: // stop
                     nhcCmd.startValue = getActionState(actionId);
             }
         }

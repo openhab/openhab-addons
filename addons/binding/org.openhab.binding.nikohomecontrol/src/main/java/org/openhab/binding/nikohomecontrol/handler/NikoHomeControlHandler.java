@@ -104,7 +104,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                 if (command instanceof UpDownType) {
                     UpDownType s = (UpDownType) command;
                     if (s == UpDownType.UP) {
-                        nhcComm.executeAction(actionID, 253);
+                        nhcComm.executeAction(actionID, 255);
                         logger.debug("Niko Home Control: rollershutter {} up pressed", actionID);
                     } else {
                         nhcComm.executeAction(actionID, 254);
@@ -113,7 +113,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                 } else if (command instanceof StopMoveType) {
                     StopMoveType s = (StopMoveType) command;
                     if (s == StopMoveType.STOP) {
-                        nhcComm.executeAction(actionID, 255);
+                        nhcComm.executeAction(actionID, 253);
                         logger.debug("Niko Home Control: rollershutter {} stop pressed", actionID);
                     } else {
                         logger.debug("Niko Home Control: rollershutter {} move pressed", actionID);
