@@ -30,8 +30,8 @@
             <channel id="key" typeId="ir-key-codes-M6503C"/>
             <channel id="lamp-fault-check" typeId="lamp-fault-check"/>
             <channel id="natural-mode" typeId="natural-mode"/>
-            <channel id="osd-select" typeId="osd"/> <!--  TODO validate this -->
-            <channel id="picture-mode" typeId="picture-mode-M6503C"/>
+            <channel id="osd-select" typeId="osd-select"/>
+            <channel id="picture-mode" typeId="picture-mode"/>
             <channel id="power" typeId="power"/>
             <channel id="power-indicator" typeId="power-indicator"/>
             <channel id="power-saving" typeId="power-saving"/>
@@ -86,36 +86,6 @@
                 <option value="06">Original (AV)</option>
                 <option value="07">14:9 (AV)</option>
                 <option value="09">Just scan(HD DTV), 1:1 (RGB PC, HDMI/DVI PC)</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <channel-type id="color-temperature-M6503C">
-        <item-type>String</item-type>
-        <label>Color temperature</label>
-        <description>To adjust color temperature</description>
-        <state>
-            <options>
-                <option value="00">Medium</option>
-                <option value="01">Cool</option>
-                <option value="02">Warm</option>
-                <option value="03">User</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <channel-type id="energy-saving-SAC34134216">
-        <item-type>String</item-type>
-        <label>Energy Saving</label>
-        <description>Control the energy saving function</description>
-        <state>
-            <options>
-                <option value="00">Off</option>
-                <option value="01">Minimum</option>
-                <option value="02">Medium</option>
-                <option value="03">Maximum</option>
-                <option value="04">Auto/Intelligent sensor (depending on model)</option>
-                <option value="05">Screen off</option>
             </options>
         </state>
     </channel-type>
@@ -209,26 +179,9 @@
         </state>
     </channel-type>
 
-    <channel-type id="picture-mode-M6503C">
-        <item-type>String</item-type>
-        <label>Picture mode</label>
-        <description>To adjust picture mode</description>
-        <state>
-            <options>
-                <option value="00">Vivid</option>
-                <option value="01">Standard</option>
-                <option value="02">Cinema</option>
-                <option value="03">Sport</option>
-                <option value="04">Game</option>
-                <option value="05">User1</option>
-                <option value="06">User2</option>
-            </options>
-        </state>
-    </channel-type>
-
     <channel-type id="screen-mute-M6503C">
         <item-type>String</item-type>
-        <label>Energy Saving</label>
+        <label>Screen mute</label>
         <description>Select screen mute on/off</description>
         <state>
             <options>

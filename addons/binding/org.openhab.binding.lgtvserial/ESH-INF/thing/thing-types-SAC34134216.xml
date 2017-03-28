@@ -19,12 +19,12 @@
             <channel id="bass" typeId="bass"/>
             <channel id="brightness" typeId="brightness"/> 
             <channel id="color" typeId="color"/>
-            <channel id="color-temperature" typeId="color-temperature-SAC34134216"/>
+            <channel id="color-temperature2" typeId="color-temperature2"/>
             <channel id="contrast" typeId="contrast"/>
-            <channel id="energy-saving" typeId="energy-saving-SAC34134216"/>
+            <channel id="energy-saving" typeId="energy-saving"/>
             <channel id="input2" typeId="input-SAC34134216"/>
             <channel id="ir-key-code" typeId="ir-key-code-SAC34134216" />
-            <channel id="osd" typeId="osd"/>
+            <channel id="osd-select" typeId="osd-select"/>
             <channel id="power" typeId="power"/>
             <channel id="raw" typeId="raw"/>
             <channel id="screen-mute" typeId="screen-mute-SAC34134216"/>
@@ -62,12 +62,12 @@
             <channel id="bass" typeId="bass"/>
             <channel id="brightness" typeId="brightness"/> 
             <channel id="color" typeId="color"/>
-            <channel id="color-temperature" typeId="color-temperature-SAC34134216"/>
+            <channel id="color-temperature2" typeId="color-temperature2"/>
             <channel id="contrast" typeId="contrast"/>
-            <channel id="energy-saving" typeId="energy-saving-SAC34134216"/>
+            <channel id="energy-saving" typeId="energy-saving"/>
             <channel id="input2" typeId="input-SAC34134216"/>
             <channel id="ir-key-code" typeId="ir-key-code-SAC34134216" />
-            <channel id="osd" typeId="osd"/>
+            <channel id="osd-select" typeId="osd-select"/>
             <channel id="power" typeId="power"/>
             <channel id="raw" typeId="raw"/>
             <channel id="screen-mute" typeId="screen-mute-SAC34134216"/>
@@ -104,13 +104,13 @@
             <channel id="bass" typeId="bass"/>
             <channel id="brightness" typeId="brightness"/> 
             <channel id="color" typeId="color"/>
-            <channel id="color-temperature" typeId="color-temperature-SAC34134216"/>
+            <channel id="color-temperature2" typeId="color-temperature2"/>
             <channel id="contrast" typeId="contrast"/>
-            <channel id="energy-saving" typeId="energy-saving-SAC34134216"/>
+            <channel id="energy-saving" typeId="energy-saving"/>
             <channel id="input2" typeId="input-SAC34134216"/>
             <channel id="ir-key-code" typeId="ir-key-code-SAC34134216" />
             <channel id="ism-method" typeId="ism-SAC34134216"/> <!-- only for plasma TVs -->
-            <channel id="osd" typeId="osd"/>
+            <channel id="osd-select" typeId="osd-select"/>
             <channel id="power" typeId="power"/>
             <channel id="raw" typeId="raw"/>
             <channel id="screen-mute" typeId="screen-mute-SAC34134216"/>
@@ -164,29 +164,6 @@
                 <option value="1D">Cinema Zoom 14</option>
                 <option value="1E">Cinema Zoom 15</option>
                 <option value="1F">Cinema Zoom 16</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <channel-type id="color-temperature-SAC34134216">
-        <item-type>Dimmer</item-type>
-        <label>Color temperature</label>
-        <description>To adjust color temperature</description>
-    </channel-type>
-
-
-    <channel-type id="energy-saving-SAC34134216">
-        <item-type>String</item-type>
-        <label>Energy Saving</label>
-        <description>Control the energy saving function</description>
-        <state>
-            <options>
-                <option value="00">Off</option>
-                <option value="01">Minimum</option>
-                <option value="02">Medium</option>
-                <option value="03">Maximum</option>
-                <option value="04">Auto/Intelligent sensor (depending on model)</option>
-                <option value="05">Screen off</option>
             </options>
         </state>
     </channel-type>

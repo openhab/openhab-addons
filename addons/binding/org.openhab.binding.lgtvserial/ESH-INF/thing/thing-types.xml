@@ -20,17 +20,18 @@
             <channel id="brightness" typeId="brightness"/> 
             <channel id="color" typeId="color"/>
             <channel id="color-temperature" typeId="color-temperature"/>
+            <channel id="color-temperature2" typeId="color-temperature2"/>
             <channel id="contrast" typeId="contrast"/>
             <channel id="dpm" typeId="dpm"/>
             <channel id="elapsed-time" typeId="elapsed-time"/>
             <channel id="energy-saving" typeId="energy-saving"/>
-            <channel id="fan-fault" typeId="fan-fault"/>
+            <channel id="fan-fault-check" typeId="fan-fault-check"/>
             <channel id="h-position" typeId="h-position"/>
             <channel id="input" typeId="input"/>
             <channel id="input2" typeId="input"/>
             <channel id="ir-key-code" typeId="ir-key-code"/>
             <channel id="ism-method" typeId="ism-method"/>
-            <channel id="lamp-fault" typeId="lamp-fault"/>
+            <channel id="lamp-fault-check" typeId="lamp-fault-check"/>
             <channel id="natural-mode" typeId="natural-mode"/>
             <channel id="osd-language" typeId="osd-language"/>
             <channel id="osd-select" typeId="osd-select"/>

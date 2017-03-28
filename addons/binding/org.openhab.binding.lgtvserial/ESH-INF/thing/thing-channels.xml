@@ -43,6 +43,12 @@
         <description>Set Auto Sleep</description>
     </channel-type>
 
+    <channel-type id="auto-volume">
+        <item-type>Switch</item-type>
+        <label>Auto volume</label>
+        <description>Automatically adjust the volume level</description>
+    </channel-type>
+
     <channel-type id="backlight">
         <item-type>Dimmer</item-type>
         <label>Backlight</label>
@@ -79,7 +85,6 @@
         <description>Adjust screen color</description>
     </channel-type>
     
-    <!-- TODO This doesn't seem to work that way on my model... -->
     <channel-type id="color-temperature">
         <item-type>String</item-type>
         <label>Color temperature</label>
@@ -93,6 +98,12 @@
         </state>
     </channel-type>
 
+    <channel-type id="color-temperature2">
+        <item-type>Dimmer</item-type>
+        <label>Color temperature</label>
+        <description>Color temperature of the display</description>
+    </channel-type>
+
     <channel-type id="dpm">
         <item-type>Switch</item-type>
         <label>DPM Select</label>
@@ -103,6 +114,22 @@
         <item-type>String</item-type>
         <label>Elapsed time</label>
         <description>Read the elapsed time</description>
+    </channel-type>
+    
+    <channel-type id="energy-saving">
+        <item-type>String</item-type>
+        <label>Energy Saving</label>
+        <description>Control the energy saving function</description>
+        <state>
+            <options>
+                <option value="00">Off</option>
+                <option value="01">Minimum</option>
+                <option value="02">Medium</option>
+                <option value="03">Maximum</option>
+                <option value="04">Auto/Intelligent sensor (depending on model)</option>
+                <option value="05">Screen off</option>
+            </options>
+        </state>
     </channel-type>
     
     <channel-type id="fan-fault-check">
@@ -261,11 +288,55 @@
         </state>
     </channel-type>
 
-    <channel-type id="osd">
+    <channel-type id="natural-mode">
+        <item-type>Switch</item-type>
+        <label>Natural mode</label>
+        <description>To assign the Tile Natural mode for Tiling function</description>
+    </channel-type>
+
+    <channel-type id="osd-language">
+        <item-type>String</item-type>
+        <label>OSD Language</label>
+        <description>Set the OSD language</description>
+        <state>
+            <options>
+                <option value="00">English</option>
+                <option value="01">French</option>
+                <option value="02">German</option>
+                <option value="03">Spanish</option>
+                <option value="04">Italian</option>
+                <option value="05">Portuguese</option>
+                <option value="06">Chinese</option>
+                <option value="07">Japanese</option>
+                <option value="08">Korean</option>
+                <option value="09">Russian</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="osd-select">
         <item-type>Switch</item-type>
         <label>OSD</label>
         <description>To select OSD (On Screen Display) on/off</description>
     </channel-type>
+    
+    <channel-type id="picture-mode">
+        <item-type>String</item-type>
+        <label>Picture mode</label>
+        <description>To adjust picture mode</description>
+        <state>
+            <options>
+                <option value="00">Vivid</option>
+                <option value="01">Standard</option>
+                <option value="02">Cinema</option>
+                <option value="03">Sport</option>
+                <option value="04">Game</option>
+                <option value="05">User1</option>
+                <option value="06">User2</option>
+            </options>
+        </state>
+    </channel-type>
+    
     
     <channel-type id="power">
         <item-type>Switch</item-type>

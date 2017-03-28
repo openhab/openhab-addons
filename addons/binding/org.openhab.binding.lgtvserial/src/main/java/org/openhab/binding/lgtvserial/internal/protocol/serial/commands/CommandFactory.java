@@ -28,6 +28,8 @@ public class CommandFactory {
                 return new ColorCommand(setId);
             case "color-temperature":
                 return new ColorTemperatureCommand(setId);
+            case "color-temperature2":
+                return new ColorTemperature2Command(setId);
             case "contrast":
                 return new ContrastCommand(setId);
             case "dpm":
