@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,10 +35,18 @@ public class DisplayOptionsVirtualDatapointHandler extends AbstractVirtualDatapo
      * {@inheritDoc}
      */
     @Override
-    public void add(HmDevice device) {
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_DISPLAY_OPTIONS;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(HmDevice device) {
         if (device.getType().startsWith(DEVICE_TYPE_19_REMOTE_CONTROL)
                 && !(device.getHmInterface() == HmInterface.CUXD)) {
-            addDatapoint(device, 18, VIRTUAL_DATAPOINT_NAME_DISPLAY_OPTIONS, HmValueType.STRING, null, false);
+            addDatapoint(device, 18, getName(), HmValueType.STRING, null, false);
         }
     }
 
@@ -46,15 +54,15 @@ public class DisplayOptionsVirtualDatapointHandler extends AbstractVirtualDatapo
      * {@inheritDoc}
      */
     @Override
-    public boolean canHandle(HmDatapoint dp, Object value) {
-        return VIRTUAL_DATAPOINT_NAME_DISPLAY_OPTIONS.equals(dp.getName());
+    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+        return getName().equals(dp.getName());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handle(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
+    public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         HmChannel channel = dp.getChannel();
 
@@ -81,6 +89,6 @@ public class DisplayOptionsVirtualDatapointHandler extends AbstractVirtualDatapo
             throws IOException, HomematicClientException {
         HmDatapointInfo dpInfo = HmDatapointInfo.createValuesInfo(channel, dpName);
         HmDatapoint dp = gateway.getDatapoint(dpInfo);
-        gateway.sendDatapoint(dp, new HmDatapointConfig(true), newValue);
+        gateway.sendDatapoint(dp, new HmDatapointConfig(), newValue);
     }
 }

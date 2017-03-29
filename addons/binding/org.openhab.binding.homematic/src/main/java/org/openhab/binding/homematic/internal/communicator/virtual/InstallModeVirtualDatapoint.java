@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,9 +33,17 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
      * {@inheritDoc}
      */
     @Override
-    public void add(HmDevice device) {
+    public String getName() {
+        return VIRTUAL_DATAPOINT_NAME_INSTALL_MODE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(HmDevice device) {
         if (device.isGatewayExtras()) {
-            addDatapoint(device, 0, VIRTUAL_DATAPOINT_NAME_INSTALL_MODE, HmValueType.BOOL, Boolean.FALSE, false);
+            addDatapoint(device, 0, getName(), HmValueType.BOOL, Boolean.FALSE, false);
         }
     }
 
@@ -43,15 +51,15 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
      * {@inheritDoc}
      */
     @Override
-    public boolean canHandle(HmDatapoint dp, Object value) {
-        return VIRTUAL_DATAPOINT_NAME_INSTALL_MODE.equals(dp.getName());
+    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+        return getName().equals(dp.getName());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handle(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
+    public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
         boolean enable = MiscUtils.isTrueValue(value);

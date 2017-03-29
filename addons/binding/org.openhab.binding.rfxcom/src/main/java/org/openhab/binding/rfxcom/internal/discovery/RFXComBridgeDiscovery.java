@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,11 +34,9 @@ import jd2xx.JD2XX;
  *
  */
 public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
+    private static final long REFRESH_INTERVAL_IN_SECONDS = 600;
 
-    private final static Logger logger = LoggerFactory.getLogger(RFXComBridgeDiscovery.class);
-
-    /** The refresh interval for background discovery */
-    private long refreshInterval = 600;
+    private final Logger logger = LoggerFactory.getLogger(RFXComBridgeDiscovery.class);
 
     private boolean unsatisfiedLinkErrorLogged = false;
 
@@ -70,7 +68,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start background discovery for RFXCOM transceivers");
-        discoveryJob = scheduler.scheduleAtFixedRate(discoverRunnable, 0, refreshInterval, TimeUnit.SECONDS);
+        discoveryJob = scheduler.scheduleAtFixedRate(discoverRunnable, 0, REFRESH_INTERVAL_IN_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
             logger.debug("Discovered {} FTDI device(s)", devDescriptions.length);
 
             for (int i = 0; i < devSerialNumbers.length; ++i) {
-                if (devDescriptions != null && devDescriptions.length > 0) {
+                if (devDescriptions.length > 0) {
                     switch (devDescriptions[i]) {
                         case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX433:
                             addBridge(RFXComBindingConstants.BRIDGE_RFXTRX443, devSerialNumbers[i]);
@@ -136,11 +134,8 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
         properties.put(RFXComBindingConstants.BRIDGE_ID, bridgeId);
 
         ThingUID uid = new ThingUID(bridgeType, bridgeId);
-        if (uid != null) {
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel("RFXCOM transceiver").build();
-            thingDiscovered(result);
-        }
-
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withLabel("RFXCOM transceiver").build();
+        thingDiscovered(result);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,7 +42,6 @@ import org.xml.sax.SAXException;
  */
 public class XmlRpcServer implements RpcServer {
     private final static Logger logger = LoggerFactory.getLogger(XmlRpcServer.class);
-    private final static boolean TRACE_ENABLED = logger.isTraceEnabled();
 
     private static final String XML_EMPTY_STRING = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value></value></param></params></methodResponse>";
     private static final String XML_EMPTY_ARRAY = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value><array><data></data></array></value></param></params></methodResponse>";
@@ -69,7 +68,7 @@ public class XmlRpcServer implements RpcServer {
 
         try {
             xmlRpcHTTPD.start();
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 xmlRpcHTTPD.dumpStdErr();
             }
         } catch (Exception e) {
@@ -110,11 +109,11 @@ public class XmlRpcServer implements RpcServer {
             final PrintWriter respWriter = response.getWriter();
             try {
                 XmlRpcResponse xmlResponse = new XmlRpcResponse(request.getInputStream(), config.getEncoding());
-                if (TRACE_ENABLED) {
+                if (logger.isTraceEnabled()) {
                     logger.trace("Server parsed XmlRpcMessage:\n{}", xmlResponse);
                 }
                 final String returnValue = handleMethodCall(xmlResponse.getMethodName(), xmlResponse.getResponseData());
-                if (TRACE_ENABLED) {
+                if (logger.isTraceEnabled()) {
                     logger.trace("Server XmlRpcResponse:\n{}", returnValue);
                 }
                 respWriter.println(returnValue);
@@ -147,6 +146,8 @@ public class XmlRpcServer implements RpcServer {
                     Object[] data = (Object[]) call.get("params");
                     handleMethodCall(method, data);
                 }
+                return XML_EMPTY_EVENT_LIST;
+            } else if (RPC_METHODNAME_SET_CONFIG_READY.equals(methodName)) {
                 return XML_EMPTY_EVENT_LIST;
             } else {
                 logger.warn("Unknown method called by Homematic gateway: " + methodName);

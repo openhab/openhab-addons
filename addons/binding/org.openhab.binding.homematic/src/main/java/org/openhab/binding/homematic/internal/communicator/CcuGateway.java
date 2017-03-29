@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,8 +23,10 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
+import org.openhab.binding.homematic.internal.communicator.client.UnknownParameterSetException;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownRpcFailureException;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuLoadDeviceNamesParser;
+import org.openhab.binding.homematic.internal.communicator.parser.CcuParamsetDescriptionParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuValueParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuVariablesAndScriptsParser;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -48,7 +50,6 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  */
 public class CcuGateway extends AbstractHomematicGateway {
     private static final Logger logger = LoggerFactory.getLogger(CcuGateway.class);
-    private static final boolean TRACE_ENABLED = logger.isTraceEnabled();
 
     private Map<String, String> tclregaScripts;
     private HttpClient httpClient;
@@ -130,13 +131,13 @@ public class CcuGateway extends AbstractHomematicGateway {
      * {@inheritDoc}
      */
     @Override
-    public void loadChannelValues(HmChannel channel) throws IOException {
+    protected void setChannelDatapointValues(HmChannel channel, HmParamsetType paramsetType) throws IOException {
         try {
-            super.loadChannelValues(channel);
+            super.setChannelDatapointValues(channel, paramsetType);
         } catch (UnknownRpcFailureException ex) {
             logger.debug(
-                    "RpcMessage unknown RPC failure (-1 Failure), fetching values with TclRega script for device '{}'",
-                    channel.getDevice().getAddress());
+                    "RpcMessage unknown RPC failure (-1 Failure), fetching values with TclRega script for device {}, channel: {}, paramset: {}",
+                    channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
 
             Collection<String> dpNames = new ArrayList<String>();
             for (HmDatapoint dp : channel.getDatapoints().values()) {
@@ -155,6 +156,25 @@ public class CcuGateway extends AbstractHomematicGateway {
                 new CcuValueParser(channel).parse(resultList);
                 channel.setInitialized(true);
             }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addChannelDatapoints(HmChannel channel, HmParamsetType paramsetType) throws IOException {
+        try {
+            getRpcClient(channel.getDevice().getHmInterface()).addChannelDatapoints(channel, paramsetType);
+        } catch (UnknownParameterSetException ex) {
+            logger.debug(
+                    "RpcMessage RPC failure (-3 Unknown paramset), fetching metadata with TclRega script for device: {}, channel: {}, paramset: {}",
+                    channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
+
+            TclScriptDataList resultList = sendScriptByName("getParamsetDescription", TclScriptDataList.class,
+                    new String[] { "device_address", "channel_number" },
+                    new String[] { channel.getDevice().getAddress(), channel.getNumber().toString() });
+            new CcuParamsetDescriptionParser(channel, paramsetType).parse(resultList);
         }
     }
 
@@ -215,7 +235,7 @@ public class CcuGateway extends AbstractHomematicGateway {
             if (StringUtils.isEmpty(script)) {
                 throw new RuntimeException("Homematic TclRegaScript is empty!");
             }
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 logger.trace("TclRegaScript: {}", script);
             }
 
@@ -226,7 +246,7 @@ public class CcuGateway extends AbstractHomematicGateway {
 
             String result = new String(response.getContent(), config.getEncoding());
             result = StringUtils.substringBeforeLast(result, "<xml><exec>");
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 logger.trace("Result TclRegaScript: {}", result);
             }
 

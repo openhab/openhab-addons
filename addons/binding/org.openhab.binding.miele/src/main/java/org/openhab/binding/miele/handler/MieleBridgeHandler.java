@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.MulticastSocket;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -343,44 +344,49 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     while (true) {
                         try {
                             clientSocket = new MulticastSocket(JSON_RPC_PORT);
+                            clientSocket.setSoTimeout(100);
 
                             clientSocket.setInterface(InetAddress.getByName((String) getConfig().get(INTERFACE)));
                             clientSocket.joinGroup(address1);
                             clientSocket.joinGroup(address2);
 
                             while (true) {
-                                buf = new byte[256];
-                                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                                clientSocket.receive(packet);
+                                try {
+                                    buf = new byte[256];
+                                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                                    clientSocket.receive(packet);
 
-                                String event = new String(packet.getData());
-                                logger.debug("Received a multicast event '{}' from '{}:{}'",
-                                        new Object[] { event, packet.getAddress(), packet.getPort() });
+                                    String event = new String(packet.getData());
+                                    logger.debug("Received a multicast event '{}' from '{}:{}'",
+                                            new Object[] { event, packet.getAddress(), packet.getPort() });
 
-                                DeviceProperty dp = new DeviceProperty();
-                                String uid = null;
+                                    DeviceProperty dp = new DeviceProperty();
+                                    String uid = null;
 
-                                String[] parts = StringUtils.split(event, "&");
-                                for (String p : parts) {
-                                    String[] subparts = StringUtils.split(p, "=");
-                                    switch (subparts[0]) {
-                                        case "property": {
-                                            dp.Name = subparts[1];
-                                            break;
-                                        }
-                                        case "value": {
-                                            dp.Value = subparts[1];
-                                            break;
-                                        }
-                                        case "id": {
-                                            uid = subparts[1];
-                                            break;
+                                    String[] parts = StringUtils.split(event, "&");
+                                    for (String p : parts) {
+                                        String[] subparts = StringUtils.split(p, "=");
+                                        switch (subparts[0]) {
+                                            case "property": {
+                                                dp.Name = subparts[1];
+                                                break;
+                                            }
+                                            case "value": {
+                                                dp.Value = subparts[1];
+                                                break;
+                                            }
+                                            case "id": {
+                                                uid = subparts[1];
+                                                break;
+                                            }
                                         }
                                     }
-                                }
 
-                                for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                    listener.onAppliancePropertyChanged(uid, dp);
+                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
+                                        listener.onAppliancePropertyChanged(uid, dp);
+                                    }
+                                } catch (SocketTimeoutException e) {
+                                    Thread.sleep(500);
                                 }
                             }
                         } catch (Exception ex) {
@@ -579,7 +585,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     public boolean registerApplianceStatusListener(ApplianceStatusListener applianceStatusListener) {
         if (applianceStatusListener == null) {
-            throw new NullPointerException("It's not allowed to pass a null ApplianceStatusListener.");
+            throw new IllegalArgumentException("It's not allowed to pass a null ApplianceStatusListener.");
         }
         boolean result = applianceStatusListeners.add(applianceStatusListener);
         if (result && isInitialized()) {

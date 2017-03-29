@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -70,6 +71,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     static final String HTTP_TELLDUS_DEVICE_DIM = HTTP_API_TELLDUS_COM_XML + "device/dim?id=%d&level=%d";
     static final String HTTP_TELLDUS_DEVICE_TURNOFF = HTTP_API_TELLDUS_COM_XML + "device/turnOff?id=%d";
     static final String HTTP_TELLDUS_DEVICE_TURNON = HTTP_API_TELLDUS_COM_XML + "device/turnOn?id=%d";
+    private static final int MAX_RETRIES = 3;
 
     public TelldusLiveDeviceController() {
     }
@@ -273,43 +275,54 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     }
 
     <T> T callRestMethod(String uri, Class<T> response) throws TelldusLiveException {
-        Response resp = null;
+        T resultObj = null;
         try {
-            Future<Response> future = client.prepareGet(uri).execute();
-            resp = future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            JAXBContext jc = JAXBContext.newInstance(response);
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            XMLStreamReader xsr = xif.createXMLStreamReader(resp.getResponseBodyAsStream());
-
-            @SuppressWarnings("unchecked")
-            T obj = (T) jc.createUnmarshaller().unmarshal(xsr);
-            if (logger.isTraceEnabled()) {
-                logger.trace("Request [{}] Response:{}", uri, resp.getResponseBody());
+            for (int i = 0; i < MAX_RETRIES; i++) {
+                try {
+                    resultObj = innerCallRest(uri, response);
+                    break;
+                } catch (TimeoutException e) {
+                    logger.warn("TimeoutException error in get", e);
+                } catch (InterruptedException e) {
+                    logger.warn("InterruptedException error in get", e);
+                }
             }
-            return obj;
         } catch (JAXBException e) {
             logger.warn("Encoding error in get", e);
-            logResponse(uri, resp);
+            logResponse(uri, e);
             throw new TelldusLiveException(e);
         } catch (XMLStreamException e) {
             logger.warn("Communication error in get", e);
-            logResponse(uri, resp);
-            throw new TelldusLiveException(e);
-        } catch (InterruptedException e) {
-            logger.warn("InterruptedException error in get", e);
+            logResponse(uri, e);
             throw new TelldusLiveException(e);
         } catch (ExecutionException e) {
             logger.warn("ExecutionException error in get", e);
             throw new TelldusLiveException(e);
-        } catch (TimeoutException e) {
-            logger.warn("TimeoutException error in get", e);
-            throw new TelldusLiveException(e);
         }
+        return resultObj;
     }
 
-    private void logResponse(String uri, Response resp) {
-        if (resp != null) {
-            logger.warn("Request [" + uri + "] Response:" + resp.getResponseBody());
+    private <T> T innerCallRest(String uri, Class<T> response) throws InterruptedException, ExecutionException,
+            TimeoutException, JAXBException, FactoryConfigurationError, XMLStreamException {
+        Future<Response> future = client.prepareGet(uri).execute();
+        Response resp = future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        // TelldusLiveHandler.logger.info("Devices" + resp.getResponseBody());
+        JAXBContext jc = JAXBContext.newInstance(response);
+        XMLInputFactory xif = XMLInputFactory.newInstance();
+        XMLStreamReader xsr = xif.createXMLStreamReader(resp.getResponseBodyAsStream());
+        // xsr = new PropertyRenamerDelegate(xsr);
+
+        @SuppressWarnings("unchecked")
+        T obj = (T) jc.createUnmarshaller().unmarshal(xsr);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Request [" + uri + "] Response:" + resp.getResponseBody());
+        }
+        return obj;
+    }
+
+    private void logResponse(String uri, Exception e) {
+        if (e != null) {
+            logger.warn("Request [{}] Failure:{}", uri, e.getMessage());
         }
     }
 }

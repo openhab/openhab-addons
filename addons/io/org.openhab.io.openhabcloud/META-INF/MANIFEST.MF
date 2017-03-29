@@ -6,7 +6,7 @@ Bundle-Name: openHAB Cloud Connector Bundle
 Bundle-SymbolicName: org.openhab.io.openhabcloud
 Bundle-Version: 2.1.0.qualifier
 Service-Component: OSGI-INF/*.xml
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.net,
  javax.net.ssl,
  org.apache.commons.io,

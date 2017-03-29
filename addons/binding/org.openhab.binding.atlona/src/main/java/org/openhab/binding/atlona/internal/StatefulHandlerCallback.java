@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,11 +41,11 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
      * Create the callback from the other {@link AtlonaHandlerCallback}
      *
      * @param wrappedCallback a non-null {@link AtlonaHandlerCallback}
-     * @throws NullPointerException if wrappedCallback is null
+     * @throws IllegalArgumentException if wrappedCallback is null
      */
     public StatefulHandlerCallback(AtlonaHandlerCallback wrappedCallback) {
         if (wrappedCallback == null) {
-            throw new NullPointerException("wrappedCallback cannot be null");
+            throw new IllegalArgumentException("wrappedCallback cannot be null");
         }
 
         _wrappedCallback = wrappedCallback;
@@ -131,5 +131,16 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
     public void setProperty(String propertyName, String propertyValue) {
         _wrappedCallback.setProperty(propertyName, propertyValue);
 
+    }
+
+    /**
+     * Callback to get the {@link State} for a given property name
+     *
+     * @param propertyName a possibly null, possibly empty property name
+     * @return the {@link State} for the propertyName or null if not found
+     */
+    public State getState(String propertyName) {
+        // TODO Auto-generated method stub
+        return _state.get(propertyName);
     }
 }

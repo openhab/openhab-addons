@@ -41,7 +41,7 @@
         </repository>
         <snapshotRepository>
             <id>jfrog</id>
-            <url>http://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+            <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -53,13 +53,14 @@
         <ohc.version>2.1.0-SNAPSHOT</ohc.version>
         <ohcp2.version>2.1.x</ohcp2.version>
         <ohdr.version>1.0.10</ohdr.version>
+        <sat.version>0.0.2</sat.version>
         <karaf.version>4.0.8</karaf.version>
         <jackson.version>1.9.13</jackson.version>
-        <tycho-version>0.24.0</tycho-version>
+        <tycho-version>1.0.0</tycho-version>
         <tycho-groupid>org.eclipse.tycho</tycho-groupid>
         <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.version>3.1</maven.compiler.version>
+        <maven.compiler.version>3.6.1</maven.compiler.version>
         <groovy.eclipse.compiler.version>2.8.0-01</groovy.eclipse.compiler.version>
         <groovy.eclipse.batch.version>2.1.5-03</groovy.eclipse.batch.version>
     </properties>
@@ -170,7 +171,7 @@
                         </excludes>
                         <useDefaultExcludes>true</useDefaultExcludes>
                         <properties>
-                            <year>2016</year>
+                            <year>2017</year>
                         </properties>
                         <encoding>UTF-8</encoding>
                     </configuration>
@@ -187,6 +188,7 @@
                     <version>${maven.compiler.version}</version>
                     <configuration>
                         <compilerId>groovy-eclipse-compiler</compilerId>
+                        <maxmem>256m</maxmem>
                     </configuration>
                     <executions>
                         <execution>
@@ -306,8 +308,75 @@
                 </plugins>
             </build>
         </profile>
+
+	<!-- static code analysis profiles -->
+    <profile>
+      <id>check</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.openhab.tools</groupId>
+              <artifactId>static-code-analysis</artifactId>
+              <version>${sat.version}</version>
+              <executions>
+                <execution>
+                  <phase>verify</phase>
+                  <goals>
+                    <goal>checkstyle</goal>
+                    <goal>pmd</goal>
+                    <goal>findbugs</goal>
+                    <goal>report</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>
+                <findbugsPlugins>
+                  <findbugsPlugin>
+                     <groupId>jp.skypencil.findbugs.slf4j</groupId>
+                     <artifactId>bug-pattern</artifactId>
+                    <version>1.2.4</version>
+                  </findbugsPlugin>
+                </findbugsPlugins>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <id>check-bundles</id>
+      <activation>
+        <file>
+          <exists>META-INF/MANIFEST.MF</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+              <groupId>org.openhab.tools</groupId>
+              <artifactId>static-code-analysis</artifactId>
+              <version>${sat.version}</version>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     </profiles>
 
+    <pluginRepositories>
+      <pluginRepository>
+          <id>openhab-bintray</id>
+          <name>Bintray Repository for openHAB</name>
+          <url>https://dl.bintray.com/openhab/mvn/</url>
+          <releases>
+              <enabled>true</enabled>
+              <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+              <enabled>false</enabled>
+          </snapshots>
+      </pluginRepository>
+    </pluginRepositories>
 
     <repositories>
 
@@ -371,8 +440,8 @@
         <!-- openHAB snapshots -->
         <repository>
             <id>jfrog</id>
-            <name>JFrog OSS Repository</name>
-            <url>http://oss.jfrog.org/libs-snapshot/</url>
+            <name>JFrog Artifactory Repository</name>
+            <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
             <releases>
                 <enabled>false</enabled>
             </releases>

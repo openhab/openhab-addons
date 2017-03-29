@@ -5,14 +5,40 @@ It creates a REST service at _/imperihome/iss_ that implements the [ImperiHome S
 
 ## Installation
 
-The ImperiHome integration service can be installed through the Paper UI. Navigate to Extensions &gt; Misc and click Install.
+The ImperiHome integration service can be installed through the Paper UI. Navigate to Add-ons &gt; Misc and click Install.
+
+<a name="configuration"></a>
 
 ## Configuration
 
-The service itself has no configuration. ImperiHome on the other hand must be configured to connect to your openHAB instance.
+### openHAB Add-on
+
+To configure the ImperiHome integration add-on in openHAB, create a _imperihome.cfg_ file in the _conf/services_ directory. The following configuration options can be used:
+ 
+**System ID**
+
+The ImperiHome integration service identifies itself to ImperiHome using a system ID. By default the unique identifier of your openHAB installation is used. To override the ID, use the _system.id_ configuration option. 
+
+```
+system.id=my-openhab-123
+```
+
+*Warning*: the system ID can not contain the underscore character (_). 
+
+**Root URL**
+
+Root URL of your openHAB installation. Should point to the openHAB welcome page. This option is currently only required when using the custom icon tag. 
+
+```
+openhab.rootUrl=http://myserver.example.org:7070/
+```
+
+### ImperiHome
+
+ImperiHome must be configured to connect to your openHAB instance.
 
 Start ImperiHome, open the menu and go to My Systems. Add a new system (+) and choose 'ImperiHome Standard System' as the object type. Now enter the URL to your openHAB instance
- as Local URL, followed by _/imperihome/iss_. For example, if your OH instance is running at _http://192.168.1.10:8080/_, the Local URL would be _http://192.168.1.10:8080/imperihome/iss_. 
+ as Local URL, followed by _/imperihome/iss_. For example, if your openHAB instance is running at _http://192.168.1.10:8080/_, the Local URL would be _http://192.168.1.10:8080/imperihome/iss_. 
 
 If you have port forwarding or similar set up to access your OH form the internet, you can also fill the Remote URL in the same way. For example: 
 _http://my-openhab-url.dyndns.org:8080/imperihome/iss_. Please be aware that this service provides no authentication mechanism, so anyone could use the API to control your 
@@ -130,6 +156,19 @@ _Example_:
 
 ```
 iss:invert:true
+```
+
+### Tag: _icon_
+
+Sets a custom icon to be shown in ImperiHome. You can use all icon names that are also available for use in your sitemaps, including custom icons.
+To use this tag you must set the openHAB root URL in your [configuration](#configuration).
+
+_Required_: no<br>
+_Default_: none<br>
+_Example_: 
+
+```
+iss:icon:sofa
 ```
 
 <a name="deviceTypes"></a> 

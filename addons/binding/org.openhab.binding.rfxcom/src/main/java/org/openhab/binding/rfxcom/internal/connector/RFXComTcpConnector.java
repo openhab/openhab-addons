@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,16 +27,13 @@ import org.slf4j.LoggerFactory;
  * @author Ivan F. Martinez, James Hewitt-Thomas - Implementation
  */
 public class RFXComTcpConnector extends RFXComBaseConnector {
+    private final Logger logger = LoggerFactory.getLogger(RFXComTcpConnector.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(RFXComTcpConnector.class);
+    private InputStream in;
+    private OutputStream out;
+    private Socket socket;
 
-    InputStream in = null;
-    OutputStream out = null;
-    Socket socket = null;
-    Thread readerThread = null;
-
-    public RFXComTcpConnector() {
-    }
+    private Thread readerThread;
 
     @Override
     public void connect(RFXComBridgeConfiguration device) throws IOException {

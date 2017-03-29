@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.Station;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
@@ -50,7 +51,26 @@ public abstract class OpenSprinklerHandler extends BaseThingHandler {
 
         try {
             stationId = Station.get(channelUID.getId()).toNumber();
-            handleStationCommand(stationId, command);
+
+            if (command == RefreshType.REFRESH) {
+                /* A refresh command means we just need to poll OpenSprinkler for current state. */
+                if (stationId == -1) {
+                    /* A station ID number of -1 means the rain sensor is being refreshed. */
+                    State currentDeviceState = getRainSensorState();
+                    updateState(channelUID, currentDeviceState);
+                } else {
+                    State currentDeviceState = getStationState(stationId);
+                    updateState(channelUID, currentDeviceState);
+                }
+            } else {
+                /* Other command types control the OpenSprinkler. Pass off handling. */
+                if (stationId == -1) {
+                    /* A station ID number of -1 means the rain sensor is attempting to be manipulated. */
+                    logger.warn("Attempted to change state of the rain sensor. The rain sensor is read-only.");
+                } else {
+                    handleStationCommand(stationId, command);
+                }
+            }
         } catch (Exception exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not control the OpenSprinkler.");
@@ -125,6 +145,31 @@ public abstract class OpenSprinklerHandler extends BaseThingHandler {
         }
 
         if (stationOn) {
+            return OnOffType.ON;
+        } else {
+            return OnOffType.OFF;
+        }
+    }
+
+    /**
+     * Handles determining the rain sensor channel's current state from the OpenSprinkler device.
+     *
+     * @return State representation for the rain sensor channel.
+     */
+    protected State getRainSensorState() {
+        boolean rainSensorOn = false;
+
+        try {
+            rainSensorOn = openSprinklerDevice.isRainDetected();
+        } catch (Exception exp) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Could not get the rain sensor current state from the OpenSprinkler thing.");
+            logger.debug(
+                    "Could not get current state of rain sensor channel from the OpenSprinkler device. Exception received: {}",
+                    exp.toString());
+        }
+
+        if (rainSensorOn) {
             return OnOffType.ON;
         } else {
             return OnOffType.OFF;

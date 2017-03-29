@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,6 +40,7 @@ public class MinecraftBindingConstants {
     public final static String CHANNEL_PLAYER_HEALTH = "playerHealth";
     public final static String CHANNEL_PLAYER_WALK_SPEED = "playerWalkSpeed";
     public final static String CHANNEL_PLAYER_LOCATION = "playerLocation";
+    public final static String CHANNEL_PLAYER_GAME_MODE = "playerGameMode";
 
     public final static String CHANNEL_SIGN_ACTIVE = "signActive";
 

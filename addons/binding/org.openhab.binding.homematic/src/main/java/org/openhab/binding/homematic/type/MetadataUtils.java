@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -45,7 +45,7 @@ public class MetadataUtils {
     private static Map<String, String> descriptions = new HashMap<String, String>();
     private static Map<String, Set<String>> standardDatapoints = new HashMap<String, Set<String>>();
 
-    static {
+    protected static void initialize() {
         // loads all Homematic device names
         loadBundle("homematic/generated-descriptions");
         loadBundle("homematic/extra-descriptions");
@@ -65,9 +65,8 @@ public class MetadataUtils {
      * Loads the standard datapoints for channel metadata generation.
      */
     private static void loadStandardDatapoints() {
-        try {
-            InputStream is = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("homematic/standard-datapoints.properties");
+        try (InputStream is = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("homematic/standard-datapoints.properties")) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
             String line;
@@ -101,15 +100,19 @@ public class MetadataUtils {
         List<T> options = null;
         if (dp.isEnumType()) {
             options = new ArrayList<T>();
-            for (int i = 0; i < dp.getOptions().length; i++) {
-                String description = null;
-                if (!dp.isVariable() && !dp.isScript()) {
-                    description = getDescription(dp.getChannel().getType(), dp.getName(), dp.getOptions()[i]);
+            if (dp.getOptions() == null) {
+                logger.warn("No options for ENUM datapoint {}", dp);
+            } else {
+                for (int i = 0; i < dp.getOptions().length; i++) {
+                    String description = null;
+                    if (!dp.isVariable() && !dp.isScript()) {
+                        description = getDescription(dp.getChannel().getType(), dp.getName(), dp.getOptions()[i]);
+                    }
+                    if (description == null) {
+                        description = dp.getOptions()[i];
+                    }
+                    options.add(optionsBuilder.createOption(dp.getOptions()[i], description));
                 }
-                if (description == null) {
-                    description = dp.getOptions()[i];
-                }
-                options.add(optionsBuilder.createOption(dp.getOptions()[i], description));
             }
         }
         return options;
@@ -264,7 +267,8 @@ public class MetadataUtils {
         String channelType = StringUtils.defaultString(dp.getChannel().getType());
 
         if (dp.isBooleanType()) {
-            if ((dpName.equals(DATAPOINT_NAME_STATE) && channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT))
+            if (((dpName.equals(DATAPOINT_NAME_STATE) || dpName.equals(VIRTUAL_DATAPOINT_NAME_STATE_CONTACT))
+                    && channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT))
                     || (dpName.equals(DATAPOINT_NAME_SENSOR) && channelType.equals(CHANNEL_TYPE_SENSOR))) {
                 return ITEM_TYPE_CONTACT;
             } else {
@@ -279,6 +283,8 @@ public class MetadataUtils {
             } else {
                 return ITEM_TYPE_NUMBER;
             }
+        } else if (dp.isDateTimeType()) {
+            return ITEM_TYPE_DATETIME;
         } else {
             return ITEM_TYPE_STRING;
         }

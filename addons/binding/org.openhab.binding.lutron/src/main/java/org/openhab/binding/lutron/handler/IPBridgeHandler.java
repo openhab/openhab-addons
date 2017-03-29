@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -301,7 +301,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
             Matcher matcher = STATUS_REGEX.matcher(line);
 
-            if (matcher.matches()) {
+            if (matcher.find()) {
                 LutronCommandType type = LutronCommandType.valueOf(matcher.group(1));
 
                 if (type == LutronCommandType.SYSTEM) {

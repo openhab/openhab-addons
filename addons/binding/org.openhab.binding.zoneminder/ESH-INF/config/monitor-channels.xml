@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+    <config-description uri="thing-type:monitor-channels:config">
+	    <parameter name="monitorId" type="integer" required="true">
+	       <label>Monitor ID</label>
+	       <description>The ID of the monitor in ZoneMinder</description>
+	    </parameter>
+	    <parameter name="monitorTriggerTimeout" type="integer" required="false" min="0" max="65335">
+	       <label>ForceAlarm timeout</label>
+	       <description>Timeout in seconds when activating alarm. Default is 60 seconds</description>
+	       <default>60</default>
+	    </parameter>
+	    <parameter name="monitorEventText" type="text" required="false" >
+	       <label>Event Text</label>
+	       <description>Event text in ZoneMinder</description>
+	       <default>Triggered from openHAB</default>
+	    </parameter>
+    </config-description>
+</config-description:config-descriptions>

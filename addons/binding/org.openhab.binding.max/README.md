@@ -1,7 +1,7 @@
 # MAX! Binding
 
 This is the binding for the [eQ-3 MAX! Home Solution](http://www.eq-3.de/).
-This binding allows you to integrate, view and control the MAX! Thermostats in the Openhab environment
+This binding allows you to integrate, view and control the MAX! Thermostats in the openHAB environment
 
 ## Supported Things
 
@@ -24,11 +24,11 @@ If for any reason you need to manually define the Things and you are not exactly
 The discovery process for the MAX! binding works in 2 steps.
 When the binding is started or when manually triggered, the network is queried for the existence of a MAX! Cube lan gateway. When the Cube is found, it will become available in the discovery inbox. Periodically the network is queried again for a Cube.
 
-Once the Cube is available in Openhab, all the devices connected to it are discovered and added to the discovery inbox. No scan is needed to trigger this. 
+Once the Cube is available in openHAB, all the devices connected to it are discovered and added to the discovery inbox. No scan is needed to trigger this.
 
 ## Binding Configuration
 
-In the Openhab2 version of this binding there are no binding wide settings. 
+In the openHAB2 version of this binding there are no binding wide settings.
 All the configuration settings are now per MAX! Cube, hence in case you have multiple Cubes, they can run with alternative settings.
 
 ## Thing Configuration
@@ -64,8 +64,9 @@ In most cases no Things need to be defined manually. In case your Cube can't be 
 max.things:
 
 ```
-Bridge max:bridge:KEQ0565026 [ ipAddress="192.168.3.9", serialNumber="KEQ0565026" ]
-max:thermostat:KEQ0565026 [ serialNumber="KEQ0565123" ]
+Bridge max:bridge:KEQ0565026 [ ipAddress="192.168.3.9", serialNumber="KEQ0565026" ] {
+    Thing max:thermostat:KEQ0565026:KEQ0565123 [ serialNumber="KEQ0565123" ]
+}
 ```
 
 max.items:

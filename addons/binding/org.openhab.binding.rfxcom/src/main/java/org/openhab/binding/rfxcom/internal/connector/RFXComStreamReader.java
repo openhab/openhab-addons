@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Original read loop
  */
 public class RFXComStreamReader extends Thread {
-
-    private static final Logger logger = LoggerFactory.getLogger(RFXComStreamReader.class);
+    private final Logger logger = LoggerFactory.getLogger(RFXComStreamReader.class);
 
     private boolean interrupted = false;
     private RFXComBaseConnector connector;
@@ -43,8 +42,9 @@ public class RFXComStreamReader extends Thread {
         super.interrupt();
         try {
             in.close();
-        } catch (IOException e) {
-        } // quietly close
+        } catch (IOException ignore) {
+            // quietly close
+        }
     }
 
     @Override
@@ -55,7 +55,7 @@ public class RFXComStreamReader extends Thread {
 
         int msgLen = 0;
         int index = 0;
-        boolean start_found = false;
+        boolean startFound = false;
 
         logger.debug("Data listener started");
 
@@ -64,7 +64,7 @@ public class RFXComStreamReader extends Thread {
             byte[] tmpData = new byte[20];
             int len = -1;
 
-            while (interrupted != true) {
+            while (!interrupted) {
 
                 if ((len = in.read(tmpData)) > 0) {
 
@@ -76,41 +76,32 @@ public class RFXComStreamReader extends Thread {
                         if (index > dataBufferMaxLen) {
                             // too many bytes received, try to find new
                             // start
-                            start_found = false;
+                            startFound = false;
                         }
 
-                        if (start_found == false && tmpData[i] > 0) {
+                        if (!startFound && tmpData[i] > 0) {
 
-                            start_found = true;
+                            startFound = true;
                             index = 0;
                             dataBuffer[index++] = tmpData[i];
                             msgLen = tmpData[i] + 1;
 
-                        } else if (start_found) {
+                        } else if (startFound) {
 
                             dataBuffer[index++] = tmpData[i];
 
                             if (index == msgLen) {
-
-                                // whole message received, send an event
-
-                                byte[] msg = new byte[msgLen];
-
-                                for (int j = 0; j < msgLen; j++) {
-                                    msg[j] = dataBuffer[j];
-                                }
-
-                                connector.sendMsgToListeners(msg);
+                                sendMessage(dataBuffer, msgLen);
 
                                 // find new start
-                                start_found = false;
+                                startFound = false;
                             }
                         }
                     }
                 } else {
                     try {
                         Thread.sleep(100);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ignore) {
                     }
                 }
             }
@@ -123,5 +114,12 @@ public class RFXComStreamReader extends Thread {
         }
 
         logger.debug("Data listener stopped");
+    }
+
+    private void sendMessage(byte[] dataBuffer, int msgLen) {
+        byte[] msg = new byte[msgLen];
+        System.arraycopy(dataBuffer, 0, msg, 0, msgLen);
+
+        connector.sendMsgToListeners(msg);
     }
 }

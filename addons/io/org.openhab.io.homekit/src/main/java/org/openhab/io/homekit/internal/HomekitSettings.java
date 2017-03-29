@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -58,11 +58,11 @@ public class HomekitSettings {
         }
         Object minimumTemperature = properties.get("minimumTemperature");
         if (minimumTemperature != null) {
-            this.minimumTemperature = (double) minimumTemperature;
+            this.minimumTemperature = Double.parseDouble(minimumTemperature.toString());
         }
         Object maximumTemperature = properties.get("maximumTemperature");
         if (maximumTemperature != null) {
-            this.maximumTemperature = (double) maximumTemperature;
+            this.maximumTemperature = Double.parseDouble(maximumTemperature.toString());
         }
         this.thermostatHeatMode = (String) properties.get("thermostatHeatMode");
         this.thermostatCoolMode = (String) properties.get("thermostatCoolMode");

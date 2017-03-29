@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -58,6 +59,11 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
     private final ChannelUID dimChannel;
     private final ChannelUID humidityChannel;
     private final ChannelUID tempChannel;
+    private final ChannelUID raintTotChannel;
+    private final ChannelUID rainRateChannel;
+    private final ChannelUID windAverageChannel;
+    private final ChannelUID windDirectionChannel;
+    private final ChannelUID windGuestChannel;
     private final ChannelUID timestampChannel;
 
     public TelldusDevicesHandler(Thing thing) {
@@ -66,6 +72,11 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         dimChannel = new ChannelUID(getThing().getUID(), CHANNEL_DIMMER);
         humidityChannel = new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY);
         tempChannel = new ChannelUID(getThing().getUID(), CHANNEL_TEMPERATURE);
+        raintTotChannel = new ChannelUID(getThing().getUID(), CHANNEL_RAINTOTAL);
+        rainRateChannel = new ChannelUID(getThing().getUID(), CHANNEL_RAINRATE);
+        windAverageChannel = new ChannelUID(getThing().getUID(), CHANNEL_WINDAVERAGE);
+        windDirectionChannel = new ChannelUID(getThing().getUID(), CHANNEL_WINDDIRECTION);
+        windGuestChannel = new ChannelUID(getThing().getUID(), CHANNEL_WINDGUST);
         timestampChannel = new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP);
     }
 
@@ -84,6 +95,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
             return;
         }
         if (command instanceof RefreshType) {
+            getBridge().getHandler().handleCommand(channelUID, command);
             refreshDevice(dev);
             return;
         }
@@ -108,7 +120,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
     }
 
     private void refreshDevice(Device dev) {
-        if (deviceId != null && getThing().getThingTypeUID().equals(TellstickBindingConstants.SENSOR_THING_TYPE)) {
+        if (deviceId != null && isSensor()) {
             updateSensorStates(dev);
         } else if (deviceId != null) {
             updateDeviceState(dev);
@@ -186,13 +198,19 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
 
     private Device getDevice(TelldusBridgeHandler tellHandler, String deviceId) {
         Device dev = null;
-        if (deviceId != null && getThing().getThingTypeUID().equals(TellstickBindingConstants.SENSOR_THING_TYPE)) {
+        if (deviceId != null && isSensor()) {
             dev = tellHandler.getSensor(deviceId);
         } else if (deviceId != null) {
             dev = tellHandler.getDevice(deviceId);
             updateDeviceState(dev);
         }
         return dev;
+    }
+
+    private boolean isSensor() {
+        return (getThing().getThingTypeUID().equals(TellstickBindingConstants.SENSOR_THING_TYPE)
+                || getThing().getThingTypeUID().equals(TellstickBindingConstants.RAINSENSOR_THING_TYPE)
+                || getThing().getThingTypeUID().equals(TellstickBindingConstants.WINDSENSOR_THING_TYPE));
     }
 
     private void updateSensorStates(Device dev) {
@@ -255,6 +273,21 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                 break;
             case TEMPERATURE:
                 updateState(tempChannel, new DecimalType(data));
+                break;
+            case RAINRATE:
+                updateState(rainRateChannel, new DecimalType(data));
+                break;
+            case RAINTOTAL:
+                updateState(raintTotChannel, new DecimalType(data));
+                break;
+            case WINDAVERAGE:
+                updateState(windAverageChannel, new DecimalType(data));
+                break;
+            case WINDDIRECTION:
+                updateState(windDirectionChannel, new StringType(data));
+                break;
+            case WINDGUST:
+                updateState(windGuestChannel, new DecimalType(data));
                 break;
             default:
         }

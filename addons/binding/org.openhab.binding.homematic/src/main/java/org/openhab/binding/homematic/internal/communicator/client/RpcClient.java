@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.homematic.internal.communicator.client;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -25,12 +26,14 @@ import org.openhab.binding.homematic.internal.communicator.parser.GetValueParser
 import org.openhab.binding.homematic.internal.communicator.parser.HomegearLoadDeviceNamesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.ListBidcosInterfacesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.ListDevicesParser;
+import org.openhab.binding.homematic.internal.communicator.parser.RssiInfoParser;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
+import org.openhab.binding.homematic.internal.model.HmRssiInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
-    protected static final boolean TRACE_ENABLED = logger.isTraceEnabled();
+    protected static final int MAX_RPC_RETRY = 1;
 
     protected HomematicConfig config;
 
@@ -162,8 +165,8 @@ public abstract class RpcClient {
             } catch (UnknownRpcFailureException ex) {
                 if (paramsetType == HmParamsetType.VALUES) {
                     logger.debug(
-                            "RpcResponse unknown RPC failure (-1 Failure), fetching values with another API method for device '{}'",
-                            channel.getDevice().getAddress());
+                            "RpcResponse unknown RPC failure (-1 Failure), fetching values with another API method for device: {}, channel: {}, paramset: {}",
+                            channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
                     setChannelDatapointValues(channel);
                 } else {
                     throw ex;
@@ -230,6 +233,10 @@ public abstract class RpcClient {
 
         if (gatewayInfo.isCCU() || config.hasCuxdPort()) {
             gatewayInfo.setCuxdInterface(hasInterface(HmInterface.CUXD, id));
+        }
+
+        if (gatewayInfo.isCCU() || config.hasGroupPort()) {
+            gatewayInfo.setGroupInterface(hasInterface(HmInterface.GROUP, id));
         }
 
         return gatewayInfo;
@@ -321,6 +328,14 @@ public abstract class RpcClient {
             address = "*" + address.substring(2);
         }
         return address;
+    }
+
+    /**
+     * Returns the rssi values for all devices.
+     */
+    public List<HmRssiInfo> loadRssiInfo(HmInterface hmInterface) throws IOException {
+        RpcRequest request = createRpcRequest("rssiInfo");
+        return new RssiInfoParser(config).parse(sendMessage(config.getRpcPort(hmInterface), request));
     }
 
 }

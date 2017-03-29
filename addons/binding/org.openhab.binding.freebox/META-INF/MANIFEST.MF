@@ -4,7 +4,7 @@ Bundle-Name: Freebox Binding
 Bundle-SymbolicName: org.openhab.binding.freebox;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/json-simple-1.1.jar,
  lib/httpmime-4.3.1.jar,
@@ -34,5 +34,3 @@ Import-Package: com.google.common.base,
 Service-Component: OSGI-INF/*
 Export-Package: org.openhab.binding.freebox,
  org.openhab.binding.freebox.handler
-Require-Bundle: org.apache.commons.io,
- org.apache.commons.codec
