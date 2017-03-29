@@ -4,7 +4,7 @@ Bundle-Name: AllPlay Binding
 Bundle-SymbolicName: org.openhab.binding.allplay;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/tchaikovsky.jar
 Bundle-NativeCode: lib/x86-64/win/alljoyn_java.dll;processor=amd64;osname=win32;osname=Windows8;osname=Windows 8;osname=Win8;osname=Windows10;osname=Windows 10;osname=Win10,
