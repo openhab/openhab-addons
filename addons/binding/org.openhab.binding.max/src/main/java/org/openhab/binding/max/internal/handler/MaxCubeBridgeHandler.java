@@ -883,7 +883,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      *            String the channelUID used to send the command and the the
      *            command data
      */
-    public synchronized void queueCommand(SendCommand sendCommand) {
+    public void queueCommand(SendCommand sendCommand) {
         if (commandQueue.offer(sendCommand)) {
             if (lastCommandId != null && lastCommandId.getKey().equals(sendCommand.getKey())) {
                 if (commandQueue.remove(lastCommandId)) {
