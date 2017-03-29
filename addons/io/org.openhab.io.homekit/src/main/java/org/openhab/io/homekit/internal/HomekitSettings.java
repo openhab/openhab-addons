@@ -58,11 +58,11 @@ public class HomekitSettings {
         }
         Object minimumTemperature = properties.get("minimumTemperature");
         if (minimumTemperature != null) {
-            this.minimumTemperature = (double) minimumTemperature;
+            this.minimumTemperature = Double.parseDouble(minimumTemperature.toString());
         }
         Object maximumTemperature = properties.get("maximumTemperature");
         if (maximumTemperature != null) {
-            this.maximumTemperature = (double) maximumTemperature;
+            this.maximumTemperature = Double.parseDouble(maximumTemperature.toString());
         }
         this.thermostatHeatMode = (String) properties.get("thermostatHeatMode");
         this.thermostatCoolMode = (String) properties.get("thermostatCoolMode");
