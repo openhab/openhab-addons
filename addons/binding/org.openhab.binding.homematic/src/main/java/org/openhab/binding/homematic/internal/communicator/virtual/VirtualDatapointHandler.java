@@ -53,7 +53,7 @@ public interface VirtualDatapointHandler {
     /**
      * Handles a event to extract data required for the virtual datapoint.
      */
-    public void handleEvent(VirtualGateway gateway, HmDatapoint dp) throws HomematicClientException;
+    public void handleEvent(VirtualGateway gateway, HmDatapoint dp);
 
     /**
      * Returns the virtual datapoint in the given channel.

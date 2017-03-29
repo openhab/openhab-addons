@@ -10,7 +10,6 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH;
 
-import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -50,7 +49,7 @@ public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointH
      * {@inheritDoc}
      */
     @Override
-    public void handleEvent(VirtualGateway gateway, HmDatapoint dp) throws HomematicClientException {
+    public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         HmChannel channel = dp.getChannel();
         Integer value = getRssiValue(channel);
 
