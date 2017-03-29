@@ -72,16 +72,19 @@ Squeeze Players can be set up as audio sinks in openHAB.  Please follow the [ope
 You can create an item and sitemap entry in order to set the notification volume independently from the Squeeze Player's current volume setting. If the notification volume is not specified, it will use the Player's current volume setting.
 
 Item for setting notification volume.
+
 ```
 Dimmer NotificationVolume "Notification Volume [%d %%]" {channel="squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510:notificationSoundVolume"}
 ```
 
 Sitemap entry for setting notification volume.
+
 ```
 Slider item=NotificationVolume label="Notification Volume"
 ```
 
 You can play notifications from within rules.
+
 ```
 rule "Garage Door Open Notification"
 when
@@ -95,6 +98,7 @@ end
 ```
 
 And, you can play sounds from the conf/sounds directory.
+
 ```
 rule "Play Sounds"
 when
