@@ -225,7 +225,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("update {} with {}", channelUID.getAsString(), command);
+        logger.debug("update {} with {}", channelUID, command);
     }
 
     /**

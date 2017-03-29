@@ -51,7 +51,7 @@ public class MinecraftSocketHandler implements WebSocketEventHandler {
 
     @Override
     public void onError(WebSocketException e) {
-        logger.error("Server error {} : {}", e.getMessage(), e.getCause());
+        logger.error("Server error ", e);
 
     }
 

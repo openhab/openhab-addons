@@ -280,8 +280,7 @@ public class EmulatedV6Bridge {
                                     + buffer[19]);
 
                             if (chksum != buffer[21]) {
-                                logger.error("Checksum wrong:{} {}", String.valueOf(chksum),
-                                        String.valueOf(buffer[21]));
+                                logger.error("Checksum wrong:{} {}", chksum, buffer[21]);
                                 continue;
                             }
 

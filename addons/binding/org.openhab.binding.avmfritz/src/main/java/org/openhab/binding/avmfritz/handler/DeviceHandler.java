@@ -135,9 +135,9 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("command for {}: {}", channelUID.getAsString(), command);
+        logger.debug("command for {}: {}", channelUID, command);
         if (channelUID.getId().equals(CHANNEL_SWITCH)) {
-            logger.debug("update {} with {}", channelUID.getAsString(), command);
+            logger.debug("update {} with {}", channelUID, command);
             FritzahaWebInterface fritzBox = null;
             if (!thing.getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE)) {
                 Bridge bridge = this.getBridge();
@@ -176,7 +176,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     @Override
     public void addDeviceList(DeviceModel model) {
         try {
-            logger.debug("set device model: {}", model.toString());
+            logger.debug("set device model: {}", model);
             Thing thing = this.getThing();
             if (thing != null) {
                 logger.debug("update thing {} with device model: {}", thing.getUID(), model);
