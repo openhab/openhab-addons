@@ -4,7 +4,7 @@ Bundle-Name: AmazonDashButton Binding
 Bundle-SymbolicName: org.openhab.binding.amazondashbutton;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/jna-4.2.1.jar,
  lib/pcap4j-core-1.6.6.jar,
