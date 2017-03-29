@@ -486,6 +486,15 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             setChannelDatapointValues(channel, HmParamsetType.MASTER);
             setChannelDatapointValues(channel, HmParamsetType.VALUES);
         }
+
+        for (HmDatapoint dp : channel.getDatapoints().values()) {
+            for (VirtualDatapointHandler vdph : virtualDatapointHandlers) {
+                if (vdph.canHandleEvent(dp)) {
+                    vdph.handleEvent(this, dp);
+                }
+            }
+        }
+
         channel.setInitialized(true);
     }
 
