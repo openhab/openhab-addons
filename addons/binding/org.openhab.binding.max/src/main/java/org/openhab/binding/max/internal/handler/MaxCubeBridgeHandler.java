@@ -31,7 +31,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -133,6 +132,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
+    private static final int MAX_DUTY_CYCLE = 80;
     private ReentrantLock dutyCycleLock = new ReentrantLock();
     private Condition excessDutyCycle = dutyCycleLock.newCondition();
 
@@ -152,14 +152,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private Socket socket = null;
     private BufferedReader reader = null;
     private OutputStreamWriter writer = null;
-    private final Lock socketLock = new ReentrantLock();
 
     private boolean previousOnline = false;
 
     private Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
-
-    private final Lock pollingJobLock = new ReentrantLock();
-    private final Lock queueConsumerLock = new ReentrantLock();
 
     private ScheduledFuture<?> pollingJob;
     private final Runnable pollingRunnable = new Runnable() {
@@ -191,12 +187,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
         clearDeviceList();
 
-        socketLock.lock();
-        try {
-            socketClose();
-        } finally {
-            socketLock.unlock();
-        }
+        socketClose();
         super.dispose();
     }
 
@@ -220,12 +211,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
         previousOnline = true; // To trigger offline in case no connection @ startup
 
-        try {
-            startAutomaticRefresh();
-        } catch (InterruptedException e) {
-            logger.error("Could not start automatic refresh, deinitialising", e);
-            dispose();
-        }
+        startAutomaticRefresh();
     }
 
     @Override
@@ -322,49 +308,31 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void startAutomaticRefresh() throws InterruptedException {
-        pollingJobLock.tryLock(5, TimeUnit.SECONDS);
-        try {
-            if (pollingJob == null || pollingJob.isCancelled()) {
-                pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
-            }
-        } finally {
-            pollingJobLock.unlock();
+    private synchronized void startAutomaticRefresh() {
+        if (pollingJob == null || pollingJob.isCancelled()) {
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, refreshInterval, TimeUnit.SECONDS);
         }
-        queueConsumerLock.tryLock(5, TimeUnit.SECONDS);
-        try {
-            if (queueConsumerThread == null || !queueConsumerThread.isAlive()) {
-                queueConsumerThread = new Thread(new QueueConsumer(commandQueue), "max-queue-consumer");
-                queueConsumerThread.setDaemon(true);
-                queueConsumerThread.start();
-            }
-        } finally {
-            queueConsumerLock.unlock();
+        if (queueConsumerThread == null || !queueConsumerThread.isAlive()) {
+            queueConsumerThread = new Thread(new QueueConsumer(commandQueue), "max-queue-consumer");
+            queueConsumerThread.setDaemon(true);
+            queueConsumerThread.start();
         }
     }
 
     /**
      * stops the refreshing jobs
+     *
+     * @throws InterruptedException
      */
     private void stopAutomaticRefresh() throws InterruptedException {
-        pollingJobLock.tryLock(5, TimeUnit.SECONDS);
-        try {
-            if (pollingJob != null && !pollingJob.isCancelled()) {
-                pollingJob.cancel(true);
-                pollingJob = null;
-            }
-        } finally {
-            pollingJobLock.unlock();
+        if (pollingJob != null && !pollingJob.isCancelled()) {
+            pollingJob.cancel(true);
+            pollingJob = null;
         }
 
-        queueConsumerLock.tryLock(5, TimeUnit.SECONDS);
-        try {
-            if (queueConsumerThread != null && queueConsumerThread.isAlive()) {
-                queueConsumerThread.interrupt();
-                queueConsumerThread.join(1000);
-            }
-        } finally {
-            queueConsumerLock.unlock();
+        if (queueConsumerThread != null && queueConsumerThread.isAlive()) {
+            queueConsumerThread.interrupt();
+            queueConsumerThread.join(1000);
         }
     }
 
@@ -404,7 +372,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             } catch (InterruptedException e) {
                 logger.info("Stopping queueConsumer");
             } catch (Exception e) {
-                logger.error("Unexpected exception occurred during sendCommands", e);
+                logger.error("Unexpected exception occurred during run of queueConsumer", e);
             }
         }
 
@@ -412,7 +380,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             dutyCycleLock.lock();
             try {
                 while (hasExcessDutyCycle()) {
-                    socketLock.lock();
                     try {
                         if (socket != null && !socket.isClosed()) {
                             socket.close();
@@ -420,8 +387,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                     } catch (IOException e) {
                         logger.warn("Could not close socket", e);
                         e.printStackTrace();
-                    } finally {
-                        socketLock.unlock();
                     }
                     logger.debug("Found to have excess duty cycle, waiting for better times...");
                     excessDutyCycle.await(1, TimeUnit.MINUTES);
@@ -589,12 +554,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      * @param {@link CubeCommand}
      * @return boolean success
      */
-    private boolean sendCubeCommand(CubeCommand command) {
-        try {
-            socketLock.tryLock(120, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            logger.warn("Could not acquire lock to command to cube", e);
-        }
+    private synchronized boolean sendCubeCommand(CubeCommand command) {
         try {
             if (socket == null || socket.isClosed()) {
                 this.socketConnect();
@@ -648,7 +608,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             if (!exclusive) {
                 socketClose();
             }
-            socketLock.unlock();
         }
     }
 
@@ -661,32 +620,30 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private void readLines(String terminator) throws IOException {
         while (true) {
             String raw = reader.readLine();
-            if (raw != null) {
-                logger.trace("message block: '{}'", raw);
-                try {
-                    this.messageProcessor.addReceivedLine(raw);
-                    if (this.messageProcessor.isMessageAvailable()) {
-                        Message message = this.messageProcessor.pull();
-                        processMessage(message);
-                    }
-                } catch (UnprocessableMessageException e) {
-                    if (raw.contentEquals("M:")) {
-                        logger.info("No Rooms information found. Configure your MAX! Cube: {}", ipAddress);
-                        this.messageProcessor.reset();
-                    } else {
-                        logger.info("Message could not be processed: '{}' from MAX! Cube lan gateway: {}:", raw,
-                                ipAddress);
-                        this.messageProcessor.reset();
-                    }
-                } catch (Exception e) {
-                    logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw,
-                            ipAddress, e.getMessage(), e);
+            if (raw == null) {
+                return;
+            }
+            logger.trace("message block: '{}'", raw);
+            try {
+                this.messageProcessor.addReceivedLine(raw);
+                if (this.messageProcessor.isMessageAvailable()) {
+                    Message message = this.messageProcessor.pull();
+                    processMessage(message);
+                }
+            } catch (UnprocessableMessageException e) {
+                if (raw.contentEquals("M:")) {
+                    logger.info("No Rooms information found. Configure your MAX! Cube: {}", ipAddress);
+                    this.messageProcessor.reset();
+                } else {
+                    logger.info("Message could not be processed: '{}' from MAX! Cube lan gateway: {}:", raw, ipAddress);
                     this.messageProcessor.reset();
                 }
-                if (raw.startsWith(terminator)) {
-                    return;
-                }
-            } else {
+            } catch (Exception e) {
+                logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw, ipAddress,
+                        e.getMessage(), e);
+                this.messageProcessor.reset();
+            }
+            if (raw.startsWith(terminator)) {
                 return;
             }
         }
@@ -926,8 +883,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      *            String the channelUID used to send the command and the the
      *            command data
      */
-    public void queueCommand(SendCommand sendCommand) {
-
+    public synchronized void queueCommand(SendCommand sendCommand) {
         if (commandQueue.offer(sendCommand)) {
             if (lastCommandId != null && lastCommandId.getKey().equals(sendCommand.getKey())) {
                 if (commandQueue.remove(lastCommandId)) {
@@ -942,7 +898,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         } else {
             logger.debug("Command queued full dropping command id {} ({}).", sendCommand.getId(), sendCommand.getKey());
         }
-
     }
 
     /**
@@ -1016,6 +971,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean hasExcessDutyCycle() {
-        return dutyCycle >= 80;
+        return dutyCycle >= MAX_DUTY_CYCLE;
     }
 }
