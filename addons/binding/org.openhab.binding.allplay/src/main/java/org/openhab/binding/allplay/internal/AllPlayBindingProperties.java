@@ -11,21 +11,24 @@ package org.openhab.binding.allplay.internal;
 import java.util.Dictionary;
 
 /**
- * AllPlay properties common for all speakers.
+ * AllPlay binding properties.
  *
- * @author Dominic Lerbs
+ * @author Dominic Lerbs - Initial contribution
  */
-public class CommonSpeakerProperties {
+public class AllPlayBindingProperties {
 
     private final Integer rewindSkipTimeInSec;
     private final Integer fastForwardSkipTimeInSec;
+    private final String callbackUrl;
 
     private static final String REWIND_SKIP_TIME_PROPERTY = "rewindSkipTimeInSec";
     private static final String FAST_FORWARD_SKIP_TIME_PROPERTY = "fastForwardSkipTimeInSec";
+    private static final String CALLBACK_URL = "callbackUrl";
 
-    public CommonSpeakerProperties(Dictionary<String, Object> properties) {
+    public AllPlayBindingProperties(Dictionary<String, Object> properties) {
         rewindSkipTimeInSec = (Integer) properties.get(REWIND_SKIP_TIME_PROPERTY);
         fastForwardSkipTimeInSec = (Integer) properties.get(FAST_FORWARD_SKIP_TIME_PROPERTY);
+        callbackUrl = (String) properties.get(CALLBACK_URL);
     }
 
     public int getRewindSkipTimeInSec() {
@@ -34,5 +37,9 @@ public class CommonSpeakerProperties {
 
     public int getFastForwardSkipTimeInSec() {
         return fastForwardSkipTimeInSec;
+    }
+
+    public String getCallbackUrl() {
+        return callbackUrl;
     }
 }
