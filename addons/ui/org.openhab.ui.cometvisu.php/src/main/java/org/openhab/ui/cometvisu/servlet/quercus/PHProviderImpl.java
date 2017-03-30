@@ -141,7 +141,7 @@ public class PHProviderImpl implements PHProvider {
                 page = engine.getQuercus().parse(path);
             } catch (FileNotFoundException e) {
                 // php/2001
-                logger.debug("", e);
+                logger.debug("{}", e.toString(), e);
 
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
 
@@ -211,12 +211,12 @@ public class PHProviderImpl implements PHProvider {
             } catch (QuercusErrorException e) {
                 throw e;
             } catch (QuercusLineRuntimeException e) {
-                logger.debug("", e);
+                logger.debug("{}", e.toString(), e);
 
                 ws.println(e.getMessage());
                 // return;
             } catch (QuercusValueException e) {
-                logger.debug("", e);
+                logger.debug("{}", e.toString(), e);
 
                 ws.println(e.toString());
 
@@ -248,13 +248,13 @@ public class PHProviderImpl implements PHProvider {
             }
         } catch (com.caucho.quercus.QuercusDieException e) {
             // normal exit
-            logger.trace("", e);
+            logger.trace("{}", e.getMessage(), e);
         } catch (QuercusExitException e) {
             // normal exit
-            logger.trace("", e);
+            logger.trace("{}", e.getMessage(), e);
         } catch (QuercusErrorException e) {
             // error exit
-            logger.error("", e);
+            logger.error("{}", e.getMessage(), e);
         } catch (RuntimeException e) {
             throw e;
         } catch (Throwable e) {

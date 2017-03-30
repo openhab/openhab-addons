@@ -129,7 +129,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                 this.updateThingFromDevice(thing, model);
             }
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
     }
 

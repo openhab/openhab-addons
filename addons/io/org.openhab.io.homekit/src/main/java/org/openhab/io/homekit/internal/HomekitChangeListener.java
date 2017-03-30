@@ -100,7 +100,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                     .addRootDevice(HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
             logger.debug("Added homekit device {}", taggedItem.getItem().getName());
         } catch (Exception e) {
-            logger.error("Could not add device: ", e);
+            logger.error("Could not add device: {}", e.getMessage(), e);
         }
     }
 

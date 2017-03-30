@@ -74,7 +74,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                     logger.warn("no model in response");
                 }
             } catch (JAXBException e) {
-                logger.error("", e);
+                logger.error("{}", e.getLocalizedMessage(), e);
             }
         } else {
             logger.info("request is invalid: {}", status);

@@ -110,7 +110,7 @@ public class HueEmulationServlet extends HttpServlet {
             }
             logger.info("Started Hue Emulation service at {}", PATH);
         } catch (Exception e) {
-            logger.error("Could not start Hue Emulation service: ", e);
+            logger.error("Could not start Hue Emulation service: {}", e.getMessage(), e);
         }
     }
 

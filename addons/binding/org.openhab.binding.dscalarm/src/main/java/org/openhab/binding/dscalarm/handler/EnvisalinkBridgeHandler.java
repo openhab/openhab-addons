@@ -230,7 +230,7 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
                     }
                 }
             } catch (Exception e) {
-                logger.error("TCPListener(): Unable to read message: ", e);
+                logger.error("TCPListener(): Unable to read message: {} ", e.getMessage(), e);
                 closeConnection();
             }
         }

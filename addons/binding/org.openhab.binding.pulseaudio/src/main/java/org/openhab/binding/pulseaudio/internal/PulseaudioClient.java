@@ -530,7 +530,7 @@ public class PulseaudioClient {
             out.close();
             client.close();
         } catch (IOException e) {
-            logger.error("", e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
     }
 
@@ -572,7 +572,7 @@ public class PulseaudioClient {
             client.close();
             return result;
         } catch (IOException e) {
-            logger.error("", e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
         return result;
     }
@@ -582,7 +582,7 @@ public class PulseaudioClient {
             try {
                 connect();
             } catch (IOException e) {
-                logger.error("", e);
+                logger.error("{}", e.getLocalizedMessage(), e);
             }
         }
     }
@@ -597,7 +597,7 @@ public class PulseaudioClient {
         } catch (UnknownHostException e) {
             logger.error("unknown socket host {}", host);
         } catch (SocketException e) {
-            logger.error("", e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
     }
 
@@ -609,7 +609,7 @@ public class PulseaudioClient {
             try {
                 client.close();
             } catch (IOException e) {
-                logger.error("", e);
+                logger.error("{}", e.getLocalizedMessage(), e);
             }
         }
     }

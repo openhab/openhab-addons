@@ -119,7 +119,7 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.error("openConnection(): IO Exception: {}", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("openConnection(): Unable to open a connection: ", exception);
+            logger.error("openConnection(): Unable to open a connection: {} ", exception.getMessage(), exception);
             setConnected(false);
         }
     }
@@ -137,7 +137,7 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.error("write(): {}", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("write(): Unable to write to socket: ", exception);
+            logger.error("write(): Unable to write to socket: {} ", exception.getMessage(), exception);
             setConnected(false);
         }
     }
@@ -156,7 +156,7 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             logger.error("read(): IO Exception: {}", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("read(): Exception: ", exception);
+            logger.error("read(): Exception: {} ", exception.getMessage(), exception);
             setConnected(false);
         }
 
@@ -217,7 +217,7 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
                     }
                 }
             } catch (Exception e) {
-                logger.error("TCPListener(): Unable to read message: ", e);
+                logger.error("TCPListener(): Unable to read message: {} ", e.getMessage(), e);
                 closeConnection();
             }
         }

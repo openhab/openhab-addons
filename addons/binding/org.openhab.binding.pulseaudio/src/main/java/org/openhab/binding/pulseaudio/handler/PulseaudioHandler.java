@@ -118,7 +118,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                     }
 
                 } catch (Exception e) {
-                    logger.debug("Exception occurred during execution: ", e);
+                    logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
                     bridgeHandler = null;
                 }
 

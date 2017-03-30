@@ -207,7 +207,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
     }
 

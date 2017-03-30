@@ -155,7 +155,7 @@ public class ControllerHandler extends BaseBridgeHandler {
                 }
                 throw new CoolMasterClientError(String.format("Command '%s' got error '%s'", command, response));
             } catch (IOException e) {
-                logger.error("", e);
+                logger.error("{}", e.getLocalizedMessage(), e);
                 return null;
             }
         }
@@ -195,7 +195,7 @@ public class ControllerHandler extends BaseBridgeHandler {
                 }
             } catch (IOException e) {
                 disconnect();
-                logger.error("", e);
+                logger.error("{}", e.getLocalizedMessage(), e);
                 throw new CoolMasterClientError(String.format("No response from CoolMasterNet unit %s:%s", host, port));
             }
         }
@@ -211,7 +211,7 @@ public class ControllerHandler extends BaseBridgeHandler {
                 logger.error("unknown socket host {}", host);
                 socket = null;
             } catch (SocketException e) {
-                logger.error("", e);
+                logger.error("{}", e.getLocalizedMessage(), e);
                 socket = null;
             }
         }
@@ -222,7 +222,7 @@ public class ControllerHandler extends BaseBridgeHandler {
             try {
                 socket.close();
             } catch (IOException e1) {
-                logger.error("", e1);
+                logger.error("{}", e1.getLocalizedMessage(), e1);
             }
             socket = null;
         }

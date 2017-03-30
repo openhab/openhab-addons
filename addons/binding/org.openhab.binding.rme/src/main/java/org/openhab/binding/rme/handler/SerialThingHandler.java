@@ -330,7 +330,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
             } catch (InterruptedIOException e) {
                 Thread.currentThread().interrupt();
             } catch (IOException e) {
-                logger.error("An exception occurred while reading serial port {} ", port, e);
+                logger.error("An exception occurred while reading serial port '{}' : {}", port, e.getMessage(), e);
             }
 
             logger.debug("Serial port listener for serial port '{}' has stopped", port);

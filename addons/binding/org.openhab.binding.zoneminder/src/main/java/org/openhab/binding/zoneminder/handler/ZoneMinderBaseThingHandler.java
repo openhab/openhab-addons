@@ -367,7 +367,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
             }
 
         } catch (Exception ex) {
-            logger.error("", ex.getMessage());
+            logger.error("{}", ex.getMessage());
         }
 
         return state;

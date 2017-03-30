@@ -410,7 +410,7 @@ public class AllPlayHandler extends BaseThingHandler
         try {
             updateState(CURRENT_USER_DATA, new StringType(String.valueOf(currentItem.getUserData())));
         } catch (SpeakerException e) {
-            logger.warn("Unable to update current user data: ", e);
+            logger.warn("Unable to update current user data: {}", e.getMessage(), e);
         }
         logger.debug("MediaType: {}", currentItem.getMediaType());
     }

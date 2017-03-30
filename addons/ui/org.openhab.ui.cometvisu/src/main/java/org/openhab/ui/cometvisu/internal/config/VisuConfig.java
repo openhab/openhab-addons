@@ -146,9 +146,9 @@ public class VisuConfig {
             marshaller.marshal(bean, sw);
             res = sw.toString();
         } catch (JAXBException e) {
-            logger.error("", e);
+            logger.error("{}", e.getMessage(), e);
         } catch (SAXException e) {
-            logger.error("", e);
+            logger.error("{}", e.getMessage(), e);
         }
         return res;
     }
