@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.systeminfo.model.DeviceNotFoundException;
 import org.openhab.binding.systeminfo.model.OshiSysteminfo;
 import org.openhab.binding.systeminfo.model.SysteminfoInterface;
@@ -80,7 +81,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      */
     private static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
 
-    private SysteminfoInterface systeminfo;
+    private OshiSysteminfo systeminfo;
 
     ScheduledFuture<?> highPriorityTasks;
     ScheduledFuture<?> mediumPriorityTasks;
@@ -148,6 +149,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             properties.put(PROPERTY_OS_FAMILY, systeminfo.getOsFamily().toString());
             properties.put(PROPERTY_OS_MANUFACTURER, systeminfo.getOsManufacturer().toString());
             properties.put(PROPERTY_OS_VERSION, systeminfo.getOsVersion().toString());
+            updateProperties(properties);
             logger.debug("Properties updated!");
             return true;
         } catch (Exception e) {
@@ -220,6 +222,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         mediumPriorityTasks = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
+                systeminfo.updateStaticObjects();
                 publishData(mediumPriorityChannels);
             }
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalMediumPriority.intValue(), TimeUnit.SECONDS);
@@ -397,11 +400,11 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_NETWORK_DATA_RECEIVED:
                     state = systeminfo.getNetworkDataReceived(deviceIndex);
                     break;
-                case CHANNEL_NETWORK_PACKAGES_RECEIVED:
-                    state = systeminfo.getNetworkPackageReceived(deviceIndex);
+                case CHANNEL_NETWORK_PACKETS_RECEIVED:
+                    state = systeminfo.getNetworkPacketsReceived(deviceIndex);
                     break;
-                case CHANNEL_NETWORK_PACKAGES_SENT:
-                    state = systeminfo.getNetworkPackageSent(deviceIndex);
+                case CHANNEL_NETWORK_PACKETS_SENT:
+                    state = systeminfo.getNetworkPacketsSent(deviceIndex);
                     break;
                 case CHANNEL_PROCESS_LOAD:
                     state = systeminfo.getProcessCpuUsage(deviceIndex);
@@ -428,7 +431,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Can not get system info as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
         }
-        return state;
+        return state != null ? state : UnDefType.UNDEF;
     }
 
     /**

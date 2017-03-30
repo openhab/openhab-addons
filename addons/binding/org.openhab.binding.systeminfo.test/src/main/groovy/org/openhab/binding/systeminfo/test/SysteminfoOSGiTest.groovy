@@ -20,8 +20,6 @@ import org.eclipse.smarthome.core.items.GenericItem
 import org.eclipse.smarthome.core.items.ItemRegistry
 import org.eclipse.smarthome.core.library.items.NumberItem
 import org.eclipse.smarthome.core.library.items.StringItem
-import org.eclipse.smarthome.core.library.types.DecimalType
-import org.eclipse.smarthome.core.library.types.StringType
 import org.eclipse.smarthome.core.thing.Channel
 import org.eclipse.smarthome.core.thing.ChannelUID
 import org.eclipse.smarthome.core.thing.ManagedThingProvider
@@ -155,8 +153,6 @@ class SysteminfoOSGiTest extends OSGiTest{
             assertThat thingHandler, is(notNullValue())
         }
 
-        println systemInfoThing.getStatus()
-        println systemInfoThing.getStatusInfo().statusDetail
         waitForAssert{
             assertThat "Thing is not initilized, before an Item is created", systemInfoThing.getStatus(),
                     anyOf(equalTo(ThingStatus.OFFLINE), equalTo(ThingStatus.ONLINE))
@@ -165,16 +161,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         intializeItem(channelUID,DEFAULT_TEST_ITEM_NAME,acceptedItemType)
     }
 
-
-    private void testItemStateIsUpdated(String acceptedItemType,String itemName,String priority) {
-        testItemState(acceptedItemType,itemName,false,priority)
-    }
-
-    private void testItemStateIsNull (String acceptedItemType,String itemName,String priority) {
-        testItemState(acceptedItemType,itemName,true,priority)
-    }
-
-    private void testItemState(String acceptedItemType,String itemName, boolean isNullExpected, String priority) {
+    private void assertItemState(String acceptedItemType,String itemName, String priority) {
         waitForAssert({
             def thingStatusDetail = systemInfoThing.getStatusInfo().getStatusDetail()
             def description = systemInfoThing.getStatusInfo().getDescription();
@@ -195,22 +182,12 @@ class SysteminfoOSGiTest extends OSGiTest{
             waitTime = 100;
         }
 
-        if(isNullExpected) {
-            sleep(waitTime)
-            assertThat item.getState(), is(equalTo(UnDefType.NULL))
-        } else {
-            waitForAssert({
-                State itemState = item.getState()
-                assertThat itemState, not (equalTo(UnDefType.NULL))
-                if(acceptedItemType.equals("Number")) {
-                    assertThat itemState, isA (DecimalType)
-                } else if(acceptedItemType.equals("String")){
-                    assertThat itemState, isA (StringType)
-                } else {
-                    fail "Test might not be set up correctly! Check if 'acceptedItemType' in the test case is set correctly !"
-                }
-            },waitTime)
-        }
+
+        waitForAssert({
+            State itemState = item.getState()
+            assertThat itemState, not (equalTo(UnDefType.NULL))
+        },waitTime)
+
     }
 
     private void intializeItem (ChannelUID channelUID,String itemName, String acceptedItemType) {
@@ -258,17 +235,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String priority = "Medium"
 
         initializeThingWithChannelAndPriority(channnelID, acceptedItemType,priority)
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,priority);
-    }
-
-    @Test
-    public void 'assert state of not existing device is not updated' () {
-        int deviceIndex = 520;
-        String channnelID = "network$deviceIndex#mac"
-        String acceptedItemType = "String";
-
-        initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsNull(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,priority);
     }
 
     @Category(PlatformDependentTestsInterface.class)
@@ -276,11 +243,11 @@ class SysteminfoOSGiTest extends OSGiTest{
     public void 'assert state of second device is updated' () {
         //This test assumes that at least 2 network interfaces are present on the test platform
         int deviceIndex = 1;
-        String channnelID = "network$deviceIndex#mac"
+        String channnelID = "network${deviceIndex}#mac"
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -289,7 +256,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -298,7 +265,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -307,7 +274,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -316,7 +283,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -325,7 +292,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -334,7 +301,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -343,7 +310,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -352,7 +319,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -361,7 +328,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -370,7 +337,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -379,7 +346,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -388,7 +355,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -398,7 +365,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -408,7 +375,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -418,7 +385,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -428,7 +395,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -438,7 +405,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -448,7 +415,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -458,7 +425,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -468,7 +435,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -478,7 +445,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -488,7 +455,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -498,7 +465,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -508,7 +475,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channelID,acceptedItemType)
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -518,7 +485,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channelID,acceptedItemType)
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -528,7 +495,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channelID,acceptedItemType)
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Ignore
@@ -539,7 +506,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Test
@@ -548,7 +515,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     //Jenskins's machine has no CPU Fan
@@ -559,7 +526,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     //Jenskins's machine has no battery
@@ -570,7 +537,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     //Jenskins's machine has no battery
@@ -581,7 +548,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     //Jenskins's machine has no battery
@@ -592,7 +559,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     //Jenskins's machine has no display
@@ -603,7 +570,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -613,7 +580,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -623,7 +590,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -633,7 +600,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -643,27 +610,27 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
-    public void 'asssert channel network#packagesSent is updated' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_PACKAGES_SENT
+    public void 'asssert channel network#packetsSent is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_PACKETS_SENT
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
     @Test
-    public void 'asssert channel network#packagesReceived is updated' () {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_PACKAGES_RECEIVED
+    public void 'asssert channel network#packetsReceived is updated' () {
+        String channnelID = SysteminfoBindingConstants.CHANNEL_NETWORK_PACKETS_RECEIVED
         String acceptedItemType = "Number";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -673,7 +640,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -683,7 +650,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         String acceptedItemType = "String";
 
         initializeThingWithChannel(channnelID,acceptedItemType);
-        testItemStateIsUpdated(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
+        assertItemState(acceptedItemType,DEFAULT_TEST_ITEM_NAME,DEFAULT_CHANNEL_TEST_PRIORITY);
     }
 
     class SysteminfoDiscoveryServiceMock extends SysteminfoDiscoveryService {
@@ -779,7 +746,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         int pid = 0
 
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -791,7 +758,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         int pid = 0
 
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -803,7 +770,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         int pid = 0
 
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -815,7 +782,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         int pid = 0
 
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
     }
 
     @Category(org.openhab.binding.systeminfo.test.PlatformDependentTestsInterface.class)
@@ -827,7 +794,7 @@ class SysteminfoOSGiTest extends OSGiTest{
         int pid = 0
 
         initializeThingWithChannelAndPID(channnelID,acceptedItemType,pid)
-        testItemStateIsUpdated(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_CHANNEL_TEST_PRIORITY)
     }
 
     @Test

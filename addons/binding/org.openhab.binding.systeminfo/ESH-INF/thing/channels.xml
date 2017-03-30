@@ -61,8 +61,8 @@
 			<channel id="networkDisplayName" typeId="networkDisplayName" />
 			<channel id="dataSent" typeId="dataSent" />
 			<channel id="dataReceived" typeId="dataReceived" />
-			<channel id="packagesSent" typeId="packagesSent" />
-			<channel id="packagesReceived" typeId="packagesReceived" />
+			<channel id="packetsSent" typeId="packetsSent" />
+			<channel id="packetsReceived" typeId="packetsReceived" />
 			<channel id="mac" typeId="mac"></channel>
 		</channels>
 	</channel-group-type>
@@ -346,18 +346,18 @@
 		<config-description-ref uri="systeminfo:channels:lowpriority" />
 	</channel-type>
 
-	<channel-type id="packagesSent" advanced="true">
+	<channel-type id="packetsSent" advanced="true">
 		<item-type>Number</item-type>
-		<label>Packages sent</label>
-		<description>Number of packages sent</description>
+		<label>Packets sent</label>
+		<description>Number of packets sent</description>
 		<state readOnly="true" pattern="%d " />
 		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
 
-	<channel-type id="packagesReceived" advanced="true">
+	<channel-type id="packetsReceived" advanced="true">
 		<item-type>Number</item-type>
-		<label>Packages received</label>
-		<description>Number of packages received</description>
+		<label>Packets received</label>
+		<description>Number of packets received</description>
 		<state readOnly="true" pattern="%d " />
 		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>

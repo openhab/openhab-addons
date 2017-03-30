@@ -26,27 +26,27 @@ public class SysteminfoBindingConstants {
     /**
      * Number of CPU logical cores
      */
-    public final static String PROPERTY_CPU_LOGICAL_CORES = "cpu_logicalCores";
+    public final static String PROPERTY_CPU_LOGICAL_CORES = "CPU Logical Cores";
 
     /**
      * Number of CPU physical cores
      */
-    public final static String PROPERTY_CPU_PHYSICAL_CORES = "cpu_physicalCores";
+    public final static String PROPERTY_CPU_PHYSICAL_CORES = "CPU Physical Cores";
 
     /**
      * Contains information about the family /Windows, Linux, OS X etc/ of the operation system
      */
-    public final static String PROPERTY_OS_FAMILY = "os_family";
+    public final static String PROPERTY_OS_FAMILY = "OS Family";
 
     /**
      * Name of the manufacturer of the operation system
      */
-    public final static String PROPERTY_OS_MANUFACTURER = "os_manufacturer";
+    public final static String PROPERTY_OS_MANUFACTURER = "OS Manufacturer";
 
     /**
      * Version of the operation system
      */
-    public final static String PROPERTY_OS_VERSION = "os_version";
+    public final static String PROPERTY_OS_VERSION = "OS Version";
 
     // List of all Channel IDs
 
@@ -236,14 +236,14 @@ public class SysteminfoBindingConstants {
     public final static String CHANNEL_NETWORK_DATA_RECEIVED = "network#dataReceived";
 
     /**
-     * Network packages sent
+     * Network packets sent
      */
-    public final static String CHANNEL_NETWORK_PACKAGES_SENT = "network#packagesSent";
+    public final static String CHANNEL_NETWORK_PACKETS_SENT = "network#packetsSent";
 
     /**
-     * Network packages received
+     * Network packets received
      */
-    public final static String CHANNEL_NETWORK_PACKAGES_RECEIVED = "network#packagesReceived";
+    public final static String CHANNEL_NETWORK_PACKETS_RECEIVED = "network#packetsReceived";
 
     /**
      * Network name

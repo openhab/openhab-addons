@@ -39,15 +39,20 @@ import oshi.util.EdidUtil;
  */
 public class OshiSysteminfo implements SysteminfoInterface {
 
+    HardwareAbstractionLayer hal;
+
+    // Dynamic objects (may be queried repeatedly)
+    private GlobalMemory memory;
+    private CentralProcessor cpu;
+    private Sensors sensors;
+
+    // Static objects, should be recreated on each request
     private OperatingSystem operatingSystem;
     private NetworkIF[] networks;
     private Display[] displays;
     private OSFileStore[] fileStores;
-    private GlobalMemory memory;
     private PowerSource[] powerSources;
-    private CentralProcessor cpu;
     private HWDiskStore[] drives;
-    private Sensors sensors;
 
     public final static int PRECISION_AFTER_DECIMAl_SIGN = 1;
 
@@ -57,14 +62,23 @@ public class OshiSysteminfo implements SysteminfoInterface {
      */
     public OshiSysteminfo() {
         SystemInfo systemInfo = new SystemInfo();
-        HardwareAbstractionLayer hal = systemInfo.getHardware();
-        operatingSystem = systemInfo.getOperatingSystem();
-        displays = hal.getDisplays();
-        fileStores = operatingSystem.getFileSystem().getFileStores();
+        hal = systemInfo.getHardware();
+
+        // Doesn't need regular update, they may be queried repeatedly
         memory = hal.getMemory();
-        powerSources = hal.getPowerSources();
         cpu = hal.getProcessor();
         sensors = hal.getSensors();
+
+        operatingSystem = systemInfo.getOperatingSystem();
+        displays = hal.getDisplays();
+
+        updateStaticObjects();
+    }
+
+    public void updateStaticObjects() {
+        // In OSHI 4.0.0. it is planed to change this mechanism - see https://github.com/oshi/oshi/issues/310
+        fileStores = operatingSystem.getFileSystem().getFileStores();
+        powerSources = hal.getPowerSources();
         networks = hal.getNetworkIFs();
         drives = hal.getDiskStores();
     }
@@ -265,21 +279,21 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public DecimalType getSensorsCpuTemperature() {
         BigDecimal cpuTemp = new BigDecimal(sensors.getCpuTemperature());
         cpuTemp = cpuTemp.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
-        return new DecimalType(cpuTemp);
+        return cpuTemp.signum() == 1 ? new DecimalType(cpuTemp) : null;
     }
 
     @Override
     public DecimalType getSensorsCpuVoltage() {
         BigDecimal cpuVoltage = new BigDecimal(sensors.getCpuVoltage());
         cpuVoltage = cpuVoltage.setScale(PRECISION_AFTER_DECIMAl_SIGN, BigDecimal.ROUND_HALF_UP);
-        return new DecimalType(cpuVoltage);
+        return cpuVoltage.signum() == 1 ? new DecimalType(cpuVoltage) : null;
     }
 
     @Override
     public DecimalType getSensorsFanSpeed(int index) throws DeviceNotFoundException {
         int[] fanSpeeds = sensors.getFanSpeeds();
         int speed = (int) getDevice(ArrayUtils.toObject(fanSpeeds), index);
-        return new DecimalType(speed);
+        return speed > 0 ? new DecimalType(speed) : null;
     }
 
     @Override
@@ -287,12 +301,8 @@ public class OshiSysteminfo implements SysteminfoInterface {
         PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
         double remainingTimeInSeconds = powerSource.getTimeRemaining();
         // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited.
-        // In this case we will set the result value to 999
-        BigDecimal remainingTime = new BigDecimal(999);
-        if (remainingTimeInSeconds > 0) {
-            remainingTime = getTimeInMinutes(remainingTimeInSeconds);
-        }
-        return new DecimalType(remainingTime);
+        BigDecimal remainingTime = getTimeInMinutes(remainingTimeInSeconds);
+        return remainingTime.signum() == 1 ? new DecimalType(remainingTime) : null;
     }
 
     @Override
@@ -318,10 +328,10 @@ public class OshiSysteminfo implements SysteminfoInterface {
         if (totalMemory > 0) {
             double freePercentDecimal = (double) availableMemory / (double) totalMemory;
             freePercent = getPercentsValue(freePercentDecimal);
+            return new DecimalType(freePercent);
         } else {
-            freePercent = new BigDecimal(0);
+            return null;
         }
-        return new DecimalType(freePercent);
     }
 
     @Override
@@ -349,7 +359,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public DecimalType getSwapTotal() {
         long swapTotal = memory.getSwapTotal();
         swapTotal = getSizeInMB(swapTotal);
-        return new DecimalType(swapTotal);
+        return swapTotal > 0 ? new DecimalType(swapTotal) : null;
     }
 
     @Override
@@ -358,14 +368,14 @@ public class OshiSysteminfo implements SysteminfoInterface {
         long swapUsed = memory.getSwapUsed();
         long swapAvaialble = swapTotal - swapUsed;
         swapAvaialble = getSizeInMB(swapAvaialble);
-        return new DecimalType(swapAvaialble);
+        return swapAvaialble > 0 ? new DecimalType(swapAvaialble) : null;
     }
 
     @Override
     public DecimalType getSwapUsed() {
         long swapTotal = memory.getSwapUsed();
         swapTotal = getSizeInMB(swapTotal);
-        return new DecimalType(swapTotal);
+        return swapTotal > 0 ? new DecimalType(swapTotal) : null;
     }
 
     @Override
@@ -377,11 +387,10 @@ public class OshiSysteminfo implements SysteminfoInterface {
         if (totalSwap > 0) {
             double freePercentDecimal = (double) freeSwap / (double) totalSwap;
             freePercent = getPercentsValue(freePercentDecimal);
+            return new DecimalType(freePercent);
         } else {
-            freePercent = new BigDecimal(0);
+            return null;
         }
-
-        return new DecimalType(freePercent);
     }
 
     private long getSizeInMB(long sizeInBytes) {
@@ -407,7 +416,8 @@ public class OshiSysteminfo implements SysteminfoInterface {
      */
     @Override
     public DecimalType getCpuLoad1() {
-        return new DecimalType(getAvarageCpuLoad(1));
+        BigDecimal avarageCpuLoad = getAvarageCpuLoad(1);
+        return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
     }
 
     /**
@@ -417,7 +427,8 @@ public class OshiSysteminfo implements SysteminfoInterface {
      */
     @Override
     public DecimalType getCpuLoad5() {
-        return new DecimalType(getAvarageCpuLoad(5));
+        BigDecimal avarageCpuLoad = getAvarageCpuLoad(5);
+        return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
     }
 
     /**
@@ -427,7 +438,8 @@ public class OshiSysteminfo implements SysteminfoInterface {
      */
     @Override
     public DecimalType getCpuLoad15() {
-        return new DecimalType(getAvarageCpuLoad(15));
+        BigDecimal avarageCpuLoad = getAvarageCpuLoad(15);
+        return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
     }
 
     private BigDecimal getAvarageCpuLoad(int timeInMunutes) {
@@ -472,7 +484,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getNetworkPackageReceived(int networkIndex) throws DeviceNotFoundException {
+    public DecimalType getNetworkPacketsReceived(int networkIndex) throws DeviceNotFoundException {
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
         network.updateNetworkStats();
         long packRecv = network.getPacketsRecv();
@@ -480,7 +492,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getNetworkPackageSent(int networkIndex) throws DeviceNotFoundException {
+    public DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException {
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
         network.updateNetworkStats();
         long packSent = network.getPacketsSent();

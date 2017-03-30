@@ -24,6 +24,7 @@ Import-Package: groovy.json,
  org.junit.experimental.categories,
  org.openhab.binding.systeminfo.test,
  org.osgi.framework,
+ org.osgi.service.component,
  org.slf4j,
  org.eclipse.smarthome.config.discovery.inbox
 Export-Package: org.openhab.binding.systeminfo.test
