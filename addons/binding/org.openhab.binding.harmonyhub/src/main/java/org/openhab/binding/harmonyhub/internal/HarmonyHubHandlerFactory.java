@@ -46,7 +46,7 @@ import com.google.common.collect.Sets;
  */
 public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory implements ChannelTypeProvider {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(HarmonyHubHandler.SUPPORTED_THING_TYPES_UIDS, HarmonyDeviceHandler.SUPPORTED_THING_TYPES_UIDS);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();

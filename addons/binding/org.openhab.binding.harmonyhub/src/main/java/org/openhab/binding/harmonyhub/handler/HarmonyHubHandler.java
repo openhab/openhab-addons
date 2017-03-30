@@ -64,7 +64,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     private Logger logger = LoggerFactory.getLogger(HarmonyHubHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_HUB_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_HUB_THING_TYPE);
 
     // one minute should be plenty short, but not overwhelm the hub with requests
     private static final long CONFIG_CACHE_TIME = 60 * 1000;

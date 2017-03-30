@@ -38,8 +38,8 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
         implements SqueezeBoxPlayerEventListener {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerDiscoveryParticipant.class);
 
-    private final static int TIMEOUT = 60;
-    private final static int TTL = 60;
+    private static final int TIMEOUT = 60;
+    private static final int TTL = 60;
 
     private SqueezeBoxServerHandler squeezeBoxServerHandler;
     private ScheduledFuture<?> requestPlayerJob;

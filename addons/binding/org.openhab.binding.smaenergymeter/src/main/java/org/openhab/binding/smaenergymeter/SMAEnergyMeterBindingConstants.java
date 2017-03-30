@@ -24,14 +24,14 @@ public class SMAEnergyMeterBindingConstants {
     public static final String BINDING_ID = "smaenergymeter";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_ENERGY_METER = new ThingTypeUID(BINDING_ID, "energymeter");
+    public static final ThingTypeUID THING_TYPE_ENERGY_METER = new ThingTypeUID(BINDING_ID, "energymeter");
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_ENERGY_METER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_ENERGY_METER);
 
     // List of all Channel IDs
-    public final static String CHANNEL_POWER_IN = "powerIn";
-    public final static String CHANNEL_POWER_OUT = "powerOut";
-    public final static String CHANNEL_ENERGY_IN = "energyIn";
-    public final static String CHANNEL_ENERGY_OUT = "energyOut";
+    public static final String CHANNEL_POWER_IN = "powerIn";
+    public static final String CHANNEL_POWER_OUT = "powerOut";
+    public static final String CHANNEL_ENERGY_IN = "energyIn";
+    public static final String CHANNEL_ENERGY_OUT = "energyOut";
 
 }

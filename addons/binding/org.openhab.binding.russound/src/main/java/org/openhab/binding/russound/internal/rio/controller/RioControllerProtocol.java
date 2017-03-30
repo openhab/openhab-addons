@@ -36,9 +36,9 @@ class RioControllerProtocol extends AbstractRioProtocol {
     private final int _controller;
 
     // Protocol constants
-    private final static String CTL_TYPE = "type";
-    private final static String CTL_IPADDRESS = "ipAddress";
-    private final static String CTL_MACADDRESS = "macAddress";
+    private static final String CTL_TYPE = "type";
+    private static final String CTL_IPADDRESS = "ipAddress";
+    private static final String CTL_MACADDRESS = "macAddress";
 
     // Response pattners
     private final Pattern RSP_CONTROLLERNOTIFICATION = Pattern.compile("^[SN] C\\[(\\d+)\\]\\.(\\w+)=\"(.*)\"$");

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DSCAlarmDiscoveryService extends AbstractDiscoveryService {
 
-    private final static Logger logger = LoggerFactory.getLogger(DSCAlarmDiscoveryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DSCAlarmDiscoveryService.class);
 
     /**
      * DSC Alarm Bridge handler.

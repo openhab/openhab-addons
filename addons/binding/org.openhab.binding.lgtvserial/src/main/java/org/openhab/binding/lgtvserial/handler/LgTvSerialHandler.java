@@ -36,7 +36,7 @@ import gnu.io.NRSerialPort;
 public class LgTvSerialHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(LgTvSerialHandler.class);
-    private final static int BAUD = 9600;
+    private static final int BAUD = 9600;
     private NRSerialPort serialPort;
     private OutputStreamWriter output;
     private String portName;

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  */
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DAVIS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DAVIS);
 
     private Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 

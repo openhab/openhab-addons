@@ -45,14 +45,14 @@ import org.slf4j.LoggerFactory;
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";
-    private final static int SEARCH_TIME = 15;
+    private static final int SEARCH_TIME = 15;
 
     private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeDiscovery.class);
 
     static boolean discoveryRunning = false;
 
     /** The refresh interval for discovery of MAX! Cubes */
-    private final static long SEARCH_INTERVAL = 600;
+    private static final long SEARCH_INTERVAL = 600;
     private ScheduledFuture<?> cubeDiscoveryJob;
     private Runnable cubeDiscoveryRunnable = new Runnable() {
         @Override

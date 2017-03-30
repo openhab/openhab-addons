@@ -35,9 +35,9 @@ class RioSystemProtocol extends AbstractRioProtocol {
     private Logger logger = LoggerFactory.getLogger(RioSystemProtocol.class);
 
     // Protocol Constants
-    private final static String SYS_VERSION = "VERSION"; // 12 max
-    private final static String SYS_STATUS = "status"; // 12 max
-    private final static String SYS_LANG = "language"; // 12 max
+    private static final String SYS_VERSION = "VERSION"; // 12 max
+    private static final String SYS_STATUS = "status"; // 12 max
+    private static final String SYS_LANG = "language"; // 12 max
 
     // Response patterns
     private final Pattern RSP_VERSION = Pattern.compile("^S VERSION=\"(.+)\"$");
@@ -48,7 +48,7 @@ class RioSystemProtocol extends AbstractRioProtocol {
      * This represents our ping command. There is no ping command in the protocol so we simply send an empty command to
      * keep things alive (and not generate any errors)
      */
-    private final static String CMD_PING = "";
+    private static final String CMD_PING = "";
 
     /**
      * Constructs the protocol handler from given parameters

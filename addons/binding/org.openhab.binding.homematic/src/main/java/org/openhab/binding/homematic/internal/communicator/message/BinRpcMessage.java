@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class BinRpcMessage implements RpcRequest, RpcResponse {
-    private final static Logger logger = LoggerFactory.getLogger(BinRpcMessage.class);
+    private static final Logger logger = LoggerFactory.getLogger(BinRpcMessage.class);
 
     public enum TYPE {
         REQUEST,

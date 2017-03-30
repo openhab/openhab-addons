@@ -33,7 +33,7 @@ public class OceanicBindingConstants {
     public static final String BINDING_ID = "oceanic";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SOFTENER = new ThingTypeUID(BINDING_ID, "softener");
+    public static final ThingTypeUID THING_TYPE_SOFTENER = new ThingTypeUID(BINDING_ID, "softener");
 
     // List of all Channel ids
     public enum OceanicChannelSelector {

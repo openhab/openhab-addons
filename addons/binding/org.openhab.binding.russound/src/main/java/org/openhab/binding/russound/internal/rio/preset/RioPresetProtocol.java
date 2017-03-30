@@ -63,8 +63,8 @@ class RioPresetProtocol extends AbstractRioProtocol {
     private String _name;
 
     // Protocol constants
-    private final static String PRESET_NAME = "name";
-    private final static String PRESET_VALID = "valid";
+    private static final String PRESET_NAME = "name";
+    private static final String PRESET_VALID = "valid";
 
     // Response patterns
     private final Pattern RSP_PRESETNOTIFICATION = Pattern

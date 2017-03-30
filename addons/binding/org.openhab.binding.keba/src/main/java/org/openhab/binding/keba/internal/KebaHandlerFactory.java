@@ -27,7 +27,7 @@ import org.openhab.binding.keba.handler.KeContactP20Handler;
  */
 public class KebaHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KECONTACTP20);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KECONTACTP20);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

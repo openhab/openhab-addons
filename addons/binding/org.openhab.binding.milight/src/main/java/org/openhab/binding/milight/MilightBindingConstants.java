@@ -25,30 +25,30 @@ public class MilightBindingConstants {
     public static final String BINDING_ID = "milight";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID BRIDGEV3_THING_TYPE = new ThingTypeUID(BINDING_ID, "bridgeV3");
+    public static final ThingTypeUID BRIDGEV3_THING_TYPE = new ThingTypeUID(BINDING_ID, "bridgeV3");
     public final static ThingTypeUID BRIDGEV6_THING_TYPE = new ThingTypeUID(BINDING_ID, "bridgeV6");
 
-    public final static ThingTypeUID RGB_THING_TYPE = new ThingTypeUID(BINDING_ID, "rgbLed");
+    public static final ThingTypeUID RGB_THING_TYPE = new ThingTypeUID(BINDING_ID, "rgbLed");
     public final static ThingTypeUID RGB_V2_THING_TYPE = new ThingTypeUID(BINDING_ID, "rgbv2Led");
     public final static ThingTypeUID RGB_IBOX_THING_TYPE = new ThingTypeUID(BINDING_ID, "rgbiboxLed");
     public final static ThingTypeUID RGB_CW_WW_THING_TYPE = new ThingTypeUID(BINDING_ID, "rgbwwLed");
     public final static ThingTypeUID RGB_W_THING_TYPE = new ThingTypeUID(BINDING_ID, "rgbwLed");
-    public final static ThingTypeUID WHITE_THING_TYPE = new ThingTypeUID(BINDING_ID, "whiteLed");
+    public static final ThingTypeUID WHITE_THING_TYPE = new ThingTypeUID(BINDING_ID, "whiteLed");
 
-    public final static Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Sets.newHashSet(BRIDGEV3_THING_TYPE,
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Sets.newHashSet(BRIDGEV3_THING_TYPE,
             BRIDGEV6_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(RGB_V2_THING_TYPE,
             RGB_THING_TYPE, WHITE_THING_TYPE, RGB_W_THING_TYPE, RGB_CW_WW_THING_TYPE, RGB_IBOX_THING_TYPE);
 
     // List of all Channel ids
-    public final static String CHANNEL_COLOR = "ledcolor";
-    public final static String CHANNEL_NIGHTMODE = "lednightmode";
-    public final static String CHANNEL_WHITEMODE = "ledwhitemode";
+    public static final String CHANNEL_COLOR = "ledcolor";
+    public static final String CHANNEL_NIGHTMODE = "lednightmode";
+    public static final String CHANNEL_WHITEMODE = "ledwhitemode";
     public final static String CHANNEL_BRIGHTNESS = "ledbrightness";
-    public final static String CHANNEL_SATURATION = "ledsaturation";
+    public static final String CHANNEL_SATURATION = "ledsaturation";
     public final static String CHANNEL_TEMP = "ledtemperature";
-    public final static String CHANNEL_SPEED_REL = "animation_speed_relative";
-    public final static String CHANNEL_ANIMATION_MODE = "animation_mode";
+    public static final String CHANNEL_SPEED_REL = "animation_speed_relative";
+    public static final String CHANNEL_ANIMATION_MODE = "animation_mode";
     public final static String CHANNEL_ANIMATION_MODE_REL = "animation_mode_relative";
     public final static String CHANNEL_LINKLED = "ledlink";
     public final static String CHANNEL_UNLINKLED = "ledunlink";

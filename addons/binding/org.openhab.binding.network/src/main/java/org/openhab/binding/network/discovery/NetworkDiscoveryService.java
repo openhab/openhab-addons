@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class NetworkDiscoveryService extends AbstractDiscoveryService implements DiscoveryCallback {
     private final Logger logger = LoggerFactory.getLogger(NetworkDiscoveryService.class);
     private ExecutorService executorService = null;
-    final static int PING_TIMEOUT_IN_MS = 500;
+    static final int PING_TIMEOUT_IN_MS = 500;
     private int scanningNetworkSize = 0;
 
     public NetworkDiscoveryService() {

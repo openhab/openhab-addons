@@ -72,7 +72,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  */
 public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCallbacks {
 
-    public final static ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_BRIDGE;
+    public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_BRIDGE;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
