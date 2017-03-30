@@ -29,8 +29,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.kodi.internal.KodiEventListener;
-import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
+import org.openhab.binding.kodi.internal.jobs.KodiStatusUpdaterRunnable;
+import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +43,13 @@ import org.slf4j.LoggerFactory;
  */
 public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(KodiHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KodiHandler.class);
 
     private final KodiConnection connection;
 
     private ScheduledFuture<?> connectionCheckerFuture;
+
+    private ScheduledFuture<?> statusUpdaterFuture;
 
     public KodiHandler(Thing thing) {
         super(thing);
@@ -58,6 +61,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         super.dispose();
         if (connectionCheckerFuture != null) {
             connectionCheckerFuture.cancel(true);
+        }
+        if (statusUpdaterFuture != null) {
+            statusUpdaterFuture.cancel(true);
         }
         if (connection != null) {
             connection.close();
@@ -222,7 +228,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             }
             break;
         default:
-            logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
+            LOGGER.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
             break;
         }
 
@@ -239,10 +245,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             if (channelid > 0) {
                 connection.playPVR(channelid);
             } else {
-                logger.warn("Received unknown PVR channel {}", command.toString());
+                LOGGER.warn("Received unknown PVR channel {}", command.toString());
             }
         } else {
-            logger.warn("Received unknown PVR channel group {}", config.getGroup());
+            LOGGER.warn("Received unknown PVR channel group {}", config.getGroup());
         }
     }
 
@@ -277,16 +283,21 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                                 updateStatus(ThingStatus.OFFLINE);
                             }
                         } catch (Exception ex) {
-                            logger.warn("Exception in check connection to @{}. Cause: {}",
+                            LOGGER.warn("Exception in check connection to @{}. Cause: {}",
                                     connection.getConnectionName(), ex.getMessage());
 
                         }
                     }
                 };
                 connectionCheckerFuture = scheduler.scheduleWithFixedDelay(connectionChecker, 1, 10, TimeUnit.SECONDS);
+
+                // Start the status updater
+                Runnable statusUpdater = new KodiStatusUpdaterRunnable(connection);
+                statusUpdaterFuture = scheduler.scheduleWithFixedDelay(statusUpdater, 1, 10, TimeUnit.SECONDS);
+
             }
         } catch (Exception e) {
-            logger.debug("error during opening connection: {}", e.getMessage());
+            LOGGER.debug("error during opening connection: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -299,7 +310,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
             } catch (Exception e) {
-                logger.error("error during reading version: {}", e.getMessage());
+                LOGGER.error("error during reading version: {}", e.getMessage());
             }
         } else {
             updateStatus(ThingStatus.OFFLINE);
