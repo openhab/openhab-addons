@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @Component(immediate = true)
 public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant {
-
     private static final String SERVICE_TYPE = "_googlecast._tcp.local.";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -49,7 +48,6 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
-
         final ThingUID uid = getThingUID(service);
         if (uid == null) {
             return null;

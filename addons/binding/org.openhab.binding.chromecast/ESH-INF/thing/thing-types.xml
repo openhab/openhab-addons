@@ -14,11 +14,43 @@
             <channel id="volume" typeId="volume"/>
             <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
+
+            <!-- App Information -->
+            <channel id="appName" typeId="appName"/>
+            <channel id="appId" typeId="appId"/>
+            <channel id="idling" typeId="idling"/>
+            <channel id="statustext" typeId="statustext"/>
+
+            <!-- Media Info -->
+            <channel id="currentTime" typeId="currentTime"/>
+            <channel id="duration" typeId="duration"/>
+
+            <!-- Metadata Info -->
+            <channel id="metadataType" typeId="metadataType"/>
+            <channel id="albumArtist" typeId="albumArtist"/>
+            <channel id="albumName" typeId="albumName"/>
+            <channel id="artist" typeId="artist"/>
+            <channel id="broadcastDate" typeId="broadcastDate"/>
+            <channel id="composer" typeId="composer"/>
+            <channel id="creationDate" typeId="creationDate"/>
+            <channel id="discNumber" typeId="discNumber"/>
+            <channel id="episodeNumber" typeId="episodeNumber"/>
+            <channel id="image" typeId="image"/>
+            <channel id="imageSrc" typeId="imageSrc"/>
+            <channel id="locationName" typeId="locationName"/>
+            <channel id="location" typeId="location"/>
+            <channel id="releaseDate" typeId="releaseDate"/>
+            <channel id="seasonNumber" typeId="seasonNumber"/>
+            <channel id="seriesTitle" typeId="seriesTitle"/>
+            <channel id="studio" typeId="studio"/>
+            <channel id="subtitle" typeId="subtitle"/>
+            <channel id="title" typeId="title"/>
+            <channel id="trackNumber" typeId="trackNumber"/>
         </channels>
 
         <config-description-ref uri="thing-type:chromecast:device" />
     </thing-type>
-    
+
     <!-- Chromecast Audio Thing Type -->
     <thing-type id="audio">
         <label>Chromecast Audio</label>
@@ -29,6 +61,38 @@
             <channel id="volume" typeId="volume"/>
             <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
+
+            <!-- App Information -->
+            <channel id="appName" typeId="appName"/>
+            <channel id="appId" typeId="appId"/>
+            <channel id="idling" typeId="idling"/>
+            <channel id="statustext" typeId="statustext"/>
+
+            <!-- Media Info -->
+            <channel id="currentTime" typeId="currentTime"/>
+            <channel id="duration" typeId="duration"/>
+
+            <!-- Metadata Info -->
+            <channel id="metadataType" typeId="metadataType"/>
+            <channel id="albumArtist" typeId="albumArtist"/>
+            <channel id="albumName" typeId="albumName"/>
+            <channel id="artist" typeId="artist"/>
+            <channel id="broadcastDate" typeId="broadcastDate"/>
+            <channel id="composer" typeId="composer"/>
+            <channel id="creationDate" typeId="creationDate"/>
+            <channel id="discNumber" typeId="discNumber"/>
+            <channel id="episodeNumber" typeId="episodeNumber"/>
+            <channel id="image" typeId="image"/>
+            <channel id="imageSrc" typeId="imageSrc"/>
+            <channel id="locationName" typeId="locationName"/>
+            <channel id="location" typeId="location"/>
+            <channel id="releaseDate" typeId="releaseDate"/>
+            <channel id="seasonNumber" typeId="seasonNumber"/>
+            <channel id="seriesTitle" typeId="seriesTitle"/>
+            <channel id="studio" typeId="studio"/>
+            <channel id="subtitle" typeId="subtitle"/>
+            <channel id="title" typeId="title"/>
+            <channel id="trackNumber" typeId="trackNumber"/>
         </channels>
 
         <config-description-ref uri="thing-type:chromecast:device" />
@@ -44,10 +108,48 @@
             <channel id="volume" typeId="volume"/>
             <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
+
+            <!-- App Information -->
+            <channel id="appName" typeId="appName"/>
+            <channel id="appId" typeId="appId"/>
+            <channel id="idling" typeId="idling"/>
+            <channel id="statustext" typeId="statustext"/>
+
+            <!-- Media Info -->
+            <channel id="currentTime" typeId="currentTime"/>
+            <channel id="duration" typeId="duration"/>
+
+            <!-- Metadata Info -->
+            <channel id="metadataType" typeId="metadataType"/>
+            <channel id="albumArtist" typeId="albumArtist"/>
+            <channel id="albumName" typeId="albumName"/>
+            <channel id="artist" typeId="artist"/>
+            <channel id="broadcastDate" typeId="broadcastDate"/>
+            <channel id="composer" typeId="composer"/>
+            <channel id="creationDate" typeId="creationDate"/>
+            <channel id="discNumber" typeId="discNumber"/>
+            <channel id="episodeNumber" typeId="episodeNumber"/>
+            <channel id="image" typeId="image"/>
+            <channel id="imageSrc" typeId="imageSrc"/>
+            <channel id="locationName" typeId="locationName"/>
+            <channel id="location" typeId="location"/>
+            <channel id="releaseDate" typeId="releaseDate"/>
+            <channel id="seasonNumber" typeId="seasonNumber"/>
+            <channel id="seriesTitle" typeId="seriesTitle"/>
+            <channel id="studio" typeId="studio"/>
+            <channel id="subtitle" typeId="subtitle"/>
+            <channel id="title" typeId="title"/>
+            <channel id="trackNumber" typeId="trackNumber"/>
         </channels>
 
         <config-description-ref uri="thing-type:chromecast:device" />
     </thing-type>
+
+    <channel-type id="control">
+        <item-type>Player</item-type>
+        <label>Control</label>
+        <description>Player control</description>
+    </channel-type>
 
     <channel-type id="volume">
         <item-type>Dimmer</item-type>
@@ -68,10 +170,196 @@
         <description>Plays a given URI</description>
     </channel-type>
 
-    <channel-type id="control">
-        <item-type>Player</item-type>
-        <label>Control</label>
-        <description>Player control</description>
+    <!--App Information -->
+    <channel-type id="idling" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Idling</label>
+        <description>Is Chromecast active or idling</description>
+        <state readOnly="true"/>
     </channel-type>
 
+    <channel-type id="appName" advanced="true">
+        <item-type>String</item-type>
+        <label>App</label>
+        <description>Name of the currently running application</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="appId" advanced="true">
+        <item-type>String</item-type>
+        <label>App Id</label>
+        <description>Id of the currently running application</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="statustext" advanced="true">
+        <item-type>String</item-type>
+        <label>App Status</label>
+        <description>Status reported by the current application</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <!-- Media Information -->
+    <channel-type id="currentTime" advanced="true">
+        <item-type>Number</item-type>
+        <label>Current Time</label>
+        <description>Current time (in seconds) of currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="duration" advanced="true">
+        <item-type>Number</item-type>
+        <label>Duration</label>
+        <description>Length of currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <!-- Metadata Information -->
+    <channel-type id="metadataType" advanced="true">
+        <item-type>String</item-type>
+        <label>Media Type</label>
+        <description>The type of the currently playing media. One of GENERIC, MOVIE, TV_SHOW, AUDIO_TRACK, PHOTO</description>
+        <state readOnly="true">
+            <options>
+                <option value="GENERIC"/>
+                <option value="MOVIE"/>
+                <option value="TV_SHOW"/>
+                <option value="AUDIO_TRACK"/>
+                <option value="PHOTO"/>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="albumArtist" advanced="true">
+        <item-type>String</item-type>
+        <label>Album Artist</label>
+        <description>The name of the album's artist</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="albumName" advanced="true">
+        <item-type>String</item-type>
+        <label>Album Name</label>
+        <description>The name of the album</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="artist" advanced="true">
+        <item-type>String</item-type>
+        <label>Artist</label>
+        <description>The name of the artist</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="broadcastDate" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Broadcast Date</label>
+        <description>The broadcast date of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="composer" advanced="true">
+        <item-type>String</item-type>
+        <label>Composer</label>
+        <description>The composer of the current track</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="creationDate" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Creation Date</label>
+        <description>The creation date of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="discNumber" advanced="true">
+        <item-type>Number</item-type>
+        <label>Disc Number</label>
+        <description>The disc number of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="episodeNumber" advanced="true">
+        <item-type>Number</item-type>
+        <label>Episode Number</label>
+        <description>The episode number of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="imageSrc" advanced="true">
+        <item-type>String</item-type>
+        <label>Image URL</label>
+        <description>The image URL that represents this media. Normally cover-art or scene from a movie</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="image" advanced="true">
+        <item-type>Image</item-type>
+        <label>Image</label>
+        <description>The image that represents this media. Normally cover-art or scene from a movie</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="locationName" advanced="true">
+        <item-type>String</item-type>
+        <label>Location Name</label>
+        <description>The location of where the current media was taken</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="location" advanced="true">
+        <item-type>Location</item-type>
+        <label>Location</label>
+        <description>The location of where the current media was taken</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="releaseDate" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Release Date</label>
+        <description>The release date of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="seasonNumber" advanced="true">
+        <item-type>Number</item-type>
+        <label>Season Number</label>
+        <description>The season number of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="seriesTitle" advanced="true">
+        <item-type>String</item-type>
+        <label>Series Title</label>
+        <description>The series title of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="studio" advanced="true">
+        <item-type>String</item-type>
+        <label>Studio</label>
+        <description>The studio of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="subtitle" advanced="true">
+        <item-type>String</item-type>
+        <label>Subtitle</label>
+        <description>The subtitle of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="title" advanced="true">
+        <item-type>String</item-type>
+        <label>Title</label>
+        <description>The title of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="trackNumber" advanced="true">
+        <item-type>Number</item-type>
+        <label>Track Number</label>
+        <description>The track number of the currently playing media</description>
+        <state readOnly="true"/>
+    </channel-type>
 </thing:thing-descriptions>
