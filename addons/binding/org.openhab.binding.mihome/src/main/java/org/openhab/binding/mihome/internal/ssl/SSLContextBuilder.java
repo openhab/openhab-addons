@@ -42,7 +42,7 @@ public class SSLContextBuilder {
     private static final String JKS_KEYSTORE_TYPE = "JKS";
     private static final String SSL_PROTOCOL = "SSL";
 
-    private static Logger logger = LoggerFactory.getLogger(SSLContextBuilder.class);
+    private final Logger logger = LoggerFactory.getLogger(SSLContextBuilder.class);
 
     private BundleContext bundleContext;
     private TrustManager[] trustedManagers;
@@ -96,21 +96,22 @@ public class SSLContextBuilder {
      */
     public SSLContextBuilder withTrustManagers(String directory, String keyStoreName, String keyStorePass) {
         URL url = getFileURL(bundleContext, directory, keyStoreName);
+        if (url != null) {
+            try {
+                KeyStore keyStore = KeyStore.getInstance(JKS_KEYSTORE_TYPE);
+                InputStream is = url.openStream();
+                keyStore.load(is, keyStorePass.toCharArray());
+                is.close();
 
-        try {
-            KeyStore keyStore = KeyStore.getInstance(JKS_KEYSTORE_TYPE);
-            InputStream is = url.openStream();
-            keyStore.load(is, keyStorePass.toCharArray());
-            is.close();
+                TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                        .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                trustManagerFactory.init(keyStore);
 
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory
-                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(keyStore);
-
-            this.trustedManagers = trustManagerFactory.getTrustManagers();
-            logger.info("KeyStore {} loaded from directory {}", keyStoreName, directory);
-        } catch (Exception e) {
-            logger.warn("Error occured while loading keys store {} : {}", keyStoreName, e);
+                this.trustedManagers = trustManagerFactory.getTrustManagers();
+                logger.info("KeyStore {} loaded from directory {}", keyStoreName, directory);
+            } catch (Exception e) {
+                logger.error("Error occured while loading keys store {} : ", keyStoreName, e);
+            }
         }
         return this;
     }
@@ -126,22 +127,23 @@ public class SSLContextBuilder {
      */
     public SSLContextBuilder withKeyManagers(String directory, String keyStoreName, String keyStorePass) {
         URL url = getFileURL(bundleContext, directory, keyStoreName);
+        if (url != null) {
+            try {
+                KeyStore keyStore = KeyStore.getInstance(JKS_KEYSTORE_TYPE);
+                InputStream is = url.openStream();
+                keyStore.load(is, keyStorePass.toCharArray());
+                is.close();
 
-        try {
-            KeyStore keyStore = KeyStore.getInstance(JKS_KEYSTORE_TYPE);
-            InputStream is = url.openStream();
-            keyStore.load(is, keyStorePass.toCharArray());
-            is.close();
+                KeyManagerFactory keyManagerFactory = KeyManagerFactory
+                        .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                keyManagerFactory.init(keyStore, keyStorePass.toCharArray());
+                this.keyManagers = keyManagerFactory.getKeyManagers();
+                logger.info("KeyStore {} loaded from directory {}", keyStoreName, directory);
+            } catch (Exception e) {
+                logger.error("Error occured while loading keys from store {} : ", keyStoreName, e);
+            }
 
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory
-                    .getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(keyStore, keyStorePass.toCharArray());
-            this.keyManagers = keyManagerFactory.getKeyManagers();
-            logger.info("KeyStore {} loaded from directory {}", keyStoreName, directory);
-        } catch (Exception e) {
-            logger.warn("Error occured while loading keys from store {} : {}", keyStoreName, e);
         }
-
         return this;
     }
 
@@ -160,27 +162,29 @@ public class SSLContextBuilder {
      */
     public SSLContextBuilder withTrustedCertificate(String directory, String certificateName) {
         URL url = getFileURL(bundleContext, directory, certificateName);
+        if (url != null) {
+            try {
+                // The keystore has to be initialized before adding the certificate, otherwise exception will be thrown
+                KeyStore keyStore = KeyStore.getInstance(JKS_KEYSTORE_TYPE);
+                // It is valid to call load(null) it actually creates new InputStream and initializes the KeyStore with
+                // it
+                keyStore.load(null);
 
-        try {
-            // The keystore has to be initialized before adding the certificate, otherwise exception will be thrown
-            KeyStore keyStore = KeyStore.getInstance(JKS_KEYSTORE_TYPE);
-            // It is valid to call load(null) it actually creates new InputStream and initializes the KeyStore with it
-            keyStore.load(null);
+                InputStream is = url.openStream();
+                CertificateFactory factory = CertificateFactory.getInstance(X_509_CERTIFICATE);
+                X509Certificate certificate = (X509Certificate) factory.generateCertificate(is);
+                keyStore.setCertificateEntry("mihome", certificate);
+                is.close();
 
-            InputStream is = url.openStream();
-            CertificateFactory factory = CertificateFactory.getInstance(X_509_CERTIFICATE);
-            X509Certificate certificate = (X509Certificate) factory.generateCertificate(is);
-            keyStore.setCertificateEntry("mihome", certificate);
-            is.close();
+                TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                        .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                trustManagerFactory.init(keyStore);
 
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory
-                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(keyStore);
-
-            this.trustedManagers = trustManagerFactory.getTrustManagers();
-            logger.info("Certificate {} loaded from directory {}", certificateName, directory);
-        } catch (Exception e) {
-            logger.warn("Error occured while loading certificate {} : {}", certificateName, e);
+                this.trustedManagers = trustManagerFactory.getTrustManagers();
+                logger.info("Certificate {} loaded from directory {}", certificateName, directory);
+            } catch (Exception e) {
+                logger.error("Error occured while loading certificate {} : ", certificateName, e);
+            }
         }
         return this;
     }
@@ -191,11 +195,11 @@ public class SSLContextBuilder {
         if (certURLsEnum != null) {
             List<URL> certURLs = Collections.list(certURLsEnum);
             if (certURLs.size() == 1) {
-                URL url = certURLs.get(0);
-                return url;
+                return certURLs.get(0);
             }
         }
 
+        logger.warn("File {}/{} not found in bundle {}", directory, file, bundleContext.getBundle().getSymbolicName());
         return null;
     }
 }

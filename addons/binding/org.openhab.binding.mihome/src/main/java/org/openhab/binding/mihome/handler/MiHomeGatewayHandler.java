@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -30,6 +31,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingStatusInfoBuilder;
@@ -63,13 +65,39 @@ import com.google.gson.JsonObject;
  */
 public class MiHomeGatewayHandler extends BaseBridgeHandler {
 
+    // Warning messages used when some unexpected behavior is encountered
+    private static final String UNREGISTERED_GATEWAY_MESSAGE = "The gateway has been unregistered";
+    private static final String ALREADY_REGISTERED_GATEWAY_MESSAGE = "The gateway has already been registered";
+    private static final String NOT_SUCCESSFULL_REGISTRATION_MESSAGE = "Registering new gateway was not successfull";
+    private static final String NOT_ACTIVE_GATEWAY_MESSAGE = "The gateway has not been active in the last two minutes. Please check your connection.";
+    private static final String CHANGING_LABEL_MESSAGE = "Mi|Home REST API does not allow to change gateway's label. Changing the thing's label will not affect the device label.";
+    private static final String INVALID_USER_MESSAGE = "Invalid username. Email address expected.";
+    private static final String INVALID_GATEWAY_CODE_MESSAGE = "Invalid gateway code. 10 capital letters and numbers expected";
+
+    /** Initial refresh delay in seconds */
+    private static final int INITIAL_REFRESH_DELAY_SECONDS = 10;
+
+    /**
+     * The longest allowed inactive time interval (in seconds) of the gateway device.
+     * After that interval, if the gateway is still inactive, the thing goes offline.
+     * If a gateway is active or not is determined by its 'last_seen' property.
+     */
+    private static final int MAXIMUM_INACTIVE_PERIOD_SECONDS = 120;
+
+
+    /** Pattern used to check if a given String represents an email address */
+    public static final String EMAIL_PATTERN = ".+.*@.+.*(\\.[-A-Za-z]{2,})";
+
+    /** Pattern used to check if a given String is valid gateway code */
+    public static final String GATEWAY_CODE_PATTERN = "^[A-Z0-9]{10}$";
+
     /** email address used for the user's registration */
-    private String username;
+    private String registrationEmailAddress;
 
     /** user's password */
     private String password;
 
-    /** Gateway code (10 capital letters) written at the bottom of the gateway device */
+    /** Gateway code (10 capital letters and numbers) written at the bottom of the gateway device */
     private String gatewayCode;
 
     /** ID of the gateway device (received after registration) */
@@ -77,34 +105,6 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
 
     /** Label of the gateway device */
     private String gatewayLabel;
-
-    /** Pattern used to check if a given String represents an email address */
-    public static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
-    /** Pattern used to check if a given String is valid gateway code */
-    public static final String GATEWAY_CODE_PATTERN = "^[A-Z0-9]{10}$";
-
-    // Warning messages used when some unexpected behavior is encountered
-    private static final String UNREGISTERED_GATEWAY = "The gateway has been unregistered";
-    private static final String ALREADY_REGISTERED_GATEWAY = "The gateway has already been registered";
-    private static final String NOT_SUCCESSFULL_REGISTRATION = "Registering new gateway was not successfull";
-    private static final String NOT_ACTIVE_GATEWAY = "The gateway has not been active in the last two minutes. Please check your connection.";
-    private static final String CHANGING_LABEL_MESSAGE = "Mi|Home REST API does not allow to change gateway's label. Changing the thing's label will not affect the device label.";
-    private static final String INVALID_USER_MESSAGE = "Invalid username. Email address expected.";
-    private static final String INVALID_GATEWAY_CODE = "Invalid gateway code. 10 capital letters and numbers expected";
-
-    /**
-     * Initial refresh delay in seconds
-     */
-    private static final int INITIAL_REFRESH_DELAY = 10;
-
-    /**
-     * The longest allowed inactive time interval (in seconds) of the gateway device.
-     * After that interval, if the gateway is still inactive, the thing goes offline.
-     * If a gateway is active or not is determined by its 'last_seen' property.
-     */
-    private static final int MAXIMUM_INACTIVE_PERIOD = 120;
 
     /** Instance of the helper class used for the requests */
     private MiHomeApiManager apiManager;
@@ -119,7 +119,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     private boolean gatewayAlreadyUnregistered;
 
     /** Used for logging */
-    private Logger logger = LoggerFactory.getLogger(MiHomeGatewayHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MiHomeGatewayHandler.class);
 
     public MiHomeGatewayHandler(Bridge bridge) {
         super(bridge);
@@ -148,7 +148,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
                 logger.debug("About to register a new gateway");
                 registerNewGateway();
             } else {
-                logger.warn(ALREADY_REGISTERED_GATEWAY);
+                logger.warn(ALREADY_REGISTERED_GATEWAY_MESSAGE);
                 updateStatus(ThingStatus.REMOVED);
             }
             scheduleUpdateTask(this.updateInterval);
@@ -162,12 +162,13 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
         thingRegistry = (ThingRegistry) bundleContext.getService(ref);
         Collection<Thing> things = thingRegistry.getAll();
         for (Thing registeredThing : things) {
-            ThingUID thingUID = registeredThing.getUID();
-            if (thingUID != null
-                    && registeredThing.getThingTypeUID().equals(MiHomeBindingConstants.THING_TYPE_GATEWAY)) {
+            ThingUID registeredThingUID = registeredThing.getUID();
+            ThingTypeUID registeredThingTypeUID = registeredThing.getThingTypeUID();
+            if (registeredThingTypeUID != null
+                    && registeredThingTypeUID.equals(MiHomeBindingConstants.THING_TYPE_GATEWAY)) {
                 Configuration config = registeredThing.getConfiguration();
                 String code = (String) config.get(MiHomeBindingConstants.CONFIG_GATEWAY_CODE);
-                if (gatewayCode.equals(code) && (!thing.getUID().equals(registeredThing.getUID()))) {
+                if (gatewayCode.equals(code) && (!thing.getUID().equals(registeredThingUID))) {
                     return true;
                 }
             }
@@ -183,7 +184,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
             setProperties(responseData);
             updateStatus(ThingStatus.ONLINE);
         } else {
-            logger.warn(NOT_SUCCESSFULL_REGISTRATION);
+            logger.warn(NOT_SUCCESSFULL_REGISTRATION_MESSAGE);
         }
     }
 
@@ -201,9 +202,10 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
             }
         };
         try {
-            scheduler.scheduleAtFixedRate(refreshRunnable, INITIAL_REFRESH_DELAY, updateInterval, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            logger.error("An error occured while trying to check the gateway : {}", e);
+            scheduler.scheduleAtFixedRate(refreshRunnable, INITIAL_REFRESH_DELAY_SECONDS, updateInterval,
+                    TimeUnit.SECONDS);
+        } catch (RejectedExecutionException | NullPointerException | IllegalArgumentException e) {
+            logger.error("An error occured while trying to check the gateway", e);
         }
     }
 
@@ -212,7 +214,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
      * This method is called periodically by a refresh thread.
      */
     public void checkGateway() {
-        long timeInterval = 0;
+        Long timeInterval = null;
         /*
          * Mi|Home REST API does not provide a method for showing a gateway's information.
          * So in order to check when was the last time it was seen you need to list all
@@ -227,17 +229,22 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
                 String lastSeenString = lastSeenObj.getAsString();
                 String currentDateTimeString = new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN)
                         .format(new Date());
-                timeInterval = getTimeInterval(currentDateTimeString, lastSeenString);
-                if (timeInterval != -1) {
-
+                try {
+                    timeInterval = getTimeInterval(currentDateTimeString, lastSeenString);
+                } catch (ParseException e) {
+                    logger.error("An error occured while trying to get the 'inactive' time interval of the gateway", e);
+                }
+                if (timeInterval != null) {
                     handleCommand(thing.getChannel(MiHomeBindingConstants.CHANNEL_LAST_SEEN).getUID(),
                             DateTimeType.valueOf(lastSeenString));
 
-                    if (timeInterval >= MAXIMUM_INACTIVE_PERIOD && thing.getStatus().equals(ThingStatus.ONLINE)) {
-                        logger.debug(NOT_ACTIVE_GATEWAY);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, NOT_ACTIVE_GATEWAY);
+                    if (timeInterval >= MAXIMUM_INACTIVE_PERIOD_SECONDS
+                            && thing.getStatus().equals(ThingStatus.ONLINE)) {
+                        logger.debug(NOT_ACTIVE_GATEWAY_MESSAGE);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                NOT_ACTIVE_GATEWAY_MESSAGE);
                     } else if (thing.getStatus().equals(ThingStatus.OFFLINE)
-                            && timeInterval < MAXIMUM_INACTIVE_PERIOD) {
+                            && timeInterval < MAXIMUM_INACTIVE_PERIOD_SECONDS) {
                         registerNewGateway();
                     }
                 }
@@ -251,19 +258,15 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
      * @param currentDateTime - current datetime stamp
      * @param previousDateTime - previous datetime stamp
      * @return the time that has elapsed between previousDateTime and currentDateTime (in seconds)
+     * @throws ParseException - if any of the date Strings cannot be parsed correctly
      */
-    private long getTimeInterval(String currentDateTime, String previousDateTime) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN);
-            sdf.setTimeZone(TimeZone.getDefault());
-            Date lastDate = sdf.parse(currentDateTime);
-            String previous = previousDateTime.replaceAll("Z$", "+0000");
-            Date previousDate = sdf.parse(previous);
-            return (lastDate.getTime() - previousDate.getTime()) / 1000;
-        } catch (ParseException e) {
-            logger.error("An error occured while trying to get the 'inactive' time interval of the gateway", e);
-            return -1;
-        }
+    private Long getTimeInterval(String currentDateTime, String previousDateTime) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN);
+        sdf.setTimeZone(TimeZone.getDefault());
+        Date lastDate = sdf.parse(currentDateTime);
+        String previous = previousDateTime.replaceAll("Z$", "+0000");
+        Date previousDate = sdf.parse(previous);
+        return (lastDate.getTime() - previousDate.getTime()) / 1000;
     }
 
     /**
@@ -276,7 +279,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
         JsonObject response = apiManager.listGateways();
         if (response != null) {
             JsonArray allGateways = response.getAsJsonArray(JSONResponseConstants.DATA_KEY);
-            if (allGateways != null && allGateways.size() > 0) {
+            if (allGateways != null) {
                 for (JsonElement gateway : allGateways) {
                     JsonElement id = gateway.getAsJsonObject().get(DeviceConstants.DEVICE_ID_KEY);
                     if (!id.isJsonNull() && id.getAsInt() == searchedId) {
@@ -284,8 +287,8 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
                     }
                 }
             }
-            logger.warn(UNREGISTERED_GATEWAY);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNREGISTERED_GATEWAY);
+            logger.warn(UNREGISTERED_GATEWAY_MESSAGE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNREGISTERED_GATEWAY_MESSAGE);
             setGatewayAlreadyUnregistered(true);
             return null;
         }
@@ -297,11 +300,11 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void createApiManager() {
-        logger.debug("Creating API Manager for user: " + username);
+        logger.debug("Creating API Manager for user: " + registrationEmailAddress);
         ServiceReference ref = bundleContext.getServiceReference(RestClient.class.getName());
         RestClient client = (RestClient) bundleContext.getService(ref);
 
-        MiHomeApiConfiguration restConfig = new MiHomeApiConfiguration(username, password);
+        MiHomeApiConfiguration restConfig = new MiHomeApiConfiguration(registrationEmailAddress, password);
         client.setConnectionTimeout(RestClient.DEFAULT_REQUEST_TIMEOUT);
 
         ThingCallback callback = new ThingCallback() {
@@ -338,29 +341,29 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     private boolean verifyThingConfiguration(Configuration config) {
         logger.debug("About to verify the thing configuration...");
         gatewayLabel = thing.getLabel();
-        username = (String) config.get(MiHomeBindingConstants.CONFIG_USERNAME);
+        registrationEmailAddress = (String) config.get(MiHomeBindingConstants.CONFIG_USERNAME);
         gatewayCode = (String) config.get(MiHomeBindingConstants.CONFIG_GATEWAY_CODE);
-        password = config.get(MiHomeBindingConstants.CONFIG_PASSWORD).toString();
+        password = (String) config.get(MiHomeBindingConstants.CONFIG_PASSWORD);
 
         BigDecimal interval = (BigDecimal) config.get(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL);
         this.updateInterval = interval.longValue();
-        if (!isTextMatchingPattern(username, EMAIL_PATTERN)
+        if (!isTextMatchingPattern(registrationEmailAddress, EMAIL_PATTERN)
                 && isTextMatchingPattern(gatewayCode, GATEWAY_CODE_PATTERN)) {
             logger.warn(INVALID_USER_MESSAGE);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, INVALID_USER_MESSAGE);
             return false;
         }
         if (!isTextMatchingPattern(gatewayCode, GATEWAY_CODE_PATTERN)
-                && isTextMatchingPattern(username, EMAIL_PATTERN)) {
-            logger.warn(INVALID_GATEWAY_CODE);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, INVALID_GATEWAY_CODE);
+                && isTextMatchingPattern(registrationEmailAddress, EMAIL_PATTERN)) {
+            logger.warn(INVALID_GATEWAY_CODE_MESSAGE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, INVALID_GATEWAY_CODE_MESSAGE);
             return false;
         }
         if (!isTextMatchingPattern(gatewayCode, GATEWAY_CODE_PATTERN)
-                && !isTextMatchingPattern(username, EMAIL_PATTERN)) {
-            logger.warn(INVALID_USER_MESSAGE + INVALID_GATEWAY_CODE);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    INVALID_USER_MESSAGE + INVALID_GATEWAY_CODE);
+                && !isTextMatchingPattern(registrationEmailAddress, EMAIL_PATTERN)) {
+            String warningMessage = INVALID_USER_MESSAGE + INVALID_GATEWAY_CODE_MESSAGE;
+            logger.warn(warningMessage);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, warningMessage);
             return false;
         }
         return true;
@@ -442,20 +445,20 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         logger.debug("Editing the thing configuration...");
         Configuration config = editConfiguration();
-        username = (String) configurationParameters.get(MiHomeBindingConstants.CONFIG_USERNAME);
-        config.put(MiHomeBindingConstants.CONFIG_USERNAME, username);
+        registrationEmailAddress = (String) configurationParameters.get(MiHomeBindingConstants.CONFIG_USERNAME);
+        config.put(MiHomeBindingConstants.CONFIG_USERNAME, registrationEmailAddress);
         gatewayCode = (String) configurationParameters.get(MiHomeBindingConstants.CONFIG_GATEWAY_CODE);
         config.put(MiHomeBindingConstants.CONFIG_GATEWAY_CODE, gatewayCode);
         password = configurationParameters.get(MiHomeBindingConstants.CONFIG_PASSWORD).toString();
         config.put(MiHomeBindingConstants.CONFIG_PASSWORD, password);
-        updateInterval = Long
-                .valueOf(configurationParameters.get(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL).toString());
+        BigDecimal updateInterval = ((BigDecimal)configurationParameters.get(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL));
         config.put(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL, updateInterval);
+        this.updateInterval = updateInterval.longValue();
         updateConfiguration(config);
         if (verifyThingConfiguration(thing.getConfiguration())) {
             createApiManager();
             registerNewGateway();
-            scheduleUpdateTask(updateInterval);
+            scheduleUpdateTask(this.updateInterval);
         }
     }
 
@@ -465,7 +468,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        logger.debug("About to unregister gateway with id : " + gatewayId);
+        logger.debug("About to unregister gateway with id : {}", gatewayId);
         JsonObject deletionResponse = apiManager.unregisterGateway(gatewayId);
         if (deletionResponse == null && !isGatewayAlreadyUnregistered()) {
             logger.debug(
@@ -504,10 +507,8 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
      */
     public boolean initializePairing(int gatewayID, String deviceType) {
         JsonObject response = apiManager.registerSubdevice(gatewayID, deviceType);
-        if (response != null) {
-            return true;
-        }
-        return false;
+        return (response != null);
+
     }
 
     /**
@@ -520,10 +521,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
      */
     public boolean unregisterSubdevice(int subdeviceID) {
         JsonObject response = apiManager.unregisterSubdevice(subdeviceID);
-        if (response != null) {
-            return true;
-        }
-        return false;
+        return (response != null);
     }
 
     /**
@@ -546,7 +544,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
      *
      * @param subdeviceID - the ID of the subdevice to update
      * @param newLabel - the new label
-     * @return null if the request was successful, otherwise device data
+     * @return null if the request was not successful, otherwise device data
      */
     public JsonObject updateSubdevice(int subdeviceID, String newLabel) {
         JsonObject response = apiManager.updateSubdevice(subdeviceID, newLabel);

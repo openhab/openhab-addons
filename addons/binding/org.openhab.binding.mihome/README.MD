@@ -45,20 +45,20 @@ All subdevices should be paired before they can be used. When you create the thi
 
 Optional configuration parameters:
 
-- *updateInterval* - Update interval to pool data from a device in seconds. If not set, the default value is 10 seconds;
+- *updateInterval* - Update interval to poll data from a device in seconds. If not set, the default value is 10 seconds;
 
 ## Channels
 
 The channels supported from the different devices are listed below:
 
-| Channel Type ID | Item Type    | Description  | Thing type ID |
-|-----------------|------------------------|--------------|----------------- |------------- |
-| lastSeen | DateTime | Time when the device was last seen from the Mi|Home server | gateway |
-| voltage | Number | Voltage | energyMonitor |
-| real_power | Number | Real power | energyMonitor |
-| today_consumption   | Number | Today consumption in Wh | energyMonitor |
-| state | Contact | Set to Open or Closed | openSensor |
-| state | Switch | Set to ON when movement starts and OFF when movement stops | motionSensor |
+| Channel Type ID   | Item Type | Description                                                | Thing type ID |
+|-------------------|-----------|------------------------------------------------------------|---------------|
+| lastSeen          | DateTime  | Time when the device was last seen from the MiHome server  | gateway       |
+| voltage           | Number    | Voltage                                                    | energyMonitor |
+| real_power        | Number    | Real power                                                 | energyMonitor |
+| today_consumption | Number    | Today consumption in Wh                                    | energyMonitor |
+| state             | Contact   | Set to Open or Closed                                      | openSensor    |
+| state             | Switch    | Set to ON when movement starts and OFF when movement stops | motionSensor  |
 
 ## Full Example
 

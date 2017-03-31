@@ -4,9 +4,10 @@ Bundle-Name: Energenie Mi|Home Binding Tests
 Bundle-SymbolicName: org.openhab.binding.mihome.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Fragment-Host: org.openhab.binding.mihome
-Import-Package: groovy.json,
+Import-Package: com.google.gson.annotations,
+ groovy.json,
  groovy.lang,
  javax.servlet,
  javax.servlet.http,
@@ -18,8 +19,8 @@ Import-Package: groovy.json,
  org.eclipse.smarthome.config.discovery.inbox,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.items,
- org.eclipse.smarthome.core.thing.util,
  org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.core.thing.util,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,

@@ -30,14 +30,13 @@ public class JSONResponseHandler {
     /**
      * Converts a given response String to a JSON object
      */
-    public static JsonObject responseStringtoJsonObject(String jsonResponse) throws JsonParseException {
+    public static JsonObject responseStringtoJsonObject(String jsonResponse) {
         if (jsonResponse != null && !jsonResponse.isEmpty()) {
             try {
                 JsonParser parser = new JsonParser();
-                JsonObject resultObj = (JsonObject) parser.parse(jsonResponse);
-                return resultObj;
+                return (JsonObject) parser.parse(jsonResponse);
             } catch (JsonParseException e) {
-                logger.error("An JsonParseException occurred by parsing JSON response: " + jsonResponse, e);
+                logger.error("An error occurred while trying to parse the JSON response: ",jsonResponse, e);
                 return null;
             }
         }
@@ -48,14 +47,13 @@ public class JSONResponseHandler {
      * Returns the status of the server's response
      */
     public static String getResponseStatus(JsonObject jsonResponse) {
-        String responseStatus = null;
         if (jsonResponse != null) {
-            JsonElement responseStatusEl = jsonResponse.get(JSONResponseConstants.RESPONSE_STATUS_KEY);
-            if (responseStatusEl != null) {
-                responseStatus = responseStatusEl.getAsString();
+            JsonElement responseStatusElement = jsonResponse.get(JSONResponseConstants.RESPONSE_STATUS_KEY);
+            if (responseStatusElement != null) {
+                return responseStatusElement.getAsString();
             }
         }
-        return responseStatus;
+        return null;
     }
 
     /**
@@ -81,7 +79,7 @@ public class JSONResponseHandler {
             return message.toString();
         }
         if (error != null) {
-            return error.toString();
+            return error.getAsString();
         }
         return null;
     }

@@ -66,14 +66,14 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
      * Time in milliseconds between a single pairing start and end.
      * The user has to press the pairing button in this interval.
      */
-    private static final int WAIT_TIME_PAIRING = 15000;
+    private static final int PARING_WAIT_TIME_MSEC = 15000;
 
     /**
      * Default update interval in seconds
      */
     public static final BigDecimal DEFAULT_UPDATE_INTERVAL = new BigDecimal(10);
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Update interval in seconds
@@ -124,7 +124,7 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
                         "Bridge status is " + bridgeStatus.toString());
             }
         } else {
-            logger.warn("Cann't initialize ThingHandler, bridge is missing");
+            logger.warn("Can't initialize ThingHandler, bridge is missing");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge is missing");
         }
 
@@ -185,7 +185,7 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
             try {
                 id = Integer.parseInt(propertyValue);
             } catch (NumberFormatException e) {
-                logger.debug("Cann't parse property {} as int, value is {}", MiHomeBindingConstants.PROPERTY_DEVICE_ID,
+                logger.debug("Can't parse property {} as int, value is {}", MiHomeBindingConstants.PROPERTY_DEVICE_ID,
                         propertyValue);
             }
         }
@@ -244,7 +244,7 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                 "Please push the pairing button on device of type " + deviceType);
         try {
-            Thread.sleep(WAIT_TIME_PAIRING);
+            Thread.sleep(PARING_WAIT_TIME_MSEC);
         } catch (InterruptedException e) {
             logger.error("Pairing was interrupted ", e);
             Thread.currentThread().interrupt();
@@ -266,7 +266,7 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
         JsonObject newDevice = getNewDevice(subdevicesBefore, subdevicesAfter, deviceType, gatewayID);
         if (newDevice == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Cann't find device of type " + deviceType + " for gateway " + gatewayID);
+                    "Can't find device of type " + deviceType + " for gateway " + gatewayID);
             return false;
         }
 
@@ -291,7 +291,7 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
         String label = getThing().getLabel();
         JsonObject updateResponse = gatewayHandler.updateSubdevice(this.mihomeID, label);
         if (updateResponse == null) {
-            logger.warn("Failed to udapte label of newly paired subdevice {} to {}", this.mihomeID, label);
+            logger.warn("Failed to update label of newly paired subdevice {} to {}", this.mihomeID, label);
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -322,10 +322,13 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
                             }
 
                             // Update the label if changed
-                            String serverLabel = data.get(DeviceConstants.DEVICE_LABEL_KEY).getAsString();
-                            String currentLabel = getThing().getLabel();
-                            if (serverLabel != currentLabel) {
-                                getThing().setLabel(serverLabel);
+                            JsonElement newLabelElement = data.get(DeviceConstants.DEVICE_LABEL_KEY);
+                            if (newLabelElement != null) {
+                                String newLabel = newLabelElement.getAsString();
+                                String currentLabel = getThing().getLabel();
+                                if (newLabel != currentLabel) {
+                                    getThing().setLabel(newLabel);
+                                }
                             }
                         } else {
                             logger.info(
@@ -353,21 +356,7 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
 
         switch (bridgeStatus) {
             case ONLINE:
-                switch (thingStatusDetail) {
-                    case HANDLER_INITIALIZING_ERROR:
-                        // The initialization was once interrupted we will retry it
-                        initializeInternal();
-                        break;
-                    case COMMUNICATION_ERROR:
-
-                    case BRIDGE_OFFLINE:
-                        // We set the status back to online, as the bridge is available now
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                        break;
-                    default:
-                        // No action needed, we keep the current thing status
-                        break;
-                }
+                bridgeStatusChangedToOnline(thingStatusDetail);
                 break;
             case OFFLINE:
 
@@ -383,6 +372,24 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
                         "Gateway has been removed, subdevice {} will be removed as it has been deleted from the MiHome server.",
                         mihomeID);
                 updateStatus(ThingStatus.REMOVED);
+                break;
+            default:
+                // No action needed, we keep the current thing status
+                break;
+        }
+    }
+
+    private void bridgeStatusChangedToOnline(ThingStatusDetail thingStatusDetail) {
+        switch (thingStatusDetail) {
+            case HANDLER_INITIALIZING_ERROR:
+                // The initialization was once interrupted we will retry it
+                initializeInternal();
+                break;
+            case COMMUNICATION_ERROR:
+
+            case BRIDGE_OFFLINE:
+                // We set the status back to online, as the bridge is available now
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 break;
             default:
                 // No action needed, we keep the current thing status
@@ -415,13 +422,15 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
             String type = deviceObj.get(DeviceConstants.DEVICE_TYPE_KEY).getAsString();
             int gateway = deviceObj.get(DeviceConstants.SUBDEVICE_PARENT_ID_KEY).getAsInt();
 
-            if (type.equals(deviceType) && gateway == gatewayID) {
+            if (deviceType.equals(type) && gateway == gatewayID) {
                 int deviceID = deviceObj.get(DeviceConstants.DEVICE_ID_KEY).getAsInt();
                 oldIDs.add(deviceID);
             }
         }
 
-        // Search for new devices
+        // Search for new devices and return the first occurrence
+        // We are not interested of the others(if the user pairs multiple device simultaneously), as the thing handler
+        // is responsible only for a single device
         for (JsonElement device : newDevices) {
             JsonObject deviceObj = (JsonObject) device;
             String type = deviceObj.get(DeviceConstants.DEVICE_TYPE_KEY).getAsString();
@@ -446,17 +455,16 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
                 if (command instanceof RefreshType && channelUID.getId().equals(CHANNEL_STATE)) {
                     updateThingState(deviceData, channelUID);
                 } else {
-                    logger.warn("Unsupported command {} for channel with UID {}", command.toFullString(),
-                            channelUID.getAsString());
+                    logger.warn("Unsupported command {} for channel with UID {}", command.toFullString(), channelUID);
                 }
             } else {
-                logger.warn("Cann't execute command {}. No data for device with ID {}", command, this.mihomeID);
+                logger.warn("Can't execute command {}. No data for device with ID {}", command, this.mihomeID);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Subdevice " + mihomeID + " is missing, it might be deleted!");
             }
         } else {
             logger.warn("Device with ID {} is in status {}. Not able to handle command {} for channel with UID {}",
-                    this.mihomeID, status, command.toFullString(), channelUID.getAsString());
+                    this.mihomeID, status, command.toFullString(), channelUID);
         }
 
     }
@@ -478,44 +486,50 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
                 state = getEnergyMonitorState(deviceData, channelID);
                 break;
             default:
-                logger.warn("Channel with UID {} won't be updated! It is not supported from thing type {}",
-                        channelUID.getAsString(), thingTypeUID.getAsString());
+                logger.warn("Channel with UID {} won't be updated! It is not supported from thing type {}", channelUID,
+                        thingTypeUID);
+                return;
         }
 
         if (state != null) {
-            logger.debug("About to update state for channel {} to {}", channelUID.getAsString(), state.toFullString());
+            logger.debug("About to update state for channel {} to {}", channelUID, state.toFullString());
             updateState(channelUID, state);
         } else {
-            logger.info("Channel with UID {} won't be updated. Server response is incomplete.",
-                    channelUID.getAsString());
+            logger.info("Channel with UID {} won't be updated. Server response is incomplete.", channelUID);
         }
     }
 
     private State getEnergyMonitorState(JsonObject deviceData, String channelID) {
         State state = null;
-        JsonElement jsonElement = null;
         switch (channelID) {
-            case MiHomeBindingConstants.CHANNEL_REAL_POWER:
-                jsonElement = deviceData.get(DeviceConstants.MONITOR_REAL_POWER_KEY);
-                if (jsonElement != null && !jsonElement.isJsonNull()) {
-                    double rawState = jsonElement.getAsDouble();
-                    state = new DecimalType(rawState);
-                }
+            case MiHomeBindingConstants.CHANNEL_REAL_POWER: {
+                JsonElement jsonElement = deviceData.get(DeviceConstants.MONITOR_REAL_POWER_KEY);
+                state = getStateAsDecimalType(jsonElement);
                 break;
-            case MiHomeBindingConstants.CHANNEL_TODAY_CONSUMPTION:
-                jsonElement = deviceData.get(DeviceConstants.MONITOR_TODAY_CONSUMPTION_KEY);
-                if (jsonElement != null && !jsonElement.isJsonNull()) {
-                    double rawState = jsonElement.getAsDouble();
-                    state = new DecimalType(rawState);
-                }
+            }
+            case MiHomeBindingConstants.CHANNEL_TODAY_CONSUMPTION: {
+                JsonElement jsonElement = deviceData.get(DeviceConstants.MONITOR_TODAY_CONSUMPTION_KEY);
+                state = getStateAsDecimalType(jsonElement);
                 break;
-            case MiHomeBindingConstants.CHANNEL_VOLTAGE:
-                jsonElement = deviceData.get(DeviceConstants.MONITOR_VOLTAGE_KEY);
-                if (jsonElement != null && !jsonElement.isJsonNull()) {
-                    double rawState = jsonElement.getAsDouble();
-                    state = new DecimalType(rawState);
-                }
+            }
+            case MiHomeBindingConstants.CHANNEL_VOLTAGE: {
+                JsonElement jsonElement = deviceData.get(DeviceConstants.MONITOR_VOLTAGE_KEY);
+                state = getStateAsDecimalType(jsonElement);
                 break;
+            }
+        }
+        return state;
+    }
+
+    private State getStateAsDecimalType(JsonElement jsonElement) {
+        State state = null;
+        if (jsonElement != null) {
+            if (jsonElement.isJsonNull()) {
+                state = UnDefType.UNDEF;
+            } else {
+                double rawState = jsonElement.getAsDouble();
+                state = new DecimalType(rawState);
+            }
         }
         return state;
     }
@@ -528,16 +542,7 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
                 if (jsonElement.isJsonNull()) {
                     state = UnDefType.UNDEF;
                 } else {
-                    int rawState = jsonElement.getAsInt();
-
-                    switch (rawState) {
-                        case 0:
-                            state = OpenClosedType.CLOSED;
-                            break;
-                        case 1:
-                            state = OpenClosedType.OPEN;
-                            break;
-                    }
+                    return jsonElement.getAsInt() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                 }
             }
         }
@@ -552,15 +557,7 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
                 if (jsonElement.isJsonNull()) {
                     state = UnDefType.UNDEF;
                 } else {
-                    int rawState = jsonElement.getAsInt();
-                    switch (rawState) {
-                        case 0:
-                            state = OnOffType.OFF;
-                            break;
-                        case 1:
-                            state = OnOffType.ON;
-                            break;
-                    }
+                    return jsonElement.getAsInt() == 0 ? OnOffType.OFF : OnOffType.ON;
                 }
             }
         }
@@ -588,9 +585,9 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
     }
 
     @Override
-    public void thingUpdated(Thing thing) {
+    public void thingUpdated(Thing updatedThing) {
         ThingUID oldBridgeUID = this.thing.getBridgeUID();
-        ThingUID newBridgeUID = thing.getBridgeUID();
+        ThingUID newBridgeUID = updatedThing.getBridgeUID();
         if (newBridgeUID != null && !newBridgeUID.equals(oldBridgeUID)) {
             logger.warn(
                     "Mi|Home API doesn't support changing the bridige. The device should be removed and paired to the new bridge");
@@ -598,20 +595,20 @@ public class MiHomeSubdevicesHandler extends BaseThingHandler {
         }
 
         String oldLocation = this.thing.getLocation();
-        String newLocation = thing.getLocation();
+        String newLocation = updatedThing.getLocation();
         if (newLocation != null && !newLocation.equals(oldLocation)) {
             this.thing.setLocation(newLocation);
         }
 
         String oldLabel = this.thing.getLabel();
-        String newLabel = thing.getLabel();
+        String newLabel = updatedThing.getLabel();
         if (newLabel != null && !newLabel.equals(oldLabel)) {
             JsonObject updateResponse = gatewayHandler.updateSubdevice(mihomeID, newLabel);
             if (updateResponse != null) {
                 this.thing.setLabel(newLabel);
             } else {
-                logger.error("Label of device {} cann't be changed to {}. Please check the log for more details.",
-                        thing.getUID(), newLabel);
+                logger.error("Label of device {} can't be changed to {}. Please check the log for more details.",
+                        updatedThing.getUID(), newLabel);
                 return;
             }
         }

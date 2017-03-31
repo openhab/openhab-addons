@@ -17,18 +17,15 @@ import javax.servlet.http.HttpServlet
 
 import org.eclipse.smarthome.config.core.Configuration
 import org.eclipse.smarthome.core.thing.Bridge
+import org.eclipse.smarthome.core.thing.ManagedThingProvider
 import org.eclipse.smarthome.core.thing.Thing
 import org.eclipse.smarthome.core.thing.ThingRegistry
-import org.eclipse.smarthome.core.thing.ThingTypeMigrationService
 import org.eclipse.smarthome.core.thing.ThingTypeUID
 import org.eclipse.smarthome.core.thing.ThingUID
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler
 import org.eclipse.smarthome.core.thing.binding.ThingHandler
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory
 import org.eclipse.smarthome.test.OSGiTest
 import org.openhab.binding.mihome.MiHomeBindingConstants
-import org.openhab.binding.mihome.handler.MiHomeGatewayHandler
-import org.openhab.binding.mihome.handler.MiHomeSubdevicesHandler
-import org.openhab.binding.mihome.internal.MiHomeHandlerFactory
 import org.openhab.binding.mihome.internal.api.JSONResponseHandler
 import org.openhab.binding.mihome.internal.api.manager.*
 import org.openhab.binding.mihome.internal.rest.RestClient
@@ -62,87 +59,58 @@ public abstract class AbstractMiHomeOSGiTest extends OSGiTest {
     /**
      * Test update interval for the subdevices in seconds
      */
-    public static final int TEST_SUBDEVICE_UPDATE_INTERVAL = 1
+    public static final BigDecimal TEST_SUBDEVICE_UPDATE_INTERVAL = 1
 
     public static final String PATH_CREATE_GATEWAY = "/${MiHomeApiManagerImpl.CONTROLLER_DEVICES}/${MiHomeApiManagerImpl.ACTION_CREATE}"
     public static final String PATH_LIST_GATEWAYS = "/${MiHomeApiManagerImpl.CONTROLLER_DEVICES}/${MiHomeApiManagerImpl.ACTION_LIST}"
     public static final String PATH_DELETE_GATEWAYS = "/${MiHomeApiManagerImpl.CONTROLLER_DEVICES}/${MiHomeApiManagerImpl.ACTION_DELETE}"
 
-
+    protected ManagedThingProvider managedThingProvider
     protected ThingRegistry thingRegistry
     protected HttpService httpService
+
     protected RestClient client
     protected Bridge gatewayThing
 
-    /**
-     * Gets a thing handler of a specific type.
-     *
-     * @param clazz type of thing handler
-     *
-     * @return the thing handler
-     */
-    protected <T extends ThingHandler> T getThingHandler(Class<T> clazz){
-        MiHomeHandlerFactory factory
-        waitForAssert{
-            factory = getService(ThingHandlerFactory, MiHomeHandlerFactory)
-            assertThat factory, is(notNullValue())
-        }
-        def handlers = getThingHandlers(factory)
-
-        for(ThingHandler handler : handlers) {
-            if(clazz.isInstance(handler)) {
-                return handler
-            }
-        }
-        return null
+    protected Bridge createBridge(ThingRegistry thingRegistry, String apiKey, String userName, String gatewayCode) {
+        return createBridge(thingRegistry, apiKey, userName, gatewayCode, null)
     }
 
-    private Set<ThingHandler> getThingHandlers(MiHomeHandlerFactory factory) {
-        def thingManager = getService(ThingTypeMigrationService.class, { "org.eclipse.smarthome.core.thing.internal.ThingManager" } )
-        assertThat "Thing manager service cann't be found",thingManager, not(null)
-        Set<ThingHandler> handlers = thingManager.thingHandlersByFactory.get(factory)
-        return handlers
-    }
-
-    protected Bridge createBridge(ThingRegistry thingRegistry,String apiKey,String userName,String gatewayCode) {
-        return createBridge(thingRegistry,apiKey,userName,gatewayCode,null)
-    }
-
-    protected Bridge createBridge(ThingRegistry thingRegistry,String apiKey,String userName,String gatewayCode,Integer gatewayID) {
+    protected Bridge createBridge(ThingRegistry thingRegistry, String apiKey, String userName, String gatewayCode, Integer gatewayID) {
         Map<String,Object> properties = new HashMap<String, Object>()
         properties.put(MiHomeBindingConstants.CONFIG_PASSWORD, apiKey)
         properties.put(MiHomeBindingConstants.CONFIG_USERNAME, userName)
         properties.put(MiHomeBindingConstants.CONFIG_GATEWAY_CODE, gatewayCode)
         // We set the deviceID to pretend that the device registration has passed correctly
         if(gatewayID != null) {
-            properties.put(MiHomeBindingConstants.PROPERTY_DEVICE_ID,new BigDecimal(gatewayID))
+            properties.put(MiHomeBindingConstants.PROPERTY_DEVICE_ID, new BigDecimal(gatewayID))
         }
         String bridgeID
         if(gatewayID != null) {
             bridgeID = Integer.toString(gatewayID)
         } else {
-            bridgeID = "Unknonw"
+            bridgeID = "Unknown"
         }
 
         Configuration configuration = new Configuration(properties)
 
         Bridge gateway = thingRegistry.createThingOfType(
                 MiHomeBindingConstants.THING_TYPE_GATEWAY,
-                new ThingUID(MiHomeBindingConstants.THING_TYPE_GATEWAY,bridgeID),
+                new ThingUID(MiHomeBindingConstants.THING_TYPE_GATEWAY, bridgeID),
                 null, "Label", configuration)
         return gateway
     }
-    protected Thing createThing (ThingRegistry thingRegistry,Bridge bridge,ThingTypeUID thingTypeUID) {
-        return createThing(thingRegistry,bridge,thingTypeUID,null)
+    protected Thing createThing (ThingRegistry thingRegistry, Bridge bridge, ThingTypeUID thingTypeUID) {
+        return createThing(thingRegistry, bridge, thingTypeUID, null)
     }
 
-    protected Thing createThing (ThingRegistry thingRegistry,Bridge bridge,ThingTypeUID thingTypeUID, Integer subdeviceID) {
+    protected Thing createThing (ThingRegistry thingRegistry, Bridge bridge, ThingTypeUID thingTypeUID, Integer subdeviceID) {
         Map<String,Object> properties = new HashMap<String, Object>()
         properties.put(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL, TEST_SUBDEVICE_UPDATE_INTERVAL)
 
         // We set the deviceID to skip the new device registration
         if(subdeviceID != null) {
-            properties.put(MiHomeBindingConstants.PROPERTY_DEVICE_ID,new BigDecimal(subdeviceID))
+            properties.put(MiHomeBindingConstants.PROPERTY_DEVICE_ID, new BigDecimal(subdeviceID))
         }
         Configuration configuration = new Configuration(properties)
 
@@ -155,27 +123,27 @@ public abstract class AbstractMiHomeOSGiTest extends OSGiTest {
         Thing thing = thingRegistry.createThingOfType(
                 thingTypeUID,
                 new ThingUID(thingTypeUID,thingID),
-                bridge.getUID(),JsonSubdevice.DEFAULT_LABEL,configuration)
+                bridge.getUID(), JsonSubdevice.DEFAULT_LABEL, configuration)
 
         return thing
     }
 
-    protected void removeBridge(ThingRegistry thingRegistry,Bridge gateway) {
+    protected void removeBridge(ThingRegistry thingRegistry, Bridge gateway) {
         if(gateway !=null) {
             thingRegistry.forceRemove(gateway.getUID())
             waitForAssert {
-                MiHomeGatewayHandler gatewayHandler = getThingHandler(MiHomeGatewayHandler)
-                assertThat "The bridge ${gateway.getUID()} cannot be deleted",gatewayHandler, is(nullValue())
+                BridgeHandler gatewayHandler = gateway.getHandler()
+                assertThat "The bridge ${gateway.getUID()} cannot be deleted", gatewayHandler, is(nullValue())
             }
         }
     }
 
-    protected void removeThing(ThingRegistry thingRegistry,Thing thing) {
+    protected void removeThing(ThingRegistry thingRegistry, Thing thing) {
         if(thing !=null) {
             thingRegistry.forceRemove(thing.getUID())
             waitForAssert {
-                MiHomeSubdevicesHandler thingHandler = getThingHandler(MiHomeSubdevicesHandler)
-                assertThat "The thing ${thing.getUID()} cannot be deleted",thingHandler, is(nullValue())
+                ThingHandler thingHandler = thing.getHandler()
+                assertThat "The thing ${thing.getUID()} cannot be deleted", thingHandler, is(nullValue())
             }
         }
     }
@@ -196,7 +164,7 @@ public abstract class AbstractMiHomeOSGiTest extends OSGiTest {
 
     protected void registerServlet(String path, HttpServlet servlet){
         try {
-            httpService.registerServlet(path,servlet,null,null)
+            httpService.registerServlet(path, servlet, null, null)
         } catch (Exception e) {
         }
     }
@@ -241,10 +209,13 @@ public abstract class AbstractMiHomeOSGiTest extends OSGiTest {
         registerVolatileStorageService()
 
         thingRegistry = getService(ThingRegistry)
-        assertThat thingRegistry,is(notNullValue())
+        assertThat thingRegistry, is(notNullValue())
 
         httpService = getService(HttpService)
-        assertThat httpService,is(notNullValue())
+        assertThat httpService, is(notNullValue())
+
+        managedThingProvider = getService(ManagedThingProvider)
+        assertThat managedThingProvider, is(notNullValue())
 
         client = getService(RestClient)
         client.setBaseURL(TEST_URL)

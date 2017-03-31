@@ -13,8 +13,8 @@
 
     <channels>
       <channel typeId="voltage" id="voltage" />
-      <channel typeId="power" id="real_power" />
-      <channel typeId="consumption" id="today_consumption" />
+      <channel typeId="power" id="realPower" />
+      <channel typeId="consumption" id="todayConsumption" />
     </channels>
 
     <properties>

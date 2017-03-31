@@ -5,7 +5,7 @@
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
   <config-description uri="mihome:gateway">
-    <parameter name="userName" type="text" required="true">
+    <parameter name="username" type="text" required="true">
       <label>Username</label>
       <description>User's email address</description>
       <context>email</context>
@@ -21,7 +21,7 @@
     </parameter>
     <parameter name="updateInterval" type="integer" min="1" step="1" required="true" unit="s">
       <label>Update interval</label>
-      <description>Update interval to pool data from a device</description>
+      <description>Update interval to poll data from a device</description>
       <default>30</default>
       <unitLabel>seconds</unitLabel>
     </parameter>

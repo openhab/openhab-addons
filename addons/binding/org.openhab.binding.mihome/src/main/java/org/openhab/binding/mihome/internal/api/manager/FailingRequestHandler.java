@@ -44,8 +44,8 @@ public interface FailingRequestHandler {
      * {@link RestClient#sendRequest(String, org.eclipse.jetty.http.HttpMethod, java.util.Properties, java.io.InputStream, String)}
      * method
      *
-     * @param failedUrl
-     * @param e1
+     * @param failedUrl - URL of the failing request
+     * @param exception - the exception that has been thrown
      */
-    void handleIOException(String failedUrl, IOException e1);
+    void handleIOException(String failedUrl, IOException exception);
 }

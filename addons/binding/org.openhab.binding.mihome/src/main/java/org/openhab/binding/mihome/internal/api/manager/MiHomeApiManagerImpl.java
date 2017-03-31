@@ -58,7 +58,7 @@ public class MiHomeApiManagerImpl implements MiHomeApiManager {
     private RestClient restClient;
     private FailingRequestHandler failingRequestHandler;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public MiHomeApiManagerImpl(MiHomeApiConfiguration configuration, RestClient restClient,
             FailingRequestHandler requestHandler) {
@@ -161,6 +161,7 @@ public class MiHomeApiManagerImpl implements MiHomeApiManager {
         String responseBody = null;
 
         try {
+            // all requests are sent using POST method, as it is recommended from the API documentation
             contentResponse = restClient.sendRequest(controller + "/" + action, RestClient.DEFAULT_HTTP_METHOD,
                     httpHeaders, requestContent, RestClient.CONTENT_TYPE);
 
@@ -168,10 +169,10 @@ public class MiHomeApiManagerImpl implements MiHomeApiManager {
             String encoding = contentResponse.getEncoding() != null
                     ? contentResponse.getEncoding().replaceAll("\"", "").trim() : "UTF-8";
             responseBody = new String(rawResponse, encoding);
-        } catch (IOException e1) {
-            logger.error("Request execution failed: ", e1);
+        } catch (IOException e) {
+            logger.error("Request execution failed: ", e);
             String failedUrl = restClient.getBaseURL() + controller + "/" + action;
-            failingRequestHandler.handleIOException(failedUrl, e1);
+            failingRequestHandler.handleIOException(failedUrl, e);
             return null;
         }
 
@@ -188,7 +189,7 @@ public class MiHomeApiManagerImpl implements MiHomeApiManager {
                 try {
                     jsonResponse = JSONResponseHandler.responseStringtoJsonObject(responseBody);
                 } catch (JsonParseException e) {
-                    logger.error("An JsonParseException occurred by parsing JSON response: " + jsonResponse, e);
+                    logger.error("An error occurred while trying to parse the JSON response: ", jsonResponse, e);
                     return null;
                 }
                 if (JSONResponseHandler.isRequestSuccessful(jsonResponse)) {

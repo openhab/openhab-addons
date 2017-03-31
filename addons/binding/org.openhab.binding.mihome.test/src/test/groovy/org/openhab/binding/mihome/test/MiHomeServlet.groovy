@@ -24,7 +24,7 @@ public class MiHomeServlet extends HttpServlet {
     public static final String EMPTY_DATA_ARRAY ="{'status':'success', 'data':[]}"
     public static final String EMPTY_DATA_OBJECT = "{'status':'success', 'data':{}}"
 
-    String content
+    private String content
 
     public MiHomeServlet(String content) {
         this.content = content
@@ -37,5 +37,13 @@ public class MiHomeServlet extends HttpServlet {
 
         PrintWriter out = resp.getWriter()
         out.print(this.content)
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

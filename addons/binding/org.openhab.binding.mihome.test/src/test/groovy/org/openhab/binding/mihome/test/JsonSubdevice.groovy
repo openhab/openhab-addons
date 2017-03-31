@@ -6,7 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.mihome.test;
+package org.openhab.binding.mihome.test
+
+import com.google.gson.annotations.SerializedName
 
 /**
  * JSON representation of a subdevice used in the communication with the server.
@@ -16,32 +18,41 @@ package org.openhab.binding.mihome.test;
 public class JsonSubdevice extends JsonDevice {
 
     public static final String DEFAULT_LABEL = "New Subdevice"
+
     // ID of the gateway that the subdevice is paired to
-    int device_id
+    @SerializedName("device_id")
+    int deviceID
+
     //For open and motion sensors
-    Integer sensor_state
+    @SerializedName("sensor_state")
+    Integer sensorState
 
     //Only for energy monitor
+    @SerializedName("voltage")
     double voltage
-    int real_power
-    int today_wh
 
-    JsonSubdevice(int id,int gatewayID,String type) {
+    @SerializedName("real_power")
+    int realPower
+
+    @SerializedName("today_wh")
+    int todayWh
+
+    JsonSubdevice(int id, int gatewayID, String type) {
         super(type, id, DEFAULT_LABEL);
-        this.device_id = gatewayID
+        this.deviceID = gatewayID
     }
 
-    JsonSubdevice(int id,int gatewayID,String type,Integer state) {
+    JsonSubdevice(int id, int gatewayID, String type, Integer state) {
         super(type, id, DEFAULT_LABEL)
-        this.device_id = gatewayID
-        this.sensor_state = state
+        this.deviceID = gatewayID
+        this.sensorState = state
     }
 
-    JsonSubdevice(int id,int gatewayID,String type,double voltage,int power,int wh) {
+    JsonSubdevice(int id, int gatewayID ,String type, double voltage, int power, int wh) {
         super(type, id, DEFAULT_LABEL)
-        this.device_id = gatewayID
+        this.deviceID = gatewayID
         this.voltage = voltage
-        this.real_power = power
-        this.today_wh = wh
+        this.realPower = power
+        this.todayWh = wh
     }
 }

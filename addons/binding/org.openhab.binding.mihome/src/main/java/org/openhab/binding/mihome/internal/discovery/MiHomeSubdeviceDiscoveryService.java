@@ -149,7 +149,7 @@ public class MiHomeSubdeviceDiscoveryService extends AbstractDiscoveryService {
                 results.add(device);
             }
         }
-        logger.debug("{} paired devices without things found.");
+        logger.debug("{} paired devices without things found.", results.size());
         return results;
     }
 

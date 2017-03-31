@@ -9,7 +9,7 @@
 package org.openhab.binding.mihome.internal.api.constants;
 
 /**
- * Contains all Mi|Home Response keys used in the communication with the server
+ * Contains all MiHome Response keys used in the communication with the server
  *
  * @author Mihaela Memova - Initial contribution
  *

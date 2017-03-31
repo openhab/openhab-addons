@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.mihome.test;
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * JSON representation of a device (gateway or subdevice) used in the communication with the server.
  *
@@ -16,29 +18,32 @@ package org.openhab.binding.mihome.test;
  */
 public class JsonDevice {
 
-    private String device_type;
+    @SerializedName("device_type")
+    private String type;
+    @SerializedName("id")
     private int id;
+    @SerializedName("label")
     private String label;
 
     public JsonDevice(String type, int id, String label) {
-        this.device_type = type;
+        this.type = type;
         this.id = id;
         this.label = label;
     }
 
     public String getType() {
-        return device_type;
+        return type;
     }
 
     public void setType(String type) {
-        this.device_type = type;
+        this.type = type;
     }
 
-    public int getId() {
+    public int getID() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setID(int id) {
         this.id = id;
     }
 

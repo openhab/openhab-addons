@@ -20,13 +20,13 @@ import com.google.gson.JsonObject
  */
 public class FailingRequestHandlerMock implements FailingRequestHandler{
 
-    private def HTTPRequestFailed
+    private def httpRequestFailed
     private def JsonRequestFailed
     private def IOExceptionCaught
 
 
     public void setHTTPRequestFailed(boolean hTTPRequestFailed) {
-        HTTPRequestFailed = hTTPRequestFailed;
+        httpRequestFailed = hTTPRequestFailed;
     }
 
     public void setJsonRequestFailed(boolean jsonRequestFailed) {
@@ -39,7 +39,7 @@ public class FailingRequestHandlerMock implements FailingRequestHandler{
 
     @Override
     public void handleFailingHttpRequest(ContentResponse response) {
-        HTTPRequestFailed = true;
+        httpRequestFailed = true;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class FailingRequestHandlerMock implements FailingRequestHandler{
     }
 
     public boolean isHTTPRequestFailed() {
-        return HTTPRequestFailed
+        return httpRequestFailed
     }
 
     public boolean isJsonRequestFailed() {

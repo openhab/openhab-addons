@@ -30,7 +30,7 @@ import com.google.gson.JsonObject;
 
 public class FailingRequestHandlerImpl implements FailingRequestHandler {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private ThingCallback callback;
 
     public FailingRequestHandlerImpl(ThingCallback callback) {
@@ -48,45 +48,46 @@ public class FailingRequestHandlerImpl implements FailingRequestHandler {
         JsonObject responseData = jsonResponse.get(JSONResponseConstants.DATA_KEY).getAsJsonObject();
         String errorMessage = JSONResponseHandler.getErrorMessageFromResponse(responseData);
         switch (responseStatus) {
-            case JSONResponseConstants.RESPONSE_ACCESS_DENIED: {
+            case JSONResponseConstants.RESPONSE_ACCESS_DENIED:
                 logger.error("Access to the requested action was not permitted");
                 callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
                 break;
-            }
-            case JSONResponseConstants.RESPONSE_INTERNAL_SERVER_ERROR: {
+
+            case JSONResponseConstants.RESPONSE_INTERNAL_SERVER_ERROR:
                 logger.error(
                         "An error outside of your control occurred. Please report these to the team if they persist");
                 callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 break;
-            }
-            case JSONResponseConstants.RESPONSE_MAINTENANCE: {
+
+            case JSONResponseConstants.RESPONSE_MAINTENANCE:
                 logger.error("The API is currently unavailable for maintenance work.");
                 callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 break;
-            }
-            case JSONResponseConstants.RESPONSE_PARAMETER_ERROR: {
+
+            case JSONResponseConstants.RESPONSE_PARAMETER_ERROR:
                 logger.error("The parameters provided were not suitable for this action");
                 callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 break;
-            }
-            case JSONResponseConstants.RESPONSE_NOT_FOUND: {
+
+            case JSONResponseConstants.RESPONSE_NOT_FOUND:
                 logger.warn(errorMessage);
                 break;
-            }
-            case JSONResponseConstants.RESPONSE_VALIDATION_ERROR: {
+
+            case JSONResponseConstants.RESPONSE_VALIDATION_ERROR:
                 logger.error("A resource could not be created/updated/removed due to a validation error");
-                // in this case the error message from the Mi|Home API's response is not well-formatted so we create a custom message
+                // in this case the error message from the Mi|Home API's response is not well-formatted so we create a
+                // custom message
                 String customErrorMessage = "The gateway code was not recognized. Please ensure that the device is connected to the network";
-                callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, customErrorMessage);
+                callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        customErrorMessage);
                 break;
-            }
         }
     }
 
     @Override
     public void handleIOException(String failedUrl, IOException exception) {
         logger.error(
-                "An error occured while trying to execute: " + failedUrl + " Please check your connection" + exception);
+                "An error occured while trying to execute: {}. Please check your connection", failedUrl, exception);
         callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());
     }
 }

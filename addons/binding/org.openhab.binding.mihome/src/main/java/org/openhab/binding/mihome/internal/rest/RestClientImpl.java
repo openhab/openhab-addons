@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RestClientImpl implements RestClient {
 
-    private Logger logger = LoggerFactory.getLogger(RestClientImpl.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(RestClientImpl.class);
 
     private HttpClient httpClient;
     private BundleContext bundleContext;
@@ -83,8 +83,9 @@ public class RestClientImpl implements RestClient {
         ContentResponse response = null;
         try {
             response = request.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException | ExecutionException e) {
             throw new IOException(e);
         }
         return response;

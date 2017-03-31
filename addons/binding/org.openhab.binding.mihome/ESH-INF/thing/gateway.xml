@@ -8,7 +8,7 @@
     <description>It is the central part of any MiHome system. It can control lighting, heating and electrics.</description>
 
     <channels>
-      <channel typeId="last_seen" id="last_seen" />
+      <channel typeId="lastSeen" id="lastSeen" />
     </channels>
 
     <properties>
@@ -24,7 +24,7 @@
     <config-description-ref uri="mihome:gateway" />
   </bridge-type>
 
-  <channel-type id="last_seen">
+  <channel-type id="lastSeen">
     <item-type>DateTime</item-type>
     <label>Last seen</label>
     <description>Time when the device was last seen from the Mi|Home server</description>

@@ -35,7 +35,7 @@ public class MiHomeBindingConstants {
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, THING_ID_GATEWAY);
     public static final ThingTypeUID THING_TYPE_ENERGY_MONITOR = new ThingTypeUID(BINDING_ID, THING_ID_ENERGY_MONITOR);
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, THING_ID_MOTION_SENSOR);
-    public  static final ThingTypeUID THING_TYPE_OPEN_SENSOR = new ThingTypeUID(BINDING_ID, THING_ID_OPEN_SENSOR);
+    public static final ThingTypeUID THING_TYPE_OPEN_SENSOR = new ThingTypeUID(BINDING_ID, THING_ID_OPEN_SENSOR);
 
     // Mapping from thing type to device type and vice versa
     public static final Map<String, ThingTypeUID> DEVICE_TYPE_TO_THING_TYPE = ImmutableMap.of(
@@ -49,15 +49,15 @@ public class MiHomeBindingConstants {
             MiHomeBindingConstants.THING_TYPE_OPEN_SENSOR, DeviceTypesConstants.OPEN_SENSOR_TYPE);
 
     // List of all Channel IDs
-    public static final String CHANNEL_LAST_SEEN = "last_seen";
+    public static final String CHANNEL_LAST_SEEN = "lastSeen";
 
     // Formatting pattern for the date of the 'last_seen' property
     public static final String LAST_SEEN_PROPERTY_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     // Channel IDs of the House Monitor device
     public static final String CHANNEL_VOLTAGE = "voltage";
-    public static final String CHANNEL_REAL_POWER = "real_power";
-    public static final String CHANNEL_TODAY_CONSUMPTION = "today_consumption";
+    public static final String CHANNEL_REAL_POWER = "realPower";
+    public static final String CHANNEL_TODAY_CONSUMPTION = "todayConsumption";
 
     /**
      * Channel ID used from sensor devices (e.g. "motion", "openClosed" etc)
@@ -76,7 +76,7 @@ public class MiHomeBindingConstants {
     /**
      * Username in the Mi|Home portal. It is the email address used for the user registration.
      */
-    public static final String CONFIG_USERNAME = "userName";
+    public static final String CONFIG_USERNAME = "username";
     /**
      * User's password used for authentication for all requests to the REST API
      */

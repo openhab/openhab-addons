@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.mihome.handler.test
+package org.openhab.binding.mihome.handler
 
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
@@ -23,11 +23,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.openhab.binding.mihome.MiHomeBindingConstants
-import org.openhab.binding.mihome.handler.MiHomeGatewayHandler
+import org.openhab.binding.mihome.internal.api.constants.*
 import org.openhab.binding.mihome.test.AbstractMiHomeOSGiTest
 import org.openhab.binding.mihome.test.JsonGateway
 import org.openhab.binding.mihome.test.MiHomeServlet
-import org.openhab.binding.mihome.internal.api.constants.*
 
 /**
  * Tests for the {@link MiHomeGatewayHandler}
@@ -44,6 +43,13 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
         setUpServices()
     }
 
+    @After
+    public void tearDown(){
+        removeBridge(thingRegistry, gatewayThing)
+        unregisterServlet(PATH_LIST_GATEWAYS)
+        unregisterServlet(PATH_CREATE_GATEWAY)
+    }
+
     @Test
     public void 'assert OFFLINE gateway status when username is not an email address'() {
 
@@ -53,7 +59,7 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
         thingRegistry.add(gatewayThing)
 
         waitForAssert({
-            assertThat gatewayThing.getHandler(), is (notNullValue())
+            assertThat gatewayThing.getHandler(), is(notNullValue())
             assertThat gatewayThing.getStatus(), is(ThingStatus.OFFLINE)
         })
     }
@@ -83,7 +89,7 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
 
         // create gateway Thing
         gatewayThing = createBridge(thingRegistry, TEST_PASSWORD, TEST_USERNAME, TEST_GATEWAY_CODE)
-        assertThat gatewayThing,is(notNullValue())
+        assertThat gatewayThing, is(notNullValue())
 
         thingRegistry.add(gatewayThing)
 
@@ -106,7 +112,7 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
         registerServlet(PATH_CREATE_GATEWAY, successfullRegistrationServlet)
 
         gatewayThing = createBridge(thingRegistry, TEST_PASSWORD, TEST_USERNAME, TEST_GATEWAY_CODE)
-        assertThat gatewayThing,is(notNullValue())
+        assertThat gatewayThing, is(notNullValue())
 
         thingRegistry.add(gatewayThing)
 
@@ -125,7 +131,7 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
         Date date = Date.from(previousDateTime.atZone(ZoneId.systemDefault()).toInstant())
         String previousDate = new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN).format(date)
 
-        gatewayDevice.setLast_seen_at(previousDate)
+        gatewayDevice.setLastSeenAt(previousDate)
         String listGatewaysServletContent = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         MiHomeServlet listGatewaysServlet = new MiHomeServlet(listGatewaysServletContent)
         registerServlet(PATH_LIST_GATEWAYS, listGatewaysServlet)
@@ -146,11 +152,11 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
 
         //Create a gateway with valid configuration and verify its online status
         gatewayThing = createBridge(thingRegistry, TEST_PASSWORD, TEST_USERNAME, TEST_GATEWAY_CODE)
-        assertThat gatewayThing,is(notNullValue())
+        assertThat gatewayThing, is(notNullValue())
 
         thingRegistry.add(gatewayThing)
 
-        MiHomeGatewayHandler gatewayHandler= gatewayThing.getHandler()
+        MiHomeGatewayHandler gatewayHandler = gatewayThing.getHandler()
 
         waitForAssert({
             assertThat gatewayHandler, is(notNullValue())
@@ -162,7 +168,7 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
             put(MiHomeBindingConstants.CONFIG_USERNAME, "notValidEmailAddress")
             put(MiHomeBindingConstants.CONFIG_GATEWAY_CODE, "not10capitalLetters")
             put(MiHomeBindingConstants.CONFIG_PASSWORD, TEST_PASSWORD)
-            put(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL, TEST_UPDATE_INTERVAL)
+            put(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL, new BigDecimal(TEST_UPDATE_INTERVAL))
             it
         }
 
@@ -177,7 +183,7 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
             put(MiHomeBindingConstants.CONFIG_USERNAME, TEST_USERNAME)
             put(MiHomeBindingConstants.CONFIG_GATEWAY_CODE, TEST_GATEWAY_CODE)
             put(MiHomeBindingConstants.CONFIG_PASSWORD, TEST_PASSWORD)
-            put(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL, TEST_UPDATE_INTERVAL)
+            put(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL, new BigDecimal(TEST_UPDATE_INTERVAL))
             it
         }
         gatewayHandler.handleConfigurationUpdate(validConfig)
@@ -272,38 +278,38 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
 
         String expectedType = gatewayDevice.getType()
         String deviceType = props.getProperty(MiHomeBindingConstants.PROPERTY_TYPE)
-        assertThat "Property ${MiHomeBindingConstants.PROPERTY_TYPE} is missing", deviceType,is(notNullValue())
-        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_TYPE}",deviceType,is(equalTo(expectedType))
+        assertThat "Property ${MiHomeBindingConstants.PROPERTY_TYPE} is missing", deviceType, is(notNullValue())
+        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_TYPE}", deviceType, is(equalTo(expectedType))
 
-        String expectedId = gatewayDevice.getId()
+        String expectedId = gatewayDevice.getID()
         String deviceId = props.getProperty(MiHomeBindingConstants.PROPERTY_DEVICE_ID)
-        assertThat "Property ${MiHomeBindingConstants.PROPERTY_DEVICE_ID} is missing", deviceId,is(notNullValue())
-        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_DEVICE_ID}",deviceId,is(equalTo(expectedId))
+        assertThat "Property ${MiHomeBindingConstants.PROPERTY_DEVICE_ID} is missing", deviceId, is(notNullValue())
+        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_DEVICE_ID}", deviceId, is(equalTo(expectedId))
 
-        String expectedUserId = gatewayDevice.getUser_id()
+        String expectedUserId = gatewayDevice.getUserID()
         String userId = props.getProperty(MiHomeBindingConstants.PROPERTY_USER_ID)
         assertThat "Property ${MiHomeBindingConstants.PROPERTY_USER_ID} is missing",userId,is(notNullValue())
-        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_USER_ID}", userId,is(equalTo(expectedUserId))
+        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_USER_ID}", userId, is(equalTo(expectedUserId))
 
-        String expectedMac = gatewayDevice.getMac_address()
+        String expectedMac = gatewayDevice.getMacAddress()
         String deviceMac = props.getProperty(MiHomeBindingConstants.PROPERTY_MAC_ADDRESS)
-        assertThat "Property ${MiHomeBindingConstants.PROPERTY_MAC_ADDRESS} is missing", deviceMac,is(notNullValue())
-        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_MAC_ADDRESS}",deviceMac,is(equalTo(expectedMac))
+        assertThat "Property ${MiHomeBindingConstants.PROPERTY_MAC_ADDRESS} is missing", deviceMac, is(notNullValue())
+        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_MAC_ADDRESS}", deviceMac, is(equalTo(expectedMac))
 
-        String expectedIp = gatewayDevice.getIp_address()
+        String expectedIp = gatewayDevice.getIpAddress()
         String ip = props.getProperty(MiHomeBindingConstants.PROPERTY_IP_ADDRESS)
-        assertThat "Property ${MiHomeBindingConstants.PROPERTY_IP_ADDRESS} is missing", ip,is(notNullValue())
-        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_IP_ADDRESS}", ip,is(equalTo(expectedIp))
+        assertThat "Property ${MiHomeBindingConstants.PROPERTY_IP_ADDRESS} is missing", ip ,is(notNullValue())
+        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_IP_ADDRESS}", ip, is(equalTo(expectedIp))
 
         String expectedPort = gatewayDevice.getPort()
         String port = props.getProperty(MiHomeBindingConstants.PROPERTY_PORT)
-        assertThat "Property ${MiHomeBindingConstants.PROPERTY_PORT} is missing", port,is(notNullValue())
-        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_PORT}",port,is(equalTo(expectedPort))
+        assertThat "Property ${MiHomeBindingConstants.PROPERTY_PORT} is missing", port, is(notNullValue())
+        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_PORT}",port, is(equalTo(expectedPort))
 
-        String expectedFirmaware = gatewayDevice.getFirmware_version_id()
+        String expectedFirmaware = gatewayDevice.getFirmwareVersionID()
         String firmware = props.getProperty(MiHomeBindingConstants.PROPERTY_FIRMWARE_VERSION)
-        assertThat "Property ${MiHomeBindingConstants.PROPERTY_FIRMWARE_VERSION} is missing", firmware,is(notNullValue())
-        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_FIRMWARE_VERSION}",firmware,is(equalTo(expectedFirmaware))
+        assertThat "Property ${MiHomeBindingConstants.PROPERTY_FIRMWARE_VERSION} is missing", firmware, is(notNullValue())
+        assertThat "Unexpected value of the parameter ${MiHomeBindingConstants.PROPERTY_FIRMWARE_VERSION}", firmware, is(equalTo(expectedFirmaware))
     }
 
     public int getWaitingTime(MiHomeGatewayHandler handler) {
@@ -312,13 +318,6 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
          * That thread is executed periodically so the timeout to wait for the status update should be a little bit longer than
          * the thread's refresh interval
          */
-        return handler.getUpdateInterval().intValue()*1000 + 200
-    }
-
-    @After
-    public void tearDown(){
-        removeBridge(thingRegistry,gatewayThing)
-        unregisterServlet(PATH_LIST_GATEWAYS)
-        unregisterServlet(PATH_CREATE_GATEWAY)
+        return handler.getUpdateInterval().intValue() * 1000 + 200
     }
 }

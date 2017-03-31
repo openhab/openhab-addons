@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.mihome.api.manager.test
+package org.openhab.binding.mihome.api.manager
 
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
@@ -296,12 +296,12 @@ class MiHomeApiManagerOSGiTest extends OSGiTest {
             out.print(this.responseContent)
         }
 
-        private boolean assertAuthorizationHeader (String header) {
+        private boolean assertAuthorizationHeader(String header) {
             String hash = header.replace("Basic ","")
             String authInfo = new String(Base64.getDecoder().decode(hash));
             String [] credentials = authInfo.split(":")
-            assertThat "Unexpected username", credentials[0],is(equalTo(TEST_USERNAME))
-            assertThat "Unexpected API key", credentials[1],is(equalTo(TEST_API_KEY))
+            assertThat "Unexpected username", credentials[0], is(equalTo(TEST_USERNAME))
+            assertThat "Unexpected API key", credentials[1], is(equalTo(TEST_API_KEY))
         }
 
     }
@@ -335,7 +335,7 @@ class MiHomeApiManagerOSGiTest extends OSGiTest {
         waitForAssert {
             String response = callback.execute()
             boolean isRequestSuccessfull = response != null
-            assertThat isRequestSuccessfull,is(successfullRequest);
+            assertThat isRequestSuccessfull, is(successfullRequest);
             assertThat "Unexpected HTTP status", HTTPRequestFailed, is(failingRequestHandler.isHTTPRequestFailed())
             assertThat "Unexpected IO exception handling", IOExceptionCaught, is(failingRequestHandler.isIOExceptionCaught())
             assertThat "Unexpected JSON response handling", JsonRequestFailed, is(failingRequestHandler.isJsonRequestFailed())
@@ -345,7 +345,7 @@ class MiHomeApiManagerOSGiTest extends OSGiTest {
         Server server = null
 
         server = getServiceFromStaticContext(Server)
-        assertThat ("The Server is not registered as OSGi service", server,is(notNullValue()))
+        assertThat ("The Server is not registered as OSGi service", server, is(notNullValue()))
 
         HttpConfiguration httpsConfig = new HttpConfiguration()
         httpsConfig.setSecureScheme(PROTOCOL)
@@ -353,15 +353,15 @@ class MiHomeApiManagerOSGiTest extends OSGiTest {
 
         // Set the SSLContext with trusted clients
         SSLContext context = SSLContextBuilder.create(FrameworkUtil.getBundle(MiHomeApiManagerOSGiTest).getBundleContext()).withKeyManagers(KEYSTORE_PATH,KEYSTORE_NAME,KEYSTORE_PASSWORD).build()
-        assertThat  "Couldn't load key store from /${KEYSTORE_PATH}/${KEYSTORE_NAME}",context,is(notNullValue())
+        assertThat  "Couldn't load key store from /${KEYSTORE_PATH}/${KEYSTORE_NAME}", context, is(notNullValue())
         SslContextFactory sslContextFactory =  new SslContextFactory()
         sslContextFactory.setSslContext(context)
 
-        SslConnectionFactory sslConnFactory = new SslConnectionFactory(sslContextFactory,HttpVersion.HTTP_1_1.asString())
+        SslConnectionFactory sslConnFactory = new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString())
         HttpConnectionFactory httpConnFactory = new HttpConnectionFactory(httpsConfig)
 
         //Configure the port and start the new server connector
-        ServerConnector https = new ServerConnector(server,sslConnFactory,httpConnFactory)
+        ServerConnector https = new ServerConnector(server, sslConnFactory, httpConnFactory)
         https.setHost(HOST)
         https.setPort(SECURE_PORT)
         server.addConnector(https)
@@ -375,7 +375,7 @@ class MiHomeApiManagerOSGiTest extends OSGiTest {
 
         // Load the trusted key store from file
         SSLContext sslContext = SSLContextBuilder.create(FrameworkUtil.getBundle(MiHomeApiManagerOSGiTest).getBundleContext()).withTrustManagers(KEYSTORE_PATH,KEYSTORE_NAME,KEYSTORE_PASSWORD).build()
-        assertThat "Couldn't load key store from /${KEYSTORE_PATH}/${KEYSTORE_NAME}",sslContext,is(notNullValue())
+        assertThat "Couldn't load key store from /${KEYSTORE_PATH}/${KEYSTORE_NAME}", sslContext, is(notNullValue())
 
         //Inject the test SSLContext
         RestClient client = getServiceFromStaticContext(RestClient)
@@ -391,12 +391,12 @@ class MiHomeApiManagerOSGiTest extends OSGiTest {
         servlet = new MiHomeServlet(requestContent, TEST_CONNECTION_TIMEOUT)
         HttpService httpService
         httpService = getService(HttpService)
-        assertThat ("The HttpService cannot be found", httpService,is(notNullValue()))
+        assertThat ("The HttpService cannot be found", httpService, is(notNullValue()))
 
         def disableAuthenticationHttpContext = [handleSecurity: { HttpServletRequest request, HttpServletResponse response ->
                 return true
             }] as HttpContext
-        httpService.registerServlet(path,servlet,null,disableAuthenticationHttpContext)
+        httpService.registerServlet(path, servlet, null, disableAuthenticationHttpContext)
     }
 
     protected void unregisterServlet(String path){
