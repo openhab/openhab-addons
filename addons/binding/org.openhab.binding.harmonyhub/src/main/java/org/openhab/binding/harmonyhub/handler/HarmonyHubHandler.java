@@ -220,7 +220,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
             updateStatus(ThingStatus.ONLINE);
             buildChannel();
         } catch (Exception e) {
-            logger.error("Could not connect to HarmonyHub at " + host, e);
+            logger.debug("Could not connect to HarmonyHub at {}", host, e);
             setOfflineAndReconnect("Could not connect: " + e.getMessage());
         }
     }

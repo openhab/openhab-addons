@@ -195,7 +195,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
                             } catch (IOException e) {
                                 logger.debug("IO error during HarmonyHub discovery: {}", e.getMessage());
                             } catch (Exception e) {
-                                logger.debug(e.getMessage(), e);
+                                logger.debug("{}", e.getMessage(), e);
                             }
                             logger.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
                                     networkInterface.getDisplayName());

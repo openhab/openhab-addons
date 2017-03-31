@@ -210,7 +210,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
             updateThing(thingBuilder.build());
         } catch (Exception e) {
-            logger.debug("Could not add button channels to device " + logName, e);
+            logger.debug("Could not add button channels to device {}", logName, e);
         }
     }
 }
