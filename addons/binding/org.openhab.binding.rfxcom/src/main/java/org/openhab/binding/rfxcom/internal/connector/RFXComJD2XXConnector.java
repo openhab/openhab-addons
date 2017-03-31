@@ -67,6 +67,9 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
         if (readerThread != null) {
             logger.debug("Interrupt serial listener");
             readerThread.interrupt();
+            try {
+                readerThread.join();
+            } catch (InterruptedException e) {}
         }
 
         if (out != null) {
@@ -82,18 +85,18 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
             logger.debug("Close serial port");
             try {
                 serialPort.close();
-
-                readerThread = null;
-                serialPort = null;
-                out = null;
-                in = null;
-
-                logger.debug("Closed");
-
             } catch (IOException e) {
                 logger.warn("Serial port closing error", e);
             }
         }
+
+        readerThread = null;
+        serialPort = null;
+        out = null;
+        in = null;
+
+        logger.debug("Closed");
+
     }
 
     @Override
