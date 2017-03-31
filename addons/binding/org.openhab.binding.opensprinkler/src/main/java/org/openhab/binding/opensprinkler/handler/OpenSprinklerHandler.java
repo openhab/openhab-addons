@@ -113,7 +113,7 @@ public abstract class OpenSprinklerHandler extends BaseThingHandler {
             } else if (command == OnOffType.OFF) {
                 openSprinklerDevice.closeStation(stationId);
             } else {
-                logger.error("Received invalid command type for OpenSprinkler station (" + command.toString() + ").");
+                logger.error("Received invalid command type for OpenSprinkler station ({}).", command);
             }
         } catch (Exception exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,

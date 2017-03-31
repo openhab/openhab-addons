@@ -4,7 +4,7 @@ Bundle-Name: Netatmo Binding
 Bundle-SymbolicName: org.openhab.binding.netatmo;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/retrofit-1.9.0.jar,
  lib/okhttp-2.3.0.jar,

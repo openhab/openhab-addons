@@ -53,7 +53,7 @@
         <ohc.version>2.1.0-SNAPSHOT</ohc.version>
         <ohcp2.version>2.1.x</ohcp2.version>
         <ohdr.version>1.0.10</ohdr.version>
-        <sat.version>0.0.2</sat.version>
+        <sat.version>0.0.3</sat.version>
         <karaf.version>4.0.8</karaf.version>
         <jackson.version>1.9.13</jackson.version>
         <tycho-version>1.0.0</tycho-version>

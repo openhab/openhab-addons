@@ -28,7 +28,7 @@ public class AirQualityJsonTime {
     @SerializedName("tz")
     private String timeZone;
 
-    private final static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
 
     /**
      * Get Time zone from the JSON Response

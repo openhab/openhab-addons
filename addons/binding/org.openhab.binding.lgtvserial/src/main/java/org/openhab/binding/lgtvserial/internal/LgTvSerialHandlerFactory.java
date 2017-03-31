@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 public class LgTvSerialHandlerFactory extends BaseThingHandlerFactory {
     
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_LGTV);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_LGTV);
     
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

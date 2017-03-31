@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SQUEEZEBOXSERVER_THING_TYPE);
 
     // time in seconds to try to reconnect
@@ -283,7 +283,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             writer.write(command + NEW_LINE);
             writer.flush();
         } catch (IOException e) {
-            logger.error("Error while sending command to Squeeze Server (" + command + ")", e);
+            logger.error("Error while sending command to Squeeze Server ({}) ", command, e);
         }
     }
 
@@ -419,7 +419,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             try {
                 return URLDecoder.decode(raw, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                logger.debug("Failed to decode '" + raw + "'", e);
+                logger.debug("Failed to decode '{}' ", raw, e);
                 return null;
             }
         }

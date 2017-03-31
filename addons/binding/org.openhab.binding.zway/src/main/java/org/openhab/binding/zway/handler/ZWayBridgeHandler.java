@@ -72,7 +72,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  */
 public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCallbacks {
 
-    public final static ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_BRIDGE;
+    public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_BRIDGE;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -139,9 +139,9 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 }
             } catch (Throwable t) {
                 if (t instanceof Exception) {
-                    logger.error(((Exception) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else if (t instanceof Error) {
-                    logger.error(((Error) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else {
                     logger.error("Unexpected error");
                 }

@@ -94,7 +94,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         }
 
         if (validConfig) {
-            logger.debug(thingConfig.toString());
+            logger.debug("{}", thingConfig);
             updateStatus(ThingStatus.ONLINE);
             restartJobs();
         } else {
@@ -162,7 +162,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                         .as(AstroChannelConfig.class);
                 updateState(channelUID, PropertyUtils.getState(channelUID, config, getPlanet()));
             } catch (Exception ex) {
-                logger.error("Can't update state for channel " + channelUID + ": " + ex.getMessage(), ex);
+                logger.error("Can't update state for channel {} : {}", channelUID, ex.getMessage(), ex);
             }
         }
     }
@@ -231,7 +231,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                         }
                     }
                 } catch (SchedulerException ex) {
-                    logger.error(ex.getMessage(), ex);
+                    logger.error("{}", ex.getMessage(), ex);
                 }
             }
         }, 2000, TimeUnit.MILLISECONDS);
@@ -251,7 +251,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                         quartzScheduler.deleteJob(jobKey);
                     }
                 } catch (SchedulerException ex) {
-                    logger.error(ex.getMessage(), ex);
+                    logger.error("{}", ex.getMessage(), ex);
                 }
             }
         }

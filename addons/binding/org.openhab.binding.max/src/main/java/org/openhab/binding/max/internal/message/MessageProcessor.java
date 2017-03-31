@@ -43,9 +43,9 @@ public class MessageProcessor {
     /**
      * <pre>
      * If more that one single line is required to create a message
-     * 	  	numberOfRequiredLines holds the number of required messages to complete
-     * 		receivedLines holds the lines received so far
-     * 		currentMessageType indicates which message type is currently on stack
+     *    numberOfRequiredLines holds the number of required messages to complete
+     *    receivedLines holds the lines received so far
+     *    currentMessageType indicates which message type is currently on stack
      * </pre>
      */
     private Integer numberOfRequiredLines = null;

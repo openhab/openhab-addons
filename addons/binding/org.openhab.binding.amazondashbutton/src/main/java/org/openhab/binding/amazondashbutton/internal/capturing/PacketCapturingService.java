@@ -90,7 +90,7 @@ public class PacketCapturingService {
             }
             pcapHandle.setFilter(filterBuilder.toString(), BpfCompileMode.OPTIMIZE);
         } catch (Exception e) {
-            logger.error("Capturing packets on device " + pcapNetworkInterface.getName() + " failed.", e);
+            logger.error("Capturing packets on device {} failed.", pcapNetworkInterface.getName(), e);
             return false;
         }
         ExecutorService executorService = Executors.newSingleThreadExecutor();

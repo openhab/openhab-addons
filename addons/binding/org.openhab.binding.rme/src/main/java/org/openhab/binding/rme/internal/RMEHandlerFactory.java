@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 public class RMEHandlerFactory extends BaseThingHandlerFactory {
     
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MANAGER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MANAGER);
     
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

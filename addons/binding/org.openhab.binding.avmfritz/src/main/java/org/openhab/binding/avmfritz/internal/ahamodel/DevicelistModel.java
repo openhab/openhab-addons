@@ -21,24 +21,24 @@ import javax.xml.bind.annotation.XmlElement;
  * 
  * <pre>
  * <devicelist version="1">
- * 	 	<device identifier="##############" id="##" functionbitmask="896"
- * 			fwversion="03.36" manufacturer="AVM" productname="FRITZ!DECT 200">
- * 			<present>1</present>
- * 			<name>FRITZ!DECT 200 #1</name>
- * 			<switch>
- * 				<state>0</state>
- * 				<mode>manuell</mode>
- * 				<lock>0</lock>
- * 			</switch>
- * 			<powermeter>
- * 				<power>0</power>
- * 				<energy>166</energy>
- * 			</powermeter>
- * 			<temperature>
- * 				<celsius>255</celsius>
- * 				<offset>0</offset>
- * 			</temperature>
- * 		</device>
+ *   <device identifier="##############" id="##" functionbitmask="896"
+ *       fwversion="03.36" manufacturer="AVM" productname="FRITZ!DECT 200">
+ *     <present>1</present>
+ *     <name>FRITZ!DECT 200 #1</name>
+ *     <switch>
+ *       <state>0</state>
+ *       <mode>manuell</mode>
+ *       <lock>0</lock>
+ *     </switch>
+ *     <powermeter>
+ *       <power>0</power>
+ *       <energy>166</energy>
+ *     </powermeter>
+ *     <temperature>
+ *       <celsius>255</celsius>
+ *       <offset>0</offset>
+ *     </temperature>
+ *   </device>
  * </devicelist>
  * 
  * <pre>
@@ -49,24 +49,24 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlRootElement(name = "devicelist")
 public class DevicelistModel {
 
-	@XmlAttribute(name = "version")
-	private String apiVersion;
+    @XmlAttribute(name = "version")
+    private String apiVersion;
 
-	@XmlElement(name = "device")
-	private ArrayList<DeviceModel> devices;
+    @XmlElement(name = "device")
+    private ArrayList<DeviceModel> devices;
 
-	public ArrayList<DeviceModel> getDevicelist() {
-		if( this.devices == null ) {
-			this.devices = new ArrayList<DeviceModel>();
-		}
-		return devices;
-	}
+    public ArrayList<DeviceModel> getDevicelist() {
+        if (this.devices == null) {
+            this.devices = new ArrayList<DeviceModel>();
+        }
+        return devices;
+    }
 
-	public void setDevicelist(ArrayList<DeviceModel> devicelist) {
-		this.devices = devicelist;
-	}
+    public void setDevicelist(ArrayList<DeviceModel> devicelist) {
+        this.devices = devicelist;
+    }
 
-	public String getXmlApiVersion() {
-		return this.apiVersion;
-	}
+    public String getXmlApiVersion() {
+        return this.apiVersion;
+    }
 }

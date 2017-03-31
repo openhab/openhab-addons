@@ -70,7 +70,7 @@ public class ChartResource implements RESTResource {
 
     static final DecimalFormat df;
 
-    protected final static String RRD_FOLDER = org.eclipse.smarthome.config.core.ConfigConstants.getUserDataFolder()
+    protected static final String RRD_FOLDER = org.eclipse.smarthome.config.core.ConfigConstants.getUserDataFolder()
             + File.separator + "persistence" + File.separator + "rrd4j";
 
     static {
@@ -237,7 +237,7 @@ public class ChartResource implements RESTResource {
             logger.debug("no rrd file found '{}'", (RRD_FOLDER + File.separator + item.getName() + ".rrd"));
             return getPersistenceSeries(persistenceService, item, timeBegin, timeEnd, resolution);
         } catch (Exception e) {
-            logger.error(e.getLocalizedMessage() + ": fallback to generic persistance service");
+            logger.error("{}: fallback to generic persistance service", e.getLocalizedMessage());
             return getPersistenceSeries(persistenceService, item, timeBegin, timeEnd, resolution);
         }
         return convertToRrd(data);

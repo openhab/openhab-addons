@@ -24,8 +24,8 @@ import org.eclipse.smarthome.core.audio.FileAudioStream;
  */
 class VoiceRSSAudioStream extends FileAudioStream {
 
-	public VoiceRSSAudioStream(File audioFile) throws AudioException {
-		super(audioFile);
-	}
+    public VoiceRSSAudioStream(File audioFile) throws AudioException {
+        super(audioFile);
+    }
 
 }

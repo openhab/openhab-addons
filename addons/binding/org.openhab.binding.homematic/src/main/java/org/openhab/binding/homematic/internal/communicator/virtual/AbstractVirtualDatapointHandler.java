@@ -56,7 +56,7 @@ public abstract class AbstractVirtualDatapointHandler implements VirtualDatapoin
      * {@inheritDoc}
      */
     @Override
-    public void handleEvent(VirtualGateway gateway, HmDatapoint dp) throws HomematicClientException {
+    public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
     }
 
     /**

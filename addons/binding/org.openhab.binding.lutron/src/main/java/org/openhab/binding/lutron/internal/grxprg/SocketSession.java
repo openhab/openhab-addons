@@ -365,7 +365,7 @@ public class SocketSession {
                             _logger.debug("Dispatching exception: {}", response);
                             callback.responseException((Exception) response);
                         } else {
-                            _logger.error("Unknown response class: " + response);
+                            _logger.error("Unknown response class: {}", response);
                         }
                     }
                 } catch (InterruptedException e) {

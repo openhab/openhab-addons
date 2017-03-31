@@ -57,7 +57,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(HarmonyDeviceHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
 
     HarmonyHubHandler bridge;
     HarmonyHubHandlerFactory factory;
@@ -210,7 +210,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
             updateThing(thingBuilder.build());
         } catch (Exception e) {
-            logger.debug("Could not add button channels to device " + logName, e);
+            logger.debug("Could not add button channels to device {}", logName, e);
         }
     }
 }
