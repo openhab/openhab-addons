@@ -43,17 +43,17 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
     /**
      * Maximum time to search for devices.
      */
-    private final static int SEARCH_TIME = 30;
+    private static final int SEARCH_TIME = 30;
 
     /**
      * Initial delay in s for scanning job.
      */
-    private final static int INITIAL_DELAY = 5;
+    private static final int INITIAL_DELAY = 5;
 
     /**
      * Scan interval in s for scanning job.
      */
-    private final static int SCAN_INTERVAL = 180;
+    private static final int SCAN_INTERVAL = 180;
     /**
      * Handler of the bridge of which devices have to be discovered.
      */

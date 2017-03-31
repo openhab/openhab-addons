@@ -40,7 +40,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
             FreeboxBindingConstants.SUPPORTED_BRIDGE_TYPES_UIDS, FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS);
 
     @Override

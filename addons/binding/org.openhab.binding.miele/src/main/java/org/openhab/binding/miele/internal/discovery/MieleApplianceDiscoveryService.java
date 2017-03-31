@@ -43,7 +43,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
 
     private final Logger logger = LoggerFactory.getLogger(MieleApplianceDiscoveryService.class);
 
-    private final static int SEARCH_TIME = 60;
+    private static final int SEARCH_TIME = 60;
 
     private MieleBridgeHandler mieleBridgeHandler;
 

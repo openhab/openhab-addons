@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ToonDiscoveryService extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(ToonDiscoveryService.class);
-    private final static int SEARCH_TIME = 2;
+    private static final int SEARCH_TIME = 2;
     private ToonBridgeHandler toonBridgeHandler;
 
     public ToonDiscoveryService(ToonBridgeHandler toonBridgeHandler) {

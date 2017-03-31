@@ -62,7 +62,7 @@ public class TeslaBindingConstants {
     public static final String BINDING_ID = "tesla";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_MODELS = new ThingTypeUID(BINDING_ID, "models");
+    public static final ThingTypeUID THING_TYPE_MODELS = new ThingTypeUID(BINDING_ID, "models");
 
     public enum EventKeys {
         timestamp,

@@ -37,7 +37,7 @@ public class PcapNetworkInterfaceWrapper {
     /**
      * Use this Guava function in order to create a {@link PcapNetworkInterfaceWrapper} instance.
      */
-    public final static Function<PcapNetworkInterface, PcapNetworkInterfaceWrapper> TRANSFORMER = new Function<PcapNetworkInterface, PcapNetworkInterfaceWrapper>() {
+    public static final Function<PcapNetworkInterface, PcapNetworkInterfaceWrapper> TRANSFORMER = new Function<PcapNetworkInterface, PcapNetworkInterfaceWrapper>() {
 
         @Override
         public PcapNetworkInterfaceWrapper apply(PcapNetworkInterface pcapNetworkInterface) {

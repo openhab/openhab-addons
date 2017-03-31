@@ -32,7 +32,7 @@ import com.google.common.collect.Sets;
  */
 public class HDanywhereHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_MULTIROOMPLUS,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_MULTIROOMPLUS,
             THING_TYPE_MHUB4K431);
 
     @Override

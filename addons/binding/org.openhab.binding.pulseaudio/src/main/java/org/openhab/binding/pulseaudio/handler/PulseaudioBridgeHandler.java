@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class PulseaudioBridgeHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(PulseaudioBridgeHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(PulseaudioBindingConstants.BRIDGE_THING_TYPE);
 
     public String host = "localhost";

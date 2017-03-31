@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MediaRendererService implements UpnpIOParticipant, SamsungTvService {
 
-    public final static String SERVICE_NAME = "MediaRenderer";
+    public static final String SERVICE_NAME = "MediaRenderer";
     private final List<String> supportedCommands = Arrays.asList(VOLUME, MUTE, BRIGHTNESS, CONTRAST, SHARPNESS,
             COLOR_TEMPERATURE);
 

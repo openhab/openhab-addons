@@ -54,7 +54,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     private PowerSource[] powerSources;
     private HWDiskStore[] drives;
 
-    public final static int PRECISION_AFTER_DECIMAl_SIGN = 1;
+    public static final int PRECISION_AFTER_DECIMAl_SIGN = 1;
 
     /**
      * Some of the methods used in this constructor execute native code and require execute permissions

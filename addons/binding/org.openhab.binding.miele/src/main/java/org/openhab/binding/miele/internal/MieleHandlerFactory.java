@@ -46,7 +46,7 @@ import com.google.common.collect.Sets;
  */
 public class MieleHandlerFactory extends BaseThingHandlerFactory {
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(MieleBridgeHandler.SUPPORTED_THING_TYPES, MieleApplianceHandler.SUPPORTED_THING_TYPES);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();

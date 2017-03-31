@@ -38,14 +38,14 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial contribution
  */
 public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
-    private final static Logger logger = LoggerFactory.getLogger(GlobalCacheDiscoveryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(GlobalCacheDiscoveryService.class);
 
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> gcDiscoveryJob;
 
     // Discovery parameters
-    public final static boolean BACKGROUND_DISCOVERY_ENABLED = true;
-    public final static int BACKGROUND_DISCOVERY_DELAY = 10;
+    public static final boolean BACKGROUND_DISCOVERY_ENABLED = true;
+    public static final int BACKGROUND_DISCOVERY_DELAY = 10;
 
     private DiscoveryServiceCallback discoveryServiceCallback;
 

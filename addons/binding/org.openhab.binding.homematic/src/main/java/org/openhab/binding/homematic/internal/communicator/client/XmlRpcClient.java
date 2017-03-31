@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class XmlRpcClient extends RpcClient {
-    private final static Logger logger = LoggerFactory.getLogger(XmlRpcClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(XmlRpcClient.class);
     private HttpClient httpClient;
 
     public XmlRpcClient(HomematicConfig config) throws IOException {

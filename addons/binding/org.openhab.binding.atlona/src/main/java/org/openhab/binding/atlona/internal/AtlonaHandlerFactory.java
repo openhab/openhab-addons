@@ -35,7 +35,7 @@ public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
     /**
      * The set of supported Atlona products
      */
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
             AtlonaBindingConstants.THING_TYPE_PRO3_44M, AtlonaBindingConstants.THING_TYPE_PRO3_66M,
             AtlonaBindingConstants.THING_TYPE_PRO3_88M, AtlonaBindingConstants.THING_TYPE_PRO3_1616M);
 

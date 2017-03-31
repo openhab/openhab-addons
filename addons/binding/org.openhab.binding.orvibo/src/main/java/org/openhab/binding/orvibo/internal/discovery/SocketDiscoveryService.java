@@ -36,7 +36,7 @@ import com.github.tavalin.s20.Socket;
 public class SocketDiscoveryService extends AbstractDiscoveryService implements SocketDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(SocketDiscoveryService.class);
-    private final static int SEARCH_TIME = 60;
+    private static final int SEARCH_TIME = 60;
     private S20Client s20Client;
 
     public SocketDiscoveryService() throws SocketException {
