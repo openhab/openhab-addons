@@ -385,7 +385,7 @@ public class MilightV6SessionManager implements Runnable {
     }
 
     private void logUnknownPacket(byte[] data, int len, String reason) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < len; ++i) {
             s.append(String.format("%02X ", data[i]));
         }
