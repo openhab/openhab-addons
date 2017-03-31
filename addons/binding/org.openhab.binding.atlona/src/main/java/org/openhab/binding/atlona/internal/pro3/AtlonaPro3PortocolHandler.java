@@ -968,7 +968,7 @@ class AtlonaPro3PortocolHandler {
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleCommandFailure(String resp) {
-        logger.info(resp);
+        logger.info("{}", resp);
     }
 
     /**

@@ -229,7 +229,7 @@ public abstract class Device {
 
                 break;
             default:
-                logger.debug("Unhandled Device. DataBytes: " + Utils.getHex(raw));
+                logger.debug("Unhandled Device. DataBytes: {}", Utils.getHex(raw));
                 break;
 
         }

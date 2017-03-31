@@ -172,7 +172,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                     bcReceipt.close();
                 }
             } catch (Exception e) {
-                logger.debug(e.toString());
+                logger.debug("{}", e.toString());
             }
         }
     }
@@ -231,7 +231,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                             } catch (IOException e) {
                                 logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
                             } catch (Exception e) {
-                                logger.info(e.getMessage(), e);
+                                logger.info("{}", e.getMessage(), e);
                             }
                             logger.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
                                     networkInterface.getDisplayName());
