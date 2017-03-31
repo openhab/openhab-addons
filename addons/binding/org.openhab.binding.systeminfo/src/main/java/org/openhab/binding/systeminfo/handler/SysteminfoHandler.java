@@ -425,7 +425,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                     logger.error("Channel with unknown ID: {} !", channelID);
             }
         } catch (DeviceNotFoundException e) {
-            logger.error("No information for channel " + channelID + deviceIndex, e);
+            logger.error("No information for channel {} with device intex {} :", channelID, deviceIndex, e);
         } catch (Exception e) {
             logger.error("Unexpected error occurred while getting system information!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

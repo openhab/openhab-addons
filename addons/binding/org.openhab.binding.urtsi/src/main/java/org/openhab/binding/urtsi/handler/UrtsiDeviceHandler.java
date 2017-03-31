@@ -220,7 +220,7 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
                     "Serial port '" + port + "' could not be found. Available ports are:\n" + sb.toString());
         } catch (Exception e) {
             if (logger.isErrorEnabled()) {
-                logger.error("An error occurred while initializing the Urtsi II connection." + e);
+                logger.error("An error occurred while initializing the Urtsi II connection.", e);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "An error occurred while initializing the Urtsi II connection: " + e.getMessage());

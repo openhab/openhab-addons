@@ -189,9 +189,9 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
             setConnected(false);
             logger.debug("closeConnection(): Closed TCP Connection!");
         } catch (IOException ioException) {
-            logger.error("closeConnection(): Unable to close connection - {}" + ioException.getMessage());
+            logger.error("closeConnection(): Unable to close connection - {}", ioException.getMessage());
         } catch (Exception exception) {
-            logger.error("closeConnection(): Error closing connection - {}" + exception.getMessage());
+            logger.error("closeConnection(): Error closing connection - {}", exception.getMessage());
         }
     }
 

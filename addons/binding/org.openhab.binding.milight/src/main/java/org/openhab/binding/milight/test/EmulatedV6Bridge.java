@@ -147,7 +147,7 @@ public class EmulatedV6Bridge {
             if (willbeclosed) {
                 return;
             }
-            logger.error(e.getLocalizedMessage());
+            logger.error("{}", e.getLocalizedMessage());
         }
     }
 
@@ -280,8 +280,7 @@ public class EmulatedV6Bridge {
                                     + buffer[19]);
 
                             if (chksum != buffer[21]) {
-                                logger.error(
-                                        "Checksum wrong:" + String.valueOf(chksum) + " " + String.valueOf(buffer[21]));
+                                logger.error("Checksum wrong:{} {}", chksum, buffer[21]);
                                 continue;
                             }
 
@@ -299,7 +298,7 @@ public class EmulatedV6Bridge {
                             for (int i = 13; i < 19; ++i) {
                                 debugStr.append(String.format("%02X ", buffer[i]));
                             }
-                            logger.debug(debugStr.toString());
+                            logger.debug("{}", debugStr);
                         }
                     }
 
@@ -316,7 +315,7 @@ public class EmulatedV6Bridge {
             if (willbeclosed) {
                 return;
             }
-            logger.error(e.getLocalizedMessage());
+            logger.error("{}", e.getLocalizedMessage());
         }
     }
 
@@ -325,7 +324,7 @@ public class EmulatedV6Bridge {
         for (int i = 0; i < len; ++i) {
             s.append(String.format("%02X ", data[i]));
         }
-        logger.error(reason + ": " + s.toString());
+        logger.error("{}: {}", reason, s);
     }
 
     protected void sendMessage(DatagramPacket packet, DatagramSocket datagramSocket, byte buffer[]) {

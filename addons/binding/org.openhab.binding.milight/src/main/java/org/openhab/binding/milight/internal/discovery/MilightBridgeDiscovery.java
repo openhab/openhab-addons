@@ -52,7 +52,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
             try {
                 receiveThread = new MilightDiscover(this, 200, 2000 / 200);
             } catch (SocketException e) {
-                logger.error("Opening a socket for the milight discovery service failed. " + e.getLocalizedMessage());
+                logger.error("Opening a socket for the milight discovery service failed. {}", e.getLocalizedMessage());
                 return;
             }
             receiveThread.start();

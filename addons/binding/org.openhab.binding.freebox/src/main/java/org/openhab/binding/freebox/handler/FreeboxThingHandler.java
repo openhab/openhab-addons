@@ -164,7 +164,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 } else {
                     t.printStackTrace(new PrintWriter(sw));
                 }
-                logger.error(sw.toString());
+                logger.error("{}", sw);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
@@ -201,7 +201,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 } else {
                     t.printStackTrace(new PrintWriter(sw));
                 }
-                logger.error(sw.toString());
+                logger.error("{}", sw);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }

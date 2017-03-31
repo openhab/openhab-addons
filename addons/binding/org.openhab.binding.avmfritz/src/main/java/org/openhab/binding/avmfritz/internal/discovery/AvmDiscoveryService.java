@@ -83,7 +83,7 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
      */
     @Override
     public void startScan() {
-        logger.debug("starting scan on bridge " + bridgeHandler.getThing().getUID());
+        logger.debug("starting scan on bridge {}", bridgeHandler.getThing().getUID());
         FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(), this);
         bridgeHandler.getWebInterface().asyncGet(callback);
     }
@@ -168,7 +168,7 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
          */
         @Override
         public void run() {
-            logger.debug("starting scan on bridge " + bridgeHandler.getThing().getUID());
+            logger.debug("starting scan on bridge {}", bridgeHandler.getThing().getUID());
             FritzAhaDiscoveryCallback callback = new FritzAhaDiscoveryCallback(bridgeHandler.getWebInterface(),
                     service);
             bridgeHandler.getWebInterface().asyncGet(callback);

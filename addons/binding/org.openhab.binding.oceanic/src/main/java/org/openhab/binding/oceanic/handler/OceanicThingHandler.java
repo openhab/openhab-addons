@@ -157,7 +157,7 @@ public class OceanicThingHandler extends BaseThingHandler {
                         sb.append(id.getName() + "\n");
                     }
                 }
-                logger.error("Serial port '" + port + "' could not be found. Available ports are:\n" + sb.toString());
+                logger.error("Serial port '{}' could not be found. Available ports are:\n {}", port, sb);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
@@ -187,7 +187,7 @@ public class OceanicThingHandler extends BaseThingHandler {
                 readerThread.interrupt();
                 readerThread.join();
             } catch (InterruptedException e) {
-                logger.error("An exception occured while interrupting the serial port reader thread : '{}'",
+                logger.error("An exception occured while interrupting the serial port reader thread : {}",
                         e.getMessage(), e);
             }
         }
@@ -370,8 +370,7 @@ public class OceanicThingHandler extends BaseThingHandler {
                         foundStart = false;
                         for (int i = 0; i < len; i++) {
                             if (i > 0) {
-                                if (tmpData[i] != lineFeed && tmpData[i] != carriageReturn
-                                        && tmpData[i] != nullChar) {
+                                if (tmpData[i] != lineFeed && tmpData[i] != carriageReturn && tmpData[i] != nullChar) {
                                     if (tmpData[i - 1] == lineFeed || tmpData[i - 1] == carriageReturn
                                             || tmpData[i - 1] == nullChar) {
                                         index = 0;

@@ -150,7 +150,7 @@ public class PcapNetworkInterfaceService {
         try {
             listener.onPcapNetworkInterfaceAdded(pcapNetworkInterface);
         } catch (Exception e) {
-            logger.error("An exception occurred while calling onPcapNetworkInterfaceAdded for " + listener, e);
+            logger.error("An exception occurred while calling onPcapNetworkInterfaceAdded for {}", listener, e);
         }
     }
 
@@ -159,7 +159,7 @@ public class PcapNetworkInterfaceService {
         try {
             listener.onPcapNetworkInterfaceRemoved(pcapNetworkInterface);
         } catch (Exception e) {
-            logger.error("An exception occurred while calling onPcapNetworkInterfaceRemoved for " + listener, e);
+            logger.error("An exception occurred while calling onPcapNetworkInterfaceRemoved for {}", listener, e);
         }
     }
 

@@ -59,7 +59,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
     public void execute(int status, String response) {
         super.execute(status, response);
         if (this.isValidRequest()) {
-            logger.trace("Received State response " + response);
+            logger.trace("Received State response {}", response);
             try {
                 JAXBContext jaxbContext = JAXBContext.newInstance(DevicelistModel.class);
                 Unmarshaller jaxbUM = jaxbContext.createUnmarshaller();
@@ -74,10 +74,10 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                     logger.warn("no model in response");
                 }
             } catch (JAXBException e) {
-                logger.error(e.getLocalizedMessage(), e);
+                logger.error("{}", e.getLocalizedMessage(), e);
             }
         } else {
-            logger.info("request is invalid: " + status);
+            logger.info("request is invalid: {}", status);
         }
     }
 }

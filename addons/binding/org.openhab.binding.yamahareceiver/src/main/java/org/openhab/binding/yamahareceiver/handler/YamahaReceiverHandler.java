@@ -246,7 +246,7 @@ public class YamahaReceiverHandler extends BaseThingHandler {
                     state.setNetRadio(((DecimalType) command).intValue());
                     break;
                 default:
-                    logger.error("Channel " + id + " not supported!");
+                    logger.error("Channel {} not supported!", id);
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

@@ -232,7 +232,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                 }
 
             }
-            logger.trace("updating " + channelUID + " to " + updateState);
+            logger.trace("updating {} to {}", channelUID, updateState);
             if (!updateState.equals(UnDefType.UNDEF)) {
                 updateState(channelUID, updateState);
             }
@@ -270,6 +270,6 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
 
     @Override
     public void onDeviceAdded(Bridge bridge, AbstractAudioDeviceConfig device) {
-        logger.trace("new device discovered " + device + " by " + bridge);
+        logger.trace("new device discovered {} by {}", device, bridge);
     }
 }

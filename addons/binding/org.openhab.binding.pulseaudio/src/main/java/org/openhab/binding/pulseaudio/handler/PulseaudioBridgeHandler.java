@@ -142,8 +142,8 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
                             startAutomaticRefresh();
                         }
                     } catch (IOException e) {
-                        logger.error("Couldn't connect to Pulsaudio server [Host '" + host + "':'" + port + "']: "
-                                + e.getLocalizedMessage());
+                        logger.error("Couldn't connect to Pulsaudio server [Host '{}':'{}']: {}", host, port,
+                                e.getLocalizedMessage());
                         updateStatus(ThingStatus.OFFLINE);
                     }
                 }

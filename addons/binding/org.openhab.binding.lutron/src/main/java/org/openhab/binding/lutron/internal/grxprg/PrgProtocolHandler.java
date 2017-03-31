@@ -318,7 +318,7 @@ class PrgProtocolHandler {
      * @param controlUnit the control unit to refresh
      */
     void refreshState(int controlUnit) {
-        logger.debug("Refreshing control unit (" + controlUnit + ") state");
+        logger.debug("Refreshing control unit ({}) state", controlUnit);
         refreshScene();
         refreshTime();
         refreshSchedule();
@@ -420,7 +420,7 @@ class PrgProtocolHandler {
         } else {
             final String hexNbr = intensityMap.get(intensity);
             if (hexNbr == null) { // this should be impossible as all 100 values are in table
-                logger.warn("Unknown zone intensity (" + intensity + ")");
+                logger.warn("Unknown zone intensity ({})", intensity);
                 return Integer.toHexString(intensity).toUpperCase();
             }
             return hexNbr;
@@ -445,14 +445,14 @@ class PrgProtocolHandler {
         if (isShade) {
             final Integer intNbr = shadeIntensityMap.get(intensity);
             if (intNbr == null) {
-                logger.warn("Unknown shade intensity (" + intensity + ")");
+                logger.warn("Unknown shade intensity ({})", intensity);
                 return Integer.parseInt(intensity, 16);
             }
             return intNbr;
         } else {
             final Integer intNbr = reverseIntensityMap.get(intensity);
             if (intNbr == null) {
-                logger.warn("Unknown zone intensity (" + intensity + ")");
+                logger.warn("Unknown zone intensity ({})", intensity);
                 return Integer.parseInt(intensity, 16);
             }
             zoneIntensities[zone] = intNbr;
@@ -713,7 +713,7 @@ class PrgProtocolHandler {
             throw new IllegalArgumentException("command cannot be empty");
         }
         try {
-            logger.debug("SendCommand: " + command);
+            logger.debug("SendCommand: {}", command);
             _session.sendCommand(command);
         } catch (IOException e) {
             _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -836,7 +836,7 @@ class PrgProtocolHandler {
 
                     }
                 }
-                logger.error("Error response: " + errorMsg + " (" + errorNbr + ")");
+                logger.error("Error response: {} ({})", errorMsg, errorNbr);
             } catch (NumberFormatException e) {
                 logger.error("Invalid failure response (can't parse error number): '{}'", resp);
             }
@@ -866,7 +866,7 @@ class PrgProtocolHandler {
 
                     int scene = VALID_SCENES.indexOf(status);
                     if (scene < 0) {
-                        logger.warn("Unknown scene status returned for zone " + i + ": " + status);
+                        logger.warn("Unknown scene status returned for zone {}: {}", i, status);
                     } else {
                         _callback.stateChanged(i, PrgConstants.CHANNEL_SCENE, new DecimalType(scene));
                         refreshZoneIntensity(i); // request to get new zone intensities
@@ -1088,7 +1088,7 @@ class PrgProtocolHandler {
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleUnknownCommand(String response) {
-        logger.info("Unhandled response: " + response);
+        logger.info("Unhandled response: {}", response);
     }
 
     /**

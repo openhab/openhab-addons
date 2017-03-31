@@ -143,15 +143,15 @@ public class MilightDiscover extends Thread {
             try {
                 datagramSocket.send(discoverPacket_v3);
             } catch (IOException e) {
-                logger.error("Sending a V3 discovery packet to " + destIP.getHostAddress() + " failed. "
-                        + e.getLocalizedMessage());
+                logger.error("Sending a V3 discovery packet to {} failed. {}", destIP.getHostAddress(),
+                        e.getLocalizedMessage());
             }
 
             try {
                 datagramSocket.send(discoverPacket_v6);
             } catch (IOException e) {
-                logger.error("Sending a V6 discovery packet to " + destIP.getHostAddress() + " failed. "
-                        + e.getLocalizedMessage());
+                logger.error("Sending a V6 discovery packet to {} failed. {}", destIP.getHostAddress(),
+                        e.getLocalizedMessage());
             }
         }
     }
@@ -203,14 +203,14 @@ public class MilightDiscover extends Thread {
                     discoverResult.bridgeDetected(((InetSocketAddress) packet.getSocketAddress()).getAddress(), msg[1],
                             version);
                 } else {
-                    logger.error("Unexpected data received " + msg[0]);
+                    logger.error("Unexpected data received {}", msg[0]);
                 }
             }
         } catch (IOException e) {
             if (willbeclosed) {
                 return;
             }
-            logger.error(e.getLocalizedMessage());
+            logger.error("{}", e.getLocalizedMessage());
         }
     }
 

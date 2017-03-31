@@ -43,11 +43,11 @@ public class HomekitAccessoryUpdater {
         }
         ItemKey itemKey = new ItemKey(item, key);
         if (subscriptionsByName.containsKey(itemKey)) {
-            logger.error("Received duplicate subscription on " + item.getName());
+            logger.error("Received duplicate subscription on {}", item.getName());
         }
         subscriptionsByName.compute(itemKey, (k, v) -> {
             if (v != null) {
-                logger.error("Received duplicate subscription on " + item.getName());
+                logger.error("Received duplicate subscription on {}", item.getName());
                 unsubscribe(item, key);
             }
             Subscription subscription = (changedItem, oldState, newState) -> callback.changed();
@@ -102,23 +102,30 @@ public class HomekitAccessoryUpdater {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             ItemKey other = (ItemKey) obj;
             if (item == null) {
-                if (other.item != null)
+                if (other.item != null) {
                     return false;
-            } else if (!item.equals(other.item))
+                }
+            } else if (!item.equals(other.item)) {
                 return false;
+            }
             if (key == null) {
-                if (other.key != null)
+                if (other.key != null) {
                     return false;
-            } else if (!key.equals(other.key))
+                }
+            } else if (!key.equals(other.key)) {
                 return false;
+            }
             return true;
         }
     }

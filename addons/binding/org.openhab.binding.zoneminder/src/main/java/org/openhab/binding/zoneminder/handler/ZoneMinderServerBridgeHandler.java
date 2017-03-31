@@ -203,13 +203,13 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                             if (thingHandler != null) {
 
                                 if (thingHandler.getRefreshPriority() == DataRefreshPriorityEnum.HIGH_PRIORITY) {
-                                    logger.debug(String.format("[MONITOR-%s]: RefreshPriority is High Priority",
-                                            thingHandler.getZoneMinderId()));
+                                    logger.debug("[MONITOR-{}]: RefreshPriority is High Priority",
+                                            thingHandler.getZoneMinderId());
                                     thingHandler.refreshThing(zoneMinderSession, DataRefreshPriorityEnum.HIGH_PRIORITY);
                                 }
                             } else {
-                                logger.debug(String.format(
-                                        "[MONITOR]: refreshThing not called for monitor, since thingHandler is 'null'"));
+                                logger.debug(
+                                        "[MONITOR]: refreshThing not called for monitor, since thingHandler is 'null'");
 
                             }
                         }
