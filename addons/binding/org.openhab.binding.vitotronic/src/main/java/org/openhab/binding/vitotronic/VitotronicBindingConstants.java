@@ -48,23 +48,23 @@ public class VitotronicBindingConstants {
     public static final String THING_ID_VALVE = "valve";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_UID_BRIDGE = new ThingTypeUID(BINDING_ID, BRIDGE_VITOTRONIC);
-    public final static ThingTypeUID THING_TYPE_UID_HEATING = new ThingTypeUID(BINDING_ID, THING_ID_HEATING);
-    public final static ThingTypeUID THING_TYPE_UID_PELLETBURNER = new ThingTypeUID(BINDING_ID, THING_ID_PELLETBURNER);
-    public final static ThingTypeUID THING_TYPE_UID_OILBURNER = new ThingTypeUID(BINDING_ID, THING_ID_OILBURNER);
-    public final static ThingTypeUID THING_TYPE_UID_STORAGETANK = new ThingTypeUID(BINDING_ID, THING_ID_STORAGETANK);
-    public final static ThingTypeUID THING_TYPE_UID_CIRCUIT = new ThingTypeUID(BINDING_ID, THING_ID_CIRCUIT);
-    public final static ThingTypeUID THING_TYPE_UID_SOLAR = new ThingTypeUID(BINDING_ID, THING_ID_SOLAR);
-    public final static ThingTypeUID THING_TYPE_UID_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_UID_BRIDGE = new ThingTypeUID(BINDING_ID, BRIDGE_VITOTRONIC);
+    public static final ThingTypeUID THING_TYPE_UID_HEATING = new ThingTypeUID(BINDING_ID, THING_ID_HEATING);
+    public static final ThingTypeUID THING_TYPE_UID_PELLETBURNER = new ThingTypeUID(BINDING_ID, THING_ID_PELLETBURNER);
+    public static final ThingTypeUID THING_TYPE_UID_OILBURNER = new ThingTypeUID(BINDING_ID, THING_ID_OILBURNER);
+    public static final ThingTypeUID THING_TYPE_UID_STORAGETANK = new ThingTypeUID(BINDING_ID, THING_ID_STORAGETANK);
+    public static final ThingTypeUID THING_TYPE_UID_CIRCUIT = new ThingTypeUID(BINDING_ID, THING_ID_CIRCUIT);
+    public static final ThingTypeUID THING_TYPE_UID_SOLAR = new ThingTypeUID(BINDING_ID, THING_ID_SOLAR);
+    public static final ThingTypeUID THING_TYPE_UID_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID,
             THING_ID_TEMPERATURESENSOR);
-    public final static ThingTypeUID THING_TYPE_UID_PUMP = new ThingTypeUID(BINDING_ID, THING_ID_PUMP);
-    public final static ThingTypeUID THING_TYPE_UID_VALVE = new ThingTypeUID(BINDING_ID, THING_ID_VALVE);
+    public static final ThingTypeUID THING_TYPE_UID_PUMP = new ThingTypeUID(BINDING_ID, THING_ID_PUMP);
+    public static final ThingTypeUID THING_TYPE_UID_VALVE = new ThingTypeUID(BINDING_ID, THING_ID_VALVE);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_UID_BRIDGE,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_UID_BRIDGE,
             THING_TYPE_UID_HEATING, THING_TYPE_UID_PELLETBURNER, THING_TYPE_UID_OILBURNER, THING_TYPE_UID_STORAGETANK,
             THING_TYPE_UID_CIRCUIT, THING_TYPE_UID_SOLAR, THING_TYPE_UID_TEMPERATURESENSOR, THING_TYPE_UID_PUMP,
             THING_TYPE_UID_VALVE);
 
-    public final static Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_UID_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_UID_BRIDGE);
 
 }

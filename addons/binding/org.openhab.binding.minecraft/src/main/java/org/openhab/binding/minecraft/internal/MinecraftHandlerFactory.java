@@ -36,7 +36,7 @@ public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(MinecraftDiscoveryService.class);
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>();
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>();
 
     static {
         SUPPORTED_THING_TYPES_UIDS.add(MinecraftBindingConstants.THING_TYPE_SERVER);

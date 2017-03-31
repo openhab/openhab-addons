@@ -33,7 +33,7 @@ public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
 
     int adapterPort = 31113;
 
-    private final static Logger logger = LoggerFactory.getLogger(VitotronicBridgeDiscovery.class);
+    private static final Logger logger = LoggerFactory.getLogger(VitotronicBridgeDiscovery.class);
 
     public VitotronicBridgeDiscovery() throws IllegalArgumentException {
         super(VitotronicBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 15, false);

@@ -27,7 +27,7 @@ import org.openhab.binding.oceanic.handler.OceanicThingHandler;
  */
 public class OceanicHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SOFTENER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SOFTENER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

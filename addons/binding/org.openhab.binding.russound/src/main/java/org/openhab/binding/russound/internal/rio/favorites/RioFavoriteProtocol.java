@@ -53,8 +53,8 @@ class RioFavoriteProtocol extends AbstractRioProtocol {
     private String _name;
 
     // Protocol constants
-    private final static String FAV_NAME = "name";
-    private final static String FAV_VALID = "valid";
+    private static final String FAV_NAME = "name";
+    private static final String FAV_VALID = "valid";
 
     // Response patterns
     private final Pattern RSP_SYSTEMNOTIFICATION = Pattern

@@ -37,7 +37,7 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final static int SEARCH_TIME = 240;
+    private static final int SEARCH_TIME = 240;
 
     public ZWayBridgeDiscoveryService() {
         super(ZWayBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);

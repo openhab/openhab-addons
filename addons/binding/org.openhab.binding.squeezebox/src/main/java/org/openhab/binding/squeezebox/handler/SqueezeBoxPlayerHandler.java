@@ -57,7 +57,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SQUEEZEBOXPLAYER_THING_TYPE);
 
     /**

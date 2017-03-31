@@ -27,7 +27,7 @@ import org.openhab.binding.exec.handler.ExecHandler;
  */
 public class ExecHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_COMMAND);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_COMMAND);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

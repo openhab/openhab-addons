@@ -31,7 +31,7 @@ import org.tellstick.device.TellstickController;
  */
 public class TellstickBridgeDiscovery extends AbstractDiscoveryService {
 
-    private final static Logger logger = LoggerFactory.getLogger(TellstickBridgeDiscovery.class);
+    private static final Logger logger = LoggerFactory.getLogger(TellstickBridgeDiscovery.class);
 
     static boolean discoveryRunning = false;
     static boolean initilized = false;

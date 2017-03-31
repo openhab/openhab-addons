@@ -40,11 +40,10 @@ import com.google.common.collect.Sets;
 public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS, PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS);
 
     private Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<ThingHandler, ServiceRegistration<?>>();
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);

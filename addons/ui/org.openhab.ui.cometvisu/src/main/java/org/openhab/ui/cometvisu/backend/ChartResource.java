@@ -70,7 +70,7 @@ public class ChartResource implements RESTResource {
 
     static final DecimalFormat df;
 
-    protected final static String RRD_FOLDER = org.eclipse.smarthome.config.core.ConfigConstants.getUserDataFolder()
+    protected static final String RRD_FOLDER = org.eclipse.smarthome.config.core.ConfigConstants.getUserDataFolder()
             + File.separator + "persistence" + File.separator + "rrd4j";
 
     static {

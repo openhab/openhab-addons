@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
 
-    private final static Logger logger = LoggerFactory.getLogger(PulseaudioDeviceDiscoveryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(PulseaudioDeviceDiscoveryService.class);
 
     private PulseaudioBridgeHandler pulseaudioBridgeHandler;
 

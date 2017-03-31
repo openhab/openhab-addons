@@ -13,11 +13,12 @@ import static org.openhab.binding.autelis.AutelisBindingConstants.POOLCONTROL_TH
 import java.util.Collections;
 import java.util.Set;
 
+import org.openhab.binding.autelis.handler.AutelisHandler;
+
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.autelis.handler.AutelisHandler;
 
 /**
  * The {@link AutelisHandlerFactory} is responsible for creating things and
@@ -27,7 +28,7 @@ import org.openhab.binding.autelis.handler.AutelisHandler;
  */
 public class AutelisHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(POOLCONTROL_THING_TYPE_UID);
 
     @Override

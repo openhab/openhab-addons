@@ -31,7 +31,7 @@ public final class QueueChannelThrottler extends AbstractMultiRateChannelThrottl
 
     private Logger logger = LoggerFactory.getLogger(QueueChannelThrottler.class);
 
-    private final static int MAX_QUEUE_LENGTH = 150;
+    private static final int MAX_QUEUE_LENGTH = 150;
     private BlockingQueue<FutureTask<?>> tasks;
     private final Rate overallRate;
 

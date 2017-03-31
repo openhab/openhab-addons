@@ -52,7 +52,7 @@ import com.google.common.collect.Sets;
  */
 public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusListener {
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(SINK_THING_TYPE,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(SINK_THING_TYPE,
             COMBINED_SINK_THING_TYPE, SINK_INPUT_THING_TYPE, SOURCE_THING_TYPE, SOURCE_OUTPUT_THING_TYPE);
 
     private int refresh = 60; // refresh every minute as default

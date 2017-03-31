@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SilvercrestWifiSocketBindingConstants.THING_TYPE_WIFI_SOCKET);
 
     private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketHandlerFactory.class);

@@ -65,7 +65,7 @@ import com.google.gson.JsonParser;
  */
 public class MieleBridgeHandler extends BaseBridgeHandler {
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_XGW3000);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_XGW3000);
 
     private static final Pattern IP_PATTERN = Pattern
             .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");

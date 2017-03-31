@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class ZWayHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
             ZWayBridgeHandler.SUPPORTED_THING_TYPE, ZWayZAutomationDeviceHandler.SUPPORTED_THING_TYPE,
             ZWayZWaveDeviceHandler.SUPPORTED_THING_TYPE);
 

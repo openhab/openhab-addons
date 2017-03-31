@@ -21,9 +21,9 @@ import org.osgi.framework.FrameworkUtil;
  */
 public class HomekitSettings {
 
-    private final static String NAME = "openHAB";
-    private final static String MANUFACTURER = "openHAB";
-    private final static String SERIAL_NUMBER = "none";
+    private static final String NAME = "openHAB";
+    private static final String MANUFACTURER = "openHAB";
+    private static final String SERIAL_NUMBER = "none";
 
     private int port = 9123;
     private String pin = "031-45-154";

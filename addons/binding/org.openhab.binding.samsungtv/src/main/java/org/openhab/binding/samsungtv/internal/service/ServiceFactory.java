@@ -24,7 +24,7 @@ import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 public class ServiceFactory {
 
     @SuppressWarnings("serial")
-    private final static Map<String, Class<?>> serviceMap = Collections
+    private static final Map<String, Class<?>> serviceMap = Collections
             .unmodifiableMap(new HashMap<String, Class<?>>() {
                 {
                     put(MainTVServerService.SERVICE_NAME, MainTVServerService.class);

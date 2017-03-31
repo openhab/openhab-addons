@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
  * @author Gerhard Riegler - Initial contribution
  */
 public class XmlRpcServer implements RpcServer {
-    private final static Logger logger = LoggerFactory.getLogger(XmlRpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(XmlRpcServer.class);
 
     private static final String XML_EMPTY_STRING = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value></value></param></params></methodResponse>";
     private static final String XML_EMPTY_ARRAY = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value><array><data></data></array></value></param></params></methodResponse>";
