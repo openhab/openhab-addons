@@ -408,7 +408,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
      */
     private String encodeText(String text) {
         final byte[] bytes = text.getBytes(StandardCharsets.ISO_8859_1);
-        StringBuffer sb = new StringBuffer(bytes.length * 2);
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
         for (byte b : bytes) {
             sb.append("0x");
             String hexValue = String.format("%02x", b);

@@ -116,7 +116,7 @@ public class QueuedSend implements Runnable {
                     datagramSocket.send(packet);
 
                     if (logger.isDebugEnabled()) {
-                        StringBuffer s = new StringBuffer();
+                        StringBuilder s = new StringBuilder();
                         for (int c = 0; c < item.data.length; ++c) {
                             s.append(String.format("%02X ", item.data[c]));
                         }

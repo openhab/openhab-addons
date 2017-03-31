@@ -601,7 +601,7 @@ class PrgProtocolHandler {
         final String hexFade = convertFade(fade);
         final String hexIntensity = convertIntensity(controlUnit, zone, intensity);
 
-        final StringBuffer sb = new StringBuffer(16);
+        final StringBuilder sb = new StringBuilder(16);
         for (int z = 1; z <= 8; z++) {
             sb.append(' ');
             sb.append(zone == z ? hexIntensity : "*");
@@ -1041,7 +1041,7 @@ class PrgProtocolHandler {
                 controlUnit = Integer.parseInt(m.group(1));
 
                 final String q4 = m.group(8);
-                final String q4bits = new StringBuffer(Integer.toBinaryString(Integer.parseInt(q4, 16))).reverse()
+                final String q4bits = new StringBuilder(Integer.toBinaryString(Integer.parseInt(q4, 16))).reverse()
                         .toString();
                 // final boolean seqType = (q4bits.length() > 0 ? q4bits.charAt(0) : '0') == '1';
                 final boolean seqMode = (q4bits.length() > 1 ? q4bits.charAt(1) : '0') == '1';

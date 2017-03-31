@@ -285,7 +285,7 @@ public class EmulatedV6Bridge {
                                 continue;
                             }
 
-                            StringBuffer debugStr = new StringBuffer();
+                            StringBuilder debugStr = new StringBuilder();
                             if (buffer[13] == 0x08) {
                                 debugStr.append("RGBWW ");
                             } else if (buffer[13] == 0x07) {
@@ -321,7 +321,7 @@ public class EmulatedV6Bridge {
     }
 
     protected void logUnknownPacket(byte[] data, int len, String reason) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < len; ++i) {
             s.append(String.format("%02X ", data[i]));
         }
@@ -339,7 +339,7 @@ public class EmulatedV6Bridge {
     }
 
     private void debug_session_send(byte buffer[], InetAddress address) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < buffer.length; ++i) {
             s.append(String.format("%02X ", buffer[i]));
         }
