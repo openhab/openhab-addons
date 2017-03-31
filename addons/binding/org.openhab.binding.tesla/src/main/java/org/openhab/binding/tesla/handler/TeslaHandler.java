@@ -8,12 +8,39 @@
  */
 package org.openhab.binding.tesla.handler;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import static org.openhab.binding.tesla.TeslaBindingConstants.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.smarthome.core.library.types.*;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.storage.Storage;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -27,31 +54,28 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.glassfish.jersey.client.ClientProperties;
 import org.openhab.binding.tesla.TeslaBindingConstants;
-import org.openhab.binding.tesla.TeslaBindingConstants.*;
+import org.openhab.binding.tesla.TeslaBindingConstants.EventKeys;
 import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy;
 import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy.TeslaChannelSelector;
-import org.openhab.binding.tesla.internal.protocol.*;
+import org.openhab.binding.tesla.internal.protocol.ChargeState;
+import org.openhab.binding.tesla.internal.protocol.ClimateState;
+import org.openhab.binding.tesla.internal.protocol.DriveState;
+import org.openhab.binding.tesla.internal.protocol.GUIState;
+import org.openhab.binding.tesla.internal.protocol.TokenRequest;
+import org.openhab.binding.tesla.internal.protocol.TokenRequestPassword;
+import org.openhab.binding.tesla.internal.protocol.TokenRequestRefreshToken;
+import org.openhab.binding.tesla.internal.protocol.TokenResponse;
+import org.openhab.binding.tesla.internal.protocol.Vehicle;
+import org.openhab.binding.tesla.internal.protocol.VehicleState;
 import org.openhab.binding.tesla.internal.throttler.QueueChannelThrottler;
 import org.openhab.binding.tesla.internal.throttler.Rate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.xml.bind.DatatypeConverter;
-import java.io.*;
-import java.net.SocketTimeoutException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static org.openhab.binding.tesla.TeslaBindingConstants.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link TeslaHandler} is responsible for handling commands, which are sent
@@ -384,7 +408,7 @@ public class TeslaHandler extends BaseThingHandler {
 
     protected String invokeAndParse(String command, String payLoad, WebTarget target) {
 
-        logger.debug("invoking: " + command);
+        logger.debug("invoking: {}", command);
 
         if (vehicle.id != null) {
             Response response;
@@ -402,8 +426,8 @@ public class TeslaHandler extends BaseThingHandler {
             } else {
                 if (command != null) {
                     response = target.resolveTemplate("cmd", command).resolveTemplate("vid", vehicle.id)
-                            .request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer " + logonToken.access_token)
-                            .get();
+                            .request(MediaType.APPLICATION_JSON_TYPE)
+                            .header("Authorization", "Bearer " + logonToken.access_token).get();
                 } else {
                     response = target.resolveTemplate("vid", vehicle.id).request(MediaType.APPLICATION_JSON_TYPE)
                             .header("Authorization", "Bearer " + logonToken.access_token).get();
@@ -415,20 +439,20 @@ public class TeslaHandler extends BaseThingHandler {
             if (response != null && response.getStatus() == 200) {
                 try {
                     JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
-                    logger.trace("Request : {}:{}:{} yields {}", new Object[]{command, payLoad, target.toString(),
-                            jsonObject.get("response").toString()});
+                    logger.trace("Request : {}:{}:{} yields {}", new Object[] { command, payLoad, target.toString(),
+                            jsonObject.get("response").toString() });
                     return jsonObject.get("response").toString();
                 } catch (Exception e) {
                     logger.error("An exception occurred while invoking a REST request : '{}'", e.getMessage());
                 }
             } else {
                 logger.error("An error occurred while communicating with the vehicle during request {} : {}:{}",
-                        new Object[]{command, (response != null) ? response.getStatus() : "",
-                                (response != null) ? response.getStatusInfo() : "No Response"});
+                        new Object[] { command, (response != null) ? response.getStatus() : "",
+                                (response != null) ? response.getStatusInfo() : "No Response" });
 
                 if (intervalErrors == 0 && response.getStatus() == 401) {
 
-                    //Try to re-authenticate if the token is expired or expires in 24h (giving it a big slack)
+                    // Try to re-authenticate if the token is expired or expires in 24h (giving it a big slack)
                     if ((logonToken.created_at + logonToken.expires_in - 1000 * 60 * 60 * 24) < new Date().getTime()) {
                         authenticate();
                     }
@@ -512,8 +536,8 @@ public class TeslaHandler extends BaseThingHandler {
                 // is provided
                 if (jsonObject.get("reason") != null && jsonObject.get("reason").getAsString() != null) {
                     boolean requestResult = jsonObject.get("result").getAsBoolean();
-                    logger.debug("The request ({}) execution was {}, and reported '{}'", new Object[]{request,
-                            requestResult ? "successful" : "not successful", jsonObject.get("reason").getAsString()});
+                    logger.debug("The request ({}) execution was {}, and reported '{}'", new Object[] { request,
+                            requestResult ? "successful" : "not successful", jsonObject.get("reason").getAsString() });
                 } else {
                     Set<Map.Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
                     for (Map.Entry<String, JsonElement> entry : entrySet) {
@@ -682,8 +706,9 @@ public class TeslaHandler extends BaseThingHandler {
         String storedToken = (String) storage.get(getStorageKey());
         TokenResponse token = storedToken == null ? null : gson.fromJson(storedToken, TokenResponse.class);
 
-        if (token == null || StringUtils.isEmpty(token.refresh_token))
+        if (token == null || StringUtils.isEmpty(token.refresh_token)) {
             return ThingStatusDetail.CONFIGURATION_ERROR;
+        }
 
         TokenRequestRefreshToken tokenRequest = new TokenRequestRefreshToken(token.refresh_token);
 

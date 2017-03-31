@@ -93,7 +93,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
         try {
             this.client.setSignatureCalculator(calc);
             Response response = client.prepareGet(HTTP_TELLDUS_CLIENTS).execute().get();
-            logger.debug("Response {} statusText {}" + response.getResponseBody(), response.getStatusText());
+            logger.debug("Response {} statusText {}", response.getResponseBody(), response.getStatusText());
 
         } catch (InterruptedException | ExecutionException e) {
             // TODO Auto-generated catch block
@@ -315,7 +315,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
         @SuppressWarnings("unchecked")
         T obj = (T) jc.createUnmarshaller().unmarshal(xsr);
         if (logger.isTraceEnabled()) {
-            logger.trace("Request [" + uri + "] Response:" + resp.getResponseBody());
+            logger.trace("Request [{}] Response:{}", uri, resp.getResponseBody());
         }
         return obj;
     }

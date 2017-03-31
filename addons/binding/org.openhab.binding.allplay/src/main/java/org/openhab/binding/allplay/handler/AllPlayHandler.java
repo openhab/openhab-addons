@@ -418,7 +418,7 @@ public class AllPlayHandler extends BaseThingHandler
         } catch (SpeakerException e) {
             logger.warn("Unable to update current user data: {}", e.getMessage(), e);
         }
-        logger.debug("MediaType: " + currentItem.getMediaType());
+        logger.debug("MediaType: {}", currentItem.getMediaType());
     }
 
     private void updateDuration(long durationInMs) {

@@ -55,7 +55,7 @@ public class ToonDiscoveryService extends AbstractDiscoveryService {
                 ToonState state = api.collect();
                 discoverPlugs(state.getDeviceConfigInfo());
             } catch (Exception e) {
-                logger.warn(e.getMessage(), e);
+                logger.warn("{}", e.getMessage(), e);
             }
         }
         stopScan();

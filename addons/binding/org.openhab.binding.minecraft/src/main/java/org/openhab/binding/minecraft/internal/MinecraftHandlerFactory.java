@@ -83,7 +83,7 @@ public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
      * @return the Minecraft handlers created,
      */
     public static List<MinecraftServerHandler> getMinecraftServers() {
-        logger.debug("getMinecraftServers " + minecraftServers.size());
+        logger.debug("getMinecraftServers {}", minecraftServers.size());
         return new ArrayList<MinecraftServerHandler>(minecraftServers);
     }
 }

@@ -110,8 +110,9 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     private void initializeStorage() throws InvalidAlgorithmParameterException {
         if (storage.get("mac") == null) {
-            logger.warn("Could not find existing MAC in " + storage.getClass().getName()
-                    + ". Generating new MAC. This will require re-pairing of iOS devices.");
+            logger.warn(
+                    "Could not find existing MAC in {}. Generating new MAC. This will require re-pairing of iOS devices.",
+                    storage.getClass().getName());
             storage.put("mac", HomekitServer.generateMac());
         }
         if (storage.get("salt") == null) {

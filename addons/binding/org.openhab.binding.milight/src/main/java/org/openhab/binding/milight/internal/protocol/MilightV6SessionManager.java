@@ -204,7 +204,7 @@ public class MilightV6SessionManager implements Runnable {
         for (Iterator<Map.Entry<Byte, Long>> it = used_sequence_no.entrySet().iterator(); it.hasNext();) {
             Map.Entry<Byte, Long> entry = it.next();
             if (entry.getValue() + 2000 < current) {
-                logger.error("Command not confirmed: " + entry.getKey());
+                logger.error("Command not confirmed: {}", entry.getKey());
                 it.remove();
             }
         }
@@ -270,7 +270,7 @@ public class MilightV6SessionManager implements Runnable {
                         Thread.sleep(10);
                         sendQueue.datagramSocket.send(p);
                     } catch (IOException e) {
-                        logger.error("Could not send discover packet! " + e.getLocalizedMessage());
+                        logger.error("Could not send discover packet! {}", e.getLocalizedMessage());
                     } catch (InterruptedException e) {
                     }
                 }
@@ -389,7 +389,7 @@ public class MilightV6SessionManager implements Runnable {
         for (int i = 0; i < len; ++i) {
             s.append(String.format("%02X ", data[i]));
         }
-        logger.error(reason + " (" + bridgeId + "): " + s.toString());
+        logger.error("{} ({}): {}", reason, bridgeId, s);
     }
 
     /**
@@ -443,7 +443,7 @@ public class MilightV6SessionManager implements Runnable {
                             sendQueue.setAddress(r_packet.getAddress());
                             session_handshake_process();
                         } else {
-                            logger.info("Session ID received, but not for our bridge (" + bridgeId + ")");
+                            logger.info("Session ID received, but not for our bridge ({})", bridgeId);
                             logUnknownPacket(buffer, len, "ID not matching");
                         }
 
@@ -456,8 +456,8 @@ public class MilightV6SessionManager implements Runnable {
                         boolean eq = ByteBuffer.wrap(BRIDGE_MAC, 0, 6).equals(ByteBuffer.wrap(buffer, 7, 6));
                         if (eq) {
                             if (DEBUG_SESSION) {
-                                logger.debug(
-                                        "Session ID received:" + String.format("%02X %02X", buffer[19], buffer[20]));
+                                logger.debug("Session ID received: {}",
+                                        String.format("%02X %02X", buffer[19], buffer[20]));
                             }
                             setSessionID(buffer[19], buffer[20]);
                             if (sessionState == SessionState.SESSION_WAIT_FOR_BRIDGE_SID) {
@@ -465,7 +465,7 @@ public class MilightV6SessionManager implements Runnable {
                             }
                             session_handshake_process();
                         } else {
-                            logger.info("Session ID received, but not for our bridge (" + bridgeId + ")");
+                            logger.info("Session ID received, but not for our bridge ({})", bridgeId);
                             logUnknownPacket(buffer, len, "ID not matching");
                         }
 
@@ -482,7 +482,7 @@ public class MilightV6SessionManager implements Runnable {
                                 logger.debug("Registration complete");
                             }
                         } else {
-                            logger.info("Registration received, but not for our bridge (" + bridgeId + ")");
+                            logger.info("Registration received, but not for our bridge ({})", bridgeId);
                             logUnknownPacket(buffer, len, "ID not matching");
                         }
                         break;
@@ -492,10 +492,10 @@ public class MilightV6SessionManager implements Runnable {
                         used_sequence_no.remove(buffer[6]);
                         if (buffer[07] == 0) {
                             if (DEBUG_SESSION) {
-                                logger.debug("Confirmation received for command:" + String.valueOf(buffer[6]));
+                                logger.debug("Confirmation received for command:{}", String.valueOf(buffer[6]));
                             }
                         } else {
-                            logger.info("Bridge reports an error for command:" + String.valueOf(buffer[6]));
+                            logger.info("Bridge reports an error for command:{}", String.valueOf(buffer[6]));
                         }
                         break;
                     // D8 00 00 00 07 (AC CF 23 F5 7A D4) 01
@@ -509,7 +509,7 @@ public class MilightV6SessionManager implements Runnable {
                                 logger.debug("Keep alive received");
                             }
                         } else {
-                            logger.info("Keep alive received but not for our bridge (" + bridgeId + ")");
+                            logger.info("Keep alive received but not for our bridge ({})", bridgeId);
                             logUnknownPacket(buffer, len, "ID not matching");
                         }
                         break;
@@ -520,7 +520,7 @@ public class MilightV6SessionManager implements Runnable {
             }
         } catch (IOException e) {
             if (!willbeclosed) {
-                logger.error(e.getLocalizedMessage());
+                logger.error("{}", e.getLocalizedMessage());
             }
         }
         if (DEBUG_SESSION) {

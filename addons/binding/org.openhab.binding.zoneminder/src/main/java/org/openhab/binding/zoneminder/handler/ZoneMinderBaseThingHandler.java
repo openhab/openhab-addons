@@ -222,8 +222,8 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
             try {
                 handler = bridge.getHandler();
             } catch (Exception ex) {
-                logger.debug(String.format("{}: Exception in 'getZoneMinderBridgeHandler()': {}", getLogIdentifier(),
-                        ex.getMessage()));
+                logger.debug("{}: Exception in 'getZoneMinderBridgeHandler()': {}", getLogIdentifier(),
+                        ex.getMessage());
             }
 
             if (handler instanceof ZoneMinderServerBridgeHandler) {
@@ -367,7 +367,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
             }
 
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            logger.error("{}", ex.getMessage());
         }
 
         return state;

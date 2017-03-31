@@ -156,10 +156,10 @@ public class ReadResource implements EventBroadcaster, RESTResource {
                     }
                     states.add(itemState);
                 } catch (ItemNotFoundException e) {
-                    logger.error(e.getLocalizedMessage());
+                    logger.error("{}", e.getLocalizedMessage());
                 }
             }
-            logger.debug("initially broadcasting " + states.size() + "/" + itemNames.size() + " item states");
+            logger.debug("initially broadcasting {}/{} item states", states.size(), itemNames.size());
             broadcaster.broadcast(SseUtil.buildEvent(states));
         }
         // listen to state changes of the requested items
@@ -189,8 +189,9 @@ public class ReadResource implements EventBroadcaster, RESTResource {
      */
     @Override
     public void registerItem(Item item) {
-        if (item == null || items.containsKey(item) || !itemNames.contains(item.getName()))
+        if (item == null || items.containsKey(item) || !itemNames.contains(item.getName())) {
             return;
+        }
         if (item instanceof GenericItem) {
             ((GenericItem) item).addStateChangeListener(stateEventListener);
         }
@@ -205,8 +206,9 @@ public class ReadResource implements EventBroadcaster, RESTResource {
      */
     @Override
     public void unregisterItem(Item item) {
-        if (item == null || items.containsKey(item) || !itemNames.contains(item.getName()))
+        if (item == null || items.containsKey(item) || !itemNames.contains(item.getName())) {
             return;
+        }
         if (item instanceof GenericItem) {
             ((GenericItem) item).removeStateChangeListener(stateEventListener);
             items.remove(item);

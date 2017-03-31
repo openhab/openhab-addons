@@ -98,7 +98,7 @@ public class QueuedSend implements Runnable {
                     item = queue.take();
                 } catch (InterruptedException e) {
                     if (!willbeclosed) {
-                        logger.error("Queue take failed: " + e.getLocalizedMessage());
+                        logger.error("Queue take failed: {}", e.getLocalizedMessage());
                     }
                     break;
                 }
@@ -134,7 +134,7 @@ public class QueuedSend implements Runnable {
                 Thread.sleep((item.custom_delay_time != 0) ? item.custom_delay_time : delay_between_commands);
             } catch (InterruptedException e) {
                 if (!willbeclosed) {
-                    logger.error("Queue sleep failed: " + e.getLocalizedMessage());
+                    logger.error("Queue sleep failed: {}", e.getLocalizedMessage());
                 }
                 break;
             }
@@ -179,7 +179,7 @@ public class QueuedSend implements Runnable {
                 }
             } catch (IllegalStateException e) {
                 // Ignore threading errors
-                logger.error(e.getLocalizedMessage());
+                logger.error("{}", e.getLocalizedMessage());
             } catch (NoSuchElementException e) {
                 // The element might have been processed already while iterate.
                 // Ignore NoSuchElementException here.

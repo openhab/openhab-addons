@@ -171,7 +171,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
                     turnOff(device);
                 }
             } else {
-                logger.warn("Cannot send to " + device);
+                logger.warn("Cannot send to {}", device);
             }
         }
     }

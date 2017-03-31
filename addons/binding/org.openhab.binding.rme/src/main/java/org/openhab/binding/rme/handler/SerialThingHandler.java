@@ -216,7 +216,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                         sb.append(id.getName() + "\n");
                     }
                 }
-                logger.error("Serial port '" + port + "' could not be found. Available ports are:\n" + sb.toString());
+                logger.error("Serial port '{}' could not be found. Available ports are:\n {}", port, sb);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }

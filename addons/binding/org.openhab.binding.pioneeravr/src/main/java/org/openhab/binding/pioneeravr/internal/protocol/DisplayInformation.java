@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents the display status message send by the Pioneer AV receiver
  * (response to "?FL" request)
- * 
+ *
  * @author Rainer Ostendorf
- * 
+ *
  */
 
 public class DisplayInformation {
@@ -29,9 +29,9 @@ public class DisplayInformation {
 
     /**
      * parse the display status text send from the receiver
-     * 
+     *
      * @param responsePayload the responses payload, that is without the leading "FL"
-     * 
+     *
      * @return
      */
     public DisplayInformation(String responsePayload) {
@@ -46,10 +46,12 @@ public class DisplayInformation {
         // first byte holds the two special flags
         byte firstByte = (byte) Integer.parseInt(responsePayload.substring(0, 1), 16);
 
-        if ((firstByte & (1 << 0)) == (1 << 0)) //
+        if ((firstByte & (1 << 0)) == (1 << 0)) {
             guidIcon = true;
-        if ((firstByte & (1 << 1)) == (1 << 1))
+        }
+        if ((firstByte & (1 << 1)) == (1 << 1)) {
             volumeDisplay = true;
+        }
 
         // convert the ascii values back to string
         StringBuilder sb = new StringBuilder();
@@ -58,7 +60,7 @@ public class DisplayInformation {
             try {
                 sb.append((char) Integer.parseInt(hexAsciiValue, 16));
             } catch (Exception e) {
-                logger.error("parsing string failed" + responsePayload + "'", e);
+                logger.error("parsing string failed '{}'", responsePayload, e);
             }
         }
         infoText = sb.toString();

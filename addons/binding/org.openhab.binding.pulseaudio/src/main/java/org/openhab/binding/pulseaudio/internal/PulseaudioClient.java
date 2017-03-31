@@ -143,8 +143,7 @@ public class PulseaudioClient {
         items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
         items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
 
-        logger.debug("Pulseaudio server " + host + ": " + modules.size() + " modules and " + items.size()
-                + " items updated");
+        logger.debug("Pulseaudio server {}: {} modules and {} items updated", host, modules.size(), items.size());
     }
 
     private String listModules() {
@@ -531,12 +530,12 @@ public class PulseaudioClient {
             out.close();
             client.close();
         } catch (IOException e) {
-            logger.error(e.getLocalizedMessage(), e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
     }
 
     private String _sendRawRequest(String command) {
-        logger.trace("_sendRawRequest(" + command + ")");
+        logger.trace("_sendRawRequest({})", command);
         checkConnection();
         String result = "";
         try {
@@ -573,7 +572,7 @@ public class PulseaudioClient {
             client.close();
             return result;
         } catch (IOException e) {
-            logger.error(e.getLocalizedMessage(), e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
         return result;
     }
@@ -583,7 +582,7 @@ public class PulseaudioClient {
             try {
                 connect();
             } catch (IOException e) {
-                logger.error(e.getLocalizedMessage(), e);
+                logger.error("{}", e.getLocalizedMessage(), e);
             }
         }
     }
@@ -596,9 +595,9 @@ public class PulseaudioClient {
             client = new Socket(host, port);
             client.setSoTimeout(500);
         } catch (UnknownHostException e) {
-            logger.error("unknown socket host " + host);
+            logger.error("unknown socket host {}", host);
         } catch (SocketException e) {
-            logger.error(e.getLocalizedMessage(), e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
     }
 
@@ -610,7 +609,7 @@ public class PulseaudioClient {
             try {
                 client.close();
             } catch (IOException e) {
-                logger.error(e.getLocalizedMessage(), e);
+                logger.error("{}", e.getLocalizedMessage(), e);
             }
         }
     }

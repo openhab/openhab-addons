@@ -107,7 +107,7 @@ public abstract class AbstractDailyJob extends AbstractBaseJob {
                         DateFormatUtils.ISO_DATETIME_FORMAT.format(eventAt));
             }
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         }
     }
 }
