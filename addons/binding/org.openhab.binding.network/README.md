@@ -16,7 +16,7 @@ For this reason, the binding does not do an automatic background discovery, but 
 ## Thing Configuration
 
 ```
-network:device:devicename [ hostname="192.168.0.64", port="0", retry="1", timeout="5000", refresh_interval="60000", use_system_ping="false", dhcplisten="true" ]
+network:device:devicename [ hostname="192.168.0.64", port=0, retry=1, timeout=5000, refresh_interval=60000, use_system_ping="false", dhcplisten="true" ]
 ```
 
 - **hostname:** IP address or hostname of the device
@@ -88,7 +88,7 @@ All devices support some of the following channels:
 demo.Things:
 
 ```xtend
-network:device:devicename [ hostname="192.168.0.42", port="0", retry="1", timeout="5000", refresh_interval="60000", use_system_ping="false", dhcplisten="true" ]
+network:device:devicename [ hostname="192.168.0.42", port=0, retry=1, timeout=5000, refresh_interval=60000, use_system_ping="false", dhcplisten="true" ]
 ```
 
 demo.items:
