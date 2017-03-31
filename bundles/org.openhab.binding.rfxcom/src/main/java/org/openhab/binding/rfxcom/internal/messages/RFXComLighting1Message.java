@@ -179,24 +179,19 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
                     case OFF:
                     case GROUP_OFF:
                         return OnOffType.OFF;
-                        break;
 
                     case ON:
                     case GROUP_ON:
                         return OnOffType.ON;
-                        break;
 
                     case DIM:
                         return IncreaseDecreaseType.DECREASE;
-                        break;
 
                     case BRIGHT:
                         return IncreaseDecreaseType.INCREASE;
-                        break;
 
                     case CHIME:
                         return OnOffType.ON;
-                        break;
 
                     default:
                         throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + command);

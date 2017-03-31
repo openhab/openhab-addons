@@ -145,15 +145,20 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                         String channelId = uid.getId();
 
                         try {
-                            if (channelId.equals(CHANNEL_COMMAND)) {
-                                postCommand(uid, message.convertToCommand(channelId));
-                            } else if (channelId.equals(CHANNEL_LOW_BATTERY)) {
-                                updateState(uid, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
-                            } else {
-                                State state = message.convertToState(channelId);
-                                if (state != null) {
-                                    updateState(uid, state);
-                                }
+                            switch (channelId) {
+                                case CHANNEL_COMMAND:
+                                case CHANNEL_CHIME_SOUND:
+                                case CHANNEL_MOOD:
+                                    postCommand(uid, message.convertToCommand(channelId));
+                                    break;
+
+                                case CHANNEL_LOW_BATTERY:
+                                    updateState(uid, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
+                                    break;
+
+                                default:
+                                    updateState(uid, message.convertToState(channelId));
+                                    break;
                             }
                         } catch (RFXComException e) {
                             logger.trace("{} does not handle {}", channelId, message);
