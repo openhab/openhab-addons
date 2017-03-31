@@ -145,7 +145,9 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                         String channelId = uid.getId();
 
                         try {
-                            if (channelId.equals(CHANNEL_LOW_BATTERY)) {
+                            if (channelId.equals(CHANNEL_COMMAND)) {
+                                postCommand(uid, (Command) message.convertToState(channelId));
+                            } else if (channelId.equals(CHANNEL_LOW_BATTERY)) {
                                 updateState(uid, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
                             } else {
                                 State state = message.convertToState(channelId);
