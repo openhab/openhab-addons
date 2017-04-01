@@ -68,6 +68,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.coolmasternet/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-dlinkupnpcamera" description="DlinkUpnpCamera Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dlinkupnpcamera/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-dscalarm" description="DSCAlarm Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>

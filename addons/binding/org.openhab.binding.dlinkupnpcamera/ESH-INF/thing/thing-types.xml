@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dlinkupnpcamera"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="camera">
+        <label>Dlink Upnp Camera</label>
+        <description>Dlink Upnp camera represents a discovered camera</description>
+
+        <channels>
+            <channel id="pan" typeId="pan"/>
+            <channel id="tilt" typeId="tilt"/>
+            <channel id="image" typeId="image"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="udn" type="text">
+                <label>Unique Device Name</label>
+                <description>The UDN identifies the camera.</description>
+                <required>true</required>
+            </parameter>
+
+            <parameter name="connectionRefresh" type="integer">
+                <label>Connection refresh</label>
+                <description>Specifies the refresh interval in seconds</description>
+                <default>30</default>
+            </parameter>
+            
+            <parameter name="username" type="text">
+                <label>Username</label>
+                <description>The username for authentication to camera</description>
+                <required>true</required>
+            </parameter>
+            
+            <parameter name="password" type="text">
+                <label>Password</label>
+                <description>The password for authentication to camera</description>
+                <required>true</required>
+            </parameter>
+            
+            <parameter name="commandRequest" type="text">
+                <label>Command request URL repertory</label>
+                <description>Link for command request in URL</description>
+                <default>/cgi/ptdc.cgi?command</default>
+            </parameter>
+            
+            <parameter name="imageRequest" type="text">
+                                <label>Image request URL repertory</label>
+                <description>Link for image request in URL</description>
+                <default>/image/jpeg.cgi</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="pan">
+        <item-type>Player</item-type>
+        <label>Pan</label>
+        <description>Rotate the camera to left or right</description>
+    </channel-type>
+    
+    <channel-type id="tilt">
+        <item-type>Player</item-type>
+        <label>Tilt</label>
+        <description>Tilt</description>
+    </channel-type>
+
+    <channel-type id="image">
+        <item-type>Image</item-type>
+        <label>Image</label>
+        <description>Display an image from camera</description>
+    </channel-type>
+    
+</thing:thing-descriptions>
