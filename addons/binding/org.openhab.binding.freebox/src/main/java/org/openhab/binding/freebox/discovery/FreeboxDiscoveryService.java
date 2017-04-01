@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FreeboxDiscoveryService extends AbstractDiscoveryService implements FreeboxDataListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(FreeboxDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(FreeboxDiscoveryService.class);
 
     private static final int SEARCH_TIME = 10;
 

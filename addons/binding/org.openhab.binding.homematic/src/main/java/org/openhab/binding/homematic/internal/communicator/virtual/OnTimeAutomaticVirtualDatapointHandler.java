@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
-    private static final Logger logger = LoggerFactory.getLogger(OnTimeAutomaticVirtualDatapointHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OnTimeAutomaticVirtualDatapointHandler.class);
 
     /**
      * {@inheritDoc}

@@ -59,7 +59,7 @@ public class FritzahaWebInterface {
      */
     protected IFritzHandler fbHandler;
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     // Uses RegEx to handle bad FritzBox XML
     /**
      * RegEx Pattern to grab the session ID from a login XML response

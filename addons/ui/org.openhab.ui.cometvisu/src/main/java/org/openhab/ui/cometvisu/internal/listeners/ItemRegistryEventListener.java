@@ -23,8 +23,6 @@ import org.openhab.ui.cometvisu.backend.EventBroadcaster;
  * @since 2.0.0
  */
 public class ItemRegistryEventListener implements ItemRegistryChangeListener {
-    // private static final Logger logger = LoggerFactory.getLogger(ItemRegistryEventListener.class);
-
     private ItemRegistry itemRegistry;
 
     private EventBroadcaster eventBroadcaster;

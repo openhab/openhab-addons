@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @since 2.1
  */
 public class MilightV6SessionManager implements Runnable {
-    protected static final Logger logger = LoggerFactory.getLogger(MilightV6SessionManager.class);
+    protected final Logger logger = LoggerFactory.getLogger(MilightV6SessionManager.class);
 
     // The used sequence number for a command will be present in the response of the iBox. This
     // allows us to identify failed command deliveries.

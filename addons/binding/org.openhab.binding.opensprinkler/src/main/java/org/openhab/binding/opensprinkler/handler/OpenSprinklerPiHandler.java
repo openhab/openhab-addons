@@ -20,6 +20,8 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.Station;
 import org.openhab.binding.opensprinkler.config.OpenSprinklerPiConfig;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenSprinklerPiHandler} is responsible for handling commands, which are
@@ -28,6 +30,8 @@ import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
  * @author Chris Graham - Initial contribution
  */
 public class OpenSprinklerPiHandler extends OpenSprinklerHandler {
+    private final Logger logger = LoggerFactory.getLogger(OpenSprinklerPiHandler.class);
+
     private OpenSprinklerPiConfig openSprinklerConfig = null;
 
     public OpenSprinklerPiHandler(Thing thing) {

@@ -41,7 +41,7 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
         extends AbstractNetatmoThingHandler<X> {
 
     protected NADeviceAdapter<?> device;
-    private static Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
+    private Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
     private ScheduledFuture<?> refreshJob;
 
     public NetatmoDeviceHandler(Thing thing, Class<X> configurationClass) {

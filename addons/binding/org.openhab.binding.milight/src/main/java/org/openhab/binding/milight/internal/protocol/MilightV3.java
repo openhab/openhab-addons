@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class MilightV3 extends AbstractBulbInterface {
     public static final int MAX_ANIM_MODES = 10;
-    protected static final Logger logger = LoggerFactory.getLogger(MilightV3.class);
+    protected final Logger logger = LoggerFactory.getLogger(MilightV3.class);
 
     public MilightV3(int type_offset, QueuedSend sendQueue, int zone) {
         super(type_offset, sendQueue, zone);

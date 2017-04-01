@@ -19,7 +19,7 @@ public class DeviceListPolling implements Runnable {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     /**
      * Handler for delegation to callbacks.
      */

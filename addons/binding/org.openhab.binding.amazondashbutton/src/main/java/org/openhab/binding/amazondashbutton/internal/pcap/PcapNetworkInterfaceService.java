@@ -38,7 +38,7 @@ import com.google.common.collect.Sets.SetView;
  */
 public class PcapNetworkInterfaceService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PcapNetworkInterfaceService.class);
+    private final Logger logger = LoggerFactory.getLogger(PcapNetworkInterfaceService.class);
 
     private static PcapNetworkInterfaceService instance = null;
     private static final String THREADPOOL_NAME = "pcapNetworkInterfaceService";

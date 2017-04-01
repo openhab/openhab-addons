@@ -37,7 +37,7 @@ import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
 public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
     public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_VIRTUAL_DEVICE;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private ZWayZAutomationDeviceConfiguration mConfig = null;
 

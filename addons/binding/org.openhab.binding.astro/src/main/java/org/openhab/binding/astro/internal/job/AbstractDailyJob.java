@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class AbstractDailyJob extends AbstractBaseJob {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractDailyJob.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractDailyJob.class);
 
     /**
      * {@inheritDoc}

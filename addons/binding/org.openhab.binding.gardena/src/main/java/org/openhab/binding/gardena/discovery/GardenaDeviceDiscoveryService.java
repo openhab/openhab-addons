@@ -37,7 +37,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
     private GardenaAccountHandler accountHandler;

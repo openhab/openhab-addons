@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NetworkService {
 
-    private static Logger logger = LoggerFactory.getLogger(NetworkService.class);
+    private Logger logger = LoggerFactory.getLogger(NetworkService.class);
 
     private ScheduledFuture<?> refreshJob;
 

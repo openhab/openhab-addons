@@ -39,7 +39,7 @@ public class HandlerFactory extends BaseThingHandlerFactory {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     /**
      * Service registration map
      */

@@ -30,7 +30,7 @@ public class FritzahaContentExchange extends BufferingResponseListener
     /**
      * logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Callback to execute on complete response

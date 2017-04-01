@@ -34,7 +34,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
     /**
      * logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Handler to update

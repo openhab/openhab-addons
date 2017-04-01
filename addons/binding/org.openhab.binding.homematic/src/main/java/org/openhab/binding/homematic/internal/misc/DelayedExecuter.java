@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class DelayedExecuter {
-    private static final Logger logger = LoggerFactory.getLogger(DelayedExecuter.class);
+    private final Logger logger = LoggerFactory.getLogger(DelayedExecuter.class);
 
     private Map<HmDatapointInfo, Timer> delayedEvents = new HashMap<HmDatapointInfo, Timer>();
 

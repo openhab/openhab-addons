@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PacketCapturingService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PacketCapturingService.class);
+    private final Logger logger = LoggerFactory.getLogger(PacketCapturingService.class);
 
     private static final int READ_TIMEOUT = 10; // [ms]
     private static final int SNAPLEN = 65536; // [bytes]

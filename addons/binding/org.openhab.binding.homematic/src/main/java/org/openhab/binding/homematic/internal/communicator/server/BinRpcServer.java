@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class BinRpcServer implements RpcServer {
-    private static final Logger logger = LoggerFactory.getLogger(BinRpcServer.class);
+    private final Logger logger = LoggerFactory.getLogger(BinRpcServer.class);
 
     private Thread networkServiceThread;
     private BinRpcNetworkService networkService;
