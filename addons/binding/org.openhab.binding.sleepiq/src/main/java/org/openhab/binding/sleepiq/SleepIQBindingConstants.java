@@ -61,4 +61,8 @@ public class SleepIQBindingConstants {
     public static final String PROPERTY_PURCHASE_DATE = "purchaseDate";
     public static final String PROPERTY_SIZE = "size";
     public static final String PROPERTY_SKU = "sku";
+
+    private SleepIQBindingConstants() {
+        // utility class
+    }
 }

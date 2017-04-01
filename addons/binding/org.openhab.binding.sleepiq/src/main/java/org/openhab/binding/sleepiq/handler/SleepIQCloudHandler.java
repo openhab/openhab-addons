@@ -8,7 +8,8 @@
 package org.openhab.binding.sleepiq.handler;
 
 import static org.openhab.binding.sleepiq.SleepIQBindingConstants.THING_TYPE_CLOUD;
-import static org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration.*;
+import static org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration.USERNAME;
+import static org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration.PASSWORD;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +56,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.singleton(THING_TYPE_CLOUD);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SleepIQCloudHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SleepIQCloudHandler.class);
 
     private List<BedStatusListener> bedStatusListeners = new CopyOnWriteArrayList<>();
 
@@ -71,7 +72,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
     private SleepIQ cloud;
 
-    public SleepIQCloudHandler(Bridge bridge) {
+    public SleepIQCloudHandler(final Bridge bridge) {
         super(bridge);
     }
 
@@ -81,21 +82,21 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         try {
             createCloudConnection();
         } catch (UnauthorizedException e) {
-            LOGGER.error("SleepIQ cloud authentication failed: " + e.getMessage(), e);
+            logger.error("SleepIQ cloud authentication failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid SleepIQ credentials");
             return;
         } catch (LoginException e) {
-            LOGGER.error("SleepIQ cloud login failed: " + e.getMessage(), e);
+            logger.error("SleepIQ cloud login failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "SleepIQ cloud login failed");
             return;
         } catch (Exception e) {
-            LOGGER.error("Unexpected error while communicating with SleepIQ cloud: " + e.getMessage(), e);
+            logger.error("Unexpected error while communicating with SleepIQ cloud", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to connect to SleepIQ cloud");
             return;
         }
 
-        LOGGER.debug("Setting SleepIQ cloud online");
+        logger.debug("Setting SleepIQ cloud online");
         updateListenerManagement();
         updateStatus(ThingStatus.ONLINE);
     }
@@ -107,24 +108,24 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      */
     private synchronized void createCloudConnection() throws LoginException {
 
-        LOGGER.debug("Reading SleepIQ cloud binding configuration");
+        logger.debug("Reading SleepIQ cloud binding configuration");
         SleepIQCloudConfiguration bindingConfig = getConfigAs(SleepIQCloudConfiguration.class);
 
-        LOGGER.debug("Creating SleepIQ client");
+        logger.debug("Creating SleepIQ client");
         Configuration cloudConfig = new Configuration().withUsername(bindingConfig.username)
                 .withPassword(bindingConfig.password).withLogging(bindingConfig.logging);
         cloud = SleepIQ.create(cloudConfig);
 
-        LOGGER.info("Authenticating to SleepIQ cloud service");
+        logger.info("Authenticating to SleepIQ cloud service");
         cloud.login();
 
-        LOGGER.info("Authentication successful");
+        logger.info("Authentication successful");
     }
 
     @Override
     public synchronized void dispose() {
 
-        LOGGER.debug("Disposing SleepIQ cloud handler");
+        logger.debug("Disposing SleepIQ cloud handler");
 
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
@@ -176,7 +177,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      *
      * @param listener the listener to update (may be <code>null</code>)
      */
-    private void publishBedStatusUpdates(BedStatusListener listener) {
+    private void publishBedStatusUpdates(final BedStatusListener listener) {
 
         SleepIQ cloud = getCloud();
         if (cloud == null) {
@@ -197,12 +198,12 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     /**
      * Register the given listener to receive bed status updates.
      *
-     * @param listener the listener to register (must not be <code>null</code>)
+     * @param listener the listener to register
      */
-    public void registerBedStatusListener(BedStatusListener listener) {
+    public void registerBedStatusListener(final BedStatusListener listener) {
 
         if (listener == null) {
-            throw new NullPointerException("Listener cannot be null");
+            return;
         }
 
         bedStatusListeners.add(listener);
@@ -217,7 +218,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @return <code>true</code> if listener was previously registered and is now unregistered; <code>false</code>
      *         otherwise
      */
-    public boolean unregisterBedStatusListener(BedStatusListener listener) {
+    public boolean unregisterBedStatusListener(final BedStatusListener listener) {
 
         boolean result = bedStatusListeners.remove(listener);
         if (result) {
@@ -228,7 +229,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(final ChannelUID channelUID, final Command command) {
         // all channels are read-only
     }
 
@@ -277,7 +278,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param bedId the bed identifier
      * @return the identified {@link Bed} or <code>null</code> if no such bed exists
      */
-    public Bed getBed(String bedId) {
+    public Bed getBed(final String bedId) {
 
         for (Bed bed : getBeds()) {
 
@@ -297,7 +298,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param properties the properties to update (this may be <code>null</code>)
      * @return the given map (or a new map if no map was given) with updated/set properties from the supplied bed
      */
-    public Map<String, String> updateProperties(Bed bed, Map<String, String> properties) {
+    public Map<String, String> updateProperties(final Bed bed, Map<String, String> properties) {
 
         if (properties == null) {
             properties = new HashMap<>();

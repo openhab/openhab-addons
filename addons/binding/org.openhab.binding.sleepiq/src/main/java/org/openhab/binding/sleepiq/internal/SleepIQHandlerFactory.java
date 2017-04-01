@@ -35,33 +35,33 @@ import com.google.common.collect.Sets;
  */
 public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SleepIQBedDiscoveryParticipant.class);
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Sets
             .union(SleepIQCloudHandler.SUPPORTED_THING_TYPE_UIDS, SleepIQDualBedHandler.SUPPORTED_THING_TYPE_UIDS);
+
+    private final Logger logger = LoggerFactory.getLogger(SleepIQHandlerFactory.class);
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
 
     @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(final Thing thing) {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SleepIQCloudHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
 
-            LOGGER.debug("Creating SleepIQ cloud thing handler");
+            logger.debug("Creating SleepIQ cloud thing handler");
             SleepIQCloudHandler cloudHandler = new SleepIQCloudHandler((Bridge) thing);
             registerBedDiscoveryService(cloudHandler);
             return cloudHandler;
 
         } else if (SleepIQDualBedHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
 
-            LOGGER.debug("Creating SleepIQ dual bed thing handler");
+            logger.debug("Creating SleepIQ dual bed thing handler");
             return new SleepIQDualBedHandler(thing);
         }
 
@@ -69,9 +69,9 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected void removeHandler(ThingHandler thingHandler) {
+    protected void removeHandler(final ThingHandler thingHandler) {
 
-        LOGGER.debug("Removing SleepIQ thing handler");
+        logger.debug("Removing SleepIQ thing handler");
 
         if (!(thingHandler instanceof SleepIQCloudHandler)) {
             return;
@@ -85,9 +85,9 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
      *
      * @param cloudHandler the cloud handler to register (must not be <code>null</code>)
      */
-    private synchronized void registerBedDiscoveryService(SleepIQCloudHandler cloudHandler) {
+    private synchronized void registerBedDiscoveryService(final SleepIQCloudHandler cloudHandler) {
 
-        LOGGER.debug("Registering bed discovery service");
+        logger.debug("Registering bed discovery service");
         SleepIQBedDiscoveryParticipant discoveryService = new SleepIQBedDiscoveryParticipant(cloudHandler);
         discoveryServiceReg.put(cloudHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
@@ -98,7 +98,7 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
      *
      * @param cloudHandler the cloud handler to unregister (must not be <code>null</code>)
      */
-    private synchronized void unregisterBedDiscoveryService(SleepIQCloudHandler cloudHandler) {
+    private synchronized void unregisterBedDiscoveryService(final SleepIQCloudHandler cloudHandler) {
 
         ThingUID thingUID = cloudHandler.getThing().getUID();
         ServiceRegistration<?> serviceReg = discoveryServiceReg.get(thingUID);
@@ -106,7 +106,7 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
             return;
         }
 
-        LOGGER.debug("Unregistering bed discovery service");
+        logger.debug("Unregistering bed discovery service");
         serviceReg.unregister();
         discoveryServiceReg.remove(thingUID);
     }

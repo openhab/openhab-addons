@@ -29,9 +29,9 @@ import org.syphr.sleepiq.api.model.Bed;
  */
 public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SleepIQBedDiscoveryParticipant.class);
-
     private static final int TIMEOUT = 60;
+
+    private final Logger logger = LoggerFactory.getLogger(SleepIQBedDiscoveryParticipant.class);
 
     private final SleepIQCloudHandler cloudHandler;
 
@@ -40,7 +40,7 @@ public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
      *
      * @param cloudHandler the cloud service handler (bridge)
      */
-    public SleepIQBedDiscoveryParticipant(SleepIQCloudHandler cloudHandler) {
+    public SleepIQBedDiscoveryParticipant(final SleepIQCloudHandler cloudHandler) {
 
         super(SleepIQDualBedHandler.SUPPORTED_THING_TYPE_UIDS, TIMEOUT, true);
         this.cloudHandler = cloudHandler;
@@ -48,20 +48,20 @@ public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        LOGGER.debug("Starting background discovery for new beds");
+        logger.debug("Starting background discovery for new beds");
         startScan();
     }
 
     @Override
     protected void startScan() {
 
-        LOGGER.debug("Starting scan for new beds");
+        logger.debug("Starting scan for new beds");
 
         for (Bed bed : cloudHandler.getBeds()) {
 
             // only dual chamber beds are supported currently
             if (!bed.isDualSleep()) {
-                LOGGER.info("Found a bed that is not dual chamber - currently unsupported");
+                logger.info("Found a bed that is not dual chamber - currently unsupported");
                 continue;
             }
 
@@ -74,7 +74,7 @@ public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
                 continue;
             }
 
-            LOGGER.debug("New bed found with MAC address {}", bed.getMacAddress());
+            logger.debug("New bed found with MAC address {}", bed.getMacAddress());
 
             @SuppressWarnings({ "unchecked", "rawtypes" })
             Map<String, Object> properties = (Map) cloudHandler.updateProperties(bed, null);

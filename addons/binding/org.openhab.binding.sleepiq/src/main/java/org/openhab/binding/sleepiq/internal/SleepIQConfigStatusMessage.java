@@ -7,11 +7,8 @@
  */
 package org.openhab.binding.sleepiq.internal;
 
-import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
-
 /**
- * The {@link SleepIQConfigStatusMessage} defines
- * the keys to be used for {@link ConfigStatusMessage}s.
+ * The {@link SleepIQConfigStatusMessage} defines the keys to be used for configuration status messages.
  *
  * @author Gregory Moyer - Initial contribution
  *
@@ -23,7 +20,7 @@ public enum SleepIQConfigStatusMessage {
 
     private String messageKey;
 
-    private SleepIQConfigStatusMessage(String messageKey) {
+    SleepIQConfigStatusMessage(final String messageKey) {
         this.messageKey = messageKey;
     }
 

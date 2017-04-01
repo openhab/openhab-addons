@@ -23,5 +23,5 @@ public interface BedStatusListener {
      * @param cloud the cloud service that can be used to gather additional information
      * @param status the status returned from the cloud service
      */
-    public void onBedStateChanged(SleepIQ cloud, BedStatus status);
+    void onBedStateChanged(SleepIQ cloud, BedStatus status);
 }
