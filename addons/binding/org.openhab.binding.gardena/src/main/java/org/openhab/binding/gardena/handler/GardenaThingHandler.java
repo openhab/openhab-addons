@@ -99,7 +99,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         try {
             updateChannel(channelUID);
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         }
     }
 
@@ -186,7 +186,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         } catch (AccountHandlerNotAvailableException | GardenaDeviceNotFoundException ex) {
             // ignore
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         }
     }
 
