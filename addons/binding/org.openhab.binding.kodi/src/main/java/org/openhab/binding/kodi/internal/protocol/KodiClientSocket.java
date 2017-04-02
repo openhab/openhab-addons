@@ -139,14 +139,14 @@ public class KodiClientSocket {
             logger.debug("Message received from server: {}", message);
             final JsonObject json = parser.parse(message).getAsJsonObject();
             if (json.has("id")) {
-                logger.debug("Response received from server:" + json.toString());
+                logger.debug("Response received from server: {}", json);
                 int messageId = json.get("id").getAsInt();
                 if (messageId == nextMessageId - 1) {
                     commandResponse = json;
                     commandLatch.countDown();
                 }
             } else {
-                logger.debug("Event received from server: {}", json.toString());
+                logger.debug("Event received from server: {}", json);
                 try {
                     if (eventHandler != null) {
                         scheduler.submit(new Runnable() {
