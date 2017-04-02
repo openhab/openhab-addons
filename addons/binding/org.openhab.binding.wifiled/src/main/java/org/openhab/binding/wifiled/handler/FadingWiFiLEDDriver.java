@@ -179,12 +179,11 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
                         currentTargetState = fadeState;
                     }
                 } catch (NoRouteToHostException e) {
-                    e.printStackTrace();
+                    logger.warn("No route to host {}:{}", host, port, e);
                 } catch (SocketException e) {
-                    e.printStackTrace();
                     logger.warn("SocketException", e);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.warn("An error occurred", e);
                 }
             }, 0, TimeUnit.SECONDS);
         }
