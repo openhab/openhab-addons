@@ -157,11 +157,12 @@ public class BoschIndegoHandler extends BaseThingHandler {
             updateState(TEXTUAL_STATE, new StringType(statusWithMessage.getMessage()));
 
         } catch (IndegoAuthenticationException e) {
-            e.printStackTrace();
+            String message = "The login credentials are wrong or another client connected to your Indego account";
+            logger.warn(message, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "The login credentials are wrong or another client connected to your Indego account");
+                    message);
         } catch (IndegoException e) {
-            e.printStackTrace();
+            logger.warn("An error occurred", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }

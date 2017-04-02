@@ -137,7 +137,7 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
             try {
                 com.setAddress(InetAddress.getByName(host_config));
             } catch (UnknownHostException e) {
-                e.printStackTrace();
+                logger.warn("Unknown host {}", host_config, e);
             }
         }
 
