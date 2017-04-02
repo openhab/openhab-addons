@@ -43,7 +43,7 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
     protected String bridgeid;
     protected ThingDiscoveryService thingDiscoveryService;
     private ScheduledFuture<?> keepAliveTimer;
-    protected int refrehIntervalSec;
+    protected int refrehIntervalSec = 5;
 
     public AbstractMilightBridgeHandler(Bridge bridge) {
         super(bridge);
