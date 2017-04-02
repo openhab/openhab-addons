@@ -110,7 +110,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 } catch (BridgeHandlerNotAvailableException ex) {
                     // ignore
                 } catch (Exception ex) {
-                    logger.error(ex.getMessage(), ex);
+                    logger.error("{}", ex.getMessage(), ex);
                 }
             }
         });
@@ -139,7 +139,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 updateChannelState(channelUID);
             }
         } catch (Exception ex) {
-            logger.warn(ex.getMessage());
+            logger.warn("{}", ex.getMessage());
         }
     }
 
@@ -181,19 +181,19 @@ public class HomematicThingHandler extends BaseThingHandler {
                 }
             }
         } catch (HomematicClientException | BridgeHandlerNotAvailableException ex) {
-            logger.warn(ex.getMessage());
+            logger.warn("{}", ex.getMessage());
         } catch (IOException ex) {
             if (dp != null && dp.getChannel().getDevice().isOffline()) {
                 logger.warn("Device '{}' is OFFLINE, can't send command '{}' for channel '{}'",
                         dp.getChannel().getDevice().getAddress(), command, channelUID);
-                logger.trace(ex.getMessage(), ex);
+                logger.trace("{}", ex.getMessage(), ex);
             } else {
-                logger.error(ex.getMessage(), ex);
+                logger.error("{}", ex.getMessage(), ex);
             }
         } catch (ConverterTypeException ex) {
             logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         }
     }
 
@@ -235,7 +235,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         } catch (BridgeHandlerNotAvailableException ex) {
             // ignore
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         }
     }
 
@@ -392,7 +392,7 @@ public class HomematicThingHandler extends BaseThingHandler {
             }
             gateway.triggerDeviceValuesReload(device);
         } catch (HomematicClientException | BridgeHandlerNotAvailableException ex) {
-            logger.error("Error setting thing properties: " + ex.getMessage(), ex);
+            logger.error("Error setting thing properties: {}", ex.getMessage(), ex);
         }
     }
 }

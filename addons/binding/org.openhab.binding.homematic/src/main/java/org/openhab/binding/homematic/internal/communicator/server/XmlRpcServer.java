@@ -86,7 +86,7 @@ public class XmlRpcServer implements RpcServer {
             try {
                 xmlRpcHTTPD.stop();
             } catch (Exception ex) {
-                logger.error(ex.getMessage(), ex);
+                logger.error("{}", ex.getMessage(), ex);
             }
         }
     }
@@ -118,7 +118,7 @@ public class XmlRpcServer implements RpcServer {
                 }
                 respWriter.println(returnValue);
             } catch (SAXException | ParserConfigurationException ex) {
-                logger.error(ex.getMessage(), ex);
+                logger.error("{}", ex.getMessage(), ex);
                 respWriter.println(XML_EMPTY_STRING);
             }
             baseRequest.setHandled(true);
@@ -150,7 +150,7 @@ public class XmlRpcServer implements RpcServer {
             } else if (RPC_METHODNAME_SET_CONFIG_READY.equals(methodName)) {
                 return XML_EMPTY_EVENT_LIST;
             } else {
-                logger.warn("Unknown method called by Homematic gateway: " + methodName);
+                logger.warn("Unknown method called by Homematic gateway: {}", methodName);
                 return XML_EMPTY_EVENT_LIST;
             }
         }

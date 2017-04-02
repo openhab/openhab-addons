@@ -238,7 +238,7 @@ public class BinRpcMessage implements RpcRequest, RpcResponse {
 
             default:
                 for (int i = 0; i < binRpcData.length; i++) {
-                    logger.info(Integer.toHexString(binRpcData[i]) + " " + (char) binRpcData[i]);
+                    logger.info("{} {}", Integer.toHexString(binRpcData[i]), (char) binRpcData[i]);
                 }
                 throw new IOException("Unknown data type " + type);
         }

@@ -57,7 +57,7 @@ public class BinRpcServer implements RpcServer {
                     networkServiceThread.interrupt();
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                logger.error("{}", e.getMessage(), e);
             }
             networkService.shutdown();
             networkService = null;
