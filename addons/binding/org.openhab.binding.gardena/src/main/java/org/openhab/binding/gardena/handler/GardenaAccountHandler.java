@@ -61,7 +61,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
 
         gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
-        logger.debug(gardenaConfig.toString());
+        logger.debug("{}", gardenaConfig);
 
         initializeGardena();
     }
@@ -86,7 +86,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                     disposeGardena();
                     scheduleReinitialize();
-                    logger.debug(ex.getMessage(), ex);
+                    logger.debug("{}", ex.getMessage(), ex);
                 }
             }
         });
@@ -189,9 +189,8 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 gardenaThingHandler.updateStatus(device);
             }
         } catch (GardenaException ex) {
-            logger.error(ex.getMessage(), ex);
             logger.error("There is something wrong with your thing, please recreate the thing {}",
-                    gardenaThing.getUID());
+                    gardenaThing.getUID(), ex);
         } catch (AccountHandlerNotAvailableException ex) {
             // ignore
         }
