@@ -79,7 +79,7 @@ public class ChartResource implements RESTResource {
         // df.setPositivePrefix("+");
     }
 
-    static protected Map<String, QueryablePersistenceService> persistenceServices = new HashMap<String, QueryablePersistenceService>();
+    protected static Map<String, QueryablePersistenceService> persistenceServices = new HashMap<String, QueryablePersistenceService>();
 
     private ItemRegistry itemRegistry;
 
@@ -96,7 +96,7 @@ public class ChartResource implements RESTResource {
         persistenceServices.remove(service.getId());
     }
 
-    static public Map<String, QueryablePersistenceService> getPersistenceServices() {
+    public static Map<String, QueryablePersistenceService> getPersistenceServices() {
         return persistenceServices;
     }
 

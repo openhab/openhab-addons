@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComHandler extends BaseThingHandler implements DeviceMessageListener {
-    private final static int LOW_BATTERY_LEVEL = 1;
+    private static final int LOW_BATTERY_LEVEL = 1;
 
     private final Logger logger = LoggerFactory.getLogger(RFXComHandler.class);
 
