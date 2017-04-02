@@ -115,7 +115,7 @@ public class MilightV6SessionManager implements Runnable {
     private ScheduledFuture<?> checkHandshakeTimer = null;
 
     // Print out a lot of useful debug data for the session establishing
-    private final static boolean DEBUG_SESSION = false;
+    private static final boolean DEBUG_SESSION = false;
 
     // Abort a session registration process after this time in seconds
     private static final long REG_TIMEOUT_SEC = 3;

@@ -100,10 +100,10 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.COMMAND, RFXComValueSelector.SIGNAL_LEVEL);
 
-    private final static List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.COMMAND);
 
     public SubType subType;

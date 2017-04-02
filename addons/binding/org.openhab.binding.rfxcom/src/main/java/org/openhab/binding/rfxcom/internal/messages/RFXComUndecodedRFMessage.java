@@ -86,10 +86,10 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(RAW_MESSAGE,
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(RAW_MESSAGE,
             RAW_PAYLOAD);
 
-    private final static List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
     public SubType subType = SubType.UNKNOWN;
     public byte[] rawPayload = new byte[0];

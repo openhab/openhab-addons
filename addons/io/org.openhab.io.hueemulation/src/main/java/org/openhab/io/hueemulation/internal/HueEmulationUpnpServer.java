@@ -33,8 +33,8 @@ public class HueEmulationUpnpServer extends Thread {
     private Logger logger = LoggerFactory.getLogger(HueEmulationUpnpServer.class);
 
     // jUPNP shares port 1900, but since this is multicast, we can also bind to it
-    static final private int UPNP_PORT_RECV = 1900;
-    static final private String MULTI_ADDR = "239.255.255.250";
+    private static final int UPNP_PORT_RECV = 1900;
+    private static final String MULTI_ADDR = "239.255.255.250";
     private boolean running;
     private String discoPath;
     private String usn;
