@@ -10,6 +10,8 @@ package org.openhab.binding.milight.test;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.openhab.binding.milight.MilightBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple discovery service that will make the emulated V6 bridge visible to the Inbox of OH.
@@ -19,6 +21,8 @@ import org.openhab.binding.milight.MilightBindingConstants;
  * @since 2.1
  */
 public class TestDiscovery extends AbstractDiscoveryService {
+    private final Logger logger = LoggerFactory.getLogger(TestDiscovery.class);
+
     @SuppressWarnings("unused")
     private EmulatedV6Bridge server;
 
@@ -27,7 +31,7 @@ public class TestDiscovery extends AbstractDiscoveryService {
         try {
             server = new EmulatedV6Bridge();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("An error occurred", e);
         }
     }
 

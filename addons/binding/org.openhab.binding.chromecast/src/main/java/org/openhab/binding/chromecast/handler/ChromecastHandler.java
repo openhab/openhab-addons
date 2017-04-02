@@ -102,7 +102,7 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
             chromecast = new ChromeCast(address, port);
             chromecast.registerListener(this);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("An error occurred", e);
         }
     }
 

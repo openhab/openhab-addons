@@ -19,6 +19,8 @@ import javax.crypto.ShortBufferException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.openhab.binding.tesla.TeslaBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TokenRequest} is a datastructure to capture
@@ -29,6 +31,7 @@ import org.openhab.binding.tesla.TeslaBindingConstants;
  * @author Nicolai Grødum - Adding token based auth
  */
 public abstract class TokenRequest {
+    private final Logger logger = LoggerFactory.getLogger(TokenRequest.class);
 
     private String client_id;
     private String client_secret;
@@ -66,7 +69,7 @@ public abstract class TokenRequest {
         } catch (NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidKeyException | ShortBufferException
                 | IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
+            logger.warn("An error occurred", e);
         }
     }
 
