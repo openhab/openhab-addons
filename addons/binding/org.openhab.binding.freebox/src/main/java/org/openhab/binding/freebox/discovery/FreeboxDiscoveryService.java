@@ -15,6 +15,7 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.matmaul.freeboxos.FreeboxException;
 import org.matmaul.freeboxos.lan.LanHostConfig;
@@ -64,11 +65,14 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     @Override
     protected void startScan() {
         logger.debug("Starting Freebox discovery scan");
-        try {
-            LanHostsConfig lanHostsConfiguration = bridgeHandler.getFbClient().getLanManager().getAllLanHostsConfig();
-            onDataFetched(bridgeHandler.getThing().getUID(), lanHostsConfiguration);
-        } catch (FreeboxException e) {
-            logger.error("{}", e.getMessage());
+        if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+            try {
+                LanHostsConfig lanHostsConfiguration = bridgeHandler.getFbClient().getLanManager()
+                        .getAllLanHostsConfig();
+                onDataFetched(bridgeHandler.getThing().getUID(), lanHostsConfiguration);
+            } catch (FreeboxException e) {
+                logger.error("{}", e.getMessage());
+            }
         }
     }
 
