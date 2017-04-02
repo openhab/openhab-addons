@@ -83,7 +83,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                             gateway.loadRssiValues();
                         } catch (IOException ex) {
                             logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
-                            logger.error(ex.getMessage(), ex);
+                            logger.error("{}", ex.getMessage(), ex);
                         }
                     }
 
@@ -191,7 +191,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         } else {
             portPool.setInUse(homematicConfig.getBinCallbackPort());
         }
-        logger.debug(homematicConfig.toString());
+        logger.debug("{}", homematicConfig);
         return homematicConfig;
     }
 
@@ -317,7 +317,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(hmThing));
                 gateway.triggerDeviceValuesReload(device);
             } catch (HomematicClientException ex) {
-                logger.warn(ex.getMessage());
+                logger.warn("{}", ex.getMessage());
             }
         }
     }

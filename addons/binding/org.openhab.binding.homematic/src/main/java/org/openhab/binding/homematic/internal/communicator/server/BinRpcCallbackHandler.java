@@ -65,7 +65,7 @@ public class BinRpcCallbackHandler implements Runnable {
         } catch (EOFException eof) {
             // ignore
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("{}", e.getMessage(), e);
         } finally {
             try {
                 socket.close();
@@ -98,7 +98,7 @@ public class BinRpcCallbackHandler implements Runnable {
             }
             return BIN_EMPTY_EVENT_LIST;
         } else {
-            logger.warn("Unknown method called by Homematic gateway: " + methodName);
+            logger.warn("Unknown method called by Homematic gateway: {}", methodName);
             return BIN_EMPTY_EVENT_LIST;
         }
     }

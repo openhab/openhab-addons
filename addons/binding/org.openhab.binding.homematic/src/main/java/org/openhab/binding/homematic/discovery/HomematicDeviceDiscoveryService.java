@@ -110,7 +110,7 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
                         logger.debug("Finished Homematic device discovery scan on gateway '{}'",
                                 bridgeHandler.getGateway().getId());
                     } catch (Throwable ex) {
-                        logger.error(ex.getMessage(), ex);
+                        logger.error("{}", ex.getMessage(), ex);
                     } finally {
                         scanFuture = null;
                         bridgeHandler.setOfflineStatus();
