@@ -494,7 +494,7 @@ public class GardenaSmartImpl implements GardenaSmart {
                 if (!connectionLost) {
                     connectionLost = true;
                     logger.warn("Connection lost to Gardena Smart Home with id '{}'", id);
-                    logger.trace(ex.getMessage(), ex);
+                    logger.trace("{}", ex.getMessage(), ex);
                     eventListener.onConnectionLost();
                 }
             }
