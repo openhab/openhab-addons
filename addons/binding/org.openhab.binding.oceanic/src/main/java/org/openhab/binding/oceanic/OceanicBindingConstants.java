@@ -236,8 +236,6 @@ public class OceanicBindingConstants {
         getINR("incompleteregenerations", DecimalType.class, ValueSelectorType.GET, false),
         getTOR("allregenerations", DecimalType.class, ValueSelectorType.GET, false);
 
-        static final Logger logger = LoggerFactory.getLogger(OceanicChannelSelector.class);
-
         private final String text;
         private Class<? extends Type> typeClass;
         private ValueSelectorType typeValue;

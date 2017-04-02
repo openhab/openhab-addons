@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial contribution
  */
 public class MulticastListener {
-    private static final Logger logger = LoggerFactory.getLogger(MulticastListener.class);
+    private final Logger logger = LoggerFactory.getLogger(MulticastListener.class);
 
     private MulticastSocket socket;
 

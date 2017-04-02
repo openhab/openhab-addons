@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DSCAlarmMessage {
 
-    private static final Logger logger = LoggerFactory.getLogger(DSCAlarmMessage.class);
+    private final Logger logger = LoggerFactory.getLogger(DSCAlarmMessage.class);
 
     private static final EnumMap<DSCAlarmCode, MessageParameters> dscAlarmMessageParameters = new EnumMap<>(
             DSCAlarmCode.class);

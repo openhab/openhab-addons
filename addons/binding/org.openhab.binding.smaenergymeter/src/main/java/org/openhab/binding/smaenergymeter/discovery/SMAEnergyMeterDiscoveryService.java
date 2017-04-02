@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterDiscoveryService.class);
 
     public SMAEnergyMeterDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 15, true);

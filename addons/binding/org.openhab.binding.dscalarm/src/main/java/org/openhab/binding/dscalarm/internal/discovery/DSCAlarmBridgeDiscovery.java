@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
-    private static final Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
 
     private EnvisalinkBridgeDiscovery envisalinkBridgeDiscovery = new EnvisalinkBridgeDiscovery(this);
     private IT100BridgeDiscovery it100BridgeDiscovery = new IT100BridgeDiscovery(this);

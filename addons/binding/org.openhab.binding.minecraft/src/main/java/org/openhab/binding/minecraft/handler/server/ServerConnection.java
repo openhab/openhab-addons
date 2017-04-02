@@ -35,7 +35,7 @@ import rx.subscriptions.Subscriptions;
  */
 public class ServerConnection {
 
-    private static final Logger logger = LoggerFactory.getLogger(MinecraftDiscoveryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServerConnection.class);
 
     private String host;
     private int port;

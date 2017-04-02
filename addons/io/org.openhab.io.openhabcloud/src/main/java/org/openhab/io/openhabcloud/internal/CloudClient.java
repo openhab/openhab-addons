@@ -64,7 +64,7 @@ public class CloudClient {
     /*
      * Logger for this class
      */
-    private static Logger logger = LoggerFactory.getLogger(CloudClient.class);
+    private Logger logger = LoggerFactory.getLogger(CloudClient.class);
     /*
      * This constant defines maximum number of HTTP connections per peer
      * address for HTTP client which performs local connections to openHAB

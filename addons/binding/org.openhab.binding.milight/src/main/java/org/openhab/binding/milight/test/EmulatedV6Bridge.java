@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class EmulatedV6Bridge {
-    protected static final Logger logger = LoggerFactory.getLogger(EmulatedV6Bridge.class);
+    protected final Logger logger = LoggerFactory.getLogger(EmulatedV6Bridge.class);
     private boolean willbeclosed = false;
     private byte SID1 = (byte) 0xed;
     private byte SID2 = (byte) 0xab;

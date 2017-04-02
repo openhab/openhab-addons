@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class BinRpcClient extends RpcClient {
-    private static final Logger logger = LoggerFactory.getLogger(BinRpcClient.class);
+    private final Logger logger = LoggerFactory.getLogger(BinRpcClient.class);
 
     private SocketHandler socketHandler;
 

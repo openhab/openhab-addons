@@ -60,7 +60,7 @@ import com.caucho.vfs.WriteStream;
  */
 public class PHProviderImpl implements PHProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(PHProviderImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(PHProviderImpl.class);
     private static final L10N L = new L10N(PHProviderImpl.class);
 
     protected QuercusEngine engine;

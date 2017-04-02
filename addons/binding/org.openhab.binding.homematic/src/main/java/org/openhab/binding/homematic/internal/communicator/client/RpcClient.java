@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class RpcClient {
-    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    private final Logger logger = LoggerFactory.getLogger(RpcClient.class);
     protected static final int MAX_RPC_RETRY = 1;
 
     protected HomematicConfig config;

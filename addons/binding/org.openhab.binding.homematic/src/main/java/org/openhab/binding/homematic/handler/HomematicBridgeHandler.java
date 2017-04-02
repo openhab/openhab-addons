@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicBridgeHandler extends BaseBridgeHandler implements HomematicGatewayListener {
-    private static final Logger logger = LoggerFactory.getLogger(HomematicBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HomematicBridgeHandler.class);
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
     private static SimplePortPool portPool = new SimplePortPool();
 

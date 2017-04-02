@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_WRITE_ALIAS)
 public class WriteResource implements RESTResource {
-    private static final Logger logger = LoggerFactory.getLogger(WriteResource.class);
+    private final Logger logger = LoggerFactory.getLogger(WriteResource.class);
 
     private ItemRegistry itemRegistry;
 

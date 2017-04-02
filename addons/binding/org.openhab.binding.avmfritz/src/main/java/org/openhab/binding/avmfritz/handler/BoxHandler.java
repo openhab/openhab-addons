@@ -46,7 +46,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     /**
      * the refresh interval which is used to poll values from the fritzaha.
      * server (optional, defaults to 15 s)

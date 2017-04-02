@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final int SEARCH_TIME = 240;
 

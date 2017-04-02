@@ -29,13 +29,13 @@ import com.beowulfe.hap.HomekitServer;
  * @author Andy Lintner
  */
 public class HomekitAuthInfoImpl implements HomekitAuthInfo {
+    private final Logger logger = LoggerFactory.getLogger(HomekitAuthInfoImpl.class);
 
     private final Storage<String> storage;
     private final String mac;
     private final BigInteger salt;
     private final byte[] privateKey;
     private final String pin;
-    private Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
 
     public HomekitAuthInfoImpl(StorageService storageService, String pin) throws InvalidAlgorithmParameterException {
         storage = storageService.getStorage("homekit");

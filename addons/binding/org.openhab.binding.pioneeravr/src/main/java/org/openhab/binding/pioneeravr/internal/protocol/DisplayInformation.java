@@ -23,9 +23,9 @@ public class DisplayInformation {
 
     Boolean volumeDisplay; // 1-light, 0-OFF
     Boolean guidIcon; // 1-light, 0-OFF
-    String infoText = new String(""); // the actual display text
+    String infoText = ""; // the actual display text
 
-    private static final Logger logger = LoggerFactory.getLogger(DisplayInformation.class);
+    private final Logger logger = LoggerFactory.getLogger(DisplayInformation.class);
 
     /**
      * parse the display status text send from the receiver

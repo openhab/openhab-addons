@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts
  */
 public class SocketChannelSession implements SocketSession {
-    private Logger _logger = LoggerFactory.getLogger(SocketChannelSession.class);
+    private final Logger logger = LoggerFactory.getLogger(SocketChannelSession.class);
 
     /**
      * The host/ip address to connect to
@@ -113,10 +113,10 @@ public class SocketChannelSession implements SocketSession {
         final SocketChannel channel = SocketChannel.open();
         channel.configureBlocking(true);
 
-        _logger.debug("Connecting to {}:{}", _host, _port);
+        logger.debug("Connecting to {}:{}", _host, _port);
         channel.connect(new InetSocketAddress(_host, _port));
 
-        _logger.debug("Waiting for connect");
+        logger.debug("Waiting for connect");
         while (!channel.finishConnect()) {
             try {
                 Thread.sleep(250);
@@ -132,7 +132,7 @@ public class SocketChannelSession implements SocketSession {
     @Override
     public void disconnect() throws IOException {
         if (isConnected()) {
-            _logger.debug("Disconnecting from {}:{}", _host, _port);
+            logger.debug("Disconnecting from {}:{}", _host, _port);
 
             final SocketChannel channel = _socketChannel.getAndSet(null);
             channel.close();
@@ -164,9 +164,9 @@ public class SocketChannelSession implements SocketSession {
 
         final SocketChannel channel = _socketChannel.get();
         if (channel == null) {
-            _logger.debug("Cannot send command '{}' - socket channel was closed", command);
+            logger.debug("Cannot send command '{}' - socket channel was closed", command);
         } else {
-            _logger.debug("Sending Command: '{}'", command);
+            logger.debug("Sending Command: '{}'", command);
             channel.write(toSend);
         }
     }
@@ -197,7 +197,7 @@ public class SocketChannelSession implements SocketSession {
             if (_isRunning.getAndSet(false)) {
                 try {
                     if (!_running.await(5, TimeUnit.SECONDS)) {
-                        _logger.warn("Waited too long for response reader to finish");
+                        logger.warn("Waited too long for response reader to finish");
                     }
                 } catch (InterruptedException e) {
                     // Do nothing
@@ -314,7 +314,7 @@ public class SocketChannelSession implements SocketSession {
                 if (processingThread != null && Thread.currentThread() != processingThread) {
                     try {
                         if (!_running.await(5, TimeUnit.SECONDS)) {
-                            _logger.warn("Waited too long for dispatcher to finish");
+                            logger.warn("Waited too long for dispatcher to finish");
                         }
                     } catch (InterruptedException e) {
                         // do nothing
@@ -345,29 +345,29 @@ public class SocketChannelSession implements SocketSession {
                     if (response != null) {
                         if (response instanceof String) {
                             try {
-                                _logger.debug("Dispatching response: {}", response);
+                                logger.debug("Dispatching response: {}", response);
                                 final SocketSessionListener[] listeners = _listeners
                                         .toArray(new SocketSessionListener[0]);
                                 for (SocketSessionListener listener : listeners) {
                                     listener.responseReceived((String) response);
                                 }
                             } catch (Exception e) {
-                                _logger.warn("Exception occurred processing the response '{}': {}", response, e);
+                                logger.warn("Exception occurred processing the response '{}': {}", response, e);
                             }
                         } else if (response instanceof Exception) {
-                            _logger.debug("Dispatching exception: {}", response);
+                            logger.debug("Dispatching exception: {}", response);
                             final SocketSessionListener[] listeners = _listeners.toArray(new SocketSessionListener[0]);
                             for (SocketSessionListener listener : listeners) {
                                 listener.responseException((Exception) response);
                             }
                         } else {
-                            _logger.warn("Unknown response class: {}", response);
+                            logger.warn("Unknown response class: {}", response);
                         }
                     }
                 } catch (InterruptedException e) {
                     // Do nothing
                 } catch (Exception e) {
-                    _logger.debug("Uncaught exception {}", e.getMessage(), e);
+                    logger.debug("Uncaught exception {}", e.getMessage(), e);
                     break;
                 }
             }

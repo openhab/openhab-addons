@@ -36,7 +36,7 @@ import com.google.gson.JsonParser;
  *
  */
 public class KodiClientSocket {
-    private static final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
+    private final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
 
     private final ScheduledExecutorService scheduler;
     private static final int REQUEST_TIMEOUT_MS = 60000;

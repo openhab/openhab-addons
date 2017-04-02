@@ -79,7 +79,7 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ZoneMinderDiscoveryService discoveryService = null;
     private ServiceRegistration discoveryRegistration = null;

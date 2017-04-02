@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 abstract class AbstractHubbedThingHandler extends BaseThingHandler {
 
-    protected Logger logger = LoggerFactory.getLogger(AbstractHubbedThingHandler.class);
+    private Logger logger = LoggerFactory.getLogger(AbstractHubbedThingHandler.class);
 
     public AbstractHubbedThingHandler(Thing thing) {
         super(thing);

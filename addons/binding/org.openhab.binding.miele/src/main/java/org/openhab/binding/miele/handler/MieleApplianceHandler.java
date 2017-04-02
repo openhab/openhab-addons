@@ -51,12 +51,13 @@ import com.google.gson.JsonParser;
 public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannelSelector> extends BaseThingHandler
         implements ApplianceStatusListener {
 
+    private final Logger logger = LoggerFactory.getLogger(MieleApplianceHandler.class);
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_DISHWASHER,
             THING_TYPE_OVEN, THING_TYPE_FRIDGE, THING_TYPE_DRYER, THING_TYPE_HOB, THING_TYPE_FRIDGEFREEZER,
             THING_TYPE_HOOD, THING_TYPE_WASHINGMACHINE);
 
     protected Gson gson = new Gson();
-    protected Logger logger = LoggerFactory.getLogger(MieleApplianceHandler.class);
 
     protected String UID;
     protected MieleBridgeHandler bridgeHandler;

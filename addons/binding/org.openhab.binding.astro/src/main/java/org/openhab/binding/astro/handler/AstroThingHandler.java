@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class AstroThingHandler extends BaseThingHandler {
-    private static final Logger logger = LoggerFactory.getLogger(AstroThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AstroThingHandler.class);
     private Scheduler quartzScheduler;
     private ScheduledFuture<?> schedulerFuture;
     private int linkedPositionalChannels = 0;

@@ -38,7 +38,7 @@ public class AvmDiscoveryService extends AbstractDiscoveryService {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Maximum time to search for devices.

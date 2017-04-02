@@ -46,7 +46,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Ip of PL546E in standalone mode

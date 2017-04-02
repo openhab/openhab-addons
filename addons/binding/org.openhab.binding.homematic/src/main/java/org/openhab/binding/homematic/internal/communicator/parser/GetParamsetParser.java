@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
-    private static final Logger logger = LoggerFactory.getLogger(GetParamsetParser.class);
+    private final Logger logger = LoggerFactory.getLogger(GetParamsetParser.class);
 
     private HmChannel channel;
     private HmParamsetType paramsetType;
