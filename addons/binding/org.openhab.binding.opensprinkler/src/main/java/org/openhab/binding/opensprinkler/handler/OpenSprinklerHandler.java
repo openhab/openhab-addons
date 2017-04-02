@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Chris Graham - Initial contribution
  */
 public abstract class OpenSprinklerHandler extends BaseThingHandler {
-    protected Logger logger = LoggerFactory.getLogger(OpenSprinklerHTTPHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OpenSprinklerHandler.class);
 
     protected ScheduledFuture<?> pollingJob;
 

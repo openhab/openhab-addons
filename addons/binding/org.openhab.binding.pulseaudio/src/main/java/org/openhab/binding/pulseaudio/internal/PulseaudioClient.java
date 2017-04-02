@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PulseaudioClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(PulseaudioClient.class);
+    private final Logger logger = LoggerFactory.getLogger(PulseaudioClient.class);
 
     private String host;
     private int port;

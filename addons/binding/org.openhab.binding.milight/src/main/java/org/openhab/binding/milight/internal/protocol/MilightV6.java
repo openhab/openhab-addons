@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * @since 2.1
  */
 public abstract class MilightV6 extends AbstractBulbInterface {
-    protected static final Logger logger = LoggerFactory.getLogger(MilightV6.class);
+    protected final Logger logger = LoggerFactory.getLogger(MilightV6.class);
 
     protected static final int MAX_BR = 100; // Maximum brightness (0x64)
     protected static final int MAX_SAT = 100; // Maximum saturation (0x64)

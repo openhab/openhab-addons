@@ -20,12 +20,11 @@ import org.slf4j.LoggerFactory;
  * @since 1.6.0
  */
 public final class S_Message extends Message {
+    private final Logger logger = LoggerFactory.getLogger(S_Message.class);
 
     private int dutyCycle;
     private int freeMemorySlots;
     private boolean commandDiscarded = false;
-
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
 
     public S_Message(String raw) {
         super(raw);

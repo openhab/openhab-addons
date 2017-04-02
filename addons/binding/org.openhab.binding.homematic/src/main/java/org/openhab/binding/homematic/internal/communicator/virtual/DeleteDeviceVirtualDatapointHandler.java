@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
-    private static final Logger logger = LoggerFactory.getLogger(DeleteDeviceVirtualDatapointHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DeleteDeviceVirtualDatapointHandler.class);
 
     /**
      * {@inheritDoc}

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private AvmDiscoveryService service;
 

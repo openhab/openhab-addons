@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(MinecraftDiscoveryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(MinecraftHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>();
 

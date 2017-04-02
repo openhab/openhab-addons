@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IpAvrConnection extends StreamAvrConnection {
 
-    private static final Logger logger = LoggerFactory.getLogger(IpAvrConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(IpAvrConnection.class);
 
     /** default port for IP communication **/
     public static final int DEFAULT_IPCONTROL_PORT = 8102;

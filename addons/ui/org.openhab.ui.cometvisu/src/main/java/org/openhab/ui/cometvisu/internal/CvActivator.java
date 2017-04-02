@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CvActivator implements BundleActivator {
 
-    private static final Logger logger = LoggerFactory.getLogger(CvActivator.class);
+    private final Logger logger = LoggerFactory.getLogger(CvActivator.class);
 
     private static BundleContext context;
 

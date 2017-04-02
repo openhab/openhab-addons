@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_CHART_ALIAS)
 public class ChartResource implements RESTResource {
-    private static final Logger logger = LoggerFactory.getLogger(ChartResource.class);
+    private final Logger logger = LoggerFactory.getLogger(ChartResource.class);
 
     // pattern RRDTool uses to format doubles in XML files
     static final String PATTERN = "0.0000000000E00";

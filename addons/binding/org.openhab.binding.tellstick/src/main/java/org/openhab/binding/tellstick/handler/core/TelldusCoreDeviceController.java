@@ -42,7 +42,7 @@ import org.tellstick.device.iface.SwitchableDevice;
  *
  */
 public class TelldusCoreDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
-    private static final Logger logger = LoggerFactory.getLogger(TelldusCoreBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TelldusCoreDeviceController.class);
     private long lastSend = 0;
     long resendInterval = 100;
     public static final long DEFAULT_INTERVAL_BETWEEN_SEND = 250;

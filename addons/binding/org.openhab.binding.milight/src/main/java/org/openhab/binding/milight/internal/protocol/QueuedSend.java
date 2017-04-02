@@ -32,10 +32,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class QueuedSend implements Runnable {
+    private final Logger logger = LoggerFactory.getLogger(QueuedSend.class);
+
     BlockingQueue<QueueItem> queue = new LinkedBlockingQueue<>(20);
     protected final DatagramPacket packet;
     protected final DatagramSocket datagramSocket;
-    private static final Logger logger = LoggerFactory.getLogger(QueuedSend.class);
     private int delay_between_commands = 100;
     private int repeat_commands = 1;
     private boolean willbeclosed = false;
