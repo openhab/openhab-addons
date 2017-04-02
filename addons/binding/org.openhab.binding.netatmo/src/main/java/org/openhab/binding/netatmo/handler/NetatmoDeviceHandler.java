@@ -83,7 +83,7 @@ public abstract class NetatmoDeviceHandler<X extends NetatmoDeviceConfiguration>
         }
     }
 
-    abstract protected NADeviceAdapter<?> updateReadings(String equipmentId);
+    protected abstract NADeviceAdapter<?> updateReadings(String equipmentId);
 
     @Override
     protected void updateChannels(String equipmentId) {

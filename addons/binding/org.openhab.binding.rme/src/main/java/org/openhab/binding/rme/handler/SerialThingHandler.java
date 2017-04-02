@@ -75,7 +75,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
      *            - the received data as a String
      *
      **/
-    abstract public void onDataReceived(String line);
+    public abstract void onDataReceived(String line);
 
     /**
      * Write data to the serial port

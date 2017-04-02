@@ -74,10 +74,10 @@ public class HomekitAccessoryUpdater {
     private static interface Subscription extends StateChangeListener {
 
         @Override
-        public abstract void stateChanged(Item item, State oldState, State newState);
+        void stateChanged(Item item, State oldState, State newState);
 
         @Override
-        default public void stateUpdated(Item item, State state) {
+        default void stateUpdated(Item item, State state) {
             // Do nothing on non-change update
         }
     }

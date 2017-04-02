@@ -44,7 +44,7 @@ public class ServiceFactory {
      * @param port
      * @return
      */
-    static public SamsungTvService createService(String type, UpnpIOService upnpIOService, String udn,
+    public static SamsungTvService createService(String type, UpnpIOService upnpIOService, String udn,
             int pollingInterval, String host, int port) {
 
         SamsungTvService service = null;

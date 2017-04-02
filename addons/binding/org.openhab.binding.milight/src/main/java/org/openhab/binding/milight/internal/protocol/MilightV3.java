@@ -29,7 +29,7 @@ public abstract class MilightV3 extends AbstractBulbInterface {
     }
 
     // we have to map [0,360] to [0,0xFF], where red equals hue=0 and the milight color 0xB0 (=176)
-    static public byte make_color(int hue) {
+    public static byte make_color(int hue) {
         int mHue = (360 + 248 - hue) % 360; // invert and shift
         return (byte) (mHue * 255 / 360); // map to 256 values
     }

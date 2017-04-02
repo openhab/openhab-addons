@@ -46,8 +46,8 @@ public class MilightDiscover extends Thread {
     ///// Network
     private byte[] discoverbuffer_v3 = "Link_Wi-Fi".getBytes();
     private byte[] discoverbuffer_v6 = "HF-A11ASSISTHREAD".getBytes();
-    final private DatagramPacket discoverPacket_v3;
-    final private DatagramPacket discoverPacket_v6;
+    private final DatagramPacket discoverPacket_v3;
+    private final DatagramPacket discoverPacket_v6;
     private boolean willbeclosed = false;
     private DatagramSocket datagramSocket;
     private byte[] buffer = new byte[1024];
@@ -57,11 +57,11 @@ public class MilightDiscover extends Thread {
     private Logger logger = LoggerFactory.getLogger(MilightDiscover.class);
 
     ///// Result and resend
-    final private DiscoverResult discoverResult;
+    private final DiscoverResult discoverResult;
     private int resendCounter = 0;
     private ScheduledFuture<?> resendTimer;
-    final private int resendTimeoutInMillis;
-    final private int resendAttempts;
+    private final int resendTimeoutInMillis;
+    private final int resendAttempts;
     private InetAddress destIP;
 
     public MilightDiscover(DiscoverResult discoverResult, int resendTimeoutInMillis, int resendAttempts)
