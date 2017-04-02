@@ -52,7 +52,7 @@ public class DelayedExecuter {
                         try {
                             callback.execute();
                         } catch (Exception ex) {
-                            logger.error(ex.getMessage(), ex);
+                            logger.error("{}", ex.getMessage(), ex);
                         }
                     }
                 }, (long) (delay * 1000));
