@@ -24,6 +24,7 @@ public final class LightifyConstants {
     private static final String BINDING_ID = "lightify";
 
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
+    public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB_SB = new ThingTypeUID(BINDING_ID, "bulb-sb");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB_TW = new ThingTypeUID(BINDING_ID, "bulb-tw");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB_RGBW = new ThingTypeUID(BINDING_ID, "bulb-rgbw");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_ZONE = new ThingTypeUID(BINDING_ID, "zone");
@@ -33,6 +34,9 @@ public final class LightifyConstants {
     public static final String PROPERTY_DEVICE_NAME = "device-name";
     public static final String PROPERTY_DEVICE_ADDRESS = "device-address";
     public static final String PROPERTY_ZONE_ID = "zone-id";
+
+    public static final String SB_CHANNEL_ID_POWER = "sb#power";
+    public static final String SB_CHANNEL_ID_DIMMER = "sb#dimmer";
 
     public static final String TW_CHANNEL_ID_POWER = "tw#power";
     public static final String TW_CHANNEL_ID_TEMPERATURE = "tw#temperature";
@@ -45,7 +49,7 @@ public final class LightifyConstants {
 
     public static final int BITMASK_DIMMING = 1 << 0;
     public static final int BITMASK_TUNABLE_WHITE = 1 << 1;
-    public static final int BITMASK_UNK1 = 1 << 2;
+    public static final int BITMASK_PURE_WHITE = 1 << 2;
     public static final int BITMASK_RGB = 1 << 3;
     public static final int BITMASK_UNK2 = 1 << 4;
     public static final int BITMASK_MOTION_SENSOR = 1 << 5;

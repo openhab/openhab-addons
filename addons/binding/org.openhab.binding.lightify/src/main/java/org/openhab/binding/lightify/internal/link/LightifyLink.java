@@ -19,6 +19,9 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static org.openhab.binding.lightify.internal.LightifyConstants.BITMASK_PURE_WHITE;
 import static org.openhab.binding.lightify.internal.LightifyConstants.BITMASK_RGB;
 import static org.openhab.binding.lightify.internal.LightifyConstants.BITMASK_TUNABLE_WHITE;
 import static org.openhab.binding.lightify.internal.LightifyUtils.exceptional;
@@ -326,8 +330,14 @@ public class LightifyLink {
 
             boolean isRGB = (type & BITMASK_RGB) == BITMASK_RGB;
             boolean isTunableWhite = (type & BITMASK_TUNABLE_WHITE) == BITMASK_TUNABLE_WHITE;
+            boolean isPureWhite = (type & BITMASK_PURE_WHITE) == BITMASK_PURE_WHITE;
 
-            LightifyLight light = new LightifyLight(this, name, isRGB, isTunableWhite, address);
+            List<Capability> capabilities = new ArrayList<>();
+            if (isRGB) capabilities.add(Capability.RGB);
+            if (isTunableWhite) capabilities.add(Capability.TunableWhite);
+            if (isPureWhite) capabilities.add(Capability.PureWhite);
+
+            LightifyLight light = new LightifyLight(this, name, EnumSet.copyOf(capabilities), address);
 
             // Push values
             light.updateLuminance(luminance);

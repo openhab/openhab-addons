@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lightify.internal.link.Capability;
 import org.openhab.binding.lightify.internal.link.LightifyLight;
 import org.openhab.binding.lightify.internal.link.LightifyLink;
 import org.openhab.binding.lightify.internal.link.LightifyLuminary;
@@ -34,6 +35,8 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.RGBW_CHANN
 import static org.openhab.binding.lightify.internal.LightifyConstants.RGBW_CHANNEL_ID_DIMMER;
 import static org.openhab.binding.lightify.internal.LightifyConstants.RGBW_CHANNEL_ID_POWER;
 import static org.openhab.binding.lightify.internal.LightifyConstants.RGBW_CHANNEL_ID_TEMPERATURE;
+import static org.openhab.binding.lightify.internal.LightifyConstants.SB_CHANNEL_ID_DIMMER;
+import static org.openhab.binding.lightify.internal.LightifyConstants.SB_CHANNEL_ID_POWER;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_RGBW;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_TW;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_ZONE;
@@ -97,10 +100,12 @@ public class DeviceHandler extends BaseThingHandler {
         logger.debug("Command: {}", command);
         switch (channelUID.getId()) {
             case RGBW_CHANNEL_ID_POWER:
+            case SB_CHANNEL_ID_POWER:
             case TW_CHANNEL_ID_POWER:
                 handlePowerSwitch(command);
                 break;
             case RGBW_CHANNEL_ID_DIMMER:
+            case SB_CHANNEL_ID_DIMMER:
             case TW_CHANNEL_ID_DIMMER:
                 handleDimmer(command);
                 break;
@@ -176,7 +181,7 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private void updateState(LightifyLuminary luminary) {
-        if (luminary.isRGB()) {
+        if (luminary.supports(Capability.RGB)) {
             updateState(RGBW_CHANNEL_ID_POWER, luminary.isPowered() ? OnOffType.ON : OnOffType.OFF);
             updateState(RGBW_CHANNEL_ID_DIMMER, new PercentType(luminary.getLuminance()));
             updateState(RGBW_CHANNEL_ID_TEMPERATURE, new DecimalType(luminary.getTemperature()));
@@ -187,10 +192,14 @@ public class DeviceHandler extends BaseThingHandler {
             int b = Byte.toUnsignedInt(rgb[2]);
             updateState(RGBW_CHANNEL_ID_COLOR, HSBType.fromRGB(r, g, b));
 
-        } else if (luminary.isTunableWhite()) {
+        } else if (luminary.supports(Capability.TunableWhite)) {
             updateState(TW_CHANNEL_ID_POWER, luminary.isPowered() ? OnOffType.ON : OnOffType.OFF);
             updateState(TW_CHANNEL_ID_DIMMER, new PercentType(luminary.getLuminance()));
             updateState(TW_CHANNEL_ID_TEMPERATURE, new DecimalType(luminary.getTemperature()));
+
+        } else if (luminary.supports(Capability.PureWhite)) {
+            updateState(SB_CHANNEL_ID_POWER, luminary.isPowered() ? OnOffType.ON : OnOffType.OFF);
+            updateState(SB_CHANNEL_ID_DIMMER, new PercentType(luminary.getLuminance()));
         }
     }
 }

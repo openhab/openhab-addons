@@ -11,6 +11,7 @@ package org.openhab.binding.lightify.internal.link;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -27,7 +28,7 @@ public class LightifyZone extends LightifyLuminary {
     private final List<LightifyLuminary> luminaries = new CopyOnWriteArrayList<>();
 
     LightifyZone(LightifyLink lightifyLink, String name, int zoneId) {
-        super(lightifyLink, name, true, true);
+        super(lightifyLink, name, EnumSet.of(Capability.TunableWhite, Capability.RGB));
         this.zoneId = zoneId;
         this.address = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putShort((short) zoneId).array();
     }

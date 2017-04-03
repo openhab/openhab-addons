@@ -18,6 +18,19 @@
 	</bridge-type>
 
 	<!-- Lightify Thing Type -->
+	<thing-type id="bulb-sb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>OSRAM Lightify Simple Bulb</label>
+		<description>OSRAM Lightify Simple Bulb</description>
+
+		<channel-groups>
+			<channel-group typeId="lightify-sb" id="sb" />
+		</channel-groups>
+	</thing-type>
+
 	<thing-type id="bulb-tw">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
@@ -57,8 +70,16 @@
 		</channel-groups>
 	</thing-type>
 
+	<channel-group-type id="lightify-sb">
+		<label>Simple Bulb Lightify Device</label>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="dimmer" typeId="dimmer" />
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="lightify-tw">
-		<label>RGBW Lightify Device</label>
+		<label>Tunable White Lightify Device</label>
 		<channels>
 			<channel id="power" typeId="power" />
 			<channel id="dimmer" typeId="dimmer" />

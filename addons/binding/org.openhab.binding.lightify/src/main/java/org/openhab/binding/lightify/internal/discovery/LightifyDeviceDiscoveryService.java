@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.lightify.handler.DeviceHandler;
 import org.openhab.binding.lightify.handler.GatewayHandler;
+import org.openhab.binding.lightify.internal.link.Capability;
 import org.openhab.binding.lightify.internal.link.LightifyLink;
 import org.openhab.binding.lightify.internal.link.LightifyLuminary;
 import org.openhab.binding.lightify.internal.link.LightifyZone;
@@ -31,6 +32,7 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_D
 import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ID;
 import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ZONE_ID;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_RGBW;
+import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_SB;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_TW;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_ZONE;
 import static org.openhab.binding.lightify.internal.LightifyUtils.exceptional;
@@ -123,7 +125,10 @@ public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService imp
             return THING_TYPE_LIGHTIFY_ZONE;
         }
 
-        if (luminary.isTunableWhite() & !luminary.isRGB()) {
+        if (luminary.supports(Capability.PureWhite)) {
+            return THING_TYPE_LIGHTIFY_BULB_SB;
+        }
+        else if (luminary.supports(Capability.TunableWhite) & !luminary.supports(Capability.RGB)) {
             return THING_TYPE_LIGHTIFY_BULB_TW;
         }
         return THING_TYPE_LIGHTIFY_BULB_RGBW;

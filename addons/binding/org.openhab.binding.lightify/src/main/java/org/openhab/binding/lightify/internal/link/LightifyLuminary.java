@@ -9,6 +9,7 @@
 package org.openhab.binding.lightify.internal.link;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.function.Consumer;
 
 /**
@@ -20,19 +21,18 @@ public abstract class LightifyLuminary {
 
     private final LightifyLink lightifyLink;
     private final String name;
-    private final boolean isRGB;
-    private final boolean isTunableWhite;
+
+    private final EnumSet<Capability> capabilities;
 
     private boolean status;
     private short temperature;
     private byte luminance;
     private byte[] rgb = new byte[3];
 
-    LightifyLuminary(LightifyLink lightifyLink, String name, boolean isRGB, boolean isTunableWhite) {
+    LightifyLuminary(LightifyLink lightifyLink, String name, EnumSet<Capability> capabilities) {
         this.lightifyLink = lightifyLink;
         this.name = name;
-        this.isRGB = isRGB;
-        this.isTunableWhite = isTunableWhite;
+        this.capabilities = capabilities;
     }
 
     public String getName() {
@@ -55,12 +55,8 @@ public abstract class LightifyLuminary {
         lightifyLink.performTemperature(this, temperature, millis, consumer);
     }
 
-    public boolean isRGB() {
-        return isRGB;
-    }
-
-    public boolean isTunableWhite() {
-        return isTunableWhite;
+    public boolean supports(Capability capability) {
+        return capabilities.contains(capability);
     }
 
     public boolean isPowered() {

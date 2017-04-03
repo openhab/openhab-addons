@@ -9,6 +9,7 @@
 package org.openhab.binding.lightify.internal.link;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 
 /**
  * This class represents a Lightify light bulb or stripe.
@@ -19,8 +20,8 @@ public class LightifyLight extends LightifyLuminary {
 
     private final byte[] address;
 
-    LightifyLight(LightifyLink lightifyLink, String name, boolean isRGB, boolean isTunableWhite, byte[] address) {
-        super(lightifyLink, name, isRGB, isTunableWhite);
+    LightifyLight(LightifyLink lightifyLink, String name, EnumSet<Capability> capabilities, byte[] address) {
+        super(lightifyLink, name, capabilities);
         this.address = address;
     }
 
