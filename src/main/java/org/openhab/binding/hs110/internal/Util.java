@@ -10,10 +10,13 @@ import org.slf4j.LoggerFactory;
 public class Util {
     private static Logger log = LoggerFactory.getLogger(Util.class);
 
+    private static final int DECRYPTION_KEY = 0x2B;
+    private static final int ENCRYPTION_KEY = DECRYPTION_KEY + 0x80;
+
     public static String decrypt(InputStream inputStream, boolean broadcast) throws IOException {
 
         int in;
-        int key = 0x2B;
+        int key = DECRYPTION_KEY;
         int nextKey;
         StringBuilder sb = new StringBuilder();
         while ((in = inputStream.read()) != -1) {
@@ -23,7 +26,7 @@ public class Util {
             key = nextKey;
             sb.append((char) in);
         }
-        log.trace("Length of decrypted String {}", sb.length());
+        log.trace("Decrypted string with length: {}", sb.length());
         if (broadcast) {
             return "{" + sb.toString().substring(1, sb.length() - 1) + "}";
         } else {
@@ -58,7 +61,7 @@ public class Util {
     public static byte[] encryptBytes(String command) {
 
         byte[] buffer = new byte[command.length()];
-        byte key = (byte) 0xAB;
+        byte key = (byte) ENCRYPTION_KEY;
         for (int i = 0; i < command.length(); i++) {
 
             buffer[i] = (byte) (command.charAt(i) ^ key);
