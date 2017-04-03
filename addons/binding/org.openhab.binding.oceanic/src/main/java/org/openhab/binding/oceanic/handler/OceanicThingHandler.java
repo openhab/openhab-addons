@@ -58,7 +58,7 @@ public class OceanicThingHandler extends BaseThingHandler {
     public static final String BAUD_RATE = "baud";
     public static final String BUFFER_SIZE = "buffer";
 
-    private static Logger logger = LoggerFactory.getLogger(OceanicThingHandler.class);
+    private Logger logger = LoggerFactory.getLogger(OceanicThingHandler.class);
 
     private SerialPort serialPort;
     private CommPortIdentifier portId;

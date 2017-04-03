@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_READ_ALIAS)
 public class ReadResource implements EventBroadcaster, RESTResource {
-    private static final Logger logger = LoggerFactory.getLogger(ReadResource.class);
+    private final Logger logger = LoggerFactory.getLogger(ReadResource.class);
 
     private SseBroadcaster broadcaster = new SseBroadcaster();
 

@@ -28,7 +28,7 @@ import com.google.gson.JsonElement;
  */
 public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
 
-    protected Logger logger = LoggerFactory.getLogger(HoodHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HoodHandler.class);
 
     public HoodHandler(Thing thing) {
         super(thing, HoodChannelSelector.class, "Hood");

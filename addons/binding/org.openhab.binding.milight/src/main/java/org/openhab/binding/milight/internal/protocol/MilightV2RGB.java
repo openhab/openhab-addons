@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class MilightV2RGB extends AbstractBulbInterface {
-    protected static final Logger logger = LoggerFactory.getLogger(MilightV2RGB.class);
+    protected final Logger logger = LoggerFactory.getLogger(MilightV2RGB.class);
     protected static final int brLevels = 9;
 
     public MilightV2RGB(QueuedSend sendQueue, int zone) {

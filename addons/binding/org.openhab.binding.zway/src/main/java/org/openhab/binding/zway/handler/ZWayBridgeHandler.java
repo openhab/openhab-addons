@@ -74,7 +74,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
 
     public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_BRIDGE;
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private BridgePolling bridgePolling;
     private ScheduledFuture<?> pollingJob;

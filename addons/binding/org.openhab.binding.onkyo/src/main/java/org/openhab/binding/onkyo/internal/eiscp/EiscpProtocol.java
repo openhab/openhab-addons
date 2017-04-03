@@ -33,7 +33,7 @@ public class EiscpProtocol {
      *            eISCP command.
      * @return String holding the full eISCP message packet
      **/
-    static public String createEiscpPdu(EiscpMessage msg) {
+    public static String createEiscpPdu(EiscpMessage msg) {
 
         String data = msg.getCommand() + msg.getValue();
         StringBuilder sb = new StringBuilder();
@@ -98,7 +98,7 @@ public class EiscpProtocol {
      * @throws InterruptedException
      * @throws EiscpException
      **/
-    static public EiscpMessage getNextMessage(DataInputStream stream)
+    public static EiscpMessage getNextMessage(DataInputStream stream)
             throws IOException, InterruptedException, EiscpException {
 
         while (true) {

@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ControllerHandler extends BaseBridgeHandler {
     private static final int SOCKET_TIMEOUT = 2000;
-    private static final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
     private String host;
     private int port;
     private Socket socket;

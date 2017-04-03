@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @since 2.1
  */
 public class MilightV6SessionManager implements Runnable {
-    protected static final Logger logger = LoggerFactory.getLogger(MilightV6SessionManager.class);
+    protected final Logger logger = LoggerFactory.getLogger(MilightV6SessionManager.class);
 
     // The used sequence number for a command will be present in the response of the iBox. This
     // allows us to identify failed command deliveries.
@@ -115,7 +115,7 @@ public class MilightV6SessionManager implements Runnable {
     private ScheduledFuture<?> checkHandshakeTimer = null;
 
     // Print out a lot of useful debug data for the session establishing
-    private final static boolean DEBUG_SESSION = false;
+    private static final boolean DEBUG_SESSION = false;
 
     // Abort a session registration process after this time in seconds
     private static final long REG_TIMEOUT_SEC = 3;

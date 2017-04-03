@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class AbstractBaseJob implements Job {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractBaseJob.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractBaseJob.class);
     public static final String KEY_THING_UID = "thingUid";
     public static final String KEY_CHANNEL_ID = "channelId";
     public static final String KEY_JOB_NAME = "jobName";

@@ -165,7 +165,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
     /**
      * Method to Refresh Thing Handler.
      */
-    public synchronized final void refreshThing(IZoneMinderSession session, DataRefreshPriorityEnum refreshPriority) {
+    public final synchronized void refreshThing(IZoneMinderSession session, DataRefreshPriorityEnum refreshPriority) {
 
         if ((refreshPriority != getRefreshPriority()) && (!isConnected())) {
             return;

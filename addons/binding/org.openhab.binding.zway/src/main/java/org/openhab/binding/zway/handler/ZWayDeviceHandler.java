@@ -69,7 +69,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * @author Patrick Hecker - Initial contribution
  */
 public abstract class ZWayDeviceHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private DevicePolling devicePolling;
     private ScheduledFuture<?> pollingJob;

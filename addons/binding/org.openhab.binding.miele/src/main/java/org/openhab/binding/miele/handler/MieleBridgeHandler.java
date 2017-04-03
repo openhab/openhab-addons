@@ -79,7 +79,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     protected Random rand = new Random();
     protected Gson gson = new Gson();
-    protected Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
 
     protected List<ApplianceStatusListener> applianceStatusListeners = new CopyOnWriteArrayList<>();
     protected ScheduledFuture<?> pollingJob;

@@ -37,7 +37,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
     private GardenaAccountHandler accountHandler;
@@ -113,7 +113,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
                         logger.debug("Finished Gardena device discovery scan on gateway '{}'",
                                 accountHandler.getGardenaSmart().getId());
                     } catch (Throwable ex) {
-                        logger.error(ex.getMessage(), ex);
+                        logger.error("{}", ex.getMessage(), ex);
                     } finally {
                         scanFuture = null;
                         removeOlderResults(getTimestampOfLastScan());

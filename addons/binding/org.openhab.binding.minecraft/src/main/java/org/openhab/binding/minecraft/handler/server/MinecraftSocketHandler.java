@@ -36,7 +36,7 @@ import rx.subjects.BehaviorSubject;
  */
 public class MinecraftSocketHandler implements WebSocketEventHandler {
 
-    private Logger logger = LoggerFactory.getLogger(MinecraftServerHandler.class);
+    private Logger logger = LoggerFactory.getLogger(MinecraftSocketHandler.class);
 
     private BehaviorSubject<ServerData> serverRx = BehaviorSubject.create();
     private BehaviorSubject<List<SignData>> signsRx = BehaviorSubject.<List<SignData>>create();

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class AbstractVirtualDatapointHandler implements VirtualDatapointHandler {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractVirtualDatapointHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractVirtualDatapointHandler.class);
 
     /**
      * {@inheritDoc}

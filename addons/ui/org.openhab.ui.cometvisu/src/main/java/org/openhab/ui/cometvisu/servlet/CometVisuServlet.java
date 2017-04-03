@@ -73,11 +73,8 @@ import com.google.gson.Gson;
  * @author Tobias Bräutigam
  */
 public class CometVisuServlet extends HttpServlet {
-    /**
-     *
-     */
     private static final long serialVersionUID = 4448918908615003303L;
-    private static final Logger logger = LoggerFactory.getLogger(CometVisuServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(CometVisuServlet.class);
 
     private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1

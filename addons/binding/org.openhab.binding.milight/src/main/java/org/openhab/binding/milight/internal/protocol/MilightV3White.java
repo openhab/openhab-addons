@@ -25,12 +25,12 @@ public class MilightV3White extends MilightV3 {
         super(0, sendQueue, zone);
     }
 
-    private final static byte command_full[] = { (byte) 0xB5, (byte) 0xB8, (byte) 0xBD, (byte) 0xB7, (byte) 0xB2 };
-    private final static byte command_on[] = { (byte) 0x35, (byte) 0x38, (byte) 0x3D, (byte) 0x37, (byte) 0x32 };
-    private final static byte command_off[] = { (byte) 0x39, (byte) 0x3B, (byte) 0x33, (byte) 0x3A, (byte) 0x36 };
-    private final static byte command_nightmode[] = { (byte) 0xB9, (byte) 0xBB, (byte) 0xB3, (byte) 0xBA, (byte) 0xB6 };
-    private final static byte prev_animation_mode[] = { 0x27, 0x00, 0x55 };
-    private final static byte next_animation_mode[] = { 0x27, 0x00, 0x55 };
+    private static final byte command_full[] = { (byte) 0xB5, (byte) 0xB8, (byte) 0xBD, (byte) 0xB7, (byte) 0xB2 };
+    private static final byte command_on[] = { (byte) 0x35, (byte) 0x38, (byte) 0x3D, (byte) 0x37, (byte) 0x32 };
+    private static final byte command_off[] = { (byte) 0x39, (byte) 0x3B, (byte) 0x33, (byte) 0x3A, (byte) 0x36 };
+    private static final byte command_nightmode[] = { (byte) 0xB9, (byte) 0xBB, (byte) 0xB3, (byte) 0xBA, (byte) 0xB6 };
+    private static final byte prev_animation_mode[] = { 0x27, 0x00, 0x55 };
+    private static final byte next_animation_mode[] = { 0x27, 0x00, 0x55 };
 
     protected void setFull(int zone, MilightThingState state) {
         sendQueue.queueRepeatable(uidc(CAT_BRIGHTNESS_SET), new byte[] { command_full[zone], 0x00, 0x55 });

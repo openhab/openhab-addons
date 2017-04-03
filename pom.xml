@@ -309,9 +309,14 @@
             </build>
         </profile>
 
-	<!-- static code analysis profiles -->
+    <!-- static code analysis profiles -->
     <profile>
       <id>check</id>
+      <activation>
+        <property>
+          <name>!skipChecks</name>
+        </property>
+      </activation>   
       <build>
         <pluginManagement>
           <plugins>

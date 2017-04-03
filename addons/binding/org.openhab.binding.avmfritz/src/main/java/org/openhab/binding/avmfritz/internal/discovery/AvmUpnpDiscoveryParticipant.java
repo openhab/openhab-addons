@@ -37,7 +37,7 @@ public class AvmUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Provide supported thing type uid's

@@ -29,7 +29,7 @@ import com.google.common.collect.ImmutableSet;
  * @author Gerhard Riegler
  */
 public class AstroDiscoveryService extends AbstractDiscoveryService {
-    private static final Logger logger = LoggerFactory.getLogger(AstroDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(AstroDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
     /**

@@ -130,14 +130,14 @@ public class FreeboxHandler extends BaseBridgeHandler {
      *
      * @throws FreeboxException
      */
-    private boolean authorize() {
+    private boolean authorize(boolean useHttps, String fqdn, String apiBaseUrl, String apiVersion) {
 
         FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
 
         Bundle bundle = FrameworkUtil.getBundle(getClass());
 
         fbClient = new FreeboxOsClient(bundle.getSymbolicName(), /* org.openhab.binding.freebox */
-                configuration.fqdn);
+                useHttps, fqdn, apiBaseUrl, apiVersion);
 
         LoginManager loginManager = fbClient.getLoginManager();
         TrackAuthorizeStatus authorizeStatus = TrackAuthorizeStatus.UNKNOWN;
@@ -206,6 +206,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
             String apiBaseUrl = null;
             String apiVersion = null;
             String hardwareVersion = null;
+            // String apiDomain = null;
+            // boolean httpsAvailable = false;
+            // String httpsPort = null;
             FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
             String result = null;
             try {
@@ -218,16 +221,19 @@ public class FreeboxHandler extends BaseBridgeHandler {
                         .replace(StringUtils.substringBetween(result, "\"api_base_url\":\"", "\""), "\\/", "/"));
                 apiVersion = StringUtils.trim(StringUtils.substringBetween(result, "\"api_version\":\"", "\""));
                 hardwareVersion = StringUtils.trim(StringUtils.substringBetween(result, "\"device_type\":\"", "\""));
+                // apiDomain = StringUtils.trim(StringUtils.substringBetween(result, "\"api_domain\":\"", "\""));
+                // httpsAvailable = StringUtils.containsIgnoreCase(result, "\"https_available\":true");
+                // httpsPort = StringUtils.trim(StringUtils.substringBetween(result, "\"https_port\":", ","));
             }
 
             if ((apiBaseUrl != null) && (apiVersion != null) && (hardwareVersion != null)) {
-                if (authorize()) {
+                if (authorize(false, configuration.fqdn, apiBaseUrl, apiVersion)) {
                     updateStatus(ThingStatus.ONLINE);
 
                     if (globalJob == null || globalJob.isCancelled()) {
-                        long polling_interval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
-                        logger.debug("Scheduling server state update every {} seconds...", polling_interval);
-                        globalJob = scheduler.scheduleAtFixedRate(globalRunnable, 1, polling_interval,
+                        long pollingInterval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
+                        logger.debug("Scheduling server state update every {} seconds...", pollingInterval);
+                        globalJob = scheduler.scheduleAtFixedRate(globalRunnable, 1, pollingInterval,
                                 TimeUnit.SECONDS);
                     }
                 } else {

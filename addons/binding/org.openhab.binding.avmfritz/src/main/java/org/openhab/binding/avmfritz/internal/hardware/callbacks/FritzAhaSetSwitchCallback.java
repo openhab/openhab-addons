@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     /**
      * Item to update
      */

@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_CHART_ALIAS)
 public class ChartResource implements RESTResource {
-    private static final Logger logger = LoggerFactory.getLogger(ChartResource.class);
+    private final Logger logger = LoggerFactory.getLogger(ChartResource.class);
 
     // pattern RRDTool uses to format doubles in XML files
     static final String PATTERN = "0.0000000000E00";
@@ -79,7 +79,7 @@ public class ChartResource implements RESTResource {
         // df.setPositivePrefix("+");
     }
 
-    static protected Map<String, QueryablePersistenceService> persistenceServices = new HashMap<String, QueryablePersistenceService>();
+    protected static Map<String, QueryablePersistenceService> persistenceServices = new HashMap<String, QueryablePersistenceService>();
 
     private ItemRegistry itemRegistry;
 
@@ -96,7 +96,7 @@ public class ChartResource implements RESTResource {
         persistenceServices.remove(service.getId());
     }
 
-    static public Map<String, QueryablePersistenceService> getPersistenceServices() {
+    public static Map<String, QueryablePersistenceService> getPersistenceServices() {
         return persistenceServices;
     }
 

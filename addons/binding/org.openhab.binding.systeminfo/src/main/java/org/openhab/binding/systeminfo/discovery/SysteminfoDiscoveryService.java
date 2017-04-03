@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Svilen Valkanov
  */
 public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
-    private static final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
 

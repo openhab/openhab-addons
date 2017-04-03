@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class AbstractHomematicGateway implements RpcEventListener, HomematicGateway, VirtualGateway {
-    private static final Logger logger = LoggerFactory.getLogger(HomematicGateway.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractHomematicGateway.class);
     public static final double DEFAULT_DISABLE_DELAY = 2.0;
     private static final long CONNECTION_TRACKER_INTERVAL_SECONDS = 15;
     private static final String GATEWAY_POOL_NAME = "homematicGateway";
@@ -240,7 +240,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             try {
                 getRpcClient(hmInterface).release(hmInterface);
             } catch (IOException ex) {
-                logger.warn(ex.getMessage(), ex);
+                logger.warn("{}", ex.getMessage(), ex);
             }
         }
 
@@ -688,7 +688,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                         }
                     }
                 } catch (Exception ex) {
-                    logger.error(ex.getMessage(), ex);
+                    logger.error("{}", ex.getMessage(), ex);
                 }
             }
         }
@@ -798,7 +798,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 }
             });
         } catch (IOException | HomematicClientException ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         }
     }
 
@@ -822,8 +822,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                     startServers();
                     eventListener.onServerRestart();
                 } catch (IOException ex) {
-                    logger.warn(ex.getMessage());
-                    logger.trace(ex.getMessage(), ex);
+                    logger.warn("{}", ex.getMessage());
+                    logger.trace("{}", ex.getMessage(), ex);
                 }
             }
         }
@@ -900,7 +900,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 stopServers();
                 startServers();
             } catch (IOException ex) {
-                logger.debug(ex.getMessage(), ex);
+                logger.debug("{}", ex.getMessage(), ex);
             }
         }
     }
