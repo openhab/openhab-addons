@@ -87,7 +87,7 @@ final class PacketBuilder {
         int packetSize = calculatePacketSize();
         ByteBuffer buffer = ByteBuffer.allocate(packetSize + 2).order(ByteOrder.LITTLE_ENDIAN);
 
-        short requestId = lightifyLink.nextSequence();
+        int requestId = lightifyLink.nextSequence();
         putHeader(packetSize, requestId, buffer);
 
         if (luminary != null) {
@@ -131,22 +131,22 @@ final class PacketBuilder {
         }
     }
 
-    private void putHeader(int packetSize, short requestId, ByteBuffer buffer) {
+    private void putHeader(int packetSize, int requestId, ByteBuffer buffer) {
         buffer.putShort(0, (short) packetSize);
 
-        byte zoneOrNode = command.isZone() ? 0x02 : luminary.typeFlag();
-        buffer.put(2, zoneOrNode);
+        byte broadcastOrUnicast = command.isBroadcast() ? 0x02 : luminary.typeFlag();
+        buffer.put(2, broadcastOrUnicast);
 
         buffer.put(3, command.getId());
-        buffer.putShort(4, requestId);
+        buffer.putInt(4, requestId);
     }
 
     private void validate() {
         Objects.requireNonNull(command, "command must be set");
 
-        if (!command.isZone()) {
+        if (!command.isBroadcast()) {
             if (luminary == null) {
-                throw new NullPointerException("luminary must be set for non global commands");
+                throw new NullPointerException("luminary must be set for non-broadcast commands");
             }
         }
         if (command == Command.LIGHT_COLOR && rgb == null) {
@@ -161,7 +161,7 @@ final class PacketBuilder {
     }
 
     private int calculatePacketSize() {
-        int size = command.isZone() ? 6 : 14; // header
+        int size = command.isBroadcast() ? 6 : 14; // header
         if (luminary != null) {
             size += 8; // address bytes
         }

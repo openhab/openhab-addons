@@ -19,8 +19,8 @@ public class LightifyLight extends LightifyLuminary {
 
     private final byte[] address;
 
-    LightifyLight(LightifyLink lightifyLink, String name, byte[] address) {
-        super(lightifyLink, name);
+    LightifyLight(LightifyLink lightifyLink, String name, boolean isRGB, boolean isTunableWhite, byte[] address) {
+        super(lightifyLink, name, isRGB, isTunableWhite);
         this.address = address;
     }
 

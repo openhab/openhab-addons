@@ -26,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static org.openhab.binding.lightify.internal.LightifyConstants.BITMASK_RGB;
+import static org.openhab.binding.lightify.internal.LightifyConstants.BITMASK_TUNABLE_WHITE;
 import static org.openhab.binding.lightify.internal.LightifyUtils.exceptional;
 import static org.openhab.binding.lightify.internal.link.Command.LIGHT_COLOR;
 import static org.openhab.binding.lightify.internal.link.Command.LIGHT_LUMINANCE;
@@ -148,7 +150,7 @@ public class LightifyLink {
     private void perform(byte[] packet, Command command, Consumer<LightifyLuminary> consumer) {
         try {
             sendPacket(packet);
-            readPacket(command, consumer);
+            readPacket(packet, command, consumer);
 
         } catch (IOException | NullPointerException e) {
             if (connection != null) {
@@ -158,20 +160,29 @@ public class LightifyLink {
         }
     }
 
-    byte nextSequence() {
+    int nextSequence() {
         while (true) {
             int oldValue = sequencer.get();
             int next = oldValue + 1;
-            if (oldValue > 255) {
+            if (oldValue > Integer.MAX_VALUE) {
                 next = 0;
             }
             if (sequencer.compareAndSet(oldValue, next)) {
-                return (byte) next;
+                return next;
             }
         }
     }
 
-    private void onPacket(Command command, ByteBuffer buffer, Consumer<LightifyLuminary> consumer) {
+    private void onPacket(byte[] packet, Command command, ByteBuffer buffer, Consumer<LightifyLuminary> consumer) {
+        int error = handleHeader(packet, command, buffer);
+        if (error != 0x00) {
+            String sent = DatatypeConverter.printHexBinary(packet);
+            String received = DatatypeConverter.printHexBinary(buffer.array());
+            logger.warn("Packet content, sent: {}, received: {}", sent, received);
+            logger.warn("Error code: 0x{}, command: {}", Integer.toHexString(error), command);
+            logger.warn("Error Stacktrace", new RuntimeException());
+        }
+
         switch (command) {
             case STATUS_ALL:
                 handleStatusAll(buffer, consumer);
@@ -193,23 +204,12 @@ public class LightifyLink {
             case LIGHT_LUMINANCE:
             case LIGHT_TEMPERATURE:
             case LIGHT_COLOR:
-                handleLightResponse(buffer, command, consumer);
+                handleLightResponse(buffer, consumer);
                 break;
         }
     }
 
     private void handleZoneInfo(ByteBuffer buffer, Consumer<LightifyLuminary> consumer) {
-        // skip header
-        buffer.get();
-        if (ZONE_INFO.getId() != buffer.get()) {
-            throw new IllegalStateException("Illegal packet type");
-        }
-
-        buffer.getShort(); // sequence number
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-
         int zoneId = buffer.getShort();
 
         byte[] nameBuffer = new byte[16];
@@ -231,17 +231,6 @@ public class LightifyLink {
     }
 
     private void handleZoneList(ByteBuffer buffer, Consumer<LightifyLuminary> consumer) {
-        // skip header
-        buffer.get();
-        if (ZONE_LIST.getId() != buffer.get()) {
-            throw new IllegalStateException("Illegal packet type");
-        }
-
-        buffer.getShort(); // sequence number
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-
         int numOfZones = buffer.getShort();
         logger.debug("Found {} zones...", numOfZones);
         for (int i = 0; i < numOfZones; i++) {
@@ -258,17 +247,6 @@ public class LightifyLink {
     }
 
     private void handleStatusUpdate(ByteBuffer buffer, Consumer<LightifyLuminary> consumer) {
-        // skip header
-        buffer.get();
-        if (STATUS_SINGLE.getId() != buffer.get()) {
-            throw new IllegalStateException("Illegal packet type");
-        }
-
-        buffer.getShort(); // sequence number
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-
         int id = buffer.getShort();
 
         byte[] address = new byte[8];
@@ -295,18 +273,7 @@ public class LightifyLink {
         }
     }
 
-    private void handleLightResponse(ByteBuffer buffer, Command command, Consumer<? super LightifyLuminary> consumer) {
-        // skip header
-        buffer.get();
-        if (command.getId() != buffer.get()) {
-            throw new IllegalStateException("Illegal packet type");
-        }
-
-        buffer.getShort(); // sequence number
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-
+    private void handleLightResponse(ByteBuffer buffer, Consumer<? super LightifyLuminary> consumer) {
         int id = buffer.getShort();
 
         byte[] address = new byte[8];
@@ -319,19 +286,8 @@ public class LightifyLink {
     }
 
     private void handleStatusAll(ByteBuffer buffer, Consumer<? super LightifyLuminary> consumer) {
-        // skip header
-        buffer.get();
-        if (STATUS_ALL.getId() != buffer.get()) {
-            throw new IllegalStateException("Illegal packet type");
-        }
-
-        buffer.getShort(); // sequence number
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-        buffer.get(); // always 0
-
         int numOfLights = buffer.getShort();
-        logger.debug("Found {} devices...", numOfLights);
+        logger.debug("FoRund {} devices...", numOfLights);
         for (int i = 0; i < numOfLights; i++) {
             int id = buffer.getShort();
 
@@ -368,7 +324,10 @@ public class LightifyLink {
             buffer.get(nameBuffer, 0, nameBuffer.length);
             String name = new String(nameBuffer, CP437).trim();
 
-            LightifyLight light = new LightifyLight(this, name, address);
+            boolean isRGB = (type & BITMASK_RGB) == BITMASK_RGB;
+            boolean isTunableWhite = (type & BITMASK_TUNABLE_WHITE) == BITMASK_TUNABLE_WHITE;
+
+            LightifyLight light = new LightifyLight(this, name, isRGB, isTunableWhite, address);
 
             // Push values
             light.updateLuminance(luminance);
@@ -383,22 +342,41 @@ public class LightifyLink {
         }
     }
 
+    private int handleHeader(byte[] packet, Command command, ByteBuffer buffer) {
+        int status = Byte.toUnsignedInt(buffer.get());
+
+        if (status != 0x01 && status != 0x03) {
+            String sent = DatatypeConverter.printHexBinary(packet);
+            String received = DatatypeConverter.printHexBinary(buffer.array());
+            logger.warn("Packet content, sent: {}, received: {}", sent, received);
+            logger.warn("Status code: 0x{}, command: {}", Integer.toHexString(status), command);
+        }
+
+        int commandId = Byte.toUnsignedInt(buffer.get());
+        if (command.getId() != commandId) {
+            throw new IllegalStateException("Illegal packet type: 0x" + Integer.toHexString(commandId) + ", command: " + command);
+        }
+
+        buffer.getInt(); // request id, unused in this implementation
+
+        return Byte.toUnsignedInt(buffer.get());
+    }
+
     private void sendPacket(byte[] packet) throws IOException {
         connection.write(packet);
     }
 
-    private void readPacket(Command command, Consumer<LightifyLuminary> consumer) throws IOException {
+    private void readPacket(byte[] packet, Command command, Consumer<LightifyLuminary> consumer) throws IOException {
         int length = 2;
         ByteBuffer b = connection.read(length);
 
         length = b.getShort();
         ByteBuffer buffer = connection.read(length);
-        onPacket(command, buffer, consumer);
+        onPacket(packet, command, buffer, consumer);
     }
 
     public void disconnect() {
         exceptional(connection::disconnect);
-        //this.connection = null;
     }
 
     private String getZoneUID(int zoneId) {
@@ -441,7 +419,9 @@ public class LightifyLink {
         }
 
         private void disconnect() throws IOException {
-            socket.close();
+            if (socket != null) {
+                socket.close();
+            }
         }
 
         private ByteBuffer read(int length) throws IOException {

@@ -30,43 +30,43 @@ public enum Command {
     ZONE_LIST(0x1E, true),
 
     /**
-     * Retrieves information about a single configured zone
+     * Retrieves information about a single configured broadcast
      */
     ZONE_INFO(0x26, false),
 
     /**
-     * Reconfigures the luminance of the addressed device or zone
+     * Reconfigures the luminance of the addressed device or broadcast
      */
     LIGHT_LUMINANCE(0x31, false),
 
     /**
-     * Reconfigures the power on/off status of the addressed device or zone
+     * Reconfigures the power on/off status of the addressed device or broadcast
      */
     LIGHT_SWITCH(0x32, false),
 
     /**
-     * Reconfigures the white light temperature of the addressed device or zone
+     * Reconfigures the white light temperature of the addressed device or broadcast
      */
     LIGHT_TEMPERATURE(0x33, false),
 
     /**
-     * Reconfigures the RGB color of the addressed device or zone
+     * Reconfigures the RGB color of the addressed device or broadcast
      */
     LIGHT_COLOR(0x36, false);
 
     private final byte id;
-    private final boolean zone;
+    private final boolean broadcast;
 
-    Command(int id, boolean zone) {
+    Command(int id, boolean broadcast) {
         this.id = (byte) id;
-        this.zone = zone;
+        this.broadcast = broadcast;
     }
 
     public byte getId() {
         return id;
     }
 
-    public boolean isZone() {
-        return zone;
+    public boolean isBroadcast() {
+        return broadcast;
     }
 }

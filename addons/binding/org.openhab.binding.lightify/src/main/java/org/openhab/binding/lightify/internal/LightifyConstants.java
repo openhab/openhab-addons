@@ -24,7 +24,8 @@ public final class LightifyConstants {
     private static final String BINDING_ID = "lightify";
 
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
-    public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB = new ThingTypeUID(BINDING_ID, "bulb");
+    public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB_TW = new ThingTypeUID(BINDING_ID, "bulb-tw");
+    public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB_RGBW = new ThingTypeUID(BINDING_ID, "bulb-rgbw");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_ZONE = new ThingTypeUID(BINDING_ID, "zone");
 
     public static final String PROPERTY_ADDRESS = "ipAddress";
@@ -33,16 +34,32 @@ public final class LightifyConstants {
     public static final String PROPERTY_DEVICE_ADDRESS = "device-address";
     public static final String PROPERTY_ZONE_ID = "zone-id";
 
-    public static final String CHANNEL_ID_POWER = "rgbw#power";
-    public static final String CHANNEL_ID_TEMPERATURE = "rgbw#temperature";
-    public static final String CHANNEL_ID_DIMMER = "rgbw#dimmer";
-    public static final String CHANNEL_ID_COLOR = "rgbw#color";
+    public static final String TW_CHANNEL_ID_POWER = "tw#power";
+    public static final String TW_CHANNEL_ID_TEMPERATURE = "tw#temperature";
+    public static final String TW_CHANNEL_ID_DIMMER = "tw#dimmer";
+
+    public static final String RGBW_CHANNEL_ID_POWER = "rgbw#power";
+    public static final String RGBW_CHANNEL_ID_TEMPERATURE = "rgbw#temperature";
+    public static final String RGBW_CHANNEL_ID_DIMMER = "rgbw#dimmer";
+    public static final String RGBW_CHANNEL_ID_COLOR = "rgbw#color";
+
+    public static final int BITMASK_DIMMING = 1 << 0;
+    public static final int BITMASK_TUNABLE_WHITE = 1 << 1;
+    public static final int BITMASK_UNK1 = 1 << 2;
+    public static final int BITMASK_RGB = 1 << 3;
+    public static final int BITMASK_UNK2 = 1 << 4;
+    public static final int BITMASK_MOTION_SENSOR = 1 << 5;
+    public static final int BITMASK_SWITCHING = 1 << 6;
+    public static final int BITMASK_UNK3 = 1 << 7;
+
+    public static final int BITMASK_COMBO_RGBW = BITMASK_TUNABLE_WHITE | BITMASK_RGB;
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_GATEWAY);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_BULB);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_BULB_TW);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_BULB_RGBW);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_ZONE);
     }
 

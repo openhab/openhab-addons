@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lightify.internal.link.LightifyLight;
 import org.openhab.binding.lightify.internal.link.LightifyLink;
 import org.openhab.binding.lightify.internal.link.LightifyLuminary;
 import org.slf4j.Logger;
@@ -25,15 +26,20 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.openhab.binding.lightify.internal.LightifyConstants.CHANNEL_ID_COLOR;
-import static org.openhab.binding.lightify.internal.LightifyConstants.CHANNEL_ID_DIMMER;
-import static org.openhab.binding.lightify.internal.LightifyConstants.CHANNEL_ID_POWER;
-import static org.openhab.binding.lightify.internal.LightifyConstants.CHANNEL_ID_TEMPERATURE;
 import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ZONE_ID;
-import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB;
+import static org.openhab.binding.lightify.internal.LightifyConstants.RGBW_CHANNEL_ID_COLOR;
+import static org.openhab.binding.lightify.internal.LightifyConstants.RGBW_CHANNEL_ID_DIMMER;
+import static org.openhab.binding.lightify.internal.LightifyConstants.RGBW_CHANNEL_ID_POWER;
+import static org.openhab.binding.lightify.internal.LightifyConstants.RGBW_CHANNEL_ID_TEMPERATURE;
+import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_RGBW;
+import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_TW;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_ZONE;
+import static org.openhab.binding.lightify.internal.LightifyConstants.TW_CHANNEL_ID_DIMMER;
+import static org.openhab.binding.lightify.internal.LightifyConstants.TW_CHANNEL_ID_POWER;
+import static org.openhab.binding.lightify.internal.LightifyConstants.TW_CHANNEL_ID_TEMPERATURE;
 
 /**
  * <p>The {@link org.eclipse.smarthome.core.thing.binding.ThingHandler} implementation to handle commands
@@ -50,12 +56,15 @@ public class DeviceHandler extends BaseThingHandler {
      */
     public static final Set<ThingTypeUID> SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet<ThingTypeUID>() {
         {
-            add(THING_TYPE_LIGHTIFY_BULB);
+            add(THING_TYPE_LIGHTIFY_BULB_TW);
+            add(THING_TYPE_LIGHTIFY_BULB_RGBW);
             add(THING_TYPE_LIGHTIFY_ZONE);
         }
     });
 
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
+
+    private volatile ScheduledFuture<?> updateTaskRegistration;
 
     public DeviceHandler(Thing thing) {
         super(thing);
@@ -69,28 +78,37 @@ public class DeviceHandler extends BaseThingHandler {
             GatewayHandler gatewayHandler = getGatewayHandler();
             LightifyLink lightifyLink = gatewayHandler.getLightifyLink();
             LightifyLuminary luminary = getLuminary();
-            if (luminary != null) {
+            if (luminary instanceof LightifyLight) {
                 lightifyLink.performStatusUpdate(luminary, this::updateState);
             }
         };
 
-        scheduler.scheduleWithFixedDelay(statusUpdater, 1, 10, TimeUnit.SECONDS);
+        updateTaskRegistration = scheduler.scheduleWithFixedDelay(statusUpdater, 1, 10, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        updateTaskRegistration.cancel(true);
+        super.dispose();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Command: {}", command);
         switch (channelUID.getId()) {
-            case CHANNEL_ID_POWER:
+            case RGBW_CHANNEL_ID_POWER:
+            case TW_CHANNEL_ID_POWER:
                 handlePowerSwitch(command);
                 break;
-            case CHANNEL_ID_DIMMER:
+            case RGBW_CHANNEL_ID_DIMMER:
+            case TW_CHANNEL_ID_DIMMER:
                 handleDimmer(command);
                 break;
-            case CHANNEL_ID_TEMPERATURE:
+            case RGBW_CHANNEL_ID_TEMPERATURE:
+            case TW_CHANNEL_ID_TEMPERATURE:
                 handleTemperature(command);
                 break;
-            case CHANNEL_ID_COLOR:
+            case RGBW_CHANNEL_ID_COLOR:
                 handleColor(command);
         }
     }
@@ -142,9 +160,13 @@ public class DeviceHandler extends BaseThingHandler {
     private LightifyLuminary getLuminary() {
         GatewayHandler gatewayHandler = getGatewayHandler();
         LightifyLink lightifyLink = gatewayHandler.getLightifyLink();
-        if (getThing().getThingTypeUID().equals(THING_TYPE_LIGHTIFY_BULB)) {
+
+        ThingTypeUID thingTypeUID = getThing().getThingTypeUID();
+        if (thingTypeUID.equals(THING_TYPE_LIGHTIFY_BULB_RGBW)
+               || thingTypeUID.equals(THING_TYPE_LIGHTIFY_BULB_TW) ) {
             return lightifyLink.findDevice(getThing().getUID().getId());
         }
+
         String zoneId = getThing().getProperties().get(PROPERTY_ZONE_ID);
         return lightifyLink.findZone("zone::" + zoneId);
     }
@@ -154,13 +176,21 @@ public class DeviceHandler extends BaseThingHandler {
     }
 
     private void updateState(LightifyLuminary luminary) {
-        updateState(CHANNEL_ID_POWER, luminary.isPowered() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_ID_DIMMER, new PercentType(luminary.getLuminance()));
-        updateState(CHANNEL_ID_TEMPERATURE, new DecimalType(luminary.getTemperature()));
-        byte[] rgb = luminary.getRGB();
-        int r = Byte.toUnsignedInt(rgb[0]);
-        int g = Byte.toUnsignedInt(rgb[1]);
-        int b = Byte.toUnsignedInt(rgb[2]);
-        updateState(CHANNEL_ID_COLOR, HSBType.fromRGB(r, g, b));
+        if (luminary.isRGB()) {
+            updateState(RGBW_CHANNEL_ID_POWER, luminary.isPowered() ? OnOffType.ON : OnOffType.OFF);
+            updateState(RGBW_CHANNEL_ID_DIMMER, new PercentType(luminary.getLuminance()));
+            updateState(RGBW_CHANNEL_ID_TEMPERATURE, new DecimalType(luminary.getTemperature()));
+
+            byte[] rgb = luminary.getRGB();
+            int r = Byte.toUnsignedInt(rgb[0]);
+            int g = Byte.toUnsignedInt(rgb[1]);
+            int b = Byte.toUnsignedInt(rgb[2]);
+            updateState(RGBW_CHANNEL_ID_COLOR, HSBType.fromRGB(r, g, b));
+
+        } else if (luminary.isTunableWhite()) {
+            updateState(TW_CHANNEL_ID_POWER, luminary.isPowered() ? OnOffType.ON : OnOffType.OFF);
+            updateState(TW_CHANNEL_ID_DIMMER, new PercentType(luminary.getLuminance()));
+            updateState(TW_CHANNEL_ID_TEMPERATURE, new DecimalType(luminary.getTemperature()));
+        }
     }
 }

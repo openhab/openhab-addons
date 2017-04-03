@@ -27,7 +27,7 @@ public class LightifyZone extends LightifyLuminary {
     private final List<LightifyLuminary> luminaries = new CopyOnWriteArrayList<>();
 
     LightifyZone(LightifyLink lightifyLink, String name, int zoneId) {
-        super(lightifyLink, name);
+        super(lightifyLink, name, true, true);
         this.zoneId = zoneId;
         this.address = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putShort((short) zoneId).array();
     }

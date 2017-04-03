@@ -68,12 +68,15 @@ public class GatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        futureConnect.cancel(true);
         if (lightifyLink != null) {
             lightifyLink.disconnect();
         }
         if (serviceRegistration != null) {
-            discoveryService.deactivate();
-            discoveryService = null;
+            if (discoveryService != null) {
+                discoveryService.deactivate();
+                discoveryService = null;
+            }
             serviceRegistration.unregister();
             serviceRegistration = null;
         }

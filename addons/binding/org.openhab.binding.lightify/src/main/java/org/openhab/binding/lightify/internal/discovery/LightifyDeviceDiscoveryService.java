@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.lightify.handler.DeviceHandler;
 import org.openhab.binding.lightify.handler.GatewayHandler;
-import org.openhab.binding.lightify.internal.link.LightifyLight;
 import org.openhab.binding.lightify.internal.link.LightifyLink;
 import org.openhab.binding.lightify.internal.link.LightifyLuminary;
 import org.openhab.binding.lightify.internal.link.LightifyZone;
@@ -31,7 +30,8 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_D
 import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_DEVICE_NAME;
 import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ID;
 import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ZONE_ID;
-import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB;
+import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_RGBW;
+import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_TW;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_ZONE;
 import static org.openhab.binding.lightify.internal.LightifyUtils.exceptional;
 
@@ -119,6 +119,13 @@ public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService imp
     }
 
     private ThingTypeUID getThingTypeUID(LightifyLuminary luminary) {
-        return luminary instanceof LightifyLight ? THING_TYPE_LIGHTIFY_BULB : THING_TYPE_LIGHTIFY_ZONE;
+        if (luminary instanceof LightifyZone) {
+            return THING_TYPE_LIGHTIFY_ZONE;
+        }
+
+        if (luminary.isTunableWhite() & !luminary.isRGB()) {
+            return THING_TYPE_LIGHTIFY_BULB_TW;
+        }
+        return THING_TYPE_LIGHTIFY_BULB_RGBW;
     }
 }

@@ -2,7 +2,7 @@ package org.openhab.binding.lightify.internal.link;
 
 public enum DeviceType {
     Unknown(-1),
-    Blub(10),
+    Blub(2, 10),
     PlugSocket(16),
     MotionSensor(32),
     Switch(64, 65);

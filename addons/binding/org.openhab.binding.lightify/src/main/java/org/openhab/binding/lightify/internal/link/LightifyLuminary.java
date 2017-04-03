@@ -20,15 +20,19 @@ public abstract class LightifyLuminary {
 
     private final LightifyLink lightifyLink;
     private final String name;
+    private final boolean isRGB;
+    private final boolean isTunableWhite;
 
     private boolean status;
     private short temperature;
     private byte luminance;
     private byte[] rgb = new byte[3];
 
-    LightifyLuminary(LightifyLink lightifyLink, String name) {
+    LightifyLuminary(LightifyLink lightifyLink, String name, boolean isRGB, boolean isTunableWhite) {
         this.lightifyLink = lightifyLink;
         this.name = name;
+        this.isRGB = isRGB;
+        this.isTunableWhite = isTunableWhite;
     }
 
     public String getName() {
@@ -49,6 +53,14 @@ public abstract class LightifyLuminary {
 
     public void setTemperature(short temperature, short millis, Consumer<LightifyLuminary> consumer) {
         lightifyLink.performTemperature(this, temperature, millis, consumer);
+    }
+
+    public boolean isRGB() {
+        return isRGB;
+    }
+
+    public boolean isTunableWhite() {
+        return isTunableWhite;
     }
 
     public boolean isPowered() {
