@@ -38,6 +38,7 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.RGBW_CHANN
 import static org.openhab.binding.lightify.internal.LightifyConstants.SB_CHANNEL_ID_DIMMER;
 import static org.openhab.binding.lightify.internal.LightifyConstants.SB_CHANNEL_ID_POWER;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_RGBW;
+import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_SB;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_TW;
 import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_ZONE;
 import static org.openhab.binding.lightify.internal.LightifyConstants.TW_CHANNEL_ID_DIMMER;
@@ -59,6 +60,7 @@ public class DeviceHandler extends BaseThingHandler {
      */
     public static final Set<ThingTypeUID> SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet<ThingTypeUID>() {
         {
+            add(THING_TYPE_LIGHTIFY_BULB_SB);
             add(THING_TYPE_LIGHTIFY_BULB_TW);
             add(THING_TYPE_LIGHTIFY_BULB_RGBW);
             add(THING_TYPE_LIGHTIFY_ZONE);
@@ -168,7 +170,8 @@ public class DeviceHandler extends BaseThingHandler {
 
         ThingTypeUID thingTypeUID = getThing().getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_LIGHTIFY_BULB_RGBW)
-               || thingTypeUID.equals(THING_TYPE_LIGHTIFY_BULB_TW) ) {
+                || thingTypeUID.equals(THING_TYPE_LIGHTIFY_BULB_TW)
+                || thingTypeUID.equals(THING_TYPE_LIGHTIFY_BULB_SB)) {
             return lightifyLink.findDevice(getThing().getUID().getId());
         }
 
