@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.hs110.discovery;
 
 import java.io.ByteArrayInputStream;
@@ -6,6 +13,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
@@ -20,13 +28,20 @@ import org.openhab.binding.hs110.internal.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * The {@link HS110DiscoveryService} detects new Power Plugs by sending a UDP network broadcast
+ * and parsing the answer into a thing.
+ *
+ * @author Christian Fischer - Initial contribution
+ */
 public class HS110DiscoveryService extends AbstractDiscoveryService {
 
-    private Logger log = LoggerFactory.getLogger(HS110DiscoveryService.class);
+    private Logger logger = LoggerFactory.getLogger(HS110DiscoveryService.class);
 
     ///// Network
     private byte[] discoverbuffer = Util.encryptBytes(HS110.Command.SYSINFO.value);
-    final private DatagramPacket discoverPacket;
+    private final DatagramPacket discoverPacket;
     private boolean willbeclosed = false;
     private DatagramSocket datagramSocket;
     private byte[] buffer = new byte[1024];
@@ -34,7 +49,7 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
 
     private final InetAddress broadcast;
 
-    public HS110DiscoveryService() throws IllegalArgumentException, UnknownHostException {
+    public HS110DiscoveryService() throws UnknownHostException {
 
         super(HS110BindingConstants.SUPPORTED_THING_TYPES_UIDS, 2, false);
         byte[] addr = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
@@ -50,21 +65,20 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
             datagramSocket = new DatagramSocket(null);
             datagramSocket.setBroadcast(true);
             datagramSocket.send(discoverPacket);
-            StringBuilder sb = new StringBuilder();
-            for (byte b : discoverPacket.getData()) {
-                sb.append(b);
+
+            if (logger.isTraceEnabled()) {
+                String packetContent = new String(discoverPacket.getData(), StandardCharsets.UTF_8);
+                logger.debug("Discovery package sent: {}", packetContent);
             }
-            log.debug(sb.toString());
-            log.debug("Discovery package sent");
 
             while (true) {
                 datagramSocket.receive(packet);
-                log.debug("Discovery returned package with length {}", packet.getLength());
+                logger.debug("Discovery returned package with length {}", packet.getLength());
                 detectThing(packet);
                 packet.setLength(buffer.length);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error starting discovery", e);
         }
 
     }
@@ -73,13 +87,11 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
         String data = Util
                 .decrypt(new ByteArrayInputStream(Arrays.copyOfRange(packet.getData(), 0, packet.getLength())), true);
 
-        log.debug("Detecting HS110 by data: {}", data);
+        logger.debug("Detecting HS110 by data: {}", data);
 
         String inetAddress = packet.getAddress().getHostAddress();
-        Integer port = packet.getPort();
         String id = HS110.parseDeviceId(data);
-        log.debug("HS110 with id {} found on {} ", id, inetAddress);
-        // TEST if thing already exists
+        logger.debug("HS110 with id {} found on {} ", id, inetAddress);
         ThingUID thingUID = new ThingUID(HS110BindingConstants.THING_TYPE_HS110, id);
         String label = "HS110 at " + inetAddress;
         Map<String, Object> properties = new TreeMap<>();

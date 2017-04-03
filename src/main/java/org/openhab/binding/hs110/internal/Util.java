@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.hs110.internal;
 
 import java.io.IOException;
@@ -7,8 +14,12 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link Util} en- and decrypts data to be sent over the network.
+ *
+ */
 public class Util {
-    private static Logger log = LoggerFactory.getLogger(Util.class);
+    private static Logger logger = LoggerFactory.getLogger(Util.class);
 
     private static final int DECRYPTION_KEY = 0x2B;
     private static final int ENCRYPTION_KEY = DECRYPTION_KEY + 0x80;
@@ -26,7 +37,7 @@ public class Util {
             key = nextKey;
             sb.append((char) in);
         }
-        log.trace("Decrypted string with length: {}", sb.length());
+        logger.trace("Decrypted string with length: {}", sb.length());
         if (broadcast) {
             return "{" + sb.toString().substring(1, sb.length() - 1) + "}";
         } else {
@@ -37,7 +48,7 @@ public class Util {
     public static int[] encrypt(String command) {
 
         int[] buffer = new int[command.length()];
-        int key = 0xAB;
+        int key = ENCRYPTION_KEY;
         for (int i = 0; i < command.length(); i++) {
 
             buffer[i] = command.charAt(i) ^ key;
