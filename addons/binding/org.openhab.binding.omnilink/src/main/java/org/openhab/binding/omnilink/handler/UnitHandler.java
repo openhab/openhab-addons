@@ -54,10 +54,16 @@ public class UnitHandler extends BaseThingHandler {
 
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         logger.debug("handleCommand called");
-        OmniLinkCmd omniCmd = sCommandMappingMap.get(command);
-
-        boolean success = getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), 0,
-                Integer.parseInt(channelParts[2]));
+        OmniLinkCmd omniCmd;
+        if (command instanceof PercentType) {
+            omniCmd = OmniLinkCmd.CMD_UNIT_PERCENT;
+            boolean success = getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(),
+                    ((PercentType) command).intValue(), Integer.parseInt(channelParts[2]));
+        } else {
+            omniCmd = sCommandMappingMap.get(command);
+            boolean success = getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), 0,
+                    Integer.parseInt(channelParts[2]));
+        }
 
     }
 
