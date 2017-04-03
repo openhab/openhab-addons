@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -137,7 +137,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             try {
                 return getStationApi().getstationsdata(equipmentId).getBody();
             } catch (Exception e) {
-                logger.error("An error occured while calling station API : {}", e.getMessage());
+                logger.error("An error occurred while calling station API : {}", e.getMessage());
             }
         }
         return null;
@@ -148,7 +148,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
             try {
                 return getThermostatApi().getthermostatsdata(equipmentId).getBody();
             } catch (Exception e) {
-                logger.error("An error occured while calling thermostat API : {}", e.getMessage());
+                logger.error("An error occurred while calling thermostat API : {}", e.getMessage());
             }
         }
         return null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for RFY (Somfy RTS) message.
@@ -35,8 +36,12 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
         STOP(0x00),
         OPEN(0x01),
         CLOSE(0x03),
+        UP_05SEC(0x0F),
+        DOWN_05SEC(0x10),
         UP_2SEC(0x11),
-        DOWN_2SEC(0x12);
+        DOWN_2SEC(0x12),
+        ENABLE_SUN_WIND_DETECTOR(0x13),
+        DISABLE_SUN_DETECTOR(0x14);
 
         private final int command;
 
@@ -44,20 +49,26 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
             this.command = command;
         }
 
-        Commands(byte command) {
-            this.command = command;
-        }
-
         public byte toByte() {
             return (byte) command;
+        }
+
+        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
+            for (Commands c : Commands.values()) {
+                if (c.command == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(Commands.class, input);
         }
     }
 
     public enum SubType {
         RFY(0),
         RFY_EXT(1),
-
-        UNKNOWN(255);
+        RESERVED(2),
+        ASA(3);
 
         private final int subType;
 
@@ -65,12 +76,18 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
         public byte toByte() {
             return (byte) subType;
+        }
+
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
@@ -80,21 +97,21 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
     private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
             .asList(RFXComValueSelector.SHUTTER);
 
-    public SubType subType = SubType.RFY;
-    public int unitId = 0;
+    public SubType subType;
+    public int unitId;
     /**
      * valid numbers 0-4; 0 == all units
      */
-    public byte unitCode = 0;
-    public Commands command = Commands.STOP;
-    public byte signalLevel = 0xF; // maximum
+    public byte unitCode;
+    public Commands command;
+    public byte signalLevel; // maximum 0xF
 
     public RFXComRfyMessage() {
         packetType = PacketType.RFY;
 
     }
 
-    public RFXComRfyMessage(byte[] data) {
+    public RFXComRfyMessage(byte[] data) throws RFXComException {
 
         encodeMessage(data);
     }
@@ -115,26 +132,16 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
-
+    public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
         subType = SubType.values()[super.subType];
 
         unitId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
-
         unitCode = data[7];
 
-        command = Commands.STOP;
-
-        for (Commands loCmd : Commands.values()) {
-            if (loCmd.toByte() == data[8]) {
-                command = loCmd;
-                break;
-            }
-        }
+        command = Commands.fromByte(data[8]);
         signalLevel = (byte) ((data[12] & 0xF0) >> 4);
-
     }
 
     @Override
@@ -246,11 +253,10 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 

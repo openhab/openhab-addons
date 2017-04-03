@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -76,7 +76,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     try {
                         date = sdfReceived.parse(description);
                     } catch (ParseException e) {
-                        logger.error("updateChannel(): Parse Exception occured while trying to parse date string: {}. ",
+                        logger.error("updateChannel(): Parse Exception occurred while trying to parse date string: {}. ",
                                 e.getMessage());
                     }
 
@@ -88,12 +88,12 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
 
                     break;
                 case PANEL_TIME_STAMP:
-                    boolState = state != 0 ? true : false;
+                    boolState = state != 0;
                     onOffType = boolState ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_TIME_BROADCAST:
-                    boolState = state != 0 ? true : false;
+                    boolState = state != 0;
                     onOffType = boolState ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
@@ -104,67 +104,67 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     updateState(channelUID, new StringType(description));
                     break;
                 case PANEL_TROUBLE_LED:
-                    boolState = state != 0 ? true : false;
+                    boolState = state != 0;
                     onOffType = boolState ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_SERVICE_REQUIRED:
-                    trouble = state != 0 ? true : false;
+                    trouble = state != 0;
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_AC_TROUBLE:
-                    trouble = state != 0 ? true : false;
+                    trouble = state != 0;
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_TELEPHONE_TROUBLE:
-                    trouble = state != 0 ? true : false;
+                    trouble = state != 0;
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_FTC_TROUBLE:
-                    trouble = state != 0 ? true : false;
+                    trouble = state != 0;
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_ZONE_FAULT:
-                    trouble = state != 0 ? true : false;
+                    trouble = state != 0;
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_ZONE_TAMPER:
-                    trouble = state != 0 ? true : false;
+                    trouble = state != 0;
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_ZONE_LOW_BATTERY:
-                    trouble = state != 0 ? true : false;
+                    trouble = state != 0;
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_TIME_LOSS:
-                    trouble = state != 0 ? true : false;
+                    trouble = state != 0;
                     onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_FIRE_KEY_ALARM:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_PANIC_KEY_ALARM:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_AUX_KEY_ALARM:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_AUX_INPUT_ALARM:
-                    trigger = state != 0 ? true : false;
+                    trigger = state != 0;
                     onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelUID, onOffType);
                     break;
@@ -258,7 +258,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         int state = 0;
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), PANEL_TIME_STAMP);
 
-        boolean isTimeStamp = timeStamp != "" ? true : false;
+        boolean isTimeStamp = timeStamp != "";
 
         if ((timeStamp == "" && isTimeStamp == false) || (timeStamp != "" && isTimeStamp == true)) {
             logger.debug("setTimeStampState(): Already Set!", timeStamp);

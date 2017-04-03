@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -76,29 +76,44 @@ public class XmlRpcClient extends RpcClient {
      */
     @Override
     protected synchronized Object[] sendMessage(int port, RpcRequest request) throws IOException {
-        try {
-            if (TRACE_ENABLED) {
-                logger.trace("Client XmlRpcRequest (port {}):\n{}", port, request);
-            }
+        if (logger.isTraceEnabled()) {
+            logger.trace("Client XmlRpcRequest (port {}):\n{}", port, request);
+        }
+        return sendMessage(port, request, 0);
+    }
 
+    /**
+     * Sends the message, retries if there was an error.
+     */
+    private synchronized Object[] sendMessage(int port, RpcRequest request, int rpcRetryCounter) throws IOException {
+        try {
             BytesContentProvider content = new BytesContentProvider(request.createMessage());
             String url = String.format("http://%s:%s", config.getGatewayAddress(), port);
+            if (port == config.getGroupPort()) {
+                url += "/groups";
+            }
             ContentResponse response = httpClient.POST(url).content(content)
                     .timeout(config.getTimeout(), TimeUnit.SECONDS)
                     .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding()).send();
 
             String result = new String(response.getContent(), config.getEncoding());
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 logger.trace("Client XmlRpcResponse (port {}):\n{}", port, result);
             }
 
             Object[] data = new XmlRpcResponse(new ByteArrayInputStream(result.getBytes(config.getEncoding())),
                     config.getEncoding()).getResponseData();
             return new RpcResponseParser(request).parse(data);
-        } catch (UnknownRpcFailureException ex) {
+        } catch (UnknownRpcFailureException | UnknownParameterSetException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new IOException(ex.getMessage(), ex);
+            if ("init".equals(request.getMethodName()) || rpcRetryCounter >= MAX_RPC_RETRY) {
+                throw new IOException(ex.getMessage(), ex);
+            } else {
+                rpcRetryCounter++;
+                logger.debug("XmlRpcMessage failure, sending message again {}/{}", rpcRetryCounter, MAX_RPC_RETRY);
+                return sendMessage(port, request, rpcRetryCounter);
+            }
         }
     }
 }

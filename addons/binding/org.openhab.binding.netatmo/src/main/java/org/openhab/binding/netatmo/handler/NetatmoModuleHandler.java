@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,7 +12,10 @@ import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.netatmo.config.NetatmoDeviceConfiguration;
 import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.NAModuleAdapter;
@@ -29,7 +32,6 @@ import org.slf4j.LoggerFactory;
 public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
         extends AbstractNetatmoThingHandler<X> {
     private static Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
-    // Initialize with default values to avoid div 0 if properties not correctly loaded
     private int batteryMin = 0;
     private int batteryLow = 0;
     private int batteryMax = 1;
@@ -66,24 +68,43 @@ public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        switch (channelId) {
-            case CHANNEL_BATTERY_LEVEL:
-                return ChannelTypeUtils.toDecimalType(getBatteryPercent());
-            case CHANNEL_LOW_BATTERY:
-                return module.getBatteryVp() < batteryLow ? OnOffType.ON : OnOffType.OFF;
-            case CHANNEL_LAST_MESSAGE:
-                return ChannelTypeUtils.toDateTimeType(module.getLastMessage());
-            case CHANNEL_RF_STATUS:
-                Integer rfStatus = module.getRfStatus();
-                return ChannelTypeUtils.toDecimalType(getSignalStrength(rfStatus));
-            default:
-                return super.getNAThingProperty(channelId);
+        if (module != null) {
+            switch (channelId) {
+                case CHANNEL_BATTERY_LEVEL:
+                    return ChannelTypeUtils.toDecimalType(getBatteryPercent());
+                case CHANNEL_LOW_BATTERY:
+                    return module.getBatteryVp() < batteryLow ? OnOffType.ON : OnOffType.OFF;
+                case CHANNEL_LAST_MESSAGE:
+                    return ChannelTypeUtils.toDateTimeType(module.getLastMessage());
+                case CHANNEL_RF_STATUS:
+                    Integer rfStatus = module.getRfStatus();
+                    return ChannelTypeUtils.toDecimalType(getSignalStrength(rfStatus));
+
+            }
+
         }
+        return super.getNAThingProperty(channelId);
     }
 
     public void updateChannels(NAModuleAdapter module) {
         this.module = module;
         super.updateChannels(configuration.getParentId());
+    }
+
+    protected void requestParentRefresh() {
+        logger.debug("Updating parent modules of {}", configuration.getEquipmentId());
+        for (Thing thing : getBridge().getThings()) {
+            ThingHandler thingHandler = thing.getHandler();
+            if (thingHandler instanceof NetatmoDeviceHandler) {
+                @SuppressWarnings("unchecked")
+                NetatmoDeviceHandler<NetatmoDeviceConfiguration> deviceHandler = (NetatmoDeviceHandler<NetatmoDeviceConfiguration>) thingHandler;
+                NetatmoDeviceConfiguration deviceConfiguration = deviceHandler.configuration;
+                if (deviceConfiguration.getEquipmentId().equalsIgnoreCase(configuration.getParentId())) {
+                    // I'm your father Luke
+                    thingHandler.handleCommand(null, RefreshType.REFRESH);
+                }
+            }
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2014-2016 by the respective copyright holders.
+    Copyright (c) 2010-2017 by the respective copyright holders.
 
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
@@ -21,6 +21,6 @@
    <property name="port" type="Integer" value="9123" />
    <property name="service.config.description.uri" type="String" value="io:homekit"/>
    <property name="service.config.label" type="String" value="HomeKit Integration"/>
-   <property name="service.config.category" type="String" value="misc"/>
+   <property name="service.config.category" type="String" value="io"/>
 
 </scr:component>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="globalcache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- GlobalCache GC-100-06 device contains one SL module, one IR module -->
+	<thing-type id="gc100_06">
+
+		<label>GlobalCache GC-100-06</label>
+		<description>GC-100-06 Infrared and Serial Device</description>
+
+		<channel-groups>
+			<channel-group id="sl-m1" typeId="sl-m1" />
+			<channel-group id="ir-m2" typeId="ir-m2" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>Network Address</label>
+				<description>Enter the IP address of the iTach CC device</description>
+				<context>network-address</context>
+			</parameter>
+
+			<parameter name="mapFilename" type="text">
+				<label>Map File</label>
+				<description>Enter name of file containing mapping of commands to IR and Serial codes</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

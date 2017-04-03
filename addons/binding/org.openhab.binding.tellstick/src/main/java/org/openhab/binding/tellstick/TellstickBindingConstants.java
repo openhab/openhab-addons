@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,7 +29,7 @@ public class TellstickBindingConstants {
     public static final String DEVICE_PROTOCOL = "protocol";
     public static final String DEVICE_MODEL = "model";
     public static final String DEVICE_NAME = "name";
-    public static final String DEVICE_RESEND_COUNT = "resend";
+    public static final String DEVICE_RESEND_COUNT = "repeat";
     public static final String DEVICE_ISDIMMER = "dimmer";
     public static final String BRIDGE_TELLDUS_CORE = "telldus-core";
     public static final String BRIDGE_TELLDUS_LIVE = "telldus-live";

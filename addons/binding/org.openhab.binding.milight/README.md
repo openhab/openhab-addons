@@ -22,13 +22,13 @@ the bridge IP-Address and the listening port.
 Besides adding bridges through Paper-UI, you can also add them manually in your Thing
 configuration file.
 
-    Bridge milight:bridge:ACCF23A6C0B4 [ ADDR="192.168.0.70", PORT=8899 ]
-    Thing whiteLed 0
-    Thing whiteLed 1
-    Thing rgbLed 5
-    Thing rgbLed 8
-    Thing rgbLed 9
-    Thing rgbLed 10
+    Bridge milight:bridge:ACCF23A6C0B4 [ ADDR="192.168.0.70", PORT=8899 ] {
+	    Thing whiteLed 0
+	    Thing whiteLed 1
+	    Thing rgbLed 5
+	    Thing rgbLed 8
+	    Thing rgbLed 9
+	    Thing rgbLed 10
     }
 
 The Thing configuration for the bridge uses the following syntax

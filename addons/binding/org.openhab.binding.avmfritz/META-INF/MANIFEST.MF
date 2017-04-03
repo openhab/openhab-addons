@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: avmFritz Binding
 Bundle-SymbolicName: org.openhab.binding.avmfritz;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Import-Package: com.google.common.collect,

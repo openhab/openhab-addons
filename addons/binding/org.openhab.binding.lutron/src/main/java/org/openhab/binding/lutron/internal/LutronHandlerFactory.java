@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,6 +22,9 @@ import org.openhab.binding.lutron.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.handler.KeypadHandler;
 import org.openhab.binding.lutron.handler.OccupancySensorHandler;
 import org.openhab.binding.lutron.handler.SwitchHandler;
+import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
+import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
+import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -33,12 +36,18 @@ import com.google.common.collect.ImmutableSet;
  */
 public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER, THING_TYPE_SWITCH,
-            THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD);
+    // Used by LutronDeviceDiscoveryService to discover these types
+    public final static Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
+            THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD);
+
+    // Other types that can be initiated but not discovered
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
+            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_IPBRIDGE.equals(thingTypeUID) || DEVICE_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
+                || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
@@ -56,6 +65,10 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new OccupancySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_KEYPAD)) {
             return new KeypadHandler(thing);
+        } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
+            return new PrgBridgeHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {
+            return new GrafikEyeHandler(thing);
         }
 
         return null;

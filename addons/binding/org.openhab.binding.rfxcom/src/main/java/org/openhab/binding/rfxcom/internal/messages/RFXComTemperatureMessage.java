@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,15 +9,16 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for temperature and humidity message.
@@ -27,7 +28,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComTemperatureMessage extends RFXComBaseMessage {
 
     public enum SubType {
-        UNDEF(0),
         TEMP1(1),
         TEMP2(2),
         TEMP3(3),
@@ -38,8 +38,7 @@ public class RFXComTemperatureMessage extends RFXComBaseMessage {
         TEMP8(8),
         TEMP9(9),
         TEMP10(10),
-
-        UNKNOWN(255);
+        TEMP11(11);
 
         private final int subType;
 
@@ -47,31 +46,37 @@ public class RFXComTemperatureMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
         public byte toByte() {
             return (byte) subType;
+        }
+
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
     private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.TEMPERATURE);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
+    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Collections.emptyList();
 
-    public SubType subType = SubType.UNDEF;
-    public int sensorId = 0;
-    public double temperature = 0;
-    public byte signalLevel = 0;
-    public byte batteryLevel = 0;
+    public SubType subType;
+    public int sensorId;
+    public double temperature;
+    public byte signalLevel;
+    public byte batteryLevel;
 
     public RFXComTemperatureMessage() {
         packetType = PacketType.TEMPERATURE;
     }
 
-    public RFXComTemperatureMessage(byte[] data) {
+    public RFXComTemperatureMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -90,16 +95,11 @@ public class RFXComTemperatureMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
-
+        subType = SubType.fromByte(super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
 
         temperature = (short) ((data[6] & 0x7F) << 8 | (data[7] & 0xFF)) * 0.1;
@@ -142,7 +142,7 @@ public class RFXComTemperatureMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        State state;
 
         if (valueSelector.getItemClass() == NumberItem.class) {
 
@@ -196,11 +196,10 @@ public class RFXComTemperatureMessage extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 

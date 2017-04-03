@@ -36,6 +36,7 @@ This binding currently supports following packet types:
 * Temperature
 * TemperatureHumidity
 * Thermostat1
+* Undecoded
 * Wind
 
 
@@ -90,24 +91,26 @@ This binding currently supports following channels:
 
 | Channel Type ID | Item Type    | Description  |
 |-----------------|------------------------|--------------|
-| batterylevel | Number | Battery level. |
+| batteryLevel | Number | Battery level. |
 | command | Switch | Command channel. |
 | contact | Contact | Contact channel. |
-| dimminglevel | Dimmer | Dimming level channel. |
+| dimmingLevel | Dimmer | Dimming level channel. |
 | humidity | Number | Relative humidity level in percentages. |
-| humiditystatus | String | Current humidity status. |
+| humidityStatus | String | Current humidity status. |
 | instantamp | Number | Instant current in Amperes. |
 | instantpower | Number | Instant power consumption in Watts. |
 | status | String | Status channel. |
 | setpoint | Number | Requested temperature. |
 | mood | Number | Mood channel. |
 | motion | Switch | Motion detection sensor state. |
-| rainrate | Number | Rain fall rate in millimeters per hour. |
-| raintotal | Number | Total rain in millimeters. |
+| rainRate | Number | Rain fall rate in millimeters per hour. |
+| rainTotal | Number | Total rain in millimeters. |
+| rawMessage | String | Hexadecimal string of the raw RF message. |
+| rawPayload | String | Hexadecimal string of the message payload, without header. |
 | shutter | Rollershutter | Shutter channel. |
-| signallevel | Number | Received signal strength level. |
+| signalLevel | Number | Received signal strength level. |
 | temperature | Number | Current temperature in degree Celsius. |
-| totalusage | Number | Used energy in Watt hours. |
-| totalamphour | Number | Used "energy" in ampere-hours. |
-| winddirection | Number | Wind direction in degrees. |
-| windspeed | Number | Average wind speed in meters per second. |
+| totalUsage | Number | Used energy in Watt hours. |
+| totalAmpHour | Number | Used "energy" in ampere-hours. |
+| windDirection | Number | Wind direction in degrees. |
+| windSpeed | Number | Average wind speed in meters per second. |

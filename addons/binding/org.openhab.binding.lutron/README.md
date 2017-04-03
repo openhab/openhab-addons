@@ -1,6 +1,8 @@
-# Lutron Binding
+# Lutron Binding 
 
-This binding integrates with [Lutron](http://www.lutron.com) light control systems.
+This binding integrates with [Lutron](http://www.lutron.com) light control systems. 
+
+For Grafik Eye 3x/4x binding through the GRX-PRG or GRX-CI-PRG - see farther below.
 
 **Note:** while the integration protocol should be largely similar with other Lutron systems such as Homeworks QS, this binding has only been tested with RadioRA 2.
 
@@ -68,6 +70,10 @@ The following channels are supported:
 
 Currently there is only one keypad thing type to cover all keypads. Not all channels will be available on all keypads.
 
+## Binding Configuration
+
+This binding does not require any special configuration.
+
 ## Full Example
 
 demo.Things:
@@ -86,3 +92,146 @@ Switch TheaterMotion { channel="lutron:occupancysensor:theater:occupancystatus" 
 Switch TheaterScene1 { channel="lutron:keypad:theater:button1" }
 Switch TheaterScene2 { channel="lutron:keypad:theater:button2" }
 ```
+
+
+
+# Lutron Grafik Eye 3x/4x binding via GRX-PRG or GRX-CI-PRG
+
+This lutron binding will also work with Grafik Eye 3x/4x systems in conjuction with the GRX-PRG or GRX-CI-PRG interfaces.  Please see [RS232ProtocolCommandSet](http://www.lutron.com/TechnicalDocumentLibrary/RS232ProtocolCommandSet.040196d.pdf) for more information.
+
+## Supported Things
+
+1-8 Grafik Eye 3x/4x System(s) through the interface
+
+## Discovery
+
+This binding does not support discovery of the GRX-PRG or GRX-CI-PRG.  You will need to specify them directly.
+
+## Thing Configuration
+
+The bridge requires the IP address/Host name of the bridge.  Optionally, you may specify the username (defaults to 'nwk') and retryPolling (in seconds) to retry connections if the connection fails (defaults to 10 seconds). This bridge does support two way communication with the Grafik Eye units (if a scene is selected or a zone changed on the unit or via a keypad, that information is immediately available in openhab).
+
+```
+lutron:prgbridge:home [ ipAddress="192.168.1.51", user="nwk", retryPolling=10 ]
+```
+
+The Grafik Eye thing requires the control unit address (1-8).  Optionally you may specify the default fade time (when raising/lowering zones or setting zone intensities) and polling time (in seconds) to refresh the state from the Grafik Eye (defaults to 30 seconds).  If any of the zones control a QED shade (via the SG/SO-SVCN/SVCI keypad), those zones
+should be listed (comma separated list) in the shadeZones.
+
+```
+lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=30, shadeZones="2,3,4" ]
+```
+
+## Channels
+
+### Bridge channels
+
+| Channel Type ID   | Readonly | Item Type    | Description                                                    |
+|-------------------|----------|--------------|--------------------------------------------------------------- |
+| zonelowerstop     | No       | Switch       | Stops zone lowering on all control units                       |
+| zoneraisestop     | No       | Switch       | Stops zone raising on all control units                        |
+| timeclock         | No       | DateTime     | Current time on the PRG                                        |
+| schedule          | No       | Number       | Current Schedule (0=Disabled, 1=Weekday, 2=Weekend)            |
+| sunrise           | Yes      | DateTime     | Time of Sunrise                                                |
+| sunset            | Yes      | DateTime     | Time of Sunset                                                 |
+| ssstart           | No       | Switch       | Starts the Super Sequence                                      |
+| sspause           | No       | Switch       | Pauses the Super Sequence                                      |
+| ssresume          | No       | Switch       | Resumes the Super Sequence                                     |
+| ssstatus          | Yes      | String       | Status of the Super Sequence (R=Running, S=Stopped)            |
+| ssnextstep        | Yes      | Number       | Next sequence number in the Super Sequence                     |
+| ssnextminute      | Yes      | Number       | How many minutes until the next step in the Super Sequence     |
+| ssnextsecond      | Yes      | Number       | How many seconds until the next step in the Super Sequence     |
+| buttonpress       | Yes      | String       | Last keypad button pressed (see Appendix A) in protocol guide  |
+
+
+### Grafik Eye channels
+
+| Channel Type ID   | Readonly | Item Type     | Description                                                    |
+|-------------------|----------|---------------|--------------------------------------------------------------- |
+| scene             | No       | Number        | The current scene                                              |
+| scenelock         | No       | Switch        | Locks/unlocks the current scene                                |
+| sceneseq          | No       | Switch        | Starts/Stops the scene sequence                                |
+| zonelock          | No       | Switch        | Locks/unlocks the zones                                        |
+| zonefade          | No       | Number        | The seconds to fade from one intensity to the next             |
+| zonelowerX        | No       | Switch        | Lowers the specified zone                                      |
+| zoneraiseX        | No       | Switch        | Raises the specified zone                                      |
+| zoneintensityX    | No       | Number        | Specifies the zone intensity                                   |
+| zoneshadeX        | No       | Rollershutter | Specifies the shade zone                                       |
+
+### Notes
+
+* The "buttonpress" channel reports which keypad button was pressed.  DIP switch 6 must be set on the interface for this to be reported.  The "buttonpress" channel is only useful in rules to take action when a specific button (on a specific keypad) has been pressed.
+* Sunset/sunrise will only be available if configured via the Liasion software
+* scenelock, sceneseq, zonelock cannot be determined from the API and will default to OFF on startup
+* Replace the "X" on zonelowerX, zoneraiseX, etc with the zone in question.  "zonelower1" will affect zone 1.  Specifying a zone larger than you have will have no effect (such as using zonelower8 on a Grafik Eye 3506 which only has 6 zones).
+* The zonefade value will only be used when zonelower/zonereaise/zoneintensity is issued. 
+* zoneshade does not support PercentType nor StopMoveType.Move and those commands will be ignored
+* zoneintensity can be used on a shade zone if the intensity is from 0 to 5 and should be used if wanting to set a QED preset: 0=Stop, 1=Open, 2=Close, 3=Preset 1, 4=Preset 2, 5=Preset 3 
+* If you started a zonelower or zoneraise, the only way to the action is by executing an all zone stop on the bridge (i.e. zonelowerstop or zoneraisestop).  The PRG API does not provide a way to stop the lowering/raising of any specific zone.
+ 
+
+## Full Example
+
+demo.Things:
+
+```
+lutron:prgbridge:home [ ipAddress="192.168.1.51", user="nwk", retryPolling=10 ]
+lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=10 ] ```
+
+demo.items:
+
+```
+String Prg_ButtonPress "Last Button Press [%s]" { channel = "lutron:prgbridge:home:buttonpress" }
+Switch Prg_ZoneLowerStop "Zone Lower Stop" { channel = "lutron:prgbridge:home:zonelowerstop",autoupdate="false" }
+Switch Prg_ZoneRaiseStop "Zone Raise Stop" { channel = "lutron:prgbridge:home:zoneraisestop",autoupdate="false" }
+DateTime Prg_Time "Current Time: [%1$tF %1$tr]" { channel="lutron:prgbridge:home:timeclock" }
+Number Prg_Schedule "Schedule [%s]" { channel="lutron:prgbridge:home:schedule" }
+DateTime Prg_Sunrise "Sunrise [%1$tF %1$tr]" { channel="lutron:prgbridge:home:sunrise" }
+DateTime Prg_Sunset "Sunset [%1$tF %1$tr]" { channel="lutron:prgbridge:home:sunset" }
+Switch Prg_Start "Super Schedule Start" { channel="lutron:prgbridge:home:ssstart", autoupdate="false"  }
+Switch Prg_Pause "Super Schedule Pause" { channel="lutron:prgbridge:home:sspause", autoupdate="false"  }
+Switch Prg_Resume "Super Schedule Resume" { channel="lutron:prgbridge:home:ssresume", autoupdate="false"  }
+String Prg_Status "Super Schedule Status [%s]" { channel="lutron:prgbridge:home:ssstatus" }
+Number Prg_NextStep "Super Schedule Next Step [%s]" { channel="lutron:prgbridge:home:ssnextstep" }
+Number Prg_NextMinute "Super Schedule Next Step Minutes [%s]" { channel="lutron:prgbridge:home:ssnextminute" }
+Number Prg_NextSecond "Super Schedule Next Step Seconds [%s]" { channel="lutron:prgbridge:home:ssnextsecond" }
+
+Number Grx_Scene "Scene [%s]" { channel="lutron:grafikeye:home:scene" }
+Switch Grx_SceneLock "Scene Lock" { channel="lutron:grafikeye:home:scenelock" }
+Switch Grx_SceneSeq "Scene Sequence" { channel="lutron:grafikeye:home:sceneseq" }
+Switch Grx_ZoneLock "Zone Lock" { channel="lutron:grafikeye:home:zonelock" }
+Switch Grx_ZoneLower1 "Zone 1 Lower" { channel="lutron:grafikeye:home:zonelower1" }
+Switch Grx_ZoneLower2 "Zone 2 Lower" { channel="lutron:grafikeye:home:zonelower2" }
+Switch Grx_ZoneLower3 "Zone 3 Lower" { channel="lutron:grafikeye:home:zonelower3" }
+Switch Grx_ZoneLower4 "Zone 4 Lower" { channel="lutron:grafikeye:home:zonelower4" }
+Switch Grx_ZoneLower5 "Zone 5 Lower" { channel="lutron:grafikeye:home:zonelower5" }
+Switch Grx_ZoneLower6 "Zone 6 Lower" { channel="lutron:grafikeye:home:zonelower6" }
+Switch Grx_ZoneLower7 "Zone 7 Lower" { channel="lutron:grafikeye:home:zonelower7" }
+Switch Grx_ZoneLower8 "Zone 8 Lower" { channel="lutron:grafikeye:home:zonelower8" }
+Switch Grx_ZoneRaise1 "Zone 1 Raise" { channel="lutron:grafikeye:home:zoneraise1" }
+Switch Grx_ZoneRaise2 "Zone 2 Raise" { channel="lutron:grafikeye:home:zoneraise2" }
+Switch Grx_ZoneRaise3 "Zone 3 Raise" { channel="lutron:grafikeye:home:zoneraise3" }
+Switch Grx_ZoneRaise4 "Zone 4 Raise" { channel="lutron:grafikeye:home:zoneraise4" }
+Switch Grx_ZoneRaise5 "Zone 5 Raise" { channel="lutron:grafikeye:home:zoneraise5" }
+Switch Grx_ZoneRaise6 "Zone 6 Raise" { channel="lutron:grafikeye:home:zoneraise6" }
+Switch Grx_ZoneRaise7 "Zone 7 Raise" { channel="lutron:grafikeye:home:zoneraise7" }
+Switch Grx_ZoneRaise8 "Zone 8 Raise" { channel="lutron:grafikeye:home:zoneraise8" }
+Number Grx_ZoneFade "Zone Fade [%s sec]" { channel="lutron:grafikeye:home:zonefade" }
+Dimmer Grx_ZoneIntensity1 "Zone 1 Intensity [%d %%]" { channel="lutron:grafikeye:home:zoneintensity1" }
+Dimmer Grx_ZoneIntensity2 "Zone 2 Intensity [%d %%]" { channel="lutron:grafikeye:home:zoneintensity2" }
+Dimmer Grx_ZoneIntensity3 "Zone 3 Intensity [%d %%]" { channel="lutron:grafikeye:home:zoneintensity3" }
+Dimmer Grx_ZoneIntensity4 "Zone 4 Intensity [%d %%]" { channel="lutron:grafikeye:home:zoneintensity4" }
+Dimmer Grx_ZoneIntensity5 "Zone 5 Intensity [%d %%]" { channel="lutron:grafikeye:home:zoneintensity5" }
+Dimmer Grx_ZoneIntensity6 "Zone 6 Intensity [%d %%]" { channel="lutron:grafikeye:home:zoneintensity6" }
+Dimmer Grx_ZoneIntensity7 "Zone 7 Intensity [%d %%]" { channel="lutron:grafikeye:home:zoneintensity7" }
+Dimmer Grx_ZoneIntensity8 "Zone 8 Intensity [%d %%]" { channel="lutron:grafikeye:home:zoneintensity8" }
+Rollershutter Grx_ZoneShade1 "Zone 1 Shade" { channel="lutron:grafikeye:home:zoneshade1" }
+Rollershutter Grx_ZoneShade2 "Zone 2 Shade" { channel="lutron:grafikeye:home:zoneshade2" }
+Rollershutter Grx_ZoneShade3 "Zone 3 Shade" { channel="lutron:grafikeye:home:zoneshade3" }
+Rollershutter Grx_ZoneShade4 "Zone 4 Shade" { channel="lutron:grafikeye:home:zoneshade4" }
+Rollershutter Grx_ZoneShade5 "Zone 5 Shade" { channel="lutron:grafikeye:home:zoneshade5" }
+Rollershutter Grx_ZoneShade6 "Zone 6 Shade" { channel="lutron:grafikeye:home:zoneshade6" }
+Rollershutter Grx_ZoneShade7 "Zone 7 Shade" { channel="lutron:grafikeye:home:zoneshade7" }
+Rollershutter Grx_ZoneShade8 "Zone 8 Shade" { channel="lutron:grafikeye:home:zoneshade8" }
+```
+

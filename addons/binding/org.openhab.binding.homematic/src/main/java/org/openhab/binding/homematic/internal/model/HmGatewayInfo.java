@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,6 +28,7 @@ public class HmGatewayInfo {
     private boolean wiredInterface;
     private boolean cuxdInterface;
     private boolean hmipInterface;
+    private boolean groupInterface;
 
     /**
      * Returns the id of the gateway type.
@@ -142,12 +143,26 @@ public class HmGatewayInfo {
     }
 
     /**
+     * Returns true, if the gateway supports the Group interface.
+     */
+    public boolean isGroupInterface() {
+        return groupInterface;
+    }
+
+    /**
+     * Sets the Group support of the gateway.
+     */
+    public void setGroupInterface(boolean groupInterface) {
+        this.groupInterface = groupInterface;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", id).append("type", type)
                 .append("firmware", firmware).append("address", address).append("wired", wiredInterface)
-                .append("hmip", hmipInterface).append("cuxd", cuxdInterface).toString();
+                .append("hmip", hmipInterface).append("cuxd", cuxdInterface).append("group", groupInterface).toString();
     }
 }

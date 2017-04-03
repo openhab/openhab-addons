@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -163,7 +163,7 @@ public class ExecHandler extends BaseThingHandler {
                 try {
                     proc = rt.exec(commandLine.toString());
                 } catch (Exception e) {
-                    logger.error("An exception occured while executing '{}' : '{}'",
+                    logger.error("An exception occurred while executing '{}' : '{}'",
                             new Object[] { commandLine.toString(), e.getMessage() });
                     updateState(RUN, OnOffType.OFF);
                     updateState(OUTPUT, new StringType(e.getMessage()));
@@ -182,7 +182,7 @@ public class ExecHandler extends BaseThingHandler {
                     }
                     isr.close();
                 } catch (IOException e) {
-                    logger.error("An exception occured while reading the stdout when executing '{}' : '{}'",
+                    logger.error("An exception occurred while reading the stdout when executing '{}' : '{}'",
                             new Object[] { commandLine.toString(), e.getMessage() });
                 }
 
@@ -195,7 +195,7 @@ public class ExecHandler extends BaseThingHandler {
                     }
                     isr.close();
                 } catch (IOException e) {
-                    logger.error("An exception occured while reading the stderr when executing '{}' : '{}'",
+                    logger.error("An exception occurred while reading the stderr when executing '{}' : '{}'",
                             new Object[] { commandLine.toString(), e.getMessage() });
                 }
 
@@ -203,7 +203,7 @@ public class ExecHandler extends BaseThingHandler {
                 try {
                     exitVal = proc.waitFor(timeOut, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
-                    logger.error("An exception occured while waiting for the process ('{}') to finish : '{}'",
+                    logger.error("An exception occurred while waiting for the process ('{}') to finish : '{}'",
                             new Object[] { commandLine.toString(), e.getMessage() });
                 }
 
@@ -255,7 +255,7 @@ public class ExecHandler extends BaseThingHandler {
                         transformationType);
             }
         } catch (TransformationException te) {
-            logger.error("An exception occured while transforming '{}' with '{}' : '{}'",
+            logger.error("An exception occurred while transforming '{}' with '{}' : '{}'",
                     new Object[] { response, transformation, te.getMessage() });
 
             // in case of an error we return the response without any transformation

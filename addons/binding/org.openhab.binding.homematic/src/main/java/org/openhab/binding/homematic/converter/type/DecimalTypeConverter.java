@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.homematic.converter.type;
 import java.math.BigDecimal;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 
@@ -25,8 +26,8 @@ public class DecimalTypeConverter extends AbstractTypeConverter<DecimalType> {
      * {@inheritDoc}
      */
     @Override
-    protected boolean toBindingValidation(HmDatapoint dp) {
-        return dp.isNumberType();
+    protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
+        return dp.isNumberType() && typeClass.isAssignableFrom(DecimalType.class);
     }
 
     /**

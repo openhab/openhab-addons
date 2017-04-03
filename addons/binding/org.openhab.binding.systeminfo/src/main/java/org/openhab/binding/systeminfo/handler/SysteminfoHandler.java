@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -424,9 +424,9 @@ public class SysteminfoHandler extends BaseThingHandler {
         } catch (DeviceNotFoundException e) {
             logger.error("No information for channel " + channelID + deviceIndex, e);
         } catch (Exception e) {
-            logger.error("Unexpected error occured while getting system information!", e);
+            logger.error("Unexpected error occurred while getting system information!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Can not get systeminfo as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
+                    "Can not get system info as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
         }
         return state;
     }

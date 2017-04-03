@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: HomeKit Integration
 Bundle-SymbolicName: org.openhab.io.homekit;singleton:=true
 Bundle-Vendor: openhab.org
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/com.beowulfe.hap.hap-1.1.3.jar,

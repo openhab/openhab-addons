@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for transmitter message.
@@ -24,9 +25,7 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
 
     public enum SubType {
         ERROR_RECEIVER_DID_NOT_LOCK(0),
-        RESPONSE(1),
-
-        UNKNOWN(255);
+        RESPONSE(1);
 
         private final int subType;
 
@@ -34,12 +33,18 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
         public byte toByte() {
             return (byte) subType;
+        }
+
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
+            for (SubType c : SubType.values()) {
+                if (c.subType == input) {
+                    return c;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
@@ -49,10 +54,8 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
                         // anyway with RF receive data
         NAK(2), // NAK, transmitter did not lock on the requested transmit
                 // frequency
-        NAK_INVALID_AC_ADDRESS(3), // NAK, AC address zero in id1-id4 not
+        NAK_INVALID_AC_ADDRESS(3); // NAK, AC address zero in id1-id4 not
                                    // allowed
-
-        UNKNOWN(255);
 
         private final int response;
 
@@ -60,23 +63,29 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
             this.response = response;
         }
 
-        Response(byte response) {
-            this.response = response;
-        }
-
         public byte toByte() {
             return (byte) response;
         }
+
+        public static Response fromByte(int input) throws RFXComUnsupportedValueException {
+            for (Response response : Response.values()) {
+                if (response.response == input) {
+                    return response;
+                }
+            }
+
+            throw new RFXComUnsupportedValueException(Response.class, input);
+        }
     }
 
-    public SubType subType = SubType.RESPONSE;
-    public Response response = Response.ACK;
+    public SubType subType;
+    public Response response;
 
     public RFXComTransmitterMessage() {
         packetType = PacketType.TRANSMITTER_MESSAGE;
     }
 
-    public RFXComTransmitterMessage(byte[] data) {
+    public RFXComTransmitterMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -98,21 +107,12 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
 
         super.encodeMessage(data);
 
-        try {
-            subType = SubType.values()[super.subType];
-        } catch (Exception e) {
-            subType = SubType.UNKNOWN;
-        }
-
-        try {
-            response = Response.values()[data[4]];
-        } catch (Exception e) {
-            response = Response.UNKNOWN;
-        }
+        subType = SubType.fromByte(super.subType);
+        response = Response.fromByte(data[4]);
     }
 
     @Override
@@ -160,11 +160,10 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 

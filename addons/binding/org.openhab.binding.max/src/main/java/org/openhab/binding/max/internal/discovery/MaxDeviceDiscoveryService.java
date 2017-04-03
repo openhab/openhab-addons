@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class MaxDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
 
     private final static int SEARCH_TIME = 60;
-    private final static Logger logger = LoggerFactory.getLogger(MaxDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(MaxDeviceDiscoveryService.class);
 
     private MaxCubeBridgeHandler maxCubeBridgeHandler;
 
