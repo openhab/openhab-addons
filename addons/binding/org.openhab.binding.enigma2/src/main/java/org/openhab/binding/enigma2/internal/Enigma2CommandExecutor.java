@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -295,7 +296,7 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_VOLUME;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2current");
-            State returnState = new StringType(content);
+            State returnState = new PercentType(content);
             return returnState;
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
@@ -392,7 +393,10 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2eventtitle");
-            State returnState = new StringType(content);
+            State returnState = new StringType("");
+            if (content != null) {
+                returnState = new StringType(content);
+            }
             return returnState;
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
@@ -410,7 +414,10 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2eventdescription");
-            State returnState = new StringType(content);
+            State returnState = new StringType("");
+            if (content != null) {
+                returnState = new StringType(content);
+            }
             return returnState;
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
@@ -428,7 +435,10 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2eventdescriptionextended");
-            State returnState = new StringType(content);
+            State returnState = new StringType("");
+            if (content != null) {
+                returnState = new StringType(content);
+            }
             return returnState;
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
@@ -441,7 +451,14 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_CHANNEL;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfElement(content, "e2servicereference");
-            return content;
+            String[] asdf = content.split(" ");
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < asdf.length - 1; i++) {
+                sb.append(asdf[i]);
+                sb.append("%20");
+            }
+            sb.append(asdf[asdf.length - 1]);
+            return sb.toString();
         } catch (IOException e) {
             logger.error("Error during send Command: {}", e);
         }
