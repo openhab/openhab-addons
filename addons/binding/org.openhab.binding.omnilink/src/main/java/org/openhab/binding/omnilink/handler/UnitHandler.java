@@ -13,6 +13,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
@@ -57,12 +58,12 @@ public class UnitHandler extends BaseThingHandler {
         OmniLinkCmd omniCmd;
         if (command instanceof PercentType) {
             omniCmd = OmniLinkCmd.CMD_UNIT_PERCENT;
-            boolean success = getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(),
-                    ((PercentType) command).intValue(), Integer.parseInt(channelParts[2]));
+            getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((PercentType) command).intValue(),
+                    Integer.parseInt(channelParts[2]));
+        } else if (command instanceof RefreshType) {
         } else {
             omniCmd = sCommandMappingMap.get(command);
-            boolean success = getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), 0,
-                    Integer.parseInt(channelParts[2]));
+            getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), 0, Integer.parseInt(channelParts[2]));
         }
 
     }

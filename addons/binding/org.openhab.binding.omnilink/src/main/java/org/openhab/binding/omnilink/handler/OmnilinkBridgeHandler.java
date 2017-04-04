@@ -1,11 +1,13 @@
 package org.openhab.binding.omnilink.handler;
 
-import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.concurrent.Callable;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
@@ -16,34 +18,39 @@ import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Connection;
 import com.digitaldan.jomnilinkII.NotificationListener;
-import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
-import com.digitaldan.jomnilinkII.OmniNotConnectedException;
-import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.OtherEventNotifications;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
+import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 
 public class OmnilinkBridgeHandler extends BaseBridgeHandler implements NotificationListener {
     private Logger logger = LoggerFactory.getLogger(OmnilinkBridgeHandler.class);
     private OmnilinkDiscoveryService bridgeDiscoveryService;
     private Connection omniConnection;
+    private ListeningScheduledExecutorService listeningExecutor;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
-    public boolean sendOmnilinkCommand(int message, int param1, int param2) {
-        try {
-            omniConnection.controllerCommand(message, param1, param2);
-            return true;
-        } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
-                | OmniUnknownMessageTypeException e) {
-            logger.error("Could not send command", e);
-            return false;
-        }
+    public void sendOmnilinkCommand(int message, int param1, int param2) {
 
+        try {
+            listeningExecutor.submit(new Callable<Boolean>() {
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public Boolean call() throws Exception {
+                    omniConnection.controllerCommand(message, param1, param2);
+                    return Boolean.TRUE;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("Error sending command", e);
+        }
     }
 
     @Override
@@ -68,6 +75,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void initialize() {
         super.initialize();
+        listeningExecutor = MoreExecutors.listeningDecorator(scheduler);
         OmnilinkBridgeConfig config = getThing().getConfiguration().as(OmnilinkBridgeConfig.class);
 
         try {
@@ -75,8 +83,10 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             omniConnection.enableNotifications();
             omniConnection.addNotificationListener(this);
             logger.debug("initialized omnilink connection");
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.error("Error connecting to omnilink", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
     }
@@ -105,9 +115,10 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         if (zoneId != null) {
                             if (number.intValue() == resolvedZoneId) {
                                 ((UnitHandler) updatedThing.getHandler()).handleUnitStatus(stat);
+                                break;
                             }
                         }
-                        break;
+
                     }
                 }
 
@@ -129,9 +140,10 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         if (zoneId != null) {
                             if (number.intValue() == resolvedZoneId) {
                                 ((ZoneHandler) updatedThing.getHandler()).handleZoneStatus(stat);
+                                break;
                             }
                         }
-                        break;
+
                     }
                 }
 
