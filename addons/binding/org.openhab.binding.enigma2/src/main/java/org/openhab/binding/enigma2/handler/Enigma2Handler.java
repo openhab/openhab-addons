@@ -178,14 +178,16 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
 
     @Override
     protected void updateState(String channelID, State state) {
-        String newState = state.toString();
-        String oldState = stateMap.get(channelID);
-        if (oldState == null) {
-            stateMap.put(channelID, newState);
-            super.updateState(channelID, state);
-        } else {
-            if (!newState.equals(oldState)) {
+        if (state != null) {
+            String newState = state.toString();
+            String oldState = stateMap.get(channelID);
+            if (oldState == null) {
+                stateMap.put(channelID, newState);
                 super.updateState(channelID, state);
+            } else {
+                if (!newState.equals(oldState)) {
+                    super.updateState(channelID, state);
+                }
             }
         }
     }
