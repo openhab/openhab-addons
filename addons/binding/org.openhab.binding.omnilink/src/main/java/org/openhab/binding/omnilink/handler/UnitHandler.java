@@ -71,7 +71,6 @@ public class UnitHandler extends BaseThingHandler {
                         @Override
                         public void onFailure(Throwable arg0) {
                             // TODO Auto-generated method stub
-
                         }
 
                         @Override
