@@ -23,6 +23,9 @@ import com.digitaldan.jomnilinkII.MessageTypes.OtherEventNotifications;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -31,6 +34,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private OmnilinkDiscoveryService bridgeDiscoveryService;
     private Connection omniConnection;
     private ListeningScheduledExecutorService listeningExecutor;
+    // private CacheHolder<Unit> nodes;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -39,13 +43,13 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public void sendOmnilinkCommand(int message, int param1, int param2) {
 
         try {
-            listeningExecutor.submit(new Callable<Boolean>() {
+            listeningExecutor.submit(new Callable<Void>() {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public Boolean call() throws Exception {
+                public Void call() throws Exception {
                     omniConnection.controllerCommand(message, param1, param2);
-                    return Boolean.TRUE;
+                    return null;
                 }
             });
         } catch (Exception e) {
@@ -155,5 +159,23 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void otherEventNotification(OtherEventNotifications arg0) {
 
+    }
+
+    public ListenableFuture<UnitStatus> getUnitStatus(final int address) {
+
+        ListenableFuture<ObjectStatus> omniCall = listeningExecutor.submit(new Callable<ObjectStatus>() {
+
+            @Override
+            public ObjectStatus call() throws Exception {
+                return omniConnection.reqObjectStatus(2, address, address);
+            }
+        });
+        return Futures.transform(omniCall, new Function<ObjectStatus, UnitStatus>() {
+
+            @Override
+            public UnitStatus apply(ObjectStatus t) {
+                return (UnitStatus) t.getStatuses()[0];
+            }
+        }, listeningExecutor);
     }
 }

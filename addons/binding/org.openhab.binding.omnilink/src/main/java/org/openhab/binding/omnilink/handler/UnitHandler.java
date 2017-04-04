@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 
 public class UnitHandler extends BaseThingHandler {
 
@@ -61,6 +63,22 @@ public class UnitHandler extends BaseThingHandler {
             getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((PercentType) command).intValue(),
                     Integer.parseInt(channelParts[2]));
         } else if (command instanceof RefreshType) {
+            // Update status
+            logger.debug("Unit '{}' got REFRESH command", thing.getLabel());
+            Futures.addCallback(getOmnilinkBridgeHander().getUnitStatus(Integer.parseInt(channelParts[2])),
+                    new FutureCallback<UnitStatus>() {
+
+                        @Override
+                        public void onFailure(Throwable arg0) {
+                            // TODO Auto-generated method stub
+
+                        }
+
+                        @Override
+                        public void onSuccess(UnitStatus status) {
+                            handleUnitStatus(status);
+                        }
+                    });
         } else {
             omniCmd = sCommandMappingMap.get(command);
             getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), 0, Integer.parseInt(channelParts[2]));
