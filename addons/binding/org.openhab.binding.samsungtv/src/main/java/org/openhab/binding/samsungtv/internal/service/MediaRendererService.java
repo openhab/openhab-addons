@@ -188,8 +188,8 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     public void onValueReceived(String variable, String value, String service) {
 
         String oldValue = stateMap.get(variable);
-        if (value.equals(oldValue)) {
-            logger.trace("Variable '{}' value haven't been changed, ignore update", variable);
+        if ((value == null && oldValue == null) || (value != null && value.equals(oldValue))) {
+            logger.trace("Value '{}' for {} hasn't changed, ignoring update", value, variable);
             return;
         }
 

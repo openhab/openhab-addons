@@ -8,13 +8,6 @@
  */
 package org.openhab.binding.vitotronic.internal.discovery;
 
-/**
- * The {@link VitotronicBridgeDiscovery} class handles the discovery of optolink adapter
- * with broadcasting and put it to inbox, if found.
- *
- *
- * @author Stefan Andres - Initial contribution
- */
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -22,13 +15,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.vitotronic.VitotronicBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link VitotronicBridgeDiscovery} class handles the discovery of optolink adapter
+ * with broadcasting and put it to inbox, if found.
+ *
+ *
+ * @author Stefan Andres - Initial contribution
+ */
 public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
 
     int adapterPort = 31113;
@@ -112,11 +111,7 @@ public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
         properties.put(VitotronicBindingConstants.ADAPTER_ID, adapterID);
 
         ThingUID uid = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_BRIDGE, adapterID);
-        if (uid != null) {
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(adapterID)
-                    .build();
-            thingDiscovered(result);
-        }
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(adapterID).build());
     }
 
 }

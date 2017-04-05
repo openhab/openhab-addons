@@ -30,11 +30,13 @@ public class SunPhaseJob extends AbstractBaseJob {
     @Override
     protected void executeJob(String thingUid, JobDataMap jobDataMap) {
         AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(thingUid);
-        Channel phaseNameChannel = astroHandler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
-        if (astroHandler != null && phaseNameChannel != null) {
-            SunPhaseName phaseName = (SunPhaseName) jobDataMap.get(KEY_PHASE_NAME);
-            ((Sun) astroHandler.getPlanet()).getPhase().setName(phaseName);
-            astroHandler.publishChannelIfLinked(phaseNameChannel.getUID());
+        if (astroHandler != null) {
+            Channel phaseNameChannel = astroHandler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
+            if (phaseNameChannel != null) {
+                SunPhaseName phaseName = (SunPhaseName) jobDataMap.get(KEY_PHASE_NAME);
+                ((Sun) astroHandler.getPlanet()).getPhase().setName(phaseName);
+                astroHandler.publishChannelIfLinked(phaseNameChannel.getUID());
+            }
         }
     }
 }

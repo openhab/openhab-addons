@@ -286,10 +286,9 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
         ThingUID uid = new ThingUID(HarmonyHubBindingConstants.HARMONY_HUB_THING_TYPE,
                 id.replaceAll("[^A-Za-z0-9\\-_]", ""));
-        if (uid != null) {
-            DiscoveryResult discoResult = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel("HarmonyHub " + friendlyName).build();
-            thingDiscovered(discoResult);
-        }
+        thingDiscovered(DiscoveryResultBuilder.create(uid)
+                .withProperties(properties)
+                .withLabel("HarmonyHub " + friendlyName)
+                .build());
     }
 }

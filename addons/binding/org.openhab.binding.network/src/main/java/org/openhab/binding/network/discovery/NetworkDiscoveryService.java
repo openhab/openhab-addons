@@ -19,7 +19,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.network.service.DiscoveryCallback;
@@ -93,12 +92,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         // uid must not contains dots
         ThingUID uid = new ThingUID(THING_TYPE_DEVICE, ip.replace('.', '_'));
 
-        if (uid != null) {
-            Map<String, Object> properties = new HashMap<>(1);
-            properties.put(PARAMETER_HOSTNAME, ip);
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel("Network Device (" + ip + ")").build();
-            thingDiscovered(result);
-        }
+        Map<String, Object> properties = new HashMap<>(1);
+        properties.put(PARAMETER_HOSTNAME, ip);
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withLabel("Network Device (" + ip + ")").build());
     }
 }
