@@ -16,6 +16,19 @@
             </parameter>
         </config-description>
     </bridge-type>
+
+    <thing-type id="snapstream">
+        <label>Snapstream</label>
+        <description>Snapcast Stream thing</description>
+
+        <config-description>
+            <parameter name="HOST" type="text" required="true">
+                <label>Hostname</label>
+                <description>The hostname of the snapserver</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
     
     <thing-type id="snapclient">
         <label>Snapclient</label>
@@ -32,8 +45,6 @@
             </parameter>
         </config-description>
     </thing-type>
-
-
 
     <channel-type id="stream">
         <item-type>String</item-type>        

@@ -16,6 +16,7 @@
 package org.openhab.binding.snapcast.internal.protocol;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +29,18 @@ public class SnapcastClientController {
     private final JsonRpcEventClient connection;
     private final String mac;
     private final Map<String, Client> clientMap;
-    private final List<SnapcastUpdateListener> updateListeners;
+    private final List<SnapcastUpdateListener> updateListeners = new ArrayList<>();
 
     public SnapcastClientController(final JsonRpcEventClient connection, final String mac,
             final Map<String, Client> clientMap, final List<SnapcastUpdateListener> updateListeners) {
         this.connection = connection;
         this.mac = mac;
         this.clientMap = clientMap;
-        this.updateListeners = updateListeners;
+
+        // Copy update listener, this prevents unique client update listener to be export to the
+        // "Global updatelisterners" and not causing all clients to update everytime a single
+        // client i supdated.
+        updateListeners.forEach(u -> this.updateListeners.add(u));
     }
 
     private Client client() {
@@ -53,12 +58,22 @@ public class SnapcastClientController {
     }
 
     public SnapcastClientController volume(final Integer volume) throws IOException, InterruptedException {
+        return volume(volume, false);
+    }
+
+    public SnapcastClientController volume(final Integer volume, final boolean async)
+            throws IOException, InterruptedException {
+        client().getConfig().getVolume().setPercent(volume);
         final Map<String, Object> params = createParamsObject();
         params.put("volume", volume);
-        final Integer volumeResoponse = connection.sendRequestAndReadResponse("Client.SetVolume", params,
-                Integer.class);
-        client().getConfig().getVolume().setPercent(volumeResoponse);
-        notifyUpdateListeners();
+        if (async) {
+            connection.invoke("Client.SetVolume", params);
+        } else {
+            final Integer volumeResoponse = connection.sendRequestAndReadResponse("Client.SetVolume", params,
+                    Integer.class);
+            client().getConfig().getVolume().setPercent(volumeResoponse);
+            notifyUpdateListeners();
+        }
         return this;
     }
 

@@ -52,7 +52,7 @@ public class SnapserverHandler extends BaseBridgeHandler {
         }
     }
 
-    public SnapcastClientController getClient(String mac) {
+    public SnapcastClientController getClient(final String mac) {
         return snapcastController.getClient(mac);
     }
 
