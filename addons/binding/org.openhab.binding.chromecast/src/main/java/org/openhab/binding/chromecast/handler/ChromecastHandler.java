@@ -421,7 +421,16 @@ public class ChromecastHandler extends BaseThingHandler implements ChromeCastSpo
                     logger.debug("Application launched: {}", app);
                 }
                 if (url != null) {
-                    chromecast.load(title, null, url, mimeType);
+                    /* If the current track is paused, launching a new request results in nothing happening, therefore
+                    resume current track */
+                    MediaStatus ms = chromecast.getMediaStatus();
+                    if (ms != null && MediaStatus.PlayerState.PAUSED == ms.playerState
+                            && url.equals(ms.media.url)) {
+                        logger.debug("Current stream paused, resuming");
+                        chromecast.play();
+                    } else {
+                        chromecast.load(title, null, url, mimeType);
+                    }
                 }
             } else {
                 logger.warn("Missing media player app - cannot process media.");
