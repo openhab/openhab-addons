@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Walters - Fix player discovery when player name contains spaces
  * @author Mark Hilbush - Improve reconnect logic. Improve player status updates.
  * @author Mark Hilbush - Implement AudioSink and notifications
+ * @author Mark Hilbush - Added duration channel
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
@@ -566,6 +567,17 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         }
                     });
                 }
+                // Parameter duration
+                else if (messagePart.startsWith("duration%3A")) {
+                    String value = messagePart.substring("duration%3A".length());
+                    final int duration = (int) Double.parseDouble(value);
+                    updatePlayer(new PlayerUpdateEvent() {
+                        @Override
+                        public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                            listener.durationEvent(mac, duration);
+                        }
+                    });
+                }
                 // Parameter Playing Playlist Index
                 else if (messagePart.startsWith("playlist_cur_index%3A")) {
                     String value = messagePart.substring("playlist_cur_index%3A".length());
@@ -700,6 +712,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             String mode;
             if (action.equals("newsong")) {
                 mode = "play";
+                // Set the track duration to 0
+                updatePlayer(new PlayerUpdateEvent() {
+                    @Override
+                    public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                        listener.durationEvent(mac, 0);
+                    }
+                });
             } else if (action.equals("pause")) {
                 mode = messageParts[3].equals("0") ? "play" : "pause";
             } else if (action.equals("stop")) {

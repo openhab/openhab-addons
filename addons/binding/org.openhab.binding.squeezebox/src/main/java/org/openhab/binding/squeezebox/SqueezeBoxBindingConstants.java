@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * across the whole binding.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Mark Hilbush - Added duration channel
  */
 public class SqueezeBoxBindingConstants {
 
@@ -38,6 +39,7 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_UNSYNC = "unsync";
     public static final String CHANNEL_PLAYLIST_INDEX = "playListIndex";
     public static final String CHANNEL_CURRENT_PLAYING_TIME = "currentPlayingTime";
+    public static final String CHANNEL_DURATION = "duration";
     public static final String CHANNEL_NUMBER_PLAYLIST_TRACKS = "numberPlaylistTracks";
     public static final String CHANNEL_CURRENT_PLAYLIST_SHUFFLE = "currentPlaylistShuffle";
     public static final String CHANNEL_CURRENT_PLAYLIST_REPEAT = "currentPlaylistRepeat";
