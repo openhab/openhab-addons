@@ -12,6 +12,7 @@ package org.openhab.binding.squeezebox.handler;
  * @author Markus Wolters
  * @author Ben Jones
  * @author Dan Cunningham (OH2 Port)
+ * @author Mark Hilbush added durationEvent
  */
 public interface SqueezeBoxPlayerEventListener {
 
@@ -28,6 +29,8 @@ public interface SqueezeBoxPlayerEventListener {
     void currentPlaylistIndexEvent(String mac, int index);
 
     void currentPlayingTimeEvent(String mac, int time);
+
+    void durationEvent(String mac, int duration);
 
     void numberPlaylistTracksEvent(String mac, int track);
 
