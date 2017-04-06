@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dan Cunningham
  * @author Mark Hilbush - added method to cancel request player job, and to set thing properties
+ * @author Mark Hilbush - Added duration channel
  *
  */
 public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryService
@@ -112,7 +113,7 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
                 squeezeBoxServerHandler.requestPlayers();
             }
         };
-        
+
         logger.debug("request player job scheduled to run every {} seconds", TTL);
         requestPlayerJob = scheduler.scheduleWithFixedDelay(runnable, 10, TTL, TimeUnit.SECONDS);
     }
@@ -140,6 +141,10 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
 
     @Override
     public void currentPlayingTimeEvent(String mac, int time) {
+    }
+
+    @Override
+    public void durationEvent(String mac, int duration) {
     }
 
     @Override
