@@ -73,8 +73,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 refresher.callListener();
             } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_MUTE).getUID())) {
                 commandExecutor.setMute(command);
-            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_DOWNMIX).getUID())) {
-                commandExecutor.setDownmix(command);
             } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_PLAYER_CONTROL).getUID())) {
                 commandExecutor.setPlayControl(command);
             } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_REMOTE_KEY).getUID())) {
@@ -105,9 +103,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 }
                 if (commandExecutor.getMutedState() != null) {
                     updateState(Enigma2BindingConstants.CHANNEL_MUTE, commandExecutor.getMutedState());
-                }
-                if (commandExecutor.isDownmix() != null) {
-                    updateState(Enigma2BindingConstants.CHANNEL_DOWNMIX, commandExecutor.isDownmix());
                 }
                 if (commandExecutor.getChannelState() != null) {
                     updateState(Enigma2BindingConstants.CHANNEL_CHANNEL, commandExecutor.getChannelState());

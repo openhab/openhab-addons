@@ -40,8 +40,6 @@ public class Enigma2CommandExecutor {
     private static final String SUFFIX_POWERSTATE = "/web/powerstate";
     private static final String SUFFIX_VOLUME = "/web/vol";
     private static final String SUFFIX_SET_VOLUME = "/web/vol?set=set";
-    private static final String SUFFIX_DOWNMIX = "/web/downmix";
-    private static final String SUFFIX_SET_DOWNMIX = "/web/downmix?enable=";
     private static final String SUFFIX_ZAP = "/web/zap?sRef=";
     private static final String SUFFIX_CHANNEL = "/web/subservices";
     private static final String SUFFIX_EPG = "/web/epgservice?sRef=";
@@ -114,26 +112,6 @@ public class Enigma2CommandExecutor {
             OnOffType newState = (OnOffType) command;
             if (currentState != newState) {
                 sendRcCommand(Enigma2RemoteKey.MUTE);
-            }
-        } else {
-            logger.error("Unsupported command type: {}", command.getClass().getName());
-        }
-    }
-
-    /**
-     * Sets downmix
-     *
-     * @param command, OnOffType
-     */
-    public void setDownmix(Command command) {
-        if (command instanceof OnOffType) {
-            OnOffType newState = (OnOffType) command;
-            String enable = newState == OnOffType.ON ? "True" : "False";
-            try {
-                String url = deviceURL + SUFFIX_SET_DOWNMIX + enable;
-                Enigma2Util.executeUrl(url);
-            } catch (IOException e) {
-                logger.error("Error during send Command: {}", e);
             }
         } else {
             logger.error("Unsupported command type: {}", command.getClass().getName());
@@ -345,23 +323,6 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_VOLUME;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2ismuted");
-            State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
-            return returnState;
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Requests, if downmix is active
-     *
-     * @return OnOffType
-     */
-    public State isDownmix() {
-        try {
-            String url = deviceURL + SUFFIX_DOWNMIX;
-            String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfFirstElement(content, "e2state");
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
             return returnState;
         } catch (IOException e) {
