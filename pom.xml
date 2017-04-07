@@ -2,14 +2,16 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
+    <parent>
+        <groupId>org.openhab</groupId>
+        <artifactId>pom-tycho</artifactId>
+        <version>2.1.0-SNAPSHOT</version>
+        <relativePath></relativePath>
+    </parent>
 
     <groupId>org.openhab</groupId>
-    <artifactId>pom</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
-    <name>openHAB</name>
+    <artifactId>pom-addons2</artifactId>
+    <name>openHAB 2 Add-ons</name>
 
     <organization>
         <name>openHAB.org</name>
@@ -41,338 +43,40 @@
         </repository>
         <snapshotRepository>
             <id>jfrog</id>
-            <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
+            <url>https://openhab.jfrog.io/openhab/libs-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
 
     <description>This is the open Home Automation Bus (openHAB)</description>
 
-    <properties>
-        <esh.version>0.9.0-SNAPSHOT</esh.version>
-        <kat.version>1.4.1</kat.version>
-        <ohc.version>2.1.0-SNAPSHOT</ohc.version>
-        <ohcp2.version>2.1.x</ohcp2.version>
-        <ohdr.version>1.0.10</ohdr.version>
-        <sat.version>0.0.3</sat.version>
-        <karaf.version>4.0.8</karaf.version>
-        <jackson.version>1.9.13</jackson.version>
-        <tycho-version>1.0.0</tycho-version>
-        <tycho-groupid>org.eclipse.tycho</tycho-groupid>
-        <build.helper.maven.plugin.version>1.9.1</build.helper.maven.plugin.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.version>3.6.1</maven.compiler.version>
-        <groovy.eclipse.compiler.version>2.8.0-01</groovy.eclipse.compiler.version>
-        <groovy.eclipse.batch.version>2.1.5-03</groovy.eclipse.batch.version>
-    </properties>
-
     <packaging>pom</packaging>
+
+    <properties>
+        <ohc.version>${project.version}</ohc.version>
+    </properties>
 
     <modules>
         <module>addons</module>
         <module>features</module>
     </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>${tycho-groupid}</groupId>
-                <artifactId>tycho-maven-plugin</artifactId>
-                <version>${tycho-version}</version>
-                <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <groupId>${tycho-groupid}</groupId>
-                <artifactId>target-platform-configuration</artifactId>
-                <version>${tycho-version}</version>
-                <configuration>
-                    <resolver>p2</resolver>
-                    <ignoreTychoRepositories>true</ignoreTychoRepositories>
-                    <pomDependencies>consider</pomDependencies>
-                    <environments>
-                        <environment>
-                            <os>linux</os>
-                            <ws>gtk</ws>
-                            <arch>x86</arch>
-                        </environment>
-                        <environment>
-                            <os>linux</os>
-                            <ws>gtk</ws>
-                            <arch>x86_64</arch>
-                        </environment>
-                        <environment>
-                            <os>win32</os>
-                            <ws>win32</ws>
-                            <arch>x86</arch>
-                        </environment>
-                        <environment>
-                            <os>macosx</os>
-                            <ws>cocoa</ws>
-                            <arch>x86_64</arch>
-                        </environment>
-                    </environments>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>${tycho-groupid}</groupId>
-                <artifactId>tycho-packaging-plugin</artifactId>
-                <version>${tycho-version}</version>
-                <configuration>
-                    <strictVersions>false</strictVersions>
-                </configuration>
-            </plugin>
-            <plugin>
-                 <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-        </plugins>
-
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.karaf.tooling</groupId>
-                    <artifactId>karaf-maven-plugin</artifactId>
-                    <version>${karaf.version}</version>
-                    <extensions>true</extensions>
-                </plugin>
-                <plugin>
-                    <groupId>${tycho-groupid}</groupId>
-                    <artifactId>tycho-compiler-plugin</artifactId>
-                    <version>${tycho-version}</version>
-                    <configuration>
-                        <encoding>UTF-8</encoding>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>${build.helper.maven.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>com.mycila</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>2.10</version>
-                    <configuration>
-                        <basedir>${basedir}</basedir>
-                        <header>src/etc/header.txt</header>
-                        <quiet>false</quiet>
-                        <failIfMissing>true</failIfMissing>
-                        <strictCheck>true</strictCheck>
-                        <aggregate>true</aggregate>
-                        <includes>
-                            <include>**/org/openhab/**/*.java</include>
-                            <include>**/feature.xml</include>
-                            <include>**/OSGI-INF/*.xml</include>
-                        </includes>
-                        <excludes>
-                            <exclude>target/**</exclude>
-                            <exclude>**/pom.xml</exclude>
-                            <exclude>_*.java</exclude>
-                        </excludes>
-                        <useDefaultExcludes>true</useDefaultExcludes>
-                        <properties>
-                            <year>2017</year>
-                        </properties>
-                        <encoding>UTF-8</encoding>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven.compiler.version}</version>
-                    <configuration>
-                        <compilerId>groovy-eclipse-compiler</compilerId>
-                        <maxmem>256m</maxmem>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                               <goal>compile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-eclipse-compiler</artifactId>
-                            <version>${groovy.eclipse.compiler.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-eclipse-batch</artifactId>
-                            <version>${groovy.eclipse.batch.version}</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
-                    <groupId>${tycho-groupid}</groupId>
-                    <artifactId>tycho-versions-plugin</artifactId>
-                    <version>${tycho-version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.0.1</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <supportedProjectTypes>
-                            <supportedProjectType>jar</supportedProjectType>
-                            <supportedProjectType>bundle</supportedProjectType>
-                            <supportedProjectType>eclipse-plugin</supportedProjectType>
-                        </supportedProjectTypes>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>prepare-release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.eclipse.tycho</groupId>
-                        <artifactId>tycho-versions-plugin</artifactId>
-                        <version>${tycho-version}</version>
-                        <executions>
-                            <execution>
-                                <id>update-version</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>set-version</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>deploy</id>
-            <distributionManagement>
-                <repository>
-                    <id>${repo.id}</id>
-                    <url>${repo.url}/maven</url>
-                    <uniqueVersion>false</uniqueVersion>
-                </repository>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>${tycho-groupid}</groupId>
-                        <artifactId>tycho-source-plugin</artifactId>
-                        <version>${tycho-version}</version>
-                        <executions>
-                            <execution>
-                                <id>plugin-source</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>plugin-source</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <sourceBundle>true</sourceBundle>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>prepare-next-snapshot</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.eclipse.tycho</groupId>
-                        <artifactId>tycho-versions-plugin</artifactId>
-                        <version>${tycho-version}</version>
-                        <executions>
-                            <execution>
-                                <id>update-version</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>set-version</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-    <!-- static code analysis profiles -->
-    <profile>
-      <id>check</id>
-      <activation>
-        <property>
-          <name>!skipChecks</name>
-        </property>
-      </activation>   
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.openhab.tools</groupId>
-              <artifactId>static-code-analysis</artifactId>
-              <version>${sat.version}</version>
-              <executions>
-                <execution>
-                  <phase>verify</phase>
-                  <goals>
-                    <goal>checkstyle</goal>
-                    <goal>pmd</goal>
-                    <goal>findbugs</goal>
-                    <goal>report</goal>
-                  </goals>
-                </execution>
-              </executions>
-              <configuration>
-                <findbugsPlugins>
-                  <findbugsPlugin>
-                     <groupId>jp.skypencil.findbugs.slf4j</groupId>
-                     <artifactId>bug-pattern</artifactId>
-                    <version>1.2.4</version>
-                  </findbugsPlugin>
-                </findbugsPlugins>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-    <profile>
-      <id>check-bundles</id>
-      <activation>
-        <file>
-          <exists>META-INF/MANIFEST.MF</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-              <groupId>org.openhab.tools</groupId>
-              <artifactId>static-code-analysis</artifactId>
-              <version>${sat.version}</version>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    </profiles>
-
     <pluginRepositories>
       <pluginRepository>
-          <id>openhab-bintray</id>
-          <name>Bintray Repository for openHAB</name>
-          <url>https://dl.bintray.com/openhab/mvn/</url>
+            <id>jcenter</id>
+            <name>JCenter Repository</name>
+            <url>https://jcenter.bintray.com/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+      </pluginRepository>
+      <pluginRepository>
+          <id>artifactory</id>
+          <name>JFrog Artifactory Repository</name>
+          <url>https://openhab.jfrog.io/openhab/libs-release</url>
           <releases>
               <enabled>true</enabled>
               <updatePolicy>never</updatePolicy>
@@ -384,38 +88,8 @@
     </pluginRepositories>
 
     <repositories>
-
-        <!-- ESH releases -->
-        <repository>
-            <id>eclipse-releases</id>
-            <name>Eclipse Release Repository</name>
-            <layout>default</layout>
-            <url>https://repo.eclipse.org/content/repositories/releases/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-        <!-- ESH Snapshots -->
-        <repository>
-            <id>eclipse-snapshots</id>
-            <name>Eclipse Snapshot Repository</name>
-            <layout>default</layout>
-            <url>https://repo.eclipse.org/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-
-        <!-- openHAB releases -->
+        
+        <!-- releases -->
         <repository>
             <id>jcenter</id>
             <name>JCenter Repository</name>
@@ -430,9 +104,9 @@
         </repository>
 
         <repository>
-            <id>openhab-bintray</id>
-            <name>Bintray Repository for openHAB</name>
-            <url>https://dl.bintray.com/openhab/mvn/</url>
+            <id>openhab-artifactory-release</id>
+            <name>JFrog Artifactory Repository</name>
+            <url>https://openhab.jfrog.io/openhab/libs-release</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
@@ -442,9 +116,9 @@
             </snapshots>
         </repository>
 
-        <!-- openHAB snapshots -->
+        <!-- snapshots -->
         <repository>
-            <id>jfrog</id>
+            <id>openhab-artifactory-snapshot</id>
             <name>JFrog Artifactory Repository</name>
             <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
             <releases>
@@ -456,31 +130,10 @@
             </snapshots>
         </repository>
 
-        <!-- maggu2810's maven repository -->
-        <repository>
-            <id>maggu2810-bintray</id>
-            <name>Bintray Repository of maggu2810</name>
-            <url>https://dl.bintray.com/maggu2810/maven</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
         <!-- SmartHome p2 repository -->
         <repository>
             <id>p2-smarthome</id>
-            <url>http://download.eclipse.org/smarthome/updates-stable</url>
-            <layout>p2</layout>
-        </repository>
-
-        <!-- openHAB core p2 repository -->
-        <repository>
-            <id>p2-openhab-core</id>
-            <url>https://dl.bintray.com/openhab/p2/openhab-core/${ohcp2.version}</url>
+            <url>https://openhab.jfrog.io/openhab/eclipse-smarthome-stable</url>
             <layout>p2</layout>
         </repository>
 
