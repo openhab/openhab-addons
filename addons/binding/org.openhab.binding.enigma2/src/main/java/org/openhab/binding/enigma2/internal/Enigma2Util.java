@@ -37,7 +37,7 @@ public class Enigma2Util {
      *
      * This is a quick and dirty method, it always delivers the first appearance of content in an element
      */
-    public static String getContentOfElement(String content, String element) {
+    public static String getContentOfFirstElement(String content, String element) {
         final String beginTag = "<" + element + ">";
         final String endTag = "</" + element + ">";
 
@@ -111,5 +111,24 @@ public class Enigma2Util {
                     .append(hostName).toString();
         }
         return returnString;
+    }
+
+    public static String cleanString(String string) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(string);
+        for (int i = buffer.length() - 1; i >= 0; i--) {
+            if (!isValidChar(buffer.charAt(i))) {
+                buffer.deleteCharAt(i);
+            }
+        }
+        return buffer.toString();
+    }
+
+    private static boolean isValidChar(char c) {
+        int castChar = c;
+        if ((castChar >= 32) && (castChar <= 125)) {
+            return true;
+        }
+        return false;
     }
 }

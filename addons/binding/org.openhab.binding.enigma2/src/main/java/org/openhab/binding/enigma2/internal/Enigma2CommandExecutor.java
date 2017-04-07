@@ -59,14 +59,6 @@ public class Enigma2CommandExecutor {
         this.initialize();
     }
 
-    private void initialize() {
-        try {
-            serviceContainer = Enigma2Util.generateServiceMaps(deviceURL);
-        } catch (IOException | ParserConfigurationException | SAXException e) {
-            logger.error("Error during initialization: {}", e);
-        }
-    }
-
     /**
      * Sets the PowerState
      *
@@ -182,7 +174,7 @@ public class Enigma2CommandExecutor {
     /**
      * Sets Channel
      *
-     * @param command, IncreaseDecreaseType
+     * @param command, StringType
      */
     public void setChannel(Command command) {
         if (command instanceof StringType) {
@@ -277,11 +269,10 @@ public class Enigma2CommandExecutor {
         try {
             String url = deviceURL + SUFFIX_POWERSTATE;
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2instandby");
+            content = Enigma2Util.getContentOfFirstElement(content, "e2instandby");
             State returnState = content.contains("true") ? OnOffType.OFF : OnOffType.ON;
             return returnState;
         } catch (IOException e) {
-            logger.warn("Error during send Command: {}", e);
             return null;
         }
     }
@@ -295,13 +286,12 @@ public class Enigma2CommandExecutor {
         try {
             String url = deviceURL + SUFFIX_VOLUME;
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2current");
+            content = Enigma2Util.getContentOfFirstElement(content, "e2current");
             State returnState = new PercentType(content);
             return returnState;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -313,14 +303,13 @@ public class Enigma2CommandExecutor {
         try {
             String url = deviceURL + SUFFIX_CHANNEL;
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2servicename");
-            content = Enigma2ServiceContainer.cleanString(content);
+            content = Enigma2Util.getContentOfFirstElement(content, "e2servicename");
+            content = Enigma2Util.cleanString(content);
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -332,7 +321,7 @@ public class Enigma2CommandExecutor {
         try {
             String url = deviceURL + SUFFIX_ANSWER;
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2statetext");
+            content = Enigma2Util.getContentOfFirstElement(content, "e2statetext");
             State returnState = null;
             if ((content.toLowerCase().contains("yes") || content.toLowerCase().contains("ja"))) {
                 returnState = OnOffType.ON;
@@ -342,9 +331,8 @@ public class Enigma2CommandExecutor {
             }
             return returnState;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -356,13 +344,12 @@ public class Enigma2CommandExecutor {
         try {
             String url = deviceURL + SUFFIX_VOLUME;
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2ismuted");
+            content = Enigma2Util.getContentOfFirstElement(content, "e2ismuted");
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
             return returnState;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -370,17 +357,16 @@ public class Enigma2CommandExecutor {
      *
      * @return OnOffType
      */
-    public State isDownmixActiveState() {
+    public State isDownmix() {
         try {
             String url = deviceURL + SUFFIX_DOWNMIX;
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2state");
+            content = Enigma2Util.getContentOfFirstElement(content, "e2state");
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
             return returnState;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return null;
         }
-        return null;
     }
 
     /**
@@ -392,16 +378,15 @@ public class Enigma2CommandExecutor {
         try {
             String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2eventtitle");
-            State returnState = new StringType("");
+            content = Enigma2Util.getContentOfFirstElement(content, "e2eventtitle");
+            State returnState = new StringType("-");
             if (content != null) {
                 returnState = new StringType(content);
             }
             return returnState;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return new StringType("-");
         }
-        return null;
     }
 
     /**
@@ -413,16 +398,15 @@ public class Enigma2CommandExecutor {
         try {
             String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2eventdescription");
-            State returnState = new StringType("");
+            content = Enigma2Util.getContentOfFirstElement(content, "e2eventdescription");
+            State returnState = new StringType("-");
             if (content != null) {
                 returnState = new StringType(content);
             }
             return returnState;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return new StringType("-");
         }
-        return null;
     }
 
     /**
@@ -434,51 +418,56 @@ public class Enigma2CommandExecutor {
         try {
             String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2eventdescriptionextended");
-            State returnState = new StringType("");
+            content = Enigma2Util.getContentOfFirstElement(content, "e2eventdescriptionextended");
+            State returnState = new StringType("-");
             if (content != null) {
                 returnState = new StringType(content);
             }
             return returnState;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return new StringType("-");
         }
-        return null;
+    }
+
+    private void initialize() {
+        try {
+            serviceContainer = Enigma2Util.generateServiceMaps(deviceURL);
+        } catch (IOException | ParserConfigurationException | SAXException e) {
+            logger.error("Error during initialization: {}", e);
+        }
     }
 
     private String getChannelServiceReference() {
         try {
             String url = deviceURL + SUFFIX_CHANNEL;
             String content = Enigma2Util.executeUrl(url);
-            content = Enigma2Util.getContentOfElement(content, "e2servicereference");
-            String[] asdf = content.split(" ");
+            content = Enigma2Util.getContentOfFirstElement(content, "e2servicereference");
+            String[] temp = content.split(" ");
             StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < asdf.length - 1; i++) {
-                sb.append(asdf[i]);
+            for (int i = 0; i < temp.length - 1; i++) {
+                sb.append(temp[i]);
                 sb.append("%20");
             }
-            sb.append(asdf[asdf.length - 1]);
+            sb.append(temp[temp.length - 1]);
             return sb.toString();
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return null;
         }
-        return null;
     }
 
     private void sendRcCommand(Enigma2RemoteKey commandValue) {
-        if (commandValue == null) {
-            logger.error("Error in item configuration. No remote control code provided (third part of item config)");
-        } else {
+        if (commandValue != null) {
             sendRcCommand(commandValue.getValue());
         }
     }
 
-    private void sendRcCommand(int key) {
+    private boolean sendRcCommand(int key) {
         try {
             String url = deviceURL + SUFFIX_REMOTE_CONTROL + key;
             Enigma2Util.executeUrl(url);
+            return true;
         } catch (IOException e) {
-            logger.error("Error during send Command: {}", e);
+            return false;
         }
     }
 }

@@ -12,6 +12,7 @@
             <channel id="power" typeId="power" />
             <channel id="volume" typeId="volume" />
             <channel id="mute" typeId="mute" />
+            <channel id="downmix" typeId="downmix" />
             <channel id="playerControl" typeId="playerControl" />
             <channel id="channel" typeId="channel" />
             <channel id="remoteKey" typeId="remoteKey" />
@@ -59,6 +60,11 @@
         <item-type>Switch</item-type>
         <label>Volume Mute</label>
         <description>Mute state</description>
+    </channel-type>
+    <channel-type id="downmix">
+        <item-type>Switch</item-type>
+        <label>Sound downmix</label>
+        <description>Sound downmix state</description>
     </channel-type>
     <channel-type id="playerControl">
         <item-type>Player</item-type>

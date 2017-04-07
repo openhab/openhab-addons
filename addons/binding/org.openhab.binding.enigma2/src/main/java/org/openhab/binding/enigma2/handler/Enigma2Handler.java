@@ -13,13 +13,10 @@ import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingFactory;
-import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -67,24 +64,26 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         if (command instanceof RefreshType) {
             // getUpdate();
         } else {
-            if (channelUID.equals(getChannelUID(Enigma2BindingConstants.CHANNEL_POWER))) {
+            if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_POWER).getUID())) {
                 commandExecutor.setPowerState(command);
-            } else if (channelUID.equals(getChannelUID(Enigma2BindingConstants.CHANNEL_VOLUME))) {
+            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_VOLUME).getUID())) {
                 commandExecutor.setVolume(command);
-            } else if (channelUID.equals(getChannelUID(Enigma2BindingConstants.CHANNEL_CHANNEL))) {
+            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_CHANNEL).getUID())) {
                 commandExecutor.setChannel(command);
                 refresher.callListener();
-            } else if (channelUID.equals(getChannelUID(Enigma2BindingConstants.CHANNEL_MUTE))) {
+            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_MUTE).getUID())) {
                 commandExecutor.setMute(command);
-            } else if (channelUID.equals(getChannelUID(Enigma2BindingConstants.CHANNEL_PLAYER_CONTROL))) {
+            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_DOWNMIX).getUID())) {
+                commandExecutor.setDownmix(command);
+            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_PLAYER_CONTROL).getUID())) {
                 commandExecutor.setPlayControl(command);
-            } else if (channelUID.equals(getChannelUID(Enigma2BindingConstants.CHANNEL_REMOTE_KEY))) {
+            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_REMOTE_KEY).getUID())) {
                 commandExecutor.sendRemoteKey(command);
-            } else if (channelUID.equals(getChannelUID(Enigma2BindingConstants.CHANNEL_SEND_MESSAGE))) {
+            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_SEND_MESSAGE).getUID())) {
                 commandExecutor.sendMessage(command);
-            } else if (channelUID.equals(getChannelUID(Enigma2BindingConstants.CHANNEL_SEND_WARNING))) {
+            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_SEND_WARNING).getUID())) {
                 commandExecutor.sendWarning(command);
-            } else if (channelUID.equals(getChannelUID(Enigma2BindingConstants.CHANNEL_SEND_QUESTION))) {
+            } else if (channelUID.equals(thing.getChannel(Enigma2BindingConstants.CHANNEL_SEND_QUESTION).getUID())) {
                 commandExecutor.sendQuestion(command);
             }
         }
@@ -93,6 +92,64 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     @Override
     public void dispose() {
         refresher.removeListener(this);
+    }
+
+    @Override
+    public void getUpdate() {
+        OnOffType powerState = (OnOffType) commandExecutor.getPowerState();
+        if (powerState != null) {
+            updateState(Enigma2BindingConstants.CHANNEL_POWER, powerState);
+            if (powerState == OnOffType.ON) {
+                if (commandExecutor.getVolumeState() != null) {
+                    updateState(Enigma2BindingConstants.CHANNEL_VOLUME, commandExecutor.getVolumeState());
+                }
+                if (commandExecutor.getMutedState() != null) {
+                    updateState(Enigma2BindingConstants.CHANNEL_MUTE, commandExecutor.getMutedState());
+                }
+                if (commandExecutor.isDownmix() != null) {
+                    updateState(Enigma2BindingConstants.CHANNEL_DOWNMIX, commandExecutor.isDownmix());
+                }
+                if (commandExecutor.getChannelState() != null) {
+                    updateState(Enigma2BindingConstants.CHANNEL_CHANNEL, commandExecutor.getChannelState());
+                }
+                if (commandExecutor.getAnswerState() != null) {
+                    updateState(Enigma2BindingConstants.CHANNEL_GET_ANSWER, commandExecutor.getAnswerState());
+                }
+                if (commandExecutor.getNowPlayingTitle() != null) {
+                    updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_TITLE,
+                            commandExecutor.getNowPlayingTitle());
+                }
+                if (commandExecutor.getNowPlayingDescription() != null) {
+                    updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION,
+                            commandExecutor.getNowPlayingDescription());
+                }
+                if (commandExecutor.getNowPlayingDescriptionExtended() != null) {
+                    updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED,
+                            commandExecutor.getNowPlayingDescriptionExtended());
+                }
+            } else {
+                updateState(Enigma2BindingConstants.CHANNEL_CHANNEL, new StringType(""));
+                updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_TITLE, new StringType("-"));
+                updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION, new StringType("-"));
+                updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED, new StringType("-"));
+            }
+        }
+    }
+
+    @Override
+    protected void updateState(String channelID, State state) {
+        if (state != null) {
+            String newState = state.toString();
+            String oldState = stateMap.get(channelID);
+            if (oldState == null) {
+                stateMap.put(channelID, newState);
+                super.updateState(channelID, state);
+            } else {
+                if (!newState.equals(oldState)) {
+                    super.updateState(channelID, state);
+                }
+            }
+        }
     }
 
     public String getUserName() {
@@ -116,80 +173,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
             returnVal = 5000;
         }
         return returnVal;
-    }
-
-    private ChannelUID getChannelUID(String channelId) {
-        Channel channel = thing.getChannel(channelId);
-        if (channel == null) {
-            // refresh thing...
-            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(thing.getThingTypeUID()), thing.getUID(),
-                    thing.getConfiguration());
-            updateThing(newThing);
-            channel = thing.getChannel(channelId);
-        }
-        return channel.getUID();
-    }
-
-    @Override
-    public void getUpdate() {
-        if (commandExecutor.getPowerState() != null) {
-            updateState(Enigma2BindingConstants.CHANNEL_POWER, commandExecutor.getPowerState());
-            if (commandExecutor.getPowerState() == OnOffType.ON) {
-                if (commandExecutor.getVolumeState() != null) {
-                    updateState(Enigma2BindingConstants.CHANNEL_VOLUME, commandExecutor.getVolumeState());
-                }
-                if (commandExecutor.getMutedState() != null) {
-                    updateState(Enigma2BindingConstants.CHANNEL_MUTE, commandExecutor.getMutedState());
-                }
-                if (commandExecutor.getChannelState() != null) {
-                    updateState(Enigma2BindingConstants.CHANNEL_CHANNEL, commandExecutor.getChannelState());
-                }
-                updateState(Enigma2BindingConstants.CHANNEL_PLAYER_CONTROL, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_REMOTE_KEY, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_SEND_MESSAGE, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_SEND_WARNING, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_SEND_QUESTION, new StringType(""));
-                if (commandExecutor.getAnswerState() != null) {
-                    updateState(Enigma2BindingConstants.CHANNEL_GET_ANSWER, commandExecutor.getAnswerState());
-                }
-                if (commandExecutor.getNowPlayingTitle() != null) {
-                    updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_TITLE,
-                            commandExecutor.getNowPlayingTitle());
-                }
-                if (commandExecutor.getNowPlayingDescription() != null) {
-                    updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION,
-                            commandExecutor.getNowPlayingDescription());
-                }
-                if (commandExecutor.getNowPlayingDescriptionExtended() != null) {
-                    updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED,
-                            commandExecutor.getNowPlayingDescriptionExtended());
-                }
-            } else {
-                updateState(Enigma2BindingConstants.CHANNEL_CHANNEL, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_SEND_MESSAGE, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_SEND_WARNING, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_SEND_QUESTION, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_TITLE, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION, new StringType(""));
-                updateState(Enigma2BindingConstants.CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED, new StringType(""));
-            }
-        }
-    }
-
-    @Override
-    protected void updateState(String channelID, State state) {
-        if (state != null) {
-            String newState = state.toString();
-            String oldState = stateMap.get(channelID);
-            if (oldState == null) {
-                stateMap.put(channelID, newState);
-                super.updateState(channelID, state);
-            } else {
-                if (!newState.equals(oldState)) {
-                    super.updateState(channelID, state);
-                }
-            }
-        }
     }
 
     private class Enigma2Refresher extends Thread {
