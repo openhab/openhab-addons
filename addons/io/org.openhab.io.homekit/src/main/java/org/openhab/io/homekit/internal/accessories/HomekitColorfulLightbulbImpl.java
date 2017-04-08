@@ -43,7 +43,7 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
             HSBType hsb = (HSBType) state;
             return CompletableFuture.completedFuture(hsb.getHue().doubleValue());
         } else {
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
     }
 
@@ -54,7 +54,7 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
             HSBType hsb = (HSBType) state;
             return CompletableFuture.completedFuture(hsb.getSaturation().doubleValue());
         } else {
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
     }
 
