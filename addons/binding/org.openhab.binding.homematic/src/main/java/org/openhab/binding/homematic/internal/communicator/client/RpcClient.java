@@ -202,7 +202,7 @@ public abstract class RpcClient {
         boolean isHomegear = StringUtils.equalsIgnoreCase(ddParser.getType(), "Homegear");
 
         request = createRpcRequest("listBidcosInterfaces");
-        ListBidcosInterfacesParser biParser = new ListBidcosInterfacesParser(ddParser.getDeviceInterface(), isHomegear);
+        ListBidcosInterfacesParser biParser = new ListBidcosInterfacesParser();
         biParser.parse(sendMessage(config.getRpcPort(HmInterface.RF), request));
 
         HmGatewayInfo gatewayInfo = new HmGatewayInfo();
