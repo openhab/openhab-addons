@@ -11,19 +11,21 @@ package org.openhab.io.hueemulation.internal;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -56,6 +58,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 /**
  * Emulates A Hue compatible HTTP API server
@@ -68,6 +73,7 @@ public class HueEmulationServlet extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(HueEmulationServlet.class);
     private static final String CONFIG_PAIRING_ENABLED = "pairingEnabled";
     private static final String CONFIG_DISCOVERY_IP = "discoveryIp";
+    private static final String CONFIG_DISCOVERY_HTTP_PORT = "discoveryHttpPort";
     private static final String PATH = "/api";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
@@ -80,9 +86,9 @@ public class HueEmulationServlet extends HttpServlet {
             ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "usernames");
     private static final File UDN_FILE = new File(
             ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "udn");
-
-    private static final String[] SUPPORTED_TAGS = new String[] { "Switchable", "Lighting", "TargetTemperature" };
-
+    private static final File ITEM_FILE = new File(
+            ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "items");
+    private static final String[] SUPPORTED_TAGS = new String[] { "Switchable", "Lighting" };
     private Gson gson = new Gson();
     private HttpService httpService;
     private ItemRegistry itemRegistry;
@@ -90,15 +96,20 @@ public class HueEmulationServlet extends HttpServlet {
     private HueEmulationUpnpServer disco;
     private String udn;
     private String xmlDoc;
-    private CopyOnWriteArrayList<String> userNames = new CopyOnWriteArrayList<String>();
-
+    private int webPort;
     private boolean pairingEnabled = false;
+    // list of valid Hue API user ids
+    private ArrayList<String> userNames = new ArrayList<String>();
+    // deviceMap maps a Hue numeric id to a Item Name, ordered by that id
+    private TreeMap<Integer, String> deviceMap = new TreeMap<Integer, String>();
 
     protected void activate(Map<String, Object> config) {
         modified(config);
         try {
             Dictionary<String, String> servletParams = new Hashtable<String, String>();
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
+
+            // load users from disk
             if (USER_FILE.exists()) {
                 FileInputStream fis = null;
                 try {
@@ -108,14 +119,29 @@ public class HueEmulationServlet extends HttpServlet {
                     IOUtils.closeQuietly(fis);
                 }
             }
-            logger.info("Started Hue Emulation service at {}", PATH);
+
+            // load item list from disk
+            if (ITEM_FILE.exists()) {
+                JsonReader reader = null;
+                try {
+                    reader = new JsonReader(new FileReader(ITEM_FILE));
+                    LinkedHashMap<Integer, String> tmpMap = gson.fromJson(reader,
+                            new TypeToken<Map<Integer, String>>() {
+                            }.getType());
+                    if (tmpMap != null) {
+                        deviceMap.putAll(tmpMap);
+                    }
+                } finally {
+                    IOUtils.closeQuietly(reader);
+                }
+            }
+            logger.info("Started Hue Emulation service at " + PATH);
         } catch (Exception e) {
             logger.error("Could not start Hue Emulation service: {}", e.getMessage(), e);
         }
     }
 
     protected void modified(Map<String, ?> config) {
-
         if (disco != null) {
             disco.shutdown();
             disco = null;
@@ -123,8 +149,12 @@ public class HueEmulationServlet extends HttpServlet {
 
         Object obj = config.get(CONFIG_DISCOVERY_IP);
         String ip = obj != null ? (String) obj : null;
+
+        obj = config.get(CONFIG_DISCOVERY_HTTP_PORT);
+        webPort = obj == null ? Integer.parseInt(System.getProperty("org.osgi.service.http.port"))
+                : Integer.parseInt((String) obj);
         try {
-            disco = new HueEmulationUpnpServer(PATH + "/discovery.xml", getUDN(), ip);
+            disco = new HueEmulationUpnpServer(PATH + "/description.xml", getUDN(), webPort, ip);
             disco.start();
         } catch (IOException e) {
             logger.error("Could not start UPNP server for discovery", e);
@@ -184,7 +214,7 @@ public class HueEmulationServlet extends HttpServlet {
         setHeaders(resp);
 
         // UPNP discovery document
-        if (path.equals(PATH + "/discovery.xml")) {
+        if (path.equals(PATH + "/description.xml")) {
             apiDiscoveryXML(req, resp);
             return;
         }
@@ -291,7 +321,7 @@ public class HueEmulationServlet extends HttpServlet {
         }
         try {
             // will throw exception if not found
-            Item item = itemRegistry.getItem(id);
+            Item item = itemRegistry.getItem(deviceMap.get(new Integer(id)));
             HueState state = gson.fromJson(req.getReader(), HueState.class);
             HSBType hsb = state.toHSBType();
             logger.debug("HuState {}", state);
@@ -318,13 +348,13 @@ public class HueEmulationServlet extends HttpServlet {
             }
 
             if (command != null) {
-                logger.debug("sending {} to {}", command, id);
-                eventPublisher.post(ItemEventFactory.createCommandEvent(id, command));
+                logger.debug("sending {} to {}", command, item.getName());
+                eventPublisher.post(ItemEventFactory.createCommandEvent(item.getName(), command));
                 PrintWriter out = resp.getWriter();
                 out.write(String.format(STATE_RESP, id, String.valueOf(state.on)));
                 out.close();
             } else {
-                logger.error("Item {} does not accept Decimal, ON/OFF or String types", id);
+                logger.error("Item {} does not accept Decimal, ON/OFF or String types", item.getName());
                 apiServerError(req, resp, HueErrorResponse.INTERNAL_ERROR,
                         "The Hue device does not respond to that command");
             }
@@ -344,13 +374,16 @@ public class HueEmulationServlet extends HttpServlet {
      */
     private void apiLight(String id, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            Item item = itemRegistry.getItem(id);
+            HueDevice device = getHueDevices().get(new Integer(id));
+            if (device == null) {
+                throw new Exception("Could not find light for id " + id);
+            }
             PrintWriter out = resp.getWriter();
-            out.write(gson.toJson(itemToDevice(item)));
+            out.write(gson.toJson(device));
             out.close();
-        } catch (ItemNotFoundException e) {
-            logger.debug("Item not found: {}", id);
-            apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, "Item not found " + id);
+        } catch (Exception e) {
+            logger.error("error getting light: ", e);
+            apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, e.getMessage());
         }
     }
 
@@ -363,7 +396,8 @@ public class HueEmulationServlet extends HttpServlet {
      */
     public void apiLights(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PrintWriter out = resp.getWriter();
-        out.write(gson.toJson(getHueDeviceNames()));
+        // out.write(gson.toJson(getHueDeviceNames()));
+        out.write(gson.toJson(getHueDevices()));
         out.close();
     }
 
@@ -376,9 +410,12 @@ public class HueEmulationServlet extends HttpServlet {
      */
     public void apiGroupZero(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PrintWriter out = resp.getWriter();
-        String[] lights = getHueDeviceNames().keySet().toArray(new String[0]);
+        List<String> lights = new LinkedList<String>();
+        for (Integer key : deviceMap.keySet()) {
+            lights.add(key.toString());
+        }
         HueState action = new HueState();
-        out.write(gson.toJson(new HueGroup("0", lights, action)));
+        out.write(gson.toJson(new HueGroup("Group 0", lights.toArray(new String[0]), action)));
         out.close();
     }
 
@@ -467,48 +504,11 @@ public class HueEmulationServlet extends HttpServlet {
             return;
         }
 
-        String formattedXML = String.format(xmlDoc, address.getHostAddress(),
-                System.getProperty("org.osgi.service.http.port"), getUDN());
+        String formattedXML = String.format(xmlDoc, address.getHostAddress(), webPort, getUDN());
         resp.setContentType(APPLICATION_XML);
         PrintWriter out = resp.getWriter();
         out.write(formattedXML);
         out.close();
-    }
-
-    /**
-     * Returns a map of all our items that have voice tags.
-     *
-     * @param username
-     * @return
-     *         Map <item name, HueDevice>
-     */
-    private Map<String, HueDevice> getHueDevices() {
-        Collection<Item> items = getTaggedItems();
-        Map<String, HueDevice> devices = new HashMap<String, HueDevice>();
-        Iterator<Item> it = items.iterator();
-        while (it.hasNext()) {
-            Item item = it.next();
-            devices.put(item.getName(), itemToDevice(item));
-        }
-        return devices;
-    }
-
-    /**
-     * Returns the item name and voice name of each item
-     *
-     * @param username
-     * @return
-     *         Map<item name, item voice tag>
-     */
-    public Map<String, String> getHueDeviceNames() {
-        Collection<Item> items = getTaggedItems();
-        Map<String, String> devices = new HashMap<String, String>();
-        Iterator<Item> it = items.iterator();
-        while (it.hasNext()) {
-            Item item = it.next();
-            devices.put(item.getName(), item.getLabel());
-        }
-        return devices;
     }
 
     /**
@@ -539,21 +539,66 @@ public class HueEmulationServlet extends HttpServlet {
     }
 
     /**
-     * Gets all items that match our tag
+     * Gets and syncs all items tagged for voice.
      *
      * @return
      */
-    private Collection<Item> getTaggedItems() {
-        Collection<Item> items = new LinkedList<Item>();
+    private synchronized TreeMap<Integer, HueDevice> getHueDevices() {
+        TreeMap<Integer, HueDevice> returnMap = new TreeMap<Integer, HueDevice>();
+        HashMap<String, Item> taggedItems = new HashMap<String, Item>();
+
+        // if we modify our internal map, persist it to disk
+        boolean modified = false;
+
+        // get all tagged items
         for (Item item : itemRegistry.getItems()) {
             for (String tag : item.getTags()) {
                 if (ArrayUtils.contains(SUPPORTED_TAGS, tag)) {
-                    items.add(item);
+                    taggedItems.put(item.getName(), item);
+                    if (!deviceMap.containsValue(item.getName())) {
+                        // hue devices are assigned a numeric number starting with 1, if a device is
+                        // removed that number is not used again. Not sure how high this id can get
+                        // not worrying about it here
+                        Integer next = deviceMap.size() == 0 ? new Integer(1)
+                                : new Integer(deviceMap.lastKey().intValue() + 1);
+                        deviceMap.put(next, item.getName());
+                        modified = true;
+                    }
                     break;
                 }
             }
         }
-        return items;
+
+        // clean up removed entries
+        for (String itemName : deviceMap.values()) {
+            if (!taggedItems.containsKey(itemName)) {
+                deviceMap.remove(itemName);
+                modified = true;
+            }
+        }
+
+        // for each entry, lookup the item and convert it to a hue device
+        for (Integer key : deviceMap.keySet()) {
+            try {
+                returnMap.put(key, itemToDevice(itemRegistry.getItem(deviceMap.get(key))));
+            } catch (ItemNotFoundException e) {
+                logger.warn("Could not find item", e);
+            }
+        }
+
+        if (modified) {
+            JsonWriter writer = null;
+            try {
+                writer = new JsonWriter(new FileWriter(ITEM_FILE));
+                gson.toJson(deviceMap, new TypeToken<Map<Integer, String>>() {
+                }.getType(), writer);
+            } catch (IOException e) {
+                logger.error("Could not persist item cache", e);
+            } finally {
+                IOUtils.closeQuietly(writer);
+            }
+        }
+        return returnMap;
     }
 
     /**
