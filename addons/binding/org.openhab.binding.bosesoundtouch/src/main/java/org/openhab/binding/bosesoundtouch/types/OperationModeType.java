@@ -29,6 +29,7 @@ public enum OperationModeType implements PrimitiveType, State, Command {
     DEEZER,
     SIRIUSXM,
     STORED_MUSIC,
+    AMAZON,
     OTHER;
 
     @Override

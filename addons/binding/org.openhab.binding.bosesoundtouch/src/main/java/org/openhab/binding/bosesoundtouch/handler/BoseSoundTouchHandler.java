@@ -199,32 +199,18 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                                 }
                                 break;
                             case BLUETOOTH:
-                                int counter = 0;
-                                while ((currentOperationMode != OperationModeType.BLUETOOTH) && counter < 5) {
-                                    simulateRemoteKey(RemoteKey.AUX_INPUT);
-                                    try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException e) {
-                                    }
-                                    counter++;
-                                }
-                                if (counter == 5) {
-                                    logger.warn("{}: Unable to switch to mode: BLUETOOTH. Mayby no device available",
-                                            getDeviceName());
-                                }
+                                sendRequestInWebSocket("select", "<ContentItem source=\"BLUETOOTH\"></ContentItem>");
                                 break;
                             case AUX:
-                                simulateRemoteKey(RemoteKey.AUX_INPUT);
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                }
+                                sendRequestInWebSocket("select",
+                                        "<ContentItem source=\"AUX\" sourceAccount=\"AUX\"></ContentItem>");
                                 break;
                             case STORED_MUSIC:
                             case SPOTIFY:
                             case DEEZER:
                             case SIRIUSXM:
                             case PANDORA:
+                            case AMAZON:
                             case OFFLINE:
                             case OTHER:
                                 logger.warn("{}: \"{}\" OperationMode selection not supported yet", getDeviceName(),
@@ -239,7 +225,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
             } else if (channelUID.equals(channelVolumeUID)) {
                 if (command instanceof PercentType) {
                     PercentType percentType = (PercentType) command;
-                    sendRequestInWebSocket("volume", null, "<volume deviceID=\"" + getMacAddress() + "\"" + ">"
+                    sendRequestInWebSocket("volume", "<volume deviceID=\"" + getMacAddress() + "\"" + ">"
                             + percentType.intValue() + "</volume>");
                 }
             } else if (channelUID.equals(channelMuteUID)) {
@@ -384,7 +370,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
             } else if (channelUID.equals(channelBassUID)) {
                 if (command instanceof DecimalType) {
                     int bassLevel = ((DecimalType) command).intValue();
-                    sendRequestInWebSocket("bass", null, "<bass>" + bassLevel + "</bass>");
+                    sendRequestInWebSocket("bass", "<bass>" + bassLevel + "</bass>");
                 }
             } else if (channelUID.equals(channelKeyCodeUID)) {
                 if (command instanceof StringType) {
@@ -411,6 +397,10 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         } catch (IOException e) {
             onWebSocketError(e);
         }
+    }
+
+    private void sendRequestInWebSocket(String url, String postData) {
+        sendRequestInWebSocket(url, null, postData);
     }
 
     private void sendRequestInWebSocket(String url, String infoAddon, String postData) {
