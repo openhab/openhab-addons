@@ -166,6 +166,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lutron/${project.version}</bundle>
     </feature>
     
+    <feature name="openhab-binding-mailserver" description="Mail Server Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mailserver/${project.version}</bundle>
+    </feature>
+    
     <feature name="openhab-binding-max" description="MAX! Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.max/${project.version}</bundle>

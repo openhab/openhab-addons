@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mailserver"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="mailbox">
+        <supported-bridge-type-refs>
+        	<bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+        <label>Mail Server Incoming Mailbox</label>
+        <description>Specific Email Box config for incoming messages</description>
+
+        <channels>
+            <channel id="receivedmessagecount" typeId="receivedmessagecount"/><channel typeId="messagebody" id="messagebody"></channel>
+        	<channel typeId="openhabcommand" id="openhabcommand"></channel>
+        	<channel typeId="openhabvalue" id="openhabvalue"></channel>
+        </channels>
+        <config-description>
+            <parameter-group name="patternparsing">
+                <description>Pattern Parsing</description>
+                <label>Pattern Parsing</label>
+            </parameter-group>
+            <parameter-group name="mailboxconfig">
+                <description>Mail Box</description>
+                <label>Mail Box configuration</label>
+            </parameter-group>
+
+            <parameter name="toaddress" type="text" groupName="mailboxconfig" required="true">
+            	<description>Incoming TO address to listen for</description>
+            	<default>smarthouse@localhost.com</default>
+            </parameter>
+            <parameter name="commandpattern" type="text" groupName="patternparsing">
+                <description>Regular Expression for Command data</description>
+                <default>&lt;openhabcommand&gt;(.*)&lt;/openhabcommand&gt;</default>
+            </parameter>
+        	<parameter name="commandindex" type="integer" groupName="patternparsing">
+        		<default>1</default>
+        		<description>The RegEx index to retrieve for the Command RegEx</description>
+        	</parameter>
+        	
+        	<parameter name="valuepattern" type="text" groupName="patternparsing">
+        		<description>Regular Expression for Value data</description>
+        		<default>&lt;openhabvalue&gt;(.*)&lt;/openhabvalue&gt;</default>
+        	</parameter>
+        	<parameter name="valueindex" type="integer" groupName="patternparsing">
+        		<default>1</default>
+        		<description>The RegEx index to retrieve for the Value RegEx</description>
+        	</parameter>
+        </config-description>
+    </thing-type>
+
+    <!-- Sample Channel Type -->
+    <channel-type id="receivedmessagecount">
+        <item-type>Number</item-type>
+        <label>Received Count</label>
+        <description>Number of received messages</description>
+    </channel-type>
+    <channel-type id="messagebody">
+    	<item-type>String</item-type>
+    	<label>Message Body</label>
+    	<description>The full raw text of the email</description>
+    </channel-type>
+    <channel-type id="openhabvalue">
+    	<item-type>String</item-type>
+    	<label>Value</label>
+    	<description>The value from the Value RegEx expression</description>
+    </channel-type>
+    <channel-type id="openhabcommand">
+    	<item-type>String</item-type>
+    	<label>Command</label>
+    	<description>The value from the RegEx Command value</description>
+    </channel-type>
+    <bridge-type id="bridge">
+    	<label>Mail Server Incoming Bridge</label>
+    	<description>The overall Server that listens for incoming connections and sends them to an email box</description>
+    	<config-description>
+    		
+    	<parameter name="port" type="integer">
+        		<description>The port to listen on</description>
+        		<default>25</default></parameter></config-description>
+    </bridge-type>
+
+</thing:thing-descriptions>
