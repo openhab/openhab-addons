@@ -401,7 +401,6 @@ public class CometVisuServlet extends HttpServlet {
                         }
                         org.openhab.ui.cometvisu.internal.rss.beans.Entry entry = new org.openhab.ui.cometvisu.internal.rss.beans.Entry();
                         entry.publishedDate = historicItem.getTimestamp().getTime();
-                        logger.info("{}: {}", rssPubDateFormat.format(entry.publishedDate), historicItem.getState());
                         entry.tags.add(historicItem.getName());
                         String[] content = historicItem.getState().toString().split(rssLogMessageSeparator);
                         if (content.length == 0) {
