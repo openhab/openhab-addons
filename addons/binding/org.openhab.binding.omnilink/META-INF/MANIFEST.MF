@@ -4,7 +4,7 @@ Bundle-Name: Omnilink Binding
 Bundle-SymbolicName: org.openhab.binding.omnilink;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  lib/jOmniLinkII-1.0.jar
 Import-Package: 

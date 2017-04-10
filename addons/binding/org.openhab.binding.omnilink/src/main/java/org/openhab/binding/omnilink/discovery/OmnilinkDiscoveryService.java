@@ -24,6 +24,7 @@ import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
 import com.google.common.collect.ImmutableSet;
@@ -87,10 +88,50 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         try {
             generateUnits(c);
             generateZones(c);
+            generateAreas(c);
         } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
                 | OmniUnknownMessageTypeException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+    private void generateAreas(Connection c) throws IOException, OmniNotConnectedException,
+            OmniInvalidResponseException, OmniUnknownMessageTypeException {
+
+        int objnum = 0;
+        Message m;
+        // it seems that simple configurations of an omnilink have 1 area, without a name. So if there is no name for
+        // the first area, we will call that Main. If other areas name is blank, we will not create a thing
+        while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AREA, objnum, 1, ObjectProperties.FILTER_1_NONE,
+                ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE))
+                        .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
+            AreaProperties o = ((AreaProperties) m);
+            objnum = o.getNumber();
+
+            String areaName = o.getName();
+            if (o.getNumber() == 1 && "".equals(areaName)) {
+                areaName = "Main Area";
+            } else if ("".equals(areaName)) {
+                break;
+            }
+
+            ThingUID thingUID = null;
+            String thingID = "";
+            String thingLabel = areaName;
+            thingID = Integer.toString(objnum);
+
+            Map<String, Object> properties = new HashMap<>(0);
+            thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_AREA, thingID);
+            properties.put(OmnilinkUnitConfig.NUMBER, objnum);
+            properties.put(OmnilinkUnitConfig.NAME, thingLabel);
+
+            DiscoveryResult discoveryResult;
+
+            discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(thingLabel).build();
+            thingDiscovered(discoveryResult);
+
         }
     }
 

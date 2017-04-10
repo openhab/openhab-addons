@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
+import org.openhab.binding.omnilink.handler.AreaHandler;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
 import org.openhab.binding.omnilink.handler.UnitHandler;
 import org.openhab.binding.omnilink.handler.ZoneHandler;
@@ -62,6 +63,8 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
             return new ZoneHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_AREA)) {
+            return new AreaHandler(thing);
         }
 
         return null;

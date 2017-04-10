@@ -71,6 +71,30 @@
             </parameter>
         </config-description>
     </thing-type>
+     <thing-type id="area">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="omnilinkBridge" />
+        </supported-bridge-type-refs>
+
+        <label>Omnilink Area</label>
+        <description>Omnilink Area</description>
+
+        <channels>
+            <channel id="alarm" typeId="area_alarm" />
+        </channels>
+
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Zone Number</label>
+                <description>Zone Number</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Name of the zone.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
     <channel-type id="lightlevel">
         <item-type>Dimmer</item-type>
         <label>Light Level</label>
@@ -86,5 +110,11 @@
         <category>Contact</category>
         <state pattern="%s" readOnly="true"></state>
     </channel-type>
-    
+
+    <channel-type id="area_alarm">
+        <item-type>String</item-type>
+        <label>Area Alarm</label>
+        <description>Represents area mode.</description>
+        <category>Program Control</category>
+    </channel-type>   
 </thing:thing-descriptions>

@@ -1,6 +1,9 @@
 package org.openhab.binding.omnilink.handler;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -9,17 +12,21 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.openhab.binding.omnilink.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
+import org.openhab.binding.omnilink.protocol.AreaAlarmStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Connection;
+import com.digitaldan.jomnilinkII.Message;
 import com.digitaldan.jomnilinkII.NotificationListener;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.OtherEventNotifications;
+import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
@@ -34,13 +41,15 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private OmnilinkDiscoveryService bridgeDiscoveryService;
     private Connection omniConnection;
     private ListeningScheduledExecutorService listeningExecutor;
+    private Map<Integer, Thing> areaThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
+
     // private CacheHolder<Unit> nodes;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
-    public void sendOmnilinkCommand(int message, int param1, int param2) {
+    public void sendOmnilinkCommand(final int message, final int param1, final int param2) {
 
         try {
             listeningExecutor.submit(new Callable<Void>() {
@@ -97,7 +106,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     @Override
     public void objectStausNotification(ObjectStatus status) {
-        logger.debug("status notification: " + status);
+        logger.debug("status notification: {}", status.toString());
         Status[] statuses = status.getStatuses();
         Thing updatedThing = null;
 
@@ -151,9 +160,30 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                     }
                 }
 
+            } else if (s instanceof AreaStatus) {
+                AreaStatus areaStatus = (AreaStatus) s;
+                logger.debug("AreaStatus: Mode={}, text={}", areaStatus.getMode(),
+                        AreaAlarmStatus.values()[areaStatus.getMode()]);
+                ((AreaHandler) areaThings.get(areaStatus.getNumber()).getHandler()).handleAreaEvent(areaStatus);
             }
         }
+    }
 
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        logger.debug("childHandlerInitialized called with '{}', childThing '{}'", childHandler, childThing);
+        if (childHandler instanceof AreaHandler) {
+            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
+                throw new IllegalArgumentException("childThing does not have required 'number' property");
+            }
+            areaThings.put(Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString()),
+                    childThing);
+        }
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        logger.debug("childHandlerDisposed called with '{}', childThing '{}'", childHandler, childThing);
     }
 
     @Override
@@ -175,6 +205,24 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             @Override
             public UnitStatus apply(ObjectStatus t) {
                 return (UnitStatus) t.getStatuses()[0];
+            }
+        }, listeningExecutor);
+    }
+
+    public ListenableFuture<AreaStatus> getAreaStatus(final int address) {
+
+        ListenableFuture<ObjectStatus> omniCall = listeningExecutor.submit(new Callable<ObjectStatus>() {
+
+            @Override
+            public ObjectStatus call() throws Exception {
+                return omniConnection.reqObjectStatus(Message.OBJ_TYPE_AREA, address, address);
+            }
+        });
+        return Futures.transform(omniCall, new Function<ObjectStatus, AreaStatus>() {
+
+            @Override
+            public AreaStatus apply(ObjectStatus t) {
+                return (AreaStatus) t.getStatuses()[0];
             }
         }, listeningExecutor);
     }
