@@ -172,51 +172,23 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                     String cmd = command.toString().toUpperCase().trim();
                     try {
                         OperationModeType selectedMode = OperationModeType.valueOf(cmd);
-                        if (currentOperationMode == OperationModeType.STANDBY
-                                && selectedMode != OperationModeType.STANDBY) {
-                            // turn device on first...
-                            simulateRemoteKey(RemoteKey.POWER);
-                        }
                         switch (selectedMode) {
                             case STANDBY:
-                                if (currentOperationMode != OperationModeType.STANDBY) {
-                                    simulateRemoteKey(RemoteKey.POWER);
-                                }
+                                selectOperationModeStandby();
                                 break;
                             case INTERNET_RADIO:
-                                Preset psFound = null;
-                                for (Preset ps : listOfPresets) {
-                                    if ((psFound == null) && (ps.getContentItem()
-                                            .getOperationMode() == OperationModeType.INTERNET_RADIO)) {
-                                        psFound = ps;
-                                    }
-                                }
-                                if (psFound != null) {
-                                    simulateRemoteKey(psFound.getKey());
-                                } else {
-                                    logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined",
-                                            getDeviceName());
-                                }
+                                selectOperationModeRadio();
                                 break;
                             case BLUETOOTH:
-                                sendRequestInWebSocket("select", "<ContentItem source=\"BLUETOOTH\"></ContentItem>");
+                                selectOperationModeBluetooth();
                                 break;
                             case AUX:
-                                sendRequestInWebSocket("select",
-                                        "<ContentItem source=\"AUX\" sourceAccount=\"AUX\"></ContentItem>");
+                                selectOperationModeAUX();
                                 break;
-                            case STORED_MUSIC:
-                            case SPOTIFY:
-                            case DEEZER:
-                            case SIRIUSXM:
-                            case PANDORA:
-                            case AMAZON:
-                            case OFFLINE:
-                            case OTHER:
+                            default:
                                 logger.warn("{}: \"{}\" OperationMode selection not supported yet", getDeviceName(),
                                         cmd);
                                 break;
-
                         }
                     } catch (IllegalArgumentException iae) {
                         logger.error("{}: OperationMode \"{}\" is not valid!", getDeviceName(), cmd);
@@ -397,6 +369,34 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         } catch (IOException e) {
             onWebSocketError(e);
         }
+    }
+
+    private void selectOperationModeStandby() {
+        if (currentOperationMode != OperationModeType.STANDBY) {
+            simulateRemoteKey(RemoteKey.POWER);
+        }
+    }
+
+    private void selectOperationModeRadio() {
+        Preset psFound = null;
+        for (Preset ps : listOfPresets) {
+            if ((psFound == null) && (ps.getContentItem().getOperationMode() == OperationModeType.INTERNET_RADIO)) {
+                psFound = ps;
+            }
+        }
+        if (psFound != null) {
+            simulateRemoteKey(psFound.getKey());
+        } else {
+            logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined", getDeviceName());
+        }
+    }
+
+    private void selectOperationModeBluetooth() {
+        sendRequestInWebSocket("select", "<ContentItem source=\"BLUETOOTH\"></ContentItem>");
+    }
+
+    private void selectOperationModeAUX() {
+        sendRequestInWebSocket("select", "<ContentItem source=\"AUX\" sourceAccount=\"AUX\"></ContentItem>");
     }
 
     private void sendRequestInWebSocket(String url, String postData) {
