@@ -121,7 +121,7 @@ public class HueEmulationUpnpServer extends Thread {
                                 DatagramPacket response = new DatagramPacket(msg.getBytes(), msg.length(),
                                         recv.getAddress(), recv.getPort());
                                 try {
-                                    logger.trace("Sending to " + recv.getAddress().getHostAddress() + " : " + msg);
+                                    logger.trace("Sending to {} : {}", recv.getAddress().getHostAddress(), msg);
                                     sendSocket.send(response);
                                 } catch (IOException e) {
                                     logger.error("Could not send UPNP response", e);
