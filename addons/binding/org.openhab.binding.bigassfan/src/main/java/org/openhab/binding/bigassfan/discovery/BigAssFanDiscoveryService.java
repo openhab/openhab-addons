@@ -60,7 +60,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
         public void run() {
             try {
                 listen();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.warn("Discovery listener got unexpected exception: {}", e.getMessage(), e);
             }
         }
@@ -216,22 +216,18 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
         properties.put(Thing.PROPERTY_MODEL_ID, device.getModel());
         properties.put(Thing.PROPERTY_VENDOR, "Haiku");
 
-        try {
-            ThingUID uid = new ThingUID(THING_TYPE_FAN, serialNumber);
-            // If there's not a thing and it's not in the inbox, create the discovery result
-            if (callback != null && callback.getExistingDiscoveryResult(uid) == null
-                    && callback.getExistingThing(uid) == null) {
+        ThingUID uid = new ThingUID(THING_TYPE_FAN, serialNumber);
+        // If there's not a thing and it's not in the inbox, create the discovery result
+        if (callback != null && callback.getExistingDiscoveryResult(uid) == null
+                && callback.getExistingThing(uid) == null) {
 
-                logger.info("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withLabel(device.getLabel()).build();
+            logger.info("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel(device.getLabel()).build();
 
-                thingDiscovered(result);
-            } else {
-                logger.debug("Thing or inbox entry already exists for UID={}, IP={}", uid, device.getIpAddress());
-            }
-        } catch (Exception e) {
-            logger.warn("Exception creating discovery result: {}", e.getMessage(), e);
+            thingDiscovered(result);
+        } else {
+            logger.debug("Thing or inbox entry already exists for UID={}, IP={}", uid, device.getIpAddress());
         }
     }
 
@@ -243,7 +239,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
             public void run() {
                 try {
                     discoveryListener.pollForDevices();
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     logger.error("Poll job got unexpected exception: {}", e.getMessage(), e);
                 }
             }

@@ -496,7 +496,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             public void run() {
                 try {
                     listener();
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     logger.warn("FanListener had unhandled exception: ", e.getMessage(), e);
                 }
             }
