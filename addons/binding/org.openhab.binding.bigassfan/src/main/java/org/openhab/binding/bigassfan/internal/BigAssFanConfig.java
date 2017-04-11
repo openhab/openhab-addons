@@ -44,13 +44,13 @@ public class BigAssFanConfig {
     }
 
     public boolean isValid() {
-        if (!StringUtils.isNotBlank(label)) {
+        if (StringUtils.isBlank(label)) {
             return false;
         }
-        if (!StringUtils.isNotBlank(ipAddress)) {
+        if (StringUtils.isBlank(ipAddress)) {
             return false;
         }
-        if (!StringUtils.isNotBlank(macAddress)) {
+        if (StringUtils.isBlank(macAddress)) {
             return false;
         }
         return true;

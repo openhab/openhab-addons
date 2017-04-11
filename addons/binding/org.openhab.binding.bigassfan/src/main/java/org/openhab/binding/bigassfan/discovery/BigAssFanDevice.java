@@ -31,10 +31,6 @@ public class BigAssFanDevice {
     // The raw discovery message
     private String discoveryMessage;
 
-    public BigAssFanDevice() {
-        reset();
-    }
-
     public String getLabel() {
         return label;
     }

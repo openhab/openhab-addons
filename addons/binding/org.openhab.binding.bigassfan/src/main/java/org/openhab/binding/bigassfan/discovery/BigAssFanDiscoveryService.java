@@ -11,6 +11,7 @@ import static org.openhab.binding.bigassfan.BigAssFanBindingConstants.*;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +43,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
     private final Logger logger = LoggerFactory.getLogger(BigAssFanDiscoveryService.class);
 
     private static final boolean BACKGROUND_DISCOVERY_ENABLED = true;
-    private final long BACKGROUND_DISCOVERY_DELAY = 8L;
+    private static final long BACKGROUND_DISCOVERY_DELAY = 8L;
 
     private DiscoveryServiceCallback callback;
 
@@ -60,7 +61,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
             try {
                 listen();
             } catch (Exception e) {
-                logger.warn("Discovery listener got unexpected exception: {}", e.getMessage());
+                logger.warn("Discovery listener got unexpected exception: {}", e.getMessage(), e);
             }
         }
     };
@@ -72,7 +73,6 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
 
     public BigAssFanDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 0, BACKGROUND_DISCOVERY_ENABLED);
-        listenerJob = null;
     }
 
     @Override
@@ -143,10 +143,10 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
         try {
             discoveryListener = new DiscoveryListener();
         } catch (SocketException se) {
-            logger.warn("Got Socket exception creating multicast socket: {}", se.getMessage());
+            logger.warn("Got Socket exception creating multicast socket: {}", se.getMessage(), se);
             return;
         } catch (IOException ioe) {
-            logger.warn("Got IO exception creating multicast socket: {}", ioe.getMessage());
+            logger.warn("Got IO exception creating multicast socket: {}", ioe.getMessage(), ioe);
             return;
         }
 
@@ -156,11 +156,11 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
                 // Wait for a discovery message
                 BigAssFanDevice device = discoveryListener.waitForMessage();
                 processMessage(device);
+            } catch (SocketTimeoutException e) {
+                // Read on socket timed out; check for termination
+                continue;
             } catch (IOException ioe) {
-                logger.warn("Got IO exception waiting for message: {}", ioe.getMessage());
-                break;
-            } catch (Exception e) {
-                logger.warn("Got exception waiting for message: {}", e.getMessage());
+                logger.warn("Got IO exception waiting for message: {}", ioe.getMessage(), ioe);
                 break;
             }
         }
@@ -172,14 +172,6 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
         if (device == null) {
             return;
         }
-        // XXX Uncomment to test discovery
-        // device.setDiscoveryMessage("(Master Bedroom Wall Controller;DEVICE;ID;20:F8:5E:DB:98:37;SWITCH,SENSEME)");
-        // device.setDiscoveryMessage("(Master Bedroom Fan;DEVICE;ID;20:F8:5E:DA:A5:6A;FAN,LSERIES)");
-        // device.setIpAddress("192.168.1.99");
-        // device.setDiscoveryMessage("(Porch Wall Controller;DEVICE;ID;20:F8:5E:DB:98:A7;SWITCH,SENSEME)");
-        // device.setDiscoveryMessage("(Porch Fan;DEVICE;ID;20:F8:5E:DA:A5:AA;FAN,LSERIES)");
-        // device.setIpAddress("192.168.1.98");
-
         Pattern pattern = Pattern.compile("[(](.*);DEVICE;ID;(.*);(.*)[)]");
         Matcher matcher = pattern.matcher(device.getDiscoveryMessage());
         if (matcher.find()) {
@@ -226,22 +218,20 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
 
         try {
             ThingUID uid = new ThingUID(THING_TYPE_FAN, serialNumber);
-            if (uid != null) {
-                // If there's not a thing and it's not in the inbox, create the discovery result
-                if (callback != null && callback.getExistingDiscoveryResult(uid) == null
-                        && callback.getExistingThing(uid) == null) {
+            // If there's not a thing and it's not in the inbox, create the discovery result
+            if (callback != null && callback.getExistingDiscoveryResult(uid) == null
+                    && callback.getExistingThing(uid) == null) {
 
-                    logger.info("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
-                    DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                            .withLabel(device.getLabel()).build();
+                logger.info("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withLabel(device.getLabel()).build();
 
-                    thingDiscovered(result);
-                } else {
-                    logger.debug("Thing or inbox entry already exists for UID={}, IP={}", uid, device.getIpAddress());
-                }
+                thingDiscovered(result);
+            } else {
+                logger.debug("Thing or inbox entry already exists for UID={}, IP={}", uid, device.getIpAddress());
             }
         } catch (Exception e) {
-            logger.warn("Exception creating discovery result: {}", e.getMessage());
+            logger.warn("Exception creating discovery result: {}", e.getMessage(), e);
         }
     }
 
@@ -254,7 +244,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
                 try {
                     discoveryListener.pollForDevices();
                 } catch (Exception e) {
-                    logger.debug("Poll job got unexpected exception: {}", e.getMessage());
+                    logger.error("Poll job got unexpected exception: {}", e.getMessage(), e);
                 }
             }
         }, POLL_DELAY, POLL_FREQ, TimeUnit.SECONDS);

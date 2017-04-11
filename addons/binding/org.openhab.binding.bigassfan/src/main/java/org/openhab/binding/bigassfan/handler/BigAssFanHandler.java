@@ -19,6 +19,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -319,7 +320,6 @@ public class BigAssFanHandler extends BaseThingHandler {
         // Add sample command format <mac;;;ON/OFF>
         if (command instanceof OnOffType) {
             if (command.equals(OnOffType.OFF)) {
-                // FIXME Need command format
                 sendCommand(macAddress, ";LIGHT;SMART;OFF");
             } else if (command.equals(OnOffType.ON)) {
                 sendCommand(macAddress, ";LIGHT;SMART;ON");
@@ -376,24 +376,32 @@ public class BigAssFanHandler extends BaseThingHandler {
     /*
      * Convert from fan range (0-7) and light range (0-16) to dimmer range (0-100).
      */
+
+    private static final double SPEED_CONVERSION_FACTOR = 14.2857;
+    private static final double BRIGHTNESS_CONVERSION_FACTOR = 6.25;
+
     private String convertPercentToSpeed(Command command) {
-        // Produces values 0-7 from dimmer state
-        return String.valueOf((int) Math.round(((PercentType) command).doubleValue() / 14.2857));
+        // Dimmer item will produce PercentType value, which is 0-100
+        // Convert that value to what the fan expects, which is 0-7
+        return String.valueOf((int) Math.round(((PercentType) command).doubleValue() / SPEED_CONVERSION_FACTOR));
     }
 
     private PercentType convertSpeedToPercent(String speed) {
-        // Produces dimmer state from values 0-7
-        return new PercentType((int) Math.round(Integer.parseInt(speed) * 14.2857));
+        // Fan will supply fan speed value in range of 0-7
+        // Convert that value to a PercentType in range 0-100, which is what Dimmer item expects
+        return new PercentType((int) Math.round(Integer.parseInt(speed) * SPEED_CONVERSION_FACTOR));
     }
 
     private String convertPercentToLevel(Command command) {
-        // Produces values 0-16 from dimmer state
-        return String.valueOf((int) Math.round(((PercentType) command).doubleValue() / 6.25));
+        // Dimmer item will produce PercentType value, which is 0-100
+        // Convert that value to what the light expects, which is 0-16
+        return String.valueOf((int) Math.round(((PercentType) command).doubleValue() / BRIGHTNESS_CONVERSION_FACTOR));
     }
 
     private PercentType convertLevelToPercent(String level) {
-        // Produces dimmer state from values 0-16
-        return new PercentType((int) Math.round(Integer.parseInt(level) * 6.25));
+        // Light will supply brightness value in range of 0-16
+        // Convert that value to a PercentType in range 0-100, which is what Dimmer item expects
+        return new PercentType((int) Math.round(Integer.parseInt(level) * BRIGHTNESS_CONVERSION_FACTOR));
     }
 
     /*
@@ -442,7 +450,7 @@ public class BigAssFanHandler extends BaseThingHandler {
 
     private void markOfflineWithMessage(ThingStatusDetail statusDetail, String statusMessage) {
         // If it's offline with no detail or if it's not offline, mark it offline with detailed status
-        if ((isOffline() && getDetail().equals(ThingStatusDetail.NONE)) || !isOffline()) {
+        if ((isOffline() && getDetail() == ThingStatusDetail.NONE) || !isOffline()) {
             logger.debug("Changing status of {} from {}({}) to OFFLINE({})", thingID(), getStatus(), getDetail(),
                     statusDetail);
             updateStatus(ThingStatus.OFFLINE, statusDetail, statusMessage);
@@ -489,7 +497,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 try {
                     listener();
                 } catch (Exception e) {
-                    logger.warn("FanListener had unhandled exception: ", e.getMessage());
+                    logger.warn("FanListener had unhandled exception: ", e.getMessage(), e);
                 }
             }
         };
@@ -535,16 +543,13 @@ public class BigAssFanHandler extends BaseThingHandler {
             try {
                 buffer = command.getBytes(CHARSET);
             } catch (UnsupportedEncodingException e) {
-                logger.warn("Unable to convert to string using {} charset: {}", CHARSET, e.getMessage());
+                logger.warn("Unable to convert to string using {} charset: {}", CHARSET, e.getMessage(), e);
                 return;
             }
             try {
                 conn.write(buffer);
             } catch (IOException e) {
-                logger.warn("IO exception writing message to socket: {}", e.getMessage());
-                conn.disconnect();
-            } catch (Exception e) {
-                logger.warn("Unexpected exception writing message to socket: {}", e.getMessage());
+                logger.warn("IO exception writing message to socket: {}", e.getMessage(), e);
                 conn.disconnect();
             }
         }
@@ -552,46 +557,16 @@ public class BigAssFanHandler extends BaseThingHandler {
         private void listener() {
             logger.debug("Fan listener thread is running");
 
-            // XXX Uncomment for testing
-            // testListener();
-
             while (!terminate) {
                 try {
                     // Wait for a message
                     processMessage(waitForMessage());
                 } catch (IOException ioe) {
-                    logger.warn("Listener got IO exception waiting for message: {}", ioe.getMessage());
-                    break;
-                } catch (Exception e) {
-                    logger.warn("Listener got unexpected exception waiting for message: {}", e.getMessage());
+                    logger.warn("Listener got IO exception waiting for message: {}", ioe.getMessage(), ioe);
                     break;
                 }
             }
             logger.debug("Fan listener thread is exiting");
-        }
-
-        @SuppressWarnings("unused")
-        private void testListener() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("(20:F8:5E:DA:A5:6A;FAN;PWR;ON)");
-            sb.append("(20:F8:5E:DA:A5:6A;FAN;SPD;ACTUAL;5)");
-            sb.append("(20:F8:5E:DA:A5:6A;FAN;DIR;REV)");
-            sb.append("(20:F8:5E:DA:A5:6A;LIGHT;LEVEL;ACTUAL;12)");
-            sb.append("(20:F8:5E:DA:A5:6A;LIGHT;PWR;OFF)");
-            sb.append("(20:F8:5E:DA:A5:6A;TIME;VALUE;2017-03-26T14:06:27Z)");
-            sb.append("(20:F8:5E:DA:A5:6A;SNSROCC;STATUS;OCCUPIED)");
-
-            logger.debug("FanListener TEST STARTING WITH {}", sb.toString());
-            Scanner scanner = new Scanner(sb.toString());
-            scanner.useDelimiter("[)]");
-            String m1;
-            while (scanner.hasNext()) {
-                m1 = scanner.next();
-                logger.debug("FanListener TEST TOKEN: {}", m1);
-                processMessage(m1);
-            }
-            scanner.close();
-            logger.debug("FanListener TEST COMPLETE");
         }
 
         private String waitForMessage() throws IOException {
@@ -609,15 +584,8 @@ public class BigAssFanHandler extends BaseThingHandler {
         }
 
         private String readMessage() {
-            String message;
-            try {
-                logger.debug("Waiting for message from fan at {}", ipAddress);
-                message = conn.read();
-            } catch (Exception e) {
-                logger.warn("Got exception waiting for next token: {}", e.getMessage());
-                conn.disconnect();
-                return null;
-            }
+            logger.debug("Waiting for message from fan at {}", ipAddress);
+            String message = conn.read();
             logger.debug("FanListener received message of length {}: {}", message.length(), message);
             return message;
         }
@@ -641,58 +609,59 @@ public class BigAssFanHandler extends BaseThingHandler {
 
             // Check to make sure it is my MAC address or my label
             if (!isMe(messageParts[0])) {
-                logger.trace("Message not for me: {} - {}", messageParts[0].toUpperCase(), macAddress.toUpperCase());
+                logger.trace("Message not for me: {} - {}", messageParts[0], macAddress);
                 return;
             }
 
             logger.debug("Message is for me!!!  Process the message: {}", message);
-            if (StringUtils.containsIgnoreCase(message, ";FAN;PWR;")) {
+            String messageUpperCase = message.toUpperCase();
+            if (messageUpperCase.contains(";FAN;PWR;")) {
                 updateFanPower(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";FAN;SPD;ACTUAL;")) {
+            } else if (messageUpperCase.contains(";FAN;SPD;ACTUAL;")) {
                 updateFanSpeed(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";FAN;DIR;")) {
+            } else if (messageUpperCase.contains(";FAN;DIR;")) {
                 updateFanDirection(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";FAN;AUTO;")) {
+            } else if (messageUpperCase.contains(";FAN;AUTO;")) {
                 updateFanAuto(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";FAN;WHOOSH;STATUS;")) {
+            } else if (messageUpperCase.contains(";FAN;WHOOSH;STATUS;")) {
                 updateFanWhoosh(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";SMARTMODE;ACTUAL;")) {
+            } else if (messageUpperCase.contains(";SMARTMODE;ACTUAL;")) {
                 updateFanSmartmode(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";FAN;SPD;MIN;")) {
+            } else if (messageUpperCase.contains(";FAN;SPD;MIN;")) {
                 updateFanSpeedMin(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";FAN;SPD;MAX;")) {
+            } else if (messageUpperCase.contains(";FAN;SPD;MAX;")) {
                 updateFanSpeedMax(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";LIGHT;PWR;")) {
+            } else if (messageUpperCase.contains(";LIGHT;PWR;")) {
                 updateLightPower(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";LIGHT;LEVEL;ACTUAL;")) {
+            } else if (messageUpperCase.contains(";LIGHT;LEVEL;ACTUAL;")) {
                 updateLightLevel(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";LIGHT;AUTO;")) {
+            } else if (messageUpperCase.contains(";LIGHT;AUTO;")) {
                 updateLightAuto(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";SMARTERLIGHTING;")) {
-                // FIXME Find string to match on
+            } else if (messageUpperCase.contains(";TBDSMARTERLIGHTING;")) {
+                // FIXME Still need to reverse engineer fan protocol to get this command format
                 updateLightSmarter(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";LIGHT;LEVEL;MIN;")) {
+            } else if (messageUpperCase.contains(";LIGHT;LEVEL;MIN;")) {
                 updateLightLevelMin(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";LIGHT;LEVEL;MAX;")) {
+            } else if (messageUpperCase.contains(";LIGHT;LEVEL;MAX;")) {
                 updateLightLevelMax(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";SNSROCC;STATUS;")) {
+            } else if (messageUpperCase.contains(";SNSROCC;STATUS;")) {
                 updateMotion(messageParts);
 
-            } else if (StringUtils.containsIgnoreCase(message, ";TIME;VALUE;")) {
+            } else if (messageUpperCase.contains(";TIME;VALUE;")) {
                 updateTime(messageParts);
 
             } else {
@@ -715,7 +684,9 @@ public class BigAssFanHandler extends BaseThingHandler {
         private void updateFanPower(String[] messageParts) {
             logger.debug("Process fan power update (ON/OFF)");
             if (messageParts.length != 4) {
-                logger.debug("FAN;PWR has unexpected number of parameters: {}", Arrays.toString(messageParts));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("FAN;PWR has unexpected number of parameters: {}", Arrays.toString(messageParts));
+                }
                 return;
             }
             OnOffType state = messageParts[3].toUpperCase().equals("ON") ? OnOffType.ON : OnOffType.OFF;
@@ -891,7 +862,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 DateTimeType state = new DateTimeType(cal);
                 updateChannel(CHANNEL_TIME, state);
                 fanStateMap.put(CHANNEL_TIME, state);
-            } catch (Exception e) {
+            } catch (DateTimeParseException e) {
                 logger.info("Failed to parse date received from fan:{}", messageParts[3]);
             }
         }
@@ -933,11 +904,10 @@ public class BigAssFanHandler extends BaseThingHandler {
                 logger.debug("Handler using address {} on network interface {}", ifAddress.getHostAddress(),
                         NetworkInterface.getByInetAddress(ifAddress).getName());
             } catch (UnknownHostException e) {
-                logger.warn("Handler got UnknownHostException getting local IPv4 network interface: {}",
-                        e.getMessage());
+                logger.warn("Handler got UnknownHostException getting local IPv4 net interface: {}", e.getMessage(), e);
                 markOfflineWithMessage(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No suitable network interface");
             } catch (SocketException e) {
-                logger.warn("Handler got SocketException getting local IPv4 network interface: {}", e.getMessage());
+                logger.warn("Handler got SocketException getting local IPv4 network interface: {}", e.getMessage(), e);
                 markOfflineWithMessage(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No suitable network interface");
             }
         }
@@ -958,8 +928,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 fanSocket.bind(new InetSocketAddress(ifAddress, 0));
                 fanSocket.connect(new InetSocketAddress(ipAddress, BAF_PORT), SOCKET_CONNECT_TIMEOUT);
             } catch (IOException e) {
-                logger.warn("IOException connecting to fan thing {} at IP {}, exception={}", thingID(), ipAddress,
-                        e.getMessage());
+                logger.info("IOException connecting to fan thing {} at {}: {}", thingID(), ipAddress, e.getMessage());
                 markOfflineWithMessage(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 disconnect();
                 return;
@@ -971,8 +940,8 @@ public class BigAssFanHandler extends BaseThingHandler {
                 fanScanner = new Scanner(fanSocket.getInputStream());
                 fanScanner.useDelimiter("[)]");
             } catch (IOException e) {
-                logger.warn("IOException getting streams for thing {} at {}, exception={}", thingID(), ipAddress,
-                        e.getMessage());
+                logger.warn("IOException getting streams for thing {} at {}: {}", thingID(), ipAddress, e.getMessage(),
+                        e);
                 markOfflineWithMessage(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 disconnect();
                 return;
@@ -999,7 +968,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                     fanSocket.close();
                 }
             } catch (IOException e) {
-                logger.warn("IOException closing connection to fan at IP {}: {}", thingID(), ipAddress, e.getMessage());
+                logger.warn("IOException closing fan connection at IP {}: {}", thingID(), ipAddress, e.getMessage(), e);
             }
             deviceIsConnected = false;
             fanSocket = null;

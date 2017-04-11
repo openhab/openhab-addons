@@ -58,31 +58,29 @@ public class DiscoveryListener {
             bcastBuffer = POLL_MESSAGE.getBytes(CHARSET);
             bcastPacket = new DatagramPacket(bcastBuffer, bcastBuffer.length, bcastAddress, BAF_PORT);
         } catch (UnknownHostException uhe) {
-            logger.warn("UnknownHostException sending poll request for fans: {}", uhe.getMessage());
+            logger.warn("UnknownHostException sending poll request for fans: {}", uhe.getMessage(), uhe);
         } catch (UnsupportedEncodingException e) {
-            logger.warn("Unable to convert buffer to string using {} charset", CHARSET);
-        } catch (Exception e) {
-            logger.warn("Unexpected exception getting UDP socket: {}", e.getMessage());
+            logger.warn("Unable to convert buffer to string using {} charset", CHARSET, e);
         }
     }
 
-    public BigAssFanDevice waitForMessage() throws IOException {
-        try {
-            // Wait to receive a packet
-            rcvPacket.setLength(rcvBuffer.length);
-            dSocket.receive(rcvPacket);
+    public BigAssFanDevice waitForMessage() throws IOException, SocketTimeoutException {
+        // try {
+        // Wait to receive a packet
+        rcvPacket.setLength(rcvBuffer.length);
+        dSocket.receive(rcvPacket);
 
-            // Process the received packet
-            device.reset();
-            device.setIpAddress(rcvPacket.getAddress().getHostAddress());
-            String message = (new String(rcvBuffer, 0, rcvPacket.getLength()));
-            device.setDiscoveryMessage(message);
-            logger.debug("RECEIVED packet of length {} from {}: {}", message.length(), device.getIpAddress(), message);
+        // Process the received packet
+        device.reset();
+        device.setIpAddress(rcvPacket.getAddress().getHostAddress());
+        String message = (new String(rcvBuffer, 0, rcvPacket.getLength()));
+        device.setDiscoveryMessage(message);
+        logger.debug("RECEIVED packet of length {} from {}: {}", message.length(), device.getIpAddress(), message);
 
-        } catch (SocketTimeoutException ste) {
-            // Timed out on UDP socket read
-            return null;
-        }
+        // } catch (SocketTimeoutException ste) {
+        // // Timed out on UDP socket read
+        // return null;
+        // }
         return device;
     }
 
@@ -96,9 +94,7 @@ public class DiscoveryListener {
         try {
             dSocket.send(bcastPacket);
         } catch (IOException ioe) {
-            logger.warn("IOException sending poll request for fans: {}", ioe.getMessage());
-        } catch (Exception e) {
-            logger.warn("Unexpected exception sending poll request for fans: {}", e.getMessage());
+            logger.warn("IOException sending poll request for fans: {}", ioe.getMessage(), ioe);
         }
     }
 
