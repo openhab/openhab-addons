@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.openhab.io.hueemulation;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Activator: org.openhab.io.hueemulation.internal.HueActivator
 Bundle-ClassPath: .
 Import-Package: com.google.gson,
  javax.servlet,
@@ -20,6 +21,7 @@ Import-Package: com.google.gson,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.transform,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.rest,
  org.osgi.framework,
