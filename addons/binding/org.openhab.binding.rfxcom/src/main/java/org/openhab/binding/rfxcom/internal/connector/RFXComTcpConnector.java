@@ -39,6 +39,7 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
     public void connect(RFXComBridgeConfiguration device) throws IOException {
         logger.info("Connecting to RFXCOM at {}:{} over TCP/IP", device.host, device.port);
         socket = new Socket(device.host, device.port);
+        socket.setSoTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
         in = socket.getInputStream();
         out = socket.getOutputStream();
 
@@ -58,6 +59,9 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
         if (readerThread != null) {
             logger.debug("Interrupt stream listener");
             readerThread.interrupt();
+            try {
+                readerThread.join();
+            } catch (InterruptedException e) {}
         }
 
         if (out != null) {
