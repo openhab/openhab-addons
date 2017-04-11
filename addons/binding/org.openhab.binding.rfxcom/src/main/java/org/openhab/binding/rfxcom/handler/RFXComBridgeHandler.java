@@ -78,7 +78,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         logger.debug("Handler disposed.");
 
         for (DeviceMessageListener deviceStatusListener : deviceStatusListeners) {
@@ -139,7 +139,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         responseMessage = respMessage;
     }
 
-    private void connect() {
+    private synchronized void connect() {
         logger.debug("Connecting to RFXCOM transceiver");
 
         try {
