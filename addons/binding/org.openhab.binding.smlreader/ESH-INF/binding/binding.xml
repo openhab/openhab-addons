@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="smlreader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>SmlReader Binding</name>
+	<description>
+	            SML is a communication protocol for transmitting meter data for so called smart meters. SML is similar to XML with regard to its ability to nest information tags within other tags. But the standard way of coding SML packets is in a more efficient binary format that is similar but not equal to BER encoding. Also the specification comes in a form that is similar to ASN.1 but not completely standards compliant.
+                To decode SML messages, the binding takes advantage of jSML library by Fraunhofer Institute.
+    </description>
+	<author>Matthias Steigenberger</author>
+
+</binding:binding>

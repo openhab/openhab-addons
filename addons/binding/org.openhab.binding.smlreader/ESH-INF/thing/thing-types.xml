@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smlreader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="meter">
+		<label>Meter device</label>
+		<description>The meter device to read the SML</description>
+
+		<config-description>
+			<parameter name="port" type="text">
+				<label>Connected serial port</label>
+				<description>The device serial port (e.g. /dev/tty0 or COM1)</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Rate</label>
+				<description>Refresh rate in seconds</description>
+				<default>20</default>
+				<required>true</required>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="NumberChannel">
+		<item-type>Number</item-type>
+		<label>Number obis</label>
+		<state readOnly="true" />
+		<config-description>
+			<parameter name="conversionRatio" type="decimal">
+				<label>Conversion ratio</label>
+				<description>An quotient to use for conversion of the number</description>
+				<default>1.0</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="StringChannel">
+		<item-type>String</item-type>
+		<label>String obis</label>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>
