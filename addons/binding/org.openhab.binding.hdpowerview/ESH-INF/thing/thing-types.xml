@@ -23,6 +23,9 @@
     </bridge-type>
     
     <thing-type id="shade">
+        <supported-bridge-type-refs>
+          <bridge-type-ref id="hub" />
+        </supported-bridge-type-refs>
         <label>PowerView Shade</label>
         <description>Hunter Douglas PowerView Shade</description>
         <channels>
