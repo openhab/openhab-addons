@@ -187,7 +187,7 @@ public class OceanicThingHandler extends BaseThingHandler {
                 readerThread.interrupt();
                 readerThread.join();
             } catch (InterruptedException e) {
-                logger.error("An exception occured while interrupting the serial port reader thread : {}",
+                logger.error("An exception occurred while interrupting the serial port reader thread : {}",
                         e.getMessage(), e);
             }
         }
