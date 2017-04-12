@@ -57,8 +57,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * Handler for the Mi|Home Gateway (MIHO001).
- * The gateway is a central communication hub between the individual devices.
+ * Handler for the Mi|Home Gateway (MIHO001). The gateway is a central
+ * communication hub between the individual devices.
  *
  * @author Mihaela Memova - Initial contribution
  * @author Svilen Valkanov - Added methods to get information about subdevices
@@ -78,12 +78,12 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     private static final int INITIAL_REFRESH_DELAY_SECONDS = 10;
 
     /**
-     * The longest allowed inactive time interval (in seconds) of the gateway device.
-     * After that interval, if the gateway is still inactive, the thing goes offline.
-     * If a gateway is active or not is determined by its 'last_seen' property.
+     * The longest allowed inactive time interval (in seconds) of the gateway
+     * device. After that interval, if the gateway is still inactive, the thing
+     * goes offline. If a gateway is active or not is determined by its
+     * 'last_seen' property.
      */
     private static final int MAXIMUM_INACTIVE_PERIOD_SECONDS = 120;
-
 
     /** Pattern used to check if a given String represents an email address */
     public static final String EMAIL_PATTERN = ".+.*@.+.*(\\.[-A-Za-z]{2,})";
@@ -97,7 +97,10 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     /** user's password */
     private String password;
 
-    /** Gateway code (10 capital letters and numbers) written at the bottom of the gateway device */
+    /**
+     * Gateway code (10 capital letters and numbers) written at the bottom of
+     * the gateway device
+     */
     private String gatewayCode;
 
     /** ID of the gateway device (received after registration) */
@@ -143,7 +146,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
         logger.debug("Initializing MiHomeGatewayHandler...");
         Configuration config = getConfig();
         if (verifyThingConfiguration(config)) {
-            createApiManager();
+            apiManager = createApiManager(registrationEmailAddress, password, RestClient.DEFAULT_REQUEST_TIMEOUT);
             if (!isGatewayThingAlreadyRegistered(thing)) {
                 logger.debug("About to register a new gateway");
                 registerNewGateway();
@@ -155,10 +158,12 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
         }
     }
 
-    /** Checks if there is already a registered thing for a given gateway device */
+    /**
+     * Checks if there is already a registered thing for a given gateway device
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private boolean isGatewayThingAlreadyRegistered(Thing thing) {
-        ServiceReference ref = bundleContext.getServiceReference(ThingRegistry.class);
+        ServiceReference ref = bundleContext.getServiceReference(ThingRegistry.class.getName());
         thingRegistry = (ThingRegistry) bundleContext.getService(ref);
         Collection<Thing> things = thingRegistry.getAll();
         for (Thing registeredThing : things) {
@@ -193,7 +198,10 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
             this.updateTaskResult.cancel(true);
             this.updateTaskResult = null;
         }
-        /** The refresh thread which is used for checking the "last_seen_at" property of the gateway */
+        /**
+         * The refresh thread which is used for checking the "last_seen_at"
+         * property of the gateway
+         */
         Runnable refreshRunnable = new Runnable() {
             @Override
             public void run() {
@@ -216,9 +224,9 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     public void checkGateway() {
         Long timeInterval = null;
         /*
-         * Mi|Home REST API does not provide a method for showing a gateway's information.
-         * So in order to check when was the last time it was seen you need to list all
-         * gateways and find the one you want by its id.
+         * Mi|Home REST API does not provide a method for showing a gateway's
+         * information. So in order to check when was the last time it was seen
+         * you need to list all gateways and find the one you want by its id.
          */
         JsonObject gateway = getGatewayById(gatewayId);
         if (gateway != null) {
@@ -253,12 +261,17 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Calculates the difference (in seconds) between two datetime stamps given as Strings
+     * Calculates the difference (in seconds) between two datetime stamps given
+     * as Strings
      *
-     * @param currentDateTime - current datetime stamp
-     * @param previousDateTime - previous datetime stamp
-     * @return the time that has elapsed between previousDateTime and currentDateTime (in seconds)
-     * @throws ParseException - if any of the date Strings cannot be parsed correctly
+     * @param currentDateTime
+     *            - current datetime stamp
+     * @param previousDateTime
+     *            - previous datetime stamp
+     * @return the time that has elapsed between previousDateTime and
+     *         currentDateTime (in seconds)
+     * @throws ParseException
+     *             - if any of the date Strings cannot be parsed correctly
      */
     private Long getTimeInterval(String currentDateTime, String previousDateTime) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN);
@@ -270,10 +283,13 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Searches in the list of all registered gateways and find the one with the given id
+     * Searches in the list of all registered gateways and find the one with the
+     * given id
      *
-     * @param id - the id of the searched gateway
-     * @return the gateway with the given id if it is registered or null if it is not
+     * @param id
+     *            - the id of the searched gateway
+     * @return the gateway with the given id if it is registered or null if it
+     *         is not
      */
     private JsonObject getGatewayById(int searchedId) {
         JsonObject response = apiManager.listGateways();
@@ -286,26 +302,29 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
                         return gateway.getAsJsonObject();
                     }
                 }
+            } else {
+                logger.warn(UNREGISTERED_GATEWAY_MESSAGE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNREGISTERED_GATEWAY_MESSAGE);
+                setGatewayAlreadyUnregistered(true);
+                return null;
             }
-            logger.warn(UNREGISTERED_GATEWAY_MESSAGE);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNREGISTERED_GATEWAY_MESSAGE);
-            setGatewayAlreadyUnregistered(true);
-            return null;
         }
         return null;
     }
 
     /**
      * Configures the {@link #apiManager}
+     *
+     * @return
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void createApiManager() {
-        logger.debug("Creating API Manager for user: " + registrationEmailAddress);
+    private MiHomeApiManager createApiManager(String username, String password, int connectionTimeout) {
+        logger.debug("Creating API Manager for user: " + username);
         ServiceReference ref = bundleContext.getServiceReference(RestClient.class.getName());
         RestClient client = (RestClient) bundleContext.getService(ref);
 
         MiHomeApiConfiguration restConfig = new MiHomeApiConfiguration(registrationEmailAddress, password);
-        client.setConnectionTimeout(RestClient.DEFAULT_REQUEST_TIMEOUT);
+        client.setConnectionTimeout(connectionTimeout);
 
         ThingCallback callback = new ThingCallback() {
 
@@ -325,7 +344,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
             }
         };
         FailingRequestHandler handler = new FailingRequestHandlerImpl(callback);
-        apiManager = new MiHomeApiManagerImpl(restConfig, client, handler);
+        return new MiHomeApiManagerImpl(restConfig, client, handler);
     }
 
     public MiHomeApiManager getMiHomeApiManager() {
@@ -333,9 +352,11 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Checks if the thing configuration is valid. Update the thing status if it is not.
+     * Checks if the thing configuration is valid. Update the thing status if it
+     * is not.
      *
-     * @param config thing's configuration to validate
+     * @param config
+     *            thing's configuration to validate
      * @return true if it is valid, false - otherwise
      */
     private boolean verifyThingConfiguration(Configuration config) {
@@ -372,8 +393,10 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     /**
      * Verify whether a given text matches a certain pattern
      *
-     * @param text - string to check
-     * @param patternToMatch - pattern to match
+     * @param text
+     *            - string to check
+     * @param patternToMatch
+     *            - pattern to match
      * @return true if the text matches the pattern, false - otherwise
      */
     private boolean isTextMatchingPattern(String text, String patternToMatch) {
@@ -385,7 +408,8 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     /**
      * Sets the thing properties
      *
-     * @param dataObj - JSON object containing all the needed information
+     * @param dataObj
+     *            - JSON object containing all the needed information
      */
     private void setProperties(JsonObject dataObj) {
         logger.debug("Setting the thing properties...");
@@ -403,12 +427,17 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Gets the property values from the device information one by one and puts them in the map
+     * Gets the property values from the device information one by one and puts
+     * them in the map
      *
-     * @param dataObj - JSON data object which the properties should be get from
-     * @param devicePropertyToGet - the specific property to get from the data
-     * @param mapToPut - a map where the taken property will be put
-     * @param thingPropertyToSet - name of the property that is put in the map
+     * @param dataObj
+     *            - JSON data object which the properties should be get from
+     * @param devicePropertyToGet
+     *            - the specific property to get from the data
+     * @param mapToPut
+     *            - a map where the taken property will be put
+     * @param thingPropertyToSet
+     *            - name of the property that is put in the map
      */
     private void setProperty(JsonObject dataObj, String devicePropertyToGet, Map<String, String> mapToPut,
             String thingPropertyToSet) {
@@ -431,8 +460,8 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     @Override
     public void thingUpdated(Thing thing) {
         /*
-         * The default behavior is not wanted here because disposing and initializing the
-         * handler would result in a new device id.
+         * The default behavior is not wanted here because disposing and
+         * initializing the handler would result in a new device id.
          */
         String newLabel = thing.getLabel();
         if (!gatewayLabel.equals(newLabel)) {
@@ -451,12 +480,13 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
         config.put(MiHomeBindingConstants.CONFIG_GATEWAY_CODE, gatewayCode);
         password = configurationParameters.get(MiHomeBindingConstants.CONFIG_PASSWORD).toString();
         config.put(MiHomeBindingConstants.CONFIG_PASSWORD, password);
-        BigDecimal updateInterval = ((BigDecimal)configurationParameters.get(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL));
+        BigDecimal updateInterval = ((BigDecimal) configurationParameters
+                .get(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL));
         config.put(MiHomeBindingConstants.CONFIG_UPDATE_ITNERVAL, updateInterval);
         this.updateInterval = updateInterval.longValue();
         updateConfiguration(config);
         if (verifyThingConfiguration(thing.getConfiguration())) {
-            createApiManager();
+            apiManager = createApiManager(registrationEmailAddress, password, RestClient.DEFAULT_REQUEST_TIMEOUT);
             registerNewGateway();
             scheduleUpdateTask(this.updateInterval);
         }
@@ -486,7 +516,8 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     /**
      * Lists all available subdevices registered on the Mi|Home servers
      *
-     * @return array with subdevices or null if no devices are registered or the request isn't successful
+     * @return array with subdevices or null if no devices are registered or the
+     *         request isn't successful
      */
     public JsonArray listSubdevices() {
         JsonObject response = apiManager.listSubdevices();
@@ -498,12 +529,16 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Initializes the pairing process between subdevice and a gateway. Depending on the device the pairing could be
-     * initialized before or after pushing the pairing button on the device.
+     * Initializes the pairing process between subdevice and a gateway.
+     * Depending on the device the pairing could be initialized before or after
+     * pushing the pairing button on the device.
      *
-     * @param gatewayID - the ID of the gateway
-     * @param deviceType - the device type, see {@link DeviceTypesConstants}
-     * @return - true if the paring was initialized or false if the request isn't successful
+     * @param gatewayID
+     *            - the ID of the gateway
+     * @param deviceType
+     *            - the device type, see {@link DeviceTypesConstants}
+     * @return - true if the paring was initialized or false if the request
+     *         isn't successful
      */
     public boolean initializePairing(int gatewayID, String deviceType) {
         JsonObject response = apiManager.registerSubdevice(gatewayID, deviceType);
@@ -512,11 +547,13 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Sends a request to the Mi|Home server to unregister a subdevice. A success unfortunately doesn't guarantee that
-     * the device will be unregistered. If the connection to the gateway is lost the request will be successful, but it
-     * won't be completed when the connection is resumed
+     * Sends a request to the Mi|Home server to unregister a subdevice. A
+     * success unfortunately doesn't guarantee that the device will be
+     * unregistered. If the connection to the gateway is lost the request will
+     * be successful, but it won't be completed when the connection is resumed
      *
-     * @param subdeviceID - the ID of the subdevice to unregister
+     * @param subdeviceID
+     *            - the ID of the subdevice to unregister
      * @return - true if the request is sent or false if it has failed
      */
     public boolean unregisterSubdevice(int subdeviceID) {
@@ -527,8 +564,10 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     /**
      * Gets a data for a subdevice
      *
-     * @param subdeviceID - the ID of the subdevice
-     * @return JsonObject containing the requested data or null if the request isn't successful
+     * @param subdeviceID
+     *            - the ID of the subdevice
+     * @return JsonObject containing the requested data or null if the request
+     *         isn't successful
      */
     public JsonObject getSubdeviceData(int subdeviceID) {
         JsonObject response = apiManager.showSubdeviceInfo(subdeviceID);
@@ -542,8 +581,10 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     /**
      * Updates a label of the subdevice in the MiHome API
      *
-     * @param subdeviceID - the ID of the subdevice to update
-     * @param newLabel - the new label
+     * @param subdeviceID
+     *            - the ID of the subdevice to update
+     * @param newLabel
+     *            - the new label
      * @return null if the request was not successful, otherwise device data
      */
     public JsonObject updateSubdevice(int subdeviceID, String newLabel) {

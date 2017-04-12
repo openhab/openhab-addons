@@ -8,17 +8,22 @@
  */
 package org.openhab.binding.mihome.internal.api;
 
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.openhab.binding.mihome.internal.api.constants.JSONResponseConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
- * Contains some common methods which are used for processing the server's response
+ * Contains some common methods which are used for processing the server's
+ * response
  *
  * @author Mihaela Memova - Initial contribution
  *
@@ -36,7 +41,7 @@ public class JSONResponseHandler {
                 JsonParser parser = new JsonParser();
                 return (JsonObject) parser.parse(jsonResponse);
             } catch (JsonParseException e) {
-                logger.error("An error occurred while trying to parse the JSON response: ",jsonResponse, e);
+                logger.error("An error occurred while trying to parse the JSON response: ", jsonResponse, e);
                 return null;
             }
         }
@@ -68,9 +73,9 @@ public class JSONResponseHandler {
     }
 
     /**
-     * Returns the error message of the data when the request was not successful.
-     * Depending on the reason, it is saved either in the "message" property or the "errors"
-     * property
+     * Returns the error message of the data when the request was not
+     * successful. Depending on the reason, it is saved either in the "message"
+     * property or the "errors" property
      */
     public static String getErrorMessageFromResponse(JsonObject responseData) {
         JsonElement message = responseData.get(JSONResponseConstants.RESPONSE_MESSAGE_KEY);
@@ -79,8 +84,23 @@ public class JSONResponseHandler {
             return message.toString();
         }
         if (error != null) {
-            return error.getAsString();
+            return getAllErrors(error);
         }
         return null;
+    }
+
+    private static String getAllErrors(JsonElement error) {
+        StringBuilder allErrors = new StringBuilder();
+        Set<Entry<String, JsonElement>> errorsEntrySet = error.getAsJsonObject().entrySet();
+        for (Entry<String, JsonElement> entry : errorsEntrySet) {
+            String errorKey = entry.getKey();
+            JsonArray errorMessagesArray = entry.getValue().getAsJsonArray();
+            for (JsonElement message : errorMessagesArray) {
+                allErrors.append(errorKey);
+                allErrors.append(message.getAsString());
+                allErrors.append("\n");
+            }
+        }
+        return allErrors.toString();
     }
 }

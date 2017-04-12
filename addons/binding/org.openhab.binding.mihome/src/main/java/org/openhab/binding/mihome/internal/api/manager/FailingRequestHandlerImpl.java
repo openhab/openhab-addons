@@ -75,11 +75,8 @@ public class FailingRequestHandlerImpl implements FailingRequestHandler {
 
             case JSONResponseConstants.RESPONSE_VALIDATION_ERROR:
                 logger.error("A resource could not be created/updated/removed due to a validation error");
-                // in this case the error message from the Mi|Home API's response is not well-formatted so we create a
-                // custom message
-                String customErrorMessage = "The gateway code was not recognized. Please ensure that the device is connected to the network";
                 callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        customErrorMessage);
+                        errorMessage);
                 break;
         }
     }
