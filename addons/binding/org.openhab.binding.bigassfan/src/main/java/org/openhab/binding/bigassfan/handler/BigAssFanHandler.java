@@ -648,10 +648,6 @@ public class BigAssFanHandler extends BaseThingHandler {
             } else if (messageUpperCase.contains(";LIGHT;AUTO;")) {
                 updateLightAuto(messageParts);
 
-            } else if (messageUpperCase.contains(";TBDSMARTERLIGHTING;")) {
-                // FIXME Still need to reverse engineer fan protocol to get this command format
-                updateLightSmarter(messageParts);
-
             } else if (messageUpperCase.contains(";LIGHT;LEVEL;MIN;")) {
                 updateLightLevelMin(messageParts);
 
@@ -804,19 +800,8 @@ public class BigAssFanHandler extends BaseThingHandler {
             fanStateMap.put(CHANNEL_LIGHT_AUTO, state);
         }
 
-        private void updateLightSmarter(String[] messageParts) {
-            logger.debug("Process smarter lighting update (ON/OFF): NOT IMPLEMENTED YET");
-            if (messageParts.length != 5) {
-                logger.debug("Smartmode has unexpected number of parameters: {}", Arrays.toString(messageParts));
-                return;
-            }
-            OnOffType state = messageParts[3].toUpperCase().equals("ON") ? OnOffType.ON : OnOffType.OFF;
-            updateChannel(CHANNEL_FAN_SMARTMODE, state);
-            fanStateMap.put(CHANNEL_FAN_SMARTMODE, state);
-        }
-
         private void updateLightLevelMin(String[] messageParts) {
-            logger.debug("Process fan speed min update: NOT IMPLEMENTED YET");
+            logger.debug("Process fan speed min update");
             if (messageParts.length != 5) {
                 logger.debug("LightLevelMin has unexpected number of parameters: {}", Arrays.toString(messageParts));
                 return;
@@ -827,7 +812,7 @@ public class BigAssFanHandler extends BaseThingHandler {
         }
 
         private void updateLightLevelMax(String[] messageParts) {
-            logger.debug("Process fan speed max update: NOT IMPLEMENTED YET");
+            logger.debug("Process fan speed max update");
             if (messageParts.length != 5) {
                 logger.debug("LightLevelMax has unexpected number of parameters: {}", Arrays.toString(messageParts));
                 return;

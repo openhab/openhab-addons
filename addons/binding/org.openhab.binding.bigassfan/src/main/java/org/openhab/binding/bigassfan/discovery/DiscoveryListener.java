@@ -65,7 +65,6 @@ public class DiscoveryListener {
     }
 
     public BigAssFanDevice waitForMessage() throws IOException, SocketTimeoutException {
-        // try {
         // Wait to receive a packet
         rcvPacket.setLength(rcvBuffer.length);
         dSocket.receive(rcvPacket);
@@ -77,10 +76,6 @@ public class DiscoveryListener {
         device.setDiscoveryMessage(message);
         logger.debug("RECEIVED packet of length {} from {}: {}", message.length(), device.getIpAddress(), message);
 
-        // } catch (SocketTimeoutException ste) {
-        // // Timed out on UDP socket read
-        // return null;
-        // }
         return device;
     }
 

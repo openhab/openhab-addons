@@ -201,7 +201,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
         } else if (device.isFan()) {
             logger.debug("Add fan with IP={}, MAC={}", device.getIpAddress(), device.getMacAddress());
         } else {
-            logger.debug("Discovered unknown device type {} at IP={}", device.getModel(), device.getIpAddress());
+            logger.info("Discovered unknown device type {} at IP={}", device.getModel(), device.getIpAddress());
             return;
         }
 
@@ -240,7 +240,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
                 try {
                     discoveryListener.pollForDevices();
                 } catch (RuntimeException e) {
-                    logger.error("Poll job got unexpected exception: {}", e.getMessage(), e);
+                    logger.warn("Poll job got unexpected exception: {}", e.getMessage(), e);
                 }
             }
         }, POLL_DELAY, POLL_FREQ, TimeUnit.SECONDS);
