@@ -245,7 +245,7 @@ public class EiscpProtocol {
                 String value = new String(Arrays.copyOfRange(data, 5, data.length - endBytes));
                 return new EiscpMessage.MessageBuilder().command(command).value(value).build();
             } catch (Exception e) {
-                throw new EiscpException("Fatal error occured when parsing eISCP message, cause=" + e.getCause());
+                throw new EiscpException("Fatal error occurred when parsing eISCP message, cause=" + e.getCause());
             }
         }
     }
