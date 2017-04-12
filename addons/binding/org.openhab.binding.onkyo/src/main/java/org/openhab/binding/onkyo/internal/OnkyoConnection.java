@@ -69,6 +69,7 @@ public class OnkyoConnection {
     private List<OnkyoEventListener> listeners = new ArrayList<OnkyoEventListener>();
     private int retryCount = 1;
     private ConnectionSupervisor connectionSupervisor = null;
+    private boolean connectionErrorLogging = true;
 
     public OnkyoConnection(String ip) {
         this.ip = ip;
@@ -78,6 +79,11 @@ public class OnkyoConnection {
     public OnkyoConnection(String ip, int port) {
         this.ip = ip;
         this.port = port;
+    }
+
+    public OnkyoConnection(String ip, int port, boolean connectionErrorLogging) {
+        this(ip, port);
+        this.connectionErrorLogging = connectionErrorLogging;
     }
 
     /**
@@ -122,7 +128,7 @@ public class OnkyoConnection {
         try {
             sendCommand(new EiscpMessage.MessageBuilder().command(cmd).value(value).build());
         } catch (Exception e) {
-            logger.error("Could not send command to device on {}: {}", ip + ":" + port, e);
+            logError("Could not send command to device on {}: {}", ip + ":" + port, e);
         }
 
     }
@@ -152,7 +158,7 @@ public class OnkyoConnection {
                 outStream.writeBytes(data);
                 outStream.flush();
             } catch (IOException ioException) {
-                logger.error("Error occurred when sending command: {}", ioException.getMessage());
+                logError("Error occurred when sending command: {}", ioException.getMessage());
 
                 if (retry > 0) {
                     logger.debug("Retry {}...", retry);
@@ -200,9 +206,9 @@ public class OnkyoConnection {
                 }
 
             } catch (UnknownHostException unknownHost) {
-                logger.error("You are trying to connect to an unknown host: {}", unknownHost.getMessage());
+                logError("You are trying to connect to an unknown host: {}", unknownHost.getMessage());
             } catch (IOException ioException) {
-                logger.error("Can't connect: {}", ioException.getMessage());
+                logError("Can't connect: {}", ioException.getMessage());
             }
         }
 
@@ -243,7 +249,7 @@ public class OnkyoConnection {
             }
             connected = false;
         } catch (Exception e) {
-            logger.error("Closing connection throws an exception, {}", e.getMessage());
+            logError("Closing connection throws an exception, {}", e.getMessage());
         }
 
         return connected;
@@ -299,11 +305,11 @@ public class OnkyoConnection {
                     connectionAttempts = 0;
                 } catch (EiscpException e) {
 
-                    logger.error("Error occurred during message waiting: {}", e.getMessage());
+                    logError("Error occurred during message waiting: {}", e.getMessage());
 
                 } catch (SocketTimeoutException e) {
 
-                    logger.error("No data received during supervision interval ({} sec)!", SOCKET_TIMEOUT);
+                    logError("No data received during supervision interval ({} sec)!", SOCKET_TIMEOUT);
 
                     restartConnection = true;
 
@@ -343,7 +349,7 @@ public class OnkyoConnection {
                                 .value(EiscpCommand.POWER_QUERY.getValue()).build());
 
                     } catch (Exception ex) {
-                        logger.error("Reconnection invoking error: {}", ex.getMessage());
+                        logError("Reconnection invoking error: {}", ex.getMessage());
                     }
                 }
             }
@@ -409,6 +415,14 @@ public class OnkyoConnection {
 
         } catch (Exception e) {
             logger.error("Event listener invoking error: {}", e.getMessage());
+        }
+    }
+
+    private void logError(String msg, Object... arguments) {
+        if (connectionErrorLogging) {
+            logger.error(msg, arguments);
+        } else {
+            logger.debug(msg, arguments);
         }
     }
 }

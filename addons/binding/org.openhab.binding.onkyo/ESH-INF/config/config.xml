@@ -33,6 +33,12 @@
 			<default>100</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="connectionErrorLogging" type="boolean">
+            <label>Connection error logging</label>
+            <description>Enable/disable error logging when connection fails to receiver. This is usable when receiver is fully without power e.g. powered off by external socket switch.</description>
+            <default>true</default>
+            <advanced>true</advanced>
+        </parameter>
 	</config-description>
 
 </config-description:config-descriptions>
