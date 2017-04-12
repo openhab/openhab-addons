@@ -404,7 +404,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             } catch (RFXComMessageNotImplementedException e) {
                 logger.debug("Message not supported, data: {}", DatatypeConverter.printHexBinary(packet));
             } catch (RFXComException e) {
-                logger.error("Error occured during packet receiving, data: {}",
+                logger.error("Error occurred during packet receiving, data: {}",
                         DatatypeConverter.printHexBinary(packet), e);
             }
 
