@@ -177,7 +177,7 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         // <mac;FAN;SPD;SET;0..7>
         if (command instanceof PercentType) {
-            sendCommand(macAddress, ";FAN;SPD;SET;".concat(convertPercentToSpeed(command)));
+            sendCommand(macAddress, ";FAN;SPD;SET;".concat(convertPercentToSpeed((PercentType) command)));
         }
     }
 
@@ -242,9 +242,9 @@ public class BigAssFanHandler extends BaseThingHandler {
         // Add sample command format
         if (command instanceof PercentType) {
             // Send min speed set command
-            sendCommand(macAddress, ";FAN;SPD;MIN;".concat(convertPercentToSpeed(command)));
+            sendCommand(macAddress, ";FAN;SPD;MIN;".concat(convertPercentToSpeed((PercentType) command)));
             // Don't let max be less than min
-            adjustMaxSpeed(command);
+            adjustMaxSpeed((PercentType) command);
         }
     }
 
@@ -253,32 +253,32 @@ public class BigAssFanHandler extends BaseThingHandler {
         // Add sample command format
         if (command instanceof PercentType) {
             // Send max speed set command
-            sendCommand(macAddress, ";FAN;SPD;MAX;".concat(convertPercentToSpeed(command)));
+            sendCommand(macAddress, ";FAN;SPD;MAX;".concat(convertPercentToSpeed((PercentType) command)));
             // Don't let min be greater than max
-            adjustMinSpeed(command);
+            adjustMinSpeed((PercentType) command);
         }
     }
 
-    private void adjustMaxSpeed(Command command) {
-        int newMin = ((PercentType) command).intValue();
+    private void adjustMaxSpeed(PercentType command) {
+        int newMin = command.intValue();
         int currentMax = PercentType.ZERO.intValue();
         if (fanStateMap.get(CHANNEL_FAN_SPEED_MAX) != null) {
             currentMax = ((PercentType) fanStateMap.get(CHANNEL_FAN_SPEED_MAX)).intValue();
         }
         if (newMin > currentMax) {
-            updateState(CHANNEL_FAN_SPEED_MAX, (PercentType) command);
+            updateState(CHANNEL_FAN_SPEED_MAX, command);
             sendCommand(macAddress, ";FAN;SPD;MAX;".concat(convertPercentToSpeed(command)));
         }
     }
 
-    private void adjustMinSpeed(Command command) {
-        int newMax = ((PercentType) command).intValue();
+    private void adjustMinSpeed(PercentType command) {
+        int newMax = command.intValue();
         int currentMin = PercentType.HUNDRED.intValue();
         if (fanStateMap.get(CHANNEL_FAN_SPEED_MIN) != null) {
             currentMin = ((PercentType) fanStateMap.get(CHANNEL_FAN_SPEED_MIN)).intValue();
         }
         if (newMax < currentMin) {
-            updateState(CHANNEL_FAN_SPEED_MIN, (PercentType) command);
+            updateState(CHANNEL_FAN_SPEED_MIN, command);
             sendCommand(macAddress, ";FAN;SPD;MIN;".concat(convertPercentToSpeed(command)));
         }
     }
@@ -299,7 +299,7 @@ public class BigAssFanHandler extends BaseThingHandler {
         logger.debug("Handling light level command {}", command.toString());
         // <mac;LIGHT;LEVEL;SET;0..16>
         if (command instanceof PercentType) {
-            sendCommand(macAddress, ";LIGHT;LEVEL;SET;".concat(convertPercentToLevel(command)));
+            sendCommand(macAddress, ";LIGHT;LEVEL;SET;".concat(convertPercentToLevel((PercentType) command)));
         }
     }
 
@@ -316,7 +316,7 @@ public class BigAssFanHandler extends BaseThingHandler {
     }
 
     private void handleLightSmarter(Command command) {
-        logger.debug("Handling smartmode command {}: NOT IMPLEMENTED YET", command.toString());
+        logger.debug("Handling smartmode command {}", command.toString());
         // Add sample command format <mac;;;ON/OFF>
         if (command instanceof OnOffType) {
             if (command.equals(OnOffType.OFF)) {
@@ -332,9 +332,9 @@ public class BigAssFanHandler extends BaseThingHandler {
         // <mac;LIGHT;LEVEL;MIN;0-16>
         if (command instanceof PercentType) {
             // Send min light level set command
-            sendCommand(macAddress, ";LIGHT;LEVEL;MIN;".concat(convertPercentToLevel(command)));
+            sendCommand(macAddress, ";LIGHT;LEVEL;MIN;".concat(convertPercentToLevel((PercentType) command)));
             // Don't let max be less than min
-            adjustMaxLevel(command);
+            adjustMaxLevel((PercentType) command);
         }
     }
 
@@ -343,32 +343,32 @@ public class BigAssFanHandler extends BaseThingHandler {
         // <mac;LIGHT;LEVEL;MAX;0-16>
         if (command instanceof PercentType) {
             // Send max light level set command
-            sendCommand(macAddress, ";LIGHT;LEVEL;MAX;".concat(convertPercentToLevel(command)));
+            sendCommand(macAddress, ";LIGHT;LEVEL;MAX;".concat(convertPercentToLevel((PercentType) command)));
             // Don't let min be greater than max
-            adjustMinLevel(command);
+            adjustMinLevel((PercentType) command);
         }
     }
 
-    private void adjustMaxLevel(Command command) {
-        int newMin = ((PercentType) command).intValue();
+    private void adjustMaxLevel(PercentType command) {
+        int newMin = command.intValue();
         int currentMax = PercentType.ZERO.intValue();
         if (fanStateMap.get(CHANNEL_LIGHT_LEVEL_MAX) != null) {
             currentMax = ((PercentType) fanStateMap.get(CHANNEL_LIGHT_LEVEL_MAX)).intValue();
         }
         if (newMin > currentMax) {
-            updateState(CHANNEL_LIGHT_LEVEL_MAX, (PercentType) command);
+            updateState(CHANNEL_LIGHT_LEVEL_MAX, command);
             sendCommand(macAddress, ";LIGHT;LEVEL;MAX;".concat(convertPercentToLevel(command)));
         }
     }
 
-    private void adjustMinLevel(Command command) {
-        int newMax = ((PercentType) command).intValue();
+    private void adjustMinLevel(PercentType command) {
+        int newMax = command.intValue();
         int currentMin = PercentType.HUNDRED.intValue();
         if (fanStateMap.get(CHANNEL_LIGHT_LEVEL_MIN) != null) {
             currentMin = ((PercentType) fanStateMap.get(CHANNEL_LIGHT_LEVEL_MIN)).intValue();
         }
         if (newMax < currentMin) {
-            updateState(CHANNEL_LIGHT_LEVEL_MIN, (PercentType) command);
+            updateState(CHANNEL_LIGHT_LEVEL_MIN, command);
             sendCommand(macAddress, ";LIGHT;LEVEL;MIN;".concat(convertPercentToLevel(command)));
         }
     }
@@ -376,14 +376,13 @@ public class BigAssFanHandler extends BaseThingHandler {
     /*
      * Convert from fan range (0-7) and light range (0-16) to dimmer range (0-100).
      */
-
     private static final double SPEED_CONVERSION_FACTOR = 14.2857;
     private static final double BRIGHTNESS_CONVERSION_FACTOR = 6.25;
 
-    private String convertPercentToSpeed(Command command) {
+    private String convertPercentToSpeed(PercentType command) {
         // Dimmer item will produce PercentType value, which is 0-100
         // Convert that value to what the fan expects, which is 0-7
-        return String.valueOf((int) Math.round(((PercentType) command).doubleValue() / SPEED_CONVERSION_FACTOR));
+        return String.valueOf((int) Math.round(command.doubleValue() / SPEED_CONVERSION_FACTOR));
     }
 
     private PercentType convertSpeedToPercent(String speed) {
@@ -392,10 +391,10 @@ public class BigAssFanHandler extends BaseThingHandler {
         return new PercentType((int) Math.round(Integer.parseInt(speed) * SPEED_CONVERSION_FACTOR));
     }
 
-    private String convertPercentToLevel(Command command) {
+    private String convertPercentToLevel(PercentType command) {
         // Dimmer item will produce PercentType value, which is 0-100
         // Convert that value to what the light expects, which is 0-16
-        return String.valueOf((int) Math.round(((PercentType) command).doubleValue() / BRIGHTNESS_CONVERSION_FACTOR));
+        return String.valueOf((int) Math.round(command.doubleValue() / BRIGHTNESS_CONVERSION_FACTOR));
     }
 
     private PercentType convertLevelToPercent(String level) {
