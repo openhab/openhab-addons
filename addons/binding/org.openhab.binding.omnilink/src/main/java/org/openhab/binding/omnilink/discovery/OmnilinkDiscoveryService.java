@@ -201,13 +201,13 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             } else {
                 ThingUID thingUID = null;
                 String thingID = "";
-                String thingLabel = name;
+                String thingLabel = o.getName();
                 thingID = Integer.toString(objnum);
 
                 Map<String, Object> properties = new HashMap<>(0);
                 thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT, thingID);
                 properties.put(OmnilinkUnitConfig.NUMBER, objnum);
-                properties.put(OmnilinkUnitConfig.NAME, name);
+                properties.put(OmnilinkUnitConfig.NAME, o.getName());
 
                 DiscoveryResult discoveryResult;
 
