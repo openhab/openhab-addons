@@ -9,13 +9,11 @@
 package org.openhab.binding.sleepiq.handler;
 
 import static org.openhab.binding.sleepiq.SleepIQBindingConstants.THING_TYPE_CLOUD;
-import static org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration.USERNAME;
-import static org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration.PASSWORD;
+import static org.openhab.binding.sleepiq.config.SleepIQCloudConfiguration.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -82,24 +81,22 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
         try {
             createCloudConnection();
+
+            logger.debug("Setting SleepIQ cloud online");
+            updateListenerManagement();
+            updateStatus(ThingStatus.ONLINE);
+
         } catch (UnauthorizedException e) {
             logger.error("SleepIQ cloud authentication failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid SleepIQ credentials");
-            return;
         } catch (LoginException e) {
             logger.error("SleepIQ cloud login failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "SleepIQ cloud login failed");
-            return;
         } catch (Exception e) {
             logger.error("Unexpected error while communicating with SleepIQ cloud", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to connect to SleepIQ cloud");
-            return;
         }
-
-        logger.debug("Setting SleepIQ cloud online");
-        updateListenerManagement();
-        updateStatus(ThingStatus.ONLINE);
     }
 
     /**
@@ -243,13 +240,13 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         String username = config.username;
         String password = config.password;
 
-        if (username == null || username.isEmpty()) {
+        if (StringUtils.isEmpty(username)) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(USERNAME)
                     .withMessageKeySuffix(SleepIQConfigStatusMessage.USERNAME_MISSING.getMessageKey())
                     .withArguments(USERNAME).build());
         }
 
-        if (password == null || password.isEmpty()) {
+        if (StringUtils.isEmpty(password)) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(PASSWORD)
                     .withMessageKeySuffix(SleepIQConfigStatusMessage.PASSWORD_MISSING.getMessageKey())
                     .withArguments(PASSWORD).build());
@@ -300,10 +297,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @return the given map (or a new map if no map was given) with updated/set properties from the supplied bed
      */
     public Map<String, String> updateProperties(final Bed bed, Map<String, String> properties) {
-
-        if (properties == null) {
-            properties = new HashMap<>();
-        }
 
         if (bed != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, bed.getModel());

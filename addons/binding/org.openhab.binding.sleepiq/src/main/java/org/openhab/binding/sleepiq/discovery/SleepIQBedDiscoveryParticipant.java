@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.sleepiq.discovery;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -78,7 +79,7 @@ public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
             logger.debug("New bed found with MAC address {}", bed.getMacAddress());
 
             @SuppressWarnings({ "unchecked", "rawtypes" })
-            Map<String, Object> properties = (Map) cloudHandler.updateProperties(bed, null);
+            Map<String, Object> properties = (Map) cloudHandler.updateProperties(bed, new HashMap<>());
             properties.put(SleepIQBedConfiguration.BED_ID, bed.getBedId());
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)

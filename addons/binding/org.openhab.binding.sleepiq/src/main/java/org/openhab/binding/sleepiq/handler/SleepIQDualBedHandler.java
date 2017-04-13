@@ -8,19 +8,7 @@
  */
 package org.openhab.binding.sleepiq.handler;
 
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_LEFT_ALERT_DETAILED_MESSAGE;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_LEFT_ALERT_ID;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_LEFT_IN_BED;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_LEFT_LAST_LINK;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_LEFT_PRESSURE;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_LEFT_SLEEP_NUMBER;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_RIGHT_ALERT_DETAILED_MESSAGE;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_RIGHT_ALERT_ID;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_RIGHT_IN_BED;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_RIGHT_LAST_LINK;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_RIGHT_PRESSURE;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.CHANNEL_RIGHT_SLEEP_NUMBER;
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.THING_TYPE_DUAL_BED;
+import static org.openhab.binding.sleepiq.SleepIQBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
@@ -74,7 +62,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
             return;
         }
 
-        if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
+        if (ThingStatus.ONLINE != bridge.getStatus()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
