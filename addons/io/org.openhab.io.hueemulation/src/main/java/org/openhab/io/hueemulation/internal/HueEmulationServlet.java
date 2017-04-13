@@ -72,6 +72,7 @@ public class HueEmulationServlet extends HttpServlet {
     private static final String CONFIG_PAIRING_ENABLED = "pairingEnabled";
     private static final String CONFIG_DISCOVERY_IP = "discoveryIp";
     private static final String CONFIG_TRANSLATION_FILE = "translationFile";
+    private static final String CONFIG_TRANSLATION_ITEMNAME = "useItemNameForTranslation";
     private static final String PATH = "/api";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
@@ -97,6 +98,7 @@ public class HueEmulationServlet extends HttpServlet {
     private CopyOnWriteArrayList<String> userNames = new CopyOnWriteArrayList<String>();
 
     private boolean pairingEnabled = false;
+    private boolean useItemNameforTranslation = false;
     String translationFile = null;
     TransformationService transformationService = null;
 
@@ -155,6 +157,18 @@ public class HueEmulationServlet extends HttpServlet {
             transformationService = TransformationHelper
                     .getTransformationService(HueActivator.getContext(), "MAP");
         }
+        
+        Object translateNameObj = config.get(CONFIG_TRANSLATION_ITEMNAME);
+        if (translateNameObj == null) {
+            useItemNameforTranslation = false;
+        } else {
+            if (translateNameObj instanceof Boolean) {
+            	useItemNameforTranslation = ((Boolean) translateNameObj).booleanValue();
+            } else {
+            	useItemNameforTranslation = "true".equalsIgnoreCase((String) translateNameObj);
+            }
+        }
+        logger.debug("Item name instead of label will be used for transformation: {}",useItemNameforTranslation);
         
     }
 
@@ -526,9 +540,10 @@ public class HueEmulationServlet extends HttpServlet {
             Item item = it.next();
             
             if (transformationService != null) {
+            	String transformationKey = useItemNameforTranslation ? item.getName() : item.getLabel();
                 try {
-					transformedResponse = transformationService.transform(translationFile, item.getLabel());
-					if (transformedResponse == null || transformedResponse == "") {
+					transformedResponse = transformationService.transform(translationFile, transformationKey);
+					if (transformedResponse == null || transformedResponse == "" || transformedResponse.equals(transformationKey)) {
 						transformedResponse = item.getLabel();
 					}
 					logger.debug("Label {} transformed into {}",item.getLabel(),transformedResponse);
@@ -571,9 +586,10 @@ public class HueEmulationServlet extends HttpServlet {
 
         String transformedResponse;
         if (transformationService != null) {
+        	String transformationKey = useItemNameforTranslation ? item.getName() : item.getLabel();
             try {
-				transformedResponse = transformationService.transform(translationFile, item.getLabel());
-				if (transformedResponse == null || transformedResponse == "") {
+				transformedResponse = transformationService.transform(translationFile, transformationKey);
+				if (transformedResponse == null || transformedResponse == "" || transformedResponse.equals(transformationKey)) {
 					transformedResponse = item.getLabel();
 				}
 				logger.debug("Label {} transformed into {}",item.getLabel(),transformedResponse);
