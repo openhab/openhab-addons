@@ -263,25 +263,26 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                             if (configuration.ignoreConfig) {
                                 logger.debug("Ignoring transceiver configuration");
                             } else {
-                                byte[] setMode = new byte[0];
+                                byte[] setMode = null;
 
-                                try {
-                                    if (configuration.setMode != null && !configuration.setMode.isEmpty()) {
+                                if (configuration.setMode != null && !configuration.setMode.isEmpty()) {
+                                    try {
                                         setMode = DatatypeConverter.parseHexBinary(configuration.setMode);
-                                    } else {
-                                        RFXComInterfaceControlMessage modeMsg = new RFXComInterfaceControlMessage(msg.transceiverType, configuration);
-                                        setMode = modeMsg.decodeMessage();
+                                        if (setMode.length != 14) {
+                                            logger.warn("Invalid RFXCOM transceiver mode configuration");
+                                            setMode = null;
+                                        }
+                                    } catch (IllegalArgumentException ee) {
+                                        logger.warn("Failed to parse setMode data", ee);
                                     }
-                                } catch (IllegalArgumentException ee) {
-                                    logger.warn("Failed to parse setMode data", ee);
+                                } else {
+                                    RFXComInterfaceControlMessage modeMsg = new RFXComInterfaceControlMessage(msg.transceiverType, configuration);
+                                    setMode = modeMsg.decodeMessage();
                                 }
 
-                                if (setMode.length == 14) {
+                                if (setMode != null) {
                                     logger.debug("Setting RFXCOM mode using: {}", DatatypeConverter.printHexBinary(setMode));
                                     connector.sendMessage(setMode);
-                                } else if (setMode.length > 0) {
-                                    logger.warn("Illegal RFXCOM transceiver mode configuration");
-                                    // But start anyway, the saved config may be good.
                                 }
                             }
 
