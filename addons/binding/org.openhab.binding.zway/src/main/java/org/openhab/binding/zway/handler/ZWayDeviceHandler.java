@@ -632,8 +632,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     }
 
     protected synchronized void addDeviceAsChannel(Device device) {
-        logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
-
         // Device.probeType
         // |
         // Device.metrics.probeType
@@ -645,6 +643,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         // Default, depends on device type
 
         if (device != null) {
+            logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
+
             HashMap<String, String> properties = new HashMap<String, String>();
             properties.put("deviceId", device.getDeviceId());
 

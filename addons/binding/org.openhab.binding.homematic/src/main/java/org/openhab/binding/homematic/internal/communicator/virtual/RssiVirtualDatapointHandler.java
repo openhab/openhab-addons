@@ -75,7 +75,7 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
         Integer deviceValue = getDatapointValue(dpRssiDevice);
         Integer peerValue = getDatapointValue(dpRssiPeer);
 
-        if ((deviceValue == null || (deviceValue != null && deviceValue == 0)) && peerValue != null) {
+        if ((deviceValue == null || deviceValue == 0) && peerValue != null) {
             return peerValue;
         }
         return deviceValue;
