@@ -21,7 +21,7 @@ public enum SleepIQConfigStatusMessage {
 
     private String messageKey;
 
-    SleepIQConfigStatusMessage(final String messageKey) {
+    private SleepIQConfigStatusMessage(final String messageKey) {
         this.messageKey = messageKey;
     }
 
