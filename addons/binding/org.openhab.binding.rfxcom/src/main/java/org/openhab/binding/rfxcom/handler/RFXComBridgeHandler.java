@@ -325,7 +325,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 logger.error("Error occurred during packet receiving, data: {}",
                         DatatypeConverter.printHexBinary(packet), e);
             } catch (IOException e) {
-                logger.error("Communication error", e);
+                errorOccurred("I/O error");
             }
         }
 
