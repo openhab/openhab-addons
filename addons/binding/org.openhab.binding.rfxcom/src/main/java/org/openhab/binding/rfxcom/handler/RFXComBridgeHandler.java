@@ -35,6 +35,7 @@ import org.openhab.binding.rfxcom.internal.connector.RFXComTcpConnector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
+import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceControlMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Commands;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubType;
@@ -198,40 +199,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private byte[] createConfMessage(TransceiverType transceiverType) {
-        RFXComInterfaceMessage msg = new RFXComInterfaceMessage();
-
-        msg.command = Commands.SET_MODE;
-        msg.subType = SubType.RESPONSE;
-        msg.transceiverType = transceiverType;
-
-        msg.enableUndecodedPackets = configuration.enableUndecoded;
-        msg.enableImagintronixOpusPackets = configuration.enableImagintronixOpus;
-        msg.enableByronSXPackets = configuration.enableByronSX;
-        msg.enableRSLPackets = configuration.enableRSL;
-        msg.enableLighting4Packets = configuration.enableLighting4;
-        msg.enableFineOffsetPackets = configuration.enableFineOffsetViking;
-        msg.enableRubicsonPackets = configuration.enableRubicson;
-        msg.enableAEPackets = configuration.enableAEBlyss;
-        msg.enableBlindsT1T2T3T4Packets = configuration.enableBlindsT1T2T3T4;
-        msg.enableBlindsT0Packets = configuration.enableBlindsT0;
-        msg.enableProGuardPackets = configuration.enableProGuard;
-        msg.enableLaCrossePackets = configuration.enableLaCrosse;
-        msg.enableHidekiUPMPackets = configuration.enableHidekiUPM;
-        msg.enableADPackets = configuration.enableADLightwaveRF;
-        msg.enableMertikPackets = configuration.enableMertik;
-        msg.enableVisonicPackets = configuration.enableVisonic;
-        msg.enableATIPackets = configuration.enableATI;
-        msg.enableOregonPackets = configuration.enableOregonScientific;
-        msg.enableMeiantechPackets = configuration.enableMeiantech;
-        msg.enableHomeEasyPackets = configuration.enableHomeEasyEU;
-        msg.enableACPackets = configuration.enableAC;
-        msg.enableARCPackets = configuration.enableARC;
-        msg.enableX10Packets = configuration.enableX10;
-
-        return msg.decodeMessage();
-    }
-
     public synchronized void sendMessage(RFXComMessage msg) throws RFXComException {
 
         ((RFXComBaseMessage) msg).seqNbr = getNextSeqNumber();
@@ -302,7 +269,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                                     if (configuration.setMode != null && !configuration.setMode.isEmpty()) {
                                         setMode = DatatypeConverter.parseHexBinary(configuration.setMode);
                                     } else {
-                                        setMode = createConfMessage(msg.transceiverType);
+                                        RFXComInterfaceControlMessage modeMsg = new RFXComInterfaceControlMessage(msg.transceiverType, configuration);
+                                        setMode = modeMsg.decodeMessage();
                                     }
                                 } catch (IllegalArgumentException ee) {
                                     logger.warn("Failed to parse setMode data", ee);
