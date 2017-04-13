@@ -47,16 +47,16 @@ public class BoseSoundTouchBindingConstants {
     public static final String CHANNEL_SKIPENABLED = "skipEnabled";
     public static final String CHANNEL_SKIPPREVIOUSENABLED = "skipPreviousEnabled";
     public static final String CHANNEL_KEY_CODE = "keyCode";
-    public static final String CHANNEL_NOWPLAYINGALBUM = "nowPlayingAlbum";
-    public static final String CHANNEL_NOWPLAYINGARTWORK = "nowPlayingArtwork";
-    public static final String CHANNEL_NOWPLAYINGARTIST = "nowPlayingArtist";
-    public static final String CHANNEL_NOWPLAYINGDESCRIPTION = "nowPlayingDescription";
-    public static final String CHANNEL_NOWPLAYINGGENRE = "nowPlayingGenre";
-    public static final String CHANNEL_NOWPLAYINGITEMNAME = "nowPlayingItemName";
-    public static final String CHANNEL_NOWPLAYINGSTATIONLOCATION = "nowPlayingStationLocation";
-    public static final String CHANNEL_NOWPLAYINGSTATIONNAME = "nowPlayingStationName";
-    public static final String CHANNEL_NOWPLAYINGPLAYSTATUS = "nowPlayingPlayStatus";
-    public static final String CHANNEL_NOWPLAYINGTRACK = "nowPlayingTrack";
+    public static final String CHANNEL_NOWPLAYING_ALBUM = "nowPlayingAlbum";
+    public static final String CHANNEL_NOWPLAYING_ARTWORK = "nowPlayingArtwork";
+    public static final String CHANNEL_NOWPLAYING_ARTIST = "nowPlayingArtist";
+    public static final String CHANNEL_NOWPLAYING_DESCRIPTION = "nowPlayingDescription";
+    public static final String CHANNEL_NOWPLAYING_GENRE = "nowPlayingGenre";
+    public static final String CHANNEL_NOWPLAYING_ITEMNAME = "nowPlayingItemName";
+    public static final String CHANNEL_NOWPLAYING_STATIONLOCATION = "nowPlayingStationLocation";
+    public static final String CHANNEL_NOWPLAYING_STATIONNAME = "nowPlayingStationName";
+    public static final String CHANNEL_NOWPLAYING_PLAYSTATUS = "nowPlayingPlayStatus";
+    public static final String CHANNEL_NOWPLAYING_TRACK = "nowPlayingTrack";
 
     // Device configuration parameters;
     public static final String DEVICE_PARAMETER_HOST = "DEVICE_HOST";
