@@ -55,20 +55,21 @@ public class XMLResponseProcessor {
     public XMLResponseProcessor(BoseSoundTouchHandler handler) {
         this.handler = handler;
         init();
-        channelNowPlayingAlbumUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGALBUM);
-        channelNowPlayingArtworkUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGARTWORK);
-        channelNowPlayingArtistUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGARTIST);
+        channelNowPlayingAlbumUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_ALBUM);
+        channelNowPlayingArtworkUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_ARTWORK);
+        channelNowPlayingArtistUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_ARTIST);
         channelNowPlayingDescriptionUID = handler
-                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGDESCRIPTION);
-        channelNowPlayingItemNameUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGGENRE);
-        channelNowPlayingGenreUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGITEMNAME);
+                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_DESCRIPTION);
+        channelNowPlayingItemNameUID = handler
+                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_ITEMNAME);
+        channelNowPlayingGenreUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_GENRE);
         channelNowPlayingPlayStatusUID = handler
-                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGPLAYSTATUS);
+                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_PLAYSTATUS);
         channelNowPlayingStationLocationUID = handler
-                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGSTATIONLOCATION);
+                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_STATIONLOCATION);
         channelNowPlayingStationNameUID = handler
-                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGSTATIONNAME);
-        channelNowPlayingTrackUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYINGTRACK);
+                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_STATIONNAME);
+        channelNowPlayingTrackUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_TRACK);
         channelRateEnabled = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_RATEENABLED);
         channelSkipEnabled = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SKIPENABLED);
         channelSkipPreviousEnabled = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SKIPPREVIOUSENABLED);

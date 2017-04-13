@@ -30,6 +30,8 @@ public enum OperationModeType implements PrimitiveType, State, Command {
     SIRIUSXM,
     STORED_MUSIC,
     AMAZON,
+    TV,
+    HDMI,
     OTHER;
 
     @Override

@@ -13,6 +13,8 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +49,6 @@ import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
 import org.openhab.binding.bosesoundtouch.internal.XMLResponseProcessor;
 import org.openhab.binding.bosesoundtouch.internal.ZoneState;
 import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
-import org.openhab.binding.bosesoundtouch.internal.items.Preset;
 import org.openhab.binding.bosesoundtouch.internal.items.RemoteKey;
 import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
@@ -73,10 +74,11 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     private ChannelUID channelPlayerControlUID;
     private ChannelUID channelZoneControlUID;
     private ChannelUID channelPresetUID;
+    private ChannelUID channelPresetValueUID;
     private ChannelUID channelBassUID;
     private ChannelUID channelKeyCodeUID;
 
-    private ArrayList<Preset> listOfPresets;
+    private HashMap<Integer, ContentItem> mapOfPresets;
 
     private State nowPlayingSource;
     private ContentItem currentContentItem;
@@ -104,7 +106,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     @Override
     public void initialize() {
         currentOperationMode = OperationModeType.OFFLINE;
-        listOfPresets = new ArrayList<Preset>();
+        mapOfPresets = new HashMap<Integer, ContentItem>();
         zoneMembers = new ArrayList<ZoneMember>();
 
         nowPlayingSource = null;
@@ -117,6 +119,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         channelPlayerControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PLAYER_CONTROL);
         channelZoneControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONE_CONTROL);
         channelPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PRESET);
+        channelPresetValueUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PRESET_VALUE);
         channelBassUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_BASS);
         channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
 
@@ -184,6 +187,15 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                                 break;
                             case AUX:
                                 selectOperationModeAUX();
+                                break;
+                            case STORED_MUSIC:
+                                selectOperationModeStoredMusic();
+                                break;
+                            case TV:
+                                selectOperationModeProductTV();
+                                break;
+                            case HDMI:
+                                selectOperationModeProductHDMI();
                                 break;
                             default:
                                 logger.warn("{}: \"{}\" OperationMode selection not supported yet", getDeviceName(),
@@ -324,19 +336,29 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 if (command instanceof StringType) {
                     String cmd = command.toString();
                     if (cmd.equals(RemoteKey.PRESET_1.name)) {
-                        simulateRemoteKey(RemoteKey.PRESET_1);
+                        switchToContentItem(mapOfPresets.get(1));
                     } else if (cmd.equals(RemoteKey.PRESET_2.name)) {
-                        simulateRemoteKey(RemoteKey.PRESET_2);
+                        switchToContentItem(mapOfPresets.get(2));
                     } else if (cmd.equals(RemoteKey.PRESET_3.name)) {
-                        simulateRemoteKey(RemoteKey.PRESET_3);
+                        switchToContentItem(mapOfPresets.get(3));
                     } else if (cmd.equals(RemoteKey.PRESET_4.name)) {
-                        simulateRemoteKey(RemoteKey.PRESET_4);
+                        switchToContentItem(mapOfPresets.get(4));
                     } else if (cmd.equals(RemoteKey.PRESET_5.name)) {
-                        simulateRemoteKey(RemoteKey.PRESET_5);
+                        switchToContentItem(mapOfPresets.get(5));
                     } else if (cmd.equals(RemoteKey.PRESET_6.name)) {
-                        simulateRemoteKey(RemoteKey.PRESET_6);
+                        switchToContentItem(mapOfPresets.get(6));
                     } else {
                         logger.warn("{}: Invalid preset: {}", getDeviceName(), cmd);
+                    }
+                }
+            } else if (channelUID.equals(channelPresetValueUID)) {
+                if (command instanceof DecimalType) {
+                    int presetID = ((DecimalType) command).intValue();
+                    ContentItem preset = mapOfPresets.get(presetID);
+                    if (preset != null) {
+                        switchToContentItem(preset);
+                    } else {
+                        logger.warn("{}: Invalid preset: {}", getDeviceName(), presetID);
                     }
                 }
             } else if (channelUID.equals(channelBassUID)) {
@@ -358,6 +380,71 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                         channelUID.getId());
             }
         }
+
+    }
+
+    private void selectOperationModeStandby() {
+        if (currentOperationMode != OperationModeType.STANDBY) {
+            simulateRemoteKey(RemoteKey.POWER);
+        }
+    }
+
+    private void selectOperationModeRadio() {
+        ContentItem psFound = null;
+        Collection<ContentItem> listOfPresets = mapOfPresets.values();
+        for (ContentItem ps : listOfPresets) {
+            if ((psFound == null) && (ps.getOperationMode() == OperationModeType.INTERNET_RADIO)) {
+                psFound = ps;
+            }
+        }
+        if (psFound != null) {
+            switchToContentItem(psFound);
+        } else {
+            logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined", getDeviceName());
+        }
+    }
+
+    private void selectOperationModeBluetooth() {
+        ContentItem contentItem = new ContentItem();
+        contentItem.setSource("BLUETOOTH");
+        switchToContentItem(contentItem);
+    }
+
+    private void selectOperationModeAUX() {
+        ContentItem contentItem = new ContentItem();
+        contentItem.setSource("AUX");
+        contentItem.setSourceAccount("AUX");
+        switchToContentItem(contentItem);
+    }
+
+    private void selectOperationModeStoredMusic() {
+        // This is just an example, must find a way to do this
+        ContentItem contentItem = new ContentItem();
+        contentItem.setSource("STORED_MUSIC");
+        contentItem.setSourceAccount("00113216-107a-0011-7a10-7a1016321100/0");
+        contentItem.setUnusedField(0);
+        contentItem.setLocation("28$65445");
+        contentItem.setPresetable(true);
+        contentItem.setItemName("100 Jahre");
+        switchToContentItem(contentItem);
+    }
+
+    private void selectOperationModeProductTV() {
+        ContentItem contentItem = new ContentItem();
+        contentItem.setSource("PRODUCT");
+        contentItem.setSourceAccount("TV");
+        contentItem.setUnusedField(0);
+        contentItem.setPresetable(false);
+        switchToContentItem(contentItem);
+    }
+
+    private void selectOperationModeProductHDMI() {
+        ContentItem contentItem = new ContentItem();
+        contentItem.setSource("PRODUCT");
+        contentItem.setSourceAccount("HDMI_1");
+        contentItem.setUnusedField(0);
+        contentItem.setPresetable(false);
+        switchToContentItem(contentItem);
     }
 
     public void sendRequestInWebSocket(String url) {
@@ -371,48 +458,24 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         }
     }
 
-    private void selectOperationModeStandby() {
-        if (currentOperationMode != OperationModeType.STANDBY) {
-            simulateRemoteKey(RemoteKey.POWER);
-        }
-    }
-
-    private void selectOperationModeRadio() {
-        Preset psFound = null;
-        for (Preset ps : listOfPresets) {
-            if ((psFound == null) && (ps.getContentItem().getOperationMode() == OperationModeType.INTERNET_RADIO)) {
-                psFound = ps;
-            }
-        }
-        if (psFound != null) {
-            simulateRemoteKey(psFound.getKey());
-        } else {
-            logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined", getDeviceName());
-        }
-    }
-
-    private void selectOperationModeBluetooth() {
-        sendRequestInWebSocket("select", "<ContentItem source=\"BLUETOOTH\"></ContentItem>");
-    }
-
-    private void selectOperationModeAUX() {
-        sendRequestInWebSocket("select", "<ContentItem source=\"AUX\" sourceAccount=\"AUX\"></ContentItem>");
-    }
-
     private void sendRequestInWebSocket(String url, String postData) {
-        sendRequestInWebSocket(url, null, postData);
+        sendRequestInWebSocket(url, "", postData);
     }
 
     private void sendRequestInWebSocket(String url, String infoAddon, String postData) {
         int id = 0;
         String msg = "<msg><header " + "deviceID=\"" + getMacAddress() + "\"" + " url=\"" + url
-                + "\" method=\"POST\"><request requestID=\"" + id + "\"><info " + (infoAddon == null ? "" : infoAddon)
+                + "\" method=\"POST\"><request requestID=\"" + id + "\"><info " + infoAddon
                 + " type=\"new\"/></request></header><body>" + postData + "</body></msg>";
         try {
             session.getRemote().sendString(msg);
         } catch (IOException e) {
             onWebSocketError(e);
         }
+    }
+
+    private void switchToContentItem(ContentItem contentItem) {
+        sendRequestInWebSocket("select", "", contentItem.generateXML());
     }
 
     private void simulateRemoteKey(RemoteKey key) {
@@ -426,16 +489,21 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         OperationModeType om = OperationModeType.OTHER;
         if (thing.getStatus() == ThingStatus.ONLINE) {
             if (currentContentItem != null) {
-                Preset psFound = null;
-                for (Preset ps : listOfPresets) {
-                    if (ps.getContentItem().equals(currentContentItem)) {
-                        psFound = ps;
+                ContentItem psFound = null;
+                Collection<ContentItem> listOfPresets = mapOfPresets.values();
+                for (ContentItem ps : listOfPresets) {
+                    if (ps.isPresetable()) {
+                        if (ps.getLocation().equals(currentContentItem.getLocation())) {
+                            psFound = ps;
+                        }
                     }
                 }
                 if (psFound != null) {
                     updateState(channelPresetUID, new StringType(psFound.toString()));
+                    updateState(channelPresetValueUID, new DecimalType(psFound.getPresetID()));
                 } else {
                     updateState(channelPresetUID, new StringType(""));
+                    updateState(channelPresetValueUID, new DecimalType(0));
                 }
 
                 if (om == OperationModeType.OTHER) {
@@ -466,12 +534,8 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         return factory;
     }
 
-    public void clearListOfPresets() {
-        listOfPresets.clear();
-    }
-
-    public void addPresetToList(Preset preset) {
-        listOfPresets.add(preset);
+    public void addContentItemToPresetList(ContentItem preset) {
+        mapOfPresets.put(preset.getPresetID(), preset);
     }
 
     public State getNowPlayingSource() {

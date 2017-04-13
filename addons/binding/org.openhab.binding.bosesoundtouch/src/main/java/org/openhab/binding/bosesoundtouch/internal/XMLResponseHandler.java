@@ -21,9 +21,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
 import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
-import org.openhab.binding.bosesoundtouch.internal.items.Preset;
 import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
-import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -51,7 +49,6 @@ public class XMLResponseHandler extends DefaultHandler {
     private XMLHandlerState state;
     private boolean msgHeaderWasValid;
 
-    private Preset preset;
     private ContentItem contentItem;
     private boolean volumeMuteEnabled;
     private OnOffType rateEnabled;
@@ -96,6 +93,9 @@ public class XMLResponseHandler extends DefaultHandler {
                 } else if ("msg".equals(localName)) {
                     // message
                     state = XMLHandlerState.Msg;
+                } else if ("SoundTouchSdkInfo".equals(localName)) {
+                    // TODO
+                    state = XMLHandlerState.Unprocessed;
                 } else {
                     if (logger.isDebugEnabled()) {
                         logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
@@ -208,7 +208,10 @@ public class XMLResponseHandler extends DefaultHandler {
                 if ("preset".equals(localName)) {
                     state = XMLHandlerState.Preset;
                     String id = attributes.getValue("id");
-                    preset = new Preset(Integer.parseInt(id));
+                    if (contentItem == null) {
+                        contentItem = new ContentItem();
+                    }
+                    contentItem.setPresetID(Integer.parseInt(id));
                 } else {
                     logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
                             localName);
@@ -263,35 +266,14 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
         }
         if (state == XMLHandlerState.ContentItem) {
-            // // we started a content item. process data.
-            // contentItem = new ContentItem();
-            // String source = attributes.getValue("source");
-            // if (source != null) {
-            // try {
-            // contentItem.source = Source.valueOf(source);
-            // } catch (Throwable t) {
-            // logger.error("{}: Unknown Source: '{}' - needs to be defined!",
-            // boseSoundTouchHandler.getThing(), source);
-            // contentItem.source = Source.UNKNOWN;
-            // }
-            // }
-            // contentItem.location = attributes.getValue("location");
-            // contentItem.sourceAccount = attributes.getValue("sourceAccount");
-            // we started a content item. process data.
-            contentItem = new ContentItem();
-            String source = attributes.getValue("source");
-            try {
-                contentItem.setOperationMode(OperationModeType.valueOf(source));
-            } catch (IllegalArgumentException iae) {
-                contentItem.setOperationMode(OperationModeType.OTHER);
-                logger.error("{}: Unknown SourceType: '{}' - needs to be defined!", handler.getDeviceName(), source);
+            if (contentItem == null) {
+                contentItem = new ContentItem();
             }
-            // TODO Different sources might have different / additional attributes?
-            contentItem.setLocation(attributes.getValue("location"));
+            contentItem.setSource(attributes.getValue("source"));
             contentItem.setSourceAccount(attributes.getValue("sourceAccount"));
-        }
-        if (state == XMLHandlerState.Presets) {
-            handler.clearListOfPresets();
+            contentItem.setLocation(attributes.getValue("location"));
+            contentItem.setUnusedField(Integer.parseInt(attributes.getValue("unusedField")));
+            contentItem.setPresetable(Boolean.parseBoolean(attributes.getValue("isPresetable")));
         }
         if (state == XMLHandlerState.Volume) {
             volumeMuteEnabled = false;
@@ -331,13 +313,11 @@ public class XMLResponseHandler extends DefaultHandler {
                     handler.setCurrentContentItem(contentItem);
                     handler.checkOperationMode();
                 }
-                if (state == XMLHandlerState.Preset) {
-                    preset.setContentItem(contentItem);
-                }
                 break;
             case Preset:
                 if (state == XMLHandlerState.Presets) {
-                    handler.addPresetToList(preset);
+                    handler.addContentItemToPresetList(contentItem);
+                    contentItem = null;
                     handler.checkOperationMode();
                 }
                 break;
@@ -386,6 +366,7 @@ public class XMLResponseHandler extends DefaultHandler {
             logger.trace("{}: Text data during {}: '{}'", handler.getDeviceName(), state,
                     new String(ch, start, length));
         }
+        String temp;
         super.characters(ch, start, length);
         switch (state) {
             case INIT:
@@ -434,13 +415,15 @@ public class XMLResponseHandler extends DefaultHandler {
                 processor.updateNowPlayingArtist(new StringType(new String(ch, start, length)));
                 break;
             case ContentItemItemName:
-                contentItem.setItemName(new String(ch, start, length));
+                temp = new String(ch, start, length);
+                contentItem.setItemName(temp);
                 break;
             case NowPlayingDescription:
                 processor.updateNowPlayingDescription(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingGenre:
-                processor.updateNowPlayingGenre(new StringType(new String(ch, start, length)));
+                temp = new String(ch, start, length);
+                processor.updateNowPlayingGenre(new StringType(temp));
                 break;
             case NowPlayingPlayStatus:
                 String playPauseState = new String(ch, start, length);
@@ -461,7 +444,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 processor.updateNowPlayingTrack(new StringType(new String(ch, start, length)));
                 break;
             case VolumeActual:
-                String temp = new String(ch, start, length);
+                temp = new String(ch, start, length);
                 handler.updateVolume(new PercentType(Integer.parseInt(temp)));
                 break;
             case VolumeMuteEnabled:

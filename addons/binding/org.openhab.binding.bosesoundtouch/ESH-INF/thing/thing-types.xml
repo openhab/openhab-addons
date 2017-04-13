@@ -17,6 +17,7 @@
 			<channel id="playerControl" typeId="playerControl" />
 			<channel id="zoneControl" typeId="zoneControl" />
 			<channel id="preset" typeId="preset" />
+			<channel id="presetValue" typeId="presetValue" />
             <channel id="bass" typeId="bass" />
             <channel id="rateEnabled" typeId="rateEnabled" />
             <channel id="skipEnabled" typeId="skipEnabled" />
@@ -113,6 +114,12 @@
                 <option value="PRESET_6">PRESET_6</option>
             </options>
         </state>
+    </channel-type>
+    <channel-type id="presetValue">
+        <item-type>Number</item-type>
+         <label>PresetValue</label>
+         <description>PresetValue 1-6 Preset of BST, >7 Binding Presets</description>
+         <state readOnly="false" />
     </channel-type>
     <channel-type id="bass" advanced="true">
         <item-type>Number</item-type>
