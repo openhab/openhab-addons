@@ -716,9 +716,11 @@ public class TeslaHandler extends BaseThingHandler {
 
         Response response = tokenTarget.request().post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
 
-        logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
+        if (response == null) {
+            logger.debug("Authenticating : Response was null");
+        } else{
+            logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
 
-        if (response != null) {
             if (response.getStatus() == 200 && response.hasEntity()) {
 
                 String responsePayLoad = response.readEntity(String.class);
@@ -748,15 +750,15 @@ public class TeslaHandler extends BaseThingHandler {
 
         Response response = tokenTarget.request().post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
 
-        logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
-
         if (response != null) {
+            logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
+
             if (response.getStatus() == 200 && response.hasEntity()) {
 
                 String responsePayLoad = response.readEntity(String.class);
                 TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
 
-                if (response != null && !StringUtils.isEmpty(tokenResponse.access_token)) {
+                if (StringUtils.isNotEmpty(tokenResponse.access_token)) {
                     Storage<Object> storage = storageService.getStorage(TeslaBindingConstants.BINDING_ID);
                     storage.put(getStorageKey(), gson.toJson(tokenResponse));
                     this.logonToken = tokenResponse;

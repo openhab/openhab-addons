@@ -47,7 +47,7 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
         BigDecimal pw_byte1 = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_PASSWORD_BYTE_1);
         BigDecimal pw_byte2 = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_PASSWORD_BYTE_2);
         if (pw_byte1 != null && pw_byte2 != null && pw_byte1.intValue() >= 0 && pw_byte1.intValue() <= 255
-                && pw_byte2.intValue() >= 0 && pw_byte2.intValue() <= 255 && session != null) {
+                && pw_byte2.intValue() >= 0 && pw_byte2.intValue() <= 255) {
             session.setPasswordBytes((byte) pw_byte1.intValue(), (byte) pw_byte2.intValue());
         }
     }

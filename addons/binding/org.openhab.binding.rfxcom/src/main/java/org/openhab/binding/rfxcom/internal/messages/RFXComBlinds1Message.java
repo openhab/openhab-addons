@@ -269,7 +269,7 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
                     command = Commands.STOP;
 
                 } else {
-                    throw new NumberFormatException("Can't convert " + type + " to Command");
+                    throw new RFXComException("Can't convert " + type + " to Command");
                 }
                 break;
 

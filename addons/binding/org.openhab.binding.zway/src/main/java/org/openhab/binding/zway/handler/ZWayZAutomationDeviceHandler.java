@@ -180,7 +180,7 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
             Calendar lastUpdateOfDevice = Calendar.getInstance();
             lastUpdateOfDevice.setTimeInMillis(new Long(device.getUpdateTime()) * 1000);
 
-            if (lastUpdate == null || (lastUpdate != null && lastUpdateOfDevice.after(lastUpdate))) {
+            if (lastUpdate == null || lastUpdateOfDevice.after(lastUpdate)) {
                 lastUpdate = lastUpdateOfDevice;
             }
 
