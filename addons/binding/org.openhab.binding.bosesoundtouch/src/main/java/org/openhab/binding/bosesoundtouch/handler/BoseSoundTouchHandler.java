@@ -54,6 +54,7 @@ import org.openhab.binding.bosesoundtouch.internal.items.RemoteKey;
 import org.openhab.binding.bosesoundtouch.internal.items.SoundTouchType;
 import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
 import org.openhab.binding.bosesoundtouch.types.NoInternetRadioPresetFoundException;
+import org.openhab.binding.bosesoundtouch.types.NoStoredMusicPresetFoundException;
 import org.openhab.binding.bosesoundtouch.types.OperationModeNotAvailableException;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 import org.slf4j.Logger;
@@ -369,6 +370,9 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 checkOperationMode();
             } catch (NoInternetRadioPresetFoundException e) {
                 logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined", getDeviceName());
+                checkOperationMode();
+            } catch (NoStoredMusicPresetFoundException e) {
+                logger.warn("{}: Unable to switch to mode: STORED_MUSIC. No PRESET defined", getDeviceName());
                 checkOperationMode();
             }
         }

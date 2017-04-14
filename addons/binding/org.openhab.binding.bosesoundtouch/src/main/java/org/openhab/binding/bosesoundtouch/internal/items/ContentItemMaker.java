@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.openhab.binding.bosesoundtouch.types.NoInternetRadioPresetFoundException;
+import org.openhab.binding.bosesoundtouch.types.NoStoredMusicPresetFoundException;
 import org.openhab.binding.bosesoundtouch.types.OperationModeNotAvailableException;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 
@@ -30,8 +31,8 @@ public class ContentItemMaker {
         this.mapOfPresets = mapOfPresets;
     }
 
-    public ContentItem getContentItem(OperationModeType operationModeType)
-            throws OperationModeNotAvailableException, NoInternetRadioPresetFoundException {
+    public ContentItem getContentItem(OperationModeType operationModeType) throws OperationModeNotAvailableException,
+            NoInternetRadioPresetFoundException, NoStoredMusicPresetFoundException {
         switch (operationModeType) {
             case OFFLINE:
             case OTHER:
@@ -187,22 +188,29 @@ public class ContentItemMaker {
         throw new OperationModeNotAvailableException();
     }
 
-    private ContentItem getStoredMusic() throws OperationModeNotAvailableException {
-        // This is just an example, must find a way to do this
-        // Maybe an similar solution as for the INTERNET_RADIO
-        // If the more than 6 PRESETS feature is available, this makes more sense
-        ContentItem contentItem = new ContentItem();
-        contentItem.setSource("STORED_MUSIC");
-        contentItem.setSourceAccount("00113216-107a-0011-7a10-7a1016321100/0");
-        contentItem.setUnusedField(0);
-        contentItem.setLocation("28$65445");
-        contentItem.setPresetable(true);
-        contentItem.setItemName("100 Jahre");
+    private ContentItem getStoredMusic() throws NoStoredMusicPresetFoundException {
+        // // This is just an example, must find a way to do this
+        // // Maybe an similar solution as for the INTERNET_RADIO
+        // // If the more than 6 PRESETS feature is available, this makes more sense
+        // ContentItem contentItem = new ContentItem();
+        // contentItem.setSource("STORED_MUSIC");
+        // contentItem.setSourceAccount("00113216-107a-0011-7a10-7a1016321100/0");
+        // contentItem.setUnusedField(0);
+        // contentItem.setLocation("28$65445");
+        // contentItem.setPresetable(true);
+        // contentItem.setItemName("100 Jahre");
 
+        ContentItem contentItem = null;
+        Collection<ContentItem> listOfPresets = mapOfPresets.values();
+        for (ContentItem iteratedItem : listOfPresets) {
+            if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.STORED_MUSIC)) {
+                contentItem = iteratedItem;
+            }
+        }
         if (contentItem != null) {
             return contentItem;
         } else {
-            throw new OperationModeNotAvailableException();
+            throw new NoStoredMusicPresetFoundException();
         }
     }
 
