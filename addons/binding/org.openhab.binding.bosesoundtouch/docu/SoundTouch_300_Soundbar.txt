@@ -1,0 +1,9 @@
+<info deviceID="XXXXXXXXXXXX">
+<type>...</type>
+</info>
+
+<sources deviceID="XXXXXXXXXXXX">
+<sourceItem source="PRODUCT" sourceAccount="TV" status="READY" isLocal="true">TV</sourceItem>
+<sourceItem source="PRODUCT" sourceAccount="HDMI_1" status="READY" isLocal="true">HDMI_1</sourceItem>
+<sourceItem source="BLUETOOTH" status="READY" isLocal="true"/>
+</sources>
