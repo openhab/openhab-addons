@@ -369,10 +369,10 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 logger.warn("{}: OperationMode \"{}\" is not supported yet", getDeviceName(), operationModeType.name());
                 checkOperationMode();
             } catch (NoInternetRadioPresetFoundException e) {
-                logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined", getDeviceName());
+                logger.warn("{}: Unable to switch to mode \"INTERNET_RADIO\". No PRESET defined", getDeviceName());
                 checkOperationMode();
             } catch (NoStoredMusicPresetFoundException e) {
-                logger.warn("{}: Unable to switch to mode: STORED_MUSIC. No PRESET defined", getDeviceName());
+                logger.warn("{}: Unable to switch to mode: \"STORED_MUSIC\". No PRESET defined", getDeviceName());
                 checkOperationMode();
             }
         }
@@ -574,7 +574,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     @Override
     public void onWebSocketBinary(byte[] arr, int pos, int len) {
         // we don't expect binary data so just dump if we get some...
-        logger.info("{}: onWebSocketBinary({}, {}, '{}')", pos, len, Arrays.toString(arr));
+        logger.debug("{}: onWebSocketBinary({}, {}, '{}')", pos, len, Arrays.toString(arr));
     }
 
     @Override

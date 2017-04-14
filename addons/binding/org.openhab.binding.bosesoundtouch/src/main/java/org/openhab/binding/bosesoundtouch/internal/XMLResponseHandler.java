@@ -38,8 +38,6 @@ public class XMLResponseHandler extends DefaultHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XMLResponseHandler.class);
 
-    private boolean tracing;
-
     private XMLResponseProcessor processor;
     private BoseSoundTouchHandler handler;
 
@@ -66,15 +64,12 @@ public class XMLResponseHandler extends DefaultHandler {
         this.stateSwitchingMap = stateSwitchingMap;
         states = new Stack<>();
         state = XMLHandlerState.INIT;
-        tracing = logger.isTraceEnabled();
     }
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
-        if (tracing) {
-            logger.trace("{}: startElement('{}'; state: {})", handler.getDeviceName(), localName, state);
-        }
+        logger.trace("{}: startElement('{}'; state: {})", handler.getDeviceName(), localName, state);
         states.push(state);
         XMLHandlerState curState = state; // save for switch statement
         Map<String, XMLHandlerState> stateMap = stateSwitchingMap.get(state);
@@ -120,8 +115,10 @@ public class XMLResponseHandler extends DefaultHandler {
                         state = XMLHandlerState.Unprocessed;
                     }
                 } else {
-                    logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
-                            localName);
+                    if (logger.isDebugEnabled()) {
+                        logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                                localName);
+                    }
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -129,8 +126,10 @@ public class XMLResponseHandler extends DefaultHandler {
                 if ("request".equals(localName)) {
                     state = XMLHandlerState.Unprocessed; // TODO implement request id / response tracking...
                 } else {
-                    logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
-                            localName);
+                    if (logger.isDebugEnabled()) {
+                        logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                                localName);
+                    }
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -192,8 +191,10 @@ public class XMLResponseHandler extends DefaultHandler {
                 } else {
                     state = stateMap.get(localName);
                     if (state == null) {
-                        logger.warn("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
-                                localName);
+                        if (logger.isDebugEnabled()) {
+                            logger.warn("{}: Unhandled XML entity during {}: '{}", handler.getDeviceName(), curState,
+                                    localName);
+                        }
                         state = XMLHandlerState.Unprocessed;
                     } else if (state != XMLHandlerState.Volume && state != XMLHandlerState.Presets
                             && state != XMLHandlerState.Unprocessed) {
@@ -213,8 +214,10 @@ public class XMLResponseHandler extends DefaultHandler {
                     }
                     contentItem.setPresetID(Integer.parseInt(id));
                 } else {
-                    logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
-                            localName);
+                    if (logger.isDebugEnabled()) {
+                        logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                                localName);
+                    }
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
@@ -254,7 +257,10 @@ public class XMLResponseHandler extends DefaultHandler {
             case VolumeMuteEnabled:
             case ZoneMember:
             case ZoneUpdated: // currently this dosn't provide any zone details..
-                logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState, localName);
+                if (logger.isDebugEnabled()) {
+                    logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                            localName);
+                }
                 state = XMLHandlerState.Unprocessed;
                 break;
             case Unprocessed:
@@ -284,7 +290,9 @@ public class XMLResponseHandler extends DefaultHandler {
             String localName) {
         XMLHandlerState state = stateMap.get(localName);
         if (state == null) {
-            logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState, localName);
+            if (logger.isDebugEnabled()) {
+                logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState, localName);
+            }
             state = XMLHandlerState.Unprocessed;
         }
         return state;
@@ -293,9 +301,7 @@ public class XMLResponseHandler extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
-        if (tracing) {
-            logger.trace("{}: endElement('{}')", handler.getDeviceName(), localName);
-        }
+        logger.trace("{}: endElement('{}')", handler.getDeviceName(), localName);
         final XMLHandlerState prevState = state;
         state = states.pop();
         switch (prevState) {
@@ -361,10 +367,7 @@ public class XMLResponseHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        if (tracing) {
-            logger.trace("{}: Text data during {}: '{}'", handler.getDeviceName(), state,
-                    new String(ch, start, length));
-        }
+        logger.trace("{}: Text data during {}: '{}'", handler.getDeviceName(), state, new String(ch, start, length));
         String temp;
         super.characters(ch, start, length);
         switch (state) {
