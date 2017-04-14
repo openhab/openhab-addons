@@ -6,7 +6,7 @@
 
 	<thing-type id="device">
 		<label>Bose SoundTouch</label>
-		<description>The represents a Bose SoundTouch device like the SoundTouch 10, 20, 30, etc</description>
+		<description>Represents a Bose SoundTouch device</description>
 
 		<channels>
 		    <channel id="power" typeId="power" />
@@ -74,12 +74,17 @@
                 <option value="INTERNET_RADIO">INTERNET_RADIO</option>
                 <option value="BLUETOOTH">BLUETOOTH</option>
                 <option value="AUX">AUX</option>
-                <!-- <option value="SPOTIFY">SPOTIFY</option>
+                <option value="AUX1">AUX1</option>
+                <option value="AUX2">AUX2</option>
+                <option value="AUX3">AUX3</option>
+                <option value="TV">TV</option>
+                <option value="HDMI">HDMI</option>
+                <option value="SPOTIFY">SPOTIFY</option>
                 <option value="PANDORA">PANDORA</option>
                 <option value="DEEZER">DEEZER</option>
                 <option value="SIRIUSXM">SIRIUSXM</option>
                 <option value="STORED_MUSIC">STORED_MUSIC</option>
-                <option value="AMAZON">AMAZON</option>  -->
+                <option value="AMAZON">AMAZON</option>
             </options>
         </state>
     </channel-type>

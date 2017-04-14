@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.bosesoundtouch.internal.items;
 
-import org.openhab.binding.bosesoundtouch.internal.XMLResponseHandler;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Traunbauer
  */
 public class ContentItem {
-    private final Logger logger = LoggerFactory.getLogger(XMLResponseHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ContentItem.class);
 
     private OperationModeType operationMode;
     private String source;
@@ -167,7 +166,10 @@ public class ContentItem {
                 xml = "<ContentItem source=\"BLUETOOTH\"></ContentItem>";
                 break;
             case AUX:
-                xml = "<ContentItem source=\"AUX\" sourceAccount=\"AUX\"></ContentItem>";
+            case AUX1:
+            case AUX2:
+            case AUX3:
+                xml = "<ContentItem source=\"AUX\" sourceAccount=\"" + sourceAccount + "\"></ContentItem>";
                 break;
             case TV:
                 xml = "<ContentItem unusedField=\"0\" source=\"PRODUCT\" sourceAccount=\"TV\" isPresetable=\"false\" />";
@@ -175,11 +177,9 @@ public class ContentItem {
             case HDMI:
                 xml = "<ContentItem unusedField=\"0\" source=\"PRODUCT\" sourceAccount=\"HDMI_1\" isPresetable=\"false\" />";
                 break;
-            case INTERNET_RADIO:
-            case STORED_MUSIC:
             default:
                 xml = "<ContentItem " + "unusedField=" + "\"" + unusedField + "\" " + "source=" + "\"" + source + "\" "
-                        + "location=" + "\"" + location + "\" " + "sourceAccount=" + "\"" + sourceAccount + "\""
+                        + "location=" + "\"" + location + "\" " + "sourceAccount=" + "\"" + sourceAccount + "\" "
                         + "isPresetable=" + "\"" + presetable + "\">" + "<itemName>" + itemName
                         + "</itemName></ContentItem>";
                 break;

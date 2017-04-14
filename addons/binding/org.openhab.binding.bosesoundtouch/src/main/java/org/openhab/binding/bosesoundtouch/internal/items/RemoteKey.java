@@ -14,39 +14,49 @@ package org.openhab.binding.bosesoundtouch.internal.items;
  * @author Christian Niessner - Initial contribution
  */
 public enum RemoteKey {
-    PLAY,
-    PAUSE,
-    STOP,
-    PREV_TRACK,
-    NEXT_TRACK,
-    THUMBS_UP,
-    THUMBS_DOWN,
-    BOOKMARK,
-    POWER,
-    MUTE,
-    VOLUME_UP,
-    VOLUME_DOWN,
-    PRESET_1,
-    PRESET_2,
-    PRESET_3,
-    PRESET_4,
-    PRESET_5,
-    PRESET_6,
-    AUX_INPUT,
-    SHUFFLE_OFF,
-    SHUFFLE_ON,
-    REPEAT_OFF,
-    REPEAT_ONE,
-    REPEAT_ALL,
-    PLAY_PAUSE,
-    ADD_FAVORITE,
-    REMOVE_FAVORITE,
-    INVALID_KEY;
+    PLAY(0),
+    PAUSE(0),
+    STOP(0),
+    PREV_TRACK(0),
+    NEXT_TRACK(0),
+    THUMBS_UP(0),
+    THUMBS_DOWN(0),
+    BOOKMARK(0),
+    POWER(0),
+    MUTE(0),
+    VOLUME_UP(0),
+    VOLUME_DOWN(0),
+    PRESET_1(1),
+    PRESET_2(2),
+    PRESET_3(3),
+    PRESET_4(4),
+    PRESET_5(5),
+    PRESET_6(6),
+    AUX_INPUT(0),
+    SHUFFLE_OFF(0),
+    SHUFFLE_ON(0),
+    REPEAT_OFF(0),
+    REPEAT_ONE(0),
+    REPEAT_ALL(0),
+    PLAY_PAUSE(0),
+    ADD_FAVORITE(0),
+    REMOVE_FAVORITE(0),
+    INVALID_KEY(0);
 
-    public final String name;
+    private String name;
+    private int value;
 
-    private RemoteKey() {
-        name = name();
+    private RemoteKey(int value) {
+        this.name = name();
+        this.value = value;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public String getName() {
+        return name;
     }
 
 }

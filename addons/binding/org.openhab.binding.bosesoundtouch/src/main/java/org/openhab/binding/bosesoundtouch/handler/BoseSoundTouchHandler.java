@@ -49,8 +49,12 @@ import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
 import org.openhab.binding.bosesoundtouch.internal.XMLResponseProcessor;
 import org.openhab.binding.bosesoundtouch.internal.ZoneState;
 import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
+import org.openhab.binding.bosesoundtouch.internal.items.ContentItemMaker;
 import org.openhab.binding.bosesoundtouch.internal.items.RemoteKey;
+import org.openhab.binding.bosesoundtouch.internal.items.SoundTouchType;
 import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
+import org.openhab.binding.bosesoundtouch.types.NoInternetRadioPresetFoundException;
+import org.openhab.binding.bosesoundtouch.types.OperationModeNotAvailableException;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,33 +179,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                     String cmd = command.toString().toUpperCase().trim();
                     try {
                         OperationModeType selectedMode = OperationModeType.valueOf(cmd);
-                        switch (selectedMode) {
-                            case STANDBY:
-                                selectOperationModeStandby();
-                                break;
-                            case INTERNET_RADIO:
-                                selectOperationModeRadio();
-                                break;
-                            case BLUETOOTH:
-                                selectOperationModeBluetooth();
-                                break;
-                            case AUX:
-                                selectOperationModeAUX();
-                                break;
-                            case STORED_MUSIC:
-                                selectOperationModeStoredMusic();
-                                break;
-                            case TV:
-                                selectOperationModeProductTV();
-                                break;
-                            case HDMI:
-                                selectOperationModeProductHDMI();
-                                break;
-                            default:
-                                logger.warn("{}: \"{}\" OperationMode selection not supported yet", getDeviceName(),
-                                        cmd);
-                                break;
-                        }
+                        selectOperationMode(selectedMode);
                     } catch (IllegalArgumentException iae) {
                         logger.error("{}: OperationMode \"{}\" is not valid!", getDeviceName(), cmd);
                     }
@@ -245,14 +223,14 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                     }
                 } else if (command instanceof StringType) {
                     String cmd = command.toString();
-                    if (cmd.equals(RemoteKey.PLAY.name)) {
+                    if (cmd.equals(RemoteKey.PLAY.getName())) {
                         if (currentOperationMode == OperationModeType.STANDBY) {
                             simulateRemoteKey(RemoteKey.POWER);
                         } else {
                             simulateRemoteKey(RemoteKey.PLAY);
                         }
                     }
-                    if (cmd.equals(RemoteKey.PAUSE.name)) {
+                    if (cmd.equals(RemoteKey.PAUSE.getName())) {
                         simulateRemoteKey(RemoteKey.PAUSE);
                     }
                     if (cmd.equals("NEXT")) {
@@ -335,18 +313,11 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
             } else if (channelUID.equals(channelPresetUID)) {
                 if (command instanceof StringType) {
                     String cmd = command.toString();
-                    if (cmd.equals(RemoteKey.PRESET_1.name)) {
-                        switchToContentItem(mapOfPresets.get(1));
-                    } else if (cmd.equals(RemoteKey.PRESET_2.name)) {
-                        switchToContentItem(mapOfPresets.get(2));
-                    } else if (cmd.equals(RemoteKey.PRESET_3.name)) {
-                        switchToContentItem(mapOfPresets.get(3));
-                    } else if (cmd.equals(RemoteKey.PRESET_4.name)) {
-                        switchToContentItem(mapOfPresets.get(4));
-                    } else if (cmd.equals(RemoteKey.PRESET_5.name)) {
-                        switchToContentItem(mapOfPresets.get(5));
-                    } else if (cmd.equals(RemoteKey.PRESET_6.name)) {
-                        switchToContentItem(mapOfPresets.get(6));
+                    RemoteKey key = RemoteKey.valueOf(cmd);
+                    int presetID = key.getValue();
+                    ContentItem preset = mapOfPresets.get(presetID);
+                    if (preset != null) {
+                        switchToContentItem(preset);
                     } else {
                         logger.warn("{}: Invalid preset: {}", getDeviceName(), cmd);
                     }
@@ -383,68 +354,24 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     }
 
-    private void selectOperationModeStandby() {
-        if (currentOperationMode != OperationModeType.STANDBY) {
-            simulateRemoteKey(RemoteKey.POWER);
-        }
-    }
-
-    private void selectOperationModeRadio() {
-        ContentItem psFound = null;
-        Collection<ContentItem> listOfPresets = mapOfPresets.values();
-        for (ContentItem ps : listOfPresets) {
-            if ((psFound == null) && (ps.getOperationMode() == OperationModeType.INTERNET_RADIO)) {
-                psFound = ps;
+    private void selectOperationMode(OperationModeType operationModeType) {
+        if (operationModeType == OperationModeType.STANDBY) {
+            if (currentOperationMode != OperationModeType.STANDBY) {
+                simulateRemoteKey(RemoteKey.POWER);
+            }
+        } else {
+            try {
+                ContentItemMaker contentItemMaker = new ContentItemMaker(getDeviceType(), mapOfPresets);
+                ContentItem contentItem = contentItemMaker.getContentItem(operationModeType);
+                switchToContentItem(contentItem);
+            } catch (OperationModeNotAvailableException e) {
+                logger.warn("{}: OperationMode \"{}\" is not supported yet", getDeviceName(), operationModeType.name());
+                checkOperationMode();
+            } catch (NoInternetRadioPresetFoundException e) {
+                logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined", getDeviceName());
+                checkOperationMode();
             }
         }
-        if (psFound != null) {
-            switchToContentItem(psFound);
-        } else {
-            logger.warn("{}: Unable to switch to mode: INTERNET_RADIO. No PRESET defined", getDeviceName());
-        }
-    }
-
-    private void selectOperationModeBluetooth() {
-        ContentItem contentItem = new ContentItem();
-        contentItem.setSource("BLUETOOTH");
-        switchToContentItem(contentItem);
-    }
-
-    private void selectOperationModeAUX() {
-        ContentItem contentItem = new ContentItem();
-        contentItem.setSource("AUX");
-        contentItem.setSourceAccount("AUX");
-        switchToContentItem(contentItem);
-    }
-
-    private void selectOperationModeStoredMusic() {
-        // This is just an example, must find a way to do this
-        ContentItem contentItem = new ContentItem();
-        contentItem.setSource("STORED_MUSIC");
-        contentItem.setSourceAccount("00113216-107a-0011-7a10-7a1016321100/0");
-        contentItem.setUnusedField(0);
-        contentItem.setLocation("28$65445");
-        contentItem.setPresetable(true);
-        contentItem.setItemName("100 Jahre");
-        switchToContentItem(contentItem);
-    }
-
-    private void selectOperationModeProductTV() {
-        ContentItem contentItem = new ContentItem();
-        contentItem.setSource("PRODUCT");
-        contentItem.setSourceAccount("TV");
-        contentItem.setUnusedField(0);
-        contentItem.setPresetable(false);
-        switchToContentItem(contentItem);
-    }
-
-    private void selectOperationModeProductHDMI() {
-        ContentItem contentItem = new ContentItem();
-        contentItem.setSource("PRODUCT");
-        contentItem.setSourceAccount("HDMI_1");
-        contentItem.setUnusedField(0);
-        contentItem.setPresetable(false);
-        switchToContentItem(contentItem);
     }
 
     public void sendRequestInWebSocket(String url) {
@@ -673,6 +600,29 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     public String getDeviceName() {
         return thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME);
+    }
+
+    public SoundTouchType getDeviceType() {
+        String typeAsString = thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_TYPE);
+        SoundTouchType type = SoundTouchType.Unknown;
+
+        if (typeAsString.equals("SoundTouch 10")) {
+            type = SoundTouchType.SoundTouch_10_WirelessSpeaker;
+        } else if (typeAsString.equals("SoundTouch 20")) {
+            type = SoundTouchType.SoundTouch_20_WirelessSpeaker;
+        } else if (typeAsString.equals("SoundTouch 30")) {
+            type = SoundTouchType.SoundTouch_30_WirelessSpeaker;
+        } else if (typeAsString.contains("SoundBar")) { // TODO better criteria
+            type = SoundTouchType.SoundTouch_300_Soundbar;
+        } else if (typeAsString.contains("Amplifier")) { // TODO better criteria
+            type = SoundTouchType.SoundTouch_SA5Amplifier;
+        } else if (typeAsString.contains("Adapter")) { // TODO better criteria
+            type = SoundTouchType.SoundTouch_WirelessLinkAdapter;
+        } else if (typeAsString.contains("Wave")) { // TODO better criteria
+            type = SoundTouchType.WaveSoundTouchMusicSystemIV;
+        }
+
+        return type;
     }
 
     public void zonesChanged() {

@@ -318,7 +318,6 @@ public class XMLResponseHandler extends DefaultHandler {
                 if (state == XMLHandlerState.Presets) {
                     handler.addContentItemToPresetList(contentItem);
                     contentItem = null;
-                    handler.checkOperationMode();
                 }
                 break;
             case NowPlaying:
