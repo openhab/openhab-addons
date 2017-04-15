@@ -62,14 +62,14 @@ Bridge sleepiq:cloud:1 [ username="name@example.com", password="password", polli
 
 All channels within this group are read-only.
 
-| Channel ID           | Item Type | Description                                                                                                     |
-|----------------------|-----------|-----------------------------------------------------------------------------------------------------------------|
-| inBed                | Switch    | The presence of a person or object on the chamber                                                               |
-| sleepNumber          | Number    | The Sleep Number setting of the chamber                                                                         |
-| pressure             | Number    | The current pressure inside the chamber                                                                         |
-| lastLink             | String    | The amount of time that has passed since a connection was made from the chamber to the cloud service (HH:MM:SS) |
-| alertId              | Number    | Identifier for an alert condition with the chamber                                                              |
-| alertDetailedMessage | String    | A detailed message describing an alert condition with the chamber                                               |
+| Channel ID           | Item Type | Description                                                                                                         |
+|----------------------|-----------|---------------------------------------------------------------------------------------------------------------------|
+| inBed                | Switch    | The presence of a person or object on the chamber                                                                   |
+| sleepNumber          | Number    | The Sleep Number setting of the chamber                                                                             |
+| pressure             | Number    | The current pressure inside the chamber                                                                             |
+| lastLink             | String    | The amount of time that has passed since a connection was made from the chamber to the cloud service (D d HH:MM:SS) |
+| alertId              | Number    | Identifier for an alert condition with the chamber                                                                  |
+| alertDetailedMessage | String    | A detailed message describing an alert condition with the chamber                                                   |
 
 ## Items
 

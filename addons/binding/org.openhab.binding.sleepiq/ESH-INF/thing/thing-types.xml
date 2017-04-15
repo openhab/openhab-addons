@@ -121,7 +121,7 @@
     <channel-type id="lastLinkType">
         <item-type>String</item-type>
         <label>Last Link</label>
-        <description>The amount of time that has passed since a connection was made from the chamber to the cloud service (HH:MM:SS)</description>
+        <description>The amount of time that has passed since a connection was made from the chamber to the cloud service (D d HH:MM:SS)</description>
         <state readOnly="true" />
     </channel-type>
     <channel-type id="alertIdType">
