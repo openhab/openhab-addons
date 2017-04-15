@@ -25,14 +25,14 @@ public class BinRpcNetworkService implements Runnable {
     private static final String RPC_POOL_NAME = "homematicRpc";
     private ServerSocket serverSocket;
     private boolean accept = true;
-    private RpcEventListener listener;
+    private RpcServer rpcServer;
     private HomematicConfig config;
 
     /**
      * Creates the socket for listening to events from the Homematic gateway.
      */
-    public BinRpcNetworkService(RpcEventListener listener, HomematicConfig config) throws IOException {
-        this.listener = listener;
+    public BinRpcNetworkService(RpcServer rpcServer, HomematicConfig config) throws IOException {
+        this.rpcServer = rpcServer;
         this.config = config;
 
         serverSocket = new ServerSocket();
@@ -48,7 +48,7 @@ public class BinRpcNetworkService implements Runnable {
         while (accept) {
             try {
                 Socket cs = serverSocket.accept();
-                BinRpcCallbackHandler rpcHandler = new BinRpcCallbackHandler(cs, listener, config.getEncoding());
+                BinRpcCallbackHandler rpcHandler = new BinRpcCallbackHandler(cs, rpcServer, config.getEncoding());
                 ThreadPoolManager.getPool(RPC_POOL_NAME).execute(rpcHandler);
             } catch (IOException ex) {
                 // ignore

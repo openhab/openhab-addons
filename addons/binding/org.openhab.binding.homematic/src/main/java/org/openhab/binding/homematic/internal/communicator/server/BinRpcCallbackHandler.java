@@ -13,15 +13,9 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.openhab.binding.homematic.internal.communicator.message.BinRpcMessage;
-import org.openhab.binding.homematic.internal.communicator.parser.DeleteDevicesParser;
-import org.openhab.binding.homematic.internal.communicator.parser.EventParser;
-import org.openhab.binding.homematic.internal.communicator.parser.NewDevicesParser;
-import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +33,12 @@ public class BinRpcCallbackHandler implements Runnable {
             3, 0, 0, 0, 5, 'e', 'v', 'e', 'n', 't' };
 
     private Socket socket;
-    private RpcEventListener listener;
+    private RpcServer rpcServer;
     private String encoding;
 
-    public BinRpcCallbackHandler(Socket socket, RpcEventListener listener, String encoding) {
+    public BinRpcCallbackHandler(Socket socket, RpcServer rpcServer, String encoding) {
         this.socket = socket;
-        this.listener = listener;
+        this.rpcServer = rpcServer;
         this.encoding = encoding;
     }
 
@@ -80,15 +74,30 @@ public class BinRpcCallbackHandler implements Runnable {
      */
     private byte[] handleMethodCall(String methodName, Object[] responseData) throws IOException {
         if (RPC_METHODNAME_EVENT.equals(methodName)) {
-            return handleEvent(responseData);
+            try {
+                rpcServer.handleEvent(responseData);
+            } finally {
+            }
+            return BIN_EMPTY_STRING;
+
         } else if (RPC_METHODNAME_LIST_DEVICES.equals(methodName) || RPC_METHODNAME_UPDATE_DEVICE.equals(methodName)) {
             return BIN_EMPTY_ARRAY;
         } else if (RPC_METHODNAME_DELETE_DEVICES.equals(methodName)) {
-            return handleDeleteDevice(responseData);
+            try {
+                rpcServer.handleDeleteDevice(responseData);
+            } finally {
+            }
+            return BIN_EMPTY_ARRAY;
         } else if (RPC_METHODNAME_NEW_DEVICES.equals(methodName)) {
-            return handleNewDevice(responseData);
+            try {
+                rpcServer.handleNewDevice(responseData);
+            } finally {
+            }
+            return BIN_EMPTY_ARRAY;
         } else if (RPC_METHODNAME_SYSTEM_LISTMETHODS.equals(methodName)) {
-            return handleListMethods();
+            BinRpcMessage msg = new BinRpcMessage(null, BinRpcMessage.TYPE.RESPONSE, encoding);
+            msg.addArg(rpcServer.getListMethods());
+            return msg.createMessage();
         } else if (RPC_METHODNAME_SYSTEM_MULTICALL.equals(methodName)) {
             for (Object o : (Object[]) responseData[0]) {
                 Map<?, ?> call = (Map<?, ?>) o;
@@ -102,61 +111,4 @@ public class BinRpcCallbackHandler implements Runnable {
             return BIN_EMPTY_EVENT_LIST;
         }
     }
-
-    /**
-     * Creates a BINRPC message with the supported method names.
-     */
-    private byte[] handleListMethods() {
-        BinRpcMessage msg = new BinRpcMessage(null, BinRpcMessage.TYPE.RESPONSE, encoding);
-        List<String> events = new ArrayList<String>();
-        events.add(RPC_METHODNAME_SYSTEM_MULTICALL);
-        events.add(RPC_METHODNAME_EVENT);
-        events.add(RPC_METHODNAME_DELETE_DEVICES);
-        events.add(RPC_METHODNAME_NEW_DEVICES);
-        msg.addArg(events);
-        return msg.createMessage();
-    }
-
-    /**
-     * Populates the extracted event to the listener.
-     */
-    @SuppressWarnings("finally")
-    private byte[] handleEvent(Object[] message) throws IOException {
-        try {
-            EventParser eventParser = new EventParser();
-            HmDatapointInfo dpInfo = eventParser.parse(message);
-            listener.eventReceived(dpInfo, eventParser.getValue());
-        } finally {
-            return BIN_EMPTY_STRING;
-        }
-    }
-
-    /**
-     * Calls the listener when a devices has been detected.
-     */
-    @SuppressWarnings("finally")
-    private byte[] handleNewDevice(Object[] message) throws IOException {
-        try {
-            NewDevicesParser ndParser = new NewDevicesParser();
-            List<String> adresses = ndParser.parse(message);
-            listener.newDevices(adresses);
-        } finally {
-            return BIN_EMPTY_ARRAY;
-        }
-    }
-
-    /**
-     * Calls the listener when devices has been deleted.
-     */
-    @SuppressWarnings("finally")
-    private byte[] handleDeleteDevice(Object[] message) throws IOException {
-        try {
-            DeleteDevicesParser ddParser = new DeleteDevicesParser();
-            List<String> adresses = ddParser.parse(message);
-            listener.deleteDevices(adresses);
-        } finally {
-            return BIN_EMPTY_ARRAY;
-        }
-    }
-
 }

@@ -19,16 +19,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class BinRpcServer implements RpcServer {
+public class BinRpcServer extends AbstractRpcServer {
     private final Logger logger = LoggerFactory.getLogger(BinRpcServer.class);
 
     private Thread networkServiceThread;
     private BinRpcNetworkService networkService;
-    private RpcEventListener listener;
     private HomematicConfig config;
 
     public BinRpcServer(RpcEventListener listener, HomematicConfig config) {
-        this.listener = listener;
+        super(listener);
         this.config = config;
     }
 
@@ -39,7 +38,7 @@ public class BinRpcServer implements RpcServer {
     public void start() throws IOException {
         logger.debug("Initializing BIN-RPC server at port {}", config.getBinCallbackPort());
 
-        networkService = new BinRpcNetworkService(listener, config);
+        networkService = new BinRpcNetworkService(this, config);
         networkServiceThread = new Thread(networkService);
         networkServiceThread.setName("HomematicRpcServer");
         networkServiceThread.start();
