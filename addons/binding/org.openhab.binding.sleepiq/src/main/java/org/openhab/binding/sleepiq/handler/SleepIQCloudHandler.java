@@ -154,7 +154,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
         if (!bedStatusListeners.isEmpty() && (pollingJob == null || pollingJob.isCancelled())) {
             int pollingInterval = getConfigAs(SleepIQCloudConfiguration.class).pollingInterval;
-            pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, pollingInterval, pollingInterval,
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, pollingInterval, pollingInterval,
                     TimeUnit.SECONDS);
         } else if (bedStatusListeners.isEmpty() && pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
