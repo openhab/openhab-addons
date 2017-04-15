@@ -12,14 +12,19 @@ This binding supports the following thing types:
 | phone         | Thing      | The phone wired to the Freebox Revolution.              |
 | net_device    | Thing      | A network device on the local network.                  |
 | net_interface | Thing      | A network interface from a device on the local network. |
+| airplay       | Thing      | An AirPlay device in the local network.                 |
 
 ## Discovery
 
-The Freebox Revolution server is discovered automatically through mDNS in the local network. After a Freebox Revolution is discovered and available to openHAB, the binding will automatically discover phone and network devices / interfaces on the local network. Note that the discovered thing will be setup to use only HTTP API (and not HTTPS) because only an IP can be automatically determined while a domain name is required to use HTTPS with a valid certificate.
+The Freebox Revolution server is discovered automatically through mDNS in the local network. After a Freebox Revolution is discovered and available to openHAB, the binding will automatically discover phone, network devices / interfaces and AirPlay devices with video capability in the local network. Note that the discovered thing will be setup to use only HTTP API (and not HTTPS) because only an IP can be automatically determined while a domain name is required to use HTTPS with a valid certificate.
 
 ## Binding configuration
 
-There are no overall binding configuration settings that need to be set. All settings are through thing configuration parameters.
+The binding has the following configuration options, which can be set for "binding:freebox":
+
+| Parameter   | Name         | Description                                                              | Required |
+|-------------|--------------|--------------------------------------------------------------------------|----------|
+| callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. http://192.168.0.2:8080 | no       |
 
 ## Thing Configuration
 
@@ -60,6 +65,16 @@ The _net_interface_ thing requires the following configuration parameters:
 | Parameter Label              | Parameter ID             | Description                                        | Required |
 |------------------------------|--------------------------|----------------------------------------------------|----------|
 | IP Address                   | ipAddress                | The IP address (v4 or v6) of the network interface.| true     |
+
+### AirPlay device
+
+The _airplay_ thing requires the following configuration parameters:
+
+| Parameter Label | Parameter ID | Description                 | Required |
+|-----------------|--------------|-----------------------------|----------|
+| Name            | name         | Name of the AirPlay device  | true     |
+| Password        | password     | AirPlay password            | false    |
+| Accept all MP3  | acceptAllMp3 | Accept any bitrate for MP3 audio or only bitrates greater than 64 kbps | false    |
 
 ## HTTPS Access
 
@@ -202,6 +217,8 @@ The following channels are supported:
 | phone         | outgoing#call_name       | String       | R      | Last outgoing call: called name                      |
 | net_device    | reachable                | Switch       | R      | Indicates whether the network device is reachable    |
 | net_interface | reachable                | Switch       | R      | Indicates whether the network interface is reachable |
+| airplay       | playurl                  | String       | W      | Play an audio or video media from the given URL      |
+| airplay       | stop                     | Switch       | W      | Stop the media playback                              |
 
 ## Example
 
@@ -214,6 +231,7 @@ Bridge freebox:server:fb "Freebox Revolution" [ appToken="xxxxxxxxxxxxxxxxxxxxxx
     Thing phone Phone "Phone"
     Thing net_device tv1 "TV living room" [ macAddress="XX:XX:XX:XX:XX:XX" ]
     Thing net_interface tv2 "TV bedroom" [ ipAddress="192.168.0.100" ]
+    Thing airplay player "Freebox Player (AirPlay)" [ name="Freebox Player" ]
 }
 ```
 
@@ -224,6 +242,7 @@ Bridge freebox:server:fb "Freebox Revolution" [ fqdn="abcdefgh.fbxos.fr", appTok
     Thing phone Phone "Phone" [ refreshPhoneInterval=10, refreshPhoneCallsInterval=120 ]
     Thing net_device tv1 "TV living room" [ macAddress="XX:XX:XX:XX:XX:XX" ]
     Thing net_interface tv2 "TV bedroom" [ ipAddress="192.168.0.100" ]
+    Thing airplay player "Freebox Player (AirPlay)" [ name="Freebox Player", password="1111", acceptAllMp3=false ]
 }
 ```
 
@@ -277,4 +296,7 @@ DateTime Freebox_outcall_ts "TimeStamp [%1$tA %1$td %1$tR]" <calendar> {channel=
 
 Switch TVLivingRoom "TV living room" <television> {channel="freebox:net_device:fb:tv1:reachable"}
 Switch TVBedroom "TV bedroom" <television> {channel="freebox:net_interface:fb:tv2:reachable"}
+
+String freebox_player_playurl "URL [%s]" { channel="freebox:airplay:fb:player:playurl" }
+Switch freebox_player_stop "Stop playback" { channel="freebox:airplay:fb:player:stop" }
 ```
