@@ -37,6 +37,7 @@ public class HomematicConstants {
     public static final String CHANNEL_TYPE_BLIND = "BLIND";
     public static final String CHANNEL_TYPE_WINMATIC = "WINMATIC";
     public static final String CHANNEL_TYPE_AKKU = "AKKU";
+    public static final String CHANNEL_TYPE_JALOUSIE = "JALOUSIE";
 
     public static final String DATAPOINT_NAME_CONFIG_PENDING = "CONFIG_PENDING";
     public static final String DATAPOINT_NAME_UPDATE_PENDING = "UPDATE_PENDING";

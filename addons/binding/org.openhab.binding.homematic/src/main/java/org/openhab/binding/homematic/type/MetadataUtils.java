@@ -275,7 +275,8 @@ public class MetadataUtils {
                 return ITEM_TYPE_SWITCH;
             }
         } else if (dp.isNumberType()) {
-            if (dpName.startsWith(DATAPOINT_NAME_LEVEL) && channelType.equals(CHANNEL_TYPE_BLIND)) {
+            if (dpName.startsWith(DATAPOINT_NAME_LEVEL)
+                    && (channelType.equals(CHANNEL_TYPE_BLIND) || channelType.equals(CHANNEL_TYPE_JALOUSIE))) {
                 return ITEM_TYPE_ROLLERSHUTTER;
             } else if (dpName.startsWith(DATAPOINT_NAME_LEVEL) && !channelType.equals(CHANNEL_TYPE_WINMATIC)
                     && !channelType.equals(CHANNEL_TYPE_AKKU)) {
