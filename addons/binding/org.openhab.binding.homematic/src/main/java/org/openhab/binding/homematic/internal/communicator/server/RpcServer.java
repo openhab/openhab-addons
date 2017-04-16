@@ -9,10 +9,9 @@
 package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
- * RPC server interface.
+ * Simple RPC server interface.
  *
  * @author Gerhard Riegler - Initial contribution
  */
@@ -27,25 +26,5 @@ public interface RpcServer {
      * Stops the rpc server.
      */
     public void shutdown();
-
-    /**
-     * Creates a BINRPC message with the supported method names.
-     */
-    public List<String> getListMethods();
-
-    /**
-     * Populates the extracted event to the listener.
-     */
-    public void handleEvent(Object[] message) throws IOException;
-
-    /**
-     * Calls the listener when a devices has been detected.
-     */
-    public void handleNewDevice(Object[] message) throws IOException;
-
-    /**
-     * Calls the listener when devices has been deleted.
-     */
-    public void handleDeleteDevice(Object[] message) throws IOException;
 
 }

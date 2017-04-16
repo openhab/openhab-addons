@@ -8,11 +8,8 @@
  */
 package org.openhab.binding.homematic.internal.communicator.server;
 
-import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
-
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +20,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
+import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.message.XmlRpcRequest;
 import org.openhab.binding.homematic.internal.communicator.message.XmlRpcResponse;
 import org.slf4j.Logger;
@@ -34,7 +32,7 @@ import org.xml.sax.SAXException;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class XmlRpcServer extends AbstractRpcServer {
+public class XmlRpcServer implements RpcServer {
     private final Logger logger = LoggerFactory.getLogger(XmlRpcServer.class);
 
     private static final String XML_EMPTY_STRING = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<methodResponse><params><param><value></value></param></params></methodResponse>";
@@ -43,10 +41,45 @@ public class XmlRpcServer extends AbstractRpcServer {
 
     private Server xmlRpcHTTPD;
     private HomematicConfig config;
+    private RpcResponseHandler<String> rpcResponseHander;
+    private ResponseHandler jettyResponseHandler = new ResponseHandler();
 
     public XmlRpcServer(RpcEventListener listener, HomematicConfig config) {
-        super(listener);
         this.config = config;
+        this.rpcResponseHander = new RpcResponseHandler<String>(listener) {
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            protected String getEmptyStringResult() {
+                return XML_EMPTY_STRING;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            protected String getEmptyEventListResult() {
+                return XML_EMPTY_EVENT_LIST;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            protected String getEmptyArrayResult() {
+                return XML_EMPTY_ARRAY;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            protected RpcRequest<String> createRpcRequest() {
+                return new XmlRpcRequest(null, XmlRpcRequest.TYPE.RESPONSE);
+            }
+        };
     }
 
     /**
@@ -57,7 +90,7 @@ public class XmlRpcServer extends AbstractRpcServer {
         logger.debug("Initializing XML-RPC server at port {}", config.getXmlCallbackPort());
 
         xmlRpcHTTPD = new Server(config.getXmlCallbackPort());
-        xmlRpcHTTPD.setHandler(new ResponseHandler());
+        xmlRpcHTTPD.setHandler(jettyResponseHandler);
 
         try {
             xmlRpcHTTPD.start();
@@ -105,7 +138,8 @@ public class XmlRpcServer extends AbstractRpcServer {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Server parsed XmlRpcMessage:\n{}", xmlResponse);
                 }
-                final String returnValue = handleMethodCall(xmlResponse.getMethodName(), xmlResponse.getResponseData());
+                final String returnValue = rpcResponseHander.handleMethodCall(xmlResponse.getMethodName(),
+                        xmlResponse.getResponseData());
                 if (logger.isTraceEnabled()) {
                     logger.trace("Server XmlRpcResponse:\n{}", returnValue);
                 }
@@ -116,52 +150,6 @@ public class XmlRpcServer extends AbstractRpcServer {
             }
             baseRequest.setHandled(true);
         }
-
-        /**
-         * Returns a valid result of the method called by the Homematic gateway.
-         */
-        private String handleMethodCall(String methodName, Object[] responseData) throws IOException {
-            if (RPC_METHODNAME_EVENT.equals(methodName)) {
-                try {
-                    handleEvent(responseData);
-                } finally {
-                }
-                return XML_EMPTY_STRING;
-            } else if (RPC_METHODNAME_LIST_DEVICES.equals(methodName)
-                    || RPC_METHODNAME_UPDATE_DEVICE.equals(methodName)) {
-                return XML_EMPTY_ARRAY;
-            } else if (RPC_METHODNAME_DELETE_DEVICES.equals(methodName)) {
-                try {
-                    handleDeleteDevice(responseData);
-                } finally {
-                }
-                return XML_EMPTY_ARRAY;
-            } else if (RPC_METHODNAME_NEW_DEVICES.equals(methodName)) {
-                try {
-                    handleNewDevice(responseData);
-                } finally {
-                }
-                return XML_EMPTY_ARRAY;
-            } else if (RPC_METHODNAME_SYSTEM_LISTMETHODS.equals(methodName)) {
-                XmlRpcRequest msg = new XmlRpcRequest(null, XmlRpcRequest.TYPE.RESPONSE);
-                msg.addArg(getListMethods());
-                return msg.toString();
-            } else if (RPC_METHODNAME_SYSTEM_MULTICALL.equals(methodName)) {
-                for (Object o : (Object[]) responseData[0]) {
-                    Map<?, ?> call = (Map<?, ?>) o;
-                    String method = call.get("methodName").toString();
-                    Object[] data = (Object[]) call.get("params");
-                    handleMethodCall(method, data);
-                }
-                return XML_EMPTY_EVENT_LIST;
-            } else if (RPC_METHODNAME_SET_CONFIG_READY.equals(methodName)) {
-                return XML_EMPTY_EVENT_LIST;
-            } else {
-                logger.warn("Unknown method called by Homematic gateway: {}", methodName);
-                return XML_EMPTY_EVENT_LIST;
-            }
-        }
-
     }
 
 }
