@@ -179,6 +179,11 @@ public class LightifyLink {
 
     private void onPacket(byte[] packet, Command command, ByteBuffer buffer, Consumer<LightifyLuminary> consumer) {
         int error = handleHeader(packet, command, buffer);
+        if (error == -1) {
+            // Handling failed on header level
+            return;
+        }
+
         if (error != 0x00) {
             String sent = DatatypeConverter.printHexBinary(packet);
             String received = DatatypeConverter.printHexBinary(buffer.array());
@@ -291,7 +296,7 @@ public class LightifyLink {
 
     private void handleStatusAll(ByteBuffer buffer, Consumer<? super LightifyLuminary> consumer) {
         int numOfLights = buffer.getShort();
-        logger.debug("FoRund {} devices...", numOfLights);
+        logger.debug("Found {} devices...", numOfLights);
         for (int i = 0; i < numOfLights; i++) {
             int id = buffer.getShort();
 
@@ -333,6 +338,7 @@ public class LightifyLink {
             boolean isPureWhite = (type & BITMASK_PURE_WHITE) == BITMASK_PURE_WHITE;
 
             List<Capability> capabilities = new ArrayList<>();
+            capabilities.add(Capability.Dimming);
             if (isRGB) capabilities.add(Capability.RGB);
             if (isTunableWhite) capabilities.add(Capability.TunableWhite);
             if (isPureWhite) capabilities.add(Capability.PureWhite);
@@ -364,7 +370,8 @@ public class LightifyLink {
 
         int commandId = Byte.toUnsignedInt(buffer.get());
         if (command.getId() != commandId) {
-            throw new IllegalStateException("Illegal packet type: 0x" + Integer.toHexString(commandId) + ", command: " + command);
+            logger.warn("Illegal packet type: 0x{}, command: {}", Integer.toHexString(commandId), command);
+            return -1;
         }
 
         buffer.getInt(); // request id, unused in this implementation

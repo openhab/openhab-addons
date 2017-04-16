@@ -23,9 +23,10 @@ public class Test {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         LightifyLink link = new LightifyLink("172.25.100.141", scheduler);
         link.performSearch(l -> {
-            link.disconnect();
-            if (l instanceof LightifyLight) {
-                link.performSwitch(l, !l.isPowered(), System.out::println);
+            //link.disconnect();
+            if (l instanceof LightifyLight && !l.getName().contains("Wohnzimmer")) {
+                //link.performSwitch(l, !l.isPowered(), System.out::println);
+                link.performLuminance(l, (byte) 85, (short) 0, System.out::println);
             }
         });
     }
