@@ -40,7 +40,7 @@ public class HomematicGatewayFactory {
      * Loads some metadata about the type of the Homematic gateway.
      */
     private static void loadGatewayInfo(HomematicConfig config, String id) throws IOException {
-        RpcClient rpcClient = new XmlRpcClient(config);
+        RpcClient<String> rpcClient = new XmlRpcClient(config);
         try {
             config.setGatewayInfo(rpcClient.getGatewayInfo(id));
         } finally {

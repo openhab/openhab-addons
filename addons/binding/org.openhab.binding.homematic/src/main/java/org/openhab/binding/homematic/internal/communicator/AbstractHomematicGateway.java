@@ -82,7 +82,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private static final long CONNECTION_TRACKER_INTERVAL_SECONDS = 15;
     private static final String GATEWAY_POOL_NAME = "homematicGateway";
 
-    private Map<TransferMode, RpcClient> rpcClients = new HashMap<TransferMode, RpcClient>();
+    private Map<TransferMode, RpcClient<?>> rpcClients = new HashMap<TransferMode, RpcClient<?>>();
     private Map<TransferMode, RpcServer> rpcServers = new HashMap<TransferMode, RpcServer>();
 
     protected HomematicConfig config;
@@ -209,7 +209,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * Stops the Homematic gateway client.
      */
     protected void stopClients() {
-        for (RpcClient rpcClient : rpcClients.values()) {
+        for (RpcClient<?> rpcClient : rpcClients.values()) {
             rpcClient.dispose();
         }
         rpcClients.clear();
@@ -293,8 +293,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * {@inheritDoc}
      */
     @Override
-    public RpcClient getRpcClient(HmInterface hmInterface) throws IOException {
-        RpcClient rpcClient = rpcClients.get(availableInterfaces.get(hmInterface));
+    public RpcClient<?> getRpcClient(HmInterface hmInterface) throws IOException {
+        RpcClient<?> rpcClient = rpcClients.get(availableInterfaces.get(hmInterface));
         if (rpcClient == null) {
             throw new IOException("RPC client for interface " + hmInterface + " not available");
         }
@@ -869,7 +869,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 getRpcClient(getDefaultInterface()).validateConnection(getDefaultInterface());
             } catch (IOException ex) {
                 // connection lost validation
-                RpcClient rpcClient = null;
+                RpcClient<?> rpcClient = null;
                 try {
                     if (config.getGatewayInfo().isHomegear() || config.getGatewayInfo().isCCU()) {
                         rpcClient = new BinRpcClient(config);
