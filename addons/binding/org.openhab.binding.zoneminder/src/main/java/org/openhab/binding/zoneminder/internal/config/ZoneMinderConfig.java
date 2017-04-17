@@ -9,7 +9,7 @@
 package org.openhab.binding.zoneminder.internal.config;
 
 /**
- * base class containing Configuration in OpenHAB
+ * base class containing Configuration in openHAB
  *
  * @author Martin S. Eskildsen
  */

@@ -89,11 +89,11 @@ public class HDPowerViewWebTargets {
         }
 
         if (response.getStatus() != 200) {
-            logger.error("Bridge returned " + response.getStatus() + " while invoking " + target.getUri() + " : "
-                    + response.readEntity(String.class));
+            logger.error("Bridge returned {} while invoking {} : {}", response.getStatus(), target.getUri(),
+                    response.readEntity(String.class));
             return null;
         } else if (!response.hasEntity()) {
-            logger.error("Bridge returned null response" + " while invoking " + target.getUri());
+            logger.error("Bridge returned null response while invoking {}", target.getUri());
             return null;
         }
 

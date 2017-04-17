@@ -46,16 +46,16 @@ public interface RFXComMessage {
     byte[] decodeMessage() throws RFXComException;
 
     /**
-     * Procedure for converting RFXCOM value to Openhab state.
+     * Procedure for converting RFXCOM value to openHAB state.
      *
      * @param valueSelector
      *
-     * @return Openhab state.
+     * @return openHAB state.
      */
     State convertToState(RFXComValueSelector valueSelector) throws RFXComException;
 
     /**
-     * Procedure for converting Openhab state to RFXCOM object.
+     * Procedure for converting openHAB state to RFXCOM object.
      *
      */
     void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException;

@@ -224,19 +224,19 @@ public class FeedHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (MalformedURLException e) {
-            logger.warn("Url '{}' is not valid: {}", urlString, e);
+            logger.warn("Url '{}' is not valid: ", urlString, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         } catch (IOException e) {
-            logger.warn("Error accessing feed: " + urlString, e);
+            logger.warn("Error accessing feed: {}", urlString, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             return null;
         } catch (IllegalArgumentException e) {
-            logger.warn("Feed URL is null", e);
+            logger.warn("Feed URL is null ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         } catch (FeedException e) {
-            logger.warn("Feed content is not valid: " + urlString, e);
+            logger.warn("Feed content is not valid: {} ", urlString, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         }

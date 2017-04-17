@@ -22,12 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Converts between a Homematic datapoint value and a openHab PercentType.
+ * Converts between a Homematic datapoint value and a openHAB PercentType.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
-    private static final Logger logger = LoggerFactory.getLogger(PercentTypeConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(PercentTypeConverter.class);
 
     /**
      * {@inheritDoc}

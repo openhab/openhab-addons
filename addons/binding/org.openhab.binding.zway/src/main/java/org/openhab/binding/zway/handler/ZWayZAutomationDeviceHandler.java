@@ -35,9 +35,9 @@ import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
  * @author Patrick Hecker - Initial contribution
  */
 public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
-    public final static ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_VIRTUAL_DEVICE;
+    public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_VIRTUAL_DEVICE;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private ZWayZAutomationDeviceConfiguration mConfig = null;
 
@@ -82,9 +82,9 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
 
                     } catch (Throwable t) {
                         if (t instanceof Exception) {
-                            logger.error(((Exception) t).getMessage());
+                            logger.error("{}", t.getMessage());
                         } else if (t instanceof Error) {
-                            logger.error(((Error) t).getMessage());
+                            logger.error("{}", t.getMessage());
                         } else {
                             logger.error("Unexpected error");
                         }
@@ -180,7 +180,7 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
             Calendar lastUpdateOfDevice = Calendar.getInstance();
             lastUpdateOfDevice.setTimeInMillis(new Long(device.getUpdateTime()) * 1000);
 
-            if (lastUpdate == null || (lastUpdate != null && lastUpdateOfDevice.after(lastUpdate))) {
+            if (lastUpdate == null || lastUpdateOfDevice.after(lastUpdate)) {
                 lastUpdate = lastUpdateOfDevice;
             }
 

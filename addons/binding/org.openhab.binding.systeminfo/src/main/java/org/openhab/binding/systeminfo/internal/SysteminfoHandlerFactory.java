@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
     
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
     
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -218,7 +218,7 @@ public class CcuMetadataExtractor {
                         includeLine = false;
                     }
                 }
-                if ((includeLine == null || (startLine != null && includeLine)) && StringUtils.isNotBlank(line)) {
+                if ((includeLine == null || includeLine) && StringUtils.isNotBlank(line)) {
                     line(line);
                 }
             }

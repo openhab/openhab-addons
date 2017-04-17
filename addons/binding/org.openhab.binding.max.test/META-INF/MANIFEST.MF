@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Openhab Max! Binding Tests
+Bundle-Name: openHAB Max! Binding Tests
 Bundle-SymbolicName: org.openhab.binding.max.test;singleton:=true
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-Vendor: Openhab
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: openHAB
 Fragment-Host: org.openhab.binding.max
 Import-Package: groovy.json,
  groovy.lang,
@@ -17,10 +17,12 @@ Import-Package: groovy.json,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
  org.openhab.binding.max,
  org.osgi.service.device,
  org.slf4j
-Require-Bundle: org.junit;bundle-version="4.11.0"
-Export-Package: org.openhab.binding.max.internal.message;x-internal:=true,
- org.openhab.binding.max.test;uses:="org.eclipse.smarthome.test"
+Export-Package: org.openhab.binding.max.test;uses:="org.eclipse.smarthome.test"
+
 

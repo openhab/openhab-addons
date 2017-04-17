@@ -153,6 +153,18 @@ astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ] 
 }
 ```
 
+or a offset and latest
+
+```
+astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ] {
+    Channels:
+        Type rangeEvent : rise#event [
+            offset=-10,
+            latest="08:00"
+        ]
+}
+```
+
 Items:
 
 ```

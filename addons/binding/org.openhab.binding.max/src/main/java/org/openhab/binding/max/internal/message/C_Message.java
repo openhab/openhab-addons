@@ -130,7 +130,7 @@ public final class C_Message extends Message {
             for (int i = 0; i < sn.length; i++) {
                 sn[i] = bytes[i + DataStart];
             }
-            logger.trace("DataBytes: " + Utils.getHex(sn));
+            logger.trace("DataBytes: {}", Utils.getHex(sn));
             try {
                 return new String(sn, "UTF-8");
             } catch (UnsupportedEncodingException e) {

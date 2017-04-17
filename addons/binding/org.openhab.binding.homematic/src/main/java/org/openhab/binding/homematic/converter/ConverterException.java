@@ -9,7 +9,7 @@
 package org.openhab.binding.homematic.converter;
 
 /**
- * Exception if something goes wrong when converting values between openHab and the binding.
+ * Exception if something goes wrong when converting values between openHAB and the binding.
  *
  * @author Gerhard Riegler - Initial contribution
  */

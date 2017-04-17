@@ -27,7 +27,28 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.imperihome.internal.ImperiHomeConfig;
 import org.openhab.io.imperihome.internal.action.ActionRegistry;
-import org.openhab.io.imperihome.internal.model.device.*;
+import org.openhab.io.imperihome.internal.model.device.AbstractDevice;
+import org.openhab.io.imperihome.internal.model.device.AbstractNumericValueDevice;
+import org.openhab.io.imperihome.internal.model.device.Co2SensorDevice;
+import org.openhab.io.imperihome.internal.model.device.DeviceType;
+import org.openhab.io.imperihome.internal.model.device.DimmerDevice;
+import org.openhab.io.imperihome.internal.model.device.ElectricityDevice;
+import org.openhab.io.imperihome.internal.model.device.GenericSensorDevice;
+import org.openhab.io.imperihome.internal.model.device.HygrometryDevice;
+import org.openhab.io.imperihome.internal.model.device.LockDevice;
+import org.openhab.io.imperihome.internal.model.device.LuminosityDevice;
+import org.openhab.io.imperihome.internal.model.device.MultiSwitchDevice;
+import org.openhab.io.imperihome.internal.model.device.NoiseDevice;
+import org.openhab.io.imperihome.internal.model.device.PressureDevice;
+import org.openhab.io.imperihome.internal.model.device.RainDevice;
+import org.openhab.io.imperihome.internal.model.device.RgbLightDevice;
+import org.openhab.io.imperihome.internal.model.device.SceneDevice;
+import org.openhab.io.imperihome.internal.model.device.SwitchDevice;
+import org.openhab.io.imperihome.internal.model.device.TempHygroDevice;
+import org.openhab.io.imperihome.internal.model.device.TemperatureDevice;
+import org.openhab.io.imperihome.internal.model.device.TrippableDevice;
+import org.openhab.io.imperihome.internal.model.device.UvDevice;
+import org.openhab.io.imperihome.internal.model.device.WindDevice;
 import org.openhab.io.imperihome.internal.model.param.DeviceParam;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
 import org.openhab.io.imperihome.internal.util.DigestUtil;
@@ -51,7 +72,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
     private final ActionRegistry actionRegistry;
     private final ImperiHomeConfig config;
 
-    public ItemProcessor(ItemRegistry itemRegistry, DeviceRegistry deviceRegistry, ActionRegistry actionRegistry, ImperiHomeConfig config) {
+    public ItemProcessor(ItemRegistry itemRegistry, DeviceRegistry deviceRegistry, ActionRegistry actionRegistry,
+            ImperiHomeConfig config) {
         this.itemRegistry = itemRegistry;
         this.deviceRegistry = deviceRegistry;
         this.actionRegistry = actionRegistry;
@@ -305,8 +327,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
                         if (!tags.containsKey(tagType)) {
                             tags.put(tagType, new LinkedList<String>());
                         } else if (!tagType.isMultiValue()) {
-                            logger.error("Found multiple values for tag " + tagType.getPrefix()
-                                    + " - only first value is used");
+                            logger.error("Found multiple values for tag {} - only first value is used",
+                                    tagType.getPrefix());
                         }
                         tags.get(tagType).add(tagValue);
                         break;
@@ -379,8 +401,8 @@ public class ItemProcessor implements ItemRegistryChangeListener {
         }
 
         if (deviceRegistry.hasDevices()) {
-            logger.warn("There are still Devices left after processing all Items from allItemsChanged(): "
-                    + deviceRegistry.getDevices());
+            logger.warn("There are still Devices left after processing all Items from allItemsChanged(): {}",
+                    deviceRegistry.getDevices());
             deviceRegistry.clear();
         }
 

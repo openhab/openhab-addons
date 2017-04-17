@@ -49,7 +49,7 @@ import org.tellstick.device.iface.Device;
  */
 public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements TelldusBridgeHandler {
 
-    final static Logger logger = LoggerFactory.getLogger(TelldusLiveBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TelldusLiveBridgeHandler.class);
 
     private TellstickNetDevices deviceList = null;
     private TellstickNetSensors sensorList = null;

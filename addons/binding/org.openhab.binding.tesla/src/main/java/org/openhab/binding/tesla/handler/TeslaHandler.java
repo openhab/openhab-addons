@@ -16,9 +16,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +41,8 @@ import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.storage.Storage;
+import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -51,6 +53,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.glassfish.jersey.client.ClientProperties;
+import org.openhab.binding.tesla.TeslaBindingConstants;
 import org.openhab.binding.tesla.TeslaBindingConstants.EventKeys;
 import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy;
 import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy.TeslaChannelSelector;
@@ -59,6 +62,9 @@ import org.openhab.binding.tesla.internal.protocol.ClimateState;
 import org.openhab.binding.tesla.internal.protocol.DriveState;
 import org.openhab.binding.tesla.internal.protocol.GUIState;
 import org.openhab.binding.tesla.internal.protocol.TokenRequest;
+import org.openhab.binding.tesla.internal.protocol.TokenRequestPassword;
+import org.openhab.binding.tesla.internal.protocol.TokenRequestRefreshToken;
+import org.openhab.binding.tesla.internal.protocol.TokenResponse;
 import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleState;
 import org.openhab.binding.tesla.internal.throttler.QueueChannelThrottler;
@@ -76,6 +82,7 @@ import com.google.gson.JsonParser;
  * to one of the channels.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Nicolai Grødum - Adding token based auth
  */
 public class TeslaHandler extends BaseThingHandler {
 
@@ -100,17 +107,16 @@ public class TeslaHandler extends BaseThingHandler {
     protected VehicleState vehicleState;
     protected ChargeState chargeState;
     protected ClimateState climateState;
-    protected String accessToken;
 
     // REST Client API variables
-    protected Client teslaClient = ClientBuilder.newClient();
+    protected static final Client teslaClient = ClientBuilder.newClient();
     protected Client eventClient;
-    protected WebTarget teslaTarget = teslaClient.target(TESLA_OWNERS_URI);
-    protected WebTarget tokenTarget = teslaTarget.path(TESLA_ACCESS_TOKEN_URI);
-    protected WebTarget vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
-    protected WebTarget vehicleTarget = vehiclesTarget.path(VEHICLE_ID_PATH);
-    protected WebTarget dataRequestTarget = vehicleTarget.path(DATA_REQUEST_PATH);
-    protected WebTarget commandTarget = vehicleTarget.path(COMMAND_PATH);
+    public static final WebTarget teslaTarget = teslaClient.target(TESLA_OWNERS_URI);
+    public static final WebTarget tokenTarget = teslaTarget.path(TESLA_ACCESS_TOKEN_URI);
+    public static final WebTarget vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
+    public static final WebTarget vehicleTarget = vehiclesTarget.path(VEHICLE_ID_PATH);
+    public static final WebTarget dataRequestTarget = vehicleTarget.path(DATA_REQUEST_PATH);
+    public static final WebTarget commandTarget = vehicleTarget.path(COMMAND_PATH);
     protected WebTarget eventTarget;
 
     // Threading and Job related variables
@@ -124,18 +130,21 @@ public class TeslaHandler extends BaseThingHandler {
     protected int intervalErrors = 0;
     protected ReentrantLock lock;
 
+    private StorageService storageService;
     protected Gson gson = new Gson();
     protected TeslaChannelSelectorProxy teslaChannelSelectorProxy = new TeslaChannelSelectorProxy();
     private JsonParser parser = new JsonParser();
+    private TokenResponse logonToken;
 
-    public TeslaHandler(Thing thing) {
+    public TeslaHandler(Thing thing, StorageService storageService) {
         super(thing);
+        this.storageService = storageService;
     }
 
     @Override
     public void initialize() {
 
-        logger.trace("Initializing the Tesla handler for {}", getThing().getUID());
+        logger.trace("Initializing the Tesla handler for {}", this.getStorageKey());
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -398,27 +407,30 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected String invokeAndParse(String command, String payLoad, WebTarget target) {
+
+        logger.debug("invoking: {}", command);
+
         if (vehicle.id != null) {
             Response response;
 
             if (payLoad != null) {
                 if (command != null) {
                     response = target.resolveTemplate("cmd", command).resolveTemplate("vid", vehicle.id).request()
-                            .header("Authorization", "Bearer " + accessToken)
+                            .header("Authorization", "Bearer " + logonToken.access_token)
                             .post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
                 } else {
                     response = target.resolveTemplate("vid", vehicle.id).request()
-                            .header("Authorization", "Bearer " + accessToken)
+                            .header("Authorization", "Bearer " + logonToken.access_token)
                             .post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
                 }
             } else {
                 if (command != null) {
                     response = target.resolveTemplate("cmd", command).resolveTemplate("vid", vehicle.id)
-                            .request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer " + accessToken)
-                            .get();
+                            .request(MediaType.APPLICATION_JSON_TYPE)
+                            .header("Authorization", "Bearer " + logonToken.access_token).get();
                 } else {
                     response = target.resolveTemplate("vid", vehicle.id).request(MediaType.APPLICATION_JSON_TYPE)
-                            .header("Authorization", "Bearer " + accessToken).get();
+                            .header("Authorization", "Bearer " + logonToken.access_token).get();
                 }
             }
 
@@ -437,6 +449,14 @@ public class TeslaHandler extends BaseThingHandler {
                 logger.error("An error occurred while communicating with the vehicle during request {} : {}:{}",
                         new Object[] { command, (response != null) ? response.getStatus() : "",
                                 (response != null) ? response.getStatusInfo() : "No Response" });
+
+                if (intervalErrors == 0 && response.getStatus() == 401) {
+
+                    // Try to re-authenticate if the token is expired or expires in 24h (giving it a big slack)
+                    if ((logonToken.created_at + logonToken.expires_in - 1000 * 60 * 60 * 24) < new Date().getTime()) {
+                        authenticate();
+                    }
+                }
 
                 intervalErrors++;
                 if (intervalErrors >= MAXIMUM_ERRORS_IN_INTERVAL) {
@@ -647,7 +667,7 @@ public class TeslaHandler extends BaseThingHandler {
 
         // get a list of vehicles
         Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", "Bearer " + accessToken).get();
+                .header("Authorization", "Bearer " + logonToken.access_token).get();
 
         logger.debug("Querying the vehicle : Response : {}:{}", response.getStatus(), response.getStatusInfo());
 
@@ -668,30 +688,83 @@ public class TeslaHandler extends BaseThingHandler {
         return null;
     }
 
-    protected ThingStatusDetail authenticate(String username, String password) {
+    private String getStorageKey() {
+        return this.getThing().getUID().getId();
+    }
 
-        TokenRequest token = new TokenRequest(username, password);
+    private ThingStatusDetail authenticate() {
+
+        String username = (String) getConfig().get(USERNAME);
+
+        if (!StringUtils.isEmpty(username)) {
+            String password = (String) getConfig().get(PASSWORD);
+            return authenticate(username, password);
+        }
+
+        Storage<Object> storage = storageService.getStorage(TeslaBindingConstants.BINDING_ID);
+
+        String storedToken = (String) storage.get(getStorageKey());
+        TokenResponse token = storedToken == null ? null : gson.fromJson(storedToken, TokenResponse.class);
+
+        if (token == null || StringUtils.isEmpty(token.refresh_token)) {
+            return ThingStatusDetail.CONFIGURATION_ERROR;
+        }
+
+        TokenRequestRefreshToken tokenRequest = new TokenRequestRefreshToken(token.refresh_token);
+
+        String payLoad = gson.toJson(tokenRequest);
+
+        Response response = tokenTarget.request().post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
+
+        if (response == null) {
+            logger.debug("Authenticating : Response was null");
+        } else{
+            logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
+
+            if (response.getStatus() == 200 && response.hasEntity()) {
+
+                String responsePayLoad = response.readEntity(String.class);
+                TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
+
+                if (tokenResponse != null && !StringUtils.isEmpty(tokenResponse.access_token)) {
+                    storage.put(getStorageKey(), gson.toJson(tokenResponse));
+                    this.logonToken = tokenResponse;
+                    return ThingStatusDetail.NONE;
+                }
+
+                return ThingStatusDetail.NONE;
+
+            } else if (response.getStatus() == 401) {
+                return ThingStatusDetail.CONFIGURATION_ERROR;
+            } else if (response.getStatus() == 503 || response.getStatus() == 502) {
+                return ThingStatusDetail.COMMUNICATION_ERROR;
+            }
+        }
+        return ThingStatusDetail.CONFIGURATION_ERROR;
+    }
+
+    private ThingStatusDetail authenticate(String username, String password) {
+
+        TokenRequest token = new TokenRequestPassword(username, password);
         String payLoad = gson.toJson(token);
 
         Response response = tokenTarget.request().post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
 
-        logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
-
         if (response != null) {
+            logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
+
             if (response.getStatus() == 200 && response.hasEntity()) {
 
                 String responsePayLoad = response.readEntity(String.class);
-                JsonObject readObject = parser.parse(responsePayLoad.trim()).getAsJsonObject();
+                TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
 
-                for (Entry<String, JsonElement> entry : readObject.entrySet()) {
-                    switch (entry.getKey()) {
-                        case "access_token": {
-                            accessToken = entry.getValue().getAsString();
-                            logger.debug("Authenticating : Setting access code to : {}", accessToken);
-                            return ThingStatusDetail.NONE;
-                        }
-                    }
+                if (StringUtils.isNotEmpty(tokenResponse.access_token)) {
+                    Storage<Object> storage = storageService.getStorage(TeslaBindingConstants.BINDING_ID);
+                    storage.put(getStorageKey(), gson.toJson(tokenResponse));
+                    this.logonToken = tokenResponse;
+                    return ThingStatusDetail.NONE;
                 }
+
             } else if (response.getStatus() == 401) {
                 return ThingStatusDetail.CONFIGURATION_ERROR;
             } else if (response.getStatus() == 503 || response.getStatus() == 502) {
@@ -749,19 +822,19 @@ public class TeslaHandler extends BaseThingHandler {
 
             try {
                 lock.lock();
+
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
 
                     logger.debug("Setting up an authenticated connection to the Tesla back-end");
 
-                    ThingStatusDetail authenticationResult = authenticate((String) getConfig().get(USERNAME),
-                            (String) getConfig().get(PASSWORD));
+                    ThingStatusDetail authenticationResult = authenticate();
 
                     if (authenticationResult != ThingStatusDetail.NONE) {
                         updateStatus(ThingStatus.OFFLINE, authenticationResult);
                     } else {
                         // get a list of vehicles
                         Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                                .header("Authorization", "Bearer " + accessToken).get();
+                                .header("Authorization", "Bearer " + logonToken.access_token).get();
 
                         if (response != null && response.getStatus() == 200 && response.hasEntity()) {
                             if ((vehicle = queryVehicle()) != null) {

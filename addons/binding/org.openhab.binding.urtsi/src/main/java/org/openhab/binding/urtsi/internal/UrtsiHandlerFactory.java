@@ -30,7 +30,7 @@ import com.google.common.collect.Lists;
  */
 public class UrtsiHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(URTSI_DEVICE_THING_TYPE,
+    private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(URTSI_DEVICE_THING_TYPE,
             RTS_DEVICE_THING_TYPE);
 
     @Override

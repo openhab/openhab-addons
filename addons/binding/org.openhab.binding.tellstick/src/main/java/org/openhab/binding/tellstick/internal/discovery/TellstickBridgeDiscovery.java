@@ -31,7 +31,7 @@ import org.tellstick.device.TellstickController;
  */
 public class TellstickBridgeDiscovery extends AbstractDiscoveryService {
 
-    private final static Logger logger = LoggerFactory.getLogger(TellstickBridgeDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(TellstickBridgeDiscovery.class);
 
     static boolean discoveryRunning = false;
     static boolean initilized = false;
@@ -95,11 +95,10 @@ public class TellstickBridgeDiscovery extends AbstractDiscoveryService {
             Map<String, Object> properties = new HashMap<>(2);
             ThingUID uid = new ThingUID(TellstickBindingConstants.TELLDUSCOREBRIDGE_THING_TYPE,
                     Integer.toString(controller.getId()));
-            if (uid != null) {
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withLabel(controller.getType().name() + ": " + controller.getName()).build();
-                thingDiscovered(result);
-            }
+            thingDiscovered(DiscoveryResultBuilder.create(uid)
+                    .withProperties(properties)
+                    .withLabel(controller.getType().name() + ": " + controller.getName())
+                    .build());
         }
     }
 
