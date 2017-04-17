@@ -21,7 +21,6 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,11 +47,12 @@ public class VoiceRSSCloudImplementation implements VoiceRSSCloudAPI {
     private static Set<String> supportedVoices = getSupportedVoices();
 
     /**
-     * Will support only "MP3" for the moment.
+     * Will support only "MP3" and "OGG" for the moment.
      */
     private static Set<String> getSupportedAudioFormats() {
         Set<String> formats = new HashSet<String>();
-        formats.add(AudioFormat.CODEC_MP3);
+        formats.add("MP3");
+        formats.add("OGG");
         return formats;
     }
 
