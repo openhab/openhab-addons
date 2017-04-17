@@ -165,13 +165,12 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
                     if (discoveryServiceCallback != null
                             && discoveryServiceCallback.getExistingDiscoveryResult(uid) == null
                             && discoveryServiceCallback.getExistingThing(uid) == null) {
-
                         logger.trace("Creating discovery result for: {}, type={}, IP={}", uid,
                                 gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
 
                         thingDiscovered(DiscoveryResultBuilder.create(uid)
                                 .withProperties(properties)
-                                .withLabel("GlobalCache " + gcMulticastListener.getModel())
+                                .withLabel(gcMulticastListener.getVendor() + " " + + gcMulticastListener.getModel())
                                 .build());
                     }
                 }

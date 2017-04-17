@@ -37,11 +37,12 @@ public class GlobalCacheBindingConstants {
     public static final ThingTypeUID THING_TYPE_ITACH_FLEX = new ThingTypeUID(BINDING_ID, "itachFlex");
     public static final ThingTypeUID THING_TYPE_GC_100_06 = new ThingTypeUID(BINDING_ID, "gc100_06");
     public static final ThingTypeUID THING_TYPE_GC_100_12 = new ThingTypeUID(BINDING_ID, "gc100_12");
+    public static final ThingTypeUID THING_TYPE_ZMOTE = new ThingTypeUID(BINDING_ID, "zmote");
     public static final ThingTypeUID THING_TYPE_UNKNOWN = new ThingTypeUID(BINDING_ID, "unknown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ITACH_IR,
             THING_TYPE_ITACH_CC, THING_TYPE_ITACH_SL, THING_TYPE_ITACH_FLEX, THING_TYPE_GC_100_06, THING_TYPE_GC_100_12,
-            THING_TYPE_UNKNOWN);
+            THING_TYPE_ZMOTE, THING_TYPE_UNKNOWN);
 
     // GlobalCache-specific thing properties
     public static final String THING_PROPERTY_UID = "uid";
@@ -99,4 +100,7 @@ public class GlobalCacheBindingConstants {
     public static final String GC_MODEL_GC_100 = "GC-100";
     public static final String GC_MODEL_GC_100_06 = "GC-100-06";
     public static final String GC_MODEL_GC_100_12 = "GC-100-12";
+
+    // List of Zmote strings returned in the device discovery beacon
+    public static final String GC_MODEL_ZMOTE = "ZV-2";
 }
