@@ -21,7 +21,7 @@ public class HarmonyHubBindingConstants {
     public static final String BINDING_ID = "harmonyhub";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID HARMONY_HUB_THING_TYPE = new ThingTypeUID(BINDING_ID, "hub");
+    public static final ThingTypeUID HARMONY_HUB_THING_TYPE = new ThingTypeUID(BINDING_ID, "harmonyHub");
     public static final ThingTypeUID HARMONY_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids
