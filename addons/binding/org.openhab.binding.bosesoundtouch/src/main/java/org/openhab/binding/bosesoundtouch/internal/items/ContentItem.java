@@ -85,22 +85,22 @@ public class ContentItem {
         if (source == null || source.equals("")) {
             return OperationModeType.OTHER;
         }
-        try {
-            operationMode = OperationModeType.valueOf(source);
-        } catch (IllegalArgumentException iae) {
-
-            // logger.error("{}: Unknown SourceType: '{}' - needs to be defined!", handler.getDeviceName(), source);
-            logger.error("Unknown SourceType: '{}' - needs to be defined!", source);
-        }
-        if ((operationMode == OperationModeType.OTHER) && (source.contains("PRODUCT"))) {
+        if (source.contains("PRODUCT")) {
             if (sourceAccount.contains("TV")) {
                 operationMode = OperationModeType.TV;
             }
             if (sourceAccount.contains("HDMI")) {
                 operationMode = OperationModeType.HDMI;
             }
+            return operationMode;
         }
-        return operationMode;
+        try {
+            operationMode = OperationModeType.valueOf(source);
+            return operationMode;
+        } catch (IllegalArgumentException iae) {
+            logger.warn("Unknown SourceType: '{}' - needs to be defined!", source);
+            return OperationModeType.OTHER;
+        }
     }
 
     public void setSource(String source) {
@@ -196,5 +196,48 @@ public class ContentItem {
             return buffer.toString();
         }
         return itemName;
+    }
+
+    public String stringToSave() {
+        // private int presetID;
+        // private String source;
+        // private String sourceAccount;
+        // private String location;
+        // private String itemName;
+        // private int unusedField;
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(presetID);
+        sb.append(";");
+        sb.append(source);
+        sb.append(";");
+        sb.append(sourceAccount);
+        sb.append(";");
+        sb.append(location);
+        sb.append(";");
+        sb.append(itemName);
+        sb.append(";");
+        sb.append(unusedField);
+        sb.append(";");
+        return sb.toString();
+    }
+
+    public void createFormString(String s) {
+        // private int presetID;
+        // private String source;
+        // private String sourceAccount;
+        // private String location;
+        // private String itemName;
+        // private int unusedField;
+
+        String[] parts = s.split(";");
+
+        presetID = Integer.parseInt(parts[0]);
+        source = parts[1];
+        sourceAccount = parts[2];
+        location = parts[3];
+        itemName = parts[4];
+        unusedField = Integer.parseInt(parts[5]);
+        presetable = true;
     }
 }

@@ -17,11 +17,12 @@
 			<channel id="playerControl" typeId="playerControl" />
 			<channel id="zoneControl" typeId="zoneControl" />
 			<channel id="preset" typeId="preset" />
-			<channel id="presetValue" typeId="presetValue" />
+			<channel id="presetControl" typeId="presetControl" />
             <channel id="bass" typeId="bass" />
             <channel id="rateEnabled" typeId="rateEnabled" />
             <channel id="skipEnabled" typeId="skipEnabled" />
             <channel id="skipPreviousEnabled" typeId="skipPreviousEnabled" />
+            <channel id="saveAsPreset" typeId="saveAsPreset" />
 			<channel id="keyCode" typeId="keyCode" />
 			<channel id="nowPlayingAlbum" typeId="nowPlayingAlbum" />
 			<channel id="nowPlayingArtist" typeId="nowPlayingArtist" />
@@ -88,12 +89,6 @@
             </options>
         </state>
     </channel-type>
-    <channel-type id="zoneInfo" advanced="true">
-        <item-type>String</item-type>
-        <label>Zone Info</label>
-        <description>Shows information about the current zone setup</description>
-        <state readOnly="true" />
-    </channel-type>
     <channel-type id="playerControl">
         <item-type>Player</item-type>
         <label>Player Control</label>
@@ -106,31 +101,33 @@
         <description>Control the Zones, e.g. "add kitchen"/"remove kitchen"</description>
     </channel-type>
     <channel-type id="preset">
-        <item-type>String</item-type>
-        <label>Preset</label>
-        <description>Control Preset, e.g. "PRESET_1"/.../"PRESET_6"</description>
-        <state readOnly="false">
-            <options>
-                <option value="PRESET_1">PRESET_1</option>
-                <option value="PRESET_2">PRESET_2</option>
-                <option value="PRESET_3">PRESET_3</option>
-                <option value="PRESET_4">PRESET_4</option>
-                <option value="PRESET_5">PRESET_5</option>
-                <option value="PRESET_6">PRESET_6</option>
-            </options>
-        </state>
-    </channel-type>
-    <channel-type id="presetValue">
         <item-type>Number</item-type>
-         <label>PresetValue</label>
+         <label>Preset</label>
          <description>PresetValue 1-6 Preset of BST, >7 Binding Presets</description>
          <state readOnly="false" />
     </channel-type>
-    <channel-type id="bass" advanced="true">
+     <channel-type id="presetControl">
+        <item-type>Player</item-type>
+        <label>Preset Control</label>
+        <description>Control the Preset, e.g. next/previous</description>
+        <category>Player</category>
+    </channel-type>
+    <channel-type id="bass">
         <item-type>Number</item-type>
          <label>Bass</label>
          <description>Bass (-9 minimum, 0 maximum)</description>
          <state min="-9" max="0" step="1" pattern="%d " readOnly="false" />
+    </channel-type>
+     <channel-type id="saveAsPreset">
+        <item-type>Number</item-type>
+        <label>Save As Preset</label>
+        <description>A selected presetable Contentitem is save as Preset with number >6</description>
+    </channel-type>
+    <channel-type id="zoneInfo" advanced="true">
+        <item-type>String</item-type>
+        <label>Zone Info</label>
+        <description>Shows information about the current zone setup</description>
+        <state readOnly="true" />
     </channel-type>
     <channel-type id="rateEnabled" advanced="true">
         <item-type>Switch</item-type>

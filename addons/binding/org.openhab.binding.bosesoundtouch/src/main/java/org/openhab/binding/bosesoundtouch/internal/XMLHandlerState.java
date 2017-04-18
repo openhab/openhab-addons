@@ -20,8 +20,8 @@ public enum XMLHandlerState {
     MsgHeader,
     MsgBody,
     Bass,
-    BassActualValue,
-    BassTargetValue,
+    BassActual,
+    BassTarget,
     BassUpdated,
     ContentItem,
     ContentItemItemName,
@@ -48,8 +48,10 @@ public enum XMLHandlerState {
     Updates,
     Volume,
     VolumeActual,
+    VolumeTarget,
+    VolumeUpdated,
     VolumeMuteEnabled,
     Zone,
     ZoneMember,
-    ZoneUpdated
+    ZoneUpdated,
 }

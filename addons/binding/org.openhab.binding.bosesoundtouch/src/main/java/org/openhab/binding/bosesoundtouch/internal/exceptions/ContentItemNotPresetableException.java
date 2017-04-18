@@ -6,29 +6,29 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch.types;
+package org.openhab.binding.bosesoundtouch.internal.exceptions;
 
 /**
- * The {@link OperationModeNotAvailableException} class handles all nowPlaying Channels
+ * The {@link ContentItemNotPresetableException} class handles all nowPlaying Channels
  *
  * @author Thomas Traunbauer
  */
-public class OperationModeNotAvailableException extends Exception {
+public class ContentItemNotPresetableException extends NoPresetFoundException {
     private static final long serialVersionUID = 1L;
 
-    public OperationModeNotAvailableException() {
+    public ContentItemNotPresetableException() {
         super();
     }
 
-    public OperationModeNotAvailableException(String message) {
+    public ContentItemNotPresetableException(String message) {
         super(message);
     }
 
-    public OperationModeNotAvailableException(String message, Throwable cause) {
+    public ContentItemNotPresetableException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public OperationModeNotAvailableException(Throwable cause) {
+    public ContentItemNotPresetableException(Throwable cause) {
         super(cause);
     }
 }

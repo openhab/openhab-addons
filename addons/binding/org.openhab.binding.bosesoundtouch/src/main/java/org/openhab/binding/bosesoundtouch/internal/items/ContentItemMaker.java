@@ -9,11 +9,10 @@
 package org.openhab.binding.bosesoundtouch.internal.items;
 
 import java.util.Collection;
-import java.util.HashMap;
 
-import org.openhab.binding.bosesoundtouch.types.NoInternetRadioPresetFoundException;
-import org.openhab.binding.bosesoundtouch.types.NoStoredMusicPresetFoundException;
-import org.openhab.binding.bosesoundtouch.types.OperationModeNotAvailableException;
+import org.openhab.binding.bosesoundtouch.internal.exceptions.NoInternetRadioPresetFoundException;
+import org.openhab.binding.bosesoundtouch.internal.exceptions.NoStoredMusicPresetFoundException;
+import org.openhab.binding.bosesoundtouch.internal.exceptions.OperationModeNotAvailableException;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 
 /**
@@ -24,11 +23,11 @@ import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 public class ContentItemMaker {
 
     private SoundTouchType soundTouchType;
-    private HashMap<Integer, ContentItem> mapOfPresets;
+    PresetContainer presetContainer;
 
-    public ContentItemMaker(SoundTouchType soundTouchType, HashMap<Integer, ContentItem> mapOfPresets) {
+    public ContentItemMaker(SoundTouchType soundTouchType, PresetContainer presetContainer) {
         this.soundTouchType = soundTouchType;
-        this.mapOfPresets = mapOfPresets;
+        this.presetContainer = presetContainer;
     }
 
     public ContentItem getContentItem(OperationModeType operationModeType) throws OperationModeNotAvailableException,
@@ -163,7 +162,7 @@ public class ContentItemMaker {
 
     private ContentItem getInternetRadio() throws NoInternetRadioPresetFoundException {
         ContentItem contentItem = null;
-        Collection<ContentItem> listOfPresets = mapOfPresets.values();
+        Collection<ContentItem> listOfPresets = presetContainer.values();
         for (ContentItem iteratedItem : listOfPresets) {
             if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.INTERNET_RADIO)) {
                 contentItem = iteratedItem;
@@ -201,7 +200,7 @@ public class ContentItemMaker {
         // contentItem.setItemName("100 Jahre");
 
         ContentItem contentItem = null;
-        Collection<ContentItem> listOfPresets = mapOfPresets.values();
+        Collection<ContentItem> listOfPresets = presetContainer.values();
         for (ContentItem iteratedItem : listOfPresets) {
             if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.STORED_MUSIC)) {
                 contentItem = iteratedItem;

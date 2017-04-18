@@ -6,14 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch.types;
+package org.openhab.binding.bosesoundtouch.internal.exceptions;
 
 /**
  * The {@link NoInternetRadioPresetFoundException} class handles all nowPlaying Channels
  *
  * @author Thomas Traunbauer
  */
-public class NoInternetRadioPresetFoundException extends Exception {
+public class NoInternetRadioPresetFoundException extends NoPresetFoundException {
     private static final long serialVersionUID = 1L;
 
     public NoInternetRadioPresetFoundException() {

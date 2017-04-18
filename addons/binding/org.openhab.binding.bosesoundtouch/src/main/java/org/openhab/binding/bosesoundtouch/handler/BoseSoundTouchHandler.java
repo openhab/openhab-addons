@@ -8,15 +8,11 @@
  */
 package org.openhab.binding.bosesoundtouch.handler;
 
-import java.io.IOException;
+import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
+
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
@@ -43,20 +39,16 @@ import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
+import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
 import org.openhab.binding.bosesoundtouch.internal.XMLResponseProcessor;
-import org.openhab.binding.bosesoundtouch.internal.ZoneState;
-import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
-import org.openhab.binding.bosesoundtouch.internal.items.ContentItemMaker;
-import org.openhab.binding.bosesoundtouch.internal.items.RemoteKey;
+import org.openhab.binding.bosesoundtouch.internal.exceptions.BoseSoundTouchNotFoundException;
 import org.openhab.binding.bosesoundtouch.internal.items.SoundTouchType;
-import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
-import org.openhab.binding.bosesoundtouch.types.NoInternetRadioPresetFoundException;
-import org.openhab.binding.bosesoundtouch.types.NoStoredMusicPresetFoundException;
-import org.openhab.binding.bosesoundtouch.types.OperationModeNotAvailableException;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
+import org.openhab.binding.bosesoundtouch.types.RemoteKeyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,16 +71,9 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     private ChannelUID channelPlayerControlUID;
     private ChannelUID channelZoneControlUID;
     private ChannelUID channelPresetUID;
-    private ChannelUID channelPresetValueUID;
     private ChannelUID channelBassUID;
     private ChannelUID channelKeyCodeUID;
-
-    private HashMap<Integer, ContentItem> mapOfPresets;
-
-    private State nowPlayingSource;
-    private ContentItem currentContentItem;
-    private boolean muted;
-    private OperationModeType currentOperationMode;
+    private ChannelUID channelSaveAsPresetUID;
 
     private ScheduledFuture<?> connectionChecker;
     private WebSocketClient client;
@@ -96,11 +81,8 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     private ByteBuffer pingPayload = ByteBuffer.wrap("Are you still here?".getBytes());
 
     private XMLResponseProcessor xmlResponseProcessor;
-
     private BoseSoundTouchHandlerFactory factory;
-    private ZoneState zoneState;
-    private BoseSoundTouchHandler zoneMaster;
-    private List<ZoneMember> zoneMembers;
+    private CommandExecutor commandExecutor;
 
     public BoseSoundTouchHandler(Thing thing, BoseSoundTouchHandlerFactory factory) {
         super(thing);
@@ -110,12 +92,6 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     @Override
     public void initialize() {
-        currentOperationMode = OperationModeType.OFFLINE;
-        mapOfPresets = new HashMap<Integer, ContentItem>();
-        zoneMembers = new ArrayList<ZoneMember>();
-
-        nowPlayingSource = null;
-
         channelPowerUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_POWER);
         channelVolumeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_VOLUME);
         channelMuteUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_MUTE);
@@ -124,9 +100,9 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         channelPlayerControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PLAYER_CONTROL);
         channelZoneControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONE_CONTROL);
         channelPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PRESET);
-        channelPresetValueUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PRESET_VALUE);
         channelBassUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_BASS);
         channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
+        channelSaveAsPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SAVE_AS_PRESET);
 
         factory.registerSoundTouchDevice(this);
         connectionChecker = scheduler.scheduleWithFixedDelay(new Runnable() {
@@ -160,304 +136,201 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         if (thing.getStatus() != ThingStatus.ONLINE) {
             openConnection(); // try to reconnect....
         }
-        if (command instanceof RefreshType) {
-            checkOperationMode();
-            // TODO implement RefreshType
-        } else {
-            if (channelUID.equals(channelPowerUID)) {
+        switch (channelUID.getIdWithoutGroup()) {
+            case CHANNEL_POWER:
                 if (command instanceof OnOffType) {
-                    OnOffType onOffType = (OnOffType) command;
-                    if (currentOperationMode == OperationModeType.STANDBY && onOffType == OnOffType.ON) {
-                        simulateRemoteKey(RemoteKey.POWER);
-                    }
-                    if (currentOperationMode != OperationModeType.STANDBY && onOffType == OnOffType.OFF) {
-                        simulateRemoteKey(RemoteKey.POWER);
-                    }
+                    commandExecutor.setPower((OnOffType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-            } else if (channelUID.equals(channelOperationModeUID)) {
-                if (command instanceof StringType) {
-                    // try to parse string command...
-                    String cmd = command.toString().toUpperCase().trim();
-                    try {
-                        OperationModeType selectedMode = OperationModeType.valueOf(cmd);
-                        selectOperationMode(selectedMode);
-                    } catch (IllegalArgumentException iae) {
-                        logger.error("{}: OperationMode \"{}\" is not valid!", getDeviceName(), cmd);
-                    }
-                }
-            } else if (channelUID.equals(channelVolumeUID)) {
+                break;
+            case CHANNEL_VOLUME:
                 if (command instanceof PercentType) {
-                    PercentType percentType = (PercentType) command;
-                    sendRequestInWebSocket("volume", "<volume deviceID=\"" + getMacAddress() + "\"" + ">"
-                            + percentType.intValue() + "</volume>");
+                    commandExecutor.setVolume((PercentType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-            } else if (channelUID.equals(channelMuteUID)) {
+                break;
+            case CHANNEL_MUTE:
                 if (command instanceof OnOffType) {
-                    OnOffType onOffType = (OnOffType) command;
-                    if (muted && onOffType == OnOffType.OFF) {
-                        simulateRemoteKey(RemoteKey.MUTE);
-                    }
-                    if (!muted && onOffType == OnOffType.ON) {
-                        simulateRemoteKey(RemoteKey.MUTE);
-                    }
-                }
-            } else if (channelUID.equals(channelPlayerControlUID)) {
-                if (command instanceof PlayPauseType) {
-                    PlayPauseType type = (PlayPauseType) command;
-                    if (type == PlayPauseType.PLAY) {
-                        if (currentOperationMode == OperationModeType.STANDBY) {
-                            simulateRemoteKey(RemoteKey.POWER);
-                        } else {
-                            simulateRemoteKey(RemoteKey.PLAY);
-                        }
-                    }
-                    if (type == PlayPauseType.PAUSE) {
-                        simulateRemoteKey(RemoteKey.PAUSE);
-                    }
-                } else if (command instanceof NextPreviousType) {
-                    NextPreviousType type = (NextPreviousType) command;
-                    if (type == NextPreviousType.NEXT) {
-                        simulateRemoteKey(RemoteKey.NEXT_TRACK);
-                    }
-                    if (type == NextPreviousType.PREVIOUS) {
-                        simulateRemoteKey(RemoteKey.PREV_TRACK);
-                    }
-                } else if (command instanceof StringType) {
-                    String cmd = command.toString();
-                    if (cmd.equals(RemoteKey.PLAY.getName())) {
-                        if (currentOperationMode == OperationModeType.STANDBY) {
-                            simulateRemoteKey(RemoteKey.POWER);
-                        } else {
-                            simulateRemoteKey(RemoteKey.PLAY);
-                        }
-                    }
-                    if (cmd.equals(RemoteKey.PAUSE.getName())) {
-                        simulateRemoteKey(RemoteKey.PAUSE);
-                    }
-                    if (cmd.equals("NEXT")) {
-                        simulateRemoteKey(RemoteKey.NEXT_TRACK);
-                    }
-                    if (cmd.equals("PREVIOUS")) {
-                        simulateRemoteKey(RemoteKey.PREV_TRACK);
-                    }
+                    commandExecutor.setMuted((OnOffType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-            } else if (channelUID.equals(channelZoneControlUID)) {
-                if (command instanceof StringType) {
-                    // try to parse string command...
-                    String cmd = command.toString();
-                    String cmdlc = cmd.toLowerCase();
-                    int sp = cmdlc.indexOf(' ');
-                    if (sp > 0) {
-                        String action = cmdlc.split(" ")[0];
-                        String other = cmdlc.split(" ")[1];
-                        BoseSoundTouchHandler oh = null;
-                        for (Entry<String, BoseSoundTouchHandler> e : factory.getAllSoundTouchDevices().entrySet()) {
-                            BoseSoundTouchHandler o = e.getValue();
-                            // try by mac
-                            String mac = e.getKey();
-                            if (other.equalsIgnoreCase(mac)) {
-                                oh = o;
-                                break;
-                            }
-                            // try by name
-                            String devName = o.getDeviceName();
-                            if (other.equalsIgnoreCase(devName)) {
-                                oh = o;
-                                break;
-                            }
-                        }
-                        if (oh == null) {
-                            logger.warn("{}: Invalid / unknown device: '{}' in command {}", getDeviceName(), other,
-                                    cmd);
-                        } else {
-                            if ("add".equals(action)) {
-                                boolean found = false;
-                                for (ZoneMember m : zoneMembers) {
-                                    if (oh.getMacAddress().equals(m.getMac())) {
-                                        logger.warn("{}: Zone add: ID {} is already member in zone!", getDeviceName(),
-                                                oh.getMacAddress());
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
-                                    ZoneMember nm = new ZoneMember();
-                                    nm.setHandler(oh);
-                                    nm.setMac(oh.getMacAddress());
-                                    Map<String, Object> props = oh.thing.getConfiguration().getProperties();
-                                    String host = (String) props
-                                            .get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
-                                    nm.setIp(host);
-                                    // zoneMembers.add(nm);
-                                    addZoneMember(nm);
-                                    updateZones();
-                                }
-                            } else if ("remove".equals(action)) {
-                                if (!removeZoneMember(oh)) {
-                                    logger.warn("{}: Zone remove: ID {} is not a member in zone!", getDeviceName(),
-                                            oh.getMacAddress());
-                                } else {
-                                    updateZones();
-                                }
-                            } else {
-                                logger.warn("{}: Invalid zone command: {}", getDeviceName(), cmd);
-                            }
-                        }
-                    } else {
-                        logger.warn("{}: Invalid zone command: {}", getDeviceName(), cmd);
-                    }
-                } else {
-                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
-                }
-            } else if (channelUID.equals(channelPresetUID)) {
-                if (command instanceof StringType) {
-                    String cmd = command.toString();
-                    RemoteKey key = RemoteKey.valueOf(cmd);
-                    int presetID = key.getValue();
-                    ContentItem preset = mapOfPresets.get(presetID);
-                    if (preset != null) {
-                        switchToContentItem(preset);
-                    } else {
-                        logger.warn("{}: Invalid preset: {}", getDeviceName(), cmd);
-                    }
-                }
-            } else if (channelUID.equals(channelPresetValueUID)) {
-                if (command instanceof DecimalType) {
-                    int presetID = ((DecimalType) command).intValue();
-                    ContentItem preset = mapOfPresets.get(presetID);
-                    if (preset != null) {
-                        switchToContentItem(preset);
-                    } else {
-                        logger.warn("{}: Invalid preset: {}", getDeviceName(), presetID);
-                    }
-                }
-            } else if (channelUID.equals(channelBassUID)) {
-                if (command instanceof DecimalType) {
-                    int bassLevel = ((DecimalType) command).intValue();
-                    sendRequestInWebSocket("bass", "<bass>" + bassLevel + "</bass>");
-                }
-            } else if (channelUID.equals(channelKeyCodeUID)) {
+                break;
+            case CHANNEL_OPERATIONMODE:
                 if (command instanceof StringType) {
                     String cmd = command.toString().toUpperCase().trim();
                     try {
-                        simulateRemoteKey(RemoteKey.valueOf(cmd));
+                        command = OperationModeType.valueOf(cmd);
+                    } catch (IllegalArgumentException iae) {
+                        logger.warn("{}: OperationMode \"{}\" is not valid!", getDeviceName(), cmd);
+                    }
+                }
+                if (command instanceof OperationModeType) {
+                    commandExecutor.setOperationMode((OperationModeType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
+                }
+                break;
+            case CHANNEL_PLAYER_CONTROL:
+                if (command instanceof StringType) {
+                    String cmd = command.toString();
+                    if (cmd.equals("PLAY")) {
+                        command = PlayPauseType.PLAY;
+                    } else if (cmd.equals("PAUSE")) {
+                        command = PlayPauseType.PAUSE;
+                    } else if (cmd.equals("NEXT")) {
+                        command = NextPreviousType.NEXT;
+                    } else if (cmd.equals("PREVIOUS")) {
+                        command = NextPreviousType.PREVIOUS;
+                    }
+                }
+                if ((command instanceof PlayPauseType) || (command instanceof NextPreviousType)) {
+                    commandExecutor.setPlayerControl(command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
+                }
+                updateState(channelPlayerControlUID, UnDefType.UNDEF);
+                break;
+            case CHANNEL_PRESET:
+                if (command instanceof DecimalType) {
+                    commandExecutor.setPreset((DecimalType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
+                }
+                break;
+            case CHANNEL_PRESET_CONTROL:
+                if (command instanceof StringType) {
+                    String cmd = command.toString();
+                    if (cmd.equals("NEXT")) {
+                        command = NextPreviousType.NEXT;
+                    } else if (cmd.equals("PREVIOUS")) {
+                        command = NextPreviousType.PREVIOUS;
+                    }
+                }
+                if (command instanceof NextPreviousType) {
+                    commandExecutor.setPreset((NextPreviousType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
+                }
+                updateState(channelPlayerControlUID, UnDefType.UNDEF);
+                break;
+            case CHANNEL_BASS:
+                if (command instanceof DecimalType) {
+                    commandExecutor.setBass((DecimalType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
+                }
+                break;
+            case CHANNEL_SAVE_AS_PRESET:
+                if (command instanceof DecimalType) {
+                    commandExecutor.setContentItemAsPreset((DecimalType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
+                }
+                updateState(channelSaveAsPresetUID, UnDefType.UNDEF);
+                break;
+            case CHANNEL_KEY_CODE:
+                if (command instanceof StringType) {
+                    String cmd = command.toString().toUpperCase().trim();
+                    try {
+                        command = RemoteKeyType.valueOf(cmd);
                     } catch (IllegalArgumentException e) {
                         logger.warn("{}: Invalid remote key: {}", getDeviceName(), cmd);
                     }
                 }
-            } else {
+                if (command instanceof RemoteKeyType) {
+                    commandExecutor.simulateRemoteKey((RemoteKeyType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
+                }
+                updateState(channelKeyCodeUID, UnDefType.UNDEF);
+                break;
+            case CHANNEL_ZONE_CONTROL:
+                if (command instanceof StringType) {
+                    // try to parse string command...
+                    String cmd = command.toString();
+                    String cmdlc = cmd.toLowerCase();
+                    if (cmdlc.split(" ").length == 2) {
+                        String action = cmdlc.split(" ")[0];
+                        String other = cmdlc.split(" ")[1];
+
+                        BoseSoundTouchHandler handlerFound = null;
+                        try {
+                            handlerFound = findHandlerByNameOrMAC(other);
+                        } catch (BoseSoundTouchNotFoundException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
+                        if ("add".equals(action)) {
+                            commandExecutor.addToZone(handlerFound);
+                        } else if ("remove".equals(action)) {
+                            commandExecutor.removeFromZone(handlerFound);
+                        } else {
+                            logger.warn("{}: Invalid zone command: {}", getDeviceName(), cmd);
+                        }
+                    } else {
+                        logger.warn("{}: Invalid zone command: {}", getDeviceName(), cmd);
+                    }
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
+                }
+                updateState(channelZoneControlUID, UnDefType.UNDEF);
+                break;
+            default:
                 logger.warn("{} : Got command '{}' for channel '{}' which is unhandled!", getDeviceName(), command,
                         channelUID.getId());
-            }
+                break;
         }
 
     }
 
-    private void selectOperationMode(OperationModeType operationModeType) {
-        if (operationModeType == OperationModeType.STANDBY) {
-            if (currentOperationMode != OperationModeType.STANDBY) {
-                simulateRemoteKey(RemoteKey.POWER);
+    private BoseSoundTouchHandler findHandlerByNameOrMAC(String other) throws BoseSoundTouchNotFoundException {
+        BoseSoundTouchHandler handlerFound = null;
+        for (Entry<String, BoseSoundTouchHandler> entry : factory.getAllSoundTouchDevices().entrySet()) {
+            BoseSoundTouchHandler curHandler = entry.getValue();
+            // try by mac
+            String mac = entry.getKey();
+            if (other.equalsIgnoreCase(mac)) {
+                handlerFound = curHandler;
+                break;
             }
+            // try by name
+            String devName = curHandler.getDeviceName();
+            if (other.equalsIgnoreCase(devName)) {
+                handlerFound = curHandler;
+                break;
+            }
+        }
+
+        if (handlerFound != null) {
+            return handlerFound;
         } else {
-            try {
-                ContentItemMaker contentItemMaker = new ContentItemMaker(getDeviceType(), mapOfPresets);
-                ContentItem contentItem = contentItemMaker.getContentItem(operationModeType);
-                switchToContentItem(contentItem);
-            } catch (OperationModeNotAvailableException e) {
-                logger.warn("{}: OperationMode \"{}\" is not supported yet", getDeviceName(), operationModeType.name());
-                checkOperationMode();
-            } catch (NoInternetRadioPresetFoundException e) {
-                logger.warn("{}: Unable to switch to mode \"INTERNET_RADIO\". No PRESET defined", getDeviceName());
-                checkOperationMode();
-            } catch (NoStoredMusicPresetFoundException e) {
-                logger.warn("{}: Unable to switch to mode: \"STORED_MUSIC\". No PRESET defined", getDeviceName());
-                checkOperationMode();
-            }
-        }
-    }
-
-    public void sendRequestInWebSocket(String url) {
-        int id = 0;
-        String msg = "<msg><header " + "deviceID=\"" + getMacAddress() + "\"" + " url=\"" + url
-                + "\" method=\"GET\"><request requestID=\"" + id + "\"><info type=\"new\"/></request></header></msg>";
-        try {
-            session.getRemote().sendString(msg);
-        } catch (IOException e) {
-            onWebSocketError(e);
-        }
-    }
-
-    private void sendRequestInWebSocket(String url, String postData) {
-        sendRequestInWebSocket(url, "", postData);
-    }
-
-    private void sendRequestInWebSocket(String url, String infoAddon, String postData) {
-        int id = 0;
-        String msg = "<msg><header " + "deviceID=\"" + getMacAddress() + "\"" + " url=\"" + url
-                + "\" method=\"POST\"><request requestID=\"" + id + "\"><info " + infoAddon
-                + " type=\"new\"/></request></header><body>" + postData + "</body></msg>";
-        try {
-            session.getRemote().sendString(msg);
-        } catch (IOException e) {
-            onWebSocketError(e);
-        }
-    }
-
-    private void switchToContentItem(ContentItem contentItem) {
-        sendRequestInWebSocket("select", "", contentItem.generateXML());
-    }
-
-    private void simulateRemoteKey(RemoteKey key) {
-        sendRequestInWebSocket("key", "mainNode=\"keyPress\"",
-                "<key state=\"press\" sender=\"Gabbo\">" + key.name() + "</key>");
-        sendRequestInWebSocket("key", "mainNode=\"keyRelease\"",
-                "<key state=\"release\" sender=\"Gabbo\">" + key.name() + "</key>");
-    }
-
-    public void checkOperationMode() {
-        OperationModeType om = OperationModeType.OTHER;
-        if (thing.getStatus() == ThingStatus.ONLINE) {
-            if (currentContentItem != null) {
-                ContentItem psFound = null;
-                Collection<ContentItem> listOfPresets = mapOfPresets.values();
-                for (ContentItem ps : listOfPresets) {
-                    if (ps.isPresetable()) {
-                        if (ps.getLocation().equals(currentContentItem.getLocation())) {
-                            psFound = ps;
-                        }
-                    }
-                }
-                if (psFound != null) {
-                    updateState(channelPresetUID, new StringType(psFound.toString()));
-                    updateState(channelPresetValueUID, new DecimalType(psFound.getPresetID()));
-                } else {
-                    updateState(channelPresetUID, new StringType(""));
-                    updateState(channelPresetValueUID, new DecimalType(0));
-                }
-
-                if (om == OperationModeType.OTHER) {
-                    om = currentContentItem.getOperationMode();
-                }
-            } else {
-                om = OperationModeType.STANDBY;
-            }
-        }
-
-        updateState(channelOperationModeUID, new StringType(om.name()));
-        currentOperationMode = om;
-        if (om == OperationModeType.STANDBY) {
-            // zone is leaved / destroyed if turned off
-            zoneMembers.clear();
-            if (zoneMaster != null) {
-                zoneMaster.removeZoneMember(this);
-                zoneMaster = null;
-            }
-            updateState(channelPowerUID, OnOffType.OFF);
-            updateState(channelPlayerControlUID, PlayPauseType.PAUSE);
-        } else {
-            updateState(channelPowerUID, OnOffType.ON);
+            throw new BoseSoundTouchNotFoundException();
         }
     }
 
@@ -465,101 +338,58 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         return factory;
     }
 
-    public void addContentItemToPresetList(ContentItem preset) {
-        mapOfPresets.put(preset.getPresetID(), preset);
-    }
-
-    public State getNowPlayingSource() {
-        return nowPlayingSource;
-    }
-
-    public void setCurrentContentItem(ContentItem currentContentItem) {
-        this.currentContentItem = currentContentItem;
-    }
-
-    public boolean isMuted() {
-        return muted;
-    }
-
-    public void setMuted(boolean muted) {
-        this.muted = muted;
-    }
-
-    public void updateZoneState(ZoneState zoneState, BoseSoundTouchHandler zoneMaster, List<ZoneMember> zoneMembers) {
-        this.zoneState = zoneState;
-        this.zoneMaster = zoneMaster;
-        this.zoneMembers = zoneMembers;
-        zonesChanged();
-    }
-
-    private void addZoneMember(ZoneMember zoneMember) {
-        boolean found = false;
-        for (ZoneMember m : zoneMembers) {
-            if (zoneMember.getHandler().getMacAddress().equals(m.getMac())) {
-                logger.warn("{}: Zone add: ID '{}' is already member in zone!", getDeviceName(),
-                        zoneMember.getHandler().getMacAddress());
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            zoneMembers.add(zoneMember);
-        }
-    }
-
-    private boolean removeZoneMember(BoseSoundTouchHandler oh) {
-        boolean found = false;
-        for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
-            ZoneMember m = mi.next();
-            if (oh == m.getHandler()) {
-                mi.remove();
-                found = true;
-                break;
-            }
-        }
-        return found;
-    }
-
-    public BoseSoundTouchHandler getZoneMaster() {
-        return zoneMaster;
-    }
-
-    public void updateNowPlayingSource(State state) {
-        nowPlayingSource = state;
+    public CommandExecutor getCommandExecutor() {
+        return commandExecutor;
     }
 
     public void updatePlayerControl(PlayPauseType state) {
         updateState(channelPlayerControlUID, state);
     }
 
-    public void updateVolume(State state) {
-        updateState(channelVolumeUID, state);
+    public void updateMuteState(State state) {
+        updateState(channelMuteUID, state);
     }
 
-    public void updateVolumeMuted(State state) {
-        updateState(channelMuteUID, state);
+    public void updateVolume(State state) {
+        updateState(channelVolumeUID, state);
     }
 
     public void updateBassLevel(DecimalType state) {
         updateState(channelBassUID, state);
     }
 
+    public void updateZoneInfo(StringType state) {
+        updateState(channelZoneInfoUID, state);
+    }
+
+    public void updatePreset(DecimalType state) {
+        updateState(channelPresetUID, state);
+    }
+
+    public void updateOperationMode(OperationModeType state) {
+        updateState(channelOperationModeUID, state);
+    }
+
+    public void updatePowerState(OnOffType state) {
+        updateState(channelPowerUID, state);
+    }
+
     @Override
     public void onWebSocketConnect(Session session) {
         logger.debug("{}: onWebSocketConnect('{}')", getDeviceName(), session);
         this.session = session;
+        commandExecutor = new CommandExecutor(session, this);
         updateStatus(ThingStatus.ONLINE);
         // socket.newMessageSink(PayloadType.TEXT);
-        sendRequestInWebSocket("info");
+        commandExecutor.getInfo();
     }
 
     @Override
     public void onWebSocketError(Throwable e) {
         logger.error("{}: Error during websocket communication: {}", getDeviceName(), e.getMessage(), e);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        this.currentOperationMode = OperationModeType.OFFLINE;
-        this.currentContentItem = null;
-        this.checkOperationMode();
+        commandExecutor.setOperationMode(OperationModeType.OFFLINE);
+        commandExecutor.checkOperationMode();
         if (session != null) {
             session.close(StatusCode.SERVER_ERROR, getDeviceName() + ": Failure: " + e.getMessage());
         }
@@ -581,9 +411,8 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     public void onWebSocketClose(int code, String reason) {
         logger.debug("{}: onClose({}, '{}')", getDeviceName(), code, reason);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        this.currentOperationMode = OperationModeType.OFFLINE;
-        this.currentContentItem = null;
-        this.checkOperationMode();
+        commandExecutor.setOperationMode(OperationModeType.OFFLINE);
+        commandExecutor.checkOperationMode();
     }
 
     public String getMacAddress() {
@@ -629,51 +458,8 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         return type;
     }
 
-    public void zonesChanged() {
-        StringBuilder sb = new StringBuilder();
-        switch (zoneState) {
-            case Master:
-                sb.append("Master; Members: ");
-                break;
-            case Member:
-                sb.append("Member; Master is: ");
-                if (zoneMaster == null) {
-                    sb.append("<null>");
-                } else {
-                    sb.append(zoneMaster.getDeviceName());
-                }
-                sb.append("; Members: ");
-                break;
-            case None:
-                sb.append("Standalone");
-                break;
-        }
-        for (int i = 0; i < zoneMembers.size(); i++) {
-            if (i > 0) {
-                sb.append(", ");
-            }
-            sb.append(zoneMembers.get(i).getHandler().getDeviceName());
-        }
-        String zoneData = sb.toString();
-        logger.debug("{}: zoneInfo updated: {}", getDeviceName(), zoneData);
-        updateState(channelZoneInfoUID, new StringType(zoneData));
-    }
-
-    private void updateZones() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<zone master=\"").append(getMacAddress()).append("\">");
-        for (ZoneMember mbr : zoneMembers) {
-            sb.append("<member ipaddress=\"").append(mbr.getIp()).append("\">").append(mbr.getMac())
-                    .append("</member>");
-        }
-        sb.append("</zone>");
-        sendRequestInWebSocket("setZone", "mainNode=\"newZone\"", sb.toString());
-    }
-
     private void openConnection() {
         closeConnection();
-        zoneState = ZoneState.None;
-        zoneMaster = null;
         // updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE);
         try {
             client = new WebSocketClient();

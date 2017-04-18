@@ -108,17 +108,18 @@ public class XMLResponseProcessor {
         updatesMap.put("clockDisplayUpdated", XMLHandlerState.Unprocessed); // can we get anything useful of that?
         updatesMap.put("connectionStateUpdated", XMLHandlerState.UnprocessedNoTextExpected);
         updatesMap.put("infoUpdated", XMLHandlerState.Unprocessed);
-        updatesMap.put("bassUpdated", XMLHandlerState.BassUpdated);
         updatesMap.put("nowPlayingUpdated", XMLHandlerState.MsgBody);
         updatesMap.put("nowSelectionUpdated", XMLHandlerState.Unprocessed); // TODO this seems to be quite a useful info
                                                                             // what is currently played..
         updatesMap.put("recentsUpdated", XMLHandlerState.Unprocessed);
         updatesMap.put("volumeUpdated", XMLHandlerState.MsgBody);
         updatesMap.put("zoneUpdated", XMLHandlerState.ZoneUpdated); // just notifies but dosn't provide details
+        updatesMap.put("bassUpdated", XMLHandlerState.BassUpdated);
+        updatesMap.put("volumeUpdated", XMLHandlerState.VolumeUpdated);
 
         Map<String, XMLHandlerState> volume = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.Volume, volume);
-        volume.put("targetvolume", XMLHandlerState.Unprocessed);
+        volume.put("targetvolume", XMLHandlerState.VolumeTarget);
         volume.put("actualvolume", XMLHandlerState.VolumeActual);
         volume.put("muteenabled", XMLHandlerState.VolumeMuteEnabled);
 
@@ -158,8 +159,8 @@ public class XMLResponseProcessor {
 
         Map<String, XMLHandlerState> bassMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.Bass, bassMap);
-        bassMap.put("targetbass", XMLHandlerState.BassTargetValue);
-        bassMap.put("actualbass", XMLHandlerState.BassActualValue);
+        bassMap.put("targetbass", XMLHandlerState.BassTarget);
+        bassMap.put("actualbass", XMLHandlerState.BassActual);
 
     }
 
