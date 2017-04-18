@@ -74,6 +74,7 @@
                 <option value="STANDBY">STANDBY</option>
                 <option value="INTERNET_RADIO">INTERNET_RADIO</option>
                 <option value="BLUETOOTH">BLUETOOTH</option>
+                <option value="STORED_MUSIC">STORED_MUSIC</option>
                 <option value="AUX">AUX</option>
                 <option value="AUX1">AUX1</option>
                 <option value="AUX2">AUX2</option>
@@ -84,7 +85,6 @@
                 <option value="PANDORA">PANDORA</option>
                 <option value="DEEZER">DEEZER</option>
                 <option value="SIRIUSXM">SIRIUSXM</option>
-                <option value="STORED_MUSIC">STORED_MUSIC</option>
                 <option value="AMAZON">AMAZON</option>
             </options>
         </state>

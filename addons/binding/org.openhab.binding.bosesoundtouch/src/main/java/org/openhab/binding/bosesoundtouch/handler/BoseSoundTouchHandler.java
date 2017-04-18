@@ -331,15 +331,15 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
         return thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME);
     }
 
-    public void updatePlayerControl(PlayPauseType state) {
+    public void updatePlayerControl(State state) {
         updateState(channelPlayerControlUID, state);
     }
 
-    public void updateMuteState(State state) {
+    public void updateMuteState(OnOffType state) {
         updateState(channelMuteUID, state);
     }
 
-    public void updateVolume(State state) {
+    public void updateVolume(PercentType state) {
         updateState(channelVolumeUID, state);
     }
 
@@ -355,7 +355,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
         updateState(channelPresetUID, state);
     }
 
-    public void updateOperationMode(OperationModeType state) {
+    public void updateOperationMode(StringType state) {
         updateState(channelOperationModeUID, state);
     }
 

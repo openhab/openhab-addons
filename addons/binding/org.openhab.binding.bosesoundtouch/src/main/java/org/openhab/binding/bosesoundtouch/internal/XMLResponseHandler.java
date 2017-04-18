@@ -183,7 +183,8 @@ public class XMLResponseHandler extends DefaultHandler {
                         } else {
                             // an other device is the master
                             zoneState = ZoneState.Member;
-                            zoneMaster = handler.getFactory().getBoseSoundTouchDevice(master);
+                            BoseSoundTouchHandlerFactory factory = handler.getFactory();
+                            zoneMaster = factory.getBoseSoundTouchDevice(master);
                             if (zoneMaster == null) {
                                 logger.warn("{}: Zone update: Unable to find master with ID {}",
                                         handler.getDeviceName(), master);
@@ -226,7 +227,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case Sources:
                 if ("sourceItem".equals(localName)) {
-                    state = XMLHandlerState.SourceItem;
+                    state = XMLHandlerState.Unprocessed;
                     String source = attributes.getValue("source");
                     String sourceAccount = attributes.getValue("sourceAccount");
                     String status = attributes.getValue("status");
@@ -282,7 +283,6 @@ public class XMLResponseHandler extends DefaultHandler {
             case Preset:
             case Updates:
             case Volume:
-            case SourceItem:
                 state = nextState(stateMap, curState, localName);
                 break;
             // all entities without any children expected..
@@ -381,12 +381,6 @@ public class XMLResponseHandler extends DefaultHandler {
                     contentItem = null;
                 }
                 break;
-            // case SourceItem:
-            // if (state == XMLHandlerState.Sources) {
-            // handler.setAUX();
-            // contentItem = null;
-            // }
-            // break;
             case NowPlaying:
                 if (state == XMLHandlerState.MsgBody) {
                     processor.updateRateEnabled(rateEnabled);
@@ -455,8 +449,10 @@ public class XMLResponseHandler extends DefaultHandler {
             case ZoneUpdated:
             case BassTarget:
             case VolumeTarget:
+                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
+                        new String(ch, start, length));
+                break;
             case Sources:
-            case SourceItem:
                 logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
                         new String(ch, start, length));
                 break;
@@ -517,7 +513,8 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case ZoneMember:
                 String mac = new String(ch, start, length);
-                BoseSoundTouchHandler memberHandler = handler.getFactory().getBoseSoundTouchDevice(mac);
+                BoseSoundTouchHandlerFactory factory = handler.getFactory();
+                BoseSoundTouchHandler memberHandler = factory.getBoseSoundTouchDevice(mac);
                 if (memberHandler == null) {
                     logger.warn("{}: Zone update: Unable to find member with ID {}", handler.getDeviceName(), mac);
                 } else {

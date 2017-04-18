@@ -165,7 +165,6 @@ public class XMLResponseProcessor {
 
         Map<String, XMLHandlerState> sourceMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.Sources, sourceMap);
-        bassMap.put("sourceItem", XMLHandlerState.SourceItem);
 
     }
 

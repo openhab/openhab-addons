@@ -37,6 +37,16 @@ public enum OperationModeType implements PrimitiveType, State, Command {
     HDMI1,
     OTHER;
 
+    private String name;
+
+    private OperationModeType() {
+        this.name = name();
+    }
+
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String format(String pattern) {
         return String.format(pattern, this.toString());

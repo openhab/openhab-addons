@@ -154,14 +154,14 @@ public class CommandExecutor {
                 } catch (OperationModeNotAvailableException e) {
                     logger.warn("{}: OperationMode \"{}\" is not supported yet", handler.getDeviceName(),
                             operationModeType.name());
-                    checkOperationMode();
                 } catch (NoInternetRadioPresetFoundException e) {
                     logger.warn("{}: Unable to switch to mode \"INTERNET_RADIO\". No PRESET defined",
                             handler.getDeviceName());
-                    checkOperationMode();
                 } catch (NoStoredMusicPresetFoundException e) {
                     logger.warn("{}: Unable to switch to mode: \"STORED_MUSIC\". No PRESET defined",
                             handler.getDeviceName());
+
+                } finally {
                     checkOperationMode();
                 }
             }
@@ -434,7 +434,7 @@ public class CommandExecutor {
             operationMode = OperationModeType.STANDBY;
         }
 
-        handler.updateOperationMode(operationMode);
+        handler.updateOperationMode(new StringType(operationMode.getName()));
         currentOperationMode = operationMode;
         if (operationMode == OperationModeType.STANDBY) {
             // zone is leaved / destroyed if turned off
@@ -465,7 +465,8 @@ public class CommandExecutor {
 
     private BoseSoundTouchHandler findHandlerByNameOrMAC(String identifier) throws BoseSoundTouchNotFoundException {
         BoseSoundTouchHandler handlerFound = null;
-        for (Entry<String, BoseSoundTouchHandler> entry : handler.getFactory().getAllSoundTouchDevices().entrySet()) {
+        BoseSoundTouchHandlerFactory factory = handler.getFactory();
+        for (Entry<String, BoseSoundTouchHandler> entry : factory.getAllSoundTouchDevices().entrySet()) {
             BoseSoundTouchHandler curHandler = entry.getValue();
             // try by mac
             String mac = entry.getKey();
