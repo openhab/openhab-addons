@@ -81,7 +81,7 @@ public class CometVisuServlet extends HttpServlet {
                                                                 // week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
-    private Pattern sitemapPattern = Pattern.compile(".*/visu_config_(oh_)?([^\\.]+)\\.xml");
+    private Pattern sitemapPattern = Pattern.compile(".*/visu_config_?(oh_)?([^\\.]+)?\\.xml");
     private Pattern configStorePattern = Pattern.compile("config/visu_config_oh_([a-z0-9_]+)\\.xml");
 
     private String rssLogPath = "/plugins/rsslog/rsslog_oh.php";
