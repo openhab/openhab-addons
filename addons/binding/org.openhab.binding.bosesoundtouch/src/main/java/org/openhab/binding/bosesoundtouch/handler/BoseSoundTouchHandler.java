@@ -309,37 +309,55 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     }
 
-    private BoseSoundTouchHandler findHandlerByNameOrMAC(String other) throws BoseSoundTouchNotFoundException {
-        BoseSoundTouchHandler handlerFound = null;
-        for (Entry<String, BoseSoundTouchHandler> entry : factory.getAllSoundTouchDevices().entrySet()) {
-            BoseSoundTouchHandler curHandler = entry.getValue();
-            // try by mac
-            String mac = entry.getKey();
-            if (other.equalsIgnoreCase(mac)) {
-                handlerFound = curHandler;
-                break;
-            }
-            // try by name
-            String devName = curHandler.getDeviceName();
-            if (other.equalsIgnoreCase(devName)) {
-                handlerFound = curHandler;
-                break;
-            }
-        }
-
-        if (handlerFound != null) {
-            return handlerFound;
-        } else {
-            throw new BoseSoundTouchNotFoundException();
-        }
-    }
-
     public BoseSoundTouchHandlerFactory getFactory() {
         return factory;
     }
 
     public CommandExecutor getCommandExecutor() {
         return commandExecutor;
+    }
+
+    public String getMacAddress() {
+        return thing.getUID().getId();
+    }
+
+    public ChannelUID getChannelUID(String channelId) {
+        Channel chann = thing.getChannel(channelId);
+        if (chann == null) {
+            // refresh thing...
+            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(thing.getThingTypeUID()), thing.getUID(),
+                    thing.getConfiguration());
+            updateThing(newThing);
+            chann = thing.getChannel(channelId);
+        }
+        return chann.getUID();
+    }
+
+    public String getDeviceName() {
+        return thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME);
+    }
+
+    public SoundTouchType getDeviceType() {
+        String typeAsString = thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_TYPE);
+        SoundTouchType type = SoundTouchType.Unknown;
+
+        if (typeAsString.equals("SoundTouch 10")) {
+            type = SoundTouchType.SoundTouch_10_WirelessSpeaker;
+        } else if (typeAsString.equals("SoundTouch 20")) {
+            type = SoundTouchType.SoundTouch_20_WirelessSpeaker;
+        } else if (typeAsString.equals("SoundTouch 30")) {
+            type = SoundTouchType.SoundTouch_30_WirelessSpeaker;
+        } else if (typeAsString.contains("SoundBar")) { // TODO better criteria
+            type = SoundTouchType.SoundTouch_300_Soundbar;
+        } else if (typeAsString.contains("Amplifier")) { // TODO better criteria
+            type = SoundTouchType.SoundTouch_SA5Amplifier;
+        } else if (typeAsString.contains("Adapter")) { // TODO better criteria
+            type = SoundTouchType.SoundTouch_WirelessLinkAdapter;
+        } else if (typeAsString.contains("Wave")) { // TODO better criteria
+            type = SoundTouchType.WaveSoundTouchMusicSystemIV;
+        }
+
+        return type;
     }
 
     public void updatePlayerControl(PlayPauseType state) {
@@ -415,47 +433,29 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         commandExecutor.checkOperationMode();
     }
 
-    public String getMacAddress() {
-        return thing.getUID().getId();
-    }
-
-    public ChannelUID getChannelUID(String channelId) {
-        Channel chann = thing.getChannel(channelId);
-        if (chann == null) {
-            // refresh thing...
-            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(thing.getThingTypeUID()), thing.getUID(),
-                    thing.getConfiguration());
-            updateThing(newThing);
-            chann = thing.getChannel(channelId);
-        }
-        return chann.getUID();
-    }
-
-    public String getDeviceName() {
-        return thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME);
-    }
-
-    public SoundTouchType getDeviceType() {
-        String typeAsString = thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_TYPE);
-        SoundTouchType type = SoundTouchType.Unknown;
-
-        if (typeAsString.equals("SoundTouch 10")) {
-            type = SoundTouchType.SoundTouch_10_WirelessSpeaker;
-        } else if (typeAsString.equals("SoundTouch 20")) {
-            type = SoundTouchType.SoundTouch_20_WirelessSpeaker;
-        } else if (typeAsString.equals("SoundTouch 30")) {
-            type = SoundTouchType.SoundTouch_30_WirelessSpeaker;
-        } else if (typeAsString.contains("SoundBar")) { // TODO better criteria
-            type = SoundTouchType.SoundTouch_300_Soundbar;
-        } else if (typeAsString.contains("Amplifier")) { // TODO better criteria
-            type = SoundTouchType.SoundTouch_SA5Amplifier;
-        } else if (typeAsString.contains("Adapter")) { // TODO better criteria
-            type = SoundTouchType.SoundTouch_WirelessLinkAdapter;
-        } else if (typeAsString.contains("Wave")) { // TODO better criteria
-            type = SoundTouchType.WaveSoundTouchMusicSystemIV;
+    private BoseSoundTouchHandler findHandlerByNameOrMAC(String other) throws BoseSoundTouchNotFoundException {
+        BoseSoundTouchHandler handlerFound = null;
+        for (Entry<String, BoseSoundTouchHandler> entry : factory.getAllSoundTouchDevices().entrySet()) {
+            BoseSoundTouchHandler curHandler = entry.getValue();
+            // try by mac
+            String mac = entry.getKey();
+            if (other.equalsIgnoreCase(mac)) {
+                handlerFound = curHandler;
+                break;
+            }
+            // try by name
+            String devName = curHandler.getDeviceName();
+            if (other.equalsIgnoreCase(devName)) {
+                handlerFound = curHandler;
+                break;
+            }
         }
 
-        return type;
+        if (handlerFound != null) {
+            return handlerFound;
+        } else {
+            throw new BoseSoundTouchNotFoundException();
+        }
     }
 
     private void openConnection() {
