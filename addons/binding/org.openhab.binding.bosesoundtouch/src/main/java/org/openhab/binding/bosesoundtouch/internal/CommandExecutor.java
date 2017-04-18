@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.smarthome.config.core.ConfigConstants;
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
+import org.openhab.binding.bosesoundtouch.internal.exceptions.BoseSoundTouchNotFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.ContentItemNotPresetableException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoInternetRadioPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoPresetFoundException;
@@ -88,7 +90,7 @@ public class CommandExecutor {
         }
     }
 
-    public void removeFromZone(BoseSoundTouchHandler handler) {
+    private void removeFromZone(BoseSoundTouchHandler handler) {
         if (handler != null) {
             if (!removeZoneMember(handler)) {
                 logger.warn("{}: Zone remove: ID {} is not a member in zone!", handler.getDeviceName(),
@@ -99,7 +101,7 @@ public class CommandExecutor {
         }
     }
 
-    public void addToZone(BoseSoundTouchHandler handler) {
+    private void addToZone(BoseSoundTouchHandler handler) {
         if (handler != null) {
             boolean found = false;
             for (ZoneMember m : zoneMembers) {
@@ -213,7 +215,7 @@ public class CommandExecutor {
                 logger.warn("{}: Could not save presets to file", handler.getDeviceName());
             }
         } else {
-            // TODO Auto-generated catch block
+            logger.warn("{}: Only PresetID >6 is allowed", handler.getDeviceName());
         }
     }
 
@@ -256,6 +258,33 @@ public class CommandExecutor {
             simulateRemoteKey(RemoteKeyType.NEXT_TRACK);
         } else if (command.equals(NextPreviousType.PREVIOUS)) {
             simulateRemoteKey(RemoteKeyType.PREV_TRACK);
+        }
+    }
+
+    public void setZone(StringType command) {
+        // try to parse string command...
+        String cmd = command.toString();
+        String cmdlc = cmd.toLowerCase();
+        if (cmdlc.split(" ").length == 2) {
+            String action = cmdlc.split(" ")[0];
+            String identifier = cmdlc.split(" ")[1];
+
+            BoseSoundTouchHandler handlerFound = null;
+            try {
+                handlerFound = findHandlerByNameOrMAC(identifier);
+            } catch (BoseSoundTouchNotFoundException e) {
+                logger.warn("{}: Could not find Soundtouchd: {}", handler.getDeviceName(), identifier);
+            }
+
+            if ("add".equals(action)) {
+                addToZone(handlerFound);
+            } else if ("remove".equals(action)) {
+                removeFromZone(handlerFound);
+            } else {
+                logger.warn("{}: Invalid zone command: {}", handler.getDeviceName(), cmd);
+            }
+        } else {
+            logger.warn("{}: Invalid zone command: {}", handler.getDeviceName(), cmd);
         }
     }
 
@@ -431,6 +460,31 @@ public class CommandExecutor {
         } catch (ContentItemNotPresetableException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+    private BoseSoundTouchHandler findHandlerByNameOrMAC(String identifier) throws BoseSoundTouchNotFoundException {
+        BoseSoundTouchHandler handlerFound = null;
+        for (Entry<String, BoseSoundTouchHandler> entry : handler.getFactory().getAllSoundTouchDevices().entrySet()) {
+            BoseSoundTouchHandler curHandler = entry.getValue();
+            // try by mac
+            String mac = entry.getKey();
+            if (identifier.equalsIgnoreCase(mac)) {
+                handlerFound = curHandler;
+                break;
+            }
+            // try by name
+            String devName = curHandler.getDeviceName();
+            if (identifier.equalsIgnoreCase(devName)) {
+                handlerFound = curHandler;
+                break;
+            }
+        }
+
+        if (handlerFound != null) {
+            return handlerFound;
+        } else {
+            throw new BoseSoundTouchNotFoundException();
         }
     }
 }

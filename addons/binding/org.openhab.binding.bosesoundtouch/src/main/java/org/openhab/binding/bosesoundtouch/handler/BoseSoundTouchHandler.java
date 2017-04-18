@@ -14,7 +14,6 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +44,6 @@ import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
 import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
 import org.openhab.binding.bosesoundtouch.internal.XMLResponseProcessor;
-import org.openhab.binding.bosesoundtouch.internal.exceptions.BoseSoundTouchNotFoundException;
 import org.openhab.binding.bosesoundtouch.internal.items.SoundTouchType;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 import org.openhab.binding.bosesoundtouch.types.RemoteKeyType;
@@ -269,31 +267,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 break;
             case CHANNEL_ZONE_CONTROL:
                 if (command instanceof StringType) {
-                    // try to parse string command...
-                    String cmd = command.toString();
-                    String cmdlc = cmd.toLowerCase();
-                    if (cmdlc.split(" ").length == 2) {
-                        String action = cmdlc.split(" ")[0];
-                        String other = cmdlc.split(" ")[1];
-
-                        BoseSoundTouchHandler handlerFound = null;
-                        try {
-                            handlerFound = findHandlerByNameOrMAC(other);
-                        } catch (BoseSoundTouchNotFoundException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-
-                        if ("add".equals(action)) {
-                            commandExecutor.addToZone(handlerFound);
-                        } else if ("remove".equals(action)) {
-                            commandExecutor.removeFromZone(handlerFound);
-                        } else {
-                            logger.warn("{}: Invalid zone command: {}", getDeviceName(), cmd);
-                        }
-                    } else {
-                        logger.warn("{}: Invalid zone command: {}", getDeviceName(), cmd);
-                    }
+                    commandExecutor.setZone((StringType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
@@ -431,31 +405,6 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         commandExecutor.setOperationMode(OperationModeType.OFFLINE);
         commandExecutor.checkOperationMode();
-    }
-
-    private BoseSoundTouchHandler findHandlerByNameOrMAC(String other) throws BoseSoundTouchNotFoundException {
-        BoseSoundTouchHandler handlerFound = null;
-        for (Entry<String, BoseSoundTouchHandler> entry : factory.getAllSoundTouchDevices().entrySet()) {
-            BoseSoundTouchHandler curHandler = entry.getValue();
-            // try by mac
-            String mac = entry.getKey();
-            if (other.equalsIgnoreCase(mac)) {
-                handlerFound = curHandler;
-                break;
-            }
-            // try by name
-            String devName = curHandler.getDeviceName();
-            if (other.equalsIgnoreCase(devName)) {
-                handlerFound = curHandler;
-                break;
-            }
-        }
-
-        if (handlerFound != null) {
-            return handlerFound;
-        } else {
-            throw new BoseSoundTouchNotFoundException();
-        }
     }
 
     private void openConnection() {
