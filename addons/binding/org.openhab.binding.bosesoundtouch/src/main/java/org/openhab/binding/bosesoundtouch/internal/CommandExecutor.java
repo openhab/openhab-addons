@@ -148,7 +148,7 @@ public class CommandExecutor {
                 }
             } else {
                 try {
-                    ContentItemMaker contentItemMaker = new ContentItemMaker(handler.getDeviceType(), presetContainer);
+                    ContentItemMaker contentItemMaker = new ContentItemMaker(handler, presetContainer);
                     ContentItem contentItem = contentItemMaker.getContentItem(operationModeType);
                     setContentItem(contentItem);
                 } catch (OperationModeNotAvailableException e) {

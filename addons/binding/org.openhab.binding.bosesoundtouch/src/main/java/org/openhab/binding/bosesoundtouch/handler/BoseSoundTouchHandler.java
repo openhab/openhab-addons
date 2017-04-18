@@ -44,7 +44,6 @@ import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
 import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
 import org.openhab.binding.bosesoundtouch.internal.XMLResponseProcessor;
-import org.openhab.binding.bosesoundtouch.internal.items.SoundTouchType;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 import org.openhab.binding.bosesoundtouch.types.RemoteKeyType;
 import org.slf4j.Logger;
@@ -57,9 +56,20 @@ import org.slf4j.LoggerFactory;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer
  */
-public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implements WebSocketListener {
+public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
+        implements WebSocketListener, BoseSoundTouchTypeInterface {
 
     private final Logger logger = LoggerFactory.getLogger(BoseSoundTouchHandler.class);
+
+    private boolean bluetooth;
+    private boolean aux;
+    private boolean aux1;
+    private boolean aux2;
+    private boolean aux3;
+    private boolean internetRadio;
+    private boolean storedMusic;
+    private boolean hdmi1;
+    private boolean tv;
 
     private ChannelUID channelPowerUID;
     private ChannelUID channelVolumeUID;
@@ -101,6 +111,16 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         channelBassUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_BASS);
         channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
         channelSaveAsPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SAVE_AS_PRESET);
+
+        bluetooth = false;
+        aux = false;
+        aux1 = false;
+        aux2 = false;
+        aux3 = false;
+        internetRadio = false;
+        storedMusic = false;
+        hdmi1 = false;
+        tv = false;
 
         factory.registerSoundTouchDevice(this);
         connectionChecker = scheduler.scheduleWithFixedDelay(new Runnable() {
@@ -311,29 +331,6 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         return thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME);
     }
 
-    public SoundTouchType getDeviceType() {
-        String typeAsString = thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_TYPE);
-        SoundTouchType type = SoundTouchType.Unknown;
-
-        if (typeAsString.equals("SoundTouch 10")) {
-            type = SoundTouchType.SoundTouch_10_WirelessSpeaker;
-        } else if (typeAsString.equals("SoundTouch 20")) {
-            type = SoundTouchType.SoundTouch_20_WirelessSpeaker;
-        } else if (typeAsString.equals("SoundTouch 30")) {
-            type = SoundTouchType.SoundTouch_30_WirelessSpeaker;
-        } else if (typeAsString.contains("SoundBar")) { // TODO better criteria
-            type = SoundTouchType.SoundTouch_300_Soundbar;
-        } else if (typeAsString.contains("Amplifier")) { // TODO better criteria
-            type = SoundTouchType.SoundTouch_SA5Amplifier;
-        } else if (typeAsString.contains("Adapter")) { // TODO better criteria
-            type = SoundTouchType.SoundTouch_WirelessLinkAdapter;
-        } else if (typeAsString.contains("Wave")) { // TODO better criteria
-            type = SoundTouchType.WaveSoundTouchMusicSystemIV;
-        }
-
-        return type;
-    }
-
     public void updatePlayerControl(PlayPauseType state) {
         updateState(channelPlayerControlUID, state);
     }
@@ -364,6 +361,87 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     public void updatePowerState(OnOffType state) {
         updateState(channelPowerUID, state);
+    }
+
+    @Override
+    public boolean hasBluetooth() {
+        return bluetooth;
+    }
+
+    @Override
+    public boolean hasAUX() {
+        return aux;
+    }
+
+    @Override
+    public boolean hasAUX1() {
+        return aux1;
+    }
+
+    @Override
+    public boolean hasAUX2() {
+        return aux2;
+    }
+
+    @Override
+    public boolean hasAUX3() {
+        return aux3;
+    }
+
+    @Override
+    public boolean hasTV() {
+        return tv;
+    }
+
+    @Override
+    public boolean hasHDMI1() {
+        return hdmi1;
+    }
+
+    @Override
+    public boolean hasInternetRadio() {
+        return internetRadio;
+    }
+
+    @Override
+    public boolean hasStoredMusic() {
+        return storedMusic;
+    }
+
+    public void setAUX(boolean aux) {
+        this.aux = aux;
+    }
+
+    public void setAUX1(boolean aux1) {
+        this.aux1 = aux1;
+    }
+
+    public void setAUX2(boolean aux2) {
+        this.aux2 = aux2;
+    }
+
+    public void setAUX3(boolean aux3) {
+        this.aux3 = aux3;
+    }
+
+    public void setStoredMusic(boolean storedMusic) {
+        this.storedMusic = storedMusic;
+    }
+
+    public void setInternetRadio(boolean internetRadio) {
+        this.internetRadio = internetRadio;
+    }
+
+    public void setBluetooth(boolean bluetooth) {
+        this.bluetooth = bluetooth;
+    }
+
+    public void setTV(boolean tv) {
+        this.tv = tv;
+    }
+
+    public void setHDMI1(boolean hdmi1) {
+        this.hdmi1 = hdmi1;
     }
 
     @Override

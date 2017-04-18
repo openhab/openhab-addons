@@ -54,4 +54,6 @@ public enum XMLHandlerState {
     Zone,
     ZoneMember,
     ZoneUpdated,
+    Sources,
+    SourceItem,
 }

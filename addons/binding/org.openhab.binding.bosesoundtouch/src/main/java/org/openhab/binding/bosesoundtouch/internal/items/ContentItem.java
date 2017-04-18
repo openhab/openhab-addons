@@ -90,7 +90,7 @@ public class ContentItem {
                 operationMode = OperationModeType.TV;
             }
             if (sourceAccount.contains("HDMI")) {
-                operationMode = OperationModeType.HDMI;
+                operationMode = OperationModeType.HDMI1;
             }
             return operationMode;
         }
@@ -174,7 +174,7 @@ public class ContentItem {
             case TV:
                 xml = "<ContentItem unusedField=\"0\" source=\"PRODUCT\" sourceAccount=\"TV\" isPresetable=\"false\" />";
                 break;
-            case HDMI:
+            case HDMI1:
                 xml = "<ContentItem unusedField=\"0\" source=\"PRODUCT\" sourceAccount=\"HDMI_1\" isPresetable=\"false\" />";
                 break;
             default:

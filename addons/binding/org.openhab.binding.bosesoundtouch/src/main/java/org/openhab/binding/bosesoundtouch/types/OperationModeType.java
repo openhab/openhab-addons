@@ -34,7 +34,7 @@ public enum OperationModeType implements PrimitiveType, State, Command {
     STORED_MUSIC,
     AMAZON,
     TV,
-    HDMI,
+    HDMI1,
     OTHER;
 
     @Override

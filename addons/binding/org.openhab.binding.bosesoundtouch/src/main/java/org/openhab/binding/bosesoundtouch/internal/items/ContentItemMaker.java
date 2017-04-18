@@ -10,6 +10,7 @@ package org.openhab.binding.bosesoundtouch.internal.items;
 
 import java.util.Collection;
 
+import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoInternetRadioPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoStoredMusicPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.OperationModeNotAvailableException;
@@ -22,11 +23,11 @@ import org.openhab.binding.bosesoundtouch.types.OperationModeType;
  */
 public class ContentItemMaker {
 
-    private SoundTouchType soundTouchType;
-    PresetContainer presetContainer;
+    private PresetContainer presetContainer;
+    private BoseSoundTouchHandler soundTouchHandler;
 
-    public ContentItemMaker(SoundTouchType soundTouchType, PresetContainer presetContainer) {
-        this.soundTouchType = soundTouchType;
+    public ContentItemMaker(BoseSoundTouchHandler soundTouchHandler, PresetContainer presetContainer) {
+        this.soundTouchHandler = soundTouchHandler;
         this.presetContainer = presetContainer;
     }
 
@@ -51,7 +52,7 @@ public class ContentItemMaker {
                 return getBluetooth();
             case DEEZER:
                 return getDeezer();
-            case HDMI:
+            case HDMI1:
                 return getHDMI();
             case INTERNET_RADIO:
                 return getInternetRadio();
@@ -76,11 +77,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if ((soundTouchType == SoundTouchType.SoundTouch_10_WirelessSpeaker)
-                || (soundTouchType == SoundTouchType.SoundTouch_20_WirelessSpeaker)
-                || (soundTouchType == SoundTouchType.SoundTouch_30_WirelessSpeaker)
-                || (soundTouchType == SoundTouchType.WaveSoundTouchMusicSystemIV)
-                || (soundTouchType == SoundTouchType.SoundTouch_WirelessLinkAdapter)) {
+        if (soundTouchHandler.hasAUX()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX");
@@ -94,7 +91,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX1() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchType == SoundTouchType.SoundTouch_SA5Amplifier) {
+        if (soundTouchHandler.hasAUX1()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX1");
@@ -108,7 +105,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX2() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchType == SoundTouchType.SoundTouch_SA5Amplifier) {
+        if (soundTouchHandler.hasAUX2()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX2");
@@ -122,7 +119,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX3() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchType == SoundTouchType.SoundTouch_SA5Amplifier) {
+        if (soundTouchHandler.hasAUX3()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX3");
@@ -135,9 +132,16 @@ public class ContentItemMaker {
     }
 
     private ContentItem getBluetooth() throws OperationModeNotAvailableException {
-        ContentItem contentItem = new ContentItem();
-        contentItem.setSource("BLUETOOTH");
-        return contentItem;
+        ContentItem contentItem = null;
+        if (soundTouchHandler.hasBluetooth()) {
+            contentItem = new ContentItem();
+            contentItem.setSource("BLUETOOTH");
+        }
+        if (contentItem != null) {
+            return contentItem;
+        } else {
+            throw new OperationModeNotAvailableException();
+        }
     }
 
     private ContentItem getDeezer() throws OperationModeNotAvailableException {
@@ -146,7 +150,7 @@ public class ContentItemMaker {
 
     private ContentItem getHDMI() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchType == SoundTouchType.SoundTouch_300_Soundbar) {
+        if (soundTouchHandler.hasHDMI1()) {
             contentItem = new ContentItem();
             contentItem.setSource("PRODUCT");
             contentItem.setSourceAccount("HDMI_1");
@@ -162,10 +166,12 @@ public class ContentItemMaker {
 
     private ContentItem getInternetRadio() throws NoInternetRadioPresetFoundException {
         ContentItem contentItem = null;
-        Collection<ContentItem> listOfPresets = presetContainer.values();
-        for (ContentItem iteratedItem : listOfPresets) {
-            if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.INTERNET_RADIO)) {
-                contentItem = iteratedItem;
+        if (soundTouchHandler.hasInternetRadio()) {
+            Collection<ContentItem> listOfPresets = presetContainer.values();
+            for (ContentItem iteratedItem : listOfPresets) {
+                if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.INTERNET_RADIO)) {
+                    contentItem = iteratedItem;
+                }
             }
         }
         if (contentItem != null) {
@@ -188,22 +194,13 @@ public class ContentItemMaker {
     }
 
     private ContentItem getStoredMusic() throws NoStoredMusicPresetFoundException {
-        // // This is just an example, must find a way to do this
-        // // Maybe an similar solution as for the INTERNET_RADIO
-        // // If the more than 6 PRESETS feature is available, this makes more sense
-        // ContentItem contentItem = new ContentItem();
-        // contentItem.setSource("STORED_MUSIC");
-        // contentItem.setSourceAccount("00113216-107a-0011-7a10-7a1016321100/0");
-        // contentItem.setUnusedField(0);
-        // contentItem.setLocation("28$65445");
-        // contentItem.setPresetable(true);
-        // contentItem.setItemName("100 Jahre");
-
         ContentItem contentItem = null;
-        Collection<ContentItem> listOfPresets = presetContainer.values();
-        for (ContentItem iteratedItem : listOfPresets) {
-            if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.STORED_MUSIC)) {
-                contentItem = iteratedItem;
+        if (soundTouchHandler.hasStoredMusic()) {
+            Collection<ContentItem> listOfPresets = presetContainer.values();
+            for (ContentItem iteratedItem : listOfPresets) {
+                if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.STORED_MUSIC)) {
+                    contentItem = iteratedItem;
+                }
             }
         }
         if (contentItem != null) {
@@ -215,7 +212,7 @@ public class ContentItemMaker {
 
     private ContentItem getTV() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchType == SoundTouchType.SoundTouch_300_Soundbar) {
+        if (soundTouchHandler.hasTV()) {
             contentItem = new ContentItem();
             contentItem.setSource("PRODUCT");
             contentItem.setSourceAccount("TV");

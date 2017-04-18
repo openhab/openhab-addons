@@ -18,7 +18,8 @@ public enum APIRequest {
     PRESETS("presets"),
     NOW_PLAYING("now_playing"),
     ZONE("getZone"),
-    BASS("bass");
+    BASS("bass"),
+    SOURCES("sources");
 
     private String name;
 

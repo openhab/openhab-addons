@@ -224,6 +224,53 @@ public class XMLResponseHandler extends DefaultHandler {
                     state = XMLHandlerState.Unprocessed;
                 }
                 break;
+            case Sources:
+                if ("sourceItem".equals(localName)) {
+                    state = XMLHandlerState.SourceItem;
+                    String source = attributes.getValue("source");
+                    String sourceAccount = attributes.getValue("sourceAccount");
+                    String status = attributes.getValue("status");
+                    if (status.equals("READY")) {
+                        if (source.equals("AUX")) {
+                            if (sourceAccount.equals("AUX")) {
+                                handler.setAUX(true);
+                            }
+                            if (sourceAccount.equals("AUX1")) {
+                                handler.setAUX1(true);
+                            }
+                            if (sourceAccount.equals("AUX2")) {
+                                handler.setAUX2(true);
+                            }
+                            if (sourceAccount.equals("AUX3")) {
+                                handler.setAUX3(true);
+                            }
+                        }
+                        if (source.equals("STORED_MUSIC")) {
+                            handler.setStoredMusic(true);
+                        }
+                        if (source.equals("INTERNET_RADIO")) {
+                            handler.setInternetRadio(true);
+                        }
+                        if (source.equals("BLUETOOTH")) {
+                            handler.setBluetooth(true);
+                        }
+                        if (source.equals("PRODUCT")) {
+                            if (sourceAccount.equals("TV")) {
+                                handler.setTV(true);
+                            }
+                            if (sourceAccount.equals("HDMI_1")) {
+                                handler.setHDMI1(true);
+                            }
+                        }
+                    }
+                } else {
+                    if (logger.isDebugEnabled()) {
+                        logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                                localName);
+                    }
+                    state = XMLHandlerState.Unprocessed;
+                }
+                break;
             case Zone:
                 zoneMemberIp = attributes.getValue("ipaddress");
                 state = nextState(stateMap, curState, localName);
@@ -235,6 +282,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case Preset:
             case Updates:
             case Volume:
+            case SourceItem:
                 state = nextState(stateMap, curState, localName);
                 break;
             // all entities without any children expected..
@@ -317,6 +365,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 commandExecutor.sendAPIRequest(APIRequest.NOW_PLAYING);
                 commandExecutor.sendAPIRequest(APIRequest.ZONE);
                 commandExecutor.sendAPIRequest(APIRequest.BASS);
+                commandExecutor.sendAPIRequest(APIRequest.SOURCES);
                 break;
             case ContentItem:
                 if (state == XMLHandlerState.NowPlaying) {
@@ -332,6 +381,12 @@ public class XMLResponseHandler extends DefaultHandler {
                     contentItem = null;
                 }
                 break;
+            // case SourceItem:
+            // if (state == XMLHandlerState.Sources) {
+            // handler.setAUX();
+            // contentItem = null;
+            // }
+            // break;
             case NowPlaying:
                 if (state == XMLHandlerState.MsgBody) {
                     processor.updateRateEnabled(rateEnabled);
@@ -400,6 +455,8 @@ public class XMLResponseHandler extends DefaultHandler {
             case ZoneUpdated:
             case BassTarget:
             case VolumeTarget:
+            case Sources:
+            case SourceItem:
                 logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
                         new String(ch, start, length));
                 break;
