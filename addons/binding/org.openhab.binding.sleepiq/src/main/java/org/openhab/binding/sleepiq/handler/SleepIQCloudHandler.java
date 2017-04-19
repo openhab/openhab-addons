@@ -132,7 +132,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     }
 
     /**
-     * Start or stop a background polling job to look for bed status updates based on the whether or not there are any
+     * Start or stop a background polling job to look for bed status updates based on whether or not there are any
      * listeners to notify.
      */
     private synchronized void updateListenerManagement() {
@@ -151,25 +151,11 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * Retrieve the latest status on all beds and update all registered listeners.
      */
     private void publishBedStatusUpdates() {
-        publishBedStatusUpdates(null);
-    }
-
-    /**
-     * Retrieve the latest status on all beds and update the given listener. If the listener is <code>null</code>, all
-     * registered listeners will be updated.
-     *
-     * @param listener the listener to update (may be <code>null</code>)
-     */
-    private void publishBedStatusUpdates(final BedStatusListener listener) {
 
         FamilyStatus status = cloud.getFamilyStatus();
         for (BedStatus bedStatus : status.getBeds()) {
 
-            if (listener != null) {
-                listener.onBedStateChanged(cloud, bedStatus);
-            } else {
-                bedStatusListeners.stream().forEach(l -> l.onBedStateChanged(cloud, bedStatus));
-            }
+            bedStatusListeners.stream().forEach(l -> l.onBedStateChanged(cloud, bedStatus));
         }
     }
 
@@ -185,7 +171,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         }
 
         bedStatusListeners.add(listener);
-        publishBedStatusUpdates(listener);
+        publishBedStatusUpdates();
         updateListenerManagement();
     }
 
