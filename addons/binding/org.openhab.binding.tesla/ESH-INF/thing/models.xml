@@ -72,8 +72,8 @@
 			<channel id="idealbatteryrange" typeId="idealbatteryrange" />
 			<channel id="insidetemp" typeId="insidetemp" />
 			<channel id="location" typeId="location" />
-<!-- 			<channel id="latitude" typeId="latitude" />
-			<channel id="longitude" typeId="longitude" /> -->
+ 			<channel id="latitude" typeId="latitude" />
+			<channel id="longitude" typeId="longitude" />
 			<channel id="mobileenabled" typeId="mobileenabled" />
 <!-- 			<channel id="motorizedchargeport" typeId="motorizedchargeport" />
  -->			<channel id="notenoughpower" typeId="notenoughpower" />
@@ -507,7 +507,7 @@
 		<description>The actual position of the vehicle</description>
 		<state readOnly="true"></state>
 	</channel-type>	
-<!-- 	<channel-type id="latitude" advanced="true">
+ 	<channel-type id="latitude" advanced="true">
 		<item-type>Number</item-type>
 		<label>Latitude</label>
 		<description>Latitude of the actual position of the vehicle</description>
@@ -518,7 +518,7 @@
 		<label>Longitutde</label>
 		<description>Longitude of the actual position of the vehicle</description>
 		<state readOnly="true"></state>
-	</channel-type> -->
+	</channel-type>
 	<channel-type id="mobileenabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Mobile Enabled</label>

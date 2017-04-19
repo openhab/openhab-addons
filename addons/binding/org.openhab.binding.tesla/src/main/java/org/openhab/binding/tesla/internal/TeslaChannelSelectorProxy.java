@@ -276,7 +276,6 @@ public class TeslaChannelSelectorProxy {
         },
 
         ELEVATION("elevation", "location", DecimalType.class, false) {
-
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 proxy.elevation = s;
@@ -437,14 +436,7 @@ public class TeslaChannelSelectorProxy {
                 }
             }
         },
-        LATITUDE("latitude", "location", DecimalType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                proxy.latitude = s;
-                return new PointType(new StringType(proxy.latitude), new StringType(proxy.longitude),
-                        new StringType(proxy.elevation));
-            }
-        },
+        LATITUDE("latitude", "latitude", DecimalType.class, false),
         LATITUDE_EVENT("est_lat", "location", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -453,14 +445,7 @@ public class TeslaChannelSelectorProxy {
                         new StringType(proxy.elevation));
             }
         },
-        LONGITUDE("longitude", "location", DecimalType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                proxy.longitude = s;
-                return new PointType(new StringType(proxy.latitude), new StringType(proxy.longitude),
-                        new StringType(proxy.elevation));
-            }
-        },
+        LONGITUDE("longitude", "longitude", DecimalType.class, false),
         LONGITUDE_EVENT("est_lng", "location", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
