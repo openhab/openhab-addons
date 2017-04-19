@@ -745,30 +745,38 @@ public class TeslaHandler extends BaseThingHandler {
 
     private ThingStatusDetail authenticate(String username, String password) {
 
-        TokenRequest token = new TokenRequestPassword(username, password);
-        String payLoad = gson.toJson(token);
+        TokenRequest token = null;
+        try {
+            token = new TokenRequestPassword(username, password);
+        } catch (GeneralSecurityException e) {
+            logger.error("An exception occurred while building a password request token : '{}'", e.getMessage(), e);
+        }
 
-        Response response = tokenTarget.request().post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
+        if (token != null) {
+            String payLoad = gson.toJson(token);
 
-        if (response != null) {
-            logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
+            Response response = tokenTarget.request().post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
 
-            if (response.getStatus() == 200 && response.hasEntity()) {
+            if (response != null) {
+                logger.debug("Authenticating : Response : {}:{}", response.getStatus(), response.getStatusInfo());
 
-                String responsePayLoad = response.readEntity(String.class);
-                TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
+                if (response.getStatus() == 200 && response.hasEntity()) {
 
-                if (StringUtils.isNotEmpty(tokenResponse.access_token)) {
-                    Storage<Object> storage = storageService.getStorage(TeslaBindingConstants.BINDING_ID);
-                    storage.put(getStorageKey(), gson.toJson(tokenResponse));
-                    this.logonToken = tokenResponse;
-                    return ThingStatusDetail.NONE;
+                    String responsePayLoad = response.readEntity(String.class);
+                    TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
+
+                    if (StringUtils.isNotEmpty(tokenResponse.access_token)) {
+                        Storage<Object> storage = storageService.getStorage(TeslaBindingConstants.BINDING_ID);
+                        storage.put(getStorageKey(), gson.toJson(tokenResponse));
+                        this.logonToken = tokenResponse;
+                        return ThingStatusDetail.NONE;
+                    }
+
+                } else if (response.getStatus() == 401) {
+                    return ThingStatusDetail.CONFIGURATION_ERROR;
+                } else if (response.getStatus() == 503 || response.getStatus() == 502) {
+                    return ThingStatusDetail.COMMUNICATION_ERROR;
                 }
-
-            } else if (response.getStatus() == 401) {
-                return ThingStatusDetail.CONFIGURATION_ERROR;
-            } else if (response.getStatus() == 503 || response.getStatus() == 502) {
-                return ThingStatusDetail.COMMUNICATION_ERROR;
             }
         }
         return ThingStatusDetail.CONFIGURATION_ERROR;
