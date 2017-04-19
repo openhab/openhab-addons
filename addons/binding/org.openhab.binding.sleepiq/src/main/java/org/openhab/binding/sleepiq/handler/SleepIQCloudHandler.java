@@ -104,7 +104,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      *
      * @throws LoginException if there is an error while authenticating to the service
      */
-    private synchronized void createCloudConnection() throws LoginException {
+    private void createCloudConnection() throws LoginException {
 
         logger.debug("Reading SleepIQ cloud binding configuration");
         SleepIQCloudConfiguration bindingConfig = getConfigAs(SleepIQCloudConfiguration.class);
@@ -129,17 +129,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
-
-        cloud = null;
-    }
-
-    /**
-     * Get the cloud service API.
-     *
-     * @return the service object (may be <code>null</code>)
-     */
-    private synchronized SleepIQ getCloud() {
-        return cloud;
     }
 
     /**
@@ -147,10 +136,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * listeners to notify.
      */
     private synchronized void updateListenerManagement() {
-
-        if (cloud == null) {
-            return;
-        }
 
         if (!bedStatusListeners.isEmpty() && (pollingJob == null || pollingJob.isCancelled())) {
             int pollingInterval = getConfigAs(SleepIQCloudConfiguration.class).pollingInterval;
@@ -176,11 +161,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param listener the listener to update (may be <code>null</code>)
      */
     private void publishBedStatusUpdates(final BedStatusListener listener) {
-
-        SleepIQ cloud = getCloud();
-        if (cloud == null) {
-            return;
-        }
 
         FamilyStatus status = cloud.getFamilyStatus();
         for (BedStatus bedStatus : status.getBeds()) {
@@ -261,11 +241,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @return the list of beds (never <code>null</code>)
      */
     public List<Bed> getBeds() {
-
-        SleepIQ cloud = getCloud();
-        if (cloud == null) {
-            return Collections.emptyList();
-        }
 
         return cloud.getBeds();
     }
