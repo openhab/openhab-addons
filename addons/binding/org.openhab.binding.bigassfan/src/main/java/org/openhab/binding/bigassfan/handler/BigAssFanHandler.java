@@ -242,7 +242,7 @@ public class BigAssFanHandler extends BaseThingHandler {
         // Add sample command format
         if (command instanceof PercentType) {
             // Send min speed set command
-            sendCommand(macAddress, ";FAN;SPD;MIN;".concat(convertPercentToSpeed((PercentType) command)));
+            sendCommand(macAddress, ";LEARN;MINSPEED;SET;".concat(convertPercentToSpeed((PercentType) command)));
             // Don't let max be less than min
             adjustMaxSpeed((PercentType) command);
         }
@@ -253,7 +253,7 @@ public class BigAssFanHandler extends BaseThingHandler {
         // Add sample command format
         if (command instanceof PercentType) {
             // Send max speed set command
-            sendCommand(macAddress, ";FAN;SPD;MAX;".concat(convertPercentToSpeed((PercentType) command)));
+            sendCommand(macAddress, ";LEARN;MAXSPEED;SET;".concat(convertPercentToSpeed((PercentType) command)));
             // Don't let min be greater than max
             adjustMinSpeed((PercentType) command);
         }
@@ -530,7 +530,7 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         public void send(String command) {
             if (!conn.isConnected()) {
-                logger.info("Unable to send message; no connection to fan. Trying to reconnect: {}", command);
+                logger.debug("Unable to send message; no connection to fan. Trying to reconnect: {}", command);
                 conn.connect();
                 if (!conn.isConnected()) {
                     return;
@@ -595,7 +595,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             }
 
             // Match on (msg)
-            logger.info("FanListener processing received message {}", message);
+            logger.debug("FanListener processing received message {}", message);
             Pattern pattern = Pattern.compile("[(](.*)");
             Matcher matcher = pattern.matcher(message);
             if (!matcher.find()) {
@@ -912,7 +912,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 fanSocket.bind(new InetSocketAddress(ifAddress, 0));
                 fanSocket.connect(new InetSocketAddress(ipAddress, BAF_PORT), SOCKET_CONNECT_TIMEOUT);
             } catch (IOException e) {
-                logger.info("IOException connecting to fan thing {} at {}: {}", thingID(), ipAddress, e.getMessage());
+                logger.debug("IOException connecting to fan thing {} at {}: {}", thingID(), ipAddress, e.getMessage());
                 markOfflineWithMessage(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 disconnect();
                 return;

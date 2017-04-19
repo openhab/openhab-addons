@@ -193,7 +193,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
     }
 
     private synchronized void deviceDiscovered(BigAssFanDevice device) {
-        logger.info("Device discovered: {}", device);
+        logger.debug("Device discovered: {}", device);
 
         if (device.isSwitch()) {
             logger.debug("Switches (controllers) are not handled currently");
@@ -221,7 +221,7 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService implemen
         if (callback != null && callback.getExistingDiscoveryResult(uid) == null
                 && callback.getExistingThing(uid) == null) {
 
-            logger.info("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
+            logger.debug("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(device.getLabel()).build();
 
