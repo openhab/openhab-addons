@@ -108,7 +108,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
 
         systemHandler = new SystemHandler(imperiHomeConfig);
         deviceRegistry = new DeviceRegistry();
-        actionRegistry = new ActionRegistry(eventPublisher);
+        actionRegistry = new ActionRegistry(eventPublisher, deviceRegistry);
         itemProcessor = new ItemProcessor(itemRegistry, deviceRegistry, actionRegistry, imperiHomeConfig);
         roomListHandler = new RoomListHandler(deviceRegistry);
         devicesListHandler = new DevicesListHandler(deviceRegistry);
