@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
+import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchTypeInterface;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.BoseSoundTouchNotFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.ContentItemNotPresetableException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoInternetRadioPresetFoundException;
@@ -43,12 +44,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Enigma2CommandExecutor} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link CommandExecutor} class executes commands on the websocket
  *
- * @author Thomas Traunbauer - Initial contribution
+ * @author Thomas Traunbauer
  */
-public class CommandExecutor {
+public class CommandExecutor implements BoseSoundTouchTypeInterface {
     private Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
 
     private boolean muted;
@@ -67,6 +67,16 @@ public class CommandExecutor {
 
     private PresetContainer presetContainer;
 
+    private boolean bluetooth;
+    private boolean aux;
+    private boolean aux1;
+    private boolean aux2;
+    private boolean aux3;
+    private boolean internetRadio;
+    private boolean storedMusic;
+    private boolean hdmi1;
+    private boolean tv;
+
     public CommandExecutor(Session session, BoseSoundTouchHandler handler) {
         this.session = session;
         this.handler = handler;
@@ -76,6 +86,16 @@ public class CommandExecutor {
         this.currentOperationMode = OperationModeType.OFFLINE;
         this.presetContainer = new PresetContainer();
         this.currentContentItem = null;
+
+        this.bluetooth = false;
+        this.aux = false;
+        this.aux1 = false;
+        this.aux2 = false;
+        this.aux3 = false;
+        this.internetRadio = false;
+        this.storedMusic = false;
+        this.hdmi1 = false;
+        this.tv = false;
 
         File folder = new File(ConfigConstants.getUserDataFolder() + "/" + BoseSoundTouchBindingConstants.BINDING_ID);
         if (!folder.exists()) {
@@ -148,7 +168,7 @@ public class CommandExecutor {
                 }
             } else {
                 try {
-                    ContentItemMaker contentItemMaker = new ContentItemMaker(handler, presetContainer);
+                    ContentItemMaker contentItemMaker = new ContentItemMaker(this, presetContainer);
                     ContentItem contentItem = contentItemMaker.getContentItem(operationModeType);
                     setContentItem(contentItem);
                 } catch (OperationModeNotAvailableException e) {
@@ -176,6 +196,10 @@ public class CommandExecutor {
     public void setBass(DecimalType command) {
         sendPostRequestInWebSocket("bass",
                 "<bass deviceID=\"" + handler.getMacAddress() + "\"" + ">" + command.intValue() + "</bass>");
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
     }
 
     public void setMuted(OnOffType command) {
@@ -488,4 +512,95 @@ public class CommandExecutor {
             throw new BoseSoundTouchNotFoundException();
         }
     }
+
+    @Override
+    public boolean hasBluetooth() {
+        return bluetooth;
+    }
+
+    @Override
+    public boolean hasAUX() {
+        return aux;
+    }
+
+    @Override
+    public boolean hasAUX1() {
+        return aux1;
+    }
+
+    @Override
+    public boolean hasAUX2() {
+        return aux2;
+    }
+
+    @Override
+    public boolean hasAUX3() {
+        return aux3;
+    }
+
+    @Override
+    public boolean hasTV() {
+        return tv;
+    }
+
+    @Override
+    public boolean hasHDMI1() {
+        return hdmi1;
+    }
+
+    @Override
+    public boolean hasInternetRadio() {
+        return internetRadio;
+    }
+
+    @Override
+    public boolean hasStoredMusic() {
+        return storedMusic;
+    }
+
+    @Override
+    public void setAUX(boolean aux) {
+        this.aux = aux;
+    }
+
+    @Override
+    public void setAUX1(boolean aux1) {
+        this.aux1 = aux1;
+    }
+
+    @Override
+    public void setAUX2(boolean aux2) {
+        this.aux2 = aux2;
+    }
+
+    @Override
+    public void setAUX3(boolean aux3) {
+        this.aux3 = aux3;
+    }
+
+    @Override
+    public void setStoredMusic(boolean storedMusic) {
+        this.storedMusic = storedMusic;
+    }
+
+    @Override
+    public void setInternetRadio(boolean internetRadio) {
+        this.internetRadio = internetRadio;
+    }
+
+    @Override
+    public void setBluetooth(boolean bluetooth) {
+        this.bluetooth = bluetooth;
+    }
+
+    @Override
+    public void setTV(boolean tv) {
+        this.tv = tv;
+    }
+
+    @Override
+    public void setHDMI1(boolean hdmi1) {
+        this.hdmi1 = hdmi1;
+    }
+
 }

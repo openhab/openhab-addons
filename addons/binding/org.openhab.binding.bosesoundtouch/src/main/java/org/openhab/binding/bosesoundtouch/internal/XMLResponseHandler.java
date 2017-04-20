@@ -41,6 +41,7 @@ public class XMLResponseHandler extends DefaultHandler {
 
     private XMLResponseProcessor processor;
     private BoseSoundTouchHandler handler;
+    private CommandExecutor commandExecutor;
 
     private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap;
 
@@ -64,6 +65,7 @@ public class XMLResponseHandler extends DefaultHandler {
             Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap) {
         this.processor = processor;
         this.handler = handler;
+        this.commandExecutor = handler.getCommandExecutor();
         this.stateSwitchingMap = stateSwitchingMap;
         this.states = new Stack<>();
         this.state = XMLHandlerState.INIT;
@@ -234,33 +236,33 @@ public class XMLResponseHandler extends DefaultHandler {
                     if (status.equals("READY")) {
                         if (source.equals("AUX")) {
                             if (sourceAccount.equals("AUX")) {
-                                handler.setAUX(true);
+                                commandExecutor.setAUX(true);
                             }
                             if (sourceAccount.equals("AUX1")) {
-                                handler.setAUX1(true);
+                                commandExecutor.setAUX1(true);
                             }
                             if (sourceAccount.equals("AUX2")) {
-                                handler.setAUX2(true);
+                                commandExecutor.setAUX2(true);
                             }
                             if (sourceAccount.equals("AUX3")) {
-                                handler.setAUX3(true);
+                                commandExecutor.setAUX3(true);
                             }
                         }
                         if (source.equals("STORED_MUSIC")) {
-                            handler.setStoredMusic(true);
+                            commandExecutor.setStoredMusic(true);
                         }
                         if (source.equals("INTERNET_RADIO")) {
-                            handler.setInternetRadio(true);
+                            commandExecutor.setInternetRadio(true);
                         }
                         if (source.equals("BLUETOOTH")) {
-                            handler.setBluetooth(true);
+                            commandExecutor.setBluetooth(true);
                         }
                         if (source.equals("PRODUCT")) {
                             if (sourceAccount.equals("TV")) {
-                                handler.setTV(true);
+                                commandExecutor.setTV(true);
                             }
                             if (sourceAccount.equals("HDMI_1")) {
-                                handler.setHDMI1(true);
+                                commandExecutor.setHDMI1(true);
                             }
                         }
                     }
@@ -334,9 +336,6 @@ public class XMLResponseHandler extends DefaultHandler {
             contentItem.setUnusedField(Integer.parseInt(attributes.getValue("unusedField")));
             contentItem.setPresetable(Boolean.parseBoolean(attributes.getValue("isPresetable")));
         }
-        if (state == XMLHandlerState.Volume) {
-            volumeMuteEnabled = false;
-        }
     }
 
     private XMLHandlerState nextState(Map<String, XMLHandlerState> stateMap, XMLHandlerState curState,
@@ -357,13 +356,12 @@ public class XMLResponseHandler extends DefaultHandler {
         logger.trace("{}: endElement('{}')", handler.getDeviceName(), localName);
         final XMLHandlerState prevState = state;
         state = states.pop();
-        CommandExecutor commandExecutor = handler.getCommandExecutor();
         switch (prevState) {
             case Info:
                 commandExecutor.sendAPIRequest(APIRequest.VOLUME);
                 commandExecutor.sendAPIRequest(APIRequest.PRESETS);
                 commandExecutor.sendAPIRequest(APIRequest.NOW_PLAYING);
-                commandExecutor.sendAPIRequest(APIRequest.ZONE);
+                commandExecutor.sendAPIRequest(APIRequest.GET_ZONE);
                 commandExecutor.sendAPIRequest(APIRequest.BASS);
                 commandExecutor.sendAPIRequest(APIRequest.SOURCES);
                 break;
@@ -407,10 +405,11 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case Volume:
                 OnOffType muted = volumeMuteEnabled ? OnOffType.ON : OnOffType.OFF;
+                commandExecutor.setMuted(volumeMuteEnabled);
                 commandExecutor.setMuted(muted);
                 break;
             case ZoneUpdated:
-                commandExecutor.sendAPIRequest(APIRequest.ZONE);
+                commandExecutor.sendAPIRequest(APIRequest.GET_ZONE);
                 break;
             case Zone:
                 commandExecutor.updateZoneState(zoneState, zoneMaster, zoneMembers);
@@ -424,7 +423,6 @@ public class XMLResponseHandler extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         logger.trace("{}: Text data during {}: '{}'", handler.getDeviceName(), state, new String(ch, start, length));
-        String temp;
         super.characters(ch, start, length);
         switch (state) {
             case INIT:
@@ -505,11 +503,11 @@ public class XMLResponseHandler extends DefaultHandler {
                 processor.updateNowPlayingTrack(new StringType(new String(ch, start, length)));
                 break;
             case VolumeActual:
-                temp = new String(ch, start, length);
-                handler.updateVolume(new PercentType(Integer.parseInt(temp)));
+                handler.updateVolume(new PercentType(Integer.parseInt(new String(ch, start, length))));
                 break;
             case VolumeMuteEnabled:
                 volumeMuteEnabled = Boolean.parseBoolean(new String(ch, start, length));
+                commandExecutor.setMuted(volumeMuteEnabled);
                 break;
             case ZoneMember:
                 String mac = new String(ch, start, length);
@@ -542,8 +540,8 @@ public class XMLResponseHandler extends DefaultHandler {
         if (did.equals(handler.getMacAddress())) {
             return true;
         }
-        if (allowFromMaster && handler.getCommandExecutor().getZoneMaster() != null
-                && did.equals(handler.getCommandExecutor().getZoneMaster().getMacAddress())) {
+        if (allowFromMaster && commandExecutor.getZoneMaster() != null
+                && did.equals(commandExecutor.getZoneMaster().getMacAddress())) {
             return true;
         }
         logger.warn("{}: Wrong Device-ID in Entity '{}': Got: '{}', expected: '{}'", handler.getDeviceName(), localName,

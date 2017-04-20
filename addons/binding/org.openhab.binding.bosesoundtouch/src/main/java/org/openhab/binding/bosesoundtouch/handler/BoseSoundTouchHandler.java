@@ -39,7 +39,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
 import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
@@ -56,32 +55,9 @@ import org.slf4j.LoggerFactory;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer
  */
-public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
-        implements WebSocketListener, BoseSoundTouchTypeInterface {
+public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implements WebSocketListener {
 
     private final Logger logger = LoggerFactory.getLogger(BoseSoundTouchHandler.class);
-
-    private boolean bluetooth;
-    private boolean aux;
-    private boolean aux1;
-    private boolean aux2;
-    private boolean aux3;
-    private boolean internetRadio;
-    private boolean storedMusic;
-    private boolean hdmi1;
-    private boolean tv;
-
-    private ChannelUID channelPowerUID;
-    private ChannelUID channelVolumeUID;
-    private ChannelUID channelMuteUID;
-    private ChannelUID channelOperationModeUID;
-    private ChannelUID channelZoneInfoUID;
-    private ChannelUID channelPlayerControlUID;
-    private ChannelUID channelZoneControlUID;
-    private ChannelUID channelPresetUID;
-    private ChannelUID channelBassUID;
-    private ChannelUID channelKeyCodeUID;
-    private ChannelUID channelSaveAsPresetUID;
 
     private ScheduledFuture<?> connectionChecker;
     private WebSocketClient client;
@@ -100,28 +76,6 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
 
     @Override
     public void initialize() {
-        channelPowerUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_POWER);
-        channelVolumeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_VOLUME);
-        channelMuteUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_MUTE);
-        channelOperationModeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_OPERATIONMODE);
-        channelZoneInfoUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONEINFO);
-        channelPlayerControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PLAYER_CONTROL);
-        channelZoneControlUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_ZONE_CONTROL);
-        channelPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_PRESET);
-        channelBassUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_BASS);
-        channelKeyCodeUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_KEY_CODE);
-        channelSaveAsPresetUID = getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SAVE_AS_PRESET);
-
-        bluetooth = false;
-        aux = false;
-        aux1 = false;
-        aux2 = false;
-        aux3 = false;
-        internetRadio = false;
-        storedMusic = false;
-        hdmi1 = false;
-        tv = false;
-
         factory.registerSoundTouchDevice(this);
         connectionChecker = scheduler.scheduleWithFixedDelay(new Runnable() {
 
@@ -219,7 +173,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updateState(channelPlayerControlUID, UnDefType.UNDEF);
+                updatePlayerControl(UnDefType.UNDEF);
                 break;
             case CHANNEL_PRESET:
                 if (command instanceof DecimalType) {
@@ -246,7 +200,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updateState(channelPlayerControlUID, UnDefType.UNDEF);
+                updatePresetControl(UnDefType.UNDEF);
                 break;
             case CHANNEL_BASS:
                 if (command instanceof DecimalType) {
@@ -265,7 +219,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updateState(channelSaveAsPresetUID, UnDefType.UNDEF);
+                updateSaveAsPreset(UnDefType.UNDEF);
                 break;
             case CHANNEL_KEY_CODE:
                 if (command instanceof StringType) {
@@ -283,7 +237,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updateState(channelKeyCodeUID, UnDefType.UNDEF);
+                updateKeyCode(UnDefType.UNDEF);
                 break;
             case CHANNEL_ZONE_CONTROL:
                 if (command instanceof StringType) {
@@ -293,7 +247,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updateState(channelZoneControlUID, UnDefType.UNDEF);
+                updateZoneControl(UnDefType.UNDEF);
                 break;
             default:
                 logger.warn("{} : Got command '{}' for channel '{}' which is unhandled!", getDeviceName(), command,
@@ -328,120 +282,55 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
     }
 
     public String getDeviceName() {
-        return thing.getProperties().get(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME);
-    }
-
-    public void updatePlayerControl(State state) {
-        updateState(channelPlayerControlUID, state);
-    }
-
-    public void updateMuteState(OnOffType state) {
-        updateState(channelMuteUID, state);
-    }
-
-    public void updateVolume(PercentType state) {
-        updateState(channelVolumeUID, state);
+        return thing.getProperties().get(DEVICE_INFO_NAME);
     }
 
     public void updateBassLevel(DecimalType state) {
-        updateState(channelBassUID, state);
+        updateState(getChannelUID(CHANNEL_BASS), state);
     }
 
-    public void updateZoneInfo(StringType state) {
-        updateState(channelZoneInfoUID, state);
+    public void updateKeyCode(State state) {
+        updateState(getChannelUID(CHANNEL_KEY_CODE), state);
     }
 
-    public void updatePreset(DecimalType state) {
-        updateState(channelPresetUID, state);
+    public void updateMuteState(OnOffType state) {
+        updateState(getChannelUID(CHANNEL_MUTE), state);
     }
 
     public void updateOperationMode(StringType state) {
-        updateState(channelOperationModeUID, state);
+        updateState(getChannelUID(CHANNEL_OPERATIONMODE), state);
+    }
+
+    public void updatePlayerControl(State state) {
+        updateState(getChannelUID(CHANNEL_PLAYER_CONTROL), state);
     }
 
     public void updatePowerState(OnOffType state) {
-        updateState(channelPowerUID, state);
+        updateState(getChannelUID(CHANNEL_POWER), state);
     }
 
-    @Override
-    public boolean hasBluetooth() {
-        return bluetooth;
+    public void updatePreset(DecimalType state) {
+        updateState(getChannelUID(CHANNEL_PRESET), state);
     }
 
-    @Override
-    public boolean hasAUX() {
-        return aux;
+    public void updatePresetControl(State state) {
+        updateState(getChannelUID(CHANNEL_PRESET_CONTROL), state);
     }
 
-    @Override
-    public boolean hasAUX1() {
-        return aux1;
+    public void updateSaveAsPreset(State state) {
+        updateState(getChannelUID(CHANNEL_SAVE_AS_PRESET), state);
     }
 
-    @Override
-    public boolean hasAUX2() {
-        return aux2;
+    public void updateVolume(PercentType state) {
+        updateState(getChannelUID(CHANNEL_VOLUME), state);
     }
 
-    @Override
-    public boolean hasAUX3() {
-        return aux3;
+    public void updateZoneControl(State state) {
+        updateState(getChannelUID(CHANNEL_ZONE_CONTROL), state);
     }
 
-    @Override
-    public boolean hasTV() {
-        return tv;
-    }
-
-    @Override
-    public boolean hasHDMI1() {
-        return hdmi1;
-    }
-
-    @Override
-    public boolean hasInternetRadio() {
-        return internetRadio;
-    }
-
-    @Override
-    public boolean hasStoredMusic() {
-        return storedMusic;
-    }
-
-    public void setAUX(boolean aux) {
-        this.aux = aux;
-    }
-
-    public void setAUX1(boolean aux1) {
-        this.aux1 = aux1;
-    }
-
-    public void setAUX2(boolean aux2) {
-        this.aux2 = aux2;
-    }
-
-    public void setAUX3(boolean aux3) {
-        this.aux3 = aux3;
-    }
-
-    public void setStoredMusic(boolean storedMusic) {
-        this.storedMusic = storedMusic;
-    }
-
-    public void setInternetRadio(boolean internetRadio) {
-        this.internetRadio = internetRadio;
-    }
-
-    public void setBluetooth(boolean bluetooth) {
-        this.bluetooth = bluetooth;
-    }
-
-    public void setTV(boolean tv) {
-        this.tv = tv;
-    }
-
-    public void setHDMI1(boolean hdmi1) {
-        this.hdmi1 = hdmi1;
+    public void updateZoneInfo(StringType state) {
+        updateState(getChannelUID(CHANNEL_ZONE_INFO), state);
     }
 
     @Override
@@ -493,7 +382,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent
             // we need longer timeouts for web socket.
             client.setMaxIdleTimeout(360 * 1000);
             Map<String, Object> props = thing.getConfiguration().getProperties();
-            String host = (String) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
+            String host = (String) props.get(DEVICE_PARAMETER_HOST);
 
             // Port seems to be hard coded, therefore no user input or discovery is necessary
             String wsUrl = "ws://" + host + ":8080/";

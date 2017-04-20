@@ -10,24 +10,24 @@ package org.openhab.binding.bosesoundtouch.internal.items;
 
 import java.util.Collection;
 
-import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
+import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoInternetRadioPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoStoredMusicPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.OperationModeNotAvailableException;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 
 /**
- * The {@link ContentItemMaker} class handles all nowPlaying Channels
+ * The {@link ContentItemMaker} class makes ContentItems for sources
  *
  * @author Thomas Traunbauer
  */
 public class ContentItemMaker {
 
     private PresetContainer presetContainer;
-    private BoseSoundTouchHandler soundTouchHandler;
+    private CommandExecutor commandExecutor;
 
-    public ContentItemMaker(BoseSoundTouchHandler soundTouchHandler, PresetContainer presetContainer) {
-        this.soundTouchHandler = soundTouchHandler;
+    public ContentItemMaker(CommandExecutor commandExecutor, PresetContainer presetContainer) {
+        this.commandExecutor = commandExecutor;
         this.presetContainer = presetContainer;
     }
 
@@ -77,7 +77,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchHandler.hasAUX()) {
+        if (commandExecutor.hasAUX()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX");
@@ -91,7 +91,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX1() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchHandler.hasAUX1()) {
+        if (commandExecutor.hasAUX1()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX1");
@@ -105,7 +105,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX2() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchHandler.hasAUX2()) {
+        if (commandExecutor.hasAUX2()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX2");
@@ -119,7 +119,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX3() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchHandler.hasAUX3()) {
+        if (commandExecutor.hasAUX3()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX3");
@@ -133,7 +133,7 @@ public class ContentItemMaker {
 
     private ContentItem getBluetooth() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchHandler.hasBluetooth()) {
+        if (commandExecutor.hasBluetooth()) {
             contentItem = new ContentItem();
             contentItem.setSource("BLUETOOTH");
         }
@@ -150,7 +150,7 @@ public class ContentItemMaker {
 
     private ContentItem getHDMI() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchHandler.hasHDMI1()) {
+        if (commandExecutor.hasHDMI1()) {
             contentItem = new ContentItem();
             contentItem.setSource("PRODUCT");
             contentItem.setSourceAccount("HDMI_1");
@@ -166,7 +166,7 @@ public class ContentItemMaker {
 
     private ContentItem getInternetRadio() throws NoInternetRadioPresetFoundException {
         ContentItem contentItem = null;
-        if (soundTouchHandler.hasInternetRadio()) {
+        if (commandExecutor.hasInternetRadio()) {
             Collection<ContentItem> listOfPresets = presetContainer.values();
             for (ContentItem iteratedItem : listOfPresets) {
                 if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.INTERNET_RADIO)) {
@@ -195,7 +195,7 @@ public class ContentItemMaker {
 
     private ContentItem getStoredMusic() throws NoStoredMusicPresetFoundException {
         ContentItem contentItem = null;
-        if (soundTouchHandler.hasStoredMusic()) {
+        if (commandExecutor.hasStoredMusic()) {
             Collection<ContentItem> listOfPresets = presetContainer.values();
             for (ContentItem iteratedItem : listOfPresets) {
                 if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.STORED_MUSIC)) {
@@ -212,7 +212,7 @@ public class ContentItemMaker {
 
     private ContentItem getTV() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (soundTouchHandler.hasTV()) {
+        if (commandExecutor.hasTV()) {
             contentItem = new ContentItem();
             contentItem.setSource("PRODUCT");
             contentItem.setSourceAccount("TV");

@@ -9,7 +9,7 @@
 package org.openhab.binding.bosesoundtouch.internal.exceptions;
 
 /**
- * The {@link ContentItemNotPresetableException} class handles all nowPlaying Channels
+ * The {@link ContentItemNotPresetableException} class is an exception
  *
  * @author Thomas Traunbauer
  */

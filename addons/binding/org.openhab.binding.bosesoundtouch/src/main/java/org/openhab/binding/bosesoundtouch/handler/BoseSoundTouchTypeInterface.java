@@ -9,8 +9,7 @@
 package org.openhab.binding.bosesoundtouch.handler;
 
 /**
- * The {@link BoseSoundTouchTypeInterface} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link BoseSoundTouchTypeInterface} is used to find out, which sources are available
  *
  * @author Thomas Traunbauer
  */
@@ -34,4 +33,21 @@ public interface BoseSoundTouchTypeInterface {
 
     public boolean hasStoredMusic();
 
+    public void setAUX(boolean aux);
+
+    public void setAUX1(boolean aux1);
+
+    public void setAUX2(boolean aux2);
+
+    public void setAUX3(boolean aux3);
+
+    public void setStoredMusic(boolean storedMusic);
+
+    public void setInternetRadio(boolean internetRadio);
+
+    public void setBluetooth(boolean bluetooth);
+
+    public void setTV(boolean tv);
+
+    public void setHDMI1(boolean hdmi1);
 }

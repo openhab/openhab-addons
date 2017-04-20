@@ -22,7 +22,7 @@ import org.openhab.binding.bosesoundtouch.internal.exceptions.ContentItemNotPres
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoPresetFoundException;
 
 /**
- * The {@link PresetContainer} class manages a ContentItem
+ * The {@link PresetContainer} class manages a PresetContainer which contains all additional Presets
  *
  * @author Thomas Traunbauer
  */

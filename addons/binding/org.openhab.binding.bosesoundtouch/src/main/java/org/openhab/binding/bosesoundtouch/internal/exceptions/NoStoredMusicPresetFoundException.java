@@ -9,7 +9,7 @@
 package org.openhab.binding.bosesoundtouch.internal.exceptions;
 
 /**
- * The {@link NoStoredMusicPresetFoundException} class handles all nowPlaying Channels
+ * The {@link NoStoredMusicPresetFoundException} class is an exception
  *
  * @author Thomas Traunbauer
  */

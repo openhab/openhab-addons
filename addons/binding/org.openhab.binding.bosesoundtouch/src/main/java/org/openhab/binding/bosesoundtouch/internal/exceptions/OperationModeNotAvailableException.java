@@ -9,7 +9,7 @@
 package org.openhab.binding.bosesoundtouch.internal.exceptions;
 
 /**
- * The {@link OperationModeNotAvailableException} class handles all nowPlaying Channels
+ * The {@link OperationModeNotAvailableException} class is an exception
  *
  * @author Thomas Traunbauer
  */

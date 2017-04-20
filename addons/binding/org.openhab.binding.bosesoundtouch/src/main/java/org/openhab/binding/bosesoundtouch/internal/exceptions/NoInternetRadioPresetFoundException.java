@@ -9,7 +9,7 @@
 package org.openhab.binding.bosesoundtouch.internal.exceptions;
 
 /**
- * The {@link NoInternetRadioPresetFoundException} class handles all nowPlaying Channels
+ * The {@link NoInternetRadioPresetFoundException} class is an exception
  *
  * @author Thomas Traunbauer
  */

@@ -9,17 +9,26 @@
 package org.openhab.binding.bosesoundtouch.internal;
 
 /**
- * The {@link APIRequest} class is holding all OperationModes
+ * The {@link APIRequest} class handles the API requests
  *
  * @author Thomas Traunbauer
  */
 public enum APIRequest {
+    KEY("key"),
+    SELECT("select"),
+    SOURCES("sources"),
+    BASSCAPABILITIES("bassCapabilities"),
+    BASS("bass"),
+    GET_ZONE("getZone"),
+    SET_ZONE("setZone"),
+    ADD_ZONE_SLAVE("addZoneSlave"),
+    REMOVE_ZONE_SLAVE("removeZoneSlave"),
+    NOW_PLAYING("now_playing"),
+    TRACK_INFO("trackInfo"),
     VOLUME("volume"),
     PRESETS("presets"),
-    NOW_PLAYING("now_playing"),
-    ZONE("getZone"),
-    BASS("bass"),
-    SOURCES("sources");
+    INFO("info"),
+    NAME("name");
 
     private String name;
 
