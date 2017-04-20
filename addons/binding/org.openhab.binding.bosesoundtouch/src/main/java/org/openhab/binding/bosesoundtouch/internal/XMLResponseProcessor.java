@@ -13,66 +13,32 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * The {@link XMLResponseProcessor} class handles all nowPlaying Channels
+ * The {@link XMLResponseProcessor} class handles the XML mapping
  *
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer
  */
 public class XMLResponseProcessor {
-
-    private final Logger logger = LoggerFactory.getLogger(XMLResponseProcessor.class);
-
     private BoseSoundTouchHandler handler;
 
     private Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap;
 
-    // channels exclusively updated by messages received from soundtouch handler...
-    private ChannelUID channelNowPlayingAlbumUID;
-    private ChannelUID channelNowPlayingArtistUID;
-    private ChannelUID channelNowPlayingArtworkUID;
-    private ChannelUID channelNowPlayingDescriptionUID;
-    private ChannelUID channelNowPlayingGenreUID;
-    private ChannelUID channelNowPlayingItemNameUID;
-    private ChannelUID channelNowPlayingPlayStatusUID;
-    private ChannelUID channelNowPlayingStationLocationUID;
-    private ChannelUID channelNowPlayingStationNameUID;
-    private ChannelUID channelNowPlayingTrackUID;
-    private ChannelUID channelRateEnabled;
-    private ChannelUID channelSkipEnabled;
-    private ChannelUID channelSkipPreviousEnabled;
-
     public XMLResponseProcessor(BoseSoundTouchHandler handler) {
         this.handler = handler;
         init();
-        channelNowPlayingAlbumUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_ALBUM);
-        channelNowPlayingArtworkUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_ARTWORK);
-        channelNowPlayingArtistUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_ARTIST);
-        channelNowPlayingDescriptionUID = handler
-                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_DESCRIPTION);
-        channelNowPlayingItemNameUID = handler
-                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_ITEMNAME);
-        channelNowPlayingGenreUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_GENRE);
-        channelNowPlayingPlayStatusUID = handler
-                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_PLAYSTATUS);
-        channelNowPlayingStationLocationUID = handler
-                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_STATIONLOCATION);
-        channelNowPlayingStationNameUID = handler
-                .getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_STATIONNAME);
-        channelNowPlayingTrackUID = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_NOWPLAYING_TRACK);
-        channelRateEnabled = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_RATEENABLED);
-        channelSkipEnabled = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SKIPENABLED);
-        channelSkipPreviousEnabled = handler.getChannelUID(BoseSoundTouchBindingConstants.CHANNEL_SKIPPREVIOUSENABLED);
+    }
+
+    public void handleMessage(String msg) throws SAXException, IOException {
+        XMLReader reader = XMLReaderFactory.createXMLReader();
+        reader.setContentHandler(new XMLResponseHandler(handler, stateSwitchingMap));
+        reader.parse(new InputSource(new StringReader(msg)));
     }
 
     // initializes our XML parsing state machine
@@ -166,71 +132,6 @@ public class XMLResponseProcessor {
         Map<String, XMLHandlerState> sourceMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.Sources, sourceMap);
 
-    }
-
-    public void handleMessage(String msg) {
-        try {
-            XMLReader reader = XMLReaderFactory.createXMLReader();
-            reader.setContentHandler(new XMLResponseHandler(this, handler, stateSwitchingMap));
-            reader.parse(new InputSource(new StringReader(msg)));
-        } catch (IOException e) {
-            // This should never happen - we're not performing I/O!
-            logger.error("{}: Could not parse XML from string '{}'; exception is: ", handler.getDeviceName(), msg, e);
-        } catch (Throwable s) {
-            logger.error("{}: Could not parse XML from string '{}'; exception is: ", handler.getDeviceName(), msg, s);
-        }
-    }
-
-    protected void updateNowPlayingAlbum(State state) {
-        handler.updateState(channelNowPlayingAlbumUID, state);
-    }
-
-    protected void updateNowPlayingArtwork(State state) {
-        handler.updateState(channelNowPlayingArtworkUID, state);
-    }
-
-    protected void updateNowPlayingArtist(State state) {
-        handler.updateState(channelNowPlayingArtistUID, state);
-    }
-
-    protected void updateNowPlayingDescription(State state) {
-        handler.updateState(channelNowPlayingDescriptionUID, state);
-    }
-
-    protected void updateNowPlayingGenre(State state) {
-        handler.updateState(channelNowPlayingGenreUID, state);
-    }
-
-    protected void updateNowPlayingItemName(State state) {
-        handler.updateState(channelNowPlayingItemNameUID, state);
-    }
-
-    protected void updateNowPlayingPlayStatus(State state) {
-        handler.updateState(channelNowPlayingPlayStatusUID, state);
-    }
-
-    protected void updateNowPlayingStationLocation(State state) {
-        handler.updateState(channelNowPlayingStationLocationUID, state);
-    }
-
-    protected void updateNowPlayingStationName(State state) {
-        handler.updateState(channelNowPlayingStationNameUID, state);
-    }
-
-    protected void updateNowPlayingTrack(State state) {
-        handler.updateState(channelNowPlayingTrackUID, state);
-    }
-
-    protected void updateRateEnabled(State state) {
-        handler.updateState(channelRateEnabled, state);
-    }
-
-    protected void updateSkipEnabled(State state) {
-        handler.updateState(channelSkipEnabled, state);
-    }
-
-    protected void updateSkipPreviousEnabled(State state) {
-        handler.updateState(channelSkipPreviousEnabled, state);
     }
 
 }

@@ -14,7 +14,7 @@ package org.openhab.binding.bosesoundtouch.internal;
  * @author Christian Niessner - Initial contribution
  */
 public enum ZoneState {
-    None,
+    Standalone,
     Master,
     Member
 }

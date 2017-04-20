@@ -39,7 +39,6 @@ public class XMLResponseHandler extends DefaultHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XMLResponseHandler.class);
 
-    private XMLResponseProcessor processor;
     private BoseSoundTouchHandler handler;
     private CommandExecutor commandExecutor;
 
@@ -61,15 +60,12 @@ public class XMLResponseHandler extends DefaultHandler {
 
     private State nowPlayingSource;
 
-    public XMLResponseHandler(XMLResponseProcessor processor, BoseSoundTouchHandler handler,
+    public XMLResponseHandler(BoseSoundTouchHandler handler,
             Map<XMLHandlerState, Map<String, XMLHandlerState>> stateSwitchingMap) {
-        this.processor = processor;
         this.handler = handler;
         this.commandExecutor = handler.getCommandExecutor();
         this.stateSwitchingMap = stateSwitchingMap;
-        this.states = new Stack<>();
-        this.state = XMLHandlerState.INIT;
-        this.nowPlayingSource = null;
+        init();
     }
 
     @Override
@@ -156,28 +152,27 @@ public class XMLResponseHandler extends DefaultHandler {
                         // source changed
                         nowPlayingSource = new StringType(source);
                         // reset enabled states
-                        processor.updateRateEnabled(OnOffType.OFF);
-                        processor.updateSkipEnabled(OnOffType.OFF);
-                        processor.updateSkipPreviousEnabled(OnOffType.OFF);
+                        commandExecutor.updateRateEnabled(OnOffType.OFF);
+                        commandExecutor.updateSkipEnabled(OnOffType.OFF);
+                        commandExecutor.updateSkipPreviousEnabled(OnOffType.OFF);
 
                         // clear all "nowPlaying" details on source change...
-                        processor.updateNowPlayingAlbum(new StringType(""));
-                        processor.updateNowPlayingArtwork(new StringType(""));
-                        processor.updateNowPlayingArtist(new StringType(""));
-                        processor.updateNowPlayingDescription(new StringType(""));
-                        processor.updateNowPlayingGenre(new StringType(""));
-                        processor.updateNowPlayingItemName(new StringType(""));
-                        processor.updateNowPlayingPlayStatus(new StringType(""));
-                        processor.updateNowPlayingStationLocation(new StringType(""));
-                        processor.updateNowPlayingStationName(new StringType(""));
-                        processor.updateNowPlayingTrack(new StringType(""));
+                        commandExecutor.updateNowPlayingAlbum(new StringType(""));
+                        commandExecutor.updateNowPlayingArtwork(new StringType(""));
+                        commandExecutor.updateNowPlayingArtist(new StringType(""));
+                        commandExecutor.updateNowPlayingDescription(new StringType(""));
+                        commandExecutor.updateNowPlayingGenre(new StringType(""));
+                        commandExecutor.updateNowPlayingItemName(new StringType(""));
+                        commandExecutor.updateNowPlayingStationLocation(new StringType(""));
+                        commandExecutor.updateNowPlayingStationName(new StringType(""));
+                        commandExecutor.updateNowPlayingTrack(new StringType(""));
                     }
                 } else if ("zone".equals(localName)) {
                     zoneMembers = new ArrayList<>();
                     String master = attributes.getValue("master");
                     if (master == null || master.isEmpty()) {
                         zoneMaster = null;
-                        zoneState = ZoneState.None;
+                        zoneState = ZoneState.Standalone;
                     } else {
                         if (master.equals(handler.getMacAddress())) {
                             // we are the master...
@@ -338,18 +333,6 @@ public class XMLResponseHandler extends DefaultHandler {
         }
     }
 
-    private XMLHandlerState nextState(Map<String, XMLHandlerState> stateMap, XMLHandlerState curState,
-            String localName) {
-        XMLHandlerState state = stateMap.get(localName);
-        if (state == null) {
-            if (logger.isDebugEnabled()) {
-                logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState, localName);
-            }
-            state = XMLHandlerState.Unprocessed;
-        }
-        return state;
-    }
-
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
@@ -358,17 +341,17 @@ public class XMLResponseHandler extends DefaultHandler {
         state = states.pop();
         switch (prevState) {
             case Info:
-                commandExecutor.sendAPIRequest(APIRequest.VOLUME);
-                commandExecutor.sendAPIRequest(APIRequest.PRESETS);
-                commandExecutor.sendAPIRequest(APIRequest.NOW_PLAYING);
-                commandExecutor.sendAPIRequest(APIRequest.GET_ZONE);
-                commandExecutor.sendAPIRequest(APIRequest.BASS);
-                commandExecutor.sendAPIRequest(APIRequest.SOURCES);
+                commandExecutor.getRequest(APIRequest.VOLUME);
+                commandExecutor.getRequest(APIRequest.PRESETS);
+                commandExecutor.getRequest(APIRequest.NOW_PLAYING);
+                commandExecutor.getRequest(APIRequest.GET_ZONE);
+                commandExecutor.getRequest(APIRequest.BASS);
+                commandExecutor.getRequest(APIRequest.SOURCES);
                 break;
             case ContentItem:
                 if (state == XMLHandlerState.NowPlaying) {
                     // update now playing name...
-                    processor.updateNowPlayingItemName(new StringType(contentItem.getItemName()));
+                    commandExecutor.updateNowPlayingItemName(new StringType(contentItem.getItemName()));
                     commandExecutor.setCurrentContentItem(contentItem);
                     commandExecutor.checkOperationMode();
                 }
@@ -381,18 +364,18 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case NowPlaying:
                 if (state == XMLHandlerState.MsgBody) {
-                    processor.updateRateEnabled(rateEnabled);
-                    processor.updateSkipEnabled(skipEnabled);
-                    processor.updateSkipPreviousEnabled(skipPreviousEnabled);
+                    commandExecutor.updateRateEnabled(rateEnabled);
+                    commandExecutor.updateSkipEnabled(skipEnabled);
+                    commandExecutor.updateSkipPreviousEnabled(skipPreviousEnabled);
                 }
                 break;
             // handle special tags..
             case BassUpdated:
                 // request current bass level
-                commandExecutor.sendAPIRequest(APIRequest.BASS);
+                commandExecutor.getRequest(APIRequest.BASS);
                 break;
             case VolumeUpdated:
-                commandExecutor.sendAPIRequest(APIRequest.VOLUME);
+                commandExecutor.getRequest(APIRequest.VOLUME);
                 break;
             case NowPlayingRateEnabled:
                 rateEnabled = OnOffType.ON;
@@ -406,10 +389,10 @@ public class XMLResponseHandler extends DefaultHandler {
             case Volume:
                 OnOffType muted = volumeMuteEnabled ? OnOffType.ON : OnOffType.OFF;
                 commandExecutor.setMuted(volumeMuteEnabled);
-                commandExecutor.setMuted(muted);
+                commandExecutor.postVolumeMuted(muted);
                 break;
             case ZoneUpdated:
-                commandExecutor.sendAPIRequest(APIRequest.GET_ZONE);
+                commandExecutor.getRequest(APIRequest.GET_ZONE);
                 break;
             case Zone:
                 commandExecutor.updateZoneState(zoneState, zoneMaster, zoneMembers);
@@ -458,7 +441,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 // drop quietly..
                 break;
             case BassActual:
-                handler.updateBassLevel(new DecimalType(new String(ch, start, length)));
+                commandExecutor.updateBassLevel(new DecimalType(new String(ch, start, length)));
                 break;
             case InfoName:
                 setConfigOption(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME, new String(ch, start, length));
@@ -467,43 +450,42 @@ public class XMLResponseHandler extends DefaultHandler {
                 setConfigOption(BoseSoundTouchBindingConstants.DEVICE_INFO_TYPE, new String(ch, start, length));
                 break;
             case NowPlayingAlbum:
-                processor.updateNowPlayingAlbum(new StringType(new String(ch, start, length)));
+                commandExecutor.updateNowPlayingAlbum(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingArt:
-                processor.updateNowPlayingArtwork(new StringType(new String(ch, start, length)));
+                commandExecutor.updateNowPlayingArtwork(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingArtist:
-                processor.updateNowPlayingArtist(new StringType(new String(ch, start, length)));
+                commandExecutor.updateNowPlayingArtist(new StringType(new String(ch, start, length)));
                 break;
             case ContentItemItemName:
                 contentItem.setItemName(new String(ch, start, length));
                 break;
             case NowPlayingDescription:
-                processor.updateNowPlayingDescription(new StringType(new String(ch, start, length)));
+                commandExecutor.updateNowPlayingDescription(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingGenre:
-                processor.updateNowPlayingGenre(new StringType(new String(ch, start, length)));
+                commandExecutor.updateNowPlayingGenre(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingPlayStatus:
                 String playPauseState = new String(ch, start, length);
-                processor.updateNowPlayingPlayStatus(new StringType(playPauseState));
                 if ("PLAY_STATE".equals(playPauseState) || "BUFFERING_STATE".equals(playPauseState)) {
-                    handler.updatePlayerControl(PlayPauseType.PLAY);
+                    commandExecutor.updatePlayerControl(PlayPauseType.PLAY);
                 } else if ("STOP_STATE".equals(playPauseState) || "PAUSE_STATE".equals(playPauseState)) {
-                    handler.updatePlayerControl(PlayPauseType.PAUSE);
+                    commandExecutor.updatePlayerControl(PlayPauseType.PAUSE);
                 }
                 break;
             case NowPlayingStationLocation:
-                processor.updateNowPlayingStationLocation(new StringType(new String(ch, start, length)));
+                commandExecutor.updateNowPlayingStationLocation(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingStationName:
-                processor.updateNowPlayingStationName(new StringType(new String(ch, start, length)));
+                commandExecutor.updateNowPlayingStationName(new StringType(new String(ch, start, length)));
                 break;
             case NowPlayingTrack:
-                processor.updateNowPlayingTrack(new StringType(new String(ch, start, length)));
+                commandExecutor.updateNowPlayingTrack(new StringType(new String(ch, start, length)));
                 break;
             case VolumeActual:
-                handler.updateVolume(new PercentType(Integer.parseInt(new String(ch, start, length))));
+                commandExecutor.updateVolume(new PercentType(Integer.parseInt(new String(ch, start, length))));
                 break;
             case VolumeMuteEnabled:
                 volumeMuteEnabled = Boolean.parseBoolean(new String(ch, start, length));
@@ -547,6 +529,24 @@ public class XMLResponseHandler extends DefaultHandler {
         logger.warn("{}: Wrong Device-ID in Entity '{}': Got: '{}', expected: '{}'", handler.getDeviceName(), localName,
                 did, handler.getMacAddress());
         return false;
+    }
+
+    private void init() {
+        states = new Stack<>();
+        state = XMLHandlerState.INIT;
+        nowPlayingSource = null;
+    }
+
+    private XMLHandlerState nextState(Map<String, XMLHandlerState> stateMap, XMLHandlerState curState,
+            String localName) {
+        XMLHandlerState state = stateMap.get(localName);
+        if (state == null) {
+            if (logger.isDebugEnabled()) {
+                logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState, localName);
+            }
+            state = XMLHandlerState.Unprocessed;
+        }
+        return state;
     }
 
     private void setConfigOption(String option, String value) {

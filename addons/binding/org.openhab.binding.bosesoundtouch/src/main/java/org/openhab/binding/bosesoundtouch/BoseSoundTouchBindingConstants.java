@@ -56,7 +56,6 @@ public class BoseSoundTouchBindingConstants {
     public static final String CHANNEL_NOWPLAYING_ITEMNAME = "nowPlayingItemName";
     public static final String CHANNEL_NOWPLAYING_STATIONLOCATION = "nowPlayingStationLocation";
     public static final String CHANNEL_NOWPLAYING_STATIONNAME = "nowPlayingStationName";
-    public static final String CHANNEL_NOWPLAYING_PLAYSTATUS = "nowPlayingPlayStatus";
     public static final String CHANNEL_NOWPLAYING_TRACK = "nowPlayingTrack";
 
     // Device configuration parameters;

@@ -28,17 +28,14 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.ThingFactory;
-import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.bosesoundtouch.internal.APIRequest;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
 import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
@@ -111,7 +108,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         switch (channelUID.getIdWithoutGroup()) {
             case CHANNEL_POWER:
                 if (command instanceof OnOffType) {
-                    commandExecutor.setPower((OnOffType) command);
+                    commandExecutor.postPower((OnOffType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
@@ -120,7 +117,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 break;
             case CHANNEL_VOLUME:
                 if (command instanceof PercentType) {
-                    commandExecutor.setVolume((PercentType) command);
+                    commandExecutor.postVolume((PercentType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
@@ -129,7 +126,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 break;
             case CHANNEL_MUTE:
                 if (command instanceof OnOffType) {
-                    commandExecutor.setMuted((OnOffType) command);
+                    commandExecutor.postVolumeMuted((OnOffType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
@@ -146,7 +143,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                     }
                 }
                 if (command instanceof OperationModeType) {
-                    commandExecutor.setOperationMode((OperationModeType) command);
+                    commandExecutor.postOperationMode((OperationModeType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
@@ -167,17 +164,17 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                     }
                 }
                 if ((command instanceof PlayPauseType) || (command instanceof NextPreviousType)) {
-                    commandExecutor.setPlayerControl(command);
+                    commandExecutor.postPlayerControl(command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updatePlayerControl(UnDefType.UNDEF);
+                commandExecutor.updatePlayerControl(UnDefType.UNDEF);
                 break;
             case CHANNEL_PRESET:
                 if (command instanceof DecimalType) {
-                    commandExecutor.setPreset((DecimalType) command);
+                    commandExecutor.postPreset((DecimalType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
@@ -194,17 +191,17 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                     }
                 }
                 if (command instanceof NextPreviousType) {
-                    commandExecutor.setPreset((NextPreviousType) command);
+                    commandExecutor.postPreset((NextPreviousType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updatePresetControl(UnDefType.UNDEF);
+                commandExecutor.updatePresetControl(UnDefType.UNDEF);
                 break;
             case CHANNEL_BASS:
                 if (command instanceof DecimalType) {
-                    commandExecutor.setBass((DecimalType) command);
+                    commandExecutor.postBass((DecimalType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
@@ -219,7 +216,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updateSaveAsPreset(UnDefType.UNDEF);
+                commandExecutor.updateSaveAsPreset(UnDefType.UNDEF);
                 break;
             case CHANNEL_KEY_CODE:
                 if (command instanceof StringType) {
@@ -231,23 +228,23 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                     }
                 }
                 if (command instanceof RemoteKeyType) {
-                    commandExecutor.simulateRemoteKey((RemoteKeyType) command);
+                    commandExecutor.postRemoteKey((RemoteKeyType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updateKeyCode(UnDefType.UNDEF);
+                commandExecutor.updateKeyCode(UnDefType.UNDEF);
                 break;
             case CHANNEL_ZONE_CONTROL:
                 if (command instanceof StringType) {
-                    commandExecutor.setZone((StringType) command);
+                    commandExecutor.postZone((StringType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                updateZoneControl(UnDefType.UNDEF);
+                commandExecutor.updateZoneControl(UnDefType.UNDEF);
                 break;
             default:
                 logger.warn("{} : Got command '{}' for channel '{}' which is unhandled!", getDeviceName(), command,
@@ -257,80 +254,25 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     }
 
-    public BoseSoundTouchHandlerFactory getFactory() {
-        return factory;
-    }
-
     public CommandExecutor getCommandExecutor() {
         return commandExecutor;
-    }
-
-    public String getMacAddress() {
-        return thing.getUID().getId();
-    }
-
-    public ChannelUID getChannelUID(String channelId) {
-        Channel chann = thing.getChannel(channelId);
-        if (chann == null) {
-            // refresh thing...
-            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(thing.getThingTypeUID()), thing.getUID(),
-                    thing.getConfiguration());
-            updateThing(newThing);
-            chann = thing.getChannel(channelId);
-        }
-        return chann.getUID();
     }
 
     public String getDeviceName() {
         return thing.getProperties().get(DEVICE_INFO_NAME);
     }
 
-    public void updateBassLevel(DecimalType state) {
-        updateState(getChannelUID(CHANNEL_BASS), state);
+    public BoseSoundTouchHandlerFactory getFactory() {
+        return factory;
     }
 
-    public void updateKeyCode(State state) {
-        updateState(getChannelUID(CHANNEL_KEY_CODE), state);
+    public String getMacAddress() {
+        return thing.getUID().getId();
     }
 
-    public void updateMuteState(OnOffType state) {
-        updateState(getChannelUID(CHANNEL_MUTE), state);
-    }
-
-    public void updateOperationMode(StringType state) {
-        updateState(getChannelUID(CHANNEL_OPERATIONMODE), state);
-    }
-
-    public void updatePlayerControl(State state) {
-        updateState(getChannelUID(CHANNEL_PLAYER_CONTROL), state);
-    }
-
-    public void updatePowerState(OnOffType state) {
-        updateState(getChannelUID(CHANNEL_POWER), state);
-    }
-
-    public void updatePreset(DecimalType state) {
-        updateState(getChannelUID(CHANNEL_PRESET), state);
-    }
-
-    public void updatePresetControl(State state) {
-        updateState(getChannelUID(CHANNEL_PRESET_CONTROL), state);
-    }
-
-    public void updateSaveAsPreset(State state) {
-        updateState(getChannelUID(CHANNEL_SAVE_AS_PRESET), state);
-    }
-
-    public void updateVolume(PercentType state) {
-        updateState(getChannelUID(CHANNEL_VOLUME), state);
-    }
-
-    public void updateZoneControl(State state) {
-        updateState(getChannelUID(CHANNEL_ZONE_CONTROL), state);
-    }
-
-    public void updateZoneInfo(StringType state) {
-        updateState(getChannelUID(CHANNEL_ZONE_INFO), state);
+    @Override
+    public void updateThing(Thing thing) {
+        super.updateThing(thing);
     }
 
     @Override
@@ -340,14 +282,14 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         commandExecutor = new CommandExecutor(session, this);
         updateStatus(ThingStatus.ONLINE);
         // socket.newMessageSink(PayloadType.TEXT);
-        commandExecutor.getInfo();
+        commandExecutor.getRequest(APIRequest.INFO);
     }
 
     @Override
     public void onWebSocketError(Throwable e) {
         logger.error("{}: Error during websocket communication: {}", getDeviceName(), e.getMessage(), e);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        commandExecutor.setOperationMode(OperationModeType.OFFLINE);
+        commandExecutor.postOperationMode(OperationModeType.OFFLINE);
         commandExecutor.checkOperationMode();
         if (session != null) {
             session.close(StatusCode.SERVER_ERROR, getDeviceName() + ": Failure: " + e.getMessage());
@@ -357,7 +299,11 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     @Override
     public void onWebSocketText(String msg) {
         logger.debug("{}: onWebSocketText('{}')", getDeviceName(), msg);
-        xmlResponseProcessor.handleMessage(msg);
+        try {
+            xmlResponseProcessor.handleMessage(msg);
+        } catch (Throwable s) {
+            logger.error("{}: Could not parse XML from string '{}'; exception is: ", getDeviceName(), msg, s);
+        }
     }
 
     @Override
@@ -370,7 +316,7 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     public void onWebSocketClose(int code, String reason) {
         logger.debug("{}: onClose({}, '{}')", getDeviceName(), code, reason);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        commandExecutor.setOperationMode(OperationModeType.OFFLINE);
+        commandExecutor.postOperationMode(OperationModeType.OFFLINE);
         commandExecutor.checkOperationMode();
     }
 

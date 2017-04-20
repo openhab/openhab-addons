@@ -44,16 +44,6 @@ public class ContentItem {
         }
     }
 
-    private boolean isEqual(String s1, String s2) {
-        if (s1 == s2) {
-            return true;
-        }
-        if (s1 == null || s2 == null) {
-            return false;
-        }
-        return s1.equals(s2);
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ContentItem) {
@@ -229,9 +219,9 @@ public class ContentItem {
         // private String location;
         // private String itemName;
         // private int unusedField;
-
+    
         String[] parts = s.split(";");
-
+    
         presetID = Integer.parseInt(parts[0]);
         source = parts[1];
         sourceAccount = parts[2];
@@ -239,5 +229,15 @@ public class ContentItem {
         itemName = parts[4];
         unusedField = Integer.parseInt(parts[5]);
         presetable = true;
+    }
+
+    private boolean isEqual(String s1, String s2) {
+        if (s1 == s2) {
+            return true;
+        }
+        if (s1 == null || s2 == null) {
+            return false;
+        }
+        return s1.equals(s2);
     }
 }

@@ -30,7 +30,6 @@
 			<channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
             <channel id="nowPlayingGenre" typeId="nowPlayingGenre" />
 			<channel id="nowPlayingItemName" typeId="nowPlayingItemName" />
-			<channel id="nowPlayingPlayStatus" typeId="nowPlayingPlayStatus" />
 			<channel id="nowPlayingStationLocation" typeId="nowPlayingStationLocation" />
 			<channel id="nowPlayingStationName" typeId="nowPlayingStationName" />
 			<channel id="nowPlayingTrack" typeId="nowPlayingTrack" />
@@ -219,12 +218,6 @@
 		<description>Visible description shown in display</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="nowPlayingPlayStatus" advanced="true">
-        <item-type>String</item-type>
-        <label>PlayStatus</label>
-        <description>Play status (more detailed, read-only)</description>
-        <state readOnly="true" />
-    </channel-type>
 	<channel-type id="nowPlayingStationLocation" advanced="true">
 		<item-type>String</item-type>
 		<label>Station location</label>
