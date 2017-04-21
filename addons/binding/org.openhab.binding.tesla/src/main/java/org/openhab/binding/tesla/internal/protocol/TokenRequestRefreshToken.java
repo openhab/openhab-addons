@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.tesla.internal.protocol;
 
+import java.security.GeneralSecurityException;
+
 /**
  * The {@link TokenRequestRefreshToken} is a datastructure to capture
  * authentication/credentials required to log into the
@@ -20,7 +22,7 @@ public class TokenRequestRefreshToken extends TokenRequest {
     private String grant_type = "refresh_token";
     private String refresh_token;
 
-    public TokenRequestRefreshToken(String refresh_token) {
+    public TokenRequestRefreshToken(String refresh_token) throws GeneralSecurityException {
         super();
         this.refresh_token = refresh_token;
     }
