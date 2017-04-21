@@ -39,6 +39,7 @@
     <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.globalcache</module>
+    <module>org.openhab.binding.ikeatradfri</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.kodi</module>

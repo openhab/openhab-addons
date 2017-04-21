@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ikeatradfri"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <bridge-type id="gateway">
+        <label>IKEA Trådfri Gateway</label>
+        <description>Binding for the IKEA Trådfri Gateway</description>
+
+        <config-description>
+            <parameter name="host" type="text" required="true">
+                <label>Host</label>
+                <description>Hostname for the IKEA Trådfri gateway</description>
+            </parameter>
+            <parameter name="token" type="text" required="true">
+                <label>Security token</label>
+                <description>Security token printed on the label underneath the Gateway.</description>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+    <thing-type id="warmwhite_bulb">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="gateway"/>
+        </supported-bridge-type-refs>
+
+        <label>IKEA Trådfri Warm White Bulb</label>
+        <description></description>
+
+        <channels>
+            <channel id="state" typeId="state"/>
+            <channel id="brightness" typeId="brightness"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="whitespectrum_bulb">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="gateway"/>
+        </supported-bridge-type-refs>
+
+        <label>IKEA Trådfri White Spectrum Bulb</label>
+        <description></description>
+
+        <channels>
+            <channel id="state" typeId="state"/>
+            <channel id="brightness" typeId="brightness"/>
+            <channel id="colorTemperature" typeId="colorTemperature"/>
+        </channels>
+    </thing-type>
+
+    <channel-type id="state">
+        <item-type>Switch</item-type>
+        <label>State On/Off</label>
+        <category>Light</category>
+    </channel-type>
+
+    <channel-type id="fadeTime">
+        <item-type>Number</item-type>
+        <label>Fade time selector</label>
+        <state step="1" min="0" max="10"></state>
+    </channel-type>
+
+    <channel-type id="brightness">
+        <item-type>Dimmer</item-type>
+        <label>Brightness</label>
+        <description>
+            The brightness channel allows to control the brightness of a light.
+            It is also possible to switch the light on and off.
+        </description>
+        <category>DimmableLight</category>
+        <tags>
+            <tag>Lighting</tag>
+        </tags>
+    </channel-type>
+
+    <channel-type id="color">
+        <item-type>Color</item-type>
+        <label>Color</label>
+        <description>Control the color of light.</description>
+        <category>ColorLight</category>
+        <tags>
+            <tag>Lighting</tag>
+        </tags>
+    </channel-type>
+
+    <channel-type id="colorTemperature">
+        <item-type>Dimmer</item-type>
+        <label>Color Temperature</label>
+        <description>Allows to control the color temperature of light.</description>
+        <tags>
+            <tag>ColorTemperature</tag>
+        </tags>
+    </channel-type>
+
+</thing:thing-descriptions>
