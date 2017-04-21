@@ -78,9 +78,6 @@ public class HomekitSettings {
     }
 
     private static String getOrDefault(Object value, String defaultValue) {
-        if (value == null) {
-            return defaultValue;
-        }
         return value != null ? (String) value : defaultValue;
     }
 

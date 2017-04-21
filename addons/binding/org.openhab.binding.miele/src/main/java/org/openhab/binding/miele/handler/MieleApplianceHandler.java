@@ -203,35 +203,33 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     metaDataCache.put(new StringBuilder().append(dp.Name).toString().trim(), metadata);
                 }
 
-                if (dp != null) {
-                    ApplianceChannelSelector selector = null;
-                    try {
-                        selector = getValueSelectorFromMieleID(dp.Name);
-                    } catch (Exception h) {
-                        logger.trace("{} is not a valid channel for a {}", dp.Name, modelID);
-                    }
+                ApplianceChannelSelector selector = null;
+                try {
+                    selector = getValueSelectorFromMieleID(dp.Name);
+                } catch (Exception h) {
+                    logger.trace("{} is not a valid channel for a {}", dp.Name, modelID);
+                }
 
-                    if (selector != null && !selector.isProperty()) {
-                        ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
-                        logger.trace("Update state of {} with '{}'",
-                                new Object[] { theChannelUID.toString(), dpValue });
+                if (selector != null && !selector.isProperty()) {
+                    ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
+                    logger.trace("Update state of {} with '{}'",
+                            new Object[] { theChannelUID.toString(), dpValue });
 
-                        if (dp.Value != null) {
-                            logger.trace("Update state of {} with getState '{}'",
-                                    new Object[] { theChannelUID.toString(), selector.getState(dpValue, dmd) });
-                            updateState(theChannelUID, selector.getState(dpValue, dmd));
-                        } else {
-                            updateState(theChannelUID, UnDefType.UNDEF);
-                        }
+                    if (dp.Value != null) {
+                        logger.trace("Update state of {} with getState '{}'",
+                                new Object[] { theChannelUID.toString(), selector.getState(dpValue, dmd) });
+                        updateState(theChannelUID, selector.getState(dpValue, dmd));
                     } else {
-                        if (selector != null && dpValue != null) {
-                            logger.debug("Updating the property '{}' of '{}' to '{}'",
-                                    new Object[] { selector.getChannelID(), getThing().getUID(),
-                                            selector.getState(dpValue, dmd).toString() });
-                            Map<String, String> properties = editProperties();
-                            properties.put(selector.getChannelID(), selector.getState(dpValue, dmd).toString());
-                            updateProperties(properties);
-                        }
+                        updateState(theChannelUID, UnDefType.UNDEF);
+                    }
+                } else {
+                    if (selector != null && dpValue != null) {
+                        logger.debug("Updating the property '{}' of '{}' to '{}'",
+                                new Object[] { selector.getChannelID(), getThing().getUID(),
+                                        selector.getState(dpValue, dmd).toString() });
+                        Map<String, String> properties = editProperties();
+                        properties.put(selector.getChannelID(), selector.getState(dpValue, dmd).toString());
+                        updateProperties(properties);
                     }
                 }
             } catch (IllegalArgumentException e) {

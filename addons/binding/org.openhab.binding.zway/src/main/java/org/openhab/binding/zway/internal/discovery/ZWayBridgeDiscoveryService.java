@@ -76,7 +76,7 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (SocketException e) {
-            logger.warn("Error occured while searching Z-Way servers ({})", e.getMessage());
+            logger.warn("Error occurred while searching Z-Way servers ({})", e.getMessage());
         }
     }
 

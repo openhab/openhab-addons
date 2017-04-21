@@ -120,7 +120,7 @@ public class VoiceRSSTTSService implements TTSService {
         // only a default voice
         try {
             File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(this.apiKey, text,
-                    voice.getLocale().toLanguageTag(), requestedFormat.getCodec());
+                    voice.getLocale().toLanguageTag(), getApiAudioFormat(requestedFormat));
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from VoiceRSS service");
             }
@@ -164,22 +164,35 @@ public class VoiceRSSTTSService implements TTSService {
         return audioFormats;
     }
 
-    /**
-     * Up to now only MP3 supported.
-     */
-    private final AudioFormat getAudioFormat(String format) {
-        // MP3 format
-        if (AudioFormat.CODEC_MP3.equals(format)) {
-            // we use by default: MP3, 44khz_16bit_mono
-            Boolean bigEndian = null; // not used here
-            Integer bitDepth = 16;
-            Integer bitRate = null;
-            Long frequency = 44000L;
+    private final AudioFormat getAudioFormat(String apiFormat) {
+        Boolean bigEndian = null;
+        Integer bitDepth = 16;
+        Integer bitRate = null;
+        Long frequency = 44000L;
+
+        if ("MP3".equals(apiFormat)) {
+            // we use by default: MP3, 44khz_16bit_mono with bitrate 64 kbps
+            bitRate = 64000;
 
             return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, bigEndian, bitDepth, bitRate,
                     frequency);
+        } else if ("OGG".equals(apiFormat)) {
+            // we use by default: OGG, 44khz_16bit_mono
+
+            return new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, bigEndian, bitDepth, bitRate,
+                    frequency);
         } else {
-            throw new RuntimeException("Audio format " + format + "not yet supported");
+            throw new IllegalArgumentException("Audio format " + apiFormat + " not yet supported");
+        }
+    }
+
+    private final String getApiAudioFormat(AudioFormat format) {
+        if (format.getCodec().equals(AudioFormat.CODEC_MP3)) {
+            return "MP3";
+        } else if (format.getCodec().equals(AudioFormat.CODEC_VORBIS)) {
+            return "OGG";
+        } else {
+            throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
         }
     }
 

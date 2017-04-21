@@ -44,7 +44,18 @@ public enum ParamType {
     LAST_TRIP("lasttrip"),
     ACCUMULATION("Accumulation"),
     SPEED("Speed"),
-    DIRECTION("Direction");
+    DIRECTION("Direction"),
+    STOPPABLE("stopable"),
+    PULSEABLE("pulseable"),
+
+    //Thermostat parameters
+    CUR_MODE("curmode"),
+    CUR_SETPOINT("cursetpoint"),
+    CUR_TEMP("curtemp"),
+    MIN_VAL("minVal"),
+    MAX_VAL("maxVal"),
+    AVAIL_MODE("availablemodes"),
+    STEP("step");
 
     private final String apiString;
 

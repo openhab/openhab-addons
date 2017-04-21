@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
@@ -160,20 +159,17 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
                 ThingTypeUID typeUID = gcMulticastListener.getThingTypeUID();
                 if (typeUID != null) {
                     ThingUID uid = new ThingUID(typeUID, gcMulticastListener.getSerialNumber());
-                    if (uid != null) {
-                        // If there's not a thing and it's not in the inbox, create the discovery result
-                        if (discoveryServiceCallback != null
-                                && discoveryServiceCallback.getExistingDiscoveryResult(uid) == null
-                                && discoveryServiceCallback.getExistingThing(uid) == null) {
 
-                            logger.trace("Creating discovery result for: {}, type={}, IP={}", uid,
-                                    gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
+                    // If there's not a thing and it's not in the inbox, create the discovery result
+                    if (discoveryServiceCallback != null
+                            && discoveryServiceCallback.getExistingDiscoveryResult(uid) == null
+                            && discoveryServiceCallback.getExistingThing(uid) == null) {
+                        logger.trace("Creating discovery result for: {}, type={}, IP={}", uid,
+                                gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
 
-                            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                                    .withLabel("GlobalCache " + gcMulticastListener.getModel()).build();
-
-                            thingDiscovered(result);
-                        }
+                        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                                .withLabel(gcMulticastListener.getVendor() + " " + gcMulticastListener.getModel())
+                                .build());
                     }
                 }
             }

@@ -11,6 +11,7 @@ Import-Package:
  com.google.gson,
  javax.ws.rs.client,
  javax.ws.rs.core,
+ org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
