@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="antiferencematrix"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="matrixoutput">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="matrix" />
+        </supported-bridge-type-refs>        
+        <label>Matrix Output</label>
+        <description>Antiference Matrix Output - essentially a TV</description>
+        <channels>
+            <channel id="power" typeId="power"/>
+            <channel id="source" typeId="source-channel"/>
+            <channel id="statusmessage" typeId="statusmessage"/>
+        </channels>
+    </thing-type>
+
+    <thing-type id="matrixinput">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="matrix" />
+        </supported-bridge-type-refs>        
+        <label>Matrix Input</label>
+        <description>Antiference Matrix Input - e.g. A DVD Player</description>
+        <channels>
+            <channel id="statusmessage" typeId="statusmessage"/>
+        </channels>
+    </thing-type>
+
+   
+
+</thing:thing-descriptions>

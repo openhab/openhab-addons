@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="antiferencematrix"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>Whether this device is turned on. Device needs to support CEC for this to work</description>
+        <state readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="source-channel">
+        <item-type>Number</item-type>
+        <label>Source</label>
+        <description>Input source for this output</description>
+        <state min="0" max="3" step="1" pattern="%d" readOnly="false"></state>
+    </channel-type>
+    
+    <channel-type id="statusmessage">
+        <item-type>String</item-type>
+        <label>Status Message</label>
+        <description>Status Message</description>
+        <state pattern="%s" readOnly="true" />
+    </channel-type>
+    
+</thing:thing-descriptions> 

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="antiferencematrix"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="matrix">
+        <label>Antiference Matrix</label>
+        <description>The Antiference Matrix.</description>
+	    <channels>
+	       <channel id="statusmessage" typeId="statusmessage" />
+        </channels>
+        <config-description>
+            <parameter name="address" type="text" required="true">
+                <label>IP address or host name</label>
+                <description>The IP address or host name of the matrix.</description>
+            </parameter>
+            <parameter name="pollingInterval" type="integer" required="true" min="10" max="600">
+                <label>Polling Interval in seconds</label>
+                <description>Interval polling the matrix.
+                </description>
+                <default>15</default>
+            </parameter>
+        </config-description>
+    </bridge-type>
+</thing:thing-descriptions>
