@@ -231,33 +231,33 @@ public class XMLResponseHandler extends DefaultHandler {
                     if (status.equals("READY")) {
                         if (source.equals("AUX")) {
                             if (sourceAccount.equals("AUX")) {
-                                commandExecutor.setAUX(true);
+                                commandExecutor.setAUXAvailable(true);
                             }
                             if (sourceAccount.equals("AUX1")) {
-                                commandExecutor.setAUX1(true);
+                                commandExecutor.setAUX1Available(true);
                             }
                             if (sourceAccount.equals("AUX2")) {
-                                commandExecutor.setAUX2(true);
+                                commandExecutor.setAUX2Available(true);
                             }
                             if (sourceAccount.equals("AUX3")) {
-                                commandExecutor.setAUX3(true);
+                                commandExecutor.setAUX3Available(true);
                             }
                         }
                         if (source.equals("STORED_MUSIC")) {
-                            commandExecutor.setStoredMusic(true);
+                            commandExecutor.setStoredMusicAvailable(true);
                         }
                         if (source.equals("INTERNET_RADIO")) {
-                            commandExecutor.setInternetRadio(true);
+                            commandExecutor.setInternetRadioAvailable(true);
                         }
                         if (source.equals("BLUETOOTH")) {
-                            commandExecutor.setBluetooth(true);
+                            commandExecutor.setBluetoothAvailable(true);
                         }
                         if (source.equals("PRODUCT")) {
                             if (sourceAccount.equals("TV")) {
-                                commandExecutor.setTV(true);
+                                commandExecutor.setTVAvailable(true);
                             }
                             if (sourceAccount.equals("HDMI_1")) {
-                                commandExecutor.setHDMI1(true);
+                                commandExecutor.setHDMI1Available(true);
                             }
                         }
                     }
@@ -280,6 +280,9 @@ public class XMLResponseHandler extends DefaultHandler {
             case Preset:
             case Updates:
             case Volume:
+                state = nextState(stateMap, curState, localName);
+                break;
+            case BassCapabilities:
                 state = nextState(stateMap, curState, localName);
                 break;
             // all entities without any children expected..
@@ -307,6 +310,13 @@ public class XMLResponseHandler extends DefaultHandler {
             case VolumeMuteEnabled:
             case ZoneMember:
             case ZoneUpdated: // currently this dosn't provide any zone details..
+                if (logger.isDebugEnabled()) {
+                    logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
+                            localName);
+                }
+                state = XMLHandlerState.Unprocessed;
+                break;
+            case BassAvailable:
                 if (logger.isDebugEnabled()) {
                     logger.warn("{}: Unhandled XML entity during {}: '{}'", handler.getDeviceName(), curState,
                             localName);
@@ -347,6 +357,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 commandExecutor.getRequest(APIRequest.GET_ZONE);
                 commandExecutor.getRequest(APIRequest.BASS);
                 commandExecutor.getRequest(APIRequest.SOURCES);
+                commandExecutor.getRequest(APIRequest.BASSCAPABILITIES);
                 break;
             case ContentItem:
                 if (state == XMLHandlerState.NowPlaying) {
@@ -358,7 +369,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case Preset:
                 if (state == XMLHandlerState.Presets) {
-                    commandExecutor.addContentItemToPresetList(contentItem);
+                    commandExecutor.addContentItemToPresetList(contentItem.getPresetID(), contentItem);
                     contentItem = null;
                 }
                 break;
@@ -430,10 +441,11 @@ public class XMLResponseHandler extends DefaultHandler {
             case ZoneUpdated:
             case BassTarget:
             case VolumeTarget:
+            case Sources:
                 logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
                         new String(ch, start, length));
                 break;
-            case Sources:
+            case BassCapabilities:
                 logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
                         new String(ch, start, length));
                 break;
@@ -448,6 +460,10 @@ public class XMLResponseHandler extends DefaultHandler {
                 break;
             case InfoType:
                 setConfigOption(BoseSoundTouchBindingConstants.DEVICE_INFO_TYPE, new String(ch, start, length));
+                break;
+            case BassAvailable:
+                boolean bassAvailable = Boolean.parseBoolean(new String(ch, start, length));
+                commandExecutor.setBassAvailable(bassAvailable);
                 break;
             case NowPlayingAlbum:
                 commandExecutor.updateNowPlayingAlbum(new StringType(new String(ch, start, length)));

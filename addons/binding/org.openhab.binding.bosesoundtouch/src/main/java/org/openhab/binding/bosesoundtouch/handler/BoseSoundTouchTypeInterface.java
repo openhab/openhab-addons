@@ -15,39 +15,43 @@ package org.openhab.binding.bosesoundtouch.handler;
  */
 public interface BoseSoundTouchTypeInterface {
 
-    public boolean hasBluetooth();
+    public boolean isBluetoothAvailable();
 
-    public boolean hasAUX();
+    public boolean isAUXAvailable();
 
-    public boolean hasAUX1();
+    public boolean isAUX1Available();
 
-    public boolean hasAUX2();
+    public boolean isAUX2Available();
 
-    public boolean hasAUX3();
+    public boolean isAUX3Available();
 
-    public boolean hasTV();
+    public boolean isTVAvailable();
 
-    public boolean hasHDMI1();
+    public boolean isHDMI1Available();
 
-    public boolean hasInternetRadio();
+    public boolean isInternetRadioAvailable();
 
-    public boolean hasStoredMusic();
+    public boolean isStoredMusicAvailable();
 
-    public void setAUX(boolean aux);
+    public boolean isBassAvailable();
 
-    public void setAUX1(boolean aux1);
+    public void setAUXAvailable(boolean aux);
 
-    public void setAUX2(boolean aux2);
+    public void setAUX1Available(boolean aux1);
 
-    public void setAUX3(boolean aux3);
+    public void setAUX2Available(boolean aux2);
 
-    public void setStoredMusic(boolean storedMusic);
+    public void setAUX3Available(boolean aux3);
 
-    public void setInternetRadio(boolean internetRadio);
+    public void setStoredMusicAvailable(boolean storedMusic);
 
-    public void setBluetooth(boolean bluetooth);
+    public void setInternetRadioAvailable(boolean internetRadio);
 
-    public void setTV(boolean tv);
+    public void setBluetoothAvailable(boolean bluetooth);
 
-    public void setHDMI1(boolean hdmi1);
+    public void setTVAvailable(boolean tv);
+
+    public void setHDMI1Available(boolean hdmi1);
+
+    public void setBassAvailable(boolean bass);
 }

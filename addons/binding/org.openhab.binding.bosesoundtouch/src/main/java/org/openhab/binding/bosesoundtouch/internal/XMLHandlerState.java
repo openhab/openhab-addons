@@ -55,4 +55,6 @@ public enum XMLHandlerState {
     ZoneMember,
     ZoneUpdated,
     Sources,
+    BassCapabilities,
+    BassAvailable,
 }

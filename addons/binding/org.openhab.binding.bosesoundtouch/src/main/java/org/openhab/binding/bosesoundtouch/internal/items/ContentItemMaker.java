@@ -77,7 +77,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (commandExecutor.hasAUX()) {
+        if (commandExecutor.isAUXAvailable()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX");
@@ -91,7 +91,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX1() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (commandExecutor.hasAUX1()) {
+        if (commandExecutor.isAUX1Available()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX1");
@@ -105,7 +105,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX2() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (commandExecutor.hasAUX2()) {
+        if (commandExecutor.isAUX2Available()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX2");
@@ -119,7 +119,7 @@ public class ContentItemMaker {
 
     private ContentItem getAUX3() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (commandExecutor.hasAUX3()) {
+        if (commandExecutor.isAUX3Available()) {
             contentItem = new ContentItem();
             contentItem.setSource("AUX");
             contentItem.setSourceAccount("AUX3");
@@ -133,7 +133,7 @@ public class ContentItemMaker {
 
     private ContentItem getBluetooth() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (commandExecutor.hasBluetooth()) {
+        if (commandExecutor.isBluetoothAvailable()) {
             contentItem = new ContentItem();
             contentItem.setSource("BLUETOOTH");
         }
@@ -150,7 +150,7 @@ public class ContentItemMaker {
 
     private ContentItem getHDMI() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (commandExecutor.hasHDMI1()) {
+        if (commandExecutor.isHDMI1Available()) {
             contentItem = new ContentItem();
             contentItem.setSource("PRODUCT");
             contentItem.setSourceAccount("HDMI_1");
@@ -166,7 +166,7 @@ public class ContentItemMaker {
 
     private ContentItem getInternetRadio() throws NoInternetRadioPresetFoundException {
         ContentItem contentItem = null;
-        if (commandExecutor.hasInternetRadio()) {
+        if (commandExecutor.isInternetRadioAvailable()) {
             Collection<ContentItem> listOfPresets = presetContainer.values();
             for (ContentItem iteratedItem : listOfPresets) {
                 if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.INTERNET_RADIO)) {
@@ -195,7 +195,7 @@ public class ContentItemMaker {
 
     private ContentItem getStoredMusic() throws NoStoredMusicPresetFoundException {
         ContentItem contentItem = null;
-        if (commandExecutor.hasStoredMusic()) {
+        if (commandExecutor.isStoredMusicAvailable()) {
             Collection<ContentItem> listOfPresets = presetContainer.values();
             for (ContentItem iteratedItem : listOfPresets) {
                 if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.STORED_MUSIC)) {
@@ -212,7 +212,7 @@ public class ContentItemMaker {
 
     private ContentItem getTV() throws OperationModeNotAvailableException {
         ContentItem contentItem = null;
-        if (commandExecutor.hasTV()) {
+        if (commandExecutor.isTVAvailable()) {
             contentItem = new ContentItem();
             contentItem.setSource("PRODUCT");
             contentItem.setSourceAccount("TV");

@@ -34,7 +34,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.bosesoundtouch.internal.APIRequest;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
@@ -170,7 +169,6 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                commandExecutor.updatePlayerControl(UnDefType.UNDEF);
                 break;
             case CHANNEL_PRESET:
                 if (command instanceof DecimalType) {
@@ -197,7 +195,6 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                commandExecutor.updatePresetControl(UnDefType.UNDEF);
                 break;
             case CHANNEL_BASS:
                 if (command instanceof DecimalType) {
@@ -216,7 +213,6 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                commandExecutor.updateSaveAsPreset(UnDefType.UNDEF);
                 break;
             case CHANNEL_KEY_CODE:
                 if (command instanceof StringType) {
@@ -234,7 +230,6 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                commandExecutor.updateKeyCode(UnDefType.UNDEF);
                 break;
             case CHANNEL_ZONE_CONTROL:
                 if (command instanceof StringType) {
@@ -244,7 +239,6 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
                 } else {
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
-                commandExecutor.updateZoneControl(UnDefType.UNDEF);
                 break;
             default:
                 logger.warn("{} : Got command '{}' for channel '{}' which is unhandled!", getDeviceName(), command,

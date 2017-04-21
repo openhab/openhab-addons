@@ -62,8 +62,10 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     private Session session;
     private BoseSoundTouchHandler handler;
 
+    private ZoneState zoneState;
     private BoseSoundTouchHandler zoneMaster;
     private List<ZoneMember> zoneMembers;
+
     private File presetFile;
     private boolean muted;
     private ContentItem currentContentItem;
@@ -79,6 +81,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     private boolean storedMusic;
     private boolean hdmi1;
     private boolean tv;
+    private boolean bass;
 
     public CommandExecutor(Session session, BoseSoundTouchHandler handler) {
         this.session = session;
@@ -86,9 +89,9 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         init();
     }
 
-    public void addContentItemToPresetList(ContentItem preset) {
+    public void addContentItemToPresetList(int presetID, ContentItem preset) {
         try {
-            presetContainer.put(preset);
+            presetContainer.put(presetID, preset);
         } catch (ContentItemNotPresetableException e) {
             logger.debug("{}: ContentItem is not presetable", handler.getDeviceName());
         }
@@ -119,7 +122,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
 
         updateOperationMode(new StringType(operationMode.getName()));
         currentOperationMode = operationMode;
-        if (operationMode == OperationModeType.STANDBY) {
+        if (currentOperationMode == OperationModeType.STANDBY) {
             // zone is leaved / destroyed if turned off
             zoneMembers.clear();
             if (zoneMaster != null) {
@@ -131,6 +134,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         } else {
             updatePowerState(OnOffType.ON);
         }
+        refreshZone();
     }
 
     public void getRequest(APIRequest apiRequest) {
@@ -171,36 +175,35 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     }
 
     public void postBass(DecimalType command) {
-        sendPostRequestInWebSocket("bass",
-                "<bass deviceID=\"" + handler.getMacAddress() + "\"" + ">" + command.intValue() + "</bass>");
+        if (isBassAvailable()) {
+            sendPostRequestInWebSocket("bass",
+                    "<bass deviceID=\"" + handler.getMacAddress() + "\"" + ">" + command.intValue() + "</bass>");
+        } else {
+            logger.warn("{}: Bass modification not supported for this device", handler.getDeviceName());
+        }
     }
 
     public void postOperationMode(OperationModeType operationModeType) {
-        if (operationModeType == OperationModeType.OFFLINE) {
-            currentOperationMode = OperationModeType.OFFLINE;
+        if (operationModeType == OperationModeType.STANDBY) {
+            if (currentOperationMode != OperationModeType.STANDBY) {
+                postRemoteKey(RemoteKeyType.POWER);
+            }
         } else {
-            if (operationModeType == OperationModeType.STANDBY) {
-                if (currentOperationMode != OperationModeType.STANDBY) {
-                    postRemoteKey(RemoteKeyType.POWER);
-                }
-            } else {
-                try {
-                    ContentItemMaker contentItemMaker = new ContentItemMaker(this, presetContainer);
-                    ContentItem contentItem = contentItemMaker.getContentItem(operationModeType);
-                    postContentItem(contentItem);
-                } catch (OperationModeNotAvailableException e) {
-                    logger.warn("{}: OperationMode \"{}\" is not supported yet", handler.getDeviceName(),
-                            operationModeType.name());
-                } catch (NoInternetRadioPresetFoundException e) {
-                    logger.warn("{}: Unable to switch to mode \"INTERNET_RADIO\". No PRESET defined",
-                            handler.getDeviceName());
-                } catch (NoStoredMusicPresetFoundException e) {
-                    logger.warn("{}: Unable to switch to mode: \"STORED_MUSIC\". No PRESET defined",
-                            handler.getDeviceName());
-
-                } finally {
-                    checkOperationMode();
-                }
+            try {
+                ContentItemMaker contentItemMaker = new ContentItemMaker(this, presetContainer);
+                ContentItem contentItem = contentItemMaker.getContentItem(operationModeType);
+                postContentItem(contentItem);
+            } catch (OperationModeNotAvailableException e) {
+                logger.warn("{}: OperationMode \"{}\" is not supported yet", handler.getDeviceName(),
+                        operationModeType.name());
+            } catch (NoInternetRadioPresetFoundException e) {
+                logger.warn("{}: Unable to switch to mode \"INTERNET_RADIO\". No PRESET defined",
+                        handler.getDeviceName());
+            } catch (NoStoredMusicPresetFoundException e) {
+                logger.warn("{}: Unable to switch to mode: \"STORED_MUSIC\". No PRESET defined",
+                        handler.getDeviceName());
+            } finally {
+                checkOperationMode();
             }
         }
     }
@@ -233,10 +236,10 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         ContentItem item = null;
         try {
             item = presetContainer.get(command.intValue());
+            postContentItem(item);
         } catch (NoPresetFoundException e) {
-            logger.warn("{}: No preset found at id: {}", handler.getDeviceName(), currentContentItem.getPresetID());
+            logger.warn("{}: No preset found at id: {}", handler.getDeviceName(), command.intValue());
         }
-        postContentItem(item);
     }
 
     public void postPreset(NextPreviousType command) {
@@ -317,7 +320,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         handler.updateState(getChannelUID(CHANNEL_BASS), state);
     }
 
-    public void updateKeyCode(State state) {
+    public void updateKeyCode(RemoteKeyType state) {
         handler.updateState(getChannelUID(CHANNEL_KEY_CODE), state);
     }
 
@@ -326,7 +329,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     }
 
     public void updateOperationMode(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_OPERATIONMODE), state);
+        handler.updateState(getChannelUID(CHANNEL_OPERATIONMODE), state);// TODO
     }
 
     public void updatePlayerControl(State state) {
@@ -345,7 +348,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         handler.updateState(getChannelUID(CHANNEL_PRESET_CONTROL), state);
     }
 
-    public void updateSaveAsPreset(State state) {
+    public void updateSaveAsPreset(DecimalType state) {
         handler.updateState(getChannelUID(CHANNEL_SAVE_AS_PRESET), state);
     }
 
@@ -353,7 +356,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         handler.updateState(getChannelUID(CHANNEL_VOLUME), state);
     }
 
-    public void updateZoneControl(State state) {
+    public void updateZoneControl(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_ZONE_CONTROL), state);
     }
 
@@ -362,83 +365,58 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     }
 
     public void updateZoneState(ZoneState zoneState, BoseSoundTouchHandler zoneMaster, List<ZoneMember> zoneMembers) {
+        this.zoneState = zoneState;
         this.zoneMaster = zoneMaster;
         this.zoneMembers = zoneMembers;
 
-        StringBuilder sb = new StringBuilder();
-        switch (zoneState) {
-            case Master:
-                sb.append("Master; Members: ");
-                break;
-            case Member:
-                sb.append("Member; Master is: ");
-                if (zoneMaster == null) {
-                    sb.append("<null>");
-                } else {
-                    sb.append(zoneMaster.getDeviceName());
-                }
-                sb.append("; Members: ");
-                break;
-            case Standalone:
-                sb.append("Standalone");
-                break;
-        }
-        for (int i = 0; i < zoneMembers.size(); i++) {
-            if (i > 0) {
-                sb.append(", ");
-            }
-            sb.append(zoneMembers.get(i).getHandler().getDeviceName());
-        }
-        String zoneData = sb.toString();
-        logger.debug("{}: zoneInfo updated: {}", handler.getDeviceName(), zoneData);
-        updateZoneInfo(new StringType(zoneData));
+        refreshZone();
     }
 
-    public void updateNowPlayingAlbum(State state) {
+    public void updateNowPlayingAlbum(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_ALBUM), state);
     }
 
-    public void updateNowPlayingArtwork(State state) {
+    public void updateNowPlayingArtwork(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_ARTWORK), state);
     }
 
-    public void updateNowPlayingArtist(State state) {
+    public void updateNowPlayingArtist(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_ARTIST), state);
     }
 
-    public void updateNowPlayingDescription(State state) {
+    public void updateNowPlayingDescription(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_DESCRIPTION), state);
     }
 
-    public void updateNowPlayingGenre(State state) {
+    public void updateNowPlayingGenre(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_GENRE), state);
     }
 
-    public void updateNowPlayingItemName(State state) {
+    public void updateNowPlayingItemName(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_ITEMNAME), state);
     }
 
-    public void updateNowPlayingStationLocation(State state) {
+    public void updateNowPlayingStationLocation(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_STATIONLOCATION), state);
     }
 
-    public void updateNowPlayingStationName(State state) {
+    public void updateNowPlayingStationName(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_STATIONNAME), state);
     }
 
-    public void updateNowPlayingTrack(State state) {
+    public void updateNowPlayingTrack(StringType state) {
         handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_TRACK), state);
     }
 
-    public void updateRateEnabled(State state) {
+    public void updateRateEnabled(OnOffType state) {
         handler.updateState(getChannelUID(CHANNEL_RATEENABLED), state);
     }
 
-    public void updateSkipEnabled(State state) {
+    public void updateSkipEnabled(OnOffType state) {
         handler.updateState(getChannelUID(CHANNEL_SKIPENABLED), state);
     }
 
-    public void updateSkipPreviousEnabled(State state) {
+    public void updateSkipPreviousEnabled(OnOffType state) {
         handler.updateState(getChannelUID(CHANNEL_SKIPPREVIOUSENABLED), state);
     }
 
@@ -537,6 +515,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         storedMusic = false;
         hdmi1 = false;
         tv = false;
+        bass = false;
 
         File folder = new File(ConfigConstants.getUserDataFolder() + "/" + BoseSoundTouchBindingConstants.BINDING_ID);
         if (!folder.exists()) {
@@ -555,6 +534,38 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         if (contentItem != null) {
             setCurrentContentItem(contentItem);
             sendPostRequestInWebSocket("select", "", contentItem.generateXML());
+        }
+    }
+
+    private void refreshZone() {
+        if ((zoneState != null) && (zoneMaster != null) && (zoneMembers != null)) {
+            StringBuilder sb = new StringBuilder();
+            switch (zoneState) {
+                case Master:
+                    sb.append("Master; Members: ");
+                    break;
+                case Member:
+                    sb.append("Member; Master is: ");
+                    if (zoneMaster == null) {
+                        sb.append("<null>");
+                    } else {
+                        sb.append(zoneMaster.getDeviceName());
+                    }
+                    sb.append("; Members: ");
+                    break;
+                case Standalone:
+                    sb.append("Standalone");
+                    break;
+            }
+            for (int i = 0; i < zoneMembers.size(); i++) {
+                if (i > 0) {
+                    sb.append(", ");
+                }
+                sb.append(zoneMembers.get(i).getHandler().getDeviceName());
+            }
+            String zoneData = sb.toString();
+            logger.debug("{}: zoneInfo updated: {}", handler.getDeviceName(), zoneData);
+            updateZoneInfo(new StringType(zoneData));
         }
     }
 
@@ -610,93 +621,103 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     }
 
     @Override
-    public boolean hasBluetooth() {
+    public boolean isBluetoothAvailable() {
         return bluetooth;
     }
 
     @Override
-    public boolean hasAUX() {
+    public boolean isAUXAvailable() {
         return aux;
     }
 
     @Override
-    public boolean hasAUX1() {
+    public boolean isAUX1Available() {
         return aux1;
     }
 
     @Override
-    public boolean hasAUX2() {
+    public boolean isAUX2Available() {
         return aux2;
     }
 
     @Override
-    public boolean hasAUX3() {
+    public boolean isAUX3Available() {
         return aux3;
     }
 
     @Override
-    public boolean hasTV() {
+    public boolean isTVAvailable() {
         return tv;
     }
 
     @Override
-    public boolean hasHDMI1() {
+    public boolean isHDMI1Available() {
         return hdmi1;
     }
 
     @Override
-    public boolean hasInternetRadio() {
+    public boolean isInternetRadioAvailable() {
         return internetRadio;
     }
 
     @Override
-    public boolean hasStoredMusic() {
+    public boolean isStoredMusicAvailable() {
         return storedMusic;
     }
 
     @Override
-    public void setAUX(boolean aux) {
+    public boolean isBassAvailable() {
+        return bass;
+    }
+
+    @Override
+    public void setAUXAvailable(boolean aux) {
         this.aux = aux;
     }
 
     @Override
-    public void setAUX1(boolean aux1) {
+    public void setAUX1Available(boolean aux1) {
         this.aux1 = aux1;
     }
 
     @Override
-    public void setAUX2(boolean aux2) {
+    public void setAUX2Available(boolean aux2) {
         this.aux2 = aux2;
     }
 
     @Override
-    public void setAUX3(boolean aux3) {
+    public void setAUX3Available(boolean aux3) {
         this.aux3 = aux3;
     }
 
     @Override
-    public void setStoredMusic(boolean storedMusic) {
+    public void setStoredMusicAvailable(boolean storedMusic) {
         this.storedMusic = storedMusic;
     }
 
     @Override
-    public void setInternetRadio(boolean internetRadio) {
+    public void setInternetRadioAvailable(boolean internetRadio) {
         this.internetRadio = internetRadio;
     }
 
     @Override
-    public void setBluetooth(boolean bluetooth) {
+    public void setBluetoothAvailable(boolean bluetooth) {
         this.bluetooth = bluetooth;
     }
 
     @Override
-    public void setTV(boolean tv) {
+    public void setTVAvailable(boolean tv) {
         this.tv = tv;
     }
 
     @Override
-    public void setHDMI1(boolean hdmi1) {
+    public void setHDMI1Available(boolean hdmi1) {
         this.hdmi1 = hdmi1;
+    }
+
+    @Override
+    public void setBassAvailable(boolean bass) {
+        this.bass = bass;
     }
 
 }

@@ -54,6 +54,7 @@ public class XMLResponseProcessor {
         msgBodyMap.put("zone", XMLHandlerState.Zone); // only confirmation of our key presses...
         msgBodyMap.put("bass", XMLHandlerState.Bass);
         msgBodyMap.put("sources", XMLHandlerState.Sources);
+        msgBodyMap.put("bassCapabilities", XMLHandlerState.BassCapabilities);
 
         // info message states
         Map<String, XMLHandlerState> infoMap = new HashMap<>();
@@ -132,6 +133,9 @@ public class XMLResponseProcessor {
         Map<String, XMLHandlerState> sourceMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.Sources, sourceMap);
 
+        Map<String, XMLHandlerState> bassCapabilitiesMap = new HashMap<>();
+        stateSwitchingMap.put(XMLHandlerState.BassCapabilities, bassCapabilitiesMap);
+        bassCapabilitiesMap.put("bassAvailable", XMLHandlerState.BassAvailable);
     }
 
 }

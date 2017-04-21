@@ -63,6 +63,11 @@ public enum RemoteKeyType implements PrimitiveType, State, Command {
     }
 
     @Override
+    public String toString() {
+        return toFullString();
+    }
+
+    @Override
     public String toFullString() {
         return super.toString();
     }

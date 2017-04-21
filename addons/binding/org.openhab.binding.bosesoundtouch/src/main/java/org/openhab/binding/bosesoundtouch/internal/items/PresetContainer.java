@@ -46,10 +46,6 @@ public class PresetContainer {
         }
     }
 
-    public void put(ContentItem preset) throws ContentItemNotPresetableException {
-        put(preset.getPresetID(), preset);
-    }
-
     public ContentItem get(int presetID) throws NoPresetFoundException {
         ContentItem psFound = mapOfPresets.get(presetID);
         if (psFound != null) {
@@ -132,7 +128,7 @@ public class PresetContainer {
                     ContentItem item = new ContentItem();
                     item.createFormString(line);
                     try {
-                        put(item);
+                        put(item.getPresetID(), item);
                     } catch (ContentItemNotPresetableException e) {
                     }
                     line = reader.readLine();

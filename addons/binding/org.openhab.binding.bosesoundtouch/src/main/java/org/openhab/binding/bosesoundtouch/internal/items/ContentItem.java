@@ -179,12 +179,12 @@ public class ContentItem {
 
     @Override
     public String toString() {
-        if (presetID >= 1 && presetID <= 6) {
-            StringBuffer buffer = new StringBuffer();
-            buffer.append("PRESET_");
-            buffer.append(presetID);
-            return buffer.toString();
-        }
+        // if (presetID >= 1 && presetID <= 6) {
+        // StringBuffer buffer = new StringBuffer();
+        // buffer.append("PRESET_");
+        // buffer.append(presetID);
+        // return buffer.toString();
+        // }
         return itemName;
     }
 
@@ -219,9 +219,9 @@ public class ContentItem {
         // private String location;
         // private String itemName;
         // private int unusedField;
-    
+
         String[] parts = s.split(";");
-    
+
         presetID = Integer.parseInt(parts[0]);
         source = parts[1];
         sourceAccount = parts[2];
