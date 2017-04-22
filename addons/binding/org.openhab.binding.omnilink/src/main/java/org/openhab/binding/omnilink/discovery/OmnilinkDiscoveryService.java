@@ -162,6 +162,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
             boolean isInRoom = false;
             boolean isRoomController = false;
+            logger.debug("Unit type: {}", o.getUnitType());
             if (o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM
                     || o.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM) {
                 currentRoom = objnum;
@@ -205,12 +206,18 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                 thingID = Integer.toString(objnum);
 
                 Map<String, Object> properties = new HashMap<>(0);
-                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT, thingID);
+
                 properties.put(OmnilinkUnitConfig.NUMBER, objnum);
                 properties.put(OmnilinkUnitConfig.NAME, o.getName());
 
                 DiscoveryResult discoveryResult;
+                if (o.getUnitType() == UnitProperties.UNIT_TYPE_FLAG) {
+                    thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_FLAG, thingID);
 
+                } else {
+                    thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT, thingID);
+
+                }
                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withBridge(bridgeUID).withLabel(thingLabel).build();
                 thingDiscovered(discoveryResult);

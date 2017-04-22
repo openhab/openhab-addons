@@ -24,7 +24,55 @@
             </parameter>
         </config-description>
     </bridge-type>
-    
+    <thing-type id="room">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="omnilinkBridge" />
+        </supported-bridge-type-refs>
+
+        <label>Room</label>
+        <description>Grouping of Units</description>
+
+        <channels>
+            <channel id="scenea" typeId="scene_toggle" />
+            <channel id="sceneb" typeId="scene_toggle" />
+            <channel id="scenec" typeId="scene_toggle" />
+            <channel id="scened" typeId="scene_toggle" />
+        </channels>
+
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Unit Number</label>
+                <description>Unit number of the dimmer.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Name of the dimmer.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="flag">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="omnilinkBridge" />
+        </supported-bridge-type-refs>
+
+        <label>Flag</label>
+        <description>Flag within Omnilink</description>
+
+        <channels>
+            <channel id="value" typeId="flagvalue" />
+        </channels>
+
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Flag Number</label>
+                <description>Unit number of the flag.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Name of the flag.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
     <thing-type id="unit">
         <supported-bridge-type-refs>
             <bridge-type-ref id="omnilinkBridge" />
@@ -110,11 +158,23 @@
         <category>Contact</category>
         <state pattern="%s" readOnly="true"></state>
     </channel-type>
-
+    <channel-type id="scene_toggle">
+        <item-type>Switch</item-type>
+        <label>Contact State</label>
+        <description>Contact state information</description>
+        <category>Contact</category>
+        <state pattern="%s" readOnly="true"></state>
+    </channel-type>
     <channel-type id="area_alarm">
         <item-type>String</item-type>
         <label>Area Alarm</label>
         <description>Represents area mode.</description>
-        <category>Program Control</category>
+        <category>Alarm</category>
+    </channel-type>
+    <channel-type id="flagvalue">
+        <item-type>Number</item-type>
+        <label>Flag Value</label>
+        <description>Represents value for a flag.</description>
+        <category>Flag Control</category>
     </channel-type>   
 </thing:thing-descriptions>

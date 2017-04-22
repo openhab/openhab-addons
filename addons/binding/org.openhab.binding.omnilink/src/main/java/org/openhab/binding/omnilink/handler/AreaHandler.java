@@ -4,7 +4,6 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.UID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
@@ -16,7 +15,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 
-public class AreaHandler extends BaseThingHandler {
+public class AreaHandler extends AbstractOmnilinkHandler {
     private Logger logger = LoggerFactory.getLogger(AreaHandler.class);
 
     public AreaHandler(Thing thing) {
@@ -28,21 +27,19 @@ public class AreaHandler extends BaseThingHandler {
         logger.debug("handleCommand: {}, command: {}", channelUID, command);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         if (command instanceof RefreshType) {
-            Futures.addCallback(
-                    ((OmnilinkBridgeHandler) getBridge().getHandler()).getAreaStatus(Integer.parseInt(channelParts[2])),
+            Futures.addCallback(getOmnilinkBridgeHander().getAreaStatus(Integer.parseInt(channelParts[2])),
                     new FutureCallback<AreaStatus>() {
 
                         @Override
                         public void onFailure(Throwable arg0) {
-                            // TODO Auto-generated method stub
+                            logger.error("Failure getting status", arg0);
                         }
 
                         @Override
                         public void onSuccess(AreaStatus status) {
-                            logger.debug("must handle area status: {}", status);
+                            logger.debug("handle area status: {}", status);
                             updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREAALARM),
                                     new StringType(AreaAlarmStatus.values()[status.getMode()].toString()));
-                            // handleUnitStatus(status);
                         }
                     });
         }

@@ -23,8 +23,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.handler.AreaHandler;
+import org.openhab.binding.omnilink.handler.FlagHandler;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
-import org.openhab.binding.omnilink.handler.UnitHandler;
+import org.openhab.binding.omnilink.handler.UpbUnitHandler;
 import org.openhab.binding.omnilink.handler.ZoneHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ import com.google.common.collect.ImmutableSet;
 public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_AREA,
-            THING_TYPE_ZONE, THING_TYPE_UNIT, THING_TYPE_BRIDGE);
+            THING_TYPE_ZONE, THING_TYPE_UNIT, THING_TYPE_BRIDGE, THING_TYPE_FLAG);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
@@ -56,7 +57,7 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_UNIT)) {
-            return new UnitHandler(thing);
+            return new UpbUnitHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
             OmnilinkBridgeHandler handler = new OmnilinkBridgeHandler((Bridge) thing);
             registerOmnilnkBridgeDiscoveryService(handler);
@@ -65,8 +66,9 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
             return new ZoneHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_AREA)) {
             return new AreaHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_FLAG)) {
+            return new FlagHandler(thing);
         }
-
         return null;
     }
 

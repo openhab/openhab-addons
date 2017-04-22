@@ -31,6 +31,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
 import com.google.common.base.Function;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
@@ -101,25 +102,31 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             logger.error("Error connecting to omnilink", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-
+        loadUnitStatuses();
     }
 
     @Override
     public void objectStausNotification(ObjectStatus status) {
-        logger.debug("status notification: {}", status.toString());
+        // logger.debug("status notification: {}", status);
         Status[] statuses = status.getStatuses();
-        Thing updatedThing = null;
-
         for (Status s : statuses) {
             if (s instanceof UnitStatus) {
+                UnitStatus stat = (UnitStatus) s;
+                logger.debug("Handle objectStatusNotification for: {}", stat);
                 for (Thing thing : super.getThing().getThings()) {
-                    if (OmnilinkBindingConstants.THING_TYPE_UNIT.equals(thing.getThingTypeUID())) {
-                        updatedThing = thing;
-                        UnitStatus stat = (UnitStatus) s;
+
+                    if (OmnilinkBindingConstants.THING_TYPE_UNIT.equals(thing.getThingTypeUID())
+                            || OmnilinkBindingConstants.THING_TYPE_FLAG.equals(thing.getThingTypeUID())) {
+                        Object zoneId = thing.getConfiguration().getProperties().get("number");
+                        int resolvedZoneId;
+                        if (zoneId instanceof BigDecimal) {
+                            resolvedZoneId = ((BigDecimal) zoneId).intValue();
+                        } else {
+                            resolvedZoneId = (int) zoneId;
+                        }
                         Integer number = new Integer(((UnitStatus) s).getNumber());
                         logger.debug("received status update for unit: " + number + ", status: " + stat.getStatus());
-                        Object zoneId = updatedThing.getConfiguration().getProperties().get("number");
-                        int resolvedZoneId;
+
                         if (zoneId instanceof BigDecimal) {
                             resolvedZoneId = ((BigDecimal) zoneId).intValue();
                         } else {
@@ -127,23 +134,21 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         }
                         if (zoneId != null) {
                             if (number.intValue() == resolvedZoneId) {
-                                ((UnitHandler) updatedThing.getHandler()).handleUnitStatus(stat);
+                                ((UnitHandler) thing.getHandler()).handleUnitStatus(stat);
                                 break;
                             }
                         }
 
                     }
                 }
-
             } else if (s instanceof ZoneStatus) {
                 for (Thing thing : super.getThing().getThings()) {
                     if (OmnilinkBindingConstants.THING_TYPE_ZONE.equals(thing.getThingTypeUID())) {
-                        updatedThing = thing;
                         ZoneStatus stat = (ZoneStatus) s;
                         Integer number = new Integer(stat.getNumber());
                         logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
 
-                        Object zoneId = updatedThing.getConfiguration().getProperties().get("number");
+                        Object zoneId = thing.getConfiguration().getProperties().get("number");
                         int resolvedZoneId;
                         if (zoneId instanceof BigDecimal) {
                             resolvedZoneId = ((BigDecimal) zoneId).intValue();
@@ -152,7 +157,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         }
                         if (zoneId != null) {
                             if (number.intValue() == resolvedZoneId) {
-                                ((ZoneHandler) updatedThing.getHandler()).handleZoneStatus(stat);
+                                ((ZoneHandler) thing.getHandler()).handleZoneStatus(stat);
                                 break;
                             }
                         }
@@ -167,6 +172,23 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 ((AreaHandler) areaThings.get(areaStatus.getNumber()).getHandler()).handleAreaEvent(areaStatus);
             }
         }
+    }
+
+    private void loadUnitStatuses() {
+        Futures.addCallback(getUnitStatuses(), new FutureCallback<UnitStatus[]>() {
+
+            @Override
+            public void onFailure(Throwable arg0) {
+                logger.error("Error getting unit statuses", arg0);
+            }
+
+            @Override
+            public void onSuccess(UnitStatus[] status) {
+                for (UnitStatus unitStatus : status) {
+                    logger.debug("received unit status: {}", unitStatus);
+                }
+            }
+        });
     }
 
     @Override
@@ -189,6 +211,47 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void otherEventNotification(OtherEventNotifications arg0) {
 
+    }
+
+    public ListenableFuture<Integer> getMaxUnit() {
+        // int max_units = c.reqObjectTypeCapacities(Message.OBJ_TYPE_UNIT).getCapacity();
+        return listeningExecutor.submit(new Callable<Integer>() {
+
+            @Override
+            public Integer call() throws Exception {
+                return omniConnection.reqObjectTypeCapacities(Message.OBJ_TYPE_UNIT).getCapacity();
+            }
+        });
+    }
+
+    public ListenableFuture<UnitStatus[]> getUnitStatuses() {
+
+        ListenableFuture<ObjectStatus> objectStatus = Futures.chain(getMaxUnit(),
+                new Function<Integer, ListenableFuture<ObjectStatus>>() {
+                    @Override
+                    public ListenableFuture<ObjectStatus> apply(final Integer maxUnitNum) {
+                        logger.debug("max unit is: {}", maxUnitNum);
+                        return requestObjectStatus(Message.OBJ_TYPE_UNIT, 1, 5);
+                    }
+                });
+
+        return Futures.transform(objectStatus, new Function<ObjectStatus, UnitStatus[]>() {
+            @Override
+            public UnitStatus[] apply(ObjectStatus t) {
+                return (UnitStatus[]) t.getStatuses();
+            }
+        }, listeningExecutor);
+    }
+
+    public ListenableFuture<ObjectStatus> requestObjectStatus(final int arg1, final int arg2, final int arg3) {
+
+        return listeningExecutor.submit(new Callable<ObjectStatus>() {
+
+            @Override
+            public ObjectStatus call() throws Exception {
+                return omniConnection.reqObjectStatus(arg1, arg2, arg3);
+            }
+        });
     }
 
     public ListenableFuture<UnitStatus> getUnitStatus(final int address) {
