@@ -48,8 +48,6 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
     private static final AudioFormat MP3_256 = new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, null, 256000, null);
     private static final AudioFormat MP3_320 = new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, null, 320000, null);
 
-    private static final AudioFormat OGG = new AudioFormat(CONTAINER_OGG, CODEC_VORBIS, null, null, null, null);
-
     private Set<AudioFormat> supportedFormats;
     private AudioHTTPServer audioHTTPServer;
     private FreeboxThingHandler handler;
