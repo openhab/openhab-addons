@@ -206,6 +206,9 @@ public class AllPlayHandler extends BaseThingHandler
             case CONTROL:
                 handleControlCommand(command);
                 break;
+            case INPUT:
+                speaker.input().setInput(command.toString());
+                break;
             case LOOP_MODE:
                 speaker.setLoopMode(LoopMode.parse(command.toString()));
                 break;
@@ -242,6 +245,9 @@ public class AllPlayHandler extends BaseThingHandler
                 break;
             case CONTROL:
                 updatePlayState(speaker.getPlayState());
+                break;
+            case INPUT:
+                onInputChanged(speaker.input().getActiveInput());
                 break;
             case LOOP_MODE:
                 onLoopModeChanged(speaker.getLoopMode());
@@ -375,6 +381,12 @@ public class AllPlayHandler extends BaseThingHandler
     public void onZoneChanged(String zoneId, int timestamp, Map<String, Integer> slaves) {
         logger.debug("{}: Zone changed to {}", speaker.getName(), zoneId);
         updateState(ZONE_ID, new StringType(zoneId));
+    }
+
+    @Override
+    public void onInputChanged(String input) {
+        logger.debug("{}: Input changed to {}", speaker.getName(), input);
+        updateState(INPUT, new StringType(input));
     }
 
     private void updatePlayState(PlayState playState) {
