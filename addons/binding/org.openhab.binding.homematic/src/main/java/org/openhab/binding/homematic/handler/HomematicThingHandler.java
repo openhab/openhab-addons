@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.converter.ConverterFactory;
+import org.openhab.binding.homematic.converter.ConverterTypeException;
 import org.openhab.binding.homematic.converter.TypeConverter;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
@@ -66,57 +67,60 @@ public class HomematicThingHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        try {
-            HomematicGateway gateway = getHomematicGateway();
-            HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
-            updateStatus(device);
-            if (!device.isOffline()) {
-                logger.debug("Initializing {} channels of thing '{}' from gateway '{}'",
-                        getThing().getChannels().size(), getThing().getUID(), gateway.getId());
+        scheduler.execute(new Runnable() {
 
-                // update channel states
-                for (Channel channel : getThing().getChannels()) {
-                    updateChannelState(channel.getUID());
-                }
+            @Override
+            public void run() {
+                try {
+                    HomematicGateway gateway = getHomematicGateway();
+                    HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
+                    HmChannel channelZero = device.getChannel(0);
+                    loadHomematicChannelValues(channelZero);
+                    updateStatus(device);
+                    if (!device.isOffline()) {
+                        logger.debug("Initializing thing '{}' from gateway '{}'", getThing().getUID(), gateway.getId());
 
-                // update properties
-                Map<String, String> properties = editProperties();
-                setProperty(properties, device, PROPERTY_BATTERY_TYPE, VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE);
-                setProperty(properties, device, Thing.PROPERTY_FIRMWARE_VERSION, VIRTUAL_DATAPOINT_NAME_FIRMWARE);
-                setProperty(properties, device, Thing.PROPERTY_SERIAL_NUMBER, device.getAddress());
-                setProperty(properties, device, PROPERTY_AES_KEY, DATAPOINT_NAME_AES_KEY);
-                updateProperties(properties);
+                        // update properties
+                        Map<String, String> properties = editProperties();
+                        setProperty(properties, channelZero, PROPERTY_BATTERY_TYPE,
+                                VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE);
+                        setProperty(properties, channelZero, Thing.PROPERTY_FIRMWARE_VERSION,
+                                VIRTUAL_DATAPOINT_NAME_FIRMWARE);
+                        setProperty(properties, channelZero, Thing.PROPERTY_SERIAL_NUMBER, device.getAddress());
+                        setProperty(properties, channelZero, PROPERTY_AES_KEY, DATAPOINT_NAME_AES_KEY);
+                        updateProperties(properties);
 
-                // update configurations
-                Configuration config = editConfiguration();
-                for (HmChannel channel : device.getChannels()) {
-                    for (HmDatapoint dp : channel.getDatapoints().values()) {
-                        if (dp.getParamsetType() == HmParamsetType.MASTER) {
-                            loadHomematicChannelValues(dp.getChannel());
-                            config.put(MetadataUtils.getParameterName(dp),
-                                    dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
+                        // update configurations
+                        Configuration config = editConfiguration();
+                        for (HmChannel channel : device.getChannels()) {
+                            for (HmDatapoint dp : channel.getDatapoints().values()) {
+                                if (dp.getParamsetType() == HmParamsetType.MASTER) {
+                                    loadHomematicChannelValues(dp.getChannel());
+                                    config.put(MetadataUtils.getParameterName(dp),
+                                            dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
+                                }
+                            }
                         }
+                        updateConfiguration(config);
                     }
+                } catch (HomematicClientException ex) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+                } catch (IOException ex) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                } catch (BridgeHandlerNotAvailableException ex) {
+                    // ignore
+                } catch (Exception ex) {
+                    logger.error("{}", ex.getMessage(), ex);
                 }
-                updateConfiguration(config);
             }
-        } catch (HomematicClientException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-        } catch (IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-        } catch (BridgeHandlerNotAvailableException ex) {
-            // ignore
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
-        }
+        });
     }
 
     /**
      * Sets a thing property with a datapoint value.
      */
-    private void setProperty(Map<String, String> properties, HmDevice device, String propertyName,
+    private void setProperty(Map<String, String> properties, HmChannel channelZero, String propertyName,
             String datapointName) {
-        HmChannel channelZero = device.getChannel(0);
         HmDatapoint dp = channelZero
                 .getDatapoint(new HmDatapointInfo(HmParamsetType.VALUES, channelZero, datapointName));
         if (dp != null) {
@@ -135,7 +139,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 updateChannelState(channelUID);
             }
         } catch (Exception ex) {
-            logger.warn(ex.getMessage());
+            logger.warn("{}", ex.getMessage());
         }
     }
 
@@ -154,7 +158,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 dpInfo = new HmDatapointInfo(dpInfo.getAddress(), HmParamsetType.VALUES, 0,
                         VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY);
                 dp = gateway.getDatapoint(dpInfo);
-                gateway.sendDatapoint(dp, new HmDatapointConfig(true), Boolean.TRUE);
+                gateway.sendDatapoint(dp, new HmDatapointConfig(), Boolean.TRUE);
             } else {
                 Channel channel = getThing().getChannel(channelUID.getId());
                 if (channel == null) {
@@ -177,17 +181,19 @@ public class HomematicThingHandler extends BaseThingHandler {
                 }
             }
         } catch (HomematicClientException | BridgeHandlerNotAvailableException ex) {
-            logger.warn(ex.getMessage());
+            logger.warn("{}", ex.getMessage());
         } catch (IOException ex) {
             if (dp != null && dp.getChannel().getDevice().isOffline()) {
                 logger.warn("Device '{}' is OFFLINE, can't send command '{}' for channel '{}'",
                         dp.getChannel().getDevice().getAddress(), command, channelUID);
-                logger.trace(ex.getMessage(), ex);
+                logger.trace("{}", ex.getMessage(), ex);
             } else {
-                logger.error(ex.getMessage(), ex);
+                logger.error("{}", ex.getMessage(), ex);
             }
+        } catch (ConverterTypeException ex) {
+            logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         }
     }
 
@@ -214,7 +220,7 @@ public class HomematicThingHandler extends BaseThingHandler {
             if (dp.getParamsetType() == HmParamsetType.MASTER) {
                 // update configuration
                 Configuration config = editConfiguration();
-                config.put(MetadataUtils.getParameterName(dp), dp.getValue());
+                config.put(MetadataUtils.getParameterName(dp), dp.isEnumType() ? dp.getOptionValue() : dp.getValue());
                 updateConfiguration(config);
             } else if (!HomematicTypeGeneratorImpl.isIgnoredDatapoint(dp)) {
                 // update channel
@@ -229,7 +235,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         } catch (BridgeHandlerNotAvailableException ex) {
             // ignore
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         }
     }
 
@@ -239,8 +245,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void updateChannelState(final HmDatapoint dp, Channel channel)
             throws IOException, BridgeHandlerNotAvailableException, ConverterException {
 
-        boolean isChannelLinked = isLinked(channel);
-        if (isChannelLinked) {
+        if (isLinked(channel)) {
             loadHomematicChannelValues(dp.getChannel());
 
             TypeConverter<?> converter = ConverterFactory.createConverter(channel.getAcceptedItemType());
@@ -289,7 +294,6 @@ public class HomematicThingHandler extends BaseThingHandler {
             newStatus = ThingStatus.OFFLINE;
             newDetail = ThingStatusDetail.COMMUNICATION_ERROR;
         } else if (device.isConfigPending() || device.isUpdatePending()) {
-            newStatus = thing.getStatus();
             newDetail = ThingStatusDetail.CONFIGURATION_PENDING;
         }
 
@@ -320,11 +324,7 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Returns the config for a channel.
      */
     private HmDatapointConfig getChannelConfig(Channel channel, HmDatapoint dp) {
-        HmDatapointConfig dpConfig = channel.getConfiguration().as(HmDatapointConfig.class);
-        if (DATAPOINT_NAME_STOP.equals(dp.getName()) && CHANNEL_TYPE_BLIND.equals(dp.getChannel().getType())) {
-            dpConfig.setForceUpdate(true);
-        }
-        return dpConfig;
+        return channel.getConfiguration().as(HmDatapointConfig.class);
     }
 
     /**
@@ -350,10 +350,10 @@ public class HomematicThingHandler extends BaseThingHandler {
             throws ConfigValidationException {
         validateConfigurationParameters(configurationParameters);
 
-        Configuration newConfig = editConfiguration();
-        newConfig.setProperties(configurationParameters);
-
         try {
+            HomematicGateway gateway = getHomematicGateway();
+            HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
+
             for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
                 String key = configurationParmeter.getKey();
                 Object newValue = configurationParmeter.getValue();
@@ -363,8 +363,6 @@ public class HomematicThingHandler extends BaseThingHandler {
                     Integer channelNumber = NumberUtils.toInt(StringUtils.substringBefore(key, "_"));
                     String dpName = StringUtils.substringAfter(key, "_");
 
-                    HomematicGateway gateway = getHomematicGateway();
-                    HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
                     HmDatapointInfo dpInfo = new HmDatapointInfo(device.getAddress(), HmParamsetType.MASTER,
                             channelNumber, dpName);
                     HmDatapoint dp = device.getChannel(channelNumber).getDatapoint(dpInfo);
@@ -381,22 +379,20 @@ public class HomematicThingHandler extends BaseThingHandler {
                                 }
                                 if (ObjectUtils.notEqual(dp.isEnumType() ? dp.getOptionValue() : dp.getValue(),
                                         newValue)) {
-                                    gateway.sendDatapoint(dp, new HmDatapointConfig(true), newValue);
+                                    gateway.sendDatapoint(dp, new HmDatapointConfig(), newValue);
                                 }
                             }
                         } catch (IOException ex) {
                             logger.error("Error setting thing property {}: {}", dpInfo, ex.getMessage());
-                            newConfig.put(key, getConfig().get(key));
                         }
                     } else {
                         logger.error("Can't find datapoint for thing property {}", dpInfo);
-                        newConfig.put(key, getConfig().get(key));
                     }
                 }
             }
-            updateConfiguration(newConfig);
+            gateway.triggerDeviceValuesReload(device);
         } catch (HomematicClientException | BridgeHandlerNotAvailableException ex) {
-            logger.error("Error setting thing properties: " + ex.getMessage(), ex);
+            logger.error("Error setting thing properties: {}", ex.getMessage(), ex);
         }
     }
 }

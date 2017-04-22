@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -317,7 +317,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         // sequenceLength2 (hexCodeArray[3]) is not used
 
-        StringBuffer gcCode = new StringBuffer();
+        StringBuilder gcCode = new StringBuilder();
         gcCode.append(frequency);
         gcCode.append(",");
         gcCode.append(REPEAT);
@@ -524,7 +524,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         private String getAsHexString(byte[] b) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
 
             for (int j = 0; j < b.length; j++) {
                 String s = String.format("%02x ", b[j] & 0xff);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -120,11 +120,11 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
                     return handler;
                 }
             } else {
-                logger.warn("Should not be a non-GrafikEyeHandler as a thing to this bridge - ignoring: " + thing);
+                logger.warn("Should not be a non-GrafikEyeHandler as a thing to this bridge - ignoring: {}", thing);
             }
         }
 
-        throw new IllegalArgumentException("Could not find a GrafikEyeHandler for control unit: " + controlUnit);
+        throw new IllegalArgumentException("Could not find a GrafikEyeHandler for control unit : " + controlUnit);
     }
 
     /**
@@ -167,14 +167,14 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
                 final Calendar c = ((DateTimeType) command).getCalendar();
                 _protocolHandler.setTime(c);
             } else {
-                logger.error("Received a TIMECLOCK channel command with a non DateTimeType: " + command);
+                logger.error("Received a TIMECLOCK channel command with a non DateTimeType: {}", command);
             }
         } else if (id.startsWith(PrgConstants.CHANNEL_SCHEDULE)) {
             if (command instanceof DecimalType) {
                 final int schedule = ((DecimalType) command).intValue();
                 _protocolHandler.selectSchedule(schedule);
             } else {
-                logger.error("Received a SCHEDULE channel command with a non DecimalType: " + command);
+                logger.error("Received a SCHEDULE channel command with a non DecimalType: {}", command);
             }
 
         } else if (id.startsWith(PrgConstants.CHANNEL_SUPERSEQUENCESTART)) {
@@ -186,7 +186,7 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
             _protocolHandler.resumeSuperSequence();
 
         } else {
-            logger.error("Unknown/Unsupported Channel id: " + id);
+            logger.error("Unknown/Unsupported Channel id: {}", id);
         }
     }
 

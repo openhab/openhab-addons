@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_WRITE_ALIAS)
 public class WriteResource implements RESTResource {
-    private static final Logger logger = LoggerFactory.getLogger(WriteResource.class);
+    private final Logger logger = LoggerFactory.getLogger(WriteResource.class);
 
     private ItemRegistry itemRegistry;
 
@@ -52,9 +52,10 @@ public class WriteResource implements RESTResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public Response setState(@Context HttpHeaders headers, @QueryParam("a") String itemName,
             @QueryParam("v") String value, @QueryParam("ts") long timestamp) {
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("Received CV write request at '{}' for item '{}' with value '{}'.", uriInfo.getPath(),
                     itemName, value);
+        }
         Item item;
         try {
             item = itemRegistry.getItem(itemName);
@@ -68,7 +69,7 @@ public class WriteResource implements RESTResource {
             }
             return Response.ok(bean, MediaType.APPLICATION_JSON).build();
         } catch (ItemNotFoundException e) {
-            logger.error(e.getLocalizedMessage());
+            logger.error("{}", e.getLocalizedMessage());
             return Response.notAcceptable(null).build();
         }
     }

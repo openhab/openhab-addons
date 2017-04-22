@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class BinRpcCallbackHandler implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(BinRpcCallbackHandler.class);
-    private static final boolean TRACE_ENABLED = logger.isTraceEnabled();
+    private final Logger logger = LoggerFactory.getLogger(BinRpcCallbackHandler.class);
 
     private static final byte BIN_EMPTY_STRING[] = { 'B', 'i', 'n', 1, 0, 0, 0, 8, 0, 0, 0, 3, 0, 0, 0, 0 };
     private static final byte BIN_EMPTY_ARRAY[] = { 'B', 'i', 'n', 1, 0, 0, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0 };
@@ -56,7 +55,7 @@ public class BinRpcCallbackHandler implements Runnable {
     public void run() {
         try {
             BinRpcMessage message = new BinRpcMessage(socket.getInputStream(), true, encoding);
-            if (TRACE_ENABLED) {
+            if (logger.isTraceEnabled()) {
                 logger.trace("Event BinRpcMessage: {}", message.toString());
             }
             byte[] returnValue = handleMethodCall(message.getMethodName(), message.getResponseData());
@@ -66,7 +65,7 @@ public class BinRpcCallbackHandler implements Runnable {
         } catch (EOFException eof) {
             // ignore
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("{}", e.getMessage(), e);
         } finally {
             try {
                 socket.close();
@@ -99,7 +98,7 @@ public class BinRpcCallbackHandler implements Runnable {
             }
             return BIN_EMPTY_EVENT_LIST;
         } else {
-            logger.warn("Unknown method called by Homematic gateway: " + methodName);
+            logger.warn("Unknown method called by Homematic gateway: {}", methodName);
             return BIN_EMPTY_EVENT_LIST;
         }
     }

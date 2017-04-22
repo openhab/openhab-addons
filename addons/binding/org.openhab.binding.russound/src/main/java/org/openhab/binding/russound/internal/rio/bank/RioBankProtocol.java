@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,7 +42,7 @@ class RioBankProtocol extends AbstractRioProtocol {
     private final int _source;
 
     // Protocol constants
-    private final static String BANK_NAME = "name";
+    private static final String BANK_NAME = "name";
 
     // Protocol notification patterns
     private final Pattern RSP_BANKNOTIFICATION = Pattern.compile("^[SN] S\\[(\\d+)\\].B\\[(\\d+)\\].(\\w+)=\"(.*)\"$");

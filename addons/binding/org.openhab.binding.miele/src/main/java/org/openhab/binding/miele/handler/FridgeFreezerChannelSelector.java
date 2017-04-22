@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -82,14 +82,14 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
     },
     START(null, "start", OnOffType.class, false);
 
-    protected Logger logger = LoggerFactory.getLogger(FridgeFreezerChannelSelector.class);
+    private final Logger logger = LoggerFactory.getLogger(FridgeFreezerChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    private FridgeFreezerChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    FridgeFreezerChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;

@@ -1,113 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="tellstick" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Tellstick Dimmer -->
-	<thing-type id="dimmer">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="telldus-core" />
-			<bridge-type-ref id="telldus-live" />
-		</supported-bridge-type-refs>
+    <!-- Tellstick Dimmer -->
+    <thing-type id="dimmer">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="telldus-core" />
+            <bridge-type-ref id="telldus-live" />
+        </supported-bridge-type-refs>
 
-		<label>Dimmable Device</label>
-		<description>This is a Dimmable device</description>
+        <label>Dimmable Device</label>
+        <description>This is a Dimmable device</description>
 
-		<channels>
-			<channel id="dimmer" typeId="dimmer" />
-			<channel id="state" typeId="state" />
-			<channel id="timestamp" typeId="timestamp" />
-		</channels>
+        <channels>
+            <channel id="dimmer" typeId="dimmer" />
+            <channel id="state" typeId="state" />
+            <channel id="timestamp" typeId="timestamp" />
+        </channels>
 
-		<config-description>
-			<parameter name="protocol" type="text" required="false">
-				<label>Protocol</label>
-				<description>The protocol used by a specific device.</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="name" type="text">
-				<label>Name</label>
-				<description>The name of the device</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="deviceId" type="integer">
-				<label>DeviceID</label>
-				<description>This is the unique id of a device.</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="model" type="text">
-				<label>Model</label>
-				<description>The model used by a specific device.</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="repeat" type="integer">
-				<label>Repeat</label>
-				<description>The number of times to resend.</description>
-				<required>false</required>
-				<default>2</default>
-			</parameter>
-		</config-description>
-	</thing-type>
-	<thing-type id="switch">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="telldus-core" />
-		</supported-bridge-type-refs>
+        <config-description>
+            <parameter name="protocol" type="text" required="false">
+                <label>Protocol</label>
+                <description>The protocol used by a specific device.</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="name" type="text">
+                <label>Name</label>
+                <description>The name of the device</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="deviceId" type="text">
+                <label>DeviceID</label>
+                <description>This is the unique id of a device.</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="model" type="text">
+                <label>Model</label>
+                <description>The model used by a specific device.</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="repeat" type="integer">
+                <label>Repeat</label>
+                <description>The number of times to resend.</description>
+                <required>false</required>
+                <default>2</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="telldus-core" />
+        </supported-bridge-type-refs>
 
-		<label>On/Off device</label>
-		<description>This Thing defines a Switch Device</description>
+        <label>On/Off device</label>
+        <description>This Thing defines a Switch Device</description>
 
-		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="timestamp" typeId="timestamp" />
-		</channels>
+        <channels>
+            <channel id="state" typeId="state" />
+            <channel id="timestamp" typeId="timestamp" />
+        </channels>
 
-		<config-description>
-			<parameter name="protocol" type="text">
-				<label>Protocol</label>
-				<description>The protocol used by a specific device.</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="name" type="text">
-				<label>Name</label>
-				<description>The name of the device</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="deviceId" type="integer">
-				<label>DeviceID</label>
-				<description>This is the unique id of a device.</description>
-				<required>true</required>
-			</parameter>
+        <config-description>
+            <parameter name="protocol" type="text">
+                <label>Protocol</label>
+                <description>The protocol used by a specific device.</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="name" type="text">
+                <label>Name</label>
+                <description>The name of the device</description>
+                <required>false</required>
+            </parameter>
+            <parameter name="deviceId" type="text">
+                <label>DeviceID</label>
+                <description>This is the unique id of a device.</description>
+                <required>true</required>
+            </parameter>
 
-			<parameter name="resend" type="integer">
-				<label>Resend</label>
-				<description>The number of times to resend.</description>
-				<required>false</required>
-				<default>2</default>
-			</parameter>
-			<parameter name="dimmer" type="boolean">
-				<label>Dimmer</label>
-				<description>Is this a dimmer without absolute setting (e.g. you press on to start dim and then on again to stop it).</description>
-				<required>false</required>
-				<default>false</default>
-			</parameter>
-		</config-description>
-	</thing-type>
-	<channel-type id="dimmer">
-		<item-type>Dimmer</item-type>
-		<label>Dimmer Value</label>
-		<description>The channel to control the dimmer</description>
-	</channel-type>
+            <parameter name="repeat" type="integer">
+                <label>Repeat</label>
+                <description>The number of times to resend.</description>
+                <required>false</required>
+                <default>2</default>
+            </parameter>
+            <parameter name="dimmer" type="boolean">
+                <label>Dimmer</label>
+                <description>Is this a dimmer without absolute setting (e.g. you press on to start dim and then on again to stop it).</description>
+                <required>false</required>
+                <default>false</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <channel-type id="dimmer">
+        <item-type>Dimmer</item-type>
+        <label>Dimmer Value</label>
+        <description>The channel to control the dimmer</description>
+    </channel-type>
 
-	<channel-type id="state">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Turns the power on or off</description>
-		<category>Switch</category>
-	</channel-type>
+    <channel-type id="state">
+        <item-type>Switch</item-type>
+        <label>Switch</label>
+        <description>Turns the power on or off</description>
+        <category>Switch</category>
+    </channel-type>
 
-	<channel-type id="timestamp">
-		<item-type>DateTime</item-type>
-		<label>Last device update</label>
-		<description>Last device update</description>
-	</channel-type>
+    <channel-type id="timestamp">
+        <item-type>DateTime</item-type>
+        <label>Last device update</label>
+        <description>Last device update</description>
+    </channel-type>
 </thing:thing-descriptions>

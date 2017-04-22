@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.config.AstroThingConfig;
 import org.openhab.binding.astro.internal.job.AbstractBaseJob;
 import org.openhab.binding.astro.internal.job.AbstractDailyJob;
@@ -51,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class AstroThingHandler extends BaseThingHandler {
-    private static final Logger logger = LoggerFactory.getLogger(AstroThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AstroThingHandler.class);
     private Scheduler quartzScheduler;
     private ScheduledFuture<?> schedulerFuture;
     private int linkedPositionalChannels = 0;
@@ -93,7 +94,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         }
 
         if (validConfig) {
-            logger.debug(thingConfig.toString());
+            logger.debug("{}", thingConfig);
             updateStatus(ThingStatus.ONLINE);
             restartJobs();
         } else {
@@ -154,12 +155,14 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /**
      * Publishes the channel with data if it's linked.
      */
-    private void publishChannelIfLinked(ChannelUID channelUID) {
+    public void publishChannelIfLinked(ChannelUID channelUID) {
         if (isLinked(channelUID.getId()) && getPlanet() != null) {
             try {
-                updateState(channelUID, PropertyUtils.getState(channelUID, getPlanet()));
+                AstroChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                        .as(AstroChannelConfig.class);
+                updateState(channelUID, PropertyUtils.getState(channelUID, config, getPlanet()));
             } catch (Exception ex) {
-                logger.error("Can't update state for channel " + channelUID + ": " + ex.getMessage(), ex);
+                logger.error("Can't update state for channel {} : {}", channelUID, ex.getMessage(), ex);
             }
         }
     }
@@ -228,7 +231,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                         }
                     }
                 } catch (SchedulerException ex) {
-                    logger.error(ex.getMessage(), ex);
+                    logger.error("{}", ex.getMessage(), ex);
                 }
             }
         }, 2000, TimeUnit.MILLISECONDS);
@@ -248,7 +251,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                         quartzScheduler.deleteJob(jobKey);
                     }
                 } catch (SchedulerException ex) {
-                    logger.error(ex.getMessage(), ex);
+                    logger.error("{}", ex.getMessage(), ex);
                 }
             }
         }
@@ -301,7 +304,11 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Emits an event for the given channel.
      */
     public void triggerEvent(String channelId, String event) {
-        triggerChannel(getThing().getChannel(channelId).getUID(), event);
+        if (getThing().getChannel(channelId) != null) {
+            triggerChannel(getThing().getChannel(channelId).getUID(), event);
+        } else {
+            logger.warn("Event {} in thing {} does not exist, please recreate the thing", event, getThing().getUID());
+        }
     }
 
     /**

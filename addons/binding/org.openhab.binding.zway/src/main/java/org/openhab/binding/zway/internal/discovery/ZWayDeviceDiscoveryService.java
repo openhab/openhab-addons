@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,11 +36,11 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  */
 public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final static int SEARCH_TIME = 60;
-    private final static int INITIAL_DELAY = 15;
-    private final static int SCAN_INTERVAL = 240;
+    private static final int SEARCH_TIME = 60;
+    private static final int INITIAL_DELAY = 15;
+    private static final int SCAN_INTERVAL = 240;
 
     private ZWayBridgeHandler mBridgeHandler;
     private ZWayDeviceScan mZWayDeviceScanningRunnable;
@@ -89,7 +89,11 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                     if (locationList != null) {
                         // Add only the location if this differs from globalRoom (with id 0)
                         if (device.getLocation() != -1 && device.getLocation() != 0) {
-                            location = locationList.getLocationById(device.getLocation()).getTitle();
+                            try {
+                                location = locationList.getLocationById(device.getLocation()).getTitle();
+                            } catch (NullPointerException npe) {
+                                location = "";
+                            }
                         }
                     }
                 }
@@ -158,7 +162,11 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                     if (locationList != null) {
                         // Add only the location if this differs from globalRoom (with id 0)
                         if (device.getLocation() != -1 && device.getLocation() != 0) {
-                            location = locationList.getLocationById(device.getLocation()).getTitle();
+                            try {
+                                location = locationList.getLocationById(device.getLocation()).getTitle();
+                            } catch (NullPointerException npe) {
+                                location = "";
+                            }
                         }
                     }
 

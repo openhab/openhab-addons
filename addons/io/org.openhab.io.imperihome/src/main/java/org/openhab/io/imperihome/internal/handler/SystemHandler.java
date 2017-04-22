@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,7 @@ package org.openhab.io.imperihome.internal.handler;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.smarthome.core.id.InstanceUUID;
+import org.openhab.io.imperihome.internal.ImperiHomeConfig;
 import org.openhab.io.imperihome.internal.model.System;
 
 /**
@@ -20,9 +20,15 @@ import org.openhab.io.imperihome.internal.model.System;
  */
 public class SystemHandler {
 
+    private ImperiHomeConfig config;
+
+    public SystemHandler(ImperiHomeConfig imperiHomeConfig) {
+        config = imperiHomeConfig;
+    }
+
     public System handle(HttpServletRequest req) {
         System system = new System();
-        system.setId(InstanceUUID.get());
+        system.setId(config.getSystemId());
         system.setApiVersion(1);
         return system;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -59,6 +59,10 @@ public class RMEThingHandler extends SerialThingHandler {
 
         port = (String) getConfig().get(PORT);
 
+        sleep = 250;
+
+        interval = 5000;
+
         super.initialize();
     }
 
@@ -80,46 +84,53 @@ public class RMEThingHandler extends SerialThingHandler {
 
         Pattern RESPONSE_PATTERN = Pattern.compile("(.*);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1);(0|1)");
 
-        Matcher matcher = RESPONSE_PATTERN.matcher(line);
-        if (matcher.matches()) {
-            for (int i = 1; i <= matcher.groupCount(); i++) {
-                switch (DataField.get(i)) {
-                    case LEVEL: {
-                        DecimalType decimalType = new DecimalType(matcher.group(i));
-                        updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()), decimalType);
-                        break;
-                    }
-                    case MODE: {
-                        StringType stringType = null;
-                        if (matcher.group(i).equals("0")) {
-                            stringType = MANUAL;
-                        } else if (matcher.group(i).equals("1")) {
-                            stringType = AUTOMATIC;
+        try {
+
+            logger.trace("Processing '{}'", line);
+
+            Matcher matcher = RESPONSE_PATTERN.matcher(line);
+            if (matcher.matches()) {
+                for (int i = 1; i <= matcher.groupCount(); i++) {
+                    switch (DataField.get(i)) {
+                        case LEVEL: {
+                            DecimalType decimalType = new DecimalType(matcher.group(i));
+                            updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()), decimalType);
+                            break;
                         }
-                        updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()), stringType);
-                        break;
-                    }
-                    case SOURCE: {
-                        StringType stringType = null;
-                        if (matcher.group(i).equals("0")) {
-                            stringType = RAIN;
-                        } else if (matcher.group(i).equals("1")) {
-                            stringType = CITY;
+                        case MODE: {
+                            StringType stringType = null;
+                            if (matcher.group(i).equals("0")) {
+                                stringType = MANUAL;
+                            } else if (matcher.group(i).equals("1")) {
+                                stringType = AUTOMATIC;
+                            }
+                            updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()), stringType);
+                            break;
                         }
-                        updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()), stringType);
-                        break;
-                    }
-                    default:
-                        if (matcher.group(i).equals("0")) {
-                            updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
-                                    OnOffType.OFF);
-                        } else if (matcher.group(i).equals("1")) {
-                            updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
-                                    OnOffType.ON);
+                        case SOURCE: {
+                            StringType stringType = null;
+                            if (matcher.group(i).equals("0")) {
+                                stringType = RAIN;
+                            } else if (matcher.group(i).equals("1")) {
+                                stringType = CITY;
+                            }
+                            updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()), stringType);
+                            break;
                         }
-                        break;
+                        default:
+                            if (matcher.group(i).equals("0")) {
+                                updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
+                                        OnOffType.OFF);
+                            } else if (matcher.group(i).equals("1")) {
+                                updateState(new ChannelUID(getThing().getUID(), DataField.get(i).channelID()),
+                                        OnOffType.ON);
+                            }
+                            break;
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.error("An exception occurred while receiving data : '{}'", e.getMessage(), e);
         }
     }
 }

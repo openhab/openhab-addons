@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,18 +15,19 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.homematic.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Converts between a Homematic datapoint value and a openHab PercentType.
+ * Converts between a Homematic datapoint value and a openHAB PercentType.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
-    private static final Logger logger = LoggerFactory.getLogger(PercentTypeConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(PercentTypeConverter.class);
 
     /**
      * {@inheritDoc}
@@ -60,9 +61,9 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
      * {@inheritDoc}
      */
     @Override
-    protected boolean toBindingValidation(HmDatapoint dp) {
+    protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
         return dp.isNumberType() && dp.getMaxValue() != null && dp.getMinValue() != null
-                && dp.getChannel().getType() != null;
+                && dp.getChannel().getType() != null && typeClass.isAssignableFrom(PercentType.class);
     }
 
     /**

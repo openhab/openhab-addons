@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -105,19 +105,19 @@ public class FreeboxThingHandler extends BaseThingHandler {
                     lastPhoneCheck = Calendar.getInstance();
 
                     if (phoneJob == null || phoneJob.isCancelled()) {
-                        long polling_interval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneInterval;
-                        if (polling_interval > 0) {
-                            logger.debug("Scheduling phone state job every {} seconds...", polling_interval);
-                            phoneJob = scheduler.scheduleAtFixedRate(phoneRunnable, 1, polling_interval,
+                        long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneInterval;
+                        if (pollingInterval > 0) {
+                            logger.debug("Scheduling phone state job every {} seconds...", pollingInterval);
+                            phoneJob = scheduler.scheduleAtFixedRate(phoneRunnable, 1, pollingInterval,
                                     TimeUnit.SECONDS);
                         }
                     }
 
                     if (callsJob == null || callsJob.isCancelled()) {
-                        long polling_interval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneCallsInterval;
-                        if (polling_interval > 0) {
-                            logger.debug("Scheduling phone calls job every {} seconds...", polling_interval);
-                            callsJob = scheduler.scheduleAtFixedRate(callsRunnable, 1, polling_interval,
+                        long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneCallsInterval;
+                        if (pollingInterval > 0) {
+                            logger.debug("Scheduling phone calls job every {} seconds...", pollingInterval);
+                            callsJob = scheduler.scheduleAtFixedRate(callsRunnable, 1, pollingInterval,
                                     TimeUnit.SECONDS);
                         }
                     }
@@ -164,7 +164,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 } else {
                     t.printStackTrace(new PrintWriter(sw));
                 }
-                logger.error(sw.toString());
+                logger.error("{}", sw);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
@@ -201,7 +201,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                 } else {
                     t.printStackTrace(new PrintWriter(sw));
                 }
-                logger.error(sw.toString());
+                logger.error("{}", sw);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }

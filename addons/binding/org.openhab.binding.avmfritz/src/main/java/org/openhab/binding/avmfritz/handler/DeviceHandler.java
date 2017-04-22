@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -46,7 +46,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Ip of PL546E in standalone mode
@@ -81,12 +81,12 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     @Override
     public void initialize() {
         if (this.getThing().getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE)) {
-            logger.debug("About to initialize thing " + BindingConstants.DEVICE_PL546E_STANDALONE);
+            logger.debug("About to initialize thing {}", BindingConstants.DEVICE_PL546E_STANDALONE);
             Thing thing = this.getThing();
             AvmFritzConfiguration config = this.getConfigAs(AvmFritzConfiguration.class);
             this.soloIp = config.getIpAddress();
 
-            logger.debug("discovered PL546E initialized: " + config.toString());
+            logger.debug("discovered PL546E initialized: {}", config);
 
             this.refreshInterval = config.getPollingInterval();
             this.connection = new FritzahaWebInterface(config, this);
@@ -119,7 +119,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     private synchronized void onUpdate() {
         if (this.getThing() != null) {
             if (pollingJob == null || pollingJob.isCancelled()) {
-                logger.debug("start polling job at intervall " + refreshInterval);
+                logger.debug("start polling job at intervall {}", refreshInterval);
                 pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
             } else {
                 logger.debug("pollingJob active");
@@ -135,9 +135,9 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("command for " + channelUID.getAsString() + ": " + command.toString());
+        logger.debug("command for {}: {}", channelUID, command);
         if (channelUID.getId().equals(CHANNEL_SWITCH)) {
-            logger.debug("update " + channelUID.getAsString() + " with " + command.toString());
+            logger.debug("update {} with {}", channelUID, command);
             FritzahaWebInterface fritzBox = null;
             if (!thing.getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE)) {
                 Bridge bridge = this.getBridge();
@@ -156,7 +156,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 }
             }
         } else {
-            logger.error("unknown channel uid " + channelUID);
+            logger.error("unknown channel uid {}", channelUID);
         }
     }
 
@@ -176,11 +176,11 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
     @Override
     public void addDeviceList(DeviceModel model) {
         try {
-            logger.debug("set device model: " + model.toString());
+            logger.debug("set device model: {}", model);
             Thing thing = this.getThing();
             if (thing != null) {
-                logger.debug("update thing " + thing.getUID() + " with device model: " + model.toString());
-                logger.debug("about to update " + thing.getUID() + " from " + model.toString());
+                logger.debug("update thing {} with device model: {}", thing.getUID(), model);
+                logger.debug("about to update {} from {}", thing.getUID(), model);
                 if (model.isTempSensor()) {
                     Channel channel = thing.getChannel(CHANNEL_TEMP);
                     this.updateState(channel.getUID(), new DecimalType(model.getTemperature().getCelsius()));
@@ -198,8 +198,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                     } else if (model.getSwitch().getState().equals(SwitchModel.OFF)) {
                         this.updateState(channel.getUID(), OnOffType.OFF);
                     } else {
-                        logger.warn(
-                                "unknown state " + model.getSwitch().getState() + " for channel " + channel.getUID());
+                        logger.warn("unknown state {} for channel {}", model.getSwitch().getState(), channel.getUID());
                     }
                 }
                 // save AIN to config for PL546E standalone
@@ -208,7 +207,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getLocalizedMessage(), e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
     }
 

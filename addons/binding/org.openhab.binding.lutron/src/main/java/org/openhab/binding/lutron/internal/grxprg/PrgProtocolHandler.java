@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -53,63 +53,63 @@ class PrgProtocolHandler {
     // ------------------------------------------------------------------------------------------------
     // The following are the various command formats specified by the
     // http://www.lutron.com/TechnicalDocumentLibrary/RS232ProtocolCommandSet.040196d.pdf
-    private final static String CMD_SCENE = "A";
-    private final static String CMD_SCENELOCK = "SL";
-    private final static String CMD_SCENESTATUS = "G";
-    private final static String CMD_SCENESEQ = "SQ";
-    private final static String CMD_ZONELOCK = "ZL";
-    private final static String CMD_ZONELOWER = "D";
-    private final static String CMD_ZONELOWERSTOP = "E";
-    private final static String CMD_ZONERAISE = "B";
-    private final static String CMD_ZONERAISESTOP = "C";
-    private final static String CMD_ZONEINTENSITY = "szi";
-    private final static String CMD_ZONEINTENSITYSTATUS = "rzi";
-    private final static String CMD_SETTIME = "ST";
-    private final static String CMD_READTIME = "RT";
-    private final static String CMD_SELECTSCHEDULE = "SS";
-    private final static String CMD_REPORTSCHEDULE = "RS";
-    private final static String CMD_SUNRISESUNSET = "RA";
-    private final static String CMD_SUPERSEQUENCESTART = "QS";
-    private final static String CMD_SUPERSEQUENCEPAUSE = "QP";
-    private final static String CMD_SUPERSEQUENCERESUME = "QC";
-    private final static String CMD_SUPERSEQUENCESTATUS = "Q?";
+    private static final String CMD_SCENE = "A";
+    private static final String CMD_SCENELOCK = "SL";
+    private static final String CMD_SCENESTATUS = "G";
+    private static final String CMD_SCENESEQ = "SQ";
+    private static final String CMD_ZONELOCK = "ZL";
+    private static final String CMD_ZONELOWER = "D";
+    private static final String CMD_ZONELOWERSTOP = "E";
+    private static final String CMD_ZONERAISE = "B";
+    private static final String CMD_ZONERAISESTOP = "C";
+    private static final String CMD_ZONEINTENSITY = "szi";
+    private static final String CMD_ZONEINTENSITYSTATUS = "rzi";
+    private static final String CMD_SETTIME = "ST";
+    private static final String CMD_READTIME = "RT";
+    private static final String CMD_SELECTSCHEDULE = "SS";
+    private static final String CMD_REPORTSCHEDULE = "RS";
+    private static final String CMD_SUNRISESUNSET = "RA";
+    private static final String CMD_SUPERSEQUENCESTART = "QS";
+    private static final String CMD_SUPERSEQUENCEPAUSE = "QP";
+    private static final String CMD_SUPERSEQUENCERESUME = "QC";
+    private static final String CMD_SUPERSEQUENCESTATUS = "Q?";
 
     // ------------------------------------------------------------------------------------------------
     // The following are the various responses specified by the
     // http://www.lutron.com/TechnicalDocumentLibrary/RS232ProtocolCommandSet.040196d.pdf
-    private final static Pattern RSP_FAILED = Pattern.compile("^~ERROR # (\\d+) (\\d+) OK");
-    private final static Pattern RSP_OK = Pattern.compile("^~(\\d+) OK");
-    private final static Pattern RSP_RESETTING = Pattern.compile("^~:Reseting Device... (\\d+) OK");
-    private final static Pattern RSP_RMU = Pattern
+    private static final Pattern RSP_FAILED = Pattern.compile("^~ERROR # (\\d+) (\\d+) OK");
+    private static final Pattern RSP_OK = Pattern.compile("^~(\\d+) OK");
+    private static final Pattern RSP_RESETTING = Pattern.compile("^~:Reseting Device... (\\d+) OK");
+    private static final Pattern RSP_RMU = Pattern
             .compile("^~:mu (\\d) (\\d+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+)");
-    private final static Pattern RSP_SCENESTATUS = Pattern.compile("^~?:ss (\\w{8,8})( (\\d+) OK)?");
-    private final static Pattern RSP_ZONEINTENSITY = Pattern.compile(
+    private static final Pattern RSP_SCENESTATUS = Pattern.compile("^~?:ss (\\w{8,8})( (\\d+) OK)?");
+    private static final Pattern RSP_ZONEINTENSITY = Pattern.compile(
             "^~:zi (\\d) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\d+) OK");
-    private final static Pattern RSP_REPORTIME = Pattern
+    private static final Pattern RSP_REPORTIME = Pattern
             .compile("^~:rt (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d) (\\d+) OK");
-    private final static Pattern RSP_REPORTSCHEDULE = Pattern.compile("^~:rs (\\d) (\\d+) OK");
-    private final static Pattern RSP_SUNRISESUNSET = Pattern
+    private static final Pattern RSP_REPORTSCHEDULE = Pattern.compile("^~:rs (\\d) (\\d+) OK");
+    private static final Pattern RSP_SUNRISESUNSET = Pattern
             .compile("^~:ra (\\d{1,3}) (\\d{1,3}) (\\d{1,3}) (\\d{1,3}) (\\d+) OK");
-    private final static Pattern RSP_SUPERSEQUENCESTATUS = Pattern
+    private static final Pattern RSP_SUPERSEQUENCESTATUS = Pattern
             .compile("^~:s\\? (\\w) (\\d+) (\\d{1,2}) (\\d{1,2}) (\\d+) OK");
-    private final static Pattern RSP_BUTTON = Pattern.compile("^[^~:].*");
-    private final static String RSP_CONNECTION_ESTABLISHED = "connection established";
+    private static final Pattern RSP_BUTTON = Pattern.compile("^[^~:].*");
+    private static final String RSP_CONNECTION_ESTABLISHED = "connection established";
 
     /**
      * A lookup between a 0-100 percentage and corresponding hex value. Note: this specifically matches the liason
      * software setup
      */
-    private final static HashMap<Integer, String> intensityMap = new HashMap<Integer, String>();
+    private static final HashMap<Integer, String> intensityMap = new HashMap<Integer, String>();
 
     /**
      * The reverse lookup for the {{@link #intensityMap}
      */
-    private final static HashMap<String, Integer> reverseIntensityMap = new HashMap<String, Integer>();
+    private static final HashMap<String, Integer> reverseIntensityMap = new HashMap<String, Integer>();
 
     /**
      * A lookup between returned shade hex intensity to corresponding shade values
      */
-    private final static HashMap<String, Integer> shadeIntensityMap = new HashMap<String, Integer>();
+    private static final HashMap<String, Integer> shadeIntensityMap = new HashMap<String, Integer>();
 
     /**
      * Cache of current zone intensities
@@ -244,7 +244,7 @@ class PrgProtocolHandler {
     /**
      * Lookup of valid scene numbers (H is also sometimes returned - no idea what it is however)
      */
-    private final static String VALID_SCENES = "0123456789ABCDEFG";
+    private static final String VALID_SCENES = "0123456789ABCDEFG";
 
     /**
      * Constructs the protocol handler from given parameters
@@ -318,7 +318,7 @@ class PrgProtocolHandler {
      * @param controlUnit the control unit to refresh
      */
     void refreshState(int controlUnit) {
-        logger.debug("Refreshing control unit (" + controlUnit + ") state");
+        logger.debug("Refreshing control unit ({}) state", controlUnit);
         refreshScene();
         refreshTime();
         refreshSchedule();
@@ -420,7 +420,7 @@ class PrgProtocolHandler {
         } else {
             final String hexNbr = intensityMap.get(intensity);
             if (hexNbr == null) { // this should be impossible as all 100 values are in table
-                logger.warn("Unknown zone intensity (" + intensity + ")");
+                logger.warn("Unknown zone intensity ({})", intensity);
                 return Integer.toHexString(intensity).toUpperCase();
             }
             return hexNbr;
@@ -445,14 +445,14 @@ class PrgProtocolHandler {
         if (isShade) {
             final Integer intNbr = shadeIntensityMap.get(intensity);
             if (intNbr == null) {
-                logger.warn("Unknown shade intensity (" + intensity + ")");
+                logger.warn("Unknown shade intensity ({})", intensity);
                 return Integer.parseInt(intensity, 16);
             }
             return intNbr;
         } else {
             final Integer intNbr = reverseIntensityMap.get(intensity);
             if (intNbr == null) {
-                logger.warn("Unknown zone intensity (" + intensity + ")");
+                logger.warn("Unknown zone intensity ({})", intensity);
                 return Integer.parseInt(intensity, 16);
             }
             zoneIntensities[zone] = intNbr;
@@ -601,7 +601,7 @@ class PrgProtocolHandler {
         final String hexFade = convertFade(fade);
         final String hexIntensity = convertIntensity(controlUnit, zone, intensity);
 
-        final StringBuffer sb = new StringBuffer(16);
+        final StringBuilder sb = new StringBuilder(16);
         for (int z = 1; z <= 8; z++) {
             sb.append(' ');
             sb.append(zone == z ? hexIntensity : "*");
@@ -713,7 +713,7 @@ class PrgProtocolHandler {
             throw new IllegalArgumentException("command cannot be empty");
         }
         try {
-            logger.debug("SendCommand: " + command);
+            logger.debug("SendCommand: {}", command);
             _session.sendCommand(command);
         } catch (IOException e) {
             _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -836,7 +836,7 @@ class PrgProtocolHandler {
 
                     }
                 }
-                logger.error("Error response: " + errorMsg + " (" + errorNbr + ")");
+                logger.error("Error response: {} ({})", errorMsg, errorNbr);
             } catch (NumberFormatException e) {
                 logger.error("Invalid failure response (can't parse error number): '{}'", resp);
             }
@@ -866,7 +866,7 @@ class PrgProtocolHandler {
 
                     int scene = VALID_SCENES.indexOf(status);
                     if (scene < 0) {
-                        logger.warn("Unknown scene status returned for zone " + i + ": " + status);
+                        logger.warn("Unknown scene status returned for zone {}: {}", i, status);
                     } else {
                         _callback.stateChanged(i, PrgConstants.CHANNEL_SCENE, new DecimalType(scene));
                         refreshZoneIntensity(i); // request to get new zone intensities
@@ -1041,7 +1041,7 @@ class PrgProtocolHandler {
                 controlUnit = Integer.parseInt(m.group(1));
 
                 final String q4 = m.group(8);
-                final String q4bits = new StringBuffer(Integer.toBinaryString(Integer.parseInt(q4, 16))).reverse()
+                final String q4bits = new StringBuilder(Integer.toBinaryString(Integer.parseInt(q4, 16))).reverse()
                         .toString();
                 // final boolean seqType = (q4bits.length() > 0 ? q4bits.charAt(0) : '0') == '1';
                 final boolean seqMode = (q4bits.length() > 1 ? q4bits.charAt(1) : '0') == '1';
@@ -1088,7 +1088,7 @@ class PrgProtocolHandler {
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleUnknownCommand(String response) {
-        logger.info("Unhandled response: " + response);
+        logger.info("Unhandled response: {}", response);
     }
 
     /**

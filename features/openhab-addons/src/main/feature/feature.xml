@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2014-2016 by the respective copyright holders.
+    Copyright (c) 2010-2017 by the respective copyright holders.
 
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,11 @@
 
     <!-- binding -->
 
+    <feature name="openhab-binding-airquality" description="Air Quality Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.airquality/${project.version}</bundle>
+    </feature>
+    
     <feature name="openhab-binding-allplay" description="AllPlay Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.allplay/${project.version}</bundle>
@@ -28,6 +33,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.astro/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-atlona" description="Atlona PRO3 Switch Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.atlona/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-autelis" description="Autelis Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
@@ -38,6 +48,11 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.avmfritz/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-boschindego" description="Bosch Indego Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.boschindego/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-chromecast" description="Chromecast Binding" version="${project.version}">
@@ -70,10 +85,20 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.feed/${project.version}</bundle>
     </feature>
     
+    <feature name="openhab-binding-folding" description="Folding Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.folding/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-freebox" description="Freebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.freebox/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-gardena" description="Gardena Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gardena/${project.version}</bundle>
     </feature>
 
      <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
@@ -128,6 +153,12 @@
         <feature>openhab-runtime-base</feature>
         <bundle
             start-level="80">mvn:org.openhab.binding/org.openhab.binding.kostalinverter/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-lgtvserial" description="LG TV Serial Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lgtvserial/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-lutron" description="Lutron Binding" version="${project.version}">
@@ -274,16 +305,20 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.vitotronic/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-wifiled" description="WiFi LED Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.wifiled/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-yamahareceiver" description="Yamaha Receiver Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.yamahareceiver/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-binding-zwave" description="Z-Wave Binding" version="${project.version}">
+    <feature name="openhab-binding-zoneminder" description="ZoneMinder Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zwave/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.zoneminder/${project.version}</bundle>
     </feature>
 	
 	<feature name="openhab-binding-zway" description="Z-Way Binding" version="${project.version}">
@@ -349,7 +384,7 @@
 
     <!-- ui -->
 
-    <feature name="openhab-ui-cometvisu" description="CometVisu" version="${project.version}">
+    <feature name="openhab-ui-cometvisu" description="CometVisu Backend" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>esh-model-item</feature>
         <feature>esh-model-sitemap</feature>
@@ -365,15 +400,5 @@
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
     </feature>    
-    
-    <feature name="openhab-ui-habmin" description="HABmin" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habmin/${project.version}</bundle>
-    </feature>
-
-    <feature name="openhab-ui-habpanel" description="HABPanel" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.habpanel/${project.version}</bundle>
-    </feature>
-    
+        
 </features>

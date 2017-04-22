@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -146,9 +146,9 @@ public class VisuConfig {
             marshaller.marshal(bean, sw);
             res = sw.toString();
         } catch (JAXBException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("{}", e.getMessage(), e);
         } catch (SAXException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("{}", e.getMessage(), e);
         }
         return res;
     }
@@ -163,7 +163,7 @@ public class VisuConfig {
             }
             configHelper.cleanup(rootPage, pagesBean);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("", e);
             // show the exception in the config
             Text text = new Text();
             text.setFlavour("lithium");
@@ -192,7 +192,7 @@ public class VisuConfig {
             try {
                 item = app.getItemUIRegistry().getItem(widget.getItem());
             } catch (ItemNotFoundException e) {
-                logger.debug(e.getMessage());
+                logger.debug("{}", e.getMessage());
             }
         }
 

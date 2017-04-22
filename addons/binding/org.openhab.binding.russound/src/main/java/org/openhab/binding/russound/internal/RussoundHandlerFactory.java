@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,7 +34,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class RussoundHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(RioConstants.BRIDGE_TYPE_RIO,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(RioConstants.BRIDGE_TYPE_RIO,
             RioConstants.BRIDGE_TYPE_CONTROLLER, RioConstants.BRIDGE_TYPE_SOURCE, RioConstants.BRIDGE_TYPE_ZONE,
             RioConstants.BRIDGE_TYPE_BANK, RioConstants.THING_TYPE_BANK_PRESET, RioConstants.THING_TYPE_ZONE_PRESET,
             RioConstants.THING_TYPE_SYSTEM_FAVORITE, RioConstants.THING_TYPE_ZONE_FAVORITE);

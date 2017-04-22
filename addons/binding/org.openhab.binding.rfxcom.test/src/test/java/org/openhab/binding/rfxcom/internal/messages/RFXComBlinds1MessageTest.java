@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- * <p>
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,15 +8,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
-import org.openhab.binding.rfxcom.internal.messages.RFXComBlinds1Message.Commands;
-import org.openhab.binding.rfxcom.internal.messages.RFXComBlinds1Message.SubType;
+import static org.junit.Assert.assertEquals;
 
 import javax.xml.bind.DatatypeConverter;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.messages.RFXComBlinds1Message.Commands;
+import org.openhab.binding.rfxcom.internal.messages.RFXComBlinds1Message.SubType;
 
 /**
  * Test for RFXCom-binding
@@ -26,7 +25,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class RFXComBlinds1MessageTest {
     private void testMessage(String hexMsg, SubType subType, int seqNbr, String deviceId, int signalLevel,
-            RFXComBlinds1Message.Commands command) throws RFXComException, RFXComNotImpException {
+            RFXComBlinds1Message.Commands command) throws RFXComException {
         final RFXComBlinds1Message msg = (RFXComBlinds1Message) RFXComMessageFactory
                 .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
         assertEquals("SubType", subType, msg.subType);
@@ -41,7 +40,7 @@ public class RFXComBlinds1MessageTest {
     }
 
     @Test
-    public void testSomeMessages() throws RFXComException, RFXComNotImpException {
+    public void testSomeMessages() throws RFXComException {
         testMessage("0919040600A21B010280", SubType.T4, 6, "41499.1", 8, Commands.STOP);
 
         testMessage("091905021A6280010000", SubType.T5, 2, "1729152.1", 0, Commands.OPEN);

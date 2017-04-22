@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- * <p>
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,7 +15,6 @@ import javax.xml.bind.DatatypeConverter;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
 /**
@@ -28,7 +27,7 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
 public class RFXComUndecodedRFMessageTest {
 
     private void testMessage(String hexMsg, RFXComUndecodedRFMessage.SubType subType, int seqNbr, String rawPayload)
-            throws RFXComException, RFXComNotImpException {
+            throws RFXComException {
         final RFXComUndecodedRFMessage msg = (RFXComUndecodedRFMessage) RFXComMessageFactory
                 .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
         assertEquals("SubType", subType, msg.subType);
@@ -42,12 +41,12 @@ public class RFXComUndecodedRFMessageTest {
     }
 
     @Test
-    public void testSomeMessages() throws RFXComException, RFXComNotImpException {
+    public void testSomeMessages() throws RFXComException {
         testMessage("070301271356ECC0", RFXComUndecodedRFMessage.SubType.ARC, 0x27, "1356ECC0");
     }
 
     @Test(expected = RFXComMessageTooLongException.class)
-    public void testLongMessage() throws RFXComException, RFXComNotImpException {
+    public void testLongMessage() throws RFXComException {
         RFXComUndecodedRFMessage msg = (RFXComUndecodedRFMessage) RFXComMessageFactory
                 .createMessage(PacketType.UNDECODED_RF_MESSAGE);
         msg.subType = RFXComUndecodedRFMessage.SubType.ARC;

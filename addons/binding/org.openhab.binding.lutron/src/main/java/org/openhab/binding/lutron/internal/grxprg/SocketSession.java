@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts
  */
 public class SocketSession {
-    private Logger _logger = LoggerFactory.getLogger(SocketSession.class);
+    private final Logger logger = LoggerFactory.getLogger(SocketSession.class);
 
     /**
      * The host/ip address to connect to
@@ -125,7 +125,7 @@ public class SocketSession {
         _client.setKeepAlive(true);
         _client.setSoTimeout(1000); // allow reader to check to see if it should stop every 1 second
 
-        _logger.debug("Connecting to {}:{}", _host, _port);
+        logger.debug("Connecting to {}:{}", _host, _port);
         _writer = new PrintStream(_client.getOutputStream());
         _reader = new BufferedReader(new InputStreamReader(_client.getInputStream()));
 
@@ -143,7 +143,7 @@ public class SocketSession {
      */
     public void disconnect() throws IOException {
         if (isConnected()) {
-            _logger.debug("Disconnecting from {}:{}", _host, _port);
+            logger.debug("Disconnecting from {}:{}", _host, _port);
 
             _dispatcher.stopRunning();
             _responseReader.stopRunning();
@@ -186,7 +186,7 @@ public class SocketSession {
             throw new IOException("Cannot send message - disconnected");
         }
 
-        _logger.debug("Sending Command: '{}'", command);
+        logger.debug("Sending Command: '{}'", command);
         _writer.println(command + "\n"); // as pre spec - each command must have a newline
         _writer.flush();
 
@@ -221,7 +221,7 @@ public class SocketSession {
             try {
                 if (_isRunning.getAndSet(false)) {
                     if (!_running.await(5, TimeUnit.SECONDS)) {
-                        _logger.warn("Waited too long for dispatcher to finish");
+                        logger.warn("Waited too long for dispatcher to finish");
                     }
                 }
             } catch (InterruptedException e) {
@@ -265,11 +265,11 @@ public class SocketSession {
                         if (str.endsWith("\r\n") || str.endsWith("login: ")) {
                             sb.setLength(0);
                             final String response = str.substring(0, str.length() - 2);
-                            _logger.debug("Received response: {}", response);
+                            logger.debug("Received response: {}", response);
                             _responses.put(response);
                         }
                     }
-                    // _logger.debug(">>> reading: " + sb + ":" + (int) ch);
+                    // logger.debug(">>> reading: " + sb + ":" + (int) ch);
                 } catch (SocketTimeoutException e) {
                     // do nothing - we expect this (setSOTimeout) to check the _isReading
                 } catch (InterruptedException e) {
@@ -324,7 +324,7 @@ public class SocketSession {
             try {
                 if (_isRunning.getAndSet(false)) {
                     if (!_running.await(5, TimeUnit.SECONDS)) {
-                        _logger.warn("Waited too long for dispatcher to finish");
+                        logger.warn("Waited too long for dispatcher to finish");
                     }
                 }
             } catch (InterruptedException e) {
@@ -356,16 +356,16 @@ public class SocketSession {
                     if (response != null) {
                         if (response instanceof String) {
                             try {
-                                _logger.debug("Dispatching response: {}", response);
+                                logger.debug("Dispatching response: {}", response);
                                 callback.responseReceived((String) response);
                             } catch (Exception e) {
-                                _logger.warn("Exception occurred processing the response '{}': {}", response, e);
+                                logger.warn("Exception occurred processing the response '{}': {}", response, e);
                             }
                         } else if (response instanceof Exception) {
-                            _logger.debug("Dispatching exception: {}", response);
+                            logger.debug("Dispatching exception: {}", response);
                             callback.responseException((Exception) response);
                         } else {
-                            _logger.error("Unknown response class: " + response);
+                            logger.error("Unknown response class: {}", response);
                         }
                     }
                 } catch (InterruptedException e) {

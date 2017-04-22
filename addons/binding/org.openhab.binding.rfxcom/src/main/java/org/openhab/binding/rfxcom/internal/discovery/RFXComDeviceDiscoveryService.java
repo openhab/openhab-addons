@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,8 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceMessageListener {
-
-    private final static Logger logger = LoggerFactory.getLogger(RFXComDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(RFXComDeviceDiscoveryService.class);
 
     private RFXComBridgeHandler bridgeHandler;
 
@@ -66,7 +65,7 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService imple
         try {
             RFXComBaseMessage msg = (RFXComBaseMessage) message;
             String id = message.getDeviceId();
-            ThingTypeUID uid = RFXComBindingConstants.packetTypeThingMap.get(msg.packetType);
+            ThingTypeUID uid = RFXComBindingConstants.PACKET_TYPE_THING_TYPE_UID_MAP.get(msg.packetType);
             ThingUID thingUID = new ThingUID(uid, bridge, id.replace(RFXComBaseMessage.ID_DELIMITER, "_"));
             if (thingUID != null) {
                 logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);

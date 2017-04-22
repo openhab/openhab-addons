@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,9 +36,9 @@ class RioControllerProtocol extends AbstractRioProtocol {
     private final int _controller;
 
     // Protocol constants
-    private final static String CTL_TYPE = "type";
-    private final static String CTL_IPADDRESS = "ipAddress";
-    private final static String CTL_MACADDRESS = "macAddress";
+    private static final String CTL_TYPE = "type";
+    private static final String CTL_IPADDRESS = "ipAddress";
+    private static final String CTL_MACADDRESS = "macAddress";
 
     // Response pattners
     private final Pattern RSP_CONTROLLERNOTIFICATION = Pattern.compile("^[SN] C\\[(\\d+)\\]\\.(\\w+)=\"(.*)\"$");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,6 +19,8 @@ import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.RoomInformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link M_Command} Creates the MAX! Cube the room & device name information update message.
@@ -28,6 +30,8 @@ import org.openhab.binding.max.internal.device.RoomInformation;
  */
 
 public class M_Command extends CubeCommand {
+    private final Logger logger = LoggerFactory.getLogger(M_Command.class);
+
     private static byte MAGIC_NR = 86;
     private static byte M_VERSION = 2;
     private static int MAX_NAME_LENGTH = 32;

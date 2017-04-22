@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -184,7 +184,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             }
         }
 
-        logger.debug("UUID = " + InstanceUUID.get() + ", secret = " + getSecret());
+        logger.debug("UUID = {}, secret = {}", InstanceUUID.get(), getSecret());
 
         if (cloudClient != null) {
             cloudClient.shutdown();
@@ -234,9 +234,9 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             IOUtils.write(content, new FileOutputStream(file));
             logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), content);
         } catch (FileNotFoundException e) {
-            logger.error("Couldn't create file '" + file.getPath() + "'.", e);
+            logger.error("Couldn't create file '{}'.", file.getPath(), e);
         } catch (IOException e) {
-            logger.error("Couldn't write to file '" + file.getPath() + "'.", e);
+            logger.error("Couldn't write to file '{}'.", file.getPath(), e);
         }
     }
 
@@ -251,7 +251,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         if (!file.exists()) {
             newSecretString = RandomStringUtils.randomAlphanumeric(20);
-            logger.debug("New secret = " + newSecretString);
+            logger.debug("New secret = {}", newSecretString);
             writeFile(file, newSecretString);
         } else {
             newSecretString = readFirstLine(file);

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- * <p>
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,18 +8,17 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.junit.Test;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
-
-import javax.xml.bind.DatatypeConverter;
-
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING5;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.Commands.ON;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.IT;
+
+import javax.xml.bind.DatatypeConverter;
+
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.junit.Test;
+import org.openhab.binding.rfxcom.RFXComValueSelector;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
  * Test for RFXCom-binding
@@ -28,13 +27,9 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Messag
  * @since 1.9.0
  */
 public class RFXComLighting5MessageTest {
-    @Test
-    public void basicBoundaryCheck() throws RFXComException, RFXComNotImpException {
-        RFXComTestHelper.basicBoundaryCheck(LIGHTING5);
-    }
 
     @Test
-    public void convertFromStateItMessage() throws RFXComException, RFXComNotImpException {
+    public void convertFromStateItMessage() throws RFXComException {
         RFXComMessage itMessageObject = RFXComMessageFactory.createMessage(LIGHTING5);
         itMessageObject.setDeviceId("2061.1");
         itMessageObject.setSubType(IT);
@@ -46,6 +41,16 @@ public class RFXComLighting5MessageTest {
         assertEquals("SubType", IT, msg.subType);
         assertEquals("Sensor Id", "2061.1", msg.getDeviceId());
         assertEquals("Command", ON, msg.command);
+    }
+
+    @Test
+    public void basicBoundaryCheck() throws RFXComException {
+        RFXComLighting5Message message = (RFXComLighting5Message) RFXComMessageFactory.createMessage(LIGHTING5);
+
+        message.subType = RFXComLighting5Message.SubType.LIGHTWAVERF;
+        message.command = ON;
+
+        RFXComTestHelper.basicBoundaryCheck(LIGHTING5, message);
     }
 
     // TODO please add more tests for different messages

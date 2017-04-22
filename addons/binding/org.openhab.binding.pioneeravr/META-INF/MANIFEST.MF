@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PioneerAvr Binding
 Bundle-SymbolicName: org.openhab.binding.pioneeravr;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Version: 2.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: com.google.common.base,
  com.google.common.collect,

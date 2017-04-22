@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -48,8 +48,8 @@ abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements Ho
         }
         if (expectedItemClass != taggedItem.getItem().getClass()
                 && !expectedItemClass.isAssignableFrom(baseItem.getClass())) {
-            logger.error("Type " + taggedItem.getItem().getName() + " is a " + baseItem.getClass().getName()
-                    + " instead of the expected " + expectedItemClass.getName());
+            logger.error("Type {} is a {} instead of the expected {}", taggedItem.getItem().getName(),
+                    baseItem.getClass().getName(), expectedItemClass.getName());
         }
     }
 

@@ -38,8 +38,10 @@
 					<option value="EMW100">EMW100 GAO/Everflourish</option>
 					<option value="EURODOMEST">Eurodomest</option>
 					<option value="IT">IT</option>
+					<option value="KANGTAI">Kangtai, Cotech</option>
 					<option value="LIGHTWAVERF">LightwaveRF, Siemens</option>
 					<option value="LIVOLO">Livolo Dimmer or On/Off 1-3</option>
+					<option value="LIVOLO_APPLIANCE">Livolo Appliance On/Off 1-10</option>
 					<option value="MDREMOTE">MDREMOTE LED dimmer v106</option>
 					<option value="MDREMOTE_107">MDREMOTE v107</option>
 					<option value="MDREMOTE_108">MDREMOTE v108, EKAB-10KRF</option>
