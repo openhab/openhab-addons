@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OnkyoConnection {
 
-    private static Logger logger = LoggerFactory.getLogger(OnkyoConnection.class);
+    private Logger logger = LoggerFactory.getLogger(OnkyoConnection.class);
 
     /** default eISCP port. **/
     public static final int DEFAULT_EISCP_PORT = 60128;

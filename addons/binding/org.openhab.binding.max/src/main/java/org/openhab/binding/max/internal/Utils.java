@@ -182,18 +182,4 @@ public final class Utils {
         hex.delete(hex.length() - 1, hex.length());
         return hex.toString();
     }
-
-    /**
-     * Retrieves the stacktrace of an exception as string.
-     *
-     * @param e
-     *            the exception to resolve the stacktrace from
-     * @return the stacktrace from the exception provided
-     */
-    public static String getStackTrace(Exception e) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        e.printStackTrace(printWriter);
-        return stringWriter.toString();
-    }
 }

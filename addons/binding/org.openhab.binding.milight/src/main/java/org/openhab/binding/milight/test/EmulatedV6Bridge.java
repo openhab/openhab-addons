@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class EmulatedV6Bridge {
-    protected static final Logger logger = LoggerFactory.getLogger(EmulatedV6Bridge.class);
+    protected final Logger logger = LoggerFactory.getLogger(EmulatedV6Bridge.class);
     private boolean willbeclosed = false;
     private byte SID1 = (byte) 0xed;
     private byte SID2 = (byte) 0xab;
@@ -147,7 +147,7 @@ public class EmulatedV6Bridge {
             if (willbeclosed) {
                 return;
             }
-            logger.error(e.getLocalizedMessage());
+            logger.error("{}", e.getLocalizedMessage());
         }
     }
 
@@ -280,12 +280,11 @@ public class EmulatedV6Bridge {
                                     + buffer[19]);
 
                             if (chksum != buffer[21]) {
-                                logger.error(
-                                        "Checksum wrong:" + String.valueOf(chksum) + " " + String.valueOf(buffer[21]));
+                                logger.error("Checksum wrong:{} {}", chksum, buffer[21]);
                                 continue;
                             }
 
-                            StringBuffer debugStr = new StringBuffer();
+                            StringBuilder debugStr = new StringBuilder();
                             if (buffer[13] == 0x08) {
                                 debugStr.append("RGBWW ");
                             } else if (buffer[13] == 0x07) {
@@ -299,7 +298,7 @@ public class EmulatedV6Bridge {
                             for (int i = 13; i < 19; ++i) {
                                 debugStr.append(String.format("%02X ", buffer[i]));
                             }
-                            logger.debug(debugStr.toString());
+                            logger.debug("{}", debugStr);
                         }
                     }
 
@@ -316,16 +315,16 @@ public class EmulatedV6Bridge {
             if (willbeclosed) {
                 return;
             }
-            logger.error(e.getLocalizedMessage());
+            logger.error("{}", e.getLocalizedMessage());
         }
     }
 
     protected void logUnknownPacket(byte[] data, int len, String reason) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < len; ++i) {
             s.append(String.format("%02X ", data[i]));
         }
-        logger.error(reason + ": " + s.toString());
+        logger.error("{}: {}", reason, s);
     }
 
     protected void sendMessage(DatagramPacket packet, DatagramSocket datagramSocket, byte buffer[]) {
@@ -339,7 +338,7 @@ public class EmulatedV6Bridge {
     }
 
     private void debug_session_send(byte buffer[], InetAddress address) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < buffer.length; ++i) {
             s.append(String.format("%02X ", buffer[i]));
         }

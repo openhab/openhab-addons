@@ -13,11 +13,11 @@ import java.util.concurrent.Future;
 /**
  * The {@link ChannelThrottler} defines the interface for to submit tasks to a
  * throttler
- * 
+ *
  * @author Karel Goderis - Initial contribution
  */
 public interface ChannelThrottler {
-	Future<?> submit(Runnable task);
+    Future<?> submit(Runnable task);
 
-	Future<?> submit(Object channelKey, Runnable task);
+    Future<?> submit(Object channelKey, Runnable task);
 }

@@ -149,8 +149,7 @@ public class RemoteControllerService implements SamsungTvService {
     /**
      * Sends a command to Samsung TV device.
      * 
-     * @param key
-     *            Button code to send
+     * @param key Button code to send
      */
     private void sendKeyCode(final KeyCode key) {
 
@@ -158,13 +157,11 @@ public class RemoteControllerService implements SamsungTvService {
 
             RemoteController remoteController = new RemoteController(host, port, "openHAB2", "openHAB2");
 
-            if (remoteController != null) {
-                try {
-                    remoteController.sendKey(key);
+            try {
+                remoteController.sendKey(key);
 
-                } catch (RemoteControllerException e) {
-                    logger.error("Could not send command to device on {}: {}", host + ":" + port, e);
-                }
+            } catch (RemoteControllerException e) {
+                logger.error("Could not send command to device on {}: {}", host + ":" + port, e);
             }
         } else {
             logger.error("TV network address not defined");
@@ -174,8 +171,7 @@ public class RemoteControllerService implements SamsungTvService {
     /**
      * Sends a sequence of command to Samsung TV device.
      * 
-     * @param key
-     *            Button code to send
+     * @param keys List of button codes to send
      */
     private void sendKeyCodes(final List<KeyCode> keys) {
 
@@ -183,13 +179,11 @@ public class RemoteControllerService implements SamsungTvService {
 
             RemoteController remoteController = new RemoteController(host, port, "openHAB2", "openHAB2");
 
-            if (remoteController != null) {
-                try {
-                    remoteController.sendKeys(keys);
+            try {
+                remoteController.sendKeys(keys);
 
-                } catch (RemoteControllerException e) {
-                    logger.error("Could not send command(s) to device on {}: {}", host + ":" + port, e);
-                }
+            } catch (RemoteControllerException e) {
+                logger.error("Could not send command(s) to device on {}: {}", host + ":" + port, e);
             }
         } else {
             logger.error("TV network address not defined");

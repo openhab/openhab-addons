@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,10 +32,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class QueuedSend implements Runnable {
+    private final Logger logger = LoggerFactory.getLogger(QueuedSend.class);
+
     BlockingQueue<QueueItem> queue = new LinkedBlockingQueue<>(20);
     protected final DatagramPacket packet;
     protected final DatagramSocket datagramSocket;
-    private static final Logger logger = LoggerFactory.getLogger(QueuedSend.class);
     private int delay_between_commands = 100;
     private int repeat_commands = 1;
     private boolean willbeclosed = false;
@@ -98,7 +99,7 @@ public class QueuedSend implements Runnable {
                     item = queue.take();
                 } catch (InterruptedException e) {
                     if (!willbeclosed) {
-                        logger.error("Queue take failed: " + e.getLocalizedMessage());
+                        logger.error("Queue take failed: {}", e.getLocalizedMessage());
                     }
                     break;
                 }
@@ -116,7 +117,7 @@ public class QueuedSend implements Runnable {
                     datagramSocket.send(packet);
 
                     if (logger.isDebugEnabled()) {
-                        StringBuffer s = new StringBuffer();
+                        StringBuilder s = new StringBuilder();
                         for (int c = 0; c < item.data.length; ++c) {
                             s.append(String.format("%02X ", item.data[c]));
                         }
@@ -134,7 +135,7 @@ public class QueuedSend implements Runnable {
                 Thread.sleep((item.custom_delay_time != 0) ? item.custom_delay_time : delay_between_commands);
             } catch (InterruptedException e) {
                 if (!willbeclosed) {
-                    logger.error("Queue sleep failed: " + e.getLocalizedMessage());
+                    logger.error("Queue sleep failed: {}", e.getLocalizedMessage());
                 }
                 break;
             }
@@ -179,7 +180,7 @@ public class QueuedSend implements Runnable {
                 }
             } catch (IllegalStateException e) {
                 // Ignore threading errors
-                logger.error(e.getLocalizedMessage());
+                logger.error("{}", e.getLocalizedMessage());
             } catch (NoSuchElementException e) {
                 // The element might have been processed already while iterate.
                 // Ignore NoSuchElementException here.

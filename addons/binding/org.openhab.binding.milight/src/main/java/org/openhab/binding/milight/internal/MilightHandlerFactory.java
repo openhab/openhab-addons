@@ -29,7 +29,7 @@ import com.google.common.collect.Sets;
  * @author David Graeff <david.graeff@web.de>
  */
 public class MilightHandlerFactory extends BaseThingHandlerFactory {
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(MilightBindingConstants.BRIDGE_THING_TYPES_UIDS, MilightBindingConstants.SUPPORTED_THING_TYPES_UIDS);
 
     @Override

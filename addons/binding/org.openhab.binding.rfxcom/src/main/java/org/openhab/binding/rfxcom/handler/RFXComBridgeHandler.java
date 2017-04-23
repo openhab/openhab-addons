@@ -78,7 +78,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         logger.debug("Handler disposed.");
 
         for (DeviceMessageListener deviceStatusListener : deviceStatusListeners) {
@@ -139,7 +139,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         responseMessage = respMessage;
     }
 
-    private void connect() {
+    private synchronized void connect() {
         logger.debug("Connecting to RFXCOM transceiver");
 
         try {
@@ -404,7 +404,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             } catch (RFXComMessageNotImplementedException e) {
                 logger.debug("Message not supported, data: {}", DatatypeConverter.printHexBinary(packet));
             } catch (RFXComException e) {
-                logger.error("Error occured during packet receiving, data: {}",
+                logger.error("Error occurred during packet receiving, data: {}",
                         DatatypeConverter.printHexBinary(packet), e);
             }
 

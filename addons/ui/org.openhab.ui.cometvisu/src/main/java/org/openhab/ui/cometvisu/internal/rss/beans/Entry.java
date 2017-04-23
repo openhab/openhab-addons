@@ -6,11 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.ui.cometvisu.internal.rrs.beans;
+package org.openhab.ui.cometvisu.internal.rss.beans;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link Entry} is used by the CometVisu rss-plugin
- * 
+ *
  * @author Tobias Bräutigam
  * @since 2.0.0
  */
@@ -18,7 +21,7 @@ public class Entry {
     public String id;
     public String title;
     public String content;
-    public String tags;
+    public List<String> tags = new ArrayList<String>();
     public String state;
     public long publishedDate;
 }

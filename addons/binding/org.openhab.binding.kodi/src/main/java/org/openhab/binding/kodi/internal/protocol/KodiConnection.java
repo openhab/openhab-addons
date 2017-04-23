@@ -30,7 +30,7 @@ import com.google.gson.JsonPrimitive;
  */
 public class KodiConnection implements KodiClientSocketEventListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KodiConnection.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(KodiConnection.class);
 
     private static final int VOLUMESTEP = 10;
 

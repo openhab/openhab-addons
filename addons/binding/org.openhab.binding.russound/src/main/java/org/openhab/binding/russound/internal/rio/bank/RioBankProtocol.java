@@ -42,7 +42,7 @@ class RioBankProtocol extends AbstractRioProtocol {
     private final int _source;
 
     // Protocol constants
-    private final static String BANK_NAME = "name";
+    private static final String BANK_NAME = "name";
 
     // Protocol notification patterns
     private final Pattern RSP_BANKNOTIFICATION = Pattern.compile("^[SN] S\\[(\\d+)\\].B\\[(\\d+)\\].(\\w+)=\"(.*)\"$");

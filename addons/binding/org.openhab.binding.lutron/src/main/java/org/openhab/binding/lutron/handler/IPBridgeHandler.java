@@ -192,7 +192,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             while (true) {
                 LutronCommand command = this.sendQueue.take();
 
-                this.logger.debug("Sending command " + command.toString());
+                this.logger.debug("Sending command {}", command);
 
                 try {
                     this.session.writeLine(command.toString());
@@ -292,7 +292,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 continue;
             }
 
-            this.logger.debug("Received message " + line);
+            this.logger.debug("Received message {}", line);
 
             // System is alive, cancel reconnect task.
             if (this.keepAliveReconnect != null) {
@@ -324,10 +324,10 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                         this.logger.error("Error processing update", e);
                     }
                 } else {
-                    this.logger.info("No thing configured for integration ID " + integrationId);
+                    this.logger.info("No thing configured for integration ID {}", integrationId);
                 }
             } else {
-                this.logger.info("Ignoring message " + line);
+                this.logger.info("Ignoring message {}", line);
             }
         }
     }

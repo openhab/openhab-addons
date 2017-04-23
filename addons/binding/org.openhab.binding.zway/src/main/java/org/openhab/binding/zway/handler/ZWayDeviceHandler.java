@@ -69,7 +69,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * @author Patrick Hecker - Initial contribution
  */
 public abstract class ZWayDeviceHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private DevicePolling devicePolling;
     private ScheduledFuture<?> pollingJob;
@@ -126,9 +126,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 }
             } catch (Throwable t) {
                 if (t instanceof Exception) {
-                    logger.error(((Exception) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else if (t instanceof Error) {
-                    logger.error(((Error) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else {
                     logger.error("Unexpected error");
                 }
@@ -260,9 +260,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             refreshChannel(channel);
                         } catch (Throwable t) {
                             if (t instanceof Exception) {
-                                logger.error("Error occurred when performing polling:" + ((Exception) t).getMessage());
+                                logger.error("Error occurred when performing polling:{}", t.getMessage());
                             } else if (t instanceof Error) {
-                                logger.error("Error occurred when performing polling: " + ((Error) t).getMessage());
+                                logger.error("Error occurred when performing polling:{}", t.getMessage());
                             } else {
                                 logger.error("Error occurred when performing polling: Unexpected error");
                             }
@@ -340,8 +340,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 try {
                     device.update();
                 } catch (Exception e) {
-                    logger.debug(device.getMetrics().getTitle()
-                            + " doesn't support update (triggered during refresh channel)");
+                    logger.debug("{} doesn't support update (triggered during refresh channel)",
+                            device.getMetrics().getTitle());
                 }
             } else {
                 logger.warn("Devices not loaded");
@@ -632,8 +632,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     }
 
     protected synchronized void addDeviceAsChannel(Device device) {
-        logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
-
         // Device.probeType
         // |
         // Device.metrics.probeType
@@ -645,6 +643,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         // Default, depends on device type
 
         if (device != null) {
+            logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
+
             HashMap<String, String> properties = new HashMap<String, String>();
             properties.put("deviceId", device.getDeviceId());
 

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PacketCapturingService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PacketCapturingService.class);
+    private final Logger logger = LoggerFactory.getLogger(PacketCapturingService.class);
 
     private static final int READ_TIMEOUT = 10; // [ms]
     private static final int SNAPLEN = 65536; // [bytes]
@@ -90,7 +90,7 @@ public class PacketCapturingService {
             }
             pcapHandle.setFilter(filterBuilder.toString(), BpfCompileMode.OPTIMIZE);
         } catch (Exception e) {
-            logger.error("Capturing packets on device " + pcapNetworkInterface.getName() + " failed.", e);
+            logger.error("Capturing packets on device {} failed.", pcapNetworkInterface.getName(), e);
             return false;
         }
         ExecutorService executorService = Executors.newSingleThreadExecutor();

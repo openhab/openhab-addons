@@ -297,7 +297,7 @@ public class TeslaChannelSelectorProxy {
 
             }
         },
-        EST_HEADING("est_heading", "headingestimation", DecimalType.class, false),
+        EST_HEADING("est_heading", "estimatedheading", DecimalType.class, false),
         EST_RANGE("est_range", "estimatedrange", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {

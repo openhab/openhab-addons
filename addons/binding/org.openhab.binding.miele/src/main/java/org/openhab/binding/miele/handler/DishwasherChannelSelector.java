@@ -116,14 +116,12 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     },
     SWITCH(null, "switch", OnOffType.class, false);
 
-    protected Logger logger = LoggerFactory.getLogger(DishwasherChannelSelector.class);
-
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    private DishwasherChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    DishwasherChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;

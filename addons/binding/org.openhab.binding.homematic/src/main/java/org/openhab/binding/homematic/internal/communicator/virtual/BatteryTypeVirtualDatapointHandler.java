@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class BatteryTypeVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
-    private static final Logger logger = LoggerFactory.getLogger(BatteryTypeVirtualDatapointHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(BatteryTypeVirtualDatapointHandler.class);
 
     private static final Properties batteries = new Properties();
 

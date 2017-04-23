@@ -266,7 +266,7 @@ public class AirQualityHandler extends BaseThingHandler {
         }
 
         // Update the thing status
-        if (resultOk && result != null) {
+        if (resultOk) {
             String attributions = result.getData().getAttributions();
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, attributions);
         } else {

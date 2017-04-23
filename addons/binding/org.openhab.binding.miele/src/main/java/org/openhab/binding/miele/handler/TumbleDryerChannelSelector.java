@@ -123,7 +123,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     },
     SWITCH(null, "switch", OnOffType.class, false);
 
-    protected Logger logger = LoggerFactory.getLogger(TumbleDryerChannelSelector.class);
+    private final Logger logger = LoggerFactory.getLogger(TumbleDryerChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;

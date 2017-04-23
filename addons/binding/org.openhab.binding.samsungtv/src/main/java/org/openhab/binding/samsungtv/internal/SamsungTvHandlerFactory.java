@@ -31,7 +31,7 @@ import com.google.common.collect.Lists;
  */
 public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
+    private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
             .newArrayList(SAMSUNG_TV_THING_TYPE);
 
     private UpnpIOService upnpIOService;

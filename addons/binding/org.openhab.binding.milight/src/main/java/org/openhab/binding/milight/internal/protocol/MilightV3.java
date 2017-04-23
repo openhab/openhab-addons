@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class MilightV3 extends AbstractBulbInterface {
     public static final int MAX_ANIM_MODES = 10;
-    protected static final Logger logger = LoggerFactory.getLogger(MilightV3.class);
+    protected final Logger logger = LoggerFactory.getLogger(MilightV3.class);
 
     public MilightV3(int type_offset, QueuedSend sendQueue, int zone) {
         super(type_offset, sendQueue, zone);
     }
 
     // we have to map [0,360] to [0,0xFF], where red equals hue=0 and the milight color 0xB0 (=176)
-    static public byte make_color(int hue) {
+    public static byte make_color(int hue) {
         int mHue = (360 + 248 - hue) % 360; // invert and shift
         return (byte) (mHue * 255 / 360); // map to 256 values
     }

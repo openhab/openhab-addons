@@ -41,7 +41,7 @@ import retrofit.RetrofitError;
  *
  */
 public class NetatmoBridgeHandler extends BaseBridgeHandler {
-    private static Logger logger = LoggerFactory.getLogger(NetatmoBridgeHandler.class);
+    private Logger logger = LoggerFactory.getLogger(NetatmoBridgeHandler.class);
     private NetatmoBridgeConfiguration configuration;
     private ApiClient apiClient;
     private StationApi stationApi = null;

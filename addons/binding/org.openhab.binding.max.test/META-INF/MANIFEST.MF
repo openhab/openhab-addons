@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: openHAB Max! Binding Tests
 Bundle-SymbolicName: org.openhab.binding.max.test;singleton:=true
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: openHAB
 Fragment-Host: org.openhab.binding.max
 Import-Package: groovy.json,

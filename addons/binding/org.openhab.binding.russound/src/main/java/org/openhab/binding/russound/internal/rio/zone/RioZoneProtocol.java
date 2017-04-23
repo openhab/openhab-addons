@@ -45,23 +45,23 @@ class RioZoneProtocol extends AbstractRioProtocol {
     private int _zone;
 
     // Zone constants
-    private final static String ZONE_NAME = "name"; // 12 max
-    private final static String ZONE_SOURCE = "currentSource"; // 1-8 or 1-12
-    private final static String ZONE_BASS = "bass"; // -10 to 10
-    private final static String ZONE_TREBLE = "treble"; // -10 to 10
-    private final static String ZONE_BALANCE = "balance"; // -10 to 10
-    private final static String ZONE_LOUDNESS = "loudness"; // OFF/ON
-    private final static String ZONE_TURNONVOLUME = "turnOnVolume"; // 0 to 50
-    private final static String ZONE_DONOTDISTURB = "doNotDisturb"; // OFF/ON/SLAVE
-    private final static String ZONE_PARTYMODE = "partyMode"; // OFF/ON/MASTER
-    private final static String ZONE_STATUS = "status"; // OFF/ON/MASTER
-    private final static String ZONE_VOLUME = "volume"; // 0 to 50
-    private final static String ZONE_MUTE = "mute"; // OFF/ON/MASTER
-    private final static String ZONE_PAGE = "page"; // OFF/ON/MASTER
-    private final static String ZONE_SHAREDSOURCE = "sharedSource"; // OFF/ON/MASTER
-    private final static String ZONE_SLEEPTIMEREMAINING = "sleepTimeRemaining"; // OFF/ON/MASTER
-    private final static String ZONE_LASTERROR = "lastError"; // OFF/ON/MASTER
-    private final static String ZONE_ENABLED = "enabled"; // OFF/ON
+    private static final String ZONE_NAME = "name"; // 12 max
+    private static final String ZONE_SOURCE = "currentSource"; // 1-8 or 1-12
+    private static final String ZONE_BASS = "bass"; // -10 to 10
+    private static final String ZONE_TREBLE = "treble"; // -10 to 10
+    private static final String ZONE_BALANCE = "balance"; // -10 to 10
+    private static final String ZONE_LOUDNESS = "loudness"; // OFF/ON
+    private static final String ZONE_TURNONVOLUME = "turnOnVolume"; // 0 to 50
+    private static final String ZONE_DONOTDISTURB = "doNotDisturb"; // OFF/ON/SLAVE
+    private static final String ZONE_PARTYMODE = "partyMode"; // OFF/ON/MASTER
+    private static final String ZONE_STATUS = "status"; // OFF/ON/MASTER
+    private static final String ZONE_VOLUME = "volume"; // 0 to 50
+    private static final String ZONE_MUTE = "mute"; // OFF/ON/MASTER
+    private static final String ZONE_PAGE = "page"; // OFF/ON/MASTER
+    private static final String ZONE_SHAREDSOURCE = "sharedSource"; // OFF/ON/MASTER
+    private static final String ZONE_SLEEPTIMEREMAINING = "sleepTimeRemaining"; // OFF/ON/MASTER
+    private static final String ZONE_LASTERROR = "lastError"; // OFF/ON/MASTER
+    private static final String ZONE_ENABLED = "enabled"; // OFF/ON
 
     // Respone patterns
     private final Pattern RSP_ZONENOTIFICATION = Pattern

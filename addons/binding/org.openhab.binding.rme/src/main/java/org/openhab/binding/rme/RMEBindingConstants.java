@@ -21,7 +21,7 @@ public class RMEBindingConstants {
     public static final String BINDING_ID = "rme";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_MANAGER = new ThingTypeUID(BINDING_ID, "manager");
+    public static final ThingTypeUID THING_TYPE_MANAGER = new ThingTypeUID(BINDING_ID, "manager");
 
     // List of all Channel ids
     public enum DataField {

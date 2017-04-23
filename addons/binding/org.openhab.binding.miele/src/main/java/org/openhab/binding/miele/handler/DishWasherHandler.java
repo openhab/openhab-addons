@@ -29,7 +29,7 @@ import com.google.gson.JsonElement;
  */
 public class DishWasherHandler extends MieleApplianceHandler<DishwasherChannelSelector> {
 
-    protected Logger logger = LoggerFactory.getLogger(DishWasherHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DishWasherHandler.class);
 
     public DishWasherHandler(Thing thing) {
         super(thing, DishwasherChannelSelector.class, "Dishwasher");

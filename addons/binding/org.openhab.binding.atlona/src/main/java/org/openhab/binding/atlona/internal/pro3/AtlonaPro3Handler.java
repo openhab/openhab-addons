@@ -69,27 +69,27 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
     private ScheduledFuture<?> _ping;
 
     // List of all the groups patterns we recognize
-    private final static Pattern GROUP_PRIMARY_PATTERN = Pattern.compile("^" + AtlonaPro3Constants.GROUP_PRIMARY + "$");
-    private final static Pattern GROUP_PORT_PATTERN = Pattern
+    private static final Pattern GROUP_PRIMARY_PATTERN = Pattern.compile("^" + AtlonaPro3Constants.GROUP_PRIMARY + "$");
+    private static final Pattern GROUP_PORT_PATTERN = Pattern
             .compile("^" + AtlonaPro3Constants.GROUP_PORT + "(\\d{1,2})$");
-    private final static Pattern GROUP_MIRROR_PATTERN = Pattern
+    private static final Pattern GROUP_MIRROR_PATTERN = Pattern
             .compile("^" + AtlonaPro3Constants.GROUP_MIRROR + "(\\d{1,2})$");
-    private final static Pattern GROUP_VOLUME_PATTERN = Pattern
+    private static final Pattern GROUP_VOLUME_PATTERN = Pattern
             .compile("^" + AtlonaPro3Constants.GROUP_VOLUME + "(\\d{1,2})$");
 
     // List of preset commands we recognize
-    private final static Pattern CMD_PRESETSAVE = Pattern
+    private static final Pattern CMD_PRESETSAVE = Pattern
             .compile("^" + AtlonaPro3Constants.CMD_PRESETSAVE + "(\\d{1,2})$");
-    private final static Pattern CMD_PRESETRECALL = Pattern
+    private static final Pattern CMD_PRESETRECALL = Pattern
             .compile("^" + AtlonaPro3Constants.CMD_PRESETRECALL + "(\\d{1,2})$");
-    private final static Pattern CMD_PRESETCLEAR = Pattern
+    private static final Pattern CMD_PRESETCLEAR = Pattern
             .compile("^" + AtlonaPro3Constants.CMD_PRESETCLEAR + "(\\d{1,2})$");
 
     // List of matrix commands we recognize
-    private final static Pattern CMD_MATRIXRESET = Pattern.compile("^" + AtlonaPro3Constants.CMD_MATRIXRESET + "$");
-    private final static Pattern CMD_MATRIXRESETPORTS = Pattern
+    private static final Pattern CMD_MATRIXRESET = Pattern.compile("^" + AtlonaPro3Constants.CMD_MATRIXRESET + "$");
+    private static final Pattern CMD_MATRIXRESETPORTS = Pattern
             .compile("^" + AtlonaPro3Constants.CMD_MATRIXRESETPORTS + "$");
-    private final static Pattern CMD_MATRIXPORTALL = Pattern
+    private static final Pattern CMD_MATRIXPORTALL = Pattern
             .compile("^" + AtlonaPro3Constants.CMD_MATRIXPORTALL + "(\\d{1,2})$");
 
     /**

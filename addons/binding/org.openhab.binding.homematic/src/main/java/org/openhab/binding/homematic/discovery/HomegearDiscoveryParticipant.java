@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomegearDiscoveryParticipant implements UpnpDiscoveryParticipant {
-    private static final Logger logger = LoggerFactory.getLogger(HomegearDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(HomegearDiscoveryParticipant.class);
 
     /**
      * {@inheritDoc}

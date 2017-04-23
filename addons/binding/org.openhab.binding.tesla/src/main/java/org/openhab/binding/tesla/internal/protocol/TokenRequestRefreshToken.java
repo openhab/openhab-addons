@@ -8,20 +8,22 @@
  */
 package org.openhab.binding.tesla.internal.protocol;
 
+import java.security.GeneralSecurityException;
+
 /**
  * The {@link TokenRequestRefreshToken} is a datastructure to capture
- * authentication/credentials required to log into the 
+ * authentication/credentials required to log into the
  * Tesla Remote Service
  *
  * @author Nicolai Grødum - Adding token based auth
  */
-public class TokenRequestRefreshToken  extends TokenRequest{
+public class TokenRequestRefreshToken extends TokenRequest {
 
-	private String grant_type = "refresh_token";
-	private String refresh_token;
+    private String grant_type = "refresh_token";
+    private String refresh_token;
 
-	public TokenRequestRefreshToken(String refresh_token) {
-		super();
-		this.refresh_token = refresh_token;
-	}
+    public TokenRequestRefreshToken(String refresh_token) throws GeneralSecurityException {
+        super();
+        this.refresh_token = refresh_token;
+    }
 }
