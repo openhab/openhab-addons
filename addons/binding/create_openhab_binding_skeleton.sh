@@ -5,7 +5,7 @@ camelcaseId=$1
 
 id=`echo $camelcaseId | tr '[:upper:]' '[:lower:]'` 
 
-mvn archetype:generate -N \
+mvn -s ../archetype-settings.xml archetype:generate -N \
   -DarchetypeGroupId=org.eclipse.smarthome.archetype \
   -DarchetypeArtifactId=org.eclipse.smarthome.archetype.binding \
   -DarchetypeVersion=0.9.0-SNAPSHOT \
