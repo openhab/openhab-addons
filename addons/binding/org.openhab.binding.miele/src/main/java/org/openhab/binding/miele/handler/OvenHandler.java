@@ -29,7 +29,7 @@ import com.google.gson.JsonElement;
  */
 public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
 
-    protected Logger logger = LoggerFactory.getLogger(OvenHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OvenHandler.class);
 
     public OvenHandler(Thing thing) {
         super(thing, OvenChannelSelector.class, "Oven");

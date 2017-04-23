@@ -50,7 +50,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
 
-    private static final Logger logger = LoggerFactory.getLogger(AmazonDashButtonDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(AmazonDashButtonDiscoveryService.class);
 
     /**
      * The Amazon Dash button vendor prefixes

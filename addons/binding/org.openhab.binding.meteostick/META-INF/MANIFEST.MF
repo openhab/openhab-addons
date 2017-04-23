@@ -4,7 +4,7 @@ Bundle-Name: Meteostick Binding
 Bundle-SymbolicName: org.openhab.binding.meteostick;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
  gnu.io,
@@ -15,7 +15,9 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.slf4j
+ org.slf4j,
+ org.openhab.binding.meteostick,
+ org.openhab.binding.meteostick.handler
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.meteostick,
  org.openhab.binding.meteostick.handler

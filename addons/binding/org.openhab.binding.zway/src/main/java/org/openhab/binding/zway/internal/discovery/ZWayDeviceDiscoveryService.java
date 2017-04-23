@@ -36,11 +36,11 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  */
 public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final static int SEARCH_TIME = 60;
-    private final static int INITIAL_DELAY = 15;
-    private final static int SCAN_INTERVAL = 240;
+    private static final int SEARCH_TIME = 60;
+    private static final int INITIAL_DELAY = 15;
+    private static final int SCAN_INTERVAL = 240;
 
     private ZWayBridgeHandler mBridgeHandler;
     private ZWayDeviceScan mZWayDeviceScanningRunnable;

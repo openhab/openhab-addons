@@ -86,6 +86,21 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="ir-m1-c1">
+		<label>Module 1</label>
+		<description>Infrared Module</description>
+		<channels>
+			<channel id="c1" typeId="channel-type-ir">
+				<label>Connector 1</label>
+				<description>ZMote infrared emitter.</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="ir-m2">
 		<label>Module 2</label>
 		<description>Infrared Module</description>

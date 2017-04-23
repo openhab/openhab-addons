@@ -75,7 +75,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
      *            - the received data as a String
      *
      **/
-    abstract public void onDataReceived(String line);
+    public abstract void onDataReceived(String line);
 
     /**
      * Write data to the serial port
@@ -216,7 +216,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                         sb.append(id.getName() + "\n");
                     }
                 }
-                logger.error("Serial port '" + port + "' could not be found. Available ports are:\n" + sb.toString());
+                logger.error("Serial port '{}' could not be found. Available ports are:\n {}", port, sb);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }

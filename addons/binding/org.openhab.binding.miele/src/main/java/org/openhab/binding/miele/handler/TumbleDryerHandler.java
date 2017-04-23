@@ -29,7 +29,7 @@ import com.google.gson.JsonElement;
  */
 public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannelSelector> {
 
-    protected Logger logger = LoggerFactory.getLogger(TumbleDryerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TumbleDryerHandler.class);
 
     public TumbleDryerHandler(Thing thing) {
         super(thing, TumbleDryerChannelSelector.class, "TumbleDryer");

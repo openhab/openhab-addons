@@ -95,17 +95,17 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     private void createRootDevice(HomekitTaggedItem taggedItem) {
         try {
-            logger.debug("Adding homekit device " + taggedItem.getItem().getName());
+            logger.debug("Adding homekit device {}", taggedItem.getItem().getName());
             accessoryRegistry
                     .addRootDevice(HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
-            logger.debug("Added homekit device " + taggedItem.getItem().getName());
+            logger.debug("Added homekit device {}", taggedItem.getItem().getName());
         } catch (Exception e) {
-            logger.error("Could not add device: " + e.getMessage(), e);
+            logger.error("Could not add device: {}", e.getMessage(), e);
         }
     }
 
     private void createCharacteristic(HomekitTaggedItem taggedItem) {
-        logger.debug("Adding grouped homekit characteristic " + taggedItem.getItem().getName());
+        logger.debug("Adding grouped homekit characteristic {}", taggedItem.getItem().getName());
         accessoryRegistry.addCharacteristic(taggedItem);
     }
 }

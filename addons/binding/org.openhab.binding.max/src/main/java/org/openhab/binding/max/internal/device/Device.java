@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Device {
 
-    private final static Logger logger = LoggerFactory.getLogger(Device.class);
+    private static final Logger logger = LoggerFactory.getLogger(Device.class);
 
     private String serialNumber = "";
     private String rfAddress = "";
@@ -229,7 +229,7 @@ public abstract class Device {
 
                 break;
             default:
-                logger.debug("Unhandled Device. DataBytes: " + Utils.getHex(raw));
+                logger.debug("Unhandled Device. DataBytes: {}", Utils.getHex(raw));
                 break;
 
         }

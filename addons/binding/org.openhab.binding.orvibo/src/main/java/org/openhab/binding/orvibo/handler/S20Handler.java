@@ -91,21 +91,21 @@ public class S20Handler extends BaseThingHandler implements SocketStateListener 
             subscribeHandler = scheduler.scheduleWithFixedDelay(subscribeTask, 0, refreshInterval, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } catch (SocketException ex) {
-            logger.error("Error occurred while initializing S20 handler: " + ex.getMessage(), ex);
+            logger.error("Error occurred while initializing S20 handler: {}", ex.getMessage(), ex);
         }
     }
 
     @Override
     public void socketDidChangeLabel(Socket socket, String label) {
         if (!StringUtils.isBlank(label)) {
-            logger.debug("Updating thing label to " + label);
+            logger.debug("Updating thing label to {}", label);
             thing.setLabel(label);
         }
     }
 
     @Override
     public void socketDidChangePowerState(Socket socket, PowerState state) {
-        logger.debug("Received power state: " + state);
+        logger.debug("Received power state: {}", state);
         if (socket.getDeviceId().equals(thing.getUID().getId())) {
             if (state == PowerState.ON) {
                 updateState(CHANNEL_S20_SWITCH, OnOffType.ON);

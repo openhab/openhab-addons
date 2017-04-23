@@ -44,32 +44,32 @@ class RioSourceProtocol extends AbstractRioProtocol {
     private final int _source;
 
     // Protocol constants
-    private final static String SRC_NAME = "name";
-    private final static String SRC_TYPE = "type";
-    private final static String SRC_IPADDRESS = "ipAddress";
-    private final static String SRC_IPADDRESS2 = "IPAddress"; // russound wasn't consistent on capitalization on
+    private static final String SRC_NAME = "name";
+    private static final String SRC_TYPE = "type";
+    private static final String SRC_IPADDRESS = "ipAddress";
+    private static final String SRC_IPADDRESS2 = "IPAddress"; // russound wasn't consistent on capitalization on
                                                               // notifications
-    private final static String SRC_COMPOSERNAME = "composerName";
-    private final static String SRC_CHANNEL = "channel";
-    private final static String SRC_CHANNELNAME = "channelName";
-    private final static String SRC_GENRE = "genre";
-    private final static String SRC_ARTISTNAME = "artistName";
-    private final static String SRC_ALBUMNAME = "albumName";
-    private final static String SRC_COVERARTURL = "coverArtURL";
-    private final static String SRC_PLAYLISTNAME = "playlistName";
-    private final static String SRC_SONGNAME = "songName";
-    private final static String SRC_MODE = "mode";
-    private final static String SRC_SHUFFLEMODE = "shuffleMode";
-    private final static String SRC_REPEATMODE = "repeatMode";
-    private final static String SRC_RATING = "rating";
-    private final static String SRC_PROGRAMSERVICENAME = "programServiceName";
-    private final static String SRC_RADIOTEXT = "radioText";
-    private final static String SRC_RADIOTEXT2 = "radioText2";
-    private final static String SRC_RADIOTEXT3 = "radioText3";
-    private final static String SRC_RADIOTEXT4 = "radioText4";
+    private static final String SRC_COMPOSERNAME = "composerName";
+    private static final String SRC_CHANNEL = "channel";
+    private static final String SRC_CHANNELNAME = "channelName";
+    private static final String SRC_GENRE = "genre";
+    private static final String SRC_ARTISTNAME = "artistName";
+    private static final String SRC_ALBUMNAME = "albumName";
+    private static final String SRC_COVERARTURL = "coverArtURL";
+    private static final String SRC_PLAYLISTNAME = "playlistName";
+    private static final String SRC_SONGNAME = "songName";
+    private static final String SRC_MODE = "mode";
+    private static final String SRC_SHUFFLEMODE = "shuffleMode";
+    private static final String SRC_REPEATMODE = "repeatMode";
+    private static final String SRC_RATING = "rating";
+    private static final String SRC_PROGRAMSERVICENAME = "programServiceName";
+    private static final String SRC_RADIOTEXT = "radioText";
+    private static final String SRC_RADIOTEXT2 = "radioText2";
+    private static final String SRC_RADIOTEXT3 = "radioText3";
+    private static final String SRC_RADIOTEXT4 = "radioText4";
 
     // This is an undocumented volume
-    private final static String SRC_VOLUME = "volume";
+    private static final String SRC_VOLUME = "volume";
 
     // Response patterns
     private final Pattern RSP_SRCNOTIFICATION = Pattern.compile("^[SN] S\\[(\\d+)\\]\\.(\\w+)=\"(.*)\"$");

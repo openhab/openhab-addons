@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,7 +31,6 @@ import org.openhab.binding.milight.internal.protocol.MilightV6SessionManager.Ses
  */
 public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler implements ISessionState {
     private MilightV6SessionManager session;
-    private static final int v6IntervalSec = 5;
 
     public MilightBridgeV6Handler(Bridge bridge) {
         super(bridge);
@@ -48,7 +47,7 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
         BigDecimal pw_byte1 = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_PASSWORD_BYTE_1);
         BigDecimal pw_byte2 = (BigDecimal) thing.getConfiguration().get(MilightBindingConstants.CONFIG_PASSWORD_BYTE_2);
         if (pw_byte1 != null && pw_byte2 != null && pw_byte1.intValue() >= 0 && pw_byte1.intValue() <= 255
-                && pw_byte2.intValue() >= 0 && pw_byte2.intValue() <= 255 && session != null) {
+                && pw_byte2.intValue() >= 0 && pw_byte2.intValue() <= 255) {
             session.setPasswordBytes((byte) pw_byte1.intValue(), (byte) pw_byte2.intValue());
         }
     }
@@ -162,7 +161,9 @@ public class MilightBridgeV6Handler extends AbstractMilightBridgeHandler impleme
             case SESSION_VALID:
                 updateStatus(ThingStatus.ONLINE);
                 // Setup the keep alive timer as soon as we have established a valid session
-                setupRefreshTimer(v6IntervalSec);
+                BigDecimal refresh_sec = (BigDecimal) thing.getConfiguration()
+                        .get(MilightBindingConstants.CONFIG_REFRESH_SEC);
+                setupRefreshTimer(refresh_sec == null ? refrehIntervalSec : refresh_sec.intValue());
                 addBulbsToDiscovery();
                 // As soon as the session is valid, update the user visible configuration of the host IP.
                 Configuration c = editConfiguration();

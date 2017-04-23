@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class EnvisalinkBridgeDiscovery {
-    private final static Logger logger = LoggerFactory.getLogger(EnvisalinkBridgeDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(EnvisalinkBridgeDiscovery.class);
 
     static final int ENVISALINK_BRIDGE_PORT = 4025;
     static final int CONNECTION_TIMEOUT = 10;

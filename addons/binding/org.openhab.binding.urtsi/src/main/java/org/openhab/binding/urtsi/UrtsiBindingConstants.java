@@ -24,16 +24,16 @@ public class UrtsiBindingConstants {
     /**
      * URTSI II box
      */
-    public final static ThingTypeUID URTSI_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "urtsidevice");
+    public static final ThingTypeUID URTSI_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "urtsidevice");
 
     /**
      * RTS Device (e.g. rollershutter)
      */
-    public final static ThingTypeUID RTS_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "rtsdevice");
+    public static final ThingTypeUID RTS_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "rtsdevice");
 
     /**
      * Rollershutter's position
      */
-    public final static String POSITION = "position";
+    public static final String POSITION = "position";
 
 }

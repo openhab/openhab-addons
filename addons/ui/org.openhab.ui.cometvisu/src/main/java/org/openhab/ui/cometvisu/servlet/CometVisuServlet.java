@@ -60,7 +60,7 @@ import org.openhab.ui.cometvisu.internal.config.ConfigHelper.Transform;
 import org.openhab.ui.cometvisu.internal.config.VisuConfig;
 import org.openhab.ui.cometvisu.internal.editor.dataprovider.beans.DataBean;
 import org.openhab.ui.cometvisu.internal.editor.dataprovider.beans.ItemBean;
-import org.openhab.ui.cometvisu.internal.rrs.beans.Feed;
+import org.openhab.ui.cometvisu.internal.rss.beans.Feed;
 import org.openhab.ui.cometvisu.php.PHProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,21 +73,18 @@ import com.google.gson.Gson;
  * @author Tobias Bräutigam
  */
 public class CometVisuServlet extends HttpServlet {
-    /**
-     *
-     */
     private static final long serialVersionUID = 4448918908615003303L;
-    private static final Logger logger = LoggerFactory.getLogger(CometVisuServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(CometVisuServlet.class);
 
     private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1
                                                                 // week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
-    private Pattern sitemapPattern = Pattern.compile(".*/visu_config_(oh_)?([^\\.]+)\\.xml");
+    private Pattern sitemapPattern = Pattern.compile(".*/visu_config_?(oh_)?([^\\.]+)?\\.xml");
     private Pattern configStorePattern = Pattern.compile("config/visu_config_oh_([a-z0-9_]+)\\.xml");
 
-    private String rrsLogPath = "/plugins/rsslog/rsslog_oh.php";
+    private String rssLogPath = "/plugins/rsslog/rsslog_oh.php";
     private final String rssLogMessageSeparator = "\\|";
     private DateFormat rssPubDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
@@ -228,7 +225,7 @@ public class CometVisuServlet extends HttpServlet {
         // logger.info("Path: " + req.getPathInfo());
         if (path.matches(".*editor/dataproviders/.+\\.(php|json)$") || path.matches(".*designs/get_designs\\.php$")) {
             dataProviderService(requestedFile, req, resp);
-        } else if (path.equalsIgnoreCase(rrsLogPath)) {
+        } else if (path.endsWith(rssLogPath)) {
             processRssLogRequest(requestedFile, req, resp);
         } else if (requestedFile.getName().endsWith(".php")) {
             processPhpRequest(requestedFile, req, resp);
@@ -281,7 +278,7 @@ public class CometVisuServlet extends HttpServlet {
 
     /**
      * serves an RSS-Feed from a persisted string item backend for the CometVisu
-     * rrslog-plugin
+     * rsslog-plugin
      *
      * @param file
      * @param request
@@ -402,10 +399,9 @@ public class CometVisuServlet extends HttpServlet {
                         if (historicItem.getState() == null || historicItem.getState().toString().isEmpty()) {
                             continue;
                         }
-                        org.openhab.ui.cometvisu.internal.rrs.beans.Entry entry = new org.openhab.ui.cometvisu.internal.rrs.beans.Entry();
+                        org.openhab.ui.cometvisu.internal.rss.beans.Entry entry = new org.openhab.ui.cometvisu.internal.rss.beans.Entry();
                         entry.publishedDate = historicItem.getTimestamp().getTime();
-                        logger.info(rssPubDateFormat.format(entry.publishedDate) + ": " + historicItem.getState());
-                        entry.tags = historicItem.getName();
+                        entry.tags.add(historicItem.getName());
                         String[] content = historicItem.getState().toString().split(rssLogMessageSeparator);
                         if (content.length == 0) {
                             entry.content = historicItem.getState().toString();
@@ -431,10 +427,10 @@ public class CometVisuServlet extends HttpServlet {
                             && FilterCriteria.Ordering.DESCENDING.equals(filter.getOrdering())) {
                         // the RRD4j PersistenceService does not support descending ordering so we do it manually
                         Collections.sort(feed.entries,
-                                new Comparator<org.openhab.ui.cometvisu.internal.rrs.beans.Entry>() {
+                                new Comparator<org.openhab.ui.cometvisu.internal.rss.beans.Entry>() {
                                     @Override
-                                    public int compare(org.openhab.ui.cometvisu.internal.rrs.beans.Entry o1,
-                                            org.openhab.ui.cometvisu.internal.rrs.beans.Entry o2) {
+                                    public int compare(org.openhab.ui.cometvisu.internal.rss.beans.Entry o1,
+                                            org.openhab.ui.cometvisu.internal.rss.beans.Entry o2) {
                                         return Long.compare(o2.publishedDate, o1.publishedDate);
                                     }
                                 });
@@ -457,7 +453,7 @@ public class CometVisuServlet extends HttpServlet {
                     rss += "<link>" + feed.link + "</link>\n";
                     rss += "<desrciption>" + feed.description + "</desription>\n";
 
-                    for (org.openhab.ui.cometvisu.internal.rrs.beans.Entry entry : feed.entries) {
+                    for (org.openhab.ui.cometvisu.internal.rss.beans.Entry entry : feed.entries) {
                         rss += "<item>";
                         rss += "<title>" + entry.title + "</title>";
                         rss += "<description>" + entry.content + "</description>";
@@ -522,7 +518,7 @@ public class CometVisuServlet extends HttpServlet {
         // Check if file actually exists in filesystem.
         if (!file.exists()) {
             // show installation hints if the CometVisu-Clients main index.html is requested but cannot be found
-            if (file.getParent().equals(rootFolder.getCanonicalPath())
+            if (file.getParent().equals(rootFolder.getPath())
                     && (file.getName().equalsIgnoreCase("index.html") || file.getName().length() == 0)) {
                 showInstallationHint(request, response);
             } else {

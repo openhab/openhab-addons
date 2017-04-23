@@ -37,8 +37,6 @@ import org.openhab.ui.cometvisu.backend.beans.StateBean;
 @Produces(MediaType.APPLICATION_JSON)
 public class StateBeanMessageBodyWriter implements MessageBodyWriter<Object> {
 
-    // private static final Logger logger = LoggerFactory.getLogger(StateBeanMessageBodyWriter.class);
-
     @Override
     public long getSize(Object arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         // deprecated by JAX-RS 2.0 and ignored by Jersey runtime

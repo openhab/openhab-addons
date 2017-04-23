@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
-    private static final Logger logger = LoggerFactory.getLogger(GetParamsetParser.class);
+    private final Logger logger = LoggerFactory.getLogger(GetParamsetParser.class);
 
     private HmChannel channel;
     private HmParamsetType paramsetType;
@@ -51,8 +51,9 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
                 // should never happen, but in case ...
 
                 // suppress warning for this datapoint due wrong CCU metadata
-                boolean isHmSenMdirNextTrans = channel.getDevice().getType().startsWith("HM-Sen-MDIR-O")
-                        && dpInfo.getName().equals("NEXT_TRANSMISSION");
+                String deviceType = channel.getDevice().getType();
+                boolean isHmSenMdirNextTrans = dpInfo.getName().equals("NEXT_TRANSMISSION")
+                        && (deviceType.startsWith("HM-Sen-MDIR-O") || deviceType.startsWith("HM-Sen-MDIR-WM55"));
                 if (!isHmSenMdirNextTrans) {
                     logger.warn("Can't set value for datapoint '{}'", dpInfo);
                 }

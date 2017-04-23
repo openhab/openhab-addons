@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class CcuValueParser extends CommonRpcParser<TclScriptDataList, Void> {
-    private static final Logger logger = LoggerFactory.getLogger(CcuValueParser.class);
+    private final Logger logger = LoggerFactory.getLogger(CcuValueParser.class);
 
     private HmChannel channel;
 

@@ -205,7 +205,7 @@ public class MilightLedHandler extends BaseThingHandler {
                 break;
             }
             default:
-                logger.error("Channel unknown " + channelUID.getId());
+                logger.error("Channel unknown {}", channelUID.getId());
         }
     }
 

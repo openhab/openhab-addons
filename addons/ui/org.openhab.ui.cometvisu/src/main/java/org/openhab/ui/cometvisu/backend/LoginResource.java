@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_LOGIN_ALIAS)
 public class LoginResource implements RESTResource {
-    private static final Logger logger = LoggerFactory.getLogger(LoginResource.class);
-
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     public Response getLogin(@Context UriInfo uriInfo, @Context HttpHeaders headers, @QueryParam("u") String user,

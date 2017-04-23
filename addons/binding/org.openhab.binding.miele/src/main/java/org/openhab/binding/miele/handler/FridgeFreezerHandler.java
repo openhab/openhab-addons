@@ -28,7 +28,7 @@ import com.google.gson.JsonElement;
  */
 public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerChannelSelector> {
 
-    protected Logger logger = LoggerFactory.getLogger(FridgeFreezerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(FridgeFreezerHandler.class);
 
     public FridgeFreezerHandler(Thing thing) {
         super(thing, FridgeFreezerChannelSelector.class, "FridgeFreezer");

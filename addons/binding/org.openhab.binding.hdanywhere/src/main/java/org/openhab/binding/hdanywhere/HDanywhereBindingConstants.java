@@ -21,8 +21,8 @@ public class HDanywhereBindingConstants {
     public static final String BINDING_ID = "hdanywhere";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_MULTIROOMPLUS = new ThingTypeUID(BINDING_ID, "multiroomplus");
-    public final static ThingTypeUID THING_TYPE_MHUB4K431 = new ThingTypeUID(BINDING_ID, "mhub4k431");
+    public static final ThingTypeUID THING_TYPE_MULTIROOMPLUS = new ThingTypeUID(BINDING_ID, "multiroomplus");
+    public static final ThingTypeUID THING_TYPE_MHUB4K431 = new ThingTypeUID(BINDING_ID, "mhub4k431");
 
     // List of all Channel ids
     public enum Port {

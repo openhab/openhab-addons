@@ -74,7 +74,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             try {
                 shades = targets.getShades();
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                logger.error("{}", e.getMessage(), e);
                 stopScan();
                 return;
             }

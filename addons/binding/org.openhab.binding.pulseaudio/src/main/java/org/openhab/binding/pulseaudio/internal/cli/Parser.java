@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.2.0
  */
 public class Parser {
-    private final static Logger logger = LoggerFactory.getLogger(Parser.class);
+    private static final Logger logger = LoggerFactory.getLogger(Parser.class);
 
     private static final Pattern pattern = Pattern.compile("^\\s+([a-z\\s._]+)[:=]\\s*<?\"?([^>\"]+)\"?>?$");
     private static final Pattern volumePattern = Pattern.compile(

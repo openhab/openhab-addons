@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.ui.cometvisu.internal.rrs.beans;
+package org.openhab.ui.cometvisu.internal.rss.beans;
 
 /**
  * {@link ResponseData} is used by the CometVisu rss-plugin

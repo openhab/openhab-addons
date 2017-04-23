@@ -53,7 +53,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
         serialPort = (SerialPort) commPort;
         serialPort.setSerialPortParams(38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
         serialPort.enableReceiveThreshold(1);
-        serialPort.disableReceiveTimeout();
+        serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
 
         in = serialPort.getInputStream();
         out = serialPort.getOutputStream();
@@ -88,6 +88,9 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
         if (readerThread != null) {
             logger.debug("Interrupt serial listener");
             readerThread.interrupt();
+            try {
+                readerThread.join();
+            } catch (InterruptedException e) {}
         }
 
         if (out != null) {

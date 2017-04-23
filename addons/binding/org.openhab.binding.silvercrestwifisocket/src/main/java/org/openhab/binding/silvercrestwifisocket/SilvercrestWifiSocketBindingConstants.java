@@ -30,31 +30,31 @@ public class SilvercrestWifiSocketBindingConstants {
     /**
      * List of all Thing Type UIDs.
      */
-    public final static ThingTypeUID THING_TYPE_WIFI_SOCKET = new ThingTypeUID(BINDING_ID, "wifiSocket");
+    public static final ThingTypeUID THING_TYPE_WIFI_SOCKET = new ThingTypeUID(BINDING_ID, "wifiSocket");
 
     /**
      * List of all Channel ids
      */
-    public final static String WIFI_SOCKET_CHANNEL_ID = "switch";
+    public static final String WIFI_SOCKET_CHANNEL_ID = "switch";
 
     /**
      * The supported thing types.
      */
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WIFI_SOCKET);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WIFI_SOCKET);
 
     // -------------- Configuration arguments ----------------
     /**
      * Mac address configuration argument key.
      */
-    public final static String MAC_ADDRESS_ARG = "macAddress";
+    public static final String MAC_ADDRESS_ARG = "macAddress";
     /**
      * Wifi socket update interval configuration argument key.
      */
-    public final static String UPDATE_INTERVAL_ARG = "updateInterval";
+    public static final String UPDATE_INTERVAL_ARG = "updateInterval";
     /**
      * Host address configuration argument key.
      */
-    public final static String HOST_ADDRESS_ARG = "hostAddress";
+    public static final String HOST_ADDRESS_ARG = "hostAddress";
 
     // -------------- Default values ----------------
     /**

@@ -37,7 +37,7 @@ import com.google.gson.JsonParser;
  */
 public class KodiClientSocket {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KodiClientSocket.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(KodiClientSocket.class);
 
     private final ScheduledExecutorService scheduler;
     private static final int REQUEST_TIMEOUT_MS = 60000;
@@ -140,14 +140,14 @@ public class KodiClientSocket {
             LOGGER.debug("Message received from server: {}", message);
             final JsonObject json = parser.parse(message).getAsJsonObject();
             if (json.has("id")) {
-                LOGGER.debug("Response received from server:" + json.toString());
+                LOGGER.debug("Response received from server: {}", json);
                 int messageId = json.get("id").getAsInt();
                 if (messageId == nextMessageId - 1) {
                     commandResponse = json;
                     commandLatch.countDown();
                 }
             } else {
-                LOGGER.debug("Event received from server: {}", json.toString());
+                LOGGER.debug("Event received from server: {}", json);
                 try {
                     if (eventHandler != null) {
                         scheduler.submit(new Runnable() {
