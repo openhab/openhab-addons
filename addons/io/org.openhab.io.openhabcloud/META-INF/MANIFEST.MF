@@ -40,7 +40,8 @@ Import-Package: javax.net,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.event,
- org.slf4j
+ org.slf4j,
+ org.openhab.io.openhabcloud
 Export-Package: org.openhab.io.openhabcloud
 Bundle-ClassPath: .,
  lib/json-20140107.jar,
@@ -51,4 +52,3 @@ Bundle-ClassPath: .,
  lib/socket.io-client-0.8.2.jar
 Bundle-Vendor: openHAB.org
 Bundle-ActivationPolicy: lazy
-

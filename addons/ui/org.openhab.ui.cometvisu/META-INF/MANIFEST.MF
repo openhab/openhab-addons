@@ -44,7 +44,8 @@ Import-Package:
  org.osgi.service.cm;version="[1.5,2)",
  org.osgi.service.http;version="[1.2,2)",
  org.slf4j;version="[1.7,2)",
- org.xml.sax
+ org.xml.sax,
+ org.openhab.ui.cometvisu.php
 Service-Component: OSGI-INF/*.xml
 Bundle-ClassPath: .,
  lib/rrd4j-2.2.jar,
