@@ -1,10 +1,7 @@
 package org.openhab.binding.omnilink.discovery;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -34,18 +31,6 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     private OmnilinkBridgeHandler bridgeHandler;
 
-    StringBuilder groups;
-    StringBuilder items;
-    HashMap<String, LinkedList<SiteItem>> rooms;
-    LinkedList<SiteItem> lights;
-    LinkedList<SiteItem> thermos;
-    LinkedList<SiteItem> audioZones;
-    LinkedList<SiteItem> audioSources;
-    LinkedList<SiteItem> areas;
-    LinkedList<SiteItem> zones;
-    LinkedList<SiteItem> buttons;
-    ArrayList<String> existingGroups;
-
     /**
      * Creates a IsyDiscoveryService.
      */
@@ -71,20 +56,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         logger.debug("Starting scan");
         Connection c = bridgeHandler.getOmnilinkConnection();
-        groups = new StringBuilder();
-        items = new StringBuilder();
-        rooms = new LinkedHashMap<String, LinkedList<SiteItem>>();
-        lights = new LinkedList<SiteItem>();
-        thermos = new LinkedList<SiteItem>();
-        audioZones = new LinkedList<SiteItem>();
-        audioSources = new LinkedList<SiteItem>();
-        areas = new LinkedList<SiteItem>();
-        zones = new LinkedList<SiteItem>();
-        buttons = new LinkedList<SiteItem>();
 
-        existingGroups = new ArrayList<String>();
-
-        groups.append("Group All\n");
         try {
             generateUnits(c);
             generateZones(c);
@@ -116,20 +88,15 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                 break;
             }
 
-            ThingUID thingUID = null;
-            String thingID = "";
-            String thingLabel = areaName;
-            thingID = Integer.toString(objnum);
-
             Map<String, Object> properties = new HashMap<>(0);
-            thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_AREA, thingID);
+            ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_AREA, Integer.toString(objnum));
             properties.put(OmnilinkUnitConfig.NUMBER, objnum);
-            properties.put(OmnilinkUnitConfig.NAME, thingLabel);
+            properties.put(OmnilinkUnitConfig.NAME, areaName);
 
             DiscoveryResult discoveryResult;
 
             discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(thingLabel).build();
+                    .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(areaName).build();
             thingDiscovered(discoveryResult);
 
         }
@@ -139,20 +106,17 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             OmniInvalidResponseException, OmniUnknownMessageTypeException {
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
         // Group Lights_GreatRoom "Great Room" (Lights)
-        String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
+        // String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
 
         // Dimmer Lights_GreatRoom_MainLights_Switch "Main Lights [%d%%]" (Lights_GreatRoom) {omnilink="unit:10"}
-        String itemString = "%s\t%s\t\"%s\"\t(%s)\t{omnilink=\"unit:%d\"}\n";
+        // String itemString = "%s\t%s\t\"%s\"\t(%s)\t{omnilink=\"unit:%d\"}\n";
 
-        String groupName = "Lights";
-
-        // Group Lights "Lights" (All)
-        groups.append(String.format(groupString, groupName, "Lights", "All"));
+        // String groupName = "Lights";
 
         int objnum = 0;
         Message m;
         int currentRoom = 0;
-        String currentRoomName = null;
+        // String currentRoomName = null;
 
         while ((m = c.reqObjectProperties(Message.OBJ_TYPE_UNIT, objnum, 1, ObjectProperties.FILTER_1_NAMED,
                 ObjectProperties.FILTER_2_AREA_ALL, ObjectProperties.FILTER_3_ANY_LOAD))
@@ -160,7 +124,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             UnitProperties o = ((UnitProperties) m);
             objnum = o.getNumber();
 
-            boolean isInRoom = false;
+            // boolean isInRoom = false;
             boolean isRoomController = false;
             logger.debug("Unit type: {}", o.getUnitType());
             if (o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM
@@ -168,37 +132,31 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                 currentRoom = objnum;
 
                 // Lights_LivingRoom
-                currentRoomName = cleanString(groupName + "_" + o.getName());
+                // currentRoomName = cleanString(groupName + "_" + o.getName());
 
                 // Make Sure we don't already have a group called this
-                currentRoomName = addUniqueGroup(currentRoomName);
+                // currentRoomName = addUniqueGroup(currentRoomName);
 
-                groups.append(String.format(groupString, currentRoomName, o.getName(), groupName));
-                rooms.put(currentRoomName, new LinkedList<SiteItem>());
-                isInRoom = true;
+                // isInRoom = true;
                 isRoomController = true;
             } else if (objnum < currentRoom + 8) {
-                isInRoom = true;
+                // isInRoom = true;
             }
 
             // clean the name to remove things like spaces
-            String objName = cleanString(o.getName());
+            // String objName = cleanString(o.getName());
 
-            String group = isInRoom ? currentRoomName : groupName;
+            // String group = isInRoom ? currentRoomName : groupName;
 
             // name will be the room name for the first device and roomName_deviceName for sub devices
-            String name = isRoomController ? objName : group + "_" + objName;
+            // String name = isRoomController ? objName : group + "_" + objName;
 
             // the label does not have to be cleaned, so set it from the object
-            String label = o.getName() + " [%d%%]";
+            // String label = o.getName() + " [%d%%]";
 
-            SiteItem light = new SiteItem(name, o.getName(), label);
-
-            items.append(String.format(itemString, "Dimmer", name + "_Switch", label, group, objnum));
+            // SiteItem light = new SiteItem(name, o.getName(), label);
 
             if (isRoomController) {
-                items.append(
-                        String.format(itemString, "String", name + "_String", o.getName() + " [%s]", group, objnum));
             } else {
                 ThingUID thingUID = null;
                 String thingID = "";
@@ -222,13 +180,6 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                         .withBridge(bridgeUID).withLabel(thingLabel).build();
                 thingDiscovered(discoveryResult);
             }
-
-            if (isInRoom) {
-                rooms.get(currentRoomName).add(light);
-            } else {
-                lights.add(light);
-            }
-
         }
     }
 
@@ -243,10 +194,9 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private void generateZones(Connection c) throws IOException, OmniNotConnectedException,
             OmniInvalidResponseException, OmniUnknownMessageTypeException {
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
-        String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
-        String itemString = "%s\t%s\t\"%s\"\t(%s)\t{omnilink=\"%s:%d\"}\n";
-        String groupName = "Zones";
-        groups.append(String.format(groupString, groupName, "Zones", "All"));
+        // String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
+        // String itemString = "%s\t%s\t\"%s\"\t(%s)\t{omnilink=\"%s:%d\"}\n";
+        // String groupName = "Zones";
 
         int objnum = 0;
         Message m;
@@ -274,56 +224,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private class SiteItem {
-        private String name;
-        private String objName;
-        private String label;
-
-        public SiteItem(String name, String objName, String label) {
-            super();
-            this.name = name;
-            this.objName = objName;
-            this.label = label;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getObjName() {
-            return objName;
-        }
-
-        public void setObjName(String objName) {
-            this.objName = objName;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-
-    }
-
     protected static String cleanString(String string) {
         return string.replaceAll("[^A-Za-z0-9_-]", "");
     }
 
-    private String addUniqueGroup(String name) {
-        // dont allow duplicate group names
-        int i = 0;
-        String tmpName = name;
-        while (existingGroups.contains(tmpName)) {
-            tmpName = name + (i++);
-        }
-        existingGroups.add(tmpName);
-        return tmpName;
-    }
 }
