@@ -133,7 +133,7 @@ public class MulticastListener {
         } else if (beacon.contains(GC_MODEL_ZMOTE)) {
             parseZmoteAnnouncementBeacon(beacon);
         } else {
-            logger.info("Multicast listener doesn't know how to parse beacon: {}", beacon);
+            logger.debug("Multicast listener doesn't know how to parse beacon: {}", beacon);
         }
     }
 
