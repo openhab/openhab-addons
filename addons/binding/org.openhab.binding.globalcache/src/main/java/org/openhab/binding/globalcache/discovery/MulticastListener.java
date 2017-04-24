@@ -52,10 +52,6 @@ public class MulticastListener {
     private static final String GC_MULTICAST_GROUP = "239.255.250.250";
     private static final int GC_MULTICAST_PORT = 9131;
 
-    // Used for a basic soundness check on the received beacon.
-    // A beacon shorter than this is probably malformed.
-    private static final int GC_BEACON_MIN_LENGTH = 160;
-
     // How long to wait in milliseconds for a discovery beacon
     public static final int DEFAULT_SOCKET_TIMEOUT = 3000;
 
@@ -318,7 +314,7 @@ public class MulticastListener {
                 return THING_TYPE_ZMOTE;
 
             default:
-                return THING_TYPE_UNKNOWN;
+                return null;
         }
     }
 }
