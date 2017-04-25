@@ -33,12 +33,12 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
         logger.debug("handleCommand called for channel:{}, command:{}", channelUID, command);
         final String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         if (command instanceof RefreshType) {
-            logger.debug("Handling refresh");
+            logger.debug("Handling refresh, flag id: {}", channelParts[2]);
             Futures.addCallback(getOmnilinkBridgeHander().getUnitStatus(Integer.parseInt(channelParts[2])),
                     new FutureCallback<UnitStatus>() {
                         @Override
                         public void onFailure(Throwable arg0) {
-                            logger.error("Failed retrieving status for unit #: {}, error: {}", channelParts[2], arg0);
+                            logger.error("Failed retrieving status for flag #: {}", channelParts[2], arg0);
                         }
 
                         @Override
