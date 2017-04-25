@@ -9,7 +9,7 @@ Bundle-ClassPath: .
 Import-Package: com.google.common.base,
  com.google.common.collect,
  gnu.io,
- org.apache.commons.io;version="2.2.0",
+ org.apache.commons.io,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
