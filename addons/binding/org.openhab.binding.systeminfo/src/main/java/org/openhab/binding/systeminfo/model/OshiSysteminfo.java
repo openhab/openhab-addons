@@ -209,11 +209,30 @@ public class OshiSysteminfo implements SysteminfoInterface {
     @Override
     public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
-        long freeStorage = fileStore.getUsableSpace();
-        long totalStorage = fileStore.getTotalSpace();
-        double freePercentDecimal = (double) freeStorage / (double) totalStorage;
-        BigDecimal freePercent = getPercentsValue(freePercentDecimal);
-        return new DecimalType(freePercent);
+        long totalSpace = fileStore.getTotalSpace();
+        long freeSpace = fileStore.getUsableSpace();
+        if (totalSpace > 0) {
+            double freePercentDecimal = (double) freeSpace / (double) totalSpace;
+            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
+            return new DecimalType(freePercent);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
+        long totalSpace = fileStore.getTotalSpace();
+        long freeSpace = fileStore.getUsableSpace();
+        long usedSpace = totalSpace - freeSpace;
+        if (totalSpace > 0) {
+            double usedPercentDecimal = (double) usedSpace / (double) totalSpace;
+            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
+            return new DecimalType(usedPercent);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -335,6 +354,21 @@ public class OshiSysteminfo implements SysteminfoInterface {
     }
 
     @Override
+    public DecimalType getMemoryUsedPercent() {
+        long availableMemory = memory.getAvailable();
+        long totalMemory = memory.getTotal();
+        long usedMemory = totalMemory - availableMemory;
+        BigDecimal usedPercent;
+        if (totalMemory > 0) {
+            double usedPercentDecimal = (double) usedMemory / (double) totalMemory;
+            usedPercent = getPercentsValue(usedPercentDecimal);
+            return new DecimalType(usedPercent);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public StringType getDriveName(int deviceIndex) throws DeviceNotFoundException {
         HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
         String name = drive.getName();
@@ -388,6 +422,20 @@ public class OshiSysteminfo implements SysteminfoInterface {
             double freePercentDecimal = (double) freeSwap / (double) totalSwap;
             freePercent = getPercentsValue(freePercentDecimal);
             return new DecimalType(freePercent);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DecimalType getSwapUsedPercent() {
+        long usedSwap = memory.getSwapUsed();
+        long totalSwap = memory.getSwapTotal();
+        BigDecimal usedPercent;
+        if (totalSwap > 0) {
+            double usedPercentDecimal = (double) usedSwap / (double) totalSwap;
+            usedPercent = getPercentsValue(usedPercentDecimal);
+            return new DecimalType(usedPercent);
         } else {
             return null;
         }
