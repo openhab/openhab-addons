@@ -269,6 +269,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
             @Override
             public ObjectStatus call() throws Exception {
+                if (omniConnection == null) {
+                    Thread.sleep(100);
+                }
                 return omniConnection.reqObjectStatus(Message.OBJ_TYPE_UNIT, address, address);
             }
         });
