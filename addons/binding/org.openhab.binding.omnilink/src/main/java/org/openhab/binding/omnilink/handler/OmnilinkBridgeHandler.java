@@ -31,6 +31,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
 import com.google.common.base.Function;
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -226,16 +227,24 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     public ListenableFuture<UnitStatus[]> getUnitStatuses() {
 
-        ListenableFuture<ObjectStatus> objectStatus = Futures.chain(getMaxUnit(),
-                new Function<Integer, ListenableFuture<ObjectStatus>>() {
-                    @Override
-                    public ListenableFuture<ObjectStatus> apply(final Integer maxUnitNum) {
-                        logger.debug("max unit is: {}", maxUnitNum);
-                        return requestObjectStatus(Message.OBJ_TYPE_UNIT, 1, 5);
-                    }
-                });
+        AsyncFunction<Integer, ObjectStatus> queryFunction = new AsyncFunction<Integer, ObjectStatus>() {
+            @Override
+            public ListenableFuture<ObjectStatus> apply(Integer rowKey) {
+                return requestObjectStatus(Message.OBJ_TYPE_UNIT, 1, rowKey);
+            }
+        };
 
-        return Futures.transform(objectStatus, new Function<ObjectStatus, UnitStatus[]>() {
+        ListenableFuture<ObjectStatus> queryFuture = Futures.transform(getMaxUnit(), queryFunction, listeningExecutor);
+        // ListenableFuture<ObjectStatus> objectStatus = Futures.chain(getMaxUnit(),
+        // new Function<Integer, ListenableFuture<ObjectStatus>>() {
+        // @Override
+        // public ListenableFuture<ObjectStatus> apply(final Integer maxUnitNum) {
+        // logger.debug("max unit is: {}", maxUnitNum);
+        // return requestObjectStatus(Message.OBJ_TYPE_UNIT, 1, 5);
+        // }
+        // });
+
+        return Futures.transform(queryFuture, new Function<ObjectStatus, UnitStatus[]>() {
             @Override
             public UnitStatus[] apply(ObjectStatus t) {
                 return (UnitStatus[]) t.getStatuses();
@@ -249,7 +258,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
             @Override
             public ObjectStatus call() throws Exception {
-                return omniConnection.reqObjectStatus(arg1, arg2, arg3);
+                return omniConnection.reqObjectStatus(arg1, arg2, arg3, true);
             }
         });
     }
@@ -260,7 +269,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
             @Override
             public ObjectStatus call() throws Exception {
-                return omniConnection.reqObjectStatus(2, address, address);
+                return omniConnection.reqObjectStatus(Message.OBJ_TYPE_UNIT, address, address);
             }
         });
         return Futures.transform(omniCall, new Function<ObjectStatus, UnitStatus>() {
