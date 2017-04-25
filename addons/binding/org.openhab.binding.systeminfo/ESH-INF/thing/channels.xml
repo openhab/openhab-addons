@@ -168,7 +168,7 @@
 	<channel-type id="availablePercent">
 		<item-type>Number</item-type>
 		<label>Available (%)</label>
-		<description>Available size in percents</description>
+		<description>Available size in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:highpriority" />
 	</channel-type>
@@ -176,7 +176,7 @@
 	<channel-type id="usedPercent">
 		<item-type>Number</item-type>
 		<label>Used (%)</label>
-		<description>Used size in percents</description>
+		<description>Used size in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:highpriority" />
 	</channel-type>
@@ -264,7 +264,7 @@
 	<channel-type id="remainingCapacity">
 		<item-type>Number</item-type>
 		<label>Remaining capacity</label>
-		<description>Remaining capacity in percents</description>
+		<description>Remaining capacity in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>
@@ -272,7 +272,7 @@
 	<channel-type id="load">
 		<item-type>Number</item-type>
 		<label>Load</label>
-		<description>Load in percents</description>
+		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:highpriority" />
 	</channel-type>
@@ -280,7 +280,7 @@
 	<channel-type id="load_process">
 		<item-type>Number</item-type>
 		<label>Load</label>
-		<description>Load in percents</description>
+		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:highpriority_process" />
 	</channel-type>
@@ -288,7 +288,7 @@
 	<channel-type id="loadAverage" advanced="true">
 		<item-type>Number</item-type>
 		<label>Load average</label>
-		<description>Load in percents for the last 1,5 or 15 minutes</description>
+		<description>Load in percent for the last 1,5 or 15 minutes</description>
 		<state readOnly="true" pattern="%.1f %%" />
 		<config-description-ref uri="systeminfo:channels:mediumpriority" />
 	</channel-type>

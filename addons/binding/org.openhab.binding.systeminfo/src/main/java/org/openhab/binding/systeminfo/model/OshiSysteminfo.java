@@ -343,10 +343,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public DecimalType getMemoryAvailablePercent() {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
-        BigDecimal freePercent;
         if (totalMemory > 0) {
             double freePercentDecimal = (double) availableMemory / (double) totalMemory;
-            freePercent = getPercentsValue(freePercentDecimal);
+            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
             return new DecimalType(freePercent);
         } else {
             return null;
@@ -358,10 +357,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
         long usedMemory = totalMemory - availableMemory;
-        BigDecimal usedPercent;
         if (totalMemory > 0) {
             double usedPercentDecimal = (double) usedMemory / (double) totalMemory;
-            usedPercent = getPercentsValue(usedPercentDecimal);
+            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
             return new DecimalType(usedPercent);
         } else {
             return null;
@@ -417,10 +415,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
         long usedSwap = memory.getSwapUsed();
         long totalSwap = memory.getSwapTotal();
         long freeSwap = totalSwap - usedSwap;
-        BigDecimal freePercent;
         if (totalSwap > 0) {
             double freePercentDecimal = (double) freeSwap / (double) totalSwap;
-            freePercent = getPercentsValue(freePercentDecimal);
+            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
             return new DecimalType(freePercent);
         } else {
             return null;
@@ -431,10 +428,9 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public DecimalType getSwapUsedPercent() {
         long usedSwap = memory.getSwapUsed();
         long totalSwap = memory.getSwapTotal();
-        BigDecimal usedPercent;
         if (totalSwap > 0) {
             double usedPercentDecimal = (double) usedSwap / (double) totalSwap;
-            usedPercent = getPercentsValue(usedPercentDecimal);
+            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
             return new DecimalType(usedPercent);
         } else {
             return null;
