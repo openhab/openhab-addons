@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a cache for the retrieved audio data. It will preserve
- * them in file system, as .mp3 files with an additional .txt file to indidate
+ * them in file system, as audio files with an additional .txt file to indicate
  * what content is in the audio file.
  *
  * @author Jochen Hiller - Initial contribution
@@ -50,7 +50,7 @@ public class CachedVoiceRSSCloudImplementation extends VoiceRSSCloudImplementati
             throws IOException {
         String fileNameInCache = getUniqeFilenameForText(text, locale);
         // check if in cache
-        File audioFileInCache = new File(cacheFolder, fileNameInCache + ".mp3");
+        File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + audioFormat.toLowerCase());
         if (audioFileInCache.exists()) {
             return audioFileInCache;
         }
