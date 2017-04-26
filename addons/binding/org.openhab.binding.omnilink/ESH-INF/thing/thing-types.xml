@@ -24,7 +24,7 @@
             </parameter>
         </config-description>
     </bridge-type>
-    <thing-type id="room">
+    <bridge-type id="room">
         <supported-bridge-type-refs>
             <bridge-type-ref id="omnilinkBridge" />
         </supported-bridge-type-refs>
@@ -33,6 +33,7 @@
         <description>Grouping of Units</description>
 
         <channels>
+            <channel id="status" typeId="lightlevel" />
             <channel id="scenea" typeId="scene_toggle" />
             <channel id="sceneb" typeId="scene_toggle" />
             <channel id="scenec" typeId="scene_toggle" />
@@ -49,7 +50,7 @@
                 <description>Name of the dimmer.</description>
             </parameter>
         </config-description>
-    </thing-type>
+    </bridge-type>
     <thing-type id="flag">
         <supported-bridge-type-refs>
             <bridge-type-ref id="omnilinkBridge" />

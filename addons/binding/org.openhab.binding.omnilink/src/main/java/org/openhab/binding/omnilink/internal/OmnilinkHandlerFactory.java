@@ -42,7 +42,7 @@ import com.google.common.collect.ImmutableSet;
 public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_AREA,
-            THING_TYPE_ZONE, THING_TYPE_UNIT, THING_TYPE_BRIDGE, THING_TYPE_FLAG);
+            THING_TYPE_ZONE, THING_TYPE_UNIT, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 

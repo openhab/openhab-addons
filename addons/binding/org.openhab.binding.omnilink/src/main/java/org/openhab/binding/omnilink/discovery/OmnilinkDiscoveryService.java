@@ -131,44 +131,26 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                     || o.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM) {
                 currentRoom = objnum;
 
-                // Lights_LivingRoom
-                // currentRoomName = cleanString(groupName + "_" + o.getName());
-
-                // Make Sure we don't already have a group called this
-                // currentRoomName = addUniqueGroup(currentRoomName);
-
-                // isInRoom = true;
                 isRoomController = true;
             } else if (objnum < currentRoom + 8) {
                 // isInRoom = true;
             }
 
-            // clean the name to remove things like spaces
-            // String objName = cleanString(o.getName());
+            ThingUID thingUID = null;
+            String thingID = "";
+            String thingLabel = o.getName();
+            thingID = Integer.toString(objnum);
 
-            // String group = isInRoom ? currentRoomName : groupName;
+            Map<String, Object> properties = new HashMap<>(0);
 
-            // name will be the room name for the first device and roomName_deviceName for sub devices
-            // String name = isRoomController ? objName : group + "_" + objName;
-
-            // the label does not have to be cleaned, so set it from the object
-            // String label = o.getName() + " [%d%%]";
-
-            // SiteItem light = new SiteItem(name, o.getName(), label);
-
+            properties.put(OmnilinkUnitConfig.NUMBER, objnum);
+            properties.put(OmnilinkUnitConfig.NAME, o.getName());
+            DiscoveryResult discoveryResult;
             if (isRoomController) {
+                discoveryResult = DiscoveryResultBuilder
+                        .create(new ThingUID(OmnilinkBindingConstants.THING_TYPE_ROOM, thingID))
+                        .withProperties(properties).withBridge(bridgeUID).withLabel(thingLabel).build();
             } else {
-                ThingUID thingUID = null;
-                String thingID = "";
-                String thingLabel = o.getName();
-                thingID = Integer.toString(objnum);
-
-                Map<String, Object> properties = new HashMap<>(0);
-
-                properties.put(OmnilinkUnitConfig.NUMBER, objnum);
-                properties.put(OmnilinkUnitConfig.NAME, o.getName());
-
-                DiscoveryResult discoveryResult;
                 if (o.getUnitType() == UnitProperties.UNIT_TYPE_FLAG) {
                     thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_FLAG, thingID);
 
@@ -178,8 +160,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                 }
                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withBridge(bridgeUID).withLabel(thingLabel).build();
-                thingDiscovered(discoveryResult);
             }
+            thingDiscovered(discoveryResult);
         }
     }
 
