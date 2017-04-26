@@ -12,7 +12,7 @@ always_pending:
 group_defaults:
   approve_by_comment:
     enabled: true
-      approve_regex: '^(Approved|:shipit:|:\+1:|LGTM)'
+    approve_regex: '^(Approved|:shipit:|:\+1:|LGTM)'
   reset_on_push:
     enabled: true
 
