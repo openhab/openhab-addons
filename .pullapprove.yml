@@ -15,3 +15,10 @@ group_defaults:
       approve_regex: '^(Approved|:shipit:|:\+1:|LGTM)'
   reset_on_push:
     enabled: true
+
+groups:
+  code-review:
+    required: 1
+    teams:
+    - 2-x-add-ons-maintainers
+    - maintainers
