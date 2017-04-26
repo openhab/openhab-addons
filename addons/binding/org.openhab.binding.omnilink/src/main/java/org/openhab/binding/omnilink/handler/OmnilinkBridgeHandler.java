@@ -1,6 +1,5 @@
 package org.openhab.binding.omnilink.handler;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.openhab.binding.omnilink.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.protocol.AreaAlarmStatus;
@@ -44,7 +42,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private Connection omniConnection;
     private ListeningScheduledExecutorService listeningExecutor;
     private Map<Integer, Thing> areaThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
-
+    private Map<Integer, Thing> unitThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
+    private Map<Integer, Thing> zoneThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     // private CacheHolder<Unit> nodes;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
@@ -101,74 +100,41 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             logger.error("Error connecting to omnilink", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        loadUnitStatuses();
+        // loadUnitStatuses();
     }
 
     @Override
     public void objectStausNotification(ObjectStatus status) {
-        // logger.debug("status notification: {}", status);
         Status[] statuses = status.getStatuses();
         for (Status s : statuses) {
             if (s instanceof UnitStatus) {
                 UnitStatus stat = (UnitStatus) s;
-                logger.debug("Handle objectStatusNotification for: {}", stat);
-                for (Thing thing : super.getThing().getThings()) {
-
-                    if (OmnilinkBindingConstants.THING_TYPE_UNIT.equals(thing.getThingTypeUID())
-                            || OmnilinkBindingConstants.THING_TYPE_FLAG.equals(thing.getThingTypeUID())) {
-                        Object zoneId = thing.getConfiguration().getProperties().get("number");
-                        int resolvedZoneId;
-                        if (zoneId instanceof BigDecimal) {
-                            resolvedZoneId = ((BigDecimal) zoneId).intValue();
-                        } else {
-                            resolvedZoneId = (int) zoneId;
-                        }
-                        Integer number = new Integer(((UnitStatus) s).getNumber());
-                        logger.debug("received status update for unit: " + number + ", status: " + stat.getStatus());
-
-                        if (zoneId instanceof BigDecimal) {
-                            resolvedZoneId = ((BigDecimal) zoneId).intValue();
-                        } else {
-                            resolvedZoneId = (int) zoneId;
-                        }
-                        if (zoneId != null) {
-                            if (number.intValue() == resolvedZoneId) {
-                                ((UnitHandler) thing.getHandler()).handleUnitStatus(stat);
-                                break;
-                            }
-                        }
-
-                    }
+                Integer number = stat.getNumber();
+                Thing theThing = unitThings.get(number);
+                logger.debug("received status update for unit: " + number + ", status: " + stat.getStatus());
+                if (theThing != null) {
+                    ((UnitHandler) theThing.getHandler()).handleUnitStatus(stat);
+                    break;
                 }
             } else if (s instanceof ZoneStatus) {
-                for (Thing thing : super.getThing().getThings()) {
-                    if (OmnilinkBindingConstants.THING_TYPE_ZONE.equals(thing.getThingTypeUID())) {
-                        ZoneStatus stat = (ZoneStatus) s;
-                        Integer number = new Integer(stat.getNumber());
-                        logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
-
-                        Object zoneId = thing.getConfiguration().getProperties().get("number");
-                        int resolvedZoneId;
-                        if (zoneId instanceof BigDecimal) {
-                            resolvedZoneId = ((BigDecimal) zoneId).intValue();
-                        } else {
-                            resolvedZoneId = (int) zoneId;
-                        }
-                        if (zoneId != null) {
-                            if (number.intValue() == resolvedZoneId) {
-                                ((ZoneHandler) thing.getHandler()).handleZoneStatus(stat);
-                                break;
-                            }
-                        }
-
-                    }
+                ZoneStatus stat = (ZoneStatus) s;
+                Integer number = new Integer(stat.getNumber());
+                Thing theThing = zoneThings.get(number);
+                logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
+                if (theThing != null) {
+                    ((ZoneHandler) thing.getHandler()).handleZoneStatus(stat);
+                    break;
                 }
 
             } else if (s instanceof AreaStatus) {
                 AreaStatus areaStatus = (AreaStatus) s;
+                Integer number = new Integer(areaStatus.getNumber());
+                Thing theThing = areaThings.get(number);
                 logger.debug("AreaStatus: Mode={}, text={}", areaStatus.getMode(),
                         AreaAlarmStatus.values()[areaStatus.getMode()]);
-                ((AreaHandler) areaThings.get(areaStatus.getNumber()).getHandler()).handleAreaEvent(areaStatus);
+                if (theThing != null) {
+                    ((AreaHandler) theThing.getHandler()).handleAreaEvent(areaStatus);
+                }
             }
         }
     }
@@ -199,6 +165,20 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             }
             areaThings.put(Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString()),
                     childThing);
+        } else if (childHandler instanceof UnitHandler) {
+            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
+                throw new IllegalArgumentException("childThing does not have required 'number' property");
+            }
+            unitThings.put(Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString()),
+                    childThing);
+        } else if (childHandler instanceof ZoneHandler) {
+            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
+                throw new IllegalArgumentException("childThing does not have required 'number' property");
+            }
+            zoneThings.put(Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString()),
+                    childThing);
+        } else {
+            logger.warn("Did not add childThing to a map: {}", childThing);
         }
     }
 

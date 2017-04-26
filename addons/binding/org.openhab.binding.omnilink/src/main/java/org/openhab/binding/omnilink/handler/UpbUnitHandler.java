@@ -60,14 +60,12 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
             getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((PercentType) command).intValue(),
                     Integer.parseInt(channelParts[2]));
         } else if (command instanceof RefreshType) {
-            // Update status
             logger.debug("Unit '{}' got REFRESH command", thing.getLabel());
             Futures.addCallback(getOmnilinkBridgeHander().getUnitStatus(Integer.parseInt(channelParts[2])),
                     new FutureCallback<UnitStatus>() {
-
                         @Override
                         public void onFailure(Throwable arg0) {
-                            // TODO Auto-generated method stub
+                            logger.error("Error refreshing unit status", arg0);
                         }
 
                         @Override
