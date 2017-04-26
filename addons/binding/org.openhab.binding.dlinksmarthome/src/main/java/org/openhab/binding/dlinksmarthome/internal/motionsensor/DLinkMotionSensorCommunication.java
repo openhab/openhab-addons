@@ -8,13 +8,6 @@
  */
 package org.openhab.binding.dlinksmarthome.internal.motionsensor;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -46,14 +39,9 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
 
     // SOAP actions
     private static final String DETECTION_ACTION = "\"http://purenetworks.com/HNAP1/GetLatestDetection\"";
-    private static final String REBOOT_ACTION = "\"http://purenetworks.com/HNAP1/Reboot\"";
 
-    // Communication timeout
     private static final int DETECT_TIMEOUT_MS = 5000;
-    private static final int REBOOT_TIMEOUT_MS = 60000;
-
     private static final int DETECT_POLL_S = 1;
-    private static final int REBOOT_WAIT_S = 35;
 
     /**
      * Indicates the device status
@@ -73,10 +61,6 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
          */
         COMMUNICATION_ERROR,
         /**
-         * Device is being rebooted
-         */
-        REBOOTING,
-        /**
          * Internal error
          */
         INTERNAL_ERROR,
@@ -87,11 +71,7 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
         /**
          * Error due to invalid pin code
          */
-        INVALID_PIN,
-        /**
-         * Error due to invalid reboot time
-         */
-        INVALID_TIME
+        INVALID_PIN
     }
 
     /**
@@ -100,14 +80,8 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
     private final Logger logger = LoggerFactory.getLogger(DLinkMotionSensorCommunication.class);
 
     private final DLinkMotionSensorListener listener;
-    private final ScheduledExecutorService scheduler;
-
-    private int rebootHour;
-    private int rebootMinute;
-    private final int rebootInterval;
 
     private SOAPMessage detectionAction;
-    private SOAPMessage rebootAction;
 
     private boolean loginSuccess;
     private boolean detectSuccess;
@@ -115,8 +89,7 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
     private long prevDetection;
     private long lastDetection;
 
-    private ScheduledFuture<?> detectFuture;
-    private ScheduledFuture<?> rebootFuture;
+    private final ScheduledFuture<?> detectFuture;
 
     private boolean online = true;
     private DeviceStatus status = DeviceStatus.INITIALISING;
@@ -133,9 +106,6 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
                 case INITIALISING:
                     online = false;
                     updateStatus = true;
-                    // FALL-THROUGH
-                case REBOOTING:
-                    loginSuccess = false;
                     // FALL-THROUGH
                 case COMMUNICATION_ERROR:
                 case ONLINE:
@@ -175,79 +145,36 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
         }
     };
 
-    /**
-     * Reboot the device
-     */
-    private final Runnable reboot = new Runnable() {
-        @Override
-        public void run() {
-            detectFuture.cancel(true);
-
-            online = false;
-            status = DeviceStatus.REBOOTING;
-            listener.sensorStatus(status);
-
-            login(rebootAction, REBOOT_TIMEOUT_MS);
-            reboot();
-
-            detectFuture = scheduler.scheduleWithFixedDelay(detect, REBOOT_WAIT_S, DETECT_POLL_S, TimeUnit.SECONDS);
-            rebootFuture = scheduler.schedule(reboot, getNextRebootTime(), TimeUnit.MILLISECONDS);
-        }
-    };
-
     public DLinkMotionSensorCommunication(final DLinkMotionSensorConfig config,
             final DLinkMotionSensorListener listener, final ScheduledExecutorService scheduler) {
         super(config.ipAddress, config.pin);
-        this.rebootInterval = config.rebootInterval;
         this.listener = listener;
-        this.scheduler = scheduler;
 
         if (getHNAPStatus() == HNAPStatus.INTERNAL_ERROR) {
             status = DeviceStatus.INTERNAL_ERROR;
         }
 
         try {
-            final DateFormat sdf = new SimpleDateFormat("HH:mm");
-            final Date date = sdf.parse(config.rebootTime);
-            final Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            rebootHour = cal.get(Calendar.HOUR_OF_DAY);
-            rebootMinute = cal.get(Calendar.MINUTE);
-
-            if (rebootInterval < 0 || rebootInterval > 24) {
-                status = DeviceStatus.INVALID_TIME;
-            }
-
             final MessageFactory messageFactory = MessageFactory.newInstance();
             detectionAction = messageFactory.createMessage();
-            rebootAction = messageFactory.createMessage();
 
             buildDetectionAction();
-            buildRebootAction();
 
         } catch (final SOAPException e) {
             logger.debug("DLinkMotionSensorCommunication - Internal error", e);
             status = DeviceStatus.INTERNAL_ERROR;
-        } catch (final ParseException e) {
-            logger.debug("DLinkMotionSensorCommunication - Invalid reboot time", e);
-            status = DeviceStatus.INVALID_TIME;
         }
 
         detectFuture = scheduler.scheduleWithFixedDelay(detect, 0, DETECT_POLL_S, TimeUnit.SECONDS);
-
-        if (rebootInterval > 0) {
-            rebootFuture = scheduler.schedule(reboot, getNextRebootTime(), TimeUnit.MILLISECONDS);
-        }
     }
 
     /**
      * Stop communicating with the device
      */
+    @Override
     public void dispose() {
         detectFuture.cancel(true);
-        if (rebootFuture != null) {
-            rebootFuture.cancel(true);
-        }
+        super.dispose();
     }
 
     /**
@@ -265,61 +192,6 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
 
         final MimeHeaders headers = detectionAction.getMimeHeaders();
         headers.addHeader(SOAPACTION, DETECTION_ACTION);
-    }
-
-    /**
-     * This is the SOAP message used to reboot the device. This message will
-     * only receive a successful response after the login process has been completed and the
-     * authentication data has been set. Device needs rebooting as it eventually becomes
-     * unresponsive.
-     *
-     * @throws SOAPException
-     */
-    private void buildRebootAction() throws SOAPException {
-        rebootAction.getSOAPHeader().detachNode();
-        final SOAPBody soapBody = rebootAction.getSOAPBody();
-        soapBody.addChildElement("Reboot", "", HNAP_XMLNS);
-
-        final MimeHeaders headers = rebootAction.getMimeHeaders();
-        headers.addHeader(SOAPACTION, REBOOT_ACTION);
-    }
-
-    /**
-     * Get the number of milliseconds to the next reboot time
-     *
-     * @return Time in ms to next reboot
-     */
-    private long getNextRebootTime() {
-        final LocalDateTime now = LocalDateTime.now();
-        final LocalDateTime todayStart = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(),
-                rebootHour, rebootMinute, 0);
-
-        LocalDateTime next = todayStart;
-        LocalDateTime nextStart = todayStart;
-
-        if (now.isBefore(todayStart)) {
-            final LocalDateTime yesterday = now.minusDays(1);
-            // Start from yesterday's reboot time
-            next = LocalDateTime.of(yesterday.getYear(), yesterday.getMonth(), yesterday.getDayOfMonth(), rebootHour,
-                    rebootMinute, 0);
-        } else {
-            final LocalDateTime tomorrow = now.plusDays(1);
-            // End at tomorrow's reboot time
-            nextStart = LocalDateTime.of(tomorrow.getYear(), tomorrow.getMonth(), tomorrow.getDayOfMonth(), rebootHour,
-                    rebootMinute, 0);
-        }
-
-        // Add intervals until we are past the current time
-        while (next.isBefore(now)) {
-            next = next.plusHours(rebootInterval);
-        }
-
-        // Each day starts at the reboot time
-        if (next.isAfter(nextStart)) {
-            next = nextStart;
-        }
-
-        return now.until(next, ChronoUnit.MILLIS);
     }
 
     /**
@@ -412,25 +284,5 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
         }
 
         return detectSuccess;
-    }
-
-    /**
-     * Sends the reboot message
-     *
-     */
-    private void reboot() {
-        if (loginSuccess) {
-            try {
-                final Document soapResponse = sendReceive(rebootAction, REBOOT_TIMEOUT_MS);
-
-                final Node result = soapResponse.getElementsByTagName("RebootResult").item(0);
-
-                if (result == null || !OK.equals(result.getTextContent())) {
-                    unexpectedResult("reboot - Unexpected response", soapResponse);
-                }
-            } catch (final Exception e) {
-                logger.debug("reboot - Communication error", e);
-            }
-        }
     }
 }

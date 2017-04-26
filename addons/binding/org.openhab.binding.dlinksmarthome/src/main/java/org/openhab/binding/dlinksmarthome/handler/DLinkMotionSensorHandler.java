@@ -9,9 +9,7 @@
 package org.openhab.binding.dlinksmarthome.handler;
 
 import static org.openhab.binding.dlinksmarthome.DLinkSmartHomeBindingConstants.MOTION;
-import static org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig.*;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -47,16 +45,6 @@ public class DLinkMotionSensorHandler extends BaseThingHandler implements DLinkM
 
     @Override
     public void initialize() {
-        if (getConfig().get(REBOOT_INTERVAL) == null) {
-            final Configuration configuration = editConfiguration();
-            if ("A1".equals(getThing().getProperties().get(HARDWARE_VERSION))) {
-                configuration.put(REBOOT_INTERVAL, 4);
-            } else {
-                configuration.put(REBOOT_INTERVAL, 24);
-            }
-            updateConfiguration(configuration);
-        }
-
         final DLinkMotionSensorConfig config = getConfigAs(DLinkMotionSensorConfig.class);
         motionSensor = new DLinkMotionSensorCommunication(config, this, scheduler);
     }
@@ -72,18 +60,11 @@ public class DLinkMotionSensorHandler extends BaseThingHandler implements DLinkM
             case ONLINE:
                 updateStatus(ThingStatus.ONLINE);
                 break;
-            case REBOOTING:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Device rebooting");
-                break;
             case COMMUNICATION_ERROR:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 break;
             case INVALID_PIN:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid pin code");
-                break;
-            case INVALID_TIME:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid reboot time or interval");
                 break;
             case INTERNAL_ERROR:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "System error");

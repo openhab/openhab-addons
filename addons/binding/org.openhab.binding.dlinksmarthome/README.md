@@ -8,12 +8,6 @@ A binding for D-Link Smart Home devices.
 
 The binding has been tested with hardware revisions A1 and A2 running firmware version 1.22.
 
-The binding must periodically reboot the device as it eventually becomes unresponsive: 
-
-* Hardware revision A1 devices require rebooting every 4 hours
-* Hardware revision A2 devices require rebooting every 24 hours
-
-
 ## Discovery
 
 The binding can automatically discover devices that have already been added to the Wifi network. Please refer to your mydlink Home app for instructions on how to add your device to your Wifi network.
@@ -30,8 +24,6 @@ It is recommended to let the binding discover and add devices. Once added the co
 
 * **ipAddress** - Hostname or IP of the device
 * **pin** - PIN code from the back of the device
-* **rebootTime** (default 03:00) - Time that the device will be first rebooted each day (device must be rebooted periodically to ensure that it remains responsive)
-* **rebootInterval** (default 24) - Number of hours before device needs rebooting (a value of 0 disables reboot)
  
 To manually configure a DCH-S150 Thing you must specify its IP address and PIN code. 
  

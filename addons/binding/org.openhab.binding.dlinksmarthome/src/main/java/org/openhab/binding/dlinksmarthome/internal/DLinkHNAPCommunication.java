@@ -8,16 +8,18 @@
  */
 package org.openhab.binding.dlinksmarthome.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -38,6 +40,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -87,7 +93,8 @@ public abstract class DLinkHNAPCommunication {
      */
     private final Logger logger = LoggerFactory.getLogger(DLinkHNAPCommunication.class);
 
-    private URL url;
+    private URI uri;
+    private final HttpClient httpClient;
     private final String pin;
     private String privateKey;
 
@@ -138,8 +145,11 @@ public abstract class DLinkHNAPCommunication {
     public DLinkHNAPCommunication(final String ipAddress, final String pin) {
         this.pin = pin;
 
+        httpClient = new HttpClient();
+
         try {
-            url = new URL(null, "http://" + ipAddress + "/HNAP1");
+            uri = new URI("http://" + ipAddress + "/HNAP1");
+            httpClient.start();
 
             parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
@@ -153,12 +163,27 @@ public abstract class DLinkHNAPCommunication {
         } catch (final SOAPException e) {
             logger.debug("DLinkHNAPCommunication - Internal error", e);
             status = HNAPStatus.INTERNAL_ERROR;
-        } catch (final MalformedURLException e) {
+        } catch (final URISyntaxException e) {
             logger.debug("DLinkHNAPCommunication - Internal error", e);
             status = HNAPStatus.INTERNAL_ERROR;
         } catch (final ParserConfigurationException e) {
             logger.debug("DLinkHNAPCommunication - Internal error", e);
             status = HNAPStatus.INTERNAL_ERROR;
+        } catch (final Exception e) {
+            // Thrown by httpClient.start()
+            logger.debug("DLinkHNAPCommunication - Internal error", e);
+            status = HNAPStatus.INTERNAL_ERROR;
+        }
+    }
+
+    /**
+     * Stop communicating with the device
+     */
+    public void dispose() {
+        try {
+            httpClient.stop();
+        } catch (final Exception e) {
+            // Ignored
         }
     }
 
@@ -376,40 +401,40 @@ public abstract class DLinkHNAPCommunication {
     }
 
     /**
-     * Send the SOAP message using a HttpURLConnection and parse the result using DocumentBuilder.
-     * This is used in preference to SOAPConnection and SOAPMessage as these tend to fill
-     * the log file with messages when things go wrong.
+     * Send the SOAP message using Jetty HTTP client. Jetty is used in preference to
+     * HttpURLConnection which can result in the HNAP interface becoming unresponsive.
      *
      * @param action - SOAP Action to send
      * @param timeout - Connection timeout in milliseconds
-     * @return The result which may be null
+     * @return The result
      * @throws IOException
      * @throws SOAPException
      * @throws SAXException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
      */
-    protected Document sendReceive(final SOAPMessage action, final int timeout)
-            throws IOException, SOAPException, SAXException {
+    protected Document sendReceive(final SOAPMessage action, final int timeout) throws IOException, SOAPException,
+            SAXException, InterruptedException, TimeoutException, ExecutionException {
 
-        Document result = null;
+        Document result;
 
-        final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        final Request request = httpClient.POST(uri);
+        request.timeout(timeout, TimeUnit.MILLISECONDS);
 
-        connection.setConnectTimeout(timeout);
-        connection.setReadTimeout(timeout);
-
-        connection.setDoOutput(true);
         final Iterator<?> it = action.getMimeHeaders().getAllHeaders();
         while (it.hasNext()) {
             final MimeHeader header = (MimeHeader) it.next();
-            connection.setRequestProperty(header.getName(), header.getValue());
+            request.header(header.getName(), header.getValue());
         }
 
-        try (final OutputStream os = connection.getOutputStream()) {
+        try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             action.writeTo(os);
-        }
-
-        try (final InputStream is = connection.getInputStream()) {
-            result = parser.parse(is);
+            request.content(new BytesContentProvider(os.toByteArray()));
+            final ContentResponse response = request.send();
+            try (final ByteArrayInputStream is = new ByteArrayInputStream(response.getContent())) {
+                result = parser.parse(is);
+            }
         }
 
         return result;

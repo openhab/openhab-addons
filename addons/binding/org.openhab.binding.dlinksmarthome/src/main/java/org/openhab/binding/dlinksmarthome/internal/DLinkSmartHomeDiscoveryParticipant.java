@@ -9,7 +9,7 @@
 package org.openhab.binding.dlinksmarthome.internal;
 
 import static org.openhab.binding.dlinksmarthome.DLinkSmartHomeBindingConstants.*;
-import static org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig.*;
+import static org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig.IP_ADDRESS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -93,11 +93,9 @@ public class DLinkSmartHomeDiscoveryParticipant implements MDNSDiscoveryParticip
 
         final String host = serviceInfo.getHostAddresses()[0];
         final String mac = serviceInfo.getPropertyString("mac");
-        final String hardwareVersion = serviceInfo.getPropertyString("hardware_ver");
 
         final Map<String, Object> properties = new HashMap<>();
         properties.put(IP_ADDRESS, host);
-        properties.put(HARDWARE_VERSION, hardwareVersion);
 
         logger.debug("DCH-S150 found: {}", host);
 
