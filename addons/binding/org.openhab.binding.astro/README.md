@@ -137,6 +137,7 @@ astro:sun:home [ geolocation="xx.xxxxxx,xx.xxxxxx", altitude=100, interval=60 ] 
         ]
 }
 astro:moon:home [ geolocation="xx.xxxxxx,xx.xxxxxx", interval=60 ]
+
 ```
 
 or a datetime offset

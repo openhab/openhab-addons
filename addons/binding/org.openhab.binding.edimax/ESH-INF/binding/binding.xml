@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="edimax"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+    <name>Edimax SmartPlug Binding</name>
+    <description>This is the binding for Edimax SmartPlug based on the OH1 plugin from derHeinz. At the moment there are two devices supported. The Smartplug SP-1101W and the Smartplug with metering SP-2101W.</description>
+    <author>Falk Harnisch, derHeinz</author>
+
+</binding:binding>

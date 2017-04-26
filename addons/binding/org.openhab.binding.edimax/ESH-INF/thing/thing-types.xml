@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="edimax" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="sp2101w">
+        <label>SP-2101W</label>
+        <description>Edimax SP-2101W Binding</description>
+
+        <channels>
+            <channel id="switch" typeId="switch" />
+            <channel id="current" typeId="current" />
+            <channel id="power" typeId="power" />
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <label>IP address</label>
+                <description>The IP address of the Edimax Plug</description>
+            </parameter>
+            <parameter name="username" type="text" required="true">
+                <label>Username</label>
+                <description>Username to access the Edimax Plug.</description>
+                <default>admin</default>
+            </parameter>
+            <parameter name="password" type="text" required="true">
+                <label>Password</label>
+                <description>Password to access the Edimax Plug.</description>
+                <default>1234</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="sp1101w">
+        <label>SP-1101W</label>
+        <description>Edimax SP-1101W Binding</description>
+
+        <channels>
+            <channel typeId="switch" id="switch" />
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text" required="true">
+                <label>IP address</label>
+                <description>The IP address of the Edimax Plug</description>
+            </parameter>
+            <parameter name="username" type="text" required="true">
+                <label>Username</label>
+                <description>Username to access the Edimax Plug.</description>
+                <default>admin</default>
+            </parameter>
+            <parameter name="password" type="text" required="true">
+                <label>Password</label>
+                <description>Password to access the Edimax Plug.</description>
+                <default>1234</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="switch">
+        <item-type>switch</item-type>
+        <label>Switch</label>
+        <description>On/Off Switch</description>
+        <category>switch</category>
+    </channel-type>
+    
+    <channel-type id="current">
+       <item-type>Number</item-type>
+       <label>Current</label>
+       <description>Current of the Switch in ampere</description>
+       <state readOnly="true" pattern="%.3f A"/>
+    </channel-type>
+    
+    <channel-type id="power">
+       <item-type>Number</item-type>
+       <label>Power</label>
+       <description>Power of the Switch in watt</description>
+       <state readOnly="true" pattern="%.2f W"/>
+    </channel-type>
+
+</thing:thing-descriptions>
