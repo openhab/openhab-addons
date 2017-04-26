@@ -281,7 +281,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                 logger.debug("Configuration complete: {}", mConfig);
 
                 mZWayApi = new ZWayApiHttp(mConfig.getZWayIpAddress(), mConfig.getZWayPort(), mConfig.getZWayProtocol(),
-                        mConfig.getZWayUsername(), mConfig.getZWayPassword(), this);
+                        mConfig.getZWayUsername(), mConfig.getZWayPassword(), -1, false, this);
 
                 // Start an extra thread, because it takes sometimes more
                 // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
@@ -621,7 +621,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     }
 
     @Override
-    public void postDeviceResponse(Device device) {
+    public void putDeviceResponse(Device device) {
     }
 
     @Override
@@ -718,6 +718,10 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         if (invalidateApiState) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
+    }
+
+    @Override
+    public void message(int code, String message) {
     }
 
     @Override

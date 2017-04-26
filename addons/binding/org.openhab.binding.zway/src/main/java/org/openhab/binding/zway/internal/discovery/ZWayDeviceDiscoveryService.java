@@ -26,6 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
+import de.fh_zwickau.informatik.sensor.model.devices.types.Camera;
+import de.fh_zwickau.informatik.sensor.model.devices.types.SensorMultiline;
+import de.fh_zwickau.informatik.sensor.model.devices.types.Text;
 import de.fh_zwickau.informatik.sensor.model.locations.LocationList;
 import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
 
@@ -152,6 +155,12 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                 if (device.getVisibility() && !device.getPermanentlyHidden()) {
                     if (ZWayBindingConstants.DISCOVERY_IGNORED_DEVICES.contains(device.getDeviceId().split("_")[0])) {
                         logger.debug("Skip device: {}", device.getMetrics().getTitle());
+                        continue;
+                    }
+
+                    if (device instanceof SensorMultiline || device instanceof Camera || device instanceof Text) {
+                        logger.debug("Skip device because the device type is not supported: {}",
+                                device.getMetrics().getTitle());
                         continue;
                     }
 
