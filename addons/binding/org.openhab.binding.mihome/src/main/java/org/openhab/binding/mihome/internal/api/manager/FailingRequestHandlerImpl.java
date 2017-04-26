@@ -70,21 +70,20 @@ public class FailingRequestHandlerImpl implements FailingRequestHandler {
                 break;
 
             case JSONResponseConstants.RESPONSE_NOT_FOUND:
-                logger.warn(errorMessage);
+                logger.warn("{}", errorMessage);
                 break;
 
             case JSONResponseConstants.RESPONSE_VALIDATION_ERROR:
                 logger.error("A resource could not be created/updated/removed due to a validation error");
-                callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        errorMessage);
+                callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 break;
         }
     }
 
     @Override
     public void handleIOException(String failedUrl, IOException exception) {
-        logger.error(
-                "An error occured while trying to execute: {}. Please check your connection", failedUrl, exception);
+        logger.error("An error occured while trying to execute: {}. Please check your connection", failedUrl,
+                exception);
         callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());
     }
 }

@@ -318,7 +318,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private MiHomeApiManager createApiManager(String username, String password, int connectionTimeout) {
-        logger.debug("Creating API Manager for user: " + username);
+        logger.debug("Creating API Manager for user: {}", username);
         ServiceReference ref = bundleContext.getServiceReference(RestClient.class.getName());
         RestClient client = (RestClient) bundleContext.getService(ref);
 
