@@ -10,7 +10,6 @@ package org.openhab.binding.mihome.internal.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +44,7 @@ public class RestClientImpl implements RestClient {
     private String baseURL;
     private int timeout;
 
-    public void activate(BundleContext bundleContext) throws NoSuchAlgorithmException {
+    public void activate(BundleContext bundleContext) throws Exception {
         this.bundleContext = bundleContext;
 
         httpClient = new HttpClient(new SslContextFactory());
@@ -56,7 +55,7 @@ public class RestClientImpl implements RestClient {
         startHttpClient();
     }
 
-    public void deactivate(BundleContext context) {
+    public void deactivate(BundleContext context) throws Exception {
         stopHttpClient();
     }
 
@@ -103,7 +102,7 @@ public class RestClientImpl implements RestClient {
     }
 
     @Override
-    public void setSslContext(SSLContext sslContext) {
+    public void setSslContext(SSLContext sslContext) throws Exception {
         // The SSLContext can be replaced when the client is stopped
         stopHttpClient();
         httpClient.getSslContextFactory().setSslContext(sslContext);
@@ -111,23 +110,15 @@ public class RestClientImpl implements RestClient {
 
     }
 
-    private void startHttpClient() {
+    private void startHttpClient() throws Exception {
         if (!httpClient.isStarted()) {
-            try {
-                httpClient.start();
-            } catch (Exception e) {
-                logger.warn("Cannot start HttpClient!", e);
-            }
+            httpClient.start();
         }
     }
 
-    private void stopHttpClient() {
+    private void stopHttpClient() throws Exception {
         if (!httpClient.isStopped()) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                logger.warn("Cannot stop HttpClient!", e);
-            }
+            httpClient.stop();
         }
     }
 

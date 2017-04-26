@@ -66,8 +66,9 @@ public interface RestClient {
      * Sets a sslContext
      *
      * @param sslContext - {@link SSLContext} to be used by the client when executing the SSL handshake
+     * @throws Exception - if any Exception occurs while trying to set the {@link SSLContext}
      */
-    public void setSslContext(SSLContext sslContext);
+    public void setSslContext(SSLContext sslContext) throws Exception;
 
     public String getBaseURL();
 

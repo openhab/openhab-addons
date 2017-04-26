@@ -37,7 +37,7 @@ Required configuration parameters:
 
 Optional configuration parameters:
 
-- *updateInterval* - Update interval to pool data from a device in seconds. If not set, the default value is 30 seconds;
+- *updateInterval* - Update interval to poll data from a device in seconds. If not set, the default value is 30 seconds;
 
 ### Subdevices configuration
 

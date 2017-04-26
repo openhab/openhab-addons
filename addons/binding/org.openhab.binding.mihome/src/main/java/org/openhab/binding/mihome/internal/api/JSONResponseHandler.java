@@ -81,7 +81,7 @@ public class JSONResponseHandler {
         JsonElement message = responseData.get(JSONResponseConstants.RESPONSE_MESSAGE_KEY);
         JsonElement error = responseData.get(JSONResponseConstants.RESPONSE_ERROR_KEY);
         if (message != null) {
-            return message.toString();
+            return message.getAsString();
         }
         if (error != null) {
             return getAllErrors(error);

@@ -118,7 +118,7 @@ public abstract class AbstractMiHomeOSGiTest extends OSGiTest {
         if(subdeviceID != null) {
             thingID = Integer.toString(subdeviceID)
         } else {
-            thingID = "Unknonw"
+            thingID = "Unknown"
         }
         Thing thing = thingRegistry.createThingOfType(
                 thingTypeUID,

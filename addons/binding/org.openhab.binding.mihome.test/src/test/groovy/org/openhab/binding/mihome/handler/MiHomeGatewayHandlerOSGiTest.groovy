@@ -17,7 +17,6 @@ import java.time.*
 import org.eclipse.smarthome.core.thing.Bridge
 import org.eclipse.smarthome.core.thing.ThingRegistry
 import org.eclipse.smarthome.core.thing.ThingStatus
-import org.eclipse.smarthome.core.thing.binding.ThingHandler
 import org.eclipse.smarthome.test.storage.VolatileStorageService
 import org.junit.After
 import org.junit.Before
@@ -129,7 +128,7 @@ class MiHomeGatewayHandlerOSGiTest extends AbstractMiHomeOSGiTest {
         LocalDateTime curentDateTime = LocalDateTime.now()
         LocalDateTime previousDateTime = curentDateTime.minusMinutes(3)
         Date date = Date.from(previousDateTime.atZone(ZoneId.systemDefault()).toInstant())
-        String previousDate = new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN).format(date)
+        String previousDate = new SimpleDateFormat(MiHomeBindingConstants.DATE_TIME_PATTERN).format(date)
 
         gatewayDevice.setLastSeenAt(previousDate)
         String listGatewaysServletContent = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)

@@ -137,6 +137,6 @@ public class JsonGateway extends JsonDevice {
     public static String getFormattedCurrentDayTime() {
         LocalDateTime curentLocalDateTime = LocalDateTime.now();
         Date currentDate = Date.from(curentLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        return new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN).format(currentDate);
+        return new SimpleDateFormat(MiHomeBindingConstants.DATE_TIME_PATTERN).format(currentDate);
     }
 }

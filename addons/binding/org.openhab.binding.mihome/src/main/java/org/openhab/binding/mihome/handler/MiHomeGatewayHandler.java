@@ -235,7 +235,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
             thing.setLabel(gatewayLabel);
             if (!lastSeenObj.isJsonNull()) {
                 String lastSeenString = lastSeenObj.getAsString();
-                String currentDateTimeString = new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN)
+                String currentDateTimeString = new SimpleDateFormat(MiHomeBindingConstants.DATE_TIME_PATTERN)
                         .format(new Date());
                 try {
                     timeInterval = getTimeInterval(currentDateTimeString, lastSeenString);
@@ -274,7 +274,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
      *             - if any of the date Strings cannot be parsed correctly
      */
     private Long getTimeInterval(String currentDateTime, String previousDateTime) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN);
+        SimpleDateFormat sdf = new SimpleDateFormat(MiHomeBindingConstants.DATE_TIME_PATTERN);
         sdf.setTimeZone(TimeZone.getDefault());
         Date lastDate = sdf.parse(currentDateTime);
         String previous = previousDateTime.replaceAll("Z$", "+0000");
@@ -302,7 +302,6 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
                         return gateway.getAsJsonObject();
                     }
                 }
-            } else {
                 logger.warn(UNREGISTERED_GATEWAY_MESSAGE);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNREGISTERED_GATEWAY_MESSAGE);
                 setGatewayAlreadyUnregistered(true);
@@ -599,7 +598,7 @@ public class MiHomeGatewayHandler extends BaseBridgeHandler {
     public static String getFormattedCurrentDayTime() {
         LocalDateTime curentLocalDateTime = LocalDateTime.now();
         Date currentDate = Date.from(curentLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        return new SimpleDateFormat(MiHomeBindingConstants.LAST_SEEN_PROPERTY_PATTERN).format(currentDate);
+        return new SimpleDateFormat(MiHomeBindingConstants.DATE_TIME_PATTERN).format(currentDate);
     }
 
     @Override

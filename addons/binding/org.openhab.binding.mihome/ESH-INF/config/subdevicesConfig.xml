@@ -7,7 +7,7 @@
   <config-description uri="mihome:subdevices">
     <parameter name="updateInterval" type="integer" min="1" step="1" required="true" unit="s">
       <label>Update interval</label>
-      <description>Update interval to pool data from a device</description>
+      <description>Update interval to poll data from a device</description>
       <default>10</default>
       <unitLabel>seconds</unitLabel>
     </parameter>

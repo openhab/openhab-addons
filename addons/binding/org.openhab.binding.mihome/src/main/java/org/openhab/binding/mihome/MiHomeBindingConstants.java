@@ -50,15 +50,10 @@ public class MiHomeBindingConstants {
 
     // List of all Channel IDs
     public static final String CHANNEL_LAST_SEEN = "lastSeen";
-
-    // Formatting pattern for the date of the 'last_seen' property
-    public static final String LAST_SEEN_PROPERTY_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-
     // Channel IDs of the House Monitor device
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_REAL_POWER = "realPower";
     public static final String CHANNEL_TODAY_CONSUMPTION = "todayConsumption";
-
     /**
      * Channel ID used from sensor devices (e.g. "motion", "openClosed" etc)
      */
@@ -123,5 +118,10 @@ public class MiHomeBindingConstants {
      * Port of the gateway device
      */
     public static final String PROPERTY_PORT = "port";
+
+    /**
+     * Formatting pattern for the date of the 'last_seen' property
+     */
+    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
 }
