@@ -23,6 +23,7 @@ public class OmnilinkBindingConstants {
     // List of all Channel ids
     public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
     public final static String CHANNEL_CONTACTSENSOR = "status";
+    public final static String CHANNEL_ROOM_STATUS = "status";
 
     public final static String CHANNEL_AREAMODE = "mode";
     public final static String CHANNEL_AREAALARM = "alarm";

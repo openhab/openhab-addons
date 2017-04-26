@@ -25,6 +25,7 @@ import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.handler.AreaHandler;
 import org.openhab.binding.omnilink.handler.FlagHandler;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
+import org.openhab.binding.omnilink.handler.RoomHandler;
 import org.openhab.binding.omnilink.handler.UpbUnitHandler;
 import org.openhab.binding.omnilink.handler.ZoneHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -68,6 +69,8 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
             return new AreaHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_FLAG)) {
             return new FlagHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ROOM)) {
+            return new RoomHandler(thing);
         }
         return null;
     }

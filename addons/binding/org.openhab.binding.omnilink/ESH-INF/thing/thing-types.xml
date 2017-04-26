@@ -24,7 +24,7 @@
             </parameter>
         </config-description>
     </bridge-type>
-    <bridge-type id="room">
+    <thing-type id="room">
         <supported-bridge-type-refs>
             <bridge-type-ref id="omnilinkBridge" />
         </supported-bridge-type-refs>
@@ -50,7 +50,7 @@
                 <description>Name of the dimmer.</description>
             </parameter>
         </config-description>
-    </bridge-type>
+    </thing-type>
     <thing-type id="flag">
         <supported-bridge-type-refs>
             <bridge-type-ref id="omnilinkBridge" />
