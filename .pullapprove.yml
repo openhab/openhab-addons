@@ -21,4 +21,3 @@ groups:
     required: 1
     teams:
     - 2-x-add-ons-maintainers
-    - maintainers
