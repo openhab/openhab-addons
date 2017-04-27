@@ -6,11 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch.internal.items;
+package org.openhab.binding.bosesoundtouch.internal;
 
 import java.util.Collection;
 
-import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoInternetRadioPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoStoredMusicPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.OperationModeNotAvailableException;

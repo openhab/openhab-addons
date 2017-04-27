@@ -6,14 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bosesoundtouch.handler;
+package org.openhab.binding.bosesoundtouch.internal;
 
 /**
- * The {@link BoseSoundTouchTypeInterface} is used to find out, which sources are available
+ * The {@link AvailableSources} is used to find out, which sources are available
  *
  * @author Thomas Traunbauer
  */
-public interface BoseSoundTouchTypeInterface {
+public interface AvailableSources {
 
     public boolean isBluetoothAvailable();
 

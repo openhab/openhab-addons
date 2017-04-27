@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.bosesoundtouch.internal.discovery;
 
+import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
+
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Arrays;
@@ -22,7 +24,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
-import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return BoseSoundTouchBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+        return SUPPORTED_THING_TYPES_UIDS;
     }
 
     @Override
@@ -64,9 +65,9 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
                         info.getName(), label, Arrays.toString(addrs));
             }
 
-            properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST, addrs[0].getHostAddress());
+            properties.put(DEVICE_PARAMETER_HOST, addrs[0].getHostAddress());
             if (getMacAddress(info) != null) {
-                properties.put(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_MAC, new String(getMacAddress(info)));
+                properties.put(DEVICE_PARAMETER_MAC, new String(getMacAddress(info)));
             }
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
         }
@@ -82,7 +83,7 @@ public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant 
                     logger.trace("Discovered a Bose SoundTouch thing with name '{}'", info.getName());
                     byte[] mac = getMacAddress(info);
                     if (mac != null) {
-                        return new ThingUID(BoseSoundTouchBindingConstants.THING_TYPE_DEVICE, new String(mac));
+                        return new ThingUID(THING_TYPE_DEVICE, new String(mac));
                     } else {
                         return null;
                     }

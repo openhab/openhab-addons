@@ -11,19 +11,19 @@
 		<channels>
 		    <channel id="power" typeId="power" />
 		    <channel id="volume" typeId="volume" />
+		    <channel id="bass" typeId="bass" />
 		    <channel id="mute" typeId="mute" />
 			<channel id="operationMode" typeId="operationMode" />
-			<channel id="zoneInfo" typeId="zoneInfo" />
 			<channel id="playerControl" typeId="playerControl" />
 			<channel id="zoneControl" typeId="zoneControl" />
 			<channel id="preset" typeId="preset" />
 			<channel id="presetControl" typeId="presetControl" />
-            <channel id="bass" typeId="bass" />
+			<channel id="saveAsPreset" typeId="saveAsPreset" />
+			<channel id="keyCode" typeId="keyCode" />
+            <channel id="zoneInfo" typeId="zoneInfo" />
             <channel id="rateEnabled" typeId="rateEnabled" />
             <channel id="skipEnabled" typeId="skipEnabled" />
             <channel id="skipPreviousEnabled" typeId="skipPreviousEnabled" />
-            <channel id="saveAsPreset" typeId="saveAsPreset" />
-			<channel id="keyCode" typeId="keyCode" />
 			<channel id="nowPlayingAlbum" typeId="nowPlayingAlbum" />
 			<channel id="nowPlayingArtist" typeId="nowPlayingArtist" />
 			<channel id="nowPlayingArtwork" typeId="nowPlayingArtwork" />
@@ -58,6 +58,12 @@
         <label>Volume</label>
         <description>Set or get the volume</description>
         <category>SoundVolume</category>
+    </channel-type>
+    <channel-type id="bass">
+        <item-type>Number</item-type>
+         <label>Bass</label>
+         <description>Bass (-9 minimum, 0 maximum)</description>
+         <state min="-9" max="0" step="1" pattern="%d " readOnly="false" />
     </channel-type>
     <channel-type id="mute">
         <item-type>Switch</item-type>
@@ -111,40 +117,10 @@
         <description>Control the Preset, e.g. next/previous</description>
         <category>Player</category>
     </channel-type>
-    <channel-type id="bass">
-        <item-type>Number</item-type>
-         <label>Bass</label>
-         <description>Bass (-9 minimum, 0 maximum)</description>
-         <state min="-9" max="0" step="1" pattern="%d " readOnly="false" />
-    </channel-type>
-     <channel-type id="saveAsPreset">
+    <channel-type id="saveAsPreset">
         <item-type>Number</item-type>
         <label>Save As Preset</label>
         <description>A selected presetable Contentitem is save as Preset with number >6</description>
-    </channel-type>
-    <channel-type id="zoneInfo" advanced="true">
-        <item-type>String</item-type>
-        <label>Zone Info</label>
-        <description>Shows information about the current zone setup</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="rateEnabled" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Rating enabled</label>
-        <description>Current source allows rating</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="skipEnabled" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Skip enabled</label>
-        <description>Current source allows skipping to next track</description>
-        <state readOnly="true" />
-    </channel-type>
-    <channel-type id="skipPreviousEnabled" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Skip/Previous enabled</label>
-        <description>Current source allows scrolling through tracks</description>
-        <state readOnly="true" />
     </channel-type>
     <channel-type id="keyCode" advanced="true">
         <item-type>String</item-type>
@@ -181,6 +157,30 @@
                 <option value="REMOVE_FAVORITE">REMOVE_FAVORITE</option>
             </options>
         </state>
+    </channel-type>
+    <channel-type id="zoneInfo" advanced="true">
+        <item-type>String</item-type>
+        <label>Zone Info</label>
+        <description>Shows information about the current zone setup</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="rateEnabled" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Rating enabled</label>
+        <description>Current source allows rating</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="skipEnabled" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Skip enabled</label>
+        <description>Current source allows skipping to next track</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="skipPreviousEnabled" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Skip/Previous enabled</label>
+        <description>Current source allows scrolling through tracks</description>
+        <state readOnly="true" />
     </channel-type>
 	<channel-type id="nowPlayingAlbum" advanced="true">
 		<item-type>String</item-type>

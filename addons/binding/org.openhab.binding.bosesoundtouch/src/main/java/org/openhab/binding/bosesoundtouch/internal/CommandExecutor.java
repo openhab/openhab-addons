@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -33,19 +32,13 @@ import org.eclipse.smarthome.core.thing.binding.ThingFactory;
 import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
-import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchTypeInterface;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.BoseSoundTouchNotFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.ContentItemNotPresetableException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoInternetRadioPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoStoredMusicPresetFoundException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.OperationModeNotAvailableException;
-import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
-import org.openhab.binding.bosesoundtouch.internal.items.ContentItemMaker;
-import org.openhab.binding.bosesoundtouch.internal.items.PresetContainer;
-import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
 import org.openhab.binding.bosesoundtouch.types.RemoteKeyType;
 import org.slf4j.Logger;
@@ -56,21 +49,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author Thomas Traunbauer
  */
-public class CommandExecutor implements BoseSoundTouchTypeInterface {
+public class CommandExecutor implements AvailableSources {
     private Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
 
     private Session session;
     private BoseSoundTouchHandler handler;
+    private PresetContainer presetContainer;
 
     private ZoneState zoneState;
     private BoseSoundTouchHandler zoneMaster;
-    private List<ZoneMember> zoneMembers;
+    private List<BoseSoundTouchHandler> listOfZoneMembers;
 
     private File presetFile;
     private boolean muted;
     private ContentItem currentContentItem;
     private OperationModeType currentOperationMode;
-    private PresetContainer presetContainer;
 
     private boolean bluetooth;
     private boolean aux;
@@ -124,7 +117,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         currentOperationMode = operationMode;
         if (currentOperationMode == OperationModeType.STANDBY) {
             // zone is leaved / destroyed if turned off
-            zoneMembers.clear();
+            listOfZoneMembers.clear();
             if (zoneMaster != null) {
                 zoneMaster.getCommandExecutor().removeZoneMember(handler);
                 zoneMaster = null;
@@ -364,10 +357,11 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         handler.updateState(getChannelUID(CHANNEL_ZONE_INFO), state);
     }
 
-    public void updateZoneState(ZoneState zoneState, BoseSoundTouchHandler zoneMaster, List<ZoneMember> zoneMembers) {
+    public void updateZoneState(ZoneState zoneState, BoseSoundTouchHandler zoneMaster,
+            List<BoseSoundTouchHandler> listOfZoneMembers) {
         this.zoneState = zoneState;
         this.zoneMaster = zoneMaster;
-        this.zoneMembers = zoneMembers;
+        this.listOfZoneMembers = listOfZoneMembers;
 
         refreshZone();
     }
@@ -423,8 +417,8 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     private void addToZone(BoseSoundTouchHandler handler) {
         if (handler != null) {
             boolean found = false;
-            for (ZoneMember m : zoneMembers) {
-                if (handler.getMacAddress().equals(m.getMac())) {
+            for (BoseSoundTouchHandler m : listOfZoneMembers) {
+                if (handler.getMacAddress().equals(m.getMacAddress())) {
                     logger.warn("{}: Zone add: ID {} is already member in zone!", handler.getDeviceName(),
                             handler.getMacAddress());
                     found = true;
@@ -432,31 +426,24 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
                 }
             }
             if (!found) {
-                ZoneMember nm = new ZoneMember();
-                nm.setHandler(handler);
-                nm.setMac(handler.getMacAddress());
-                Map<String, Object> props = handler.getThing().getConfiguration().getProperties();
-                String host = (String) props.get(BoseSoundTouchBindingConstants.DEVICE_PARAMETER_HOST);
-                nm.setIp(host);
-                // zoneMembers.add(nm);
-                addZoneMember(nm);
+                addZoneMember(handler);
                 updateZones();
             }
         }
     }
 
-    private void addZoneMember(ZoneMember zoneMember) {
+    private void addZoneMember(BoseSoundTouchHandler zoneMember) {
         boolean found = false;
-        for (ZoneMember m : zoneMembers) {
-            if (zoneMember.getHandler().getMacAddress().equals(m.getMac())) {
+        for (BoseSoundTouchHandler m : listOfZoneMembers) {
+            if (zoneMember.getMacAddress().equals(m.getMacAddress())) {
                 logger.warn("{}: Zone add: ID '{}' is already member in zone!", handler.getDeviceName(),
-                        zoneMember.getHandler().getMacAddress());
+                        zoneMember.getMacAddress());
                 found = true;
                 break;
             }
         }
         if (!found) {
-            zoneMembers.add(zoneMember);
+            listOfZoneMembers.add(zoneMember);
         }
     }
 
@@ -500,7 +487,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     }
 
     private void init() {
-        zoneMembers = new ArrayList<ZoneMember>();
+        listOfZoneMembers = new ArrayList<BoseSoundTouchHandler>();
         zoneMaster = null;
         currentOperationMode = OperationModeType.OFFLINE;
         presetContainer = new PresetContainer();
@@ -517,7 +504,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
         tv = false;
         bass = false;
 
-        File folder = new File(ConfigConstants.getUserDataFolder() + "/" + BoseSoundTouchBindingConstants.BINDING_ID);
+        File folder = new File(ConfigConstants.getUserDataFolder() + "/" + BINDING_ID);
         if (!folder.exists()) {
             logger.debug("Creating directory {}", folder.getPath());
             folder.mkdirs();
@@ -538,7 +525,7 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     }
 
     private void refreshZone() {
-        if ((zoneState != null) && (zoneMaster != null) && (zoneMembers != null)) {
+        if ((zoneState != null) && (zoneMaster != null) && (listOfZoneMembers != null)) {
             StringBuilder sb = new StringBuilder();
             switch (zoneState) {
                 case Master:
@@ -557,11 +544,11 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
                     sb.append("Standalone");
                     break;
             }
-            for (int i = 0; i < zoneMembers.size(); i++) {
+            for (int i = 0; i < listOfZoneMembers.size(); i++) {
                 if (i > 0) {
                     sb.append(", ");
                 }
-                sb.append(zoneMembers.get(i).getHandler().getDeviceName());
+                sb.append(listOfZoneMembers.get(i).getDeviceName());
             }
             String zoneData = sb.toString();
             logger.debug("{}: zoneInfo updated: {}", handler.getDeviceName(), zoneData);
@@ -582,9 +569,9 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
 
     private boolean removeZoneMember(BoseSoundTouchHandler oh) {
         boolean found = false;
-        for (Iterator<ZoneMember> mi = zoneMembers.iterator(); mi.hasNext();) {
-            ZoneMember m = mi.next();
-            if (oh == m.getHandler()) {
+        for (Iterator<BoseSoundTouchHandler> mi = listOfZoneMembers.iterator(); mi.hasNext();) {
+            BoseSoundTouchHandler m = mi.next();
+            if (oh == m) {
                 mi.remove();
                 found = true;
                 break;
@@ -612,8 +599,8 @@ public class CommandExecutor implements BoseSoundTouchTypeInterface {
     private void updateZones() {
         StringBuilder sb = new StringBuilder();
         sb.append("<zone master=\"").append(handler.getMacAddress()).append("\">");
-        for (ZoneMember mbr : zoneMembers) {
-            sb.append("<member ipaddress=\"").append(mbr.getIp()).append("\">").append(mbr.getMac())
+        for (BoseSoundTouchHandler mbr : listOfZoneMembers) {
+            sb.append("<member ipaddress=\"").append(mbr.getIPAddress()).append("\">").append(mbr.getMacAddress())
                     .append("</member>");
         }
         sb.append("</zone>");

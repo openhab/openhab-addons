@@ -13,7 +13,6 @@ import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,11 +31,12 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bosesoundtouch.internal.APIRequest;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
-import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerParent;
 import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
 import org.openhab.binding.bosesoundtouch.internal.XMLResponseProcessor;
 import org.openhab.binding.bosesoundtouch.types.OperationModeType;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer
  */
-public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implements WebSocketListener {
+public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocketListener {
 
     private final Logger logger = LoggerFactory.getLogger(BoseSoundTouchHandler.class);
 
@@ -64,8 +64,19 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     private BoseSoundTouchHandlerFactory factory;
     private CommandExecutor commandExecutor;
 
+    /**
+     * Creates a new instance of this class for the {@link Thing}.
+     *
+     * @param thing the thing that should be handled, not null
+     * @param factory the factory that created this handler
+     *
+     * @throws IllegalArgumentException if thing or factory argument is null
+     */
     public BoseSoundTouchHandler(Thing thing, BoseSoundTouchHandlerFactory factory) {
         super(thing);
+        if (factory == null) {
+            throw new IllegalArgumentException("The argument 'factory' must not be null.");
+        }
         this.factory = factory;
         xmlResponseProcessor = new XMLResponseProcessor(this);
     }
@@ -98,10 +109,15 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
         super.handleRemoval();
     }
 
+    @Override // just overwrite to give CommandExecutor access
+    public void updateState(ChannelUID channelUID, State state) {
+        super.updateState(channelUID, state);
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("{}: handleCommand({}, {});", getDeviceName(), channelUID, command);
-        if (thing.getStatus() != ThingStatus.ONLINE) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
             openConnection(); // try to reconnect....
         }
         switch (channelUID.getIdWithoutGroup()) {
@@ -248,20 +264,58 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
 
     }
 
+    /**
+     * Returns the CommandExecutor of this handler
+     *
+     * @return the CommandExecutor of this handler
+     */
     public CommandExecutor getCommandExecutor() {
         return commandExecutor;
     }
 
-    public String getDeviceName() {
-        return thing.getProperties().get(DEVICE_INFO_NAME);
-    }
-
+    /**
+     * Returns the BoseSoundTouchHandlerFactory this handler was created from
+     *
+     * @return the BoseSoundTouchHandlerFactory this handler was created from
+     */
     public BoseSoundTouchHandlerFactory getFactory() {
         return factory;
     }
 
+    /**
+     * Returns the name of the device delivered from itself
+     *
+     * @return the name of the device delivered from itself
+     */
+    public String getDeviceName() {
+        return getThing().getProperties().get(DEVICE_INFO_NAME);
+    }
+
+    /**
+     * Returns the type of the device delivered from itself
+     *
+     * @return the type of the device delivered from itself
+     */
+    public String getDeviceType() {
+        return getThing().getProperties().get(DEVICE_INFO_TYPE);
+    }
+
+    /**
+     * Returns the MAC Address of this device
+     *
+     * @return the MAC Address of this device
+     */
     public String getMacAddress() {
-        return thing.getUID().getId();
+        return (String) getThing().getConfiguration().getProperties().get(DEVICE_PARAMETER_MAC);
+    }
+
+    /**
+     * Returns the IP Address of this device
+     *
+     * @return the IP Address of this device
+     */
+    public String getIPAddress() {
+        return (String) getThing().getConfiguration().getProperties().get(DEVICE_PARAMETER_HOST);
     }
 
     @Override
@@ -321,11 +375,8 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
             client = new WebSocketClient();
             // we need longer timeouts for web socket.
             client.setMaxIdleTimeout(360 * 1000);
-            Map<String, Object> props = thing.getConfiguration().getProperties();
-            String host = (String) props.get(DEVICE_PARAMETER_HOST);
-
             // Port seems to be hard coded, therefore no user input or discovery is necessary
-            String wsUrl = "ws://" + host + ":8080/";
+            String wsUrl = "ws://" + getIPAddress() + ":8080/";
             logger.debug("{}: Connecting to: {}", getDeviceName(), wsUrl);
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setSubProtocols("gabbo");
@@ -359,10 +410,10 @@ public class BoseSoundTouchHandler extends BoseSoundTouchHandlerParent implement
     }
 
     private void checkConnection() {
-        if (thing.getStatus() != ThingStatus.ONLINE) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
             openConnection(); // try to reconnect....
         }
-        if (thing.getStatus() == ThingStatus.ONLINE) {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 session.getRemote().sendPing(pingPayload);
             } catch (Throwable e) {

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +21,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
-import org.openhab.binding.bosesoundtouch.internal.items.ContentItem;
-import org.openhab.binding.bosesoundtouch.internal.items.ZoneMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -55,8 +54,7 @@ public class XMLResponseHandler extends DefaultHandler {
     private OnOffType skipPreviousEnabled;
     private ZoneState zoneState;
     private BoseSoundTouchHandler zoneMaster;
-    private List<ZoneMember> zoneMembers;
-    private String zoneMemberIp;
+    private List<BoseSoundTouchHandler> listOfZoneMembers;
 
     private State nowPlayingSource;
 
@@ -168,7 +166,7 @@ public class XMLResponseHandler extends DefaultHandler {
                         commandExecutor.updateNowPlayingTrack(new StringType(""));
                     }
                 } else if ("zone".equals(localName)) {
-                    zoneMembers = new ArrayList<>();
+                    listOfZoneMembers = new ArrayList<BoseSoundTouchHandler>();
                     String master = attributes.getValue("master");
                     if (master == null || master.isEmpty()) {
                         zoneMaster = null;
@@ -270,7 +268,6 @@ public class XMLResponseHandler extends DefaultHandler {
                 }
                 break;
             case Zone:
-                zoneMemberIp = attributes.getValue("ipaddress");
                 state = nextState(stateMap, curState, localName);
                 break;
             case Bass:
@@ -406,7 +403,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 commandExecutor.getRequest(APIRequest.GET_ZONE);
                 break;
             case Zone:
-                commandExecutor.updateZoneState(zoneState, zoneMaster, zoneMembers);
+                commandExecutor.updateZoneState(zoneState, zoneMaster, listOfZoneMembers);
                 break;
             default:
                 // no actions...
@@ -456,10 +453,10 @@ public class XMLResponseHandler extends DefaultHandler {
                 commandExecutor.updateBassLevel(new DecimalType(new String(ch, start, length)));
                 break;
             case InfoName:
-                setConfigOption(BoseSoundTouchBindingConstants.DEVICE_INFO_NAME, new String(ch, start, length));
+                setConfigOption(DEVICE_INFO_NAME, new String(ch, start, length));
                 break;
             case InfoType:
-                setConfigOption(BoseSoundTouchBindingConstants.DEVICE_INFO_TYPE, new String(ch, start, length));
+                setConfigOption(DEVICE_INFO_TYPE, new String(ch, start, length));
                 break;
             case BassAvailable:
                 boolean bassAvailable = Boolean.parseBoolean(new String(ch, start, length));
@@ -514,11 +511,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 if (memberHandler == null) {
                     logger.warn("{}: Zone update: Unable to find member with ID {}", handler.getDeviceName(), mac);
                 } else {
-                    ZoneMember zoneMember = new ZoneMember();
-                    zoneMember.setIp(zoneMemberIp);
-                    zoneMember.setMac(mac);
-                    zoneMember.setHandler(memberHandler);
-                    zoneMembers.add(zoneMember);
+                    listOfZoneMembers.add(memberHandler);
                 }
                 break;
         }
