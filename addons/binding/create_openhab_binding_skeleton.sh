@@ -18,3 +18,6 @@ mvn -s ../archetype-settings.xml archetype:generate -N \
   -DvendorName=openHAB \
   -Dnamespace=org.openhab
 
+directory=`echo "org.openhab.binding."$id/`
+
+cp ../../src/etc/about.html "$directory"
