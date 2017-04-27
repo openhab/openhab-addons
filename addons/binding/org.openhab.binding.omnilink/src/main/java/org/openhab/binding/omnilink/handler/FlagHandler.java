@@ -48,7 +48,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
                     });
         } else if (command instanceof DecimalType) {
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
-            getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_ON.getNumber(),
+            getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_SET_COUNTER.getNumber(),
                     ((DecimalType) command).intValue(), Integer.parseInt(channelParts[2]));
         } else {
             logger.warn("Must handle command: {}", command);
