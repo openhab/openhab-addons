@@ -22,6 +22,7 @@ import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.ButtonProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
 import com.google.common.collect.ImmutableSet;
@@ -56,15 +57,40 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         logger.debug("Starting scan");
         Connection c = bridgeHandler.getOmnilinkConnection();
-
+        // OBJ_TYPE_BUTTON
         try {
             generateUnits(c);
             generateZones(c);
             generateAreas(c);
+            generateButtons(c);
         } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
                 | OmniUnknownMessageTypeException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+    private void generateButtons(Connection c) throws IOException, OmniNotConnectedException,
+            OmniInvalidResponseException, OmniUnknownMessageTypeException {
+
+        int objnum = 0;
+        Message m;
+
+        while ((m = c.reqObjectProperties(Message.OBJ_TYPE_BUTTON, objnum, 1, ObjectProperties.FILTER_1_NAMED,
+                ObjectProperties.FILTER_2_AREA_ALL, ObjectProperties.FILTER_3_NONE))
+                        .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
+            ButtonProperties o = ((ButtonProperties) m);
+            objnum = o.getNumber();
+            Map<String, Object> properties = new HashMap<>(0);
+            ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_BUTTON, Integer.toString(objnum));
+            properties.put(OmnilinkUnitConfig.NUMBER, objnum);
+            properties.put(OmnilinkUnitConfig.NAME, o.getName());
+
+            DiscoveryResult discoveryResult;
+
+            discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(o.getName()).build();
+            thingDiscovered(discoveryResult);
         }
     }
 

@@ -24,7 +24,6 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
     }
 
     public void handleZoneStatus(ZoneStatus status) {
-
         State newState = status.getStatus() == 1 ? OnOffType.ON : OnOffType.OFF;
         logger.debug("handle Zone Status Change to: " + newState);
         updateState(OmnilinkBindingConstants.CHANNEL_CONTACTSENSOR, newState);

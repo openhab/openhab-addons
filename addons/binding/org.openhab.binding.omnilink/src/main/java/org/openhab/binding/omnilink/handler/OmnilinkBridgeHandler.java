@@ -24,6 +24,9 @@ import com.digitaldan.jomnilinkII.Message;
 import com.digitaldan.jomnilinkII.NotificationListener;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.OtherEventNotifications;
+import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
+import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
+import com.digitaldan.jomnilinkII.MessageTypes.SystemStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
@@ -101,6 +104,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         // loadUnitStatuses();
+        getSystemInfo();
+        getSystemStatus();
     }
 
     @Override
@@ -122,10 +127,13 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 Thing theThing = zoneThings.get(number);
                 logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
                 if (theThing != null) {
-                    ((ZoneHandler) thing.getHandler()).handleZoneStatus(stat);
-                    break;
+                    try {
+                        ((ZoneHandler) thing.getHandler()).handleZoneStatus(stat);
+                        break;
+                    } catch (ClassCastException e) {
+                        logger.error("CCE", e);
+                    }
                 }
-
             } else if (s instanceof AreaStatus) {
                 AreaStatus areaStatus = (AreaStatus) s;
                 Integer number = new Integer(areaStatus.getNumber());
@@ -218,6 +226,63 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 return (UnitStatus[]) t.getStatuses();
             }
         }, listeningExecutor);
+    }
+
+    private void getSystemInfo() {
+
+        ListenableFuture<SystemInformation> systemStatus = listeningExecutor.submit(new Callable<SystemInformation>() {
+
+            @Override
+            public SystemInformation call() throws Exception {
+                return omniConnection.reqSystemInformation();
+            }
+        });
+        Futures.addCallback(systemStatus, new FutureCallback<SystemInformation>() {
+            @Override
+            public void onFailure(Throwable arg0) {
+                logger.error("Error retrieving system status", arg0);
+            }
+
+            @Override
+            public void onSuccess(SystemInformation status) {
+                logger.debug("received system info: {}", status);
+            }
+        });
+
+    }
+
+    private void getSystemStatus() {
+
+        ListenableFuture<SystemStatus> systemStatus = listeningExecutor.submit(new Callable<SystemStatus>() {
+
+            @Override
+            public SystemStatus call() throws Exception {
+                return omniConnection.reqSystemStatus();
+            }
+        });
+        Futures.addCallback(systemStatus, new FutureCallback<SystemStatus>() {
+            @Override
+            public void onFailure(Throwable arg0) {
+                logger.error("Error retrieving system status", arg0);
+            }
+
+            @Override
+            public void onSuccess(SystemStatus status) {
+                logger.debug("received system status: {}", status);
+            }
+        });
+
+    }
+
+    public ListenableFuture<SecurityCodeValidation> validateSecurity(int area, final int code1, final int code2,
+            final int code3, final int code4) {
+
+        return listeningExecutor.submit(new Callable<SecurityCodeValidation>() {
+            @Override
+            public SecurityCodeValidation call() throws Exception {
+                return omniConnection.reqSecurityCodeValidation(area, code1, code2, code3, code4);
+            }
+        });
     }
 
     private ListenableFuture<ObjectStatus> requestObjectStatus(final int arg1, final int arg2, final int arg3) {

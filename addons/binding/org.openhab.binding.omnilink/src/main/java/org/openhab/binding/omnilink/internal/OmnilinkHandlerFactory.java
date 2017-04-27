@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.handler.AreaHandler;
+import org.openhab.binding.omnilink.handler.ButtonHandler;
 import org.openhab.binding.omnilink.handler.FlagHandler;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
 import org.openhab.binding.omnilink.handler.RoomHandler;
@@ -43,7 +44,7 @@ import com.google.common.collect.ImmutableSet;
 public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_AREA,
-            THING_TYPE_ZONE, THING_TYPE_UNIT, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM);
+            THING_TYPE_ZONE, THING_TYPE_UNIT, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM, THING_TYPE_BUTTON);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
@@ -71,7 +72,10 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
             return new FlagHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ROOM)) {
             return new RoomHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_BUTTON)) {
+            return new ButtonHandler(thing);
         }
+
         return null;
     }
 

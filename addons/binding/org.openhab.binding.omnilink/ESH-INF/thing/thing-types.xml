@@ -74,6 +74,29 @@
             </parameter>
         </config-description>
     </thing-type>
+    <thing-type id="button">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="omnilinkBridge" />
+        </supported-bridge-type-refs>
+
+        <label>Button</label>
+        <description>Button within Omnilink</description>
+
+        <channels>
+            <channel id="press" typeId="buttonPress" />
+        </channels>
+
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Flag Number</label>
+                <description>Unit number of the flag.</description>
+            </parameter>
+            <parameter name="name" type="text" required="true">
+                <label>Name</label>
+                <description>Name of the flag.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
     <thing-type id="unit">
         <supported-bridge-type-refs>
             <bridge-type-ref id="omnilinkBridge" />
@@ -178,4 +201,11 @@
         <description>Represents value for a flag.</description>
         <category>Flag Control</category>
     </channel-type>   
+    <channel-type id="buttonPress">
+        <item-type>Switch</item-type>
+        <label>Button Press</label>
+        <description>Button Press</description>
+        <category>Contact</category>
+        <state pattern="%s"></state>
+    </channel-type>
 </thing:thing-descriptions>
