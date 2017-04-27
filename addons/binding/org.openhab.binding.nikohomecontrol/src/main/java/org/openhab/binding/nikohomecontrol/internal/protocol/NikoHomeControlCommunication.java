@@ -50,36 +50,40 @@ public class NikoHomeControlCommunication {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication.class);
 
-    private InetAddress nhcAddress = null;
-    private Integer nhcPort = null;
+    private InetAddress nhcAddress;
+    private int nhcPort;
 
-    private Socket nhcSocket = null;
-    private PrintWriter nhcOut = null;
-    private BufferedReader nhcIn = null;
+    private Socket nhcSocket;
+    private PrintWriter nhcOut;
+    private BufferedReader nhcIn;
 
-    private Boolean listenerStopped = false;
+    private Boolean listenerStopped;
 
-    private String swversion = null;
-    private String api = null;
-    private String time = null;
-    private String language = null;
-    private String currency = null;
-    private String units = null;
-    private String dst = null;
-    private String tz = null;
-    private String lastenergyerase = null;
-    private String lastconfig = null;
+    // Initialize with empty strings. If null, downstream methods may throw null pointer exceptions. These exceptions
+    // cause threads to stop without warning, no way to catch the exception. This behavior happened when trying to write
+    // null to properties of things. So this avoids having to check before the call for null pointers each time as the
+    // null exceptions cannot be caught.
+    private String swVersion = "";
+    private String api = "";
+    private String time = "";
+    private String language = "";
+    private String currency = "";
+    private String units = "";
+    private String dst = "";
+    private String tz = "";
+    private String lastEnergyErase = "";
+    private String lastConfig = "";
 
-    private final ArrayList<Integer> locations = new ArrayList<Integer>();
-    private final HashMap<Integer, String> locationNames = new HashMap<Integer, String>();
+    private final ArrayList<Integer> locations = new ArrayList<>();
+    private final HashMap<Integer, String> locationNames = new HashMap<>();
 
-    private final ArrayList<Integer> actions = new ArrayList<Integer>();
-    private final HashMap<Integer, String> actionNames = new HashMap<Integer, String>();
-    private final HashMap<Integer, Integer> actionTypes = new HashMap<Integer, Integer>();
-    private final HashMap<Integer, Integer> actionLocations = new HashMap<Integer, Integer>();
-    private final HashMap<Integer, Integer> actionStates = new HashMap<Integer, Integer>();
+    private final ArrayList<Integer> actions = new ArrayList<>();
+    private final HashMap<Integer, String> actionNames = new HashMap<>();
+    private final HashMap<Integer, Integer> actionTypes = new HashMap<>();
+    private final HashMap<Integer, Integer> actionLocations = new HashMap<>();
+    private final HashMap<Integer, Integer> actionStates = new HashMap<>();
 
-    private final HashMap<Integer, NikoHomeControlHandler> actionThingHandlers = new HashMap<Integer, NikoHomeControlHandler>();
+    private final HashMap<Integer, NikoHomeControlHandler> actionThingHandlers = new HashMap<>();
 
     /**
      * Class {@link NHCCmd} used as input to gson to send commands to Niko Home Control.
@@ -88,24 +92,40 @@ public class NikoHomeControlCommunication {
      *
      * @author Mark Herwege
      */
-    private class NHCCmd {
-        @SuppressWarnings("unused")
-        private String cmd = "cmd";
-        @SuppressWarnings("unused")
-        private Integer id = null;
-        @SuppressWarnings("unused")
-        private Integer value1 = null;
-        @SuppressWarnings("unused")
-        private Integer value2 = null;
-        @SuppressWarnings("unused")
-        private Integer value3 = null;
-        @SuppressWarnings("unused")
-        private Integer startValue = null;
-        @SuppressWarnings("unused")
-        private Integer endValue = null;
+    @SuppressWarnings("unused")
+    private static class NHCCmd {
+        private String cmd;
+        private Integer id;
+        private Integer value1;
+        private Integer value2;
+        private Integer value3;
+        private Integer startValue;
+        private Integer endValue;
 
-        NHCCmd() {
+        NHCCmd(String cmd) {
+            this.cmd = cmd;
         }
+
+        NHCCmd(String cmd, Integer id, Integer value1) {
+            this(cmd);
+            this.id = id;
+            this.value1 = value1;
+        }
+
+        NHCCmd(String cmd, Integer id, Integer value1, Integer value2, Integer value3) {
+            this(cmd, id, value1);
+            this.value2 = value2;
+            this.value3 = value3;
+        }
+
+        public void setStartValue(Integer startValue) {
+            this.startValue = startValue;
+        }
+
+        public void setEndValue(Integer endValue) {
+            this.endValue = endValue;
+        }
+
     }
 
     /**
@@ -117,13 +137,10 @@ public class NikoHomeControlCommunication {
      *
      * @author Mark Herwege
      */
-    private class NHCCmdAck {
+    private static class NHCCmdAck {
         private String cmd;
         private String event;
-        private ArrayList<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
-
-        NHCCmdAck() {
-        }
+        private ArrayList<HashMap<String, String>> data = new ArrayList<>();
     }
 
     /**
@@ -134,32 +151,28 @@ public class NikoHomeControlCommunication {
      *
      * @author Mark Herwege
      */
-    private class NHCSimpleCmdAck {
+    private static class NHCSimpleCmdAck {
         private String cmd;
         @SuppressWarnings("unused")
         private String event;
-        private HashMap<String, String> data = new HashMap<String, String>();
-
-        NHCSimpleCmdAck() {
-        }
+        private HashMap<String, String> data = new HashMap<>();
     }
 
     /**
      * Constructor for Niko Home Control communication object, manages communication with
      * Niko Home Control IP-interface.
      *
+     * @param addr Can be null or omitted, will attempt to discover IP address.
      * @param port
-     * @param addr
      */
-    public NikoHomeControlCommunication(int port, InetAddress addr) {
+    public NikoHomeControlCommunication(InetAddress addr, int port) {
 
         startCommunication(addr, port);
     }
 
     public NikoHomeControlCommunication(int port) {
 
-        InetAddress addr = null;
-        startCommunication(addr, port);
+        startCommunication(null, port);
     }
 
     /**
@@ -169,14 +182,10 @@ public class NikoHomeControlCommunication {
      * The Niko Home Control IP-interface responds to this UDP packet.
      * The IP-address from the Niko Home Control IP-interface is then extracted from the response packet.
      *
-     * @param IP address used to get local broadcast address, will be broadcast in local subnet if omitted
+     * @param IP address used to get local broadcast address, will be broadcast in local subnet if null
      * @return IP address
      * @throws IOException
      */
-    private InetAddress nikoHomeControlFindAddr() throws IOException {
-        return nikoHomeControlFindAddr(null);
-    }
-
     private InetAddress nikoHomeControlFindAddr(InetAddress broadcastaddr) throws IOException {
 
         byte[] discoverbuffer = { (byte) 0x44 };
@@ -189,24 +198,21 @@ public class NikoHomeControlCommunication {
         ipaddr[3] = (byte) 0xff;
         broadcastaddr = InetAddress.getByAddress(ipaddr);
 
-        DatagramPacket discoveryPacket = null;
-        DatagramPacket packet = null;
         DatagramSocket datagramSocket = null;
-        InetAddress addr = null;
-        byte[] buffer = null;
-
         try {
-            discoveryPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcastaddr, broadcastport);
-            buffer = new byte[1024];
-            packet = new DatagramPacket(buffer, buffer.length);
+            DatagramPacket discoveryPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcastaddr,
+                    broadcastport);
+            byte[] buffer = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             datagramSocket = new DatagramSocket(null);
             datagramSocket.setBroadcast(true);
             datagramSocket.bind(null);
             datagramSocket.setSoTimeout(500);
             datagramSocket.send(discoveryPacket);
             datagramSocket.receive(packet);
-            addr = packet.getAddress();
+            InetAddress addr = packet.getAddress();
             logger.debug("Niko Home Control: IP address is {}", addr);
+            return addr;
 
         } finally {
             if (datagramSocket != null) {
@@ -214,7 +220,6 @@ public class NikoHomeControlCommunication {
             }
         }
 
-        return addr;
     }
 
     /**
@@ -228,11 +233,7 @@ public class NikoHomeControlCommunication {
 
         try {
             nhcPort = port;
-            if (addr == null) {
-                nhcAddress = nikoHomeControlFindAddr();
-            } else {
-                nhcAddress = nikoHomeControlFindAddr(addr);
-            }
+            nhcAddress = nikoHomeControlFindAddr(addr);
 
             if (nhcAddress == null) {
                 logger.warn("Niko Home Control: did not find real IP of gateway");
@@ -244,7 +245,7 @@ public class NikoHomeControlCommunication {
             nhcIn = new BufferedReader(new InputStreamReader(nhcSocket.getInputStream()));
             logger.info("Niko Home Control: connected");
 
-            // initialize all info in local variables
+            // initialize all info in local fields
             initialize();
 
             // Start Niko Home Control event listener. This listener will act on all messages coming from
@@ -254,7 +255,7 @@ public class NikoHomeControlCommunication {
         } catch (IOException e) {
             // if the error occurs in the initialization, don't try to restart
             logger.warn("Niko Home Control: error initializing communication");
-            stopCommunication(false);
+            stopCommunication();
         }
 
     }
@@ -285,7 +286,7 @@ public class NikoHomeControlCommunication {
                     // this is not an communication stop triggered from outside this runnable
                     logger.warn("Niko Home Control: IO error in listener");
                     // the IO has stopped working, so we need to close cleanly and try to restart
-                    stopCommunication(true);
+                    restartCommunication();
                 }
             }
         }
@@ -300,70 +301,45 @@ public class NikoHomeControlCommunication {
     private void readMessage(String nhcMessage) {
 
         Gson gson = new Gson();
-        NHCCmdAck nhcCmdAck = null;
-        NHCSimpleCmdAck nhcSimpleCmdAck = null;
 
         logger.debug("Niko Home Control: received json {}", nhcMessage);
 
         try {
             // first try with simple reply form, a hashmap in the data field
-            nhcSimpleCmdAck = new NHCSimpleCmdAck();
-            nhcSimpleCmdAck = gson.fromJson(nhcMessage, NHCSimpleCmdAck.class);
-            if (nhcSimpleCmdAck.cmd != null) {
-                if (nhcSimpleCmdAck.cmd.equals("systeminfo")) {
-                    systemInfo(nhcSimpleCmdAck);
-                } else if (nhcSimpleCmdAck.cmd.equals("startevents")) {
-                    startEvents(nhcSimpleCmdAck);
-                } else if ((nhcSimpleCmdAck.cmd.equals("executeactions"))
-                        && (Integer.valueOf(nhcSimpleCmdAck.data.get("error")).equals(0))) {
-                    logger.debug("Niko Home Control: execute action success");
-                } else {
-                    logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
-                }
+            NHCSimpleCmdAck nhcSimpleCmdAck = gson.fromJson(nhcMessage, NHCSimpleCmdAck.class);
+            if ("systeminfo".equals(nhcSimpleCmdAck.cmd)) {
+                systemInfo(nhcSimpleCmdAck);
+            } else if ("startevents".equals(nhcSimpleCmdAck.cmd)) {
+                startEvents(nhcSimpleCmdAck);
+            } else if ("executeactions".equals(nhcSimpleCmdAck.cmd)
+                    && (Integer.valueOf(nhcSimpleCmdAck.data.get("error")).equals(0))) {
+                logger.debug("Niko Home Control: execute action success");
             } else {
                 logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
             }
         } catch (JsonSyntaxException je) {
             // if that JSON cannot be converted, it should be an array of hashmaps in the data field
-            nhcCmdAck = new NHCCmdAck();
-            nhcCmdAck = gson.fromJson(nhcMessage, NHCCmdAck.class);
-            if (nhcCmdAck.cmd != null) {
-                if (nhcCmdAck.cmd.equals("listlocations")) {
-                    listLocations(nhcCmdAck);
-                } else if (nhcCmdAck.cmd.equals("listactions")) {
-                    listActions(nhcCmdAck);
-                } else if (nhcCmdAck.cmd.equals("listthermostat")) {
-                    listThermostat(nhcCmdAck);
-                } else if (nhcCmdAck.cmd.equals("listthermostatHVAC")) {
-                    listThermostatHVAC(nhcCmdAck);
-                } else if (nhcCmdAck.cmd.equals("readtariffdata")) {
-                    readTariffData(nhcCmdAck);
-                } else if (nhcCmdAck.cmd.equals("getalarms")) {
-                    getAlarms(nhcCmdAck);
-                } else {
-                    logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
-                }
-            } else if (nhcCmdAck.event != null) {
-                if (nhcCmdAck.event.equals("listactions")) {
-                    for (HashMap<String, String> action : nhcCmdAck.data) {
-                        int id = Integer.valueOf(action.get("id"));
-                        setActionState(id, Integer.valueOf(action.get("value1")));
-                    }
-                } else {
-                    logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
+            NHCCmdAck nhcCmdAck = gson.fromJson(nhcMessage, NHCCmdAck.class);
+            if ("listlocations".equals(nhcCmdAck.cmd)) {
+                listLocations(nhcCmdAck);
+            } else if ("listactions".equals(nhcCmdAck.cmd)) {
+                listActions(nhcCmdAck);
+            } else if ("listactions".equals(nhcCmdAck.event)) {
+                for (HashMap<String, String> action : nhcCmdAck.data) {
+                    int id = Integer.valueOf(action.get("id"));
+                    setActionState(id, Integer.valueOf(action.get("value1")));
                 }
             } else {
                 logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
             }
         }
-
     }
 
     /**
      * Cleanup socket when the communication with Niko Home Control IP-interface is closed.
+     *
      */
-    private void stopCommunication() {
-
+    public synchronized void stopCommunication() {
         listenerStopped = true;
 
         if (nhcSocket != null) {
@@ -374,22 +350,18 @@ public class NikoHomeControlCommunication {
             nhcSocket = null;
         }
         logger.warn("Niko Home Control: communication stopped");
+
     }
 
     /**
-     * Cleanup socket when the communication with Niko Home Control IP-interface is closed.
+     * Close and restart communication with Niko Home Control IP-interface.
      *
-     * @param restart true if it is the intention to try to restart, should not be true if the event listener has not
-     *            successfully been started before
      */
-    public synchronized void stopCommunication(Boolean restart) {
+    public void restartCommunication() {
         stopCommunication();
 
-        // try restarting the communication
-        if (restart) {
-            logger.info("Niko Home Control: restart communication");
-            startCommunication(nhcAddress, nhcPort.intValue());
-        }
+        logger.info("Niko Home Control: restart communication");
+        startCommunication(nhcAddress, nhcPort);
 
     }
 
@@ -404,40 +376,20 @@ public class NikoHomeControlCommunication {
      */
     private void initialize() throws IOException {
 
-        NHCCmd nhcCmd = new NHCCmd();
+        sendAndReadMessage("systeminfo");
+        sendAndReadMessage("startevents");
+        sendAndReadMessage("listlocations");
+        sendAndReadMessage("listactions");
+        sendAndReadMessage("listthermostat");
+        sendAndReadMessage("listthermostatHVAC");
+        sendAndReadMessage("readtariffdata");
+        sendAndReadMessage("getalarms");
 
-        nhcCmd.cmd = "systeminfo";
-        sendMessage(nhcCmd);
+    }
+
+    private void sendAndReadMessage(String command) throws IOException {
+        sendMessage(new NHCCmd(command));
         readMessage(nhcIn.readLine());
-
-        nhcCmd.cmd = "startevents";
-        sendMessage(nhcCmd);
-        readMessage(nhcIn.readLine());
-
-        nhcCmd.cmd = "listlocations";
-        sendMessage(nhcCmd);
-        readMessage(nhcIn.readLine());
-
-        nhcCmd.cmd = "listactions";
-        sendMessage(nhcCmd);
-        readMessage(nhcIn.readLine());
-
-        nhcCmd.cmd = "listthermostat";
-        sendMessage(nhcCmd);
-        readMessage(nhcIn.readLine());
-
-        nhcCmd.cmd = "listthermostatHVAC";
-        sendMessage(nhcCmd);
-        readMessage(nhcIn.readLine());
-
-        nhcCmd.cmd = "readtariffdata";
-        sendMessage(nhcCmd);
-        readMessage(nhcIn.readLine());
-
-        nhcCmd.cmd = "getalarms";
-        sendMessage(nhcCmd);
-        readMessage(nhcIn.readLine());
-
     }
 
     private void systemInfo(NHCSimpleCmdAck nhcCmdAck) {
@@ -445,7 +397,7 @@ public class NikoHomeControlCommunication {
         logger.debug("Niko Home Control: systeminfo");
 
         if (nhcCmdAck.data.containsKey("swversion")) {
-            setSwversion(nhcCmdAck.data.get("swversion"));
+            setSwVersion(nhcCmdAck.data.get("swversion"));
         }
         if (nhcCmdAck.data.containsKey("api")) {
             setApi(nhcCmdAck.data.get("api"));
@@ -469,10 +421,10 @@ public class NikoHomeControlCommunication {
             setTz(nhcCmdAck.data.get("TZ"));
         }
         if (nhcCmdAck.data.containsKey("lastenergyerase")) {
-            setLastenergyerase(nhcCmdAck.data.get("lastenergyerase"));
+            setLastEnergyErase(nhcCmdAck.data.get("lastenergyerase"));
         }
         if (nhcCmdAck.data.containsKey("lastconfig")) {
-            setLastconfig(nhcCmdAck.data.get("lastconfig"));
+            setLastConfig(nhcCmdAck.data.get("lastconfig"));
         }
     }
 
@@ -524,30 +476,6 @@ public class NikoHomeControlCommunication {
 
     }
 
-    private void listThermostat(NHCCmdAck nhcCmdAck) {
-
-        logger.debug("Niko Home Control: list thermostat");
-
-    }
-
-    private void listThermostatHVAC(NHCCmdAck nhcCmdAck) {
-
-        logger.debug("Niko Home Control: list thermostatHVAC");
-
-    }
-
-    private void readTariffData(NHCCmdAck nhcCmdAck) {
-
-        logger.debug("Niko Home Control: read tariff data");
-
-    }
-
-    private void getAlarms(NHCCmdAck nhcCmdAck) {
-
-        logger.debug("Niko Home Control: get alarms");
-
-    }
-
     /**
      * Sends action to Niko Home Control.
      *
@@ -563,22 +491,19 @@ public class NikoHomeControlCommunication {
 
         logger.debug("Niko Home Control: execute action {} of type {} for {}", percent, actionType, actionId);
 
-        NHCCmd nhcCmd = new NHCCmd();
-        nhcCmd.cmd = "executeactions";
-        nhcCmd.id = actionId;
-        nhcCmd.value1 = percent;
+        NHCCmd nhcCmd = new NHCCmd("executeactions", actionId, percent);
 
         // rollershutters have extra fields in the command
         if ((actionType == 4) || (actionType == 5)) {
             switch (percent) {
                 case 255: // open
-                    nhcCmd.endValue = 100;
+                    nhcCmd.setEndValue(100);
                     break;
                 case 254: // close
-                    nhcCmd.startValue = 100;
+                    nhcCmd.setStartValue(100);
                     break;
                 case 253: // stop
-                    nhcCmd.startValue = getActionState(actionId);
+                    nhcCmd.setStartValue(getActionState(actionId));
             }
         }
 
@@ -598,7 +523,7 @@ public class NikoHomeControlCommunication {
         nhcOut.println(json);
         if (nhcOut.checkError()) {
             logger.warn("Niko Home Control: error sending message to gateway, trying to restart communication");
-            stopCommunication(true);
+            restartCommunication();
             // retry sending after restart
             nhcOut.println(json);
         }
@@ -625,14 +550,14 @@ public class NikoHomeControlCommunication {
     /**
      * Return software version of Niko Home Control Controller, retrieved when connecting.
      *
-     * @return swversion
+     * @return swVersion
      */
-    public String getSwversion() {
-        return swversion;
+    public String getSwVersion() {
+        return swVersion;
     }
 
-    private void setSwversion(String swversion) {
-        this.swversion = swversion;
+    private void setSwVersion(String swversion) {
+        this.swVersion = swversion;
     }
 
     /**
@@ -649,7 +574,7 @@ public class NikoHomeControlCommunication {
     }
 
     /**
-     * Return current time from Niko Home Control Controller, retrieved when connecting.
+     * Return current local time from Niko Home Control Controller, retrieved when connecting.
      *
      * @return time
      */
@@ -701,9 +626,9 @@ public class NikoHomeControlCommunication {
     }
 
     /**
-     * Return timezone from Niko Home Control Controller, retrieved when connecting.
+     * Return timezone offset from Niko Home Control Controller, retrieved when connecting.
      *
-     * @return timezone
+     * @return local timezone offset in 1/10 seconds
      */
     public String getTz() {
         return tz;
@@ -714,9 +639,9 @@ public class NikoHomeControlCommunication {
     }
 
     /**
-     * Return daylight saving time from Niko Home Control Controller, retrieved when connecting.
+     * Return daylight saving time offset from Niko Home Control Controller, retrieved when connecting.
      *
-     * @return dst
+     * @return dst offset in 1/10 seconds for current time
      */
     public String getDst() {
         return dst;
@@ -727,117 +652,101 @@ public class NikoHomeControlCommunication {
     }
 
     /**
-     * Return last energy data erase time from Niko Home Control Controller, retrieved when connecting.
+     * Return last energy data erase time (UTC) from Niko Home Control Controller, retrieved when connecting.
      *
-     * @return lastenergyerase
+     * @return lastEnergyErase
      */
-    public String getLastenergyerase() {
-        return lastenergyerase;
+    public String getLastEnergyErase() {
+        return lastEnergyErase;
     }
 
-    private void setLastenergyerase(String lastenergyerase) {
-        this.lastenergyerase = lastenergyerase;
+    private void setLastEnergyErase(String lastEnergyErase) {
+        this.lastEnergyErase = lastEnergyErase;
     }
 
     /**
-     * Return last configuration upload time from Niko Home Control Controller, retrieved when connecting.
+     * Return last configuration upload time (UTC) from Niko Home Control Controller, retrieved when connecting.
      *
-     * @return lastconfig
+     * @return lastConfig
      */
-    public String getLastconfig() {
-        return lastconfig;
+    public String getLastConfig() {
+        return lastConfig;
     }
 
-    private void setLastconfig(String lastconfig) {
-        this.lastconfig = lastconfig;
+    private void setLastConfig(String lastConfig) {
+        this.lastConfig = lastConfig;
     }
 
     /**
-     * Return the location name identified by locationID
+     * Return the location name identified by locationId
      *
-     * @param locationID
+     * @param locationId
      * @return location name
      */
-    public String getLocationName(int locationID) {
-        return this.locationNames.get(locationID);
+    public String getLocationName(int locationId) {
+        return this.locationNames.get(locationId);
     }
 
     /**
-     * Return the list of all action IDs in the Niko Home Control Controller.
+     * Return the list of all action Ids in the Niko Home Control Controller.
      *
-     * @return <code>ArrayList&ltInteger></code> of action IDs
+     * @return <code>ArrayList&ltInteger></code> of action Ids
      */
     public ArrayList<Integer> getActions() {
         return this.actions;
     }
 
     /**
-     * Get name of action identified by actionID.
+     * Get name of action identified by actionId.
      *
-     * @param actionID
+     * @param actionId
      * @return action name
      */
-    public String getActionName(int actionID) {
-        if (this.actionNames.containsKey(actionID)) {
-            return this.actionNames.get(actionID);
-        } else {
-            return null;
-        }
+    public String getActionName(int actionId) {
+        return this.actionNames.get(actionId);
     }
 
     /**
-     * Get type of action identified by actionID.
+     * Get type of action identified by actionId.
      * <p>
      * Action type is 1 for a switch and 2 for a dimmer.
      *
-     * @param actionID
+     * @param actionId
      * @return action type
      */
-    public Integer getActionType(int actionID) {
-        if (this.actionNames.containsKey(actionID)) {
-            return this.actionTypes.get(actionID);
-        } else {
-            return null;
-        }
+    public Integer getActionType(int actionId) {
+        return this.actionTypes.get(actionId);
     }
 
     /**
-     * Get location ID of action identified by actionID.
+     * Get location Id of action identified by actionId.
      *
-     * @param actionID
-     * @return location ID
+     * @param actionId
+     * @return location Id
      */
-    public Integer getActionLocation(int actionID) {
-        if (this.actionNames.containsKey(actionID)) {
-            return this.actionLocations.get(actionID);
-        } else {
-            return null;
-        }
+    public Integer getActionLocation(int actionId) {
+        return this.actionLocations.get(actionId);
     }
 
     /**
-     * Get state of action identified by actionID.
+     * Get state of action identified by actionId.
      * <p>
      * State is a value between 0 and 100 for a dimmer or rollershutter.
      * State is 0 or 100 for a switch.
      *
-     * @param actionID
+     * @param actionId
      * @return action state
      */
-    public Integer getActionState(int actionID) {
-        if (this.actionNames.containsKey(actionID)) {
-            return this.actionStates.get(actionID);
-        } else {
-            return null;
-        }
+    public Integer getActionState(int actionId) {
+        return this.actionStates.get(actionId);
     }
 
-    private void setActionState(int actionID, int value) {
-        this.actionStates.put(actionID, value);
-        NikoHomeControlHandler nhcHandler = getActionThingHandler(actionID);
+    private void setActionState(int actionId, int value) {
+        this.actionStates.put(actionId, value);
+        NikoHomeControlHandler nhcHandler = getActionThingHandler(actionId);
         if (nhcHandler != null) {
-            logger.debug("Niko Home Control: update channel state for {} with {}", actionID, value);
-            nhcHandler.handleStateUpdate(getActionType(actionID), value);
+            logger.debug("Niko Home Control: update channel state for {} with {}", actionId, value);
+            nhcHandler.handleStateUpdate(getActionType(actionId), value);
         }
     }
 
@@ -846,25 +755,21 @@ public class NikoHomeControlCommunication {
      * It keeps a record of the thing handler in this object so the thing can be updated when
      * an action receives an update from the Niko Home Control IP-interface.
      *
-     * @param actionID
+     * @param actionId
      * @param handler
      */
-    public void setActionThingHandler(int actionID, NikoHomeControlHandler handler) {
-        this.actionThingHandlers.put(actionID, handler);
+    public void setActionThingHandler(int actionId, NikoHomeControlHandler handler) {
+        this.actionThingHandlers.put(actionId, handler);
     }
 
     /**
      * Retrieves the ThingHandler from the internal record of the thing handler in this object.
      *
-     * @param actionID
+     * @param actionId
      * @return Niko Home Control Thing Handler
      */
-    private NikoHomeControlHandler getActionThingHandler(int actionID) {
-        if (this.actionNames.containsKey(actionID)) {
-            return actionThingHandlers.get(actionID);
-        } else {
-            return null;
-        }
+    private NikoHomeControlHandler getActionThingHandler(int actionId) {
+        return actionThingHandlers.get(actionId);
     }
 
     /**
@@ -873,6 +778,6 @@ public class NikoHomeControlCommunication {
      * @return True if active
      */
     public boolean communicationActive() {
-        return ((nhcSocket == null) ? false : true);
+        return nhcSocket != null;
     }
 }

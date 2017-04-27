@@ -10,8 +10,8 @@ package org.openhab.binding.nikohomecontrol.handler;
 import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.nikohomecontrol.internal.discovery.ThingDiscoveryService;
+import org.openhab.binding.nikohomecontrol.internal.discovery.NikoHomeControlDiscoveryService;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +38,14 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler.class);
 
-    private NikoHomeControlCommunication nhcComm = null;
+    private NikoHomeControlCommunication nhcComm;
 
     private ScheduledFuture<?> refreshTimer;
+
+    private InetAddress addr;
+    private Integer port;
+
+    private NikoHomeControlDiscoveryService nhcDiscovery;
 
     public NikoHomeControlBridgeHandler(Bridge nikoHomeControlBridge) {
         super(nikoHomeControlBridge);
@@ -55,39 +60,29 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
 
         logger.debug("Niko Home Control: initializing bridge handler");
-        InetAddress addr = null;
-        int port;
 
         Configuration config = this.getConfig();
-        // workaround for int port not being read back as int from configuration, remove trailing .0
-        logger.debug("Niko Home Control: bridge handler port {}", config.get(CONFIG_PORT).toString());
-        String portString = config.get(CONFIG_PORT).toString();
-        int portStringDotPos = portString.indexOf(".");
-        if (portStringDotPos > 0) {
-            portString = portString.substring(0, portStringDotPos);
-        }
-        port = Integer.parseInt(portString);
+
+        port = ((Number) config.get(CONFIG_PORT)).intValue();
+        logger.debug("Niko Home Control: bridge handler port {}", port);
+
         try {
+            // If hostname or address was provided in the configuration, try to use this to for bridge and give error
+            // when hostname parameter was not valid.
+            // No hostname provided is a valid configuration, therefore allow null addr to pass through.
             if (config.get(CONFIG_HOST_NAME) != null) {
-                logger.debug("Niko Home Control: bridge handler host {}", config.get(CONFIG_HOST_NAME).toString());
-                addr = InetAddress.getByName(config.get(CONFIG_HOST_NAME).toString());
+                logger.debug("Niko Home Control: bridge handler host {}", config.get(CONFIG_HOST_NAME));
+                addr = InetAddress.getByName((String) config.get(CONFIG_HOST_NAME));
             }
-        } catch (IOException e) {
+        } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Niko Home Control: cannot resolve bridge IP");
+                    "Niko Home Control: cannot resolve bridge IP with hostname " + config.get(CONFIG_HOST_NAME));
             return;
         }
-        BigDecimal intervalConfig = (BigDecimal) config.get(CONFIG_REFRESH);
-        int refreshInterval;
-        if (intervalConfig == null) {
-            refreshInterval = 0;
-        } else {
-            refreshInterval = intervalConfig.intValue();
-        }
 
-        InetAddress nhcAddr = addr;
+        Integer refreshInterval = ((Number) config.get(CONFIG_REFRESH)).intValue();
 
-        createCommunicationObject(nhcAddr, port);
+        createCommunicationObject();
         setupRefreshTimer(refreshInterval);
 
     }
@@ -99,9 +94,10 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      * @param nhcAddr IP address or subnet for gateway
      * @param port
      */
-    private void createCommunicationObject(InetAddress nhcAddr, int port) {
+    private void createCommunicationObject() {
 
-        ThingDiscoveryService nhcDiscovery = new ThingDiscoveryService(thing.getUID(), this);
+        nhcDiscovery = new NikoHomeControlDiscoveryService(thing.getUID(), this);
+        nhcDiscovery.start(bundleContext);
 
         scheduler.submit(new Runnable() {
 
@@ -110,40 +106,28 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
                 try {
                     for (int i = 0; i < 3; i++) {
                         // try connecting max 3 times
-                        nhcComm = new NikoHomeControlCommunication(port, nhcAddr);
+                        nhcComm = new NikoHomeControlCommunication(addr, port);
                         if (nhcComm.communicationActive()) {
                             break;
                         }
-                        nhcComm = null;
+                        if (i == 2) {
+                            throw new IOException("Niko Home Control: communication socket error");
+                        }
                     }
-                    if (!nhcComm.communicationActive()) {
-                        IOException e = new IOException("Niko Home Control: communication socket not open");
-                        throw e;
-                    }
-                    thing.getConfiguration().put(CONFIG_HOST_NAME, nhcComm.getAddr().getHostAddress());
-                    thing.getConfiguration().put(CONFIG_PORT, port);
-                    HashMap<String, String> properties = new HashMap<String, String>();
-                    properties.put("IP Address", nhcComm.getAddr().getHostAddress());
-                    properties.put("Port", Integer.toString(port));
-                    properties.put("swversion", nhcComm.getSwversion());
-                    properties.put("api", nhcComm.getApi());
-                    properties.put("time", nhcComm.getTime());
-                    properties.put("language", nhcComm.getLanguage());
-                    properties.put("currency", nhcComm.getCurrency());
-                    properties.put("units", nhcComm.getUnits());
-                    properties.put("DST", nhcComm.getDst());
-                    properties.put("TZ", nhcComm.getTz());
-                    properties.put("lastenergyerase", nhcComm.getLastenergyerase());
-                    properties.put("lastconfig", nhcComm.getLastconfig());
-                    thing.setProperties(properties);
+
+                    addr = nhcComm.getAddr();
+                    // keep the discovered host ip in the configuration to reuse when restarting
+                    thing.getConfiguration().put(CONFIG_HOST_NAME, addr.getHostAddress());
+
+                    updateProperties();
+
                     updateStatus(ThingStatus.ONLINE);
 
-                    nhcDiscovery.start(bundleContext);
                     nhcDiscovery.discoverDevices();
 
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "Niko Home Control: error initializing bridge handler");
+                            "Niko Home Control: error starting bridge connection");
                 }
             }
         });
@@ -155,14 +139,14 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      *
      * @param interval_config Time before refresh in minutes.
      */
-    private void setupRefreshTimer(int refreshInterval) {
+    private void setupRefreshTimer(Integer refreshInterval) {
 
         if (refreshTimer != null) {
             refreshTimer.cancel(true);
             refreshTimer = null;
         }
 
-        if (refreshInterval == 0) {
+        if ((refreshInterval == null) || (refreshInterval == 0)) {
             return;
         }
 
@@ -171,19 +155,67 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
         refreshTimer = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
+
                 logger.debug("Niko Home Control: restart communication at scheduled time");
+
                 updateStatus(ThingStatus.OFFLINE);
-                nhcComm.stopCommunication(true);
-                thing.setProperty("IP Address", nhcComm.getAddr().getHostAddress());
-                updateStatus(ThingStatus.ONLINE);
+
+                try {
+                    for (int i = 0; i < 3; i++) {
+                        // try restarting max 3 times
+                        nhcComm.restartCommunication();
+                        if (nhcComm.communicationActive()) {
+                            break;
+                        }
+                        if (i == 2) {
+                            throw new IOException("Niko Home Control: communication socket error");
+                        }
+                    }
+                    addr = nhcComm.getAddr();
+                    updateProperties();
+
+                    updateStatus(ThingStatus.ONLINE);
+
+                } catch (IOException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "Niko Home Control: error restarting bridge connection");
+                }
             }
         }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
     }
 
+    /**
+     * Update bridge properties with properties returned from Niko Home Control Controller, so they can be made visible
+     * in PaperUI.
+     *
+     */
+    private void updateProperties() {
+
+        HashMap<String, String> properties = new HashMap<>();
+
+        properties.put("ipAddress", addr.getHostAddress());
+        properties.put("port", Integer.toString(port));
+        properties.put("softwareVersion", nhcComm.getSwVersion());
+        properties.put("apiVersion", nhcComm.getApi());
+        properties.put("language", nhcComm.getLanguage());
+        properties.put("currency", nhcComm.getCurrency());
+        properties.put("units", nhcComm.getUnits());
+        properties.put("tzOffset", nhcComm.getTz());
+        properties.put("dstOffset", nhcComm.getDst());
+        properties.put("configDate", nhcComm.getLastConfig());
+        properties.put("energyEraseDate", nhcComm.getLastEnergyErase());
+        properties.put("connectionStartDate", nhcComm.getTime());
+
+        thing.setProperties(properties);
+
+    }
+
     @Override
     public void dispose() {
-        nhcComm.stopCommunication(false);
+        nhcComm.stopCommunication();
         nhcComm = null;
+
+        nhcDiscovery.stop();
     }
 
     /**

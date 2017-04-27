@@ -20,9 +20,5 @@ Import-Package:
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.nikohomecontrol;uses:="org.eclipse.smarthome.core.thing",
- org.openhab.binding.nikohomecontrol.handler;
-  uses:="org.eclipse.smarthome.core.thing,
-   org.openhab.binding.nikohomecontrol.internal.protocol,
-   org.eclipse.smarthome.core.thing.binding,
-   org.eclipse.smarthome.core.types"
+Export-Package: org.openhab.binding.nikohomecontrol,
+ org.openhab.binding.nikohomecontrol.handler

@@ -9,7 +9,7 @@
 		<config-description>
 			<parameter name="ADDR" type="text" required="false">
 				<label>IP or Host Name</label>
-				<description>Will be resolved by discovery if auto configured</description>
+				<description>Address will be resolved on connection if not configured</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="PORT" type="integer" required="true">
@@ -36,13 +36,13 @@
 		<channels>
 			<channel id="switch" typeId="switch" />
 		</channels>
-        <config-description>
-            <parameter name="ACTIONID" type="integer" required="false">
-                <label>Action ID</label>
-                <description>Niko Home Control IP Interface Object ID</description>
-                <advanced>true</advanced>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="ACTIONID" type="integer" required="false">
+				<label>Action ID</label>
+				<description>Niko Home Control IP Interface Object ID</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<thing-type id="dimmer">
 		<supported-bridge-type-refs>
@@ -50,22 +50,22 @@
 		</supported-bridge-type-refs>
 		<label>Dimmer</label>
 		<description>Dimmer type actions in Niko Home Control</description>
-        <channels>
-            <channel id="brightness" typeId="brightness" />
-        </channels>
-        <config-description>
-            <parameter name="ACTIONID" type="integer" required="false">
-                <label>Action ID</label>
-                <description>Niko Home Control IP Interface Object ID</description>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="STEP" type="integer" required="true">
-                <label>Step value</label>
-                <description>Step value used for increase/decrease of dimmer brightness, default 10%</description>
-                <default>10</default>
-                <advanced>true</advanced>
-            </parameter>
-        </config-description>
+		<channels>
+			<channel id="brightness" typeId="brightness" />
+		</channels>
+		<config-description>
+			<parameter name="ACTIONID" type="integer" required="false">
+				<label>Action ID</label>
+				<description>Niko Home Control IP Interface Object ID</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="STEP" type="integer" required="true">
+				<label>Step value</label>
+				<description>Step value used for increase/decrease of dimmer brightness, default 10%</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<thing-type id="blind">
 		<supported-bridge-type-refs>
@@ -76,13 +76,13 @@
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter" />
 		</channels>
-        <config-description>
-            <parameter name="ACTIONID" type="integer" required="false">
-                <label>Action ID</label>
-                <description>Niko Home Control IP Interface Object ID</description>
-                <advanced>true</advanced>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="ACTIONID" type="integer" required="false">
+				<label>Action ID</label>
+				<description>Niko Home Control IP Interface Object ID</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="switch">
@@ -95,13 +95,13 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness control for dimmer action in Niko Home Control</description>
-        <category>DimmableLight</category>
+		<category>DimmableLight</category>
 	</channel-type>
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<description>Rollershutter control for rollershutter action in Niko Home Control</description>
-        <category>Blinds</category>
+		<category>Blinds</category>
 	</channel-type>
 
 </thing:thing-descriptions>

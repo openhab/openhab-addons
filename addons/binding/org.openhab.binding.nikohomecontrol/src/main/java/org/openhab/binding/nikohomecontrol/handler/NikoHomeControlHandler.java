@@ -9,6 +9,7 @@ package org.openhab.binding.nikohomecontrol.handler;
 
 import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -34,8 +35,8 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlHandler.class);
 
-    private NikoHomeControlBridgeHandler nhcBridgeHandler = null;
-    private NikoHomeControlCommunication nhcComm = null;
+    private NikoHomeControlBridgeHandler nhcBridgeHandler;
+    private NikoHomeControlCommunication nhcComm;
 
     public NikoHomeControlHandler(Thing thing) {
         super(thing);
@@ -46,106 +47,124 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
         if (nhcComm == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Niko Home Control: communication object is null, could not handle command " + command + " for "
-                            + channelUID);
+                    "Niko Home Control: no connection with Niko Home Control, could not handle command " + command
+                            + " for " + channelUID);
             return;
         }
 
-        int actionID = (Integer) thing.getConfiguration().get(CONFIG_ACTION_ID);
+        Integer actionId = ((Number) this.getConfig().get(CONFIG_ACTION_ID)).intValue();
 
-        logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
+        if (nhcComm.getActions().contains(actionId)) {
 
-        switch (channelUID.getId()) {
+            logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
 
-            case CHANNEL_SWITCH:
-                if (command instanceof OnOffType) {
-                    OnOffType s = (OnOffType) command;
-                    if (s == OnOffType.OFF) {
-                        nhcComm.executeAction(actionID, 0);
-                    } else {
-                        nhcComm.executeAction(actionID, 100);
-                    }
-                }
-                updateStatus(ThingStatus.ONLINE);
-                break;
+            switch (channelUID.getId()) {
 
-            case CHANNEL_BRIGHTNESS:
-                if (command instanceof OnOffType) {
-                    OnOffType s = (OnOffType) command;
-                    if (s == OnOffType.OFF) {
-                        nhcComm.executeAction(actionID, 255);
-                    } else {
-                        nhcComm.executeAction(actionID, 254);
-                    }
-                } else if (command instanceof IncreaseDecreaseType) {
-                    IncreaseDecreaseType s = (IncreaseDecreaseType) command;
-                    int stepValue = (Integer) thing.getConfiguration().get(CONFIG_STEP_VALUE);
-                    int currentValue = nhcComm.getActionState(actionID);
-                    int newValue;
-                    if (s == IncreaseDecreaseType.INCREASE) {
-                        newValue = currentValue + stepValue;
-                        // round down to nearest step multiple
-                        newValue = newValue - newValue % stepValue;
-                        nhcComm.executeAction(actionID, (newValue > 100 ? 100 : newValue));
-                    } else {
-                        newValue = currentValue - stepValue;
-                        // round up to nearest step multiple
-                        newValue = newValue + newValue % stepValue;
-                        nhcComm.executeAction(actionID, (newValue < 0 ? 0 : newValue));
-                    }
-                } else if (command instanceof PercentType) {
-                    PercentType p = (PercentType) command;
-                    nhcComm.executeAction(actionID, p.intValue());
-                }
-                updateStatus(ThingStatus.ONLINE);
-                break;
+                case CHANNEL_SWITCH:
+                    handleSwitchCommand(actionId, command);
+                    updateStatus(ThingStatus.ONLINE);
+                    break;
 
-            case CHANNEL_ROLLERSHUTTER:
-                if (command instanceof UpDownType) {
-                    UpDownType s = (UpDownType) command;
-                    if (s == UpDownType.UP) {
-                        nhcComm.executeAction(actionID, 255);
-                        logger.debug("Niko Home Control: rollershutter {} up pressed", actionID);
-                    } else {
-                        nhcComm.executeAction(actionID, 254);
-                        logger.debug("Niko Home Control: rollershutter {} down pressed", actionID);
-                    }
-                } else if (command instanceof StopMoveType) {
-                    StopMoveType s = (StopMoveType) command;
-                    if (s == StopMoveType.STOP) {
-                        nhcComm.executeAction(actionID, 253);
-                        logger.debug("Niko Home Control: rollershutter {} stop pressed", actionID);
-                    } else {
-                        logger.debug("Niko Home Control: rollershutter {} move pressed", actionID);
-                    }
-                } else if (command instanceof PercentType) {
-                    PercentType p = (PercentType) command;
-                    nhcComm.executeAction(actionID, p.intValue());
-                    logger.debug("Niko Home Control: rollershutter {} percent {}", actionID, p.intValue());
-                }
-                updateStatus(ThingStatus.ONLINE);
-                break;
+                case CHANNEL_BRIGHTNESS:
+                    handleBrightnessCommand(actionId, command);
+                    updateStatus(ThingStatus.ONLINE);
+                    break;
 
-            default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Niko Home Control: channel unknown " + channelUID.getId());
+                case CHANNEL_ROLLERSHUTTER:
+                    handleRollershutterCommand(actionId, command);
+                    updateStatus(ThingStatus.ONLINE);
+                    break;
+
+                default:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Niko Home Control: channel unknown " + channelUID.getId());
+            }
+
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Niko Home Control: ACTIONID does not match an action in the controller " + actionId);
+        }
+    }
+
+    private void handleSwitchCommand(Integer actionId, Command command) {
+        if (command instanceof OnOffType) {
+            OnOffType s = (OnOffType) command;
+            if (s == OnOffType.OFF) {
+                nhcComm.executeAction(actionId, 0);
+            } else {
+                nhcComm.executeAction(actionId, 100);
+            }
+        }
+    }
+
+    private void handleBrightnessCommand(Integer actionId, Command command) {
+        if (command instanceof OnOffType) {
+            OnOffType s = (OnOffType) command;
+            if (s == OnOffType.OFF) {
+                nhcComm.executeAction(actionId, 255);
+            } else {
+                nhcComm.executeAction(actionId, 254);
+            }
+        } else if (command instanceof IncreaseDecreaseType) {
+            IncreaseDecreaseType s = (IncreaseDecreaseType) command;
+            int stepValue = ((Number) this.getConfig().get(CONFIG_STEP_VALUE)).intValue();
+            int currentValue = nhcComm.getActionState(actionId);
+            int newValue;
+            if (s == IncreaseDecreaseType.INCREASE) {
+                newValue = currentValue + stepValue;
+                // round down to step multiple
+                newValue = newValue - newValue % stepValue;
+                nhcComm.executeAction(actionId, (newValue > 100 ? 100 : newValue));
+            } else {
+                newValue = currentValue - stepValue;
+                // round up to step multiple
+                newValue = newValue + newValue % stepValue;
+                nhcComm.executeAction(actionId, (newValue < 0 ? 0 : newValue));
+            }
+        } else if (command instanceof PercentType) {
+            PercentType p = (PercentType) command;
+            nhcComm.executeAction(actionId, p.intValue());
+        }
+    }
+
+    private void handleRollershutterCommand(Integer actionId, Command command) {
+        if (command instanceof UpDownType) {
+            UpDownType s = (UpDownType) command;
+            if (s == UpDownType.UP) {
+                nhcComm.executeAction(actionId, 255);
+                logger.debug("Niko Home Control: rollershutter {} up pressed", actionId);
+            } else {
+                nhcComm.executeAction(actionId, 254);
+                logger.debug("Niko Home Control: rollershutter {} down pressed", actionId);
+            }
+        } else if (command instanceof StopMoveType) {
+            StopMoveType s = (StopMoveType) command;
+            if (s == StopMoveType.STOP) {
+                nhcComm.executeAction(actionId, 253);
+                logger.debug("Niko Home Control: rollershutter {} stop pressed", actionId);
+            } else {
+                logger.debug("Niko Home Control: rollershutter {} move pressed", actionId);
+            }
+        } else if (command instanceof PercentType) {
+            PercentType p = (PercentType) command;
+            nhcComm.executeAction(actionId, p.intValue());
+            logger.debug("Niko Home Control: rollershutter {} percent {}", actionId, p.intValue());
         }
     }
 
     @Override
     public void initialize() {
 
-        int actionID;
-        Integer actionIdInteger = null;
-        if (thing.getConfiguration().containsKey(CONFIG_ACTION_ID)) {
-            actionIdInteger = (Integer) thing.getConfiguration().get(CONFIG_ACTION_ID);
+        Configuration config = this.getConfig();
+
+        Integer actionId = null;
+        if (config.containsKey(CONFIG_ACTION_ID)) {
+            actionId = ((Number) config.get(CONFIG_ACTION_ID)).intValue();
         }
-        if (actionIdInteger != null) {
-            actionID = actionIdInteger;
-        } else {
-            // by default try the ID of the thing, discovery would set this to the Niko Home Control ID
-            actionID = Integer.parseInt(thing.getUID().getId());
-            thing.getConfiguration().put(CONFIG_ACTION_ID, actionID);
+        if (actionId == null) {
+            // By default try the ID of the thing, discovery would have set this to the Niko Home Control ID.
+            actionId = Integer.parseInt(thing.getUID().getId());
+            config.put(CONFIG_ACTION_ID, actionId);
         }
 
         nhcBridgeHandler = (NikoHomeControlBridgeHandler) getBridge().getHandler();
@@ -153,34 +172,34 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
         if (nhcComm == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Niko Home Control: communication object is null, could not initialize action " + actionID);
+                    "Niko Home Control: no connection with Niko Home Control, could not initialize action " + actionId);
             return;
         }
 
-        if (nhcComm.getActions().contains(actionID)) {
+        if (nhcComm.getActions().contains(actionId)) {
 
-            Integer actionState = nhcComm.getActionState(actionID);
-            Integer actionType = nhcComm.getActionType(actionID);
-            String actionLocation = nhcComm.getLocationName(nhcComm.getActionLocation(actionID));
+            int actionState = nhcComm.getActionState(actionId);
+            int actionType = nhcComm.getActionType(actionId);
+            String actionLocation = nhcComm.getLocationName(nhcComm.getActionLocation(actionId));
 
-            nhcComm.setActionThingHandler(actionID, this);
+            nhcComm.setActionThingHandler(actionId, this);
 
             switch (actionType) {
                 case 0:
                 case 1:
                     updateState(CHANNEL_SWITCH, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
-                    logger.debug("Niko Home Control: switch intialized {}", actionID);
+                    logger.debug("Niko Home Control: switch intialized {}", actionId);
                     updateStatus(ThingStatus.ONLINE);
                     break;
                 case 2:
                     updateState(CHANNEL_BRIGHTNESS, new PercentType(actionState));
-                    logger.debug("Niko Home Control: dimmer intialized {}", actionID);
+                    logger.debug("Niko Home Control: dimmer intialized {}", actionId);
                     updateStatus(ThingStatus.ONLINE);
                     break;
                 case 4:
                 case 5:
                     updateState(CHANNEL_ROLLERSHUTTER, new PercentType(actionState));
-                    logger.debug("Niko Home Control: rollershutter intialized {}", actionID);
+                    logger.debug("Niko Home Control: rollershutter intialized {}", actionId);
                     updateStatus(ThingStatus.ONLINE);
                     break;
                 default:
@@ -190,7 +209,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             thing.setLocation(actionLocation);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: thing ID does not match an action in the controller " + actionID);
+                    "Niko Home Control: ACTIONID does not match an action in the controller " + actionId);
         }
 
     }
@@ -198,7 +217,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     public void handleStateUpdate(int actionType, int actionState) {
 
         logger.debug("Niko Home Control: handle state update {} for {}", actionState,
-                thing.getConfiguration().get(CONFIG_ACTION_ID));
+                this.getConfig().get(CONFIG_ACTION_ID));
 
         switch (actionType) {
             case 0:
