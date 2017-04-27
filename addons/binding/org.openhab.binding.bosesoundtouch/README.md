@@ -101,6 +101,13 @@ I hope this gives you some idea's how to use this plugin.
 
 If you need support or have new idea's please use the [openHAB cummunity](https://community.openhab.org/t/bose-soundtouch-binding/5678) to post the requests.
 
+#### Add additional PRESETS
+
+When selected a presetable ContentItem you are able to save this preset with the saveAsPreset Channel
+Use numbers greater than six to save the selected source as Preset.
+Once the source is saved, you can use it like the other PRESETS with the channel preset and the channel presetControl
+Note that these PRESETS are only available when using openHAB
+
 #### Known issues and Workarounds
 
 ##### Limmited support
