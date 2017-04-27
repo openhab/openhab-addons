@@ -127,12 +127,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 Thing theThing = zoneThings.get(number);
                 logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
                 if (theThing != null) {
-                    try {
-                        ((ZoneHandler) theThing.getHandler()).handleZoneStatus(stat);
-                        break;
-                    } catch (ClassCastException e) {
-                        logger.error("CCE", e);
-                    }
+                    ((ZoneHandler) theThing.getHandler()).handleZoneStatus(stat);
+                    break;
                 }
             } else if (s instanceof AreaStatus) {
                 AreaStatus areaStatus = (AreaStatus) s;
