@@ -209,11 +209,30 @@ public class OshiSysteminfo implements SysteminfoInterface {
     @Override
     public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
-        long freeStorage = fileStore.getUsableSpace();
-        long totalStorage = fileStore.getTotalSpace();
-        double freePercentDecimal = (double) freeStorage / (double) totalStorage;
-        BigDecimal freePercent = getPercentsValue(freePercentDecimal);
-        return new DecimalType(freePercent);
+        long totalSpace = fileStore.getTotalSpace();
+        long freeSpace = fileStore.getUsableSpace();
+        if (totalSpace > 0) {
+            double freePercentDecimal = (double) freeSpace / (double) totalSpace;
+            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
+            return new DecimalType(freePercent);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
+        long totalSpace = fileStore.getTotalSpace();
+        long freeSpace = fileStore.getUsableSpace();
+        long usedSpace = totalSpace - freeSpace;
+        if (totalSpace > 0) {
+            double usedPercentDecimal = (double) usedSpace / (double) totalSpace;
+            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
+            return new DecimalType(usedPercent);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -324,11 +343,24 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public DecimalType getMemoryAvailablePercent() {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
-        BigDecimal freePercent;
         if (totalMemory > 0) {
             double freePercentDecimal = (double) availableMemory / (double) totalMemory;
-            freePercent = getPercentsValue(freePercentDecimal);
+            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
             return new DecimalType(freePercent);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DecimalType getMemoryUsedPercent() {
+        long availableMemory = memory.getAvailable();
+        long totalMemory = memory.getTotal();
+        long usedMemory = totalMemory - availableMemory;
+        if (totalMemory > 0) {
+            double usedPercentDecimal = (double) usedMemory / (double) totalMemory;
+            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
+            return new DecimalType(usedPercent);
         } else {
             return null;
         }
@@ -383,11 +415,23 @@ public class OshiSysteminfo implements SysteminfoInterface {
         long usedSwap = memory.getSwapUsed();
         long totalSwap = memory.getSwapTotal();
         long freeSwap = totalSwap - usedSwap;
-        BigDecimal freePercent;
         if (totalSwap > 0) {
             double freePercentDecimal = (double) freeSwap / (double) totalSwap;
-            freePercent = getPercentsValue(freePercentDecimal);
+            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
             return new DecimalType(freePercent);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DecimalType getSwapUsedPercent() {
+        long usedSwap = memory.getSwapUsed();
+        long totalSwap = memory.getSwapTotal();
+        if (totalSwap > 0) {
+            double usedPercentDecimal = (double) usedSwap / (double) totalSwap;
+            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
+            return new DecimalType(usedPercent);
         } else {
             return null;
         }
