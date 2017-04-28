@@ -21,21 +21,32 @@ import org.slf4j.LoggerFactory;
 public class ContentItem {
     private final Logger logger = LoggerFactory.getLogger(ContentItem.class);
 
-    private OperationModeType operationMode;
     private String source;
     private String sourceAccount;
     private String location;
     private boolean presetable;
     private String itemName;
     private int unusedField;
-
     private int presetID;
 
+    /**
+     * Creates a new instance of this class
+     */
     public ContentItem() {
+        source = "";
+        sourceAccount = "";
+        location = "";
+        presetable = false;
         itemName = "";
+        unusedField = 0;
         presetID = 0;
     }
 
+    /**
+     * Returns true if this ContentItem is defined as Preset
+     *
+     * @return true if this ContentItem is defined as Preset
+     */
     public boolean isPreset() {
         if (presetable) {
             return presetID > 0;
@@ -44,13 +55,31 @@ public class ContentItem {
         }
     }
 
+    /**
+     * Returns true if all necessary stats are set
+     *
+     * @return true if all necessary stats are set
+     */
+    public boolean isValid() {
+        if (getOperationMode() == OperationModeType.STANDBY) {
+            return true;
+        }
+        if (itemName.equals("") || source.equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Returns true if source, sourceAccount, location, itemName, and presetable are equal
+     *
+     * @return true if source, sourceAccount, location, itemName, and presetable are equal
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ContentItem) {
             ContentItem other = (ContentItem) obj;
-            if (other.operationMode != this.operationMode) {
-                return false;
-            }
             if (!isEqual(other.source, this.source)) {
                 return false;
             }
@@ -71,7 +100,13 @@ public class ContentItem {
         return super.equals(obj);
     }
 
+    /**
+     * Returns the operation Mode, depending on the stats that are set
+     *
+     * @return the operation Mode, depending on the stats that are set
+     */
     public OperationModeType getOperationMode() {
+        OperationModeType operationMode = OperationModeType.OTHER;
         if (source == null || source.equals("")) {
             return OperationModeType.OTHER;
         }
@@ -149,6 +184,11 @@ public class ContentItem {
         return presetID;
     }
 
+    /**
+     * Returns the XML Code that is needed to switch to this ContentItem
+     *
+     * @return the XML Code that is needed to switch to this ContentItem
+     */
     public String generateXML() {
         String xml;
         switch (getOperationMode()) {
@@ -188,6 +228,11 @@ public class ContentItem {
         return itemName;
     }
 
+    /**
+     * Returns a string, to save the contentItem
+     *
+     * @return a string, to save the contentItem
+     */
     public String stringToSave() {
         // private int presetID;
         // private String source;
@@ -212,6 +257,11 @@ public class ContentItem {
         return sb.toString();
     }
 
+    /**
+     * Inits the stats with values parsed form the string s
+     *
+     * @param s a string written with stringToSave()
+     */
     public void createFormString(String s) {
         // private int presetID;
         // private String source;

@@ -9,7 +9,7 @@
 package org.openhab.binding.bosesoundtouch.internal;
 
 /**
- * The {@link AvailableSources} is used to find out, which sources are available
+ * The {@link AvailableSources} is used to find out, which sources and functions are available
  *
  * @author Thomas Traunbauer
  */

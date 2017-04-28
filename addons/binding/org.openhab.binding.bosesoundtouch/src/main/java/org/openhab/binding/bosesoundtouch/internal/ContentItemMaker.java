@@ -25,11 +25,23 @@ public class ContentItemMaker {
     private PresetContainer presetContainer;
     private CommandExecutor commandExecutor;
 
+    /**
+     * Creates a new instance of this class
+     */
     public ContentItemMaker(CommandExecutor commandExecutor, PresetContainer presetContainer) {
         this.commandExecutor = commandExecutor;
         this.presetContainer = presetContainer;
     }
 
+    /**
+     * Returns a valid ContentItem, to switch to
+     *
+     * @param operationModeType
+     *
+     * @throws OperationModeNotAvailableException if OperationMode is not supported yet or on this device
+     * @throws NoInternetRadioPresetFoundException if OperationMode is INTERNET_RADIO and no PRESET is defined
+     * @throws NoStoredMusicPresetFoundException if OperationMode is STORED_MUSIC and no PRESET is defined
+     */
     public ContentItem getContentItem(OperationModeType operationModeType) throws OperationModeNotAvailableException,
             NoInternetRadioPresetFoundException, NoStoredMusicPresetFoundException {
         switch (operationModeType) {
@@ -166,7 +178,7 @@ public class ContentItemMaker {
     private ContentItem getInternetRadio() throws NoInternetRadioPresetFoundException {
         ContentItem contentItem = null;
         if (commandExecutor.isInternetRadioAvailable()) {
-            Collection<ContentItem> listOfPresets = presetContainer.values();
+            Collection<ContentItem> listOfPresets = presetContainer.getAllPresets();
             for (ContentItem iteratedItem : listOfPresets) {
                 if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.INTERNET_RADIO)) {
                     contentItem = iteratedItem;
@@ -195,7 +207,7 @@ public class ContentItemMaker {
     private ContentItem getStoredMusic() throws NoStoredMusicPresetFoundException {
         ContentItem contentItem = null;
         if (commandExecutor.isStoredMusicAvailable()) {
-            Collection<ContentItem> listOfPresets = presetContainer.values();
+            Collection<ContentItem> listOfPresets = presetContainer.getAllPresets();
             for (ContentItem iteratedItem : listOfPresets) {
                 if ((contentItem == null) && (iteratedItem.getOperationMode() == OperationModeType.STORED_MUSIC)) {
                     contentItem = iteratedItem;

@@ -14,12 +14,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -27,11 +24,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.binding.ThingFactory;
-import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
@@ -54,29 +46,39 @@ import org.slf4j.LoggerFactory;
 public class CommandExecutor implements AvailableSources {
     private Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
 
-    private Session session;
     private BoseSoundTouchHandler handler;
     private PresetContainer presetContainer;
 
-    private ZoneState zoneState;
     private BoseSoundTouchHandler zoneMaster;
     private List<BoseSoundTouchHandler> listOfZoneMembers;
 
-    private boolean muted;
+    private boolean currentMuted;
     private ContentItem currentContentItem;
     private OperationModeType currentOperationMode;
 
     private Map<String, Boolean> mapOfAvailableFunctions;
 
-    public CommandExecutor(Session session, BoseSoundTouchHandler handler) {
-        this.session = session;
+    /**
+     * Creates a new instance of this class
+     *
+     * @param handler the handler that created this CommandExecutor
+     */
+    public CommandExecutor(BoseSoundTouchHandler handler) {
         this.handler = handler;
         init();
     }
 
-    public void addContentItemToPresetList(int presetID, ContentItem preset) {
+    /**
+     * Adds a ContentItem to the PresetContainer
+     *
+     * @param id the id the ContentItem should be reached
+     * @param contentItem the contentItem that should be saved as PRESET. Note that a eventually set presetID of the
+     *            ContentItem will be overwritten with id
+     */
+    public void addContentItemToPresetContainer(int id, ContentItem contentItem) {
+        contentItem.setPresetID(id);
         try {
-            presetContainer.put(presetID, preset);
+            presetContainer.put(id, contentItem);
         } catch (ContentItemNotPresetableException e) {
             logger.debug("{}: ContentItem is not presetable", handler.getDeviceName());
         } catch (IOException e) {
@@ -84,82 +86,101 @@ public class CommandExecutor implements AvailableSources {
         }
     }
 
-    public void checkOperationMode() {
-        OperationModeType operationMode = OperationModeType.OTHER;
-        if (currentContentItem != null) {
-            ContentItem psFound = null;
-            Collection<ContentItem> listOfPresets = presetContainer.values();
-            for (ContentItem ps : listOfPresets) {
-                if (ps.isPresetable()) {
-                    if (ps.getLocation().equals(currentContentItem.getLocation())) {
-                        psFound = ps;
-                    }
-                }
-            }
-            int presetID = 0;
-            if (psFound != null) {
-                presetID = psFound.getPresetID();
-            }
-            updatePreset(new DecimalType(presetID));
-
-            operationMode = currentContentItem.getOperationMode();
-        } else {
-            operationMode = OperationModeType.STANDBY;
-        }
-
-        updateOperationMode(new StringType(operationMode.toString()));
-        currentOperationMode = operationMode;
-        if (currentOperationMode == OperationModeType.STANDBY) {
-            // zone is leaved / destroyed if turned off
-            listOfZoneMembers.clear();
-            if (zoneMaster != null) {
-                zoneMaster.getCommandExecutor().removeZoneMember(handler);
-                zoneMaster = null;
-            }
-            updatePowerState(OnOffType.OFF);
-            updatePlayerControl(PlayPauseType.PAUSE);
-        } else {
-            updatePowerState(OnOffType.ON);
-        }
-        refreshZone();
-    }
-
-    public void getRequest(APIRequest apiRequest) {
-        String msg = "<msg><header " + "deviceID=\"" + handler.getMacAddress() + "\"" + " url=\"" + apiRequest
-                + "\" method=\"GET\"><request requestID=\"0\"><info type=\"new\"/></request></header></msg>";
-        try {
-            session.getRemote().sendString(msg);
-        } catch (IOException e) {
-            handler.onWebSocketError(e);
-        }
-    }
-
-    public BoseSoundTouchHandler getZoneMaster() {
-        return zoneMaster;
-    }
-
-    public void setContentItemAsPreset(DecimalType command) {
+    /**
+     * Adds the current selected ContentItem to the PresetContainer
+     *
+     * @param command the command is a DecimalType, thats intValue will be used as id. The id the ContentItem should be
+     *            reached
+     */
+    public void addCurrentContentItemToPresetContainer(DecimalType command) {
         if (command.intValue() > 6) {
-            try {
-                presetContainer.put(command.intValue(), currentContentItem);
-            } catch (ContentItemNotPresetableException e) {
-                logger.warn("{}: Selected item is not presetable", handler.getDeviceName());
-            } catch (IOException e) {
-                logger.warn("{}: Could not save presets to file", handler.getDeviceName());
-            }
+            addContentItemToPresetContainer(command.intValue(), currentContentItem);
         } else {
             logger.warn("{}: Only PresetID >6 is allowed", handler.getDeviceName());
         }
     }
 
-    public void setCurrentContentItem(ContentItem currentContentItem) {
-        this.currentContentItem = currentContentItem;
+    /**
+     * Initializes a API Request on this device
+     *
+     * @param apiRequest the apiRequest thats informations should be collected
+     */
+    public void getInformations(APIRequest apiRequest) {
+        String msg = "<msg><header " + "deviceID=\"" + handler.getMacAddress() + "\"" + " url=\"" + apiRequest
+                + "\" method=\"GET\"><request requestID=\"0\"><info type=\"new\"/></request></header></msg>";
+        try {
+            handler.getSession().getRemote().sendString(msg);
+        } catch (IOException e) {
+            handler.onWebSocketError(e);
+        }
     }
 
-    public void setMuted(boolean muted) {
-        this.muted = muted;
+    /**
+     * Returns the Zone Master
+     *
+     * @return the Zone Master
+     */
+    public BoseSoundTouchHandler getZoneMaster() {
+        return zoneMaster;
     }
 
+    /**
+     * Sets the current ContentItem if it is valid, and inits an update of the operating values
+     *
+     * @param contentItem
+     */
+    public void setCurrentContentItem(ContentItem contentItem) {
+        if ((contentItem != null) && (contentItem.isValid())) {
+            ContentItem psFound = null;
+            if (presetContainer != null) {
+                Collection<ContentItem> listOfPresets = presetContainer.getAllPresets();
+                for (ContentItem ps : listOfPresets) {
+                    if (ps.isPresetable()) {
+                        if (ps.getLocation().equals(contentItem.getLocation())) {
+                            psFound = ps;
+                        }
+                    }
+                }
+                int presetID = 0;
+                if (psFound != null) {
+                    presetID = psFound.getPresetID();
+                }
+                contentItem.setPresetID(presetID);
+
+                currentContentItem = contentItem;
+            }
+        }
+        updateOperatingValues();
+    }
+
+    /**
+     * Sets the device is currently muted
+     *
+     * @param muted
+     */
+    public void setCurrentMuted(boolean muted) {
+        currentMuted = muted;
+    }
+
+    /**
+     * Sets the device zone definition
+     *
+     * @param zoneState
+     * @param zoneMaster
+     * @param listOfZoneMembers
+     */
+    public void setZone(BoseSoundTouchHandler zoneMaster, List<BoseSoundTouchHandler> listOfZoneMembers) {
+        this.zoneMaster = zoneMaster;
+        this.listOfZoneMembers = listOfZoneMembers;
+
+        updateZoneInfoGUIState();
+    }
+
+    /**
+     * Post Bass on the device
+     *
+     * @param command the command is Type of DecimalType
+     */
     public void postBass(DecimalType command) {
         if (isBassAvailable()) {
             sendPostRequestInWebSocket("bass",
@@ -169,19 +190,22 @@ public class CommandExecutor implements AvailableSources {
         }
     }
 
-    public void postOperationMode(OperationModeType operationModeType) {
-        if (operationModeType == OperationModeType.STANDBY) {
-            if (currentOperationMode != OperationModeType.STANDBY) {
-                postRemoteKey(RemoteKeyType.POWER);
-            }
+    /**
+     * Post OperationMode on the device
+     *
+     * @param command the command is Type of OperationModeType
+     */
+    public void postOperationMode(OperationModeType command) {
+        if (command == OperationModeType.STANDBY) {
+            postPower(OnOffType.OFF);
         } else {
             try {
                 ContentItemMaker contentItemMaker = new ContentItemMaker(this, presetContainer);
-                ContentItem contentItem = contentItemMaker.getContentItem(operationModeType);
+                ContentItem contentItem = contentItemMaker.getContentItem(command);
                 postContentItem(contentItem);
             } catch (OperationModeNotAvailableException e) {
                 logger.warn("{}: OperationMode \"{}\" is not supported yet", handler.getDeviceName(),
-                        operationModeType.name());
+                        command.toString());
             } catch (NoInternetRadioPresetFoundException e) {
                 logger.warn("{}: Unable to switch to mode \"INTERNET_RADIO\". No PRESET defined",
                         handler.getDeviceName());
@@ -189,11 +213,16 @@ public class CommandExecutor implements AvailableSources {
                 logger.warn("{}: Unable to switch to mode: \"STORED_MUSIC\". No PRESET defined",
                         handler.getDeviceName());
             } finally {
-                checkOperationMode();
+                updateOperatingValues();
             }
         }
     }
 
+    /**
+     * Post PlayerControl on the device
+     *
+     * @param command the command is Type of Command
+     */
     public void postPlayerControl(Command command) {
         if (command.equals(PlayPauseType.PLAY)) {
             postRemoteKey(RemoteKeyType.PLAY);
@@ -206,6 +235,11 @@ public class CommandExecutor implements AvailableSources {
         }
     }
 
+    /**
+     * Post Power on the device
+     *
+     * @param command the command is Type of OnOffType
+     */
     public void postPower(OnOffType command) {
         if (command.equals(OnOffType.ON)) {
             if (currentOperationMode == OperationModeType.STANDBY) {
@@ -216,8 +250,14 @@ public class CommandExecutor implements AvailableSources {
                 postRemoteKey(RemoteKeyType.POWER);
             }
         }
+        updateOperatingValues();
     }
 
+    /**
+     * Post Preset on the device
+     *
+     * @param command the command is Type of DecimalType
+     */
     public void postPreset(DecimalType command) {
         ContentItem item = null;
         try {
@@ -228,6 +268,11 @@ public class CommandExecutor implements AvailableSources {
         }
     }
 
+    /**
+     * Post Preset on the device
+     *
+     * @param command the command is Type of NextPreviousType
+     */
     public void postPreset(NextPreviousType command) {
         ContentItem item = null;
         if (command.equals(NextPreviousType.NEXT)) {
@@ -248,6 +293,11 @@ public class CommandExecutor implements AvailableSources {
         postContentItem(item);
     }
 
+    /**
+     * Post RemoteKey on the device
+     *
+     * @param command the command is Type of RemoteKeyType
+     */
     public void postRemoteKey(RemoteKeyType key) {
         sendPostRequestInWebSocket("key", "mainNode=\"keyPress\"",
                 "<key state=\"press\" sender=\"Gabbo\">" + key.name() + "</key>");
@@ -255,26 +305,40 @@ public class CommandExecutor implements AvailableSources {
                 "<key state=\"release\" sender=\"Gabbo\">" + key.name() + "</key>");
     }
 
+    /**
+     * Post Volume on the device
+     *
+     * @param command the command is Type of PercentType
+     */
     public void postVolume(PercentType command) {
         sendPostRequestInWebSocket("volume",
                 "<volume deviceID=\"" + handler.getMacAddress() + "\"" + ">" + command.intValue() + "</volume>");
     }
 
+    /**
+     * Post VolumeMute on the device
+     *
+     * @param command the command is Type of OnOffType
+     */
     public void postVolumeMuted(OnOffType command) {
-        updateMuteState(command);
         if (command.equals(OnOffType.ON)) {
-            if (!muted) {
-                muted = true;
+            if (!currentMuted) {
+                currentMuted = true;
                 postRemoteKey(RemoteKeyType.MUTE);
             }
         } else if (command.equals(OnOffType.OFF)) {
-            if (muted) {
-                muted = false;
+            if (currentMuted) {
+                currentMuted = false;
                 postRemoteKey(RemoteKeyType.MUTE);
             }
         }
     }
 
+    /**
+     * Post Zone on the device
+     *
+     * @param command the command is Type of StringType
+     */
     public void postZone(StringType command) {
         // try to parse string command...
         String cmd = command.toString();
@@ -302,151 +366,101 @@ public class CommandExecutor implements AvailableSources {
         }
     }
 
-    public void updateBassLevel(DecimalType state) {
-        handler.updateState(getChannelUID(CHANNEL_BASS), state);
+    /**
+     * Update GUI for Basslevel
+     *
+     * @param state the state is Type of DecimalType
+     */
+    public void updateBassLevelGUIState(DecimalType state) {
+        handler.updateState(handler.getChannelUID(CHANNEL_BASS), state);
     }
 
-    public void updateKeyCode(RemoteKeyType state) {
-        handler.updateState(getChannelUID(CHANNEL_KEY_CODE), state);
+    /**
+     * Update GUI for Volume
+     *
+     * @param state the state is Type of PercentType
+     */
+    public void updateVolumeGUIState(PercentType state) {
+        handler.updateState(handler.getChannelUID(CHANNEL_VOLUME), state);
     }
 
-    public void updateMuteState(OnOffType state) {
-        handler.updateState(getChannelUID(CHANNEL_MUTE), state);
+    /**
+     * Update GUI for OperationMode
+     *
+     * @param state the state is Type of StringType
+     */
+    public void updateOperationModeGUIState(StringType state) {
+        handler.updateState(handler.getChannelUID(CHANNEL_OPERATIONMODE), state);
     }
 
-    public void updateOperationMode(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_OPERATIONMODE), state);// TODO
+    /**
+     * Update GUI for PlayerControl
+     *
+     * @param state the state is Type of State
+     */
+    public void updatePlayerControlGUIState(State state) {
+        handler.updateState(handler.getChannelUID(CHANNEL_PLAYER_CONTROL), state);
     }
 
-    public void updatePlayerControl(State state) {
-        handler.updateState(getChannelUID(CHANNEL_PLAYER_CONTROL), state);
+    /**
+     * Update GUI for Power
+     *
+     * @param state the state is Type of OnOffType
+     */
+    public void updatePowerStateGUIState(OnOffType state) {
+        handler.updateState(handler.getChannelUID(CHANNEL_POWER), state);
     }
 
-    public void updatePowerState(OnOffType state) {
-        handler.updateState(getChannelUID(CHANNEL_POWER), state);
+    /**
+     * Update GUI for Preset
+     *
+     * @param state the state is Type of DecimalType
+     */
+    public void updatePresetGUIState(DecimalType state) {
+        handler.updateState(handler.getChannelUID(CHANNEL_PRESET), state);
     }
 
-    public void updatePreset(DecimalType state) {
-        handler.updateState(getChannelUID(CHANNEL_PRESET), state);
+    /**
+     * Update GUI for ZoneInfo
+     *
+     * @param state the state is Type of StringType
+     */
+    public void updateZoneInfoGUIState(StringType state) {
+        handler.updateState(handler.getChannelUID(CHANNEL_ZONE_INFO), state);
     }
 
-    public void updatePresetControl(State state) {
-        handler.updateState(getChannelUID(CHANNEL_PRESET_CONTROL), state);
-    }
-
-    public void updateSaveAsPreset(DecimalType state) {
-        handler.updateState(getChannelUID(CHANNEL_SAVE_AS_PRESET), state);
-    }
-
-    public void updateVolume(PercentType state) {
-        handler.updateState(getChannelUID(CHANNEL_VOLUME), state);
-    }
-
-    public void updateZoneControl(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_ZONE_CONTROL), state);
-    }
-
-    public void updateZoneInfo(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_ZONE_INFO), state);
-    }
-
-    public void updateZoneState(ZoneState zoneState, BoseSoundTouchHandler zoneMaster,
-            List<BoseSoundTouchHandler> listOfZoneMembers) {
-        this.zoneState = zoneState;
-        this.zoneMaster = zoneMaster;
-        this.listOfZoneMembers = listOfZoneMembers;
-
-        refreshZone();
-    }
-
-    public void updateNowPlayingAlbum(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_ALBUM), state);
-    }
-
-    public void updateNowPlayingArtwork(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_ARTWORK), state);
-    }
-
-    public void updateNowPlayingArtist(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_ARTIST), state);
-    }
-
-    public void updateNowPlayingDescription(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_DESCRIPTION), state);
-    }
-
-    public void updateNowPlayingGenre(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_GENRE), state);
-    }
-
-    public void updateNowPlayingItemName(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_ITEMNAME), state);
-    }
-
-    public void updateNowPlayingStationLocation(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_STATIONLOCATION), state);
-    }
-
-    public void updateNowPlayingStationName(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_STATIONNAME), state);
-    }
-
-    public void updateNowPlayingTrack(StringType state) {
-        handler.updateState(getChannelUID(CHANNEL_NOWPLAYING_TRACK), state);
-    }
-
-    public void updateRateEnabled(OnOffType state) {
-        handler.updateState(getChannelUID(CHANNEL_RATEENABLED), state);
-    }
-
-    public void updateSkipEnabled(OnOffType state) {
-        handler.updateState(getChannelUID(CHANNEL_SKIPENABLED), state);
-    }
-
-    public void updateSkipPreviousEnabled(OnOffType state) {
-        handler.updateState(getChannelUID(CHANNEL_SKIPPREVIOUSENABLED), state);
-    }
-
-    private void addToZone(BoseSoundTouchHandler handler) {
-        if (handler != null) {
+    private void addToZone(BoseSoundTouchHandler memberHandler) {
+        if (memberHandler != null) {
             boolean found = false;
             for (BoseSoundTouchHandler m : listOfZoneMembers) {
-                if (handler.getMacAddress().equals(m.getMacAddress())) {
-                    logger.warn("{}: Zone add: ID {} is already member in zone!", handler.getDeviceName(),
-                            handler.getMacAddress());
+                if (memberHandler.getMacAddress().equals(m.getMacAddress())) {
+                    logger.warn("{}: Zone add: ID {} is already member in zone!", memberHandler.getDeviceName(),
+                            memberHandler.getMacAddress());
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                addZoneMember(handler);
-                updateZones();
-            }
-        }
-    }
+                listOfZoneMembers.add(memberHandler);
 
-    private void addZoneMember(BoseSoundTouchHandler zoneMember) {
-        boolean found = false;
-        for (BoseSoundTouchHandler m : listOfZoneMembers) {
-            if (zoneMember.getMacAddress().equals(m.getMacAddress())) {
-                logger.warn("{}: Zone add: ID '{}' is already member in zone!", handler.getDeviceName(),
-                        zoneMember.getMacAddress());
-                found = true;
-                break;
+                StringBuilder sb = new StringBuilder();
+                sb.append("<zone master=\"").append(handler.getMacAddress()).append("\">");
+                for (BoseSoundTouchHandler mbr : listOfZoneMembers) {
+                    sb.append("<member ipaddress=\"").append(mbr.getIPAddress()).append("\">")
+                            .append(mbr.getMacAddress()).append("</member>");
+                }
+                sb.append("</zone>");
+                sendPostRequestInWebSocket("setZone", "mainNode=\"newZone\"", sb.toString());
             }
-        }
-        if (!found) {
-            listOfZoneMembers.add(zoneMember);
         }
     }
 
     private BoseSoundTouchHandler findHandlerByNameOrMAC(String identifier) throws BoseSoundTouchNotFoundException {
         BoseSoundTouchHandler handlerFound = null;
-        BoseSoundTouchHandlerFactory factory = handler.getFactory();
-        for (Entry<String, BoseSoundTouchHandler> entry : factory.getAllSoundTouchDevices().entrySet()) {
-            BoseSoundTouchHandler curHandler = entry.getValue();
+        Collection<BoseSoundTouchHandler> colOfHandlers = handler.getFactory().getAllBoseSoundTouchHandler();
+        for (BoseSoundTouchHandler curHandler : colOfHandlers) {
             // try by mac
-            String mac = entry.getKey();
+            String mac = curHandler.getMacAddress();
             if (identifier.equalsIgnoreCase(mac)) {
                 handlerFound = curHandler;
                 break;
@@ -466,20 +480,8 @@ public class CommandExecutor implements AvailableSources {
         }
     }
 
-    private ChannelUID getChannelUID(String channelId) {
-        Thing thing = handler.getThing();
-        Channel chann = thing.getChannel(channelId);
-        if (chann == null) {
-            // refresh thing...
-            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(thing.getThingTypeUID()), thing.getUID(),
-                    thing.getConfiguration());
-            handler.updateThing(newThing);
-            chann = thing.getChannel(channelId);
-        }
-        return chann.getUID();
-    }
-
     private void init() {
+        getInformations(APIRequest.INFO);
         listOfZoneMembers = new ArrayList<BoseSoundTouchHandler>();
         zoneMaster = null;
         currentOperationMode = OperationModeType.OFFLINE;
@@ -508,60 +510,29 @@ public class CommandExecutor implements AvailableSources {
         }
     }
 
-    private void refreshZone() {
-        if ((zoneState != null) && (zoneMaster != null) && (listOfZoneMembers != null)) {
-            StringBuilder sb = new StringBuilder();
-            switch (zoneState) {
-                case Master:
-                    sb.append("Master; Members: ");
-                    break;
-                case Member:
-                    sb.append("Member; Master is: ");
-                    if (zoneMaster == null) {
-                        sb.append("<null>");
-                    } else {
-                        sb.append(zoneMaster.getDeviceName());
-                    }
-                    sb.append("; Members: ");
-                    break;
-                case Standalone:
-                    sb.append("Standalone");
-                    break;
-            }
-            for (int i = 0; i < listOfZoneMembers.size(); i++) {
-                if (i > 0) {
-                    sb.append(", ");
-                }
-                sb.append(listOfZoneMembers.get(i).getDeviceName());
-            }
-            String zoneData = sb.toString();
-            logger.debug("{}: zoneInfo updated: {}", handler.getDeviceName(), zoneData);
-            updateZoneInfo(new StringType(zoneData));
-        }
-    }
-
     private void removeFromZone(BoseSoundTouchHandler handler) {
         if (handler != null) {
-            if (!removeZoneMember(handler)) {
+            boolean removed = false;
+            for (int i = 0; i < listOfZoneMembers.size(); i++) {
+                if (handler.equals(listOfZoneMembers.get(i))) {
+                    BoseSoundTouchHandler memberHandler = listOfZoneMembers.get(i);
+
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<zone master=\"").append(zoneMaster.getMacAddress()).append("\">");
+                    sb.append("<member ipaddress=\"").append(memberHandler.getIPAddress()).append("\">")
+                            .append(memberHandler.getMacAddress()).append("</member>");
+                    sb.append("</zone>");
+                    sendPostRequestInWebSocket("removeZoneSlave", sb.toString());
+
+                    listOfZoneMembers.remove(i);
+                    removed = true;
+                }
+            }
+            if (!removed) {
                 logger.warn("{}: Zone remove: ID {} is not a member in zone!", handler.getDeviceName(),
                         handler.getMacAddress());
-            } else {
-                updateZones();
             }
         }
-    }
-
-    private boolean removeZoneMember(BoseSoundTouchHandler oh) {
-        boolean found = false;
-        for (Iterator<BoseSoundTouchHandler> mi = listOfZoneMembers.iterator(); mi.hasNext();) {
-            BoseSoundTouchHandler m = mi.next();
-            if (oh == m) {
-                mi.remove();
-                found = true;
-                break;
-            }
-        }
-        return found;
     }
 
     private void sendPostRequestInWebSocket(String url, String postData) {
@@ -574,21 +545,66 @@ public class CommandExecutor implements AvailableSources {
                 + "\" method=\"POST\"><request requestID=\"" + id + "\"><info " + infoAddon
                 + " type=\"new\"/></request></header><body>" + postData + "</body></msg>";
         try {
-            session.getRemote().sendString(msg);
+            handler.getSession().getRemote().sendString(msg);
         } catch (IOException e) {
             handler.onWebSocketError(e);
         }
     }
 
-    private void updateZones() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<zone master=\"").append(handler.getMacAddress()).append("\">");
-        for (BoseSoundTouchHandler mbr : listOfZoneMembers) {
-            sb.append("<member ipaddress=\"").append(mbr.getIPAddress()).append("\">").append(mbr.getMacAddress())
-                    .append("</member>");
+    private void updateOperatingValues() {
+        OperationModeType operationMode;
+        if (currentContentItem != null) {
+            updatePresetGUIState(new DecimalType(currentContentItem.getPresetID()));
+            operationMode = currentContentItem.getOperationMode();
+        } else {
+            operationMode = OperationModeType.STANDBY;
         }
-        sb.append("</zone>");
-        sendPostRequestInWebSocket("setZone", "mainNode=\"newZone\"", sb.toString());
+
+        updateOperationModeGUIState(new StringType(operationMode.toString()));
+        currentOperationMode = operationMode;
+        if (currentOperationMode == OperationModeType.STANDBY) {
+            listOfZoneMembers.clear();
+            if (zoneMaster != null) {
+                zoneMaster.getCommandExecutor().removeFromZone(handler);
+                zoneMaster = null;
+            }
+            updatePowerStateGUIState(OnOffType.OFF);
+            updatePlayerControlGUIState(PlayPauseType.PAUSE);
+
+        } else {
+            updatePowerStateGUIState(OnOffType.ON);
+        }
+        updateZoneInfoGUIState();
+    }
+
+    private void updateZoneInfoGUIState() {
+        String zoneData = "";
+        if (zoneMaster == null) {
+            zoneData = "Standalone";
+        } else {
+            if (zoneMaster.equals(handler)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Master; Members: ");
+                for (int i = 0; i < listOfZoneMembers.size(); i++) {
+                    if (i > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(listOfZoneMembers.get(i).getDeviceName());
+                }
+                zoneData = sb.toString();
+            } else {
+                if (zoneMaster == null) {
+                    zoneData = "";
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Member; Master is: ");
+                    sb.append(zoneMaster.getDeviceName());
+                    zoneData = sb.toString();
+                }
+            }
+        }
+        logger.debug("{}: zoneInfo updated: {}", handler.getDeviceName(), zoneData);
+        updateZoneInfoGUIState(new StringType(zoneData));
     }
 
     @Override

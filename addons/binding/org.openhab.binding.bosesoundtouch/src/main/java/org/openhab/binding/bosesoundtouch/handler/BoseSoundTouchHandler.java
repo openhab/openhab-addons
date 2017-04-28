@@ -27,15 +27,17 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingFactory;
+import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.bosesoundtouch.internal.APIRequest;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchHandlerFactory;
 import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
 import org.openhab.binding.bosesoundtouch.internal.XMLResponseProcessor;
@@ -82,8 +84,23 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof BoseSoundTouchHandler) {
+            BoseSoundTouchHandler other = (BoseSoundTouchHandler) obj;
+            if (this.getMacAddress().equals(other.getMacAddress())) {
+                return true;
+            }
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return getMacAddress() + ": " + getDeviceName();
+    }
+
+    @Override
     public void initialize() {
-        factory.registerSoundTouchDevice(this);
         connectionChecker = scheduler.scheduleWithFixedDelay(new Runnable() {
 
             @Override
@@ -223,7 +240,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 break;
             case CHANNEL_SAVE_AS_PRESET:
                 if (command instanceof DecimalType) {
-                    commandExecutor.setContentItemAsPreset((DecimalType) command);
+                    commandExecutor.addCurrentContentItemToPresetContainer((DecimalType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
@@ -283,6 +300,15 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     }
 
     /**
+     * Returns the Session this handler has opened
+     *
+     * @return the Session this handler has opened
+     */
+    public Session getSession() {
+        return session;
+    }
+
+    /**
      * Returns the name of the device delivered from itself
      *
      * @return the name of the device delivered from itself
@@ -318,6 +344,25 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         return (String) getThing().getConfiguration().getProperties().get(DEVICE_PARAMETER_HOST);
     }
 
+    /**
+     * Returns the ChannelUID of a channelId String
+     *
+     * @param channelId the channelId is a String representing the channel
+     *
+     * @return the ChannelUID of a channelId String
+     */
+    public ChannelUID getChannelUID(String channelId) {
+        Channel chann = getThing().getChannel(channelId);
+        if (chann == null) {
+            // refresh thing...
+            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(getThing().getThingTypeUID()),
+                    getThing().getUID(), getThing().getConfiguration());
+            updateThing(newThing);
+            chann = getThing().getChannel(channelId);
+        }
+        return chann.getUID();
+    }
+
     @Override
     public void updateThing(Thing thing) {
         super.updateThing(thing);
@@ -327,10 +372,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     public void onWebSocketConnect(Session session) {
         logger.debug("{}: onWebSocketConnect('{}')", getDeviceName(), session);
         this.session = session;
-        commandExecutor = new CommandExecutor(session, this);
+        commandExecutor = new CommandExecutor(this);
         updateStatus(ThingStatus.ONLINE);
-        // socket.newMessageSink(PayloadType.TEXT);
-        commandExecutor.getRequest(APIRequest.INFO);
     }
 
     @Override
@@ -338,7 +381,6 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         logger.error("{}: Error during websocket communication: {}", getDeviceName(), e.getMessage(), e);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         commandExecutor.postOperationMode(OperationModeType.OFFLINE);
-        commandExecutor.checkOperationMode();
         if (session != null) {
             session.close(StatusCode.SERVER_ERROR, getDeviceName() + ": Failure: " + e.getMessage());
         }
@@ -365,7 +407,6 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         logger.debug("{}: onClose({}, '{}')", getDeviceName(), code, reason);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         commandExecutor.postOperationMode(OperationModeType.OFFLINE);
-        commandExecutor.checkOperationMode();
     }
 
     private void openConnection() {

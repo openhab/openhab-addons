@@ -30,16 +30,36 @@ public class PresetContainer {
     private HashMap<Integer, ContentItem> mapOfPresets;
     private File presetFile;
 
+    /**
+     * Creates a new instance of this class
+     *
+     * @throws IOException if PresetFile could not be read
+     */
     public PresetContainer(File presetFile) throws IOException {
         this.presetFile = presetFile;
         this.mapOfPresets = new HashMap<Integer, ContentItem>();
         readFromFile(presetFile);
     }
 
-    public Collection<ContentItem> values() {
+    /**
+     * Returns a Collection of all Presets
+     *
+     * @param operationModeType
+     */
+    public Collection<ContentItem> getAllPresets() {
         return mapOfPresets.values();
     }
 
+    /**
+     * Adds a ContentItem as Preset, with presetID. Note that a eventually existing id in preset will be overwritten by
+     * presetID
+     *
+     * @param presetID
+     * @param preset
+     *
+     * @throws ContentItemNotPresetableException if ContentItem is not presetable
+     * @throws IOException if Presets could not be saved to file
+     */
     public void put(int presetID, ContentItem preset) throws ContentItemNotPresetableException, IOException {
         preset.setPresetID(presetID);
         if (preset.isPresetable()) {
@@ -50,6 +70,13 @@ public class PresetContainer {
         }
     }
 
+    /**
+     * Returns the Preset with presetID
+     *
+     * @param presetID
+     *
+     * @throws NoPresetFoundException if Preset could not be found
+     */
     public ContentItem get(int presetID) throws NoPresetFoundException {
         ContentItem psFound = mapOfPresets.get(presetID);
         if (psFound != null) {
@@ -64,7 +91,7 @@ public class PresetContainer {
             presetFile.delete();
         }
         BufferedWriter writer = new BufferedWriter(new FileWriter(presetFile));
-        Collection<ContentItem> colletionOfPresets = values();
+        Collection<ContentItem> colletionOfPresets = getAllPresets();
         ArrayList<ContentItem> listOfPresets = new ArrayList<ContentItem>();
         listOfPresets.addAll(colletionOfPresets);
         // Only openhab Presets got saved
