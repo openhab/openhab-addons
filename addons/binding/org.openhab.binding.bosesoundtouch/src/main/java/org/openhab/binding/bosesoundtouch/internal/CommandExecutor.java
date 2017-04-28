@@ -13,8 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -60,21 +62,11 @@ public class CommandExecutor implements AvailableSources {
     private BoseSoundTouchHandler zoneMaster;
     private List<BoseSoundTouchHandler> listOfZoneMembers;
 
-    private File presetFile;
     private boolean muted;
     private ContentItem currentContentItem;
     private OperationModeType currentOperationMode;
 
-    private boolean bluetooth;
-    private boolean aux;
-    private boolean aux1;
-    private boolean aux2;
-    private boolean aux3;
-    private boolean internetRadio;
-    private boolean storedMusic;
-    private boolean hdmi1;
-    private boolean tv;
-    private boolean bass;
+    private Map<String, Boolean> mapOfAvailableFunctions;
 
     public CommandExecutor(Session session, BoseSoundTouchHandler handler) {
         this.session = session;
@@ -87,6 +79,8 @@ public class CommandExecutor implements AvailableSources {
             presetContainer.put(presetID, preset);
         } catch (ContentItemNotPresetableException e) {
             logger.debug("{}: ContentItem is not presetable", handler.getDeviceName());
+        } catch (IOException e) {
+            logger.warn("{}: Could not save presets to file", handler.getDeviceName());
         }
     }
 
@@ -113,7 +107,7 @@ public class CommandExecutor implements AvailableSources {
             operationMode = OperationModeType.STANDBY;
         }
 
-        updateOperationMode(new StringType(operationMode.getName()));
+        updateOperationMode(new StringType(operationMode.toString()));
         currentOperationMode = operationMode;
         if (currentOperationMode == OperationModeType.STANDBY) {
             // zone is leaved / destroyed if turned off
@@ -131,7 +125,7 @@ public class CommandExecutor implements AvailableSources {
     }
 
     public void getRequest(APIRequest apiRequest) {
-        String msg = "<msg><header " + "deviceID=\"" + handler.getMacAddress() + "\"" + " url=\"" + apiRequest.getName()
+        String msg = "<msg><header " + "deviceID=\"" + handler.getMacAddress() + "\"" + " url=\"" + apiRequest
                 + "\" method=\"GET\"><request requestID=\"0\"><info type=\"new\"/></request></header></msg>";
         try {
             session.getRemote().sendString(msg);
@@ -148,7 +142,6 @@ public class CommandExecutor implements AvailableSources {
         if (command.intValue() > 6) {
             try {
                 presetContainer.put(command.intValue(), currentContentItem);
-                presetContainer.writeToFile(presetFile);
             } catch (ContentItemNotPresetableException e) {
                 logger.warn("{}: Selected item is not presetable", handler.getDeviceName());
             } catch (IOException e) {
@@ -239,14 +232,14 @@ public class CommandExecutor implements AvailableSources {
         ContentItem item = null;
         if (command.equals(NextPreviousType.NEXT)) {
             try {
-                item = presetContainer.getNext(currentContentItem);
+                item = presetContainer.get(currentContentItem.getPresetID() + 1);
             } catch (NoPresetFoundException e) {
                 logger.warn("{}: No preset found at id: {}", handler.getDeviceName(),
                         currentContentItem.getPresetID() + 1);
             }
         } else if (command.equals(NextPreviousType.PREVIOUS)) {
             try {
-                item = presetContainer.getPrev(currentContentItem);
+                item = presetContainer.get(currentContentItem.getPresetID() - 1);
             } catch (NoPresetFoundException e) {
                 logger.warn("{}: No preset found at id: {}", handler.getDeviceName(),
                         currentContentItem.getPresetID() - 1);
@@ -490,28 +483,19 @@ public class CommandExecutor implements AvailableSources {
         listOfZoneMembers = new ArrayList<BoseSoundTouchHandler>();
         zoneMaster = null;
         currentOperationMode = OperationModeType.OFFLINE;
-        presetContainer = new PresetContainer();
         currentContentItem = null;
 
-        bluetooth = false;
-        aux = false;
-        aux1 = false;
-        aux2 = false;
-        aux3 = false;
-        internetRadio = false;
-        storedMusic = false;
-        hdmi1 = false;
-        tv = false;
-        bass = false;
+        mapOfAvailableFunctions = new HashMap<>();
 
         File folder = new File(ConfigConstants.getUserDataFolder() + "/" + BINDING_ID);
         if (!folder.exists()) {
             logger.debug("Creating directory {}", folder.getPath());
             folder.mkdirs();
         }
-        presetFile = new File(folder, "presets.txt");
+        File presetFile = new File(folder, "presets.txt");
+
         try {
-            presetContainer.readFromFile(presetFile);
+            presetContainer = new PresetContainer(presetFile);
         } catch (IOException e) {
             logger.warn("{}: Could not load presets from file", handler.getDeviceName());
         }
@@ -609,102 +593,110 @@ public class CommandExecutor implements AvailableSources {
 
     @Override
     public boolean isBluetoothAvailable() {
-        return bluetooth;
+        return isSourceAvailable("bluetooth");
     }
 
     @Override
     public boolean isAUXAvailable() {
-        return aux;
+        return isSourceAvailable("aux");
     }
 
     @Override
     public boolean isAUX1Available() {
-        return aux1;
+        return isSourceAvailable("aux1");
     }
 
     @Override
     public boolean isAUX2Available() {
-        return aux2;
+        return isSourceAvailable("aux2");
     }
 
     @Override
     public boolean isAUX3Available() {
-        return aux3;
+        return isSourceAvailable("aux3");
     }
 
     @Override
     public boolean isTVAvailable() {
-        return tv;
+        return isSourceAvailable("tv");
     }
 
     @Override
     public boolean isHDMI1Available() {
-        return hdmi1;
+        return isSourceAvailable("hdmi1");
     }
 
     @Override
     public boolean isInternetRadioAvailable() {
-        return internetRadio;
+        return isSourceAvailable("internetRadio");
     }
 
     @Override
     public boolean isStoredMusicAvailable() {
-        return storedMusic;
+        return isSourceAvailable("storedMusic");
     }
 
     @Override
     public boolean isBassAvailable() {
-        return bass;
-    }
-
-    @Override
-    public void setAUXAvailable(boolean aux) {
-        this.aux = aux;
-    }
-
-    @Override
-    public void setAUX1Available(boolean aux1) {
-        this.aux1 = aux1;
-    }
-
-    @Override
-    public void setAUX2Available(boolean aux2) {
-        this.aux2 = aux2;
-    }
-
-    @Override
-    public void setAUX3Available(boolean aux3) {
-        this.aux3 = aux3;
-    }
-
-    @Override
-    public void setStoredMusicAvailable(boolean storedMusic) {
-        this.storedMusic = storedMusic;
-    }
-
-    @Override
-    public void setInternetRadioAvailable(boolean internetRadio) {
-        this.internetRadio = internetRadio;
+        return isSourceAvailable("bass");
     }
 
     @Override
     public void setBluetoothAvailable(boolean bluetooth) {
-        this.bluetooth = bluetooth;
+        mapOfAvailableFunctions.put("bluetooth", bluetooth);
+    }
+
+    @Override
+    public void setAUXAvailable(boolean aux) {
+        mapOfAvailableFunctions.put("aux", aux);
+    }
+
+    @Override
+    public void setAUX1Available(boolean aux1) {
+        mapOfAvailableFunctions.put("aux1", aux1);
+    }
+
+    @Override
+    public void setAUX2Available(boolean aux2) {
+        mapOfAvailableFunctions.put("aux2", aux2);
+    }
+
+    @Override
+    public void setAUX3Available(boolean aux3) {
+        mapOfAvailableFunctions.put("aux3", aux3);
+    }
+
+    @Override
+    public void setStoredMusicAvailable(boolean storedMusic) {
+        mapOfAvailableFunctions.put("storedMusic", storedMusic);
+    }
+
+    @Override
+    public void setInternetRadioAvailable(boolean internetRadio) {
+        mapOfAvailableFunctions.put("internetRadio", internetRadio);
     }
 
     @Override
     public void setTVAvailable(boolean tv) {
-        this.tv = tv;
+        mapOfAvailableFunctions.put("tv", tv);
     }
 
     @Override
     public void setHDMI1Available(boolean hdmi1) {
-        this.hdmi1 = hdmi1;
+        mapOfAvailableFunctions.put("hdmi1", hdmi1);
     }
 
     @Override
     public void setBassAvailable(boolean bass) {
-        this.bass = bass;
+        mapOfAvailableFunctions.put("bass", bass);
     }
 
+    private boolean isSourceAvailable(String source) {
+        Boolean isAvailable = mapOfAvailableFunctions.get(source);
+        if (isAvailable == null) {
+            return false;
+        } else {
+            return isAvailable;
+        }
+    }
 }

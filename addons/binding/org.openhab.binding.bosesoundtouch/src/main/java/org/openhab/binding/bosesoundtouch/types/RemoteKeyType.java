@@ -53,10 +53,6 @@ public enum RemoteKeyType implements PrimitiveType, State, Command {
         this.name = name();
     }
 
-    public String getName() {
-        return name;
-    }
-
     @Override
     public String format(String pattern) {
         return String.format(pattern, this.toString());
@@ -64,11 +60,11 @@ public enum RemoteKeyType implements PrimitiveType, State, Command {
 
     @Override
     public String toString() {
-        return toFullString();
+        return name;
     }
 
     @Override
     public String toFullString() {
-        return super.toString();
+        return toString();
     }
 }

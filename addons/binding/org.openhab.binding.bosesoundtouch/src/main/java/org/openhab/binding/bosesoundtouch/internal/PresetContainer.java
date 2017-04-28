@@ -28,19 +28,23 @@ import org.openhab.binding.bosesoundtouch.internal.exceptions.NoPresetFoundExcep
  */
 public class PresetContainer {
     private HashMap<Integer, ContentItem> mapOfPresets;
+    private File presetFile;
 
-    public PresetContainer() {
-        mapOfPresets = new HashMap<Integer, ContentItem>();
+    public PresetContainer(File presetFile) throws IOException {
+        this.presetFile = presetFile;
+        this.mapOfPresets = new HashMap<Integer, ContentItem>();
+        readFromFile(presetFile);
     }
 
     public Collection<ContentItem> values() {
         return mapOfPresets.values();
     }
 
-    public void put(int presetID, ContentItem preset) throws ContentItemNotPresetableException {
+    public void put(int presetID, ContentItem preset) throws ContentItemNotPresetableException, IOException {
         preset.setPresetID(presetID);
         if (preset.isPresetable()) {
             mapOfPresets.put(presetID, preset);
+            writeToFile(presetFile);
         } else {
             throw new ContentItemNotPresetableException();
         }
@@ -55,51 +59,7 @@ public class PresetContainer {
         }
     }
 
-    public ContentItem getNext(ContentItem currentContentItem) throws NoPresetFoundException {
-        ContentItem psFound = null;
-        Collection<ContentItem> listOfPresets = values();
-        for (ContentItem ps : listOfPresets) {
-            if (ps.getLocation().equals(currentContentItem.getLocation())) {
-                psFound = ps;
-            }
-        }
-
-        if (psFound != null) {
-            psFound = mapOfPresets.get(psFound.getPresetID() + 1);
-        } else {
-            throw new NoPresetFoundException();
-        }
-
-        if (psFound != null) {
-            return psFound;
-        } else {
-            throw new NoPresetFoundException();
-        }
-    }
-
-    public ContentItem getPrev(ContentItem currentContentItem) throws NoPresetFoundException {
-        ContentItem psFound = null;
-        Collection<ContentItem> listOfPresets = values();
-        for (ContentItem ps : listOfPresets) {
-            if (ps.getLocation().equals(currentContentItem.getLocation())) {
-                psFound = ps;
-            }
-        }
-
-        if (psFound != null) {
-            psFound = mapOfPresets.get(psFound.getPresetID() - 1);
-        } else {
-            throw new NoPresetFoundException();
-        }
-
-        if (psFound != null) {
-            return psFound;
-        } else {
-            throw new NoPresetFoundException();
-        }
-    }
-
-    public void writeToFile(File presetFile) throws IOException {
+    private void writeToFile(File presetFile) throws IOException {
         if (presetFile.exists()) {
             presetFile.delete();
         }
@@ -116,7 +76,7 @@ public class PresetContainer {
         writer.close();
     }
 
-    public void readFromFile(File presetFile) throws IOException {
+    private void readFromFile(File presetFile) throws IOException {
         if (!presetFile.exists()) {
             throw new IOException("Could not load save PRESETS");
         }
