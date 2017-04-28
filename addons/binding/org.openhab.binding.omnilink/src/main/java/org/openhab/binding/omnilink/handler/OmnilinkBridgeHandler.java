@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Connection;
+import com.digitaldan.jomnilinkII.DisconnectListener;
 import com.digitaldan.jomnilinkII.Message;
 import com.digitaldan.jomnilinkII.NotificationListener;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
@@ -48,6 +50,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private Map<Integer, Thing> unitThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     private Map<Integer, Thing> zoneThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     // private CacheHolder<Unit> nodes;
+    private int secondsUntilReconnect = 1;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -91,21 +94,53 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void initialize() {
         listeningExecutor = MoreExecutors.listeningDecorator(scheduler);
-        OmnilinkBridgeConfig config = getThing().getConfiguration().as(OmnilinkBridgeConfig.class);
 
         try {
-            omniConnection = new Connection(config.getIpAddress(), 4369, config.getKey1() + ":" + config.getKey2());
-            omniConnection.enableNotifications();
-            omniConnection.addNotificationListener(this);
-            logger.debug("initialized omnilink connection");
+            makeOmnilinkConnection();
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.error("Error connecting to omnilink", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            doOmnilinkReconnect();
         }
-        // loadUnitStatuses();
+
+    }
+
+    private void makeOmnilinkConnection() throws Exception {
+        OmnilinkBridgeConfig config = getThing().getConfiguration().as(OmnilinkBridgeConfig.class);
+        omniConnection = new Connection(config.getIpAddress(), 4369, config.getKey1() + ":" + config.getKey2());
+        omniConnection.enableNotifications();
+
+        omniConnection.addNotificationListener(this);
+        omniConnection.addDisconnectListener(new DisconnectListener() {
+            @Override
+            public void notConnectedEvent(Exception e) {
+                doOmnilinkReconnect();
+            }
+        });
+        updateStatus(ThingStatus.ONLINE);
+        secondsUntilReconnect = 1;
         getSystemInfo();
         getSystemStatus();
+    }
+
+    private void doOmnilinkReconnect() {
+        logger.debug("will try to establish another connection in {} seconds", secondsUntilReconnect);
+        scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    makeOmnilinkConnection();
+
+                } catch (Exception e) {
+                    logger.error("Error trying to reconnect", e);
+                    if (secondsUntilReconnect < 300) {
+                        secondsUntilReconnect = secondsUntilReconnect * 2;
+                    }
+                    doOmnilinkReconnect();
+                }
+
+            }
+        }, secondsUntilReconnect, TimeUnit.SECONDS);
     }
 
     @Override
