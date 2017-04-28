@@ -71,6 +71,11 @@ public class SysteminfoBindingConstants {
     public static final String CHANNEL_MEMORY_AVAILABLE_PERCENT = "memory#availablePercent";
 
     /**
+     * Percents of the used memory
+     */
+    public static final String CHANNEL_MEMORY_USED_PERCENT = "memory#usedPercent";
+
+    /**
      * Total size of swap memory
      */
     public static final String CHANNEL_SWAP_TOTAL = "swap#total";
@@ -89,6 +94,11 @@ public class SysteminfoBindingConstants {
      * Percents of the available swap memory
      */
     public static final String CHANNEL_SWAP_AVAILABLE_PERCENT = "swap#availablePercent";
+
+    /**
+     * Percents of the used swap memory
+     */
+    public static final String CHANNEL_SWAP_USED_PERCENT = "swap#usedPercent";
 
     /**
      * Physical storage drive name
@@ -139,6 +149,11 @@ public class SysteminfoBindingConstants {
      * Percents of the available storage space
      */
     public static final String CHANNEL_STORAGE_AVAILABLE_PERCENT = "storage#availablePercent";
+
+    /**
+     * Percents of the used storage space
+     */
+    public static final String CHANNEL_STORAGE_USED_PERCENT = "storage#usedPercent";
 
     /**
      * Temperature of the CPU measured from the sensors.

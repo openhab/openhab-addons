@@ -340,6 +340,9 @@ public class SysteminfoHandler extends BaseThingHandler {
                 case CHANNEL_MEMORY_AVAILABLE_PERCENT:
                     state = systeminfo.getMemoryAvailablePercent();
                     break;
+                case CHANNEL_MEMORY_USED_PERCENT:
+                    state = systeminfo.getMemoryUsedPercent();
+                    break;
                 case CHANNEL_SWAP_AVAILABLE:
                     state = systeminfo.getSwapAvailable();
                     break;
@@ -351,6 +354,9 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_SWAP_AVAILABLE_PERCENT:
                     state = systeminfo.getSwapAvailablePercent();
+                    break;
+                case CHANNEL_SWAP_USED_PERCENT:
+                    state = systeminfo.getSwapUsedPercent();
                     break;
                 case CHANNEL_DRIVE_MODEL:
                     state = systeminfo.getDriveModel(deviceIndex);
@@ -381,6 +387,9 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_STORAGE_AVAILABLE_PERCENT:
                     state = systeminfo.getStorageAvailablePercent(deviceIndex);
+                    break;
+                case CHANNEL_STORAGE_USED_PERCENT:
+                    state = systeminfo.getStorageUsedPercent(deviceIndex);
                     break;
                 case CHANNEL_NETWORK_IP:
                     state = systeminfo.getNetworkIp(deviceIndex);
