@@ -37,10 +37,10 @@
 			<channel id="switch" typeId="switch" />
 		</channels>
 		<config-description>
-			<parameter name="ACTIONID" type="integer" required="false">
+			<parameter name="ACTIONID" type="integer" required="true">
 				<label>Action ID</label>
 				<description>Niko Home Control IP Interface Object ID</description>
-				<advanced>true</advanced>
+				<advanced>false</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -54,10 +54,10 @@
 			<channel id="brightness" typeId="brightness" />
 		</channels>
 		<config-description>
-			<parameter name="ACTIONID" type="integer" required="false">
+			<parameter name="ACTIONID" type="integer" required="true">
 				<label>Action ID</label>
 				<description>Niko Home Control IP Interface Object ID</description>
-				<advanced>true</advanced>
+				<advanced>false</advanced>
 			</parameter>
 			<parameter name="STEP" type="integer" required="true">
 				<label>Step value</label>
@@ -77,10 +77,10 @@
 			<channel id="rollershutter" typeId="rollershutter" />
 		</channels>
 		<config-description>
-			<parameter name="ACTIONID" type="integer" required="false">
+			<parameter name="ACTIONID" type="integer" required="true">
 				<label>Action ID</label>
 				<description>Niko Home Control IP Interface Object ID</description>
-				<advanced>true</advanced>
+				<advanced>false</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -77,17 +77,17 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
                 case 0: // handles all-off
                 case 1: // switch
                     addDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, handler.getThing().getUID(),
-                            Integer.toString(actionId)), thingName, thingLocation);
+                            Integer.toString(actionId)), actionId, thingName, thingLocation);
 
                     break;
                 case 2: // dimmer
                     addDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, handler.getThing().getUID(),
-                            Integer.toString(actionId)), thingName, thingLocation);
+                            Integer.toString(actionId)), actionId, thingName, thingLocation);
                     break;
                 case 4: // rollershutter
                 case 5:
                     addDevice(new ThingUID(THING_TYPE_BLIND, handler.getThing().getUID(), Integer.toString(actionId)),
-                            thingName, thingLocation);
+                            actionId, thingName, thingLocation);
                     break;
                 default:
                     logger.debug("Niko Home Control: unrecognized action type {} for {} {}",
@@ -98,9 +98,9 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
     }
 
-    protected void addDevice(ThingUID uid, String thingName, String thingLocation) {
+    protected void addDevice(ThingUID uid, int actionId, String thingName, String thingLocation) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(thingName)
-                .withProperty("Location", thingLocation).build();
+                .withProperty("Location", thingLocation).withProperty(CONFIG_ACTION_ID, actionId).build();
         thingDiscovered(discoveryResult);
     }
 

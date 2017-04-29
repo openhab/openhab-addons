@@ -157,15 +157,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
         Configuration config = this.getConfig();
 
-        Integer actionId = null;
-        if (config.containsKey(CONFIG_ACTION_ID)) {
-            actionId = ((Number) config.get(CONFIG_ACTION_ID)).intValue();
-        }
-        if (actionId == null) {
-            // By default try the ID of the thing, discovery would have set this to the Niko Home Control ID.
-            actionId = Integer.parseInt(thing.getUID().getId());
-            config.put(CONFIG_ACTION_ID, actionId);
-        }
+        Integer actionId = ((Number) config.get(CONFIG_ACTION_ID)).intValue();
 
         nhcBridgeHandler = (NikoHomeControlBridgeHandler) getBridge().getHandler();
         nhcComm = nhcBridgeHandler.getCommunication();
