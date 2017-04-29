@@ -335,34 +335,35 @@ public class CommandExecutor implements AvailableSources {
     }
 
     /**
-     * Post Zone on the device
+     * Post Zone Add on the device
      *
      * @param command the command is Type of StringType
      */
-    public void postZone(StringType command) {
+    public void postZoneAdd(StringType command) {
         // try to parse string command...
-        String cmd = command.toString();
-        String cmdlc = cmd.toLowerCase();
-        if (cmdlc.split(" ").length == 2) {
-            String action = cmdlc.split(" ")[0];
-            String identifier = cmdlc.split(" ")[1];
+        String identifier = command.toString().toLowerCase();
+        try {
+            BoseSoundTouchHandler handlerFound = findHandlerByNameOrMAC(identifier);
+            addToZone(handlerFound);
+        } catch (BoseSoundTouchNotFoundException e) {
+            logger.warn("{}: Could not find Soundtouchd: {}", handler.getDeviceName(), identifier);
+        }
 
-            BoseSoundTouchHandler handlerFound = null;
-            try {
-                handlerFound = findHandlerByNameOrMAC(identifier);
-            } catch (BoseSoundTouchNotFoundException e) {
-                logger.warn("{}: Could not find Soundtouchd: {}", handler.getDeviceName(), identifier);
-            }
+    }
 
-            if ("add".equals(action)) {
-                addToZone(handlerFound);
-            } else if ("remove".equals(action)) {
-                removeFromZone(handlerFound);
-            } else {
-                logger.warn("{}: Invalid zone command: {}", handler.getDeviceName(), cmd);
-            }
-        } else {
-            logger.warn("{}: Invalid zone command: {}", handler.getDeviceName(), cmd);
+    /**
+     * Post Zone Remove on the device
+     *
+     * @param command the command is Type of StringType
+     */
+    public void postZoneRemove(StringType command) {
+        // try to parse string command...
+        String identifier = command.toString().toLowerCase();
+        try {
+            BoseSoundTouchHandler handlerFound = findHandlerByNameOrMAC(identifier);
+            removeFromZone(handlerFound);
+        } catch (BoseSoundTouchNotFoundException e) {
+            logger.warn("{}: Could not find Soundtouchd: {}", handler.getDeviceName(), identifier);
         }
     }
 

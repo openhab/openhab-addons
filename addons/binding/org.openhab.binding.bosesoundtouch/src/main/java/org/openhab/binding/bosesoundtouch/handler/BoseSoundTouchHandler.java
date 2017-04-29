@@ -264,9 +264,18 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                     logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
                 }
                 break;
-            case CHANNEL_ZONE_CONTROL:
+            case CHANNEL_ZONE_ADD:
                 if (command instanceof StringType) {
-                    commandExecutor.postZone((StringType) command);
+                    commandExecutor.postZoneAdd((StringType) command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    // TODO RefreshType
+                } else {
+                    logger.warn("{}: Invalid command type: {}: {}", getDeviceName(), command.getClass(), command);
+                }
+                break;
+            case CHANNEL_ZONE_REMOVE:
+                if (command instanceof StringType) {
+                    commandExecutor.postZoneRemove((StringType) command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     // TODO RefreshType
                 } else {
