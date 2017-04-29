@@ -469,9 +469,6 @@ public class NikoHomeControlCommunication {
             actionTypes.put(id, Integer.parseInt(action.get("type")));
             actionLocations.put(id, Integer.parseInt(action.get("location")));
             actionStates.put(id, Integer.parseInt(action.get("value1")));
-            if (!actionThingHandlers.containsKey(id)) {
-                actionThingHandlers.put(id, null);
-            }
         }
 
     }
