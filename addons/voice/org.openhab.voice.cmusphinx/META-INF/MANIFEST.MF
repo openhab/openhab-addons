@@ -10,9 +10,6 @@ Bundle-ClassPath: .,
 Import-Package: org.eclipse.smarthome.core.voice,
  org.eclipse.smarthome.core.audio,
  org.osgi.framework,
- org.slf4j,
- org.junit,
- org.junit.runner,
- org.junit.runners
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
