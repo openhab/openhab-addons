@@ -15,7 +15,8 @@ Number  Bose1_Bass                       "Bass: [%d %%]"        <volume>      { 
 Switch  Bose1_Mute                       "Mute: [%s]"           <volume_mute> { channel="bosesoundtouch:device:BOSEMACADDR:mute" }
 String  Bose1_OperationMode              "OperationMode: [%s]"  <text>        { channel="bosesoundtouch:device:BOSEMACADDR:operationMode" }
 String  Bose1_PlayerControl              "Player Control: [%s]" <text>        { channel="bosesoundtouch:device:BOSEMACADDR:playerControl" }
-String  Bose1_ZoneControl                "Zone control: [%s]"   <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneControl" }
+String  Bose1_ZoneAdd                    "Zone add: [%s]"       <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneAdd" }
+String  Bose1_ZoneRemove                 "Zone remove: [%s]"    <text>        { channel="bosesoundtouch:device:BOSEMACADDR:zoneRemove" }
 Number  Bose1_Preset                     "Preset: [%d]"         <text>        { channel="bosesoundtouch:device:BOSEMACADDR:preset" }
 String  Bose1_PresetControl              "Preset Control: [%s]" <text>        { channel="bosesoundtouch:device:BOSEMACADDR:presetControl" }
 Number  Bose1_SaveAsPreset               "Save as Preset: [%d]" <text>        { channel="bosesoundtouch:device:BOSEMACADDR:saveAsPreset" }
@@ -47,7 +48,8 @@ sitemap demo label="Bose Test Items"
 		Switch item=Bose1_Mute
 		Text item=Bose1_OperationMode
 		Text item=Bose1_PlayerControl
-		Text item=Bose1_ZoneControl
+		Text item=Bose1_ZoneAdd
+		Text item=Bose1_ZoneRemove
 		Number item=Bose1_Preset
 		Text item=Bose1_PresetControl
 		Number item=Bose1_SaveAsPreset
@@ -70,9 +72,9 @@ A few samples for the channels (for the CLI):
 smarthome send Bose1_Volume "10"
 
 smarthome send Bose1_KeyCode "PRESET_1"
-smarthome send Bose1_ZoneControl "add <devicename>” e.g.
-smarthome send Bose1_ZoneControl "add livingroom"
-smarthome send Bose1_ZoneControl "add <device-mac-address>” e.g.
+smarthome send Bose1_ZoneAdd "<devicename>” e.g.
+smarthome send Bose1_ZoneAdd "livingroom"
+smarthome send Bose1_ZoneAdd "<device-mac-address>” e.g.
 ```
 this also can be done through rules:
 
@@ -83,7 +85,7 @@ when
 		Item Bose1_power changed
 then
 		if (Bose1_power.state == ON) {
-			sendCommand(Bose1_ZoneControl, "add kitchen")
+			sendCommand(Bose1_ZoneAdd, "kitchen")
 		}
 end
 
