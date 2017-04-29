@@ -9,18 +9,15 @@ package org.openhab.binding.nikohomecontrol.internal.discovery;
 
 import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
 
-import java.util.Hashtable;
+import java.util.Date;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants;
 import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlBridgeHandler;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,32 +34,25 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
     private static final int TIMEOUT = 5;
 
-    private ServiceRegistration<?> reg;
     private ThingUID bridgeUID;
     private NikoHomeControlBridgeHandler handler;
 
-    private NikoHomeControlCommunication nhcComm;
-
-    public NikoHomeControlDiscoveryService(ThingUID bridgeUID, NikoHomeControlBridgeHandler handler) {
+    public NikoHomeControlDiscoveryService(NikoHomeControlBridgeHandler handler) {
         super(NikoHomeControlBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, false);
         logger.debug("Niko Home Control: discovery service {}", handler);
-        this.bridgeUID = bridgeUID;
+        this.bridgeUID = handler.getThing().getUID();
         this.handler = handler;
     }
 
-    public void start(BundleContext bundleContext) {
-        if (reg != null) {
-            return;
-        }
-        reg = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<String, Object>());
+    public void activate() {
+        handler.setNhcDiscovery(this);
     }
 
-    public void stop() {
-        if (reg != null) {
-            reg.unregister();
-        }
+    @Override
+    public void deactivate() {
+        removeOlderResults(new Date().getTime());
+        handler.setNhcDiscovery(null);
         handler = null;
-        reg = null;
     }
 
     /**
@@ -70,8 +60,9 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
      */
     public void discoverDevices() {
 
-        nhcComm = handler.getCommunication();
-        if (nhcComm == null) {
+        NikoHomeControlCommunication nhcComm = handler.getCommunication();
+
+        if ((nhcComm == null) || !nhcComm.communicationActive()) {
             logger.warn("Niko Home Control: not connected.");
             return;
         }

@@ -96,9 +96,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      */
     private void createCommunicationObject() {
 
-        nhcDiscovery = new NikoHomeControlDiscoveryService(thing.getUID(), this);
-        nhcDiscovery.start(bundleContext);
-
         scheduler.submit(new Runnable() {
 
             @Override
@@ -123,7 +120,11 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
                     updateStatus(ThingStatus.ONLINE);
 
-                    nhcDiscovery.discoverDevices();
+                    if (nhcDiscovery != null) {
+                        nhcDiscovery.discoverDevices();
+                    } else {
+                        logger.debug("Niko Home Control: cannot discover, discovery service not started");
+                    }
 
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -214,8 +215,15 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         nhcComm.stopCommunication();
         nhcComm = null;
+    }
 
-        nhcDiscovery.stop();
+    /**
+     * Set discovery service handler to be able to start discovery after bridge initialization.
+     *
+     * @param nhcDiscovery
+     */
+    public void setNhcDiscovery(NikoHomeControlDiscoveryService nhcDiscovery) {
+        this.nhcDiscovery = nhcDiscovery;
     }
 
     /**
