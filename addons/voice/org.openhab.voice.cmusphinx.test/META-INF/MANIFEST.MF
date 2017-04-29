@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for CMU Sphinx Speech-to-Text
+Bundle-SymbolicName: org.openhab.voice.cmusphinx.test
+Bundle-Vendor: openHAB
+Bundle-Version: 2.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Fragment-Host: org.openhab.voice.cmusphinx
+Import-Package: org.junit;version="4.0.0"
+Service-Component: OSGI-INF/*.xml
+Bundle-ActivationPolicy: lazy

@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: CMU Sphinx Speech-to-Text
+Bundle-SymbolicName: org.openhab.voice.cmusphinx;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .,
+ lib/sphinx4-core-5prealpha-SNAPSHOT.jar
+Import-Package: org.eclipse.smarthome.core.voice,
+ org.eclipse.smarthome.core.audio,
+ org.osgi.framework,
+ org.slf4j,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners
+Service-Component: OSGI-INF/*.xml
+Bundle-ActivationPolicy: lazy

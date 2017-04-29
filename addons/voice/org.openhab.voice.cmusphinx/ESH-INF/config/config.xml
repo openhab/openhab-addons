@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+    <config-description uri="voice:cmusphinx">
+        <parameter name="locale" type="text" required="true">
+            <label>Locale</label>
+            <description>Supported locale (depends on the provided acoustic model, language model and dictionary)</description>
+        </parameter>
+        <parameter name="acousticModelPath" type="text" required="true">
+            <label>Acoustic model path</label>
+            <description>Location of the acoustic model.</description>
+        </parameter>
+        <parameter name="dictionaryPath" type="text" required="true">
+            <label>Dictionary file path</label>
+            <description>Location of the dictionary file.</description>
+        </parameter>
+        <parameter name="languageModelPath" type="text" required="false">
+            <label>Language model path</label>
+            <description>Location of the language model file. Optional if a grammar is used.</description>
+        </parameter>
+        <parameter name="grammarPath" type="text" required="false">
+            <label>Grammar path</label>
+            <description>Location of the grammar files. Optional if a language model is used.</description>
+        </parameter>
+        <parameter name="grammarName" type="text" required="false">
+            <label>Grammar name</label>
+            <description>Grammar file to use (without the .gram extension). Optional if a language model is used.</description>
+        </parameter>
+    </config-description>
+</config-description:config-descriptions>
