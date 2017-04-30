@@ -251,6 +251,9 @@ public class MetadataUtils {
      * Helper method for creating a BigDecimal.
      */
     public static BigDecimal createBigDecimal(Number number) {
+        if (number == null) {
+            return null;
+        }
         try {
             return new BigDecimal(number.toString());
         } catch (Exception ex) {
