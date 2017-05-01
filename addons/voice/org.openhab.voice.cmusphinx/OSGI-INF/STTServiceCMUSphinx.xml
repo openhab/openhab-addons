@@ -13,7 +13,9 @@
    <implementation class="org.openhab.voice.cmusphinx.internal.CMUSphinxSTTService"/>
    <service>
       <provide interface="org.eclipse.smarthome.core.voice.STTService"/>
+      <provide interface="org.eclipse.smarthome.core.voice.KSService"/>
    </service>
+   <reference bind="setVoiceManager" cardinality="1..1" interface="org.eclipse.smarthome.core.voice.VoiceManager" name="VoiceManager" policy="static" unbind="unsetVoiceManager"/>
    <property name="service.pid" type="String" value="org.openhab.cmusphinxsst"/>
    <property name="service.config.description.uri" type="String" value="voice:cmusphinx"/>
    <property name="service.config.label" type="String" value="CMU Sphinx Speech-to-Text"/>

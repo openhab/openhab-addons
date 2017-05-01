@@ -6,6 +6,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Fragment-Host: org.openhab.voice.cmusphinx
-Import-Package: org.junit;version="4.0.0"
+Import-Package: org.junit;version="4.0.0",
+    javax.sound.sampled
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy

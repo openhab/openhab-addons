@@ -59,9 +59,9 @@ public class CMUSphinxSTTServiceTest {
 
         FileAudioStream audioStream = new FileAudioStream(
                 new File(this.getClass().getResource("/177269__sergeeo__numbers-in-french-16k.wav").getFile()),
-                new AudioFormat("WAV", "PCM_SIGNED", false, 16, 512000, 16000L));
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 512000, 16000L));
 
-        service.recognize(sttListener, audioStream, new Locale("fr-FR"), null);
+        service.recognize(sttListener, audioStream, Locale.forLanguageTag("fr-FR"), null);
 
         while (!done) {
             Thread.sleep(1000);
@@ -74,9 +74,9 @@ public class CMUSphinxSTTServiceTest {
 
         audioStream = new FileAudioStream(
                 new File(this.getClass().getResource("/177267__sergeeo__french-months-16k.wav").getFile()),
-                new AudioFormat("WAV", "PCM_SIGNED", false, 16, 512000, 16000L));
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 512000, 16000L));
 
-        service.recognize(sttListener, audioStream, new Locale("fr-FR"), null);
+        service.recognize(sttListener, audioStream, Locale.forLanguageTag("fr-FR"), null);
 
         while (!done) {
             Thread.sleep(1000);
@@ -123,9 +123,9 @@ public class CMUSphinxSTTServiceTest {
 
         FileAudioStream audioStream = new FileAudioStream(
                 new File(this.getClass().getResource("/177266__sergeeo__german-months-16k.wav").getFile()),
-                new AudioFormat("WAV", "PCM_SIGNED", false, 16, 512000, 16000L));
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 512000, 16000L));
 
-        service.recognize(sttListener, audioStream, new Locale("de-DE"), null);
+        service.recognize(sttListener, audioStream, Locale.forLanguageTag("de-DE"), null);
 
         while (!done) {
             Thread.sleep(1000);
@@ -138,9 +138,9 @@ public class CMUSphinxSTTServiceTest {
 
         audioStream = new FileAudioStream(
                 new File(this.getClass().getResource("/69250__reinsamba__numbers-german-male-16k.wav").getFile()),
-                new AudioFormat("WAV", "PCM_SIGNED", false, 16, 512000, 16000L));
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 512000, 16000L));
 
-        service.recognize(sttListener, audioStream, new Locale("de-DE"), null);
+        service.recognize(sttListener, audioStream, Locale.forLanguageTag("de-DE"), null);
 
         while (!done) {
             Thread.sleep(1000);
@@ -180,13 +180,12 @@ public class CMUSphinxSTTServiceTest {
 
         FileAudioStream audioStream = new FileAudioStream(
                 new File(this.getClass().getResource("/217135__catman933__voice-16k.wav").getFile()),
-                new AudioFormat("WAV", "PCM_SIGNED", false, 16, 512000, 16000L));
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 512000, 16000L));
 
-        service.recognize(sttListener, audioStream, new Locale("en-US"), null);
+        service.recognize(sttListener, audioStream, Locale.forLanguageTag("en-US"), null);
 
         while (!done) {
             Thread.sleep(1000);
         }
     }
-
 }

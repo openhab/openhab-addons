@@ -29,5 +29,9 @@
             <label>Grammar name</label>
             <description>Grammar file to use (without the .gram extension). Optional if a language model is used.</description>
         </parameter>
+        <parameter name="startDialog" type="boolean" required="false">
+            <label>Start listening</label>
+            <description>Starts the dialog immediately using the default audio source/sink and voice services after successful initialization.</description>
+        </parameter>
     </config-description>
 </config-description:config-descriptions>

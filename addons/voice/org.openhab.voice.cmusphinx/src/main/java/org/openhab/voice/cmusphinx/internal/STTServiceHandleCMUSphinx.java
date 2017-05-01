@@ -8,6 +8,7 @@
  */
 package org.openhab.voice.cmusphinx.internal;
 
+import org.eclipse.smarthome.core.voice.KSServiceHandle;
 import org.eclipse.smarthome.core.voice.STTServiceHandle;
 
 /**
@@ -16,16 +17,16 @@ import org.eclipse.smarthome.core.voice.STTServiceHandle;
  * @author Yannick Schaus - Initial contribution and API
  *
  */
-public class STTServiceHandleCMUSphinx implements STTServiceHandle {
+public class STTServiceHandleCMUSphinx implements STTServiceHandle, KSServiceHandle {
 
-    STTServiceCMUSphinxRunnable runnable;
+    CMUSphinxRunnable runnable;
 
     /**
      * Creates an instance to manage the passed STTServiceCMUSphinxRunnable
      *
      * @param runnable The managed STTServiceKaldiRunnable
      */
-    public STTServiceHandleCMUSphinx(STTServiceCMUSphinxRunnable runnable) {
+    public STTServiceHandleCMUSphinx(CMUSphinxRunnable runnable) {
         this.runnable = runnable;
     }
 
@@ -34,6 +35,7 @@ public class STTServiceHandleCMUSphinx implements STTServiceHandle {
      */
     @Override
     public void abort() {
-
+        // keep running for now!
+        // this.runnable.abort();
     }
 }

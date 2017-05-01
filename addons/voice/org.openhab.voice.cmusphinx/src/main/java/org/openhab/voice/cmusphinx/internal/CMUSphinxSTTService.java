@@ -13,13 +13,20 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
+import org.eclipse.smarthome.core.voice.KSException;
+import org.eclipse.smarthome.core.voice.KSListener;
+import org.eclipse.smarthome.core.voice.KSService;
+import org.eclipse.smarthome.core.voice.KSServiceHandle;
 import org.eclipse.smarthome.core.voice.STTException;
 import org.eclipse.smarthome.core.voice.STTListener;
 import org.eclipse.smarthome.core.voice.STTService;
 import org.eclipse.smarthome.core.voice.STTServiceHandle;
+import org.eclipse.smarthome.core.voice.VoiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +39,17 @@ import edu.cmu.sphinx.api.StreamSpeechRecognizer;
  * @author Yannick Schaus - Initial contribution and API
  *
  */
-public class CMUSphinxSTTService implements STTService {
+public class CMUSphinxSTTService implements STTService, KSService {
     private Logger logger = LoggerFactory.getLogger(CMUSphinxSTTService.class);
     private Locale locale;
 
     private Configuration configuration;
     private StreamSpeechRecognizer speechRecognizer;
+
+    private VoiceManager voiceManager;
+    private Timer dialogTimer;
+
+    private CMUSphinxRunnable runnable;
 
     @Override
     public String getId() {
@@ -75,6 +87,18 @@ public class CMUSphinxSTTService implements STTService {
         return this.audioFormats;
     }
 
+    private CMUSphinxRunnable getRunnable(AudioStream audioStream) {
+        if (this.runnable != null) {
+            return this.runnable;
+        }
+
+        this.runnable = new CMUSphinxRunnable(this.speechRecognizer, audioStream);
+        Thread thread = new Thread(this.runnable);
+        thread.start();
+
+        return this.runnable;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -86,7 +110,7 @@ public class CMUSphinxSTTService implements STTService {
             throw new IllegalArgumentException("The passed STTListener is null");
         }
         if (null == audioStream) {
-            throw new IllegalArgumentException("The passed AudioSource is null");
+            throw new IllegalArgumentException("The passed AudioStream is null");
         }
         boolean isAudioFormatValid = false;
         AudioFormat audioFormat = audioStream.getFormat();
@@ -106,14 +130,48 @@ public class CMUSphinxSTTService implements STTService {
             throw new IllegalArgumentException("The passed Locale is unsupported");
         }
 
-        // Start recognition
-        STTServiceCMUSphinxRunnable sttServiceCMUSphinxRunnable = new STTServiceCMUSphinxRunnable(this.speechRecognizer,
-                sttListener, audioStream);
-        Thread thread = new Thread(sttServiceCMUSphinxRunnable);
-        thread.start();
+        CMUSphinxRunnable runnable = getRunnable(audioStream);
+        runnable.setSttListener(sttListener);
 
-        // Return STTServiceHandleKaldi
-        return new STTServiceHandleCMUSphinx(sttServiceCMUSphinxRunnable);
+        // Return STTServiceHandleCMUSphinx
+        return new STTServiceHandleCMUSphinx(runnable);
+
+    }
+
+    @Override
+    public KSServiceHandle spot(KSListener ksListener, AudioStream audioStream, Locale locale, String keyword)
+            throws KSException {
+        // Validate arguments
+        if (null == ksListener) {
+            throw new IllegalArgumentException("The passed KSListener is null");
+        }
+        if (null == audioStream) {
+            throw new IllegalArgumentException("The passed AudioStream is null");
+        }
+        boolean isAudioFormatValid = false;
+        AudioFormat audioFormat = audioStream.getFormat();
+        for (AudioFormat currentAudioFormat : this.audioFormats) {
+            if (currentAudioFormat.isCompatible(audioFormat)) {
+                isAudioFormatValid = true;
+                break;
+            }
+        }
+        if (!isAudioFormatValid) {
+            throw new IllegalArgumentException("The passed AudioSource's AudioFormat is unsupported");
+        }
+        if (null == audioFormat.getBitRate()) {
+            throw new IllegalArgumentException("The passed AudioSource's AudioFormat's bit rate is not set");
+        }
+        if (!this.locale.equals(locale)) {
+            throw new IllegalArgumentException("The passed Locale is unsupported");
+        }
+
+        CMUSphinxRunnable runnable = getRunnable(audioStream);
+        runnable.setKsListener(ksListener);
+        runnable.setKeyword(keyword);
+
+        // Return STTServiceHandleCMUSphinx
+        return new STTServiceHandleCMUSphinx(runnable);
 
     }
 
@@ -125,7 +183,8 @@ public class CMUSphinxSTTService implements STTService {
     private final HashSet<AudioFormat> initAudioFormats() {
         HashSet<AudioFormat> audioFormats = new HashSet<AudioFormat>();
 
-        audioFormats.add(new AudioFormat("WAV", "PCM_SIGNED", false, 16, null, 16000L));
+        audioFormats.add(
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L));
         // audioFormats.add(new AudioFormat("WAV", "PCM_SIGNED", false, 16, null, 8000L));
 
         return audioFormats;
@@ -136,6 +195,12 @@ public class CMUSphinxSTTService implements STTService {
     }
 
     public void deactivate(Map<String, Object> properties) {
+        if (this.dialogTimer != null) {
+            this.dialogTimer.cancel();
+        }
+        if (this.runnable != null) {
+            this.runnable.abort();
+        }
     }
 
     public void modified(Map<String, Object> properties) {
@@ -148,7 +213,7 @@ public class CMUSphinxSTTService implements STTService {
             logger.error("Please set the locale in settings");
             return;
         }
-        this.locale = new Locale((String) locale);
+        this.locale = Locale.forLanguageTag((String) locale);
         this.locales.clear();
         this.locales.add(this.locale);
 
@@ -178,6 +243,7 @@ public class CMUSphinxSTTService implements STTService {
         } else {
             if (grammarName == null) {
                 logger.error("Please provide the grammar name (.gram file without the extension)");
+                return;
             }
             configuration.setGrammarPath("file:" + (String) grammarPath);
             configuration.setGrammarName((String) grammarName);
@@ -186,10 +252,34 @@ public class CMUSphinxSTTService implements STTService {
 
         try {
             this.speechRecognizer = new StreamSpeechRecognizer(configuration);
+
+            logger.info("CMU Sphinx speech recognizer initialized");
+
+            Object startDialog = properties.get("startDialog");
+
+            if (startDialog != null && Boolean.parseBoolean(startDialog.toString()) && this.voiceManager != null) {
+                this.dialogTimer = new Timer();
+                VoiceManager voiceManager = this.voiceManager;
+                this.dialogTimer.schedule(new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        voiceManager.startDialog();
+                    }
+                }, 2000);
+            }
         } catch (IOException e) {
             logger.error("Error during CMU Sphinx speech recognizer initialization", e);
         }
 
-        logger.info("CMU Sphinx speech recognizer initialized");
     }
+
+    protected void setVoiceManager(VoiceManager voiceManager) {
+        this.voiceManager = voiceManager;
+    }
+
+    protected void unsetVoiceManager(VoiceManager voiceManager) {
+        this.voiceManager = null;
+    }
+
 }
