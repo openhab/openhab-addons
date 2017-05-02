@@ -28,6 +28,7 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_AREAMODE = "mode";
     public final static String CHANNEL_AREAALARM = "alarm";
     public final static String CHANNEL_FLAG = "value";
+    public final static String CHANNEL_FLAGSWITCH = "switch";
     public final static String CHANNEL_BUTTON_PRESS = "press";
 
     // List of all Thing Type UIDs

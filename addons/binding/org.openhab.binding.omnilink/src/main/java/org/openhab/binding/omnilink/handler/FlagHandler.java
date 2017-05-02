@@ -1,6 +1,7 @@
 package org.openhab.binding.omnilink.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.UID;
@@ -48,8 +49,19 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
                     });
         } else if (command instanceof DecimalType) {
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
+            OmniLinkCmd omniCmd;
+            int level = ((DecimalType) command).intValue();
+            if (level == 0 || level == 100) {
+                omniCmd = level == 0 ? OmniLinkCmd.CMD_UNIT_OFF : OmniLinkCmd.CMD_UNIT_ON;
+            } else {
+                omniCmd = OmniLinkCmd.CMD_UNIT_SET_COUNTER;
+            }
+            getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((DecimalType) command).intValue(),
+                    Integer.parseInt(channelParts[2]));
+        } else if (command instanceof OnOffType) {
+            logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
             getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_SET_COUNTER.getNumber(),
-                    ((DecimalType) command).intValue(), Integer.parseInt(channelParts[2]));
+                    OnOffType.ON.equals(command) ? 1 : 0, Integer.parseInt(channelParts[2]));
         } else {
             logger.warn("Must handle command: {}", command);
         }
@@ -58,9 +70,10 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
     @Override
     public void handleUnitStatus(UnitStatus unitStatus) {
         logger.debug("need to handle status update{}", unitStatus);
-        int status = unitStatus.getStatus();
-        State newState = DecimalType.valueOf(Integer.toString(status));
-        updateState(OmnilinkBindingConstants.CHANNEL_FLAG, newState);
+        updateState(OmnilinkBindingConstants.CHANNEL_FLAG,
+                DecimalType.valueOf(Integer.toString(unitStatus.getStatus())));
+        updateState(OmnilinkBindingConstants.CHANNEL_FLAGSWITCH,
+                unitStatus.getStatus() == 0 ? OnOffType.OFF : OnOffType.ON);
 
     }
 }

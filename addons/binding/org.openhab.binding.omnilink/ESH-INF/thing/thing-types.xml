@@ -61,6 +61,7 @@
 
         <channels>
             <channel id="value" typeId="flagvalue" />
+            <channel id="switch" typeId="flagswitch" />
         </channels>
 
         <config-description>
@@ -200,6 +201,13 @@
         <label>Flag Value</label>
         <description>Represents value for a flag.</description>
         <category>Flag Control</category>
+    </channel-type>
+    <channel-type id="flagswitch">
+        <item-type>Switch</item-type>
+        <label>Flag Switch State</label>
+        <description>Flag Switch information</description>
+        <category>Switch</category>
+        <state pattern="%s" readOnly="true"></state>
     </channel-type>   
     <channel-type id="buttonPress">
         <item-type>Switch</item-type>

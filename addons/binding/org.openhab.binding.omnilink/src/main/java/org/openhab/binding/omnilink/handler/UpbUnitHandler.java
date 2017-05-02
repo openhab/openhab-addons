@@ -45,7 +45,12 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
         logger.debug("handleCommand called");
         OmniLinkCmd omniCmd;
         if (command instanceof PercentType) {
-            omniCmd = OmniLinkCmd.CMD_UNIT_PERCENT;
+            int lightLevel = ((PercentType) command).intValue();
+            if (lightLevel == 0 || lightLevel == 100) {
+                omniCmd = lightLevel == 0 ? OmniLinkCmd.CMD_UNIT_OFF : OmniLinkCmd.CMD_UNIT_ON;
+            } else {
+                omniCmd = OmniLinkCmd.CMD_UNIT_PERCENT;
+            }
             getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((PercentType) command).intValue(),
                     Integer.parseInt(channelParts[2]));
         } else if (command instanceof RefreshType) {
@@ -87,7 +92,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
 
         State newState = PercentType.valueOf(Integer.toString(level));
 
-        logger.debug("handle Zone Status Change to: " + newState);
+        logger.debug("handle Unit Status Change to: " + newState);
         updateState(OmnilinkBindingConstants.CHANNEL_LIGHTLEVEL, newState);
 
     }
