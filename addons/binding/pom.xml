@@ -30,6 +30,8 @@
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feed.test</module>
+    <module>org.openhab.binding.feed.transform</module>
+    <module>org.openhab.binding.feed.transform.test</module>
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.gardena</module>
