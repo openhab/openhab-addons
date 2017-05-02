@@ -16,8 +16,4 @@
   <name>Niko Home Control Binding</name>
   <packaging>eclipse-plugin</packaging>
 
-  <properties>
-  	<bundle.symbolicName>org.openhab.binding.nikohomecontrol</bundle.symbolicName>
-  	<bundle.namespace>org.openhab.binding.nikohomecontrol</bundle.namespace>
-  </properties>
 </project>

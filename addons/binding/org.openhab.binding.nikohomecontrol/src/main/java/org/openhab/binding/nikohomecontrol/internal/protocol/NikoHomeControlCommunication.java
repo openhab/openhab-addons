@@ -17,6 +17,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlBridgeHandler;
 import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlHandler;
@@ -74,16 +76,16 @@ public class NikoHomeControlCommunication {
     private String lastEnergyErase = "";
     private String lastConfig = "";
 
-    private final ArrayList<Integer> locations = new ArrayList<>();
-    private final HashMap<Integer, String> locationNames = new HashMap<>();
+    private final List<Integer> locations = new ArrayList<>();
+    private final Map<Integer, String> locationNames = new HashMap<>();
 
-    private final ArrayList<Integer> actions = new ArrayList<>();
-    private final HashMap<Integer, String> actionNames = new HashMap<>();
-    private final HashMap<Integer, Integer> actionTypes = new HashMap<>();
-    private final HashMap<Integer, Integer> actionLocations = new HashMap<>();
-    private final HashMap<Integer, Integer> actionStates = new HashMap<>();
+    private final List<Integer> actions = new ArrayList<>();
+    private final Map<Integer, String> actionNames = new HashMap<>();
+    private final Map<Integer, Integer> actionTypes = new HashMap<>();
+    private final Map<Integer, Integer> actionLocations = new HashMap<>();
+    private final Map<Integer, Integer> actionStates = new HashMap<>();
 
-    private final HashMap<Integer, NikoHomeControlHandler> actionThingHandlers = new HashMap<>();
+    private final Map<Integer, NikoHomeControlHandler> actionThingHandlers = new HashMap<>();
 
     /**
      * Class {@link NHCCmd} used as input to gson to send commands to Niko Home Control.
@@ -140,7 +142,7 @@ public class NikoHomeControlCommunication {
     private static class NHCCmdAck {
         private String cmd;
         private String event;
-        private ArrayList<HashMap<String, String>> data = new ArrayList<>();
+        private List<HashMap<String, String>> data = new ArrayList<>();
     }
 
     /**
@@ -155,7 +157,7 @@ public class NikoHomeControlCommunication {
         private String cmd;
         @SuppressWarnings("unused")
         private String event;
-        private HashMap<String, String> data = new HashMap<>();
+        private Map<String, String> data = new HashMap<>();
     }
 
     /**
@@ -198,26 +200,19 @@ public class NikoHomeControlCommunication {
         ipaddr[3] = (byte) 0xff;
         broadcastaddr = InetAddress.getByAddress(ipaddr);
 
-        DatagramSocket datagramSocket = null;
-        try {
-            DatagramPacket discoveryPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcastaddr,
-                    broadcastport);
-            byte[] buffer = new byte[1024];
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            datagramSocket = new DatagramSocket(null);
+        DatagramPacket discoveryPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcastaddr,
+                broadcastport);
+        byte[] buffer = new byte[1024];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+        try (DatagramSocket datagramSocket = new DatagramSocket(null)) {
             datagramSocket.setBroadcast(true);
-            datagramSocket.bind(null);
             datagramSocket.setSoTimeout(500);
             datagramSocket.send(discoveryPacket);
             datagramSocket.receive(packet);
             InetAddress addr = packet.getAddress();
             logger.debug("Niko Home Control: IP address is {}", addr);
             return addr;
-
-        } finally {
-            if (datagramSocket != null) {
-                datagramSocket.close();
-            }
         }
 
     }
@@ -325,7 +320,7 @@ public class NikoHomeControlCommunication {
             } else if ("listactions".equals(nhcCmdAck.cmd)) {
                 listActions(nhcCmdAck);
             } else if ("listactions".equals(nhcCmdAck.event)) {
-                for (HashMap<String, String> action : nhcCmdAck.data) {
+                for (Map<String, String> action : nhcCmdAck.data) {
                     int id = Integer.valueOf(action.get("id"));
                     setActionState(id, Integer.valueOf(action.get("value1")));
                 }
@@ -345,7 +340,8 @@ public class NikoHomeControlCommunication {
         if (nhcSocket != null) {
             try {
                 nhcSocket.close();
-            } catch (IOException e) {
+            } catch (IOException ignore) {
+                // ignore IO Error when trying to close the socket if the intention is to close it anyway
             }
             nhcSocket = null;
         }
@@ -689,7 +685,7 @@ public class NikoHomeControlCommunication {
      *
      * @return <code>ArrayList&ltInteger></code> of action Ids
      */
-    public ArrayList<Integer> getActions() {
+    public List<Integer> getActions() {
         return this.actions;
     }
 

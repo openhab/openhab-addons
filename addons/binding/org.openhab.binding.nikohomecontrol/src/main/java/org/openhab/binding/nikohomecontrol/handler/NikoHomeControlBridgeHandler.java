@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -101,15 +102,9 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
             @Override
             public void run() {
                 try {
-                    for (int i = 0; i < 3; i++) {
-                        // try connecting max 3 times
-                        nhcComm = new NikoHomeControlCommunication(addr, port);
-                        if (nhcComm.communicationActive()) {
-                            break;
-                        }
-                        if (i == 2) {
-                            throw new IOException("Niko Home Control: communication socket error");
-                        }
+                    nhcComm = new NikoHomeControlCommunication(addr, port);
+                    if (!nhcComm.communicationActive()) {
+                        throw new IOException("Niko Home Control: communication socket error");
                     }
 
                     addr = nhcComm.getAddr();
@@ -153,7 +148,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
         // This timer will restart the bridge connection periodically
         logger.debug("Niko Home Control: restart bridge connection every {} min", refreshInterval);
-        refreshTimer = scheduler.scheduleAtFixedRate(new Runnable() {
+        refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
 
@@ -162,16 +157,11 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE);
 
                 try {
-                    for (int i = 0; i < 3; i++) {
-                        // try restarting max 3 times
-                        nhcComm.restartCommunication();
-                        if (nhcComm.communicationActive()) {
-                            break;
-                        }
-                        if (i == 2) {
-                            throw new IOException("Niko Home Control: communication socket error");
-                        }
+                    nhcComm.restartCommunication();
+                    if (!nhcComm.communicationActive()) {
+                        throw new IOException("Niko Home Control: communication socket error");
                     }
+
                     addr = nhcComm.getAddr();
                     updateProperties();
 
@@ -192,7 +182,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      */
     private void updateProperties() {
 
-        HashMap<String, String> properties = new HashMap<>();
+        Map<String, String> properties = new HashMap<>();
 
         properties.put("ipAddress", addr.getHostAddress());
         properties.put("port", Integer.toString(port));
@@ -213,7 +203,9 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        nhcComm.stopCommunication();
+        if (nhcComm != null) {
+            nhcComm.stopCommunication();
+        }
         nhcComm = null;
     }
 
