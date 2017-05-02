@@ -74,7 +74,6 @@ import org.openhab.binding.max.internal.message.L_Message;
 import org.openhab.binding.max.internal.message.M_Message;
 import org.openhab.binding.max.internal.message.Message;
 import org.openhab.binding.max.internal.message.MessageProcessor;
-import org.openhab.binding.max.internal.message.MessageType;
 import org.openhab.binding.max.internal.message.N_Message;
 import org.openhab.binding.max.internal.message.S_Message;
 import org.slf4j.Logger;
@@ -101,9 +100,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /** timeout on network connection **/
     private static final int NETWORK_TIMEOUT = 10000;
 
-    private List<Device> devices = new ArrayList<Device>();
+    private List<Device> devices = new ArrayList<>();
     private List<RoomInformation> rooms;
-    private Set<String> lastActiveDevices = new HashSet<String>();
+    private Set<String> lastActiveDevices = new HashSet<>();
 
     /** MAX! Thermostat default off temperature */
     private static final DecimalType DEFAULT_OFF_TEMPERATURE = new DecimalType(4.5);
@@ -111,11 +110,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /** MAX! Thermostat default on temperature */
     private static final DecimalType DEFAULT_ON_TEMPERATURE = new DecimalType(30.5);
 
-    private List<DeviceConfiguration> configurations = new ArrayList<DeviceConfiguration>();
+    private List<DeviceConfiguration> configurations = new ArrayList<>();
 
     /** maximum queue size that we're allowing */
     private static final int MAX_COMMANDS = 50;
-    private BlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<SendCommand>(MAX_COMMANDS);
+    private BlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<>(MAX_COMMANDS);
 
     private SendCommand lastCommandId = null;
 
@@ -184,6 +183,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             stopAutomaticRefresh();
         } catch (InterruptedException e) {
             logger.error("Could not stop automatic refresh", e);
+            Thread.currentThread().interrupt();
         }
         clearDeviceList();
 
@@ -254,6 +254,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 stopAutomaticRefresh();
             } catch (InterruptedException e) {
                 logger.error("Could not stop automatic refresh", e);
+                Thread.currentThread().interrupt();
             }
             clearDeviceList();
             socketClose();
@@ -386,7 +387,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         }
                     } catch (IOException e) {
                         logger.warn("Could not close socket", e);
-                        e.printStackTrace();
                     }
                     logger.debug("Found to have excess duty cycle, waiting for better times...");
                     excessDutyCycle.await(1, TimeUnit.MINUTES);
@@ -593,15 +593,15 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             socketClose(); // reconnect on next execution
             return false;
         } catch (UnknownHostException e) {
-            logger.warn("Host error occurred during execution: {}", e.getMessage());
+            logger.warn("Host error occurred during execution", e);
             socketClose(); // reconnect on next execution
             return false;
         } catch (IOException e) {
-            logger.warn("IO error occurred during execution: {}", e);
+            logger.warn("IO error occurred during execution", e);
             socketClose(); // reconnect on next execution
             return false;
         } catch (Exception e) {
-            logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
+            logger.warn("Exception occurred during execution", e);
             socketClose(); // reconnect on next execution
             return false;
         } finally {
@@ -639,8 +639,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                     this.messageProcessor.reset();
                 }
             } catch (Exception e) {
-                logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw, ipAddress,
-                        e.getMessage(), e);
+                logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}: {}", raw,
+                        ipAddress, e.getMessage());
                 this.messageProcessor.reset();
             }
             if (raw.startsWith(terminator)) {
@@ -661,107 +661,137 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
 
         message.debug(logger);
-        if (message.getType() == MessageType.H) {
-            int freeMemorySlotsMsg = ((H_Message) message).getFreeMemorySlots();
-            int dutyCycleMsg = ((H_Message) message).getDutyCycle();
-            if (freeMemorySlotsMsg != freeMemorySlots || dutyCycleMsg != dutyCycle) {
-                freeMemorySlots = freeMemorySlotsMsg;
-                setDutyCycle(dutyCycleMsg);
-
-                updateCubeState();
-            }
-            if (!propertiesSet) {
-                setProperties((H_Message) message);
-                queueCommand(new SendCommand("Cube(" + getThing().getUID().getId() + ")", new F_Command(),
-                        "Request NTP info"));
-            }
-
+        switch (message.getType()) {
+            case A:
+                // Nothing to do with A Messages.
+                break;
+            case C:
+                processCMessage((C_Message) message);
+                break;
+            case F:
+                setProperties((F_Message) message);
+                break;
+            case H:
+                processHMessage((H_Message) message);
+                break;
+            case L:
+                ((L_Message) message).updateDevices(devices, configurations);
+                logger.trace("{} devices found.", devices.size());
+                break;
+            case M:
+                processMMessage((M_Message) message);
+                break;
+            case N:
+                processNMessage((N_Message) message);
+                break;
+            case S:
+                processSMessage((S_Message) message);
+                break;
+            default:
+                break;
         }
-        if (message.getType() == MessageType.M) {
-            M_Message msg = (M_Message) message;
-            rooms = new ArrayList<RoomInformation>(msg.rooms);
+    }
 
-            if (!roomPropertiesSet) {
-                setProperties(msg);
+    private void processCMessage(C_Message c_Message) {
+        DeviceConfiguration c = null;
+        for (DeviceConfiguration conf : configurations) {
+            if (conf.getSerialNumber().equalsIgnoreCase(c_Message.getSerialNumber())) {
+                c = conf;
+                break;
             }
+        }
+
+        if (c == null) {
+            configurations.add(DeviceConfiguration.create(c_Message));
+        } else {
+            c.setValues(c_Message);
+            Device di = getDevice(c_Message.getSerialNumber());
+            if (di != null) {
+                di.setProperties(c_Message.getProperties());
+                ;
+            }
+        }
+        if (exclusive == true) {
+            for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
+                try {
+                    Device di = getDevice(c_Message.getSerialNumber());
+                    if (di != null) {
+                        deviceStatusListener.onDeviceConfigUpdate(getThing(), di);
+                    }
+                } catch (NullPointerException e) {
+                    // ignore
+                } catch (Exception e) {
+                    logger.error("An exception occurred while calling the DeviceStatusListener", e);
+                    unregisterDeviceStatusListener(deviceStatusListener);
+                }
+            }
+        }
+    }
+
+    private void processHMessage(H_Message hMessage) {
+        int freeMemorySlotsMsg = hMessage.getFreeMemorySlots();
+        int dutyCycleMsg = hMessage.getDutyCycle();
+        if (freeMemorySlotsMsg != freeMemorySlots || dutyCycleMsg != dutyCycle) {
+            freeMemorySlots = freeMemorySlotsMsg;
+            setDutyCycle(dutyCycleMsg);
+
+            updateCubeState();
+        }
+        if (!propertiesSet) {
+            setProperties(hMessage);
+            queueCommand(
+                    new SendCommand("Cube(" + getThing().getUID().getId() + ")", new F_Command(), "Request NTP info"));
+        }
+    }
+
+    private void processMMessage(M_Message msg) {
+        rooms = new ArrayList<RoomInformation>(msg.rooms);
+
+        if (!roomPropertiesSet) {
             setProperties(msg);
-            for (DeviceInformation di : msg.devices) {
-                DeviceConfiguration c = null;
-                for (DeviceConfiguration conf : configurations) {
-                    if (conf.getSerialNumber().equalsIgnoreCase(di.getSerialNumber())) {
-                        c = conf;
-                        break;
-                    }
-                }
-
-                if (c != null) {
-                    configurations.remove(c);
-                }
-
-                c = DeviceConfiguration.create(di);
-                configurations.add(c);
-                c.setRoomId(di.getRoomId());
-                String roomName = "";
-                for (RoomInformation room : msg.rooms) {
-                    if (room.getPosition() == di.getRoomId()) {
-                        roomName = room.getName();
-                    }
-                }
-                c.setRoomName(roomName);
-            }
-        } else if (message.getType() == MessageType.C) {
+        }
+        setProperties(msg);
+        for (DeviceInformation di : msg.devices) {
             DeviceConfiguration c = null;
             for (DeviceConfiguration conf : configurations) {
-                if (conf.getSerialNumber().equalsIgnoreCase(((C_Message) message).getSerialNumber())) {
+                if (conf.getSerialNumber().equalsIgnoreCase(di.getSerialNumber())) {
                     c = conf;
                     break;
                 }
             }
 
-            if (c == null) {
-                configurations.add(DeviceConfiguration.create(message));
-            } else {
-                c.setValues((C_Message) message);
-                Device di = getDevice(((C_Message) message).getSerialNumber());
-                if (di != null) {
-                    di.setProperties(((C_Message) message).getProperties());
-                    ;
+            if (c != null) {
+                configurations.remove(c);
+            }
+
+            c = DeviceConfiguration.create(di);
+            configurations.add(c);
+            c.setRoomId(di.getRoomId());
+            String roomName = "";
+            for (RoomInformation room : msg.rooms) {
+                if (room.getPosition() == di.getRoomId()) {
+                    roomName = room.getName();
                 }
             }
-            if (exclusive == true) {
-                for (DeviceStatusListener deviceStatusListener : deviceStatusListeners) {
-                    try {
-                        Device di = getDevice(((C_Message) message).getSerialNumber());
-                        if (di != null) {
-                            deviceStatusListener.onDeviceConfigUpdate(getThing(), di);
-                        }
-                    } catch (NullPointerException e) {
-                        // ignore
-                    } catch (Exception e) {
-                        logger.error("An exception occurred while calling the DeviceStatusListener", e);
-                        unregisterDeviceStatusListener(deviceStatusListener);
-                    }
-                }
-            }
-        } else if (message.getType() == MessageType.L) {
-            ((L_Message) message).updateDevices(devices, configurations);
-            logger.trace("{} devices found.", devices.size());
-        } else if (message.getType() == MessageType.S) {
-            dutyCycle = ((S_Message) message).getDutyCycle();
-            freeMemorySlots = ((S_Message) message).getFreeMemorySlots();
-            updateCubeState();
-            if (((S_Message) message).isCommandDiscarded()) {
-                logger.warn("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
-                        freeMemorySlots);
-            } else {
-                logger.debug("S message. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle, freeMemorySlots);
-            }
-        } else if (message.getType() == MessageType.N) {
-            if (((N_Message) message).getRfAddress() != null) {
-                newInclusionDeviceFound((N_Message) message);
-            }
-        } else if (message.getType() == MessageType.F) {
-            setProperties((F_Message) message);
+            c.setRoomName(roomName);
+        }
+    }
+
+    private void processNMessage(N_Message nMessage) {
+        if (nMessage.getRfAddress() != null) {
+            newInclusionDeviceFound(nMessage);
+        }
+    }
+
+    private void processSMessage(S_Message sMessage) {
+        setDutyCycle(sMessage.getDutyCycle());
+        freeMemorySlots = sMessage.getFreeMemorySlots();
+        updateCubeState();
+        if (sMessage.isCommandDiscarded()) {
+            logger.warn("Last Send Command discarded. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle,
+                    freeMemorySlots);
+        } else {
+            logger.debug("S message. Duty Cycle: {}, Free Memory Slots: {}", dutyCycle, freeMemorySlots);
         }
     }
 

@@ -21,11 +21,6 @@ public class EcoSwitch extends ShutterContact {
 
     private OnOffType ecoMode = null;
 
-    /**
-     * Class constructor.
-     *
-     * @param c
-     */
     public EcoSwitch(DeviceConfiguration c) {
         super(c);
     }

@@ -16,11 +16,6 @@ package org.openhab.binding.max.internal.device;
  */
 public class WallMountedThermostat extends HeatingThermostat {
 
-    /**
-     * Class constructor.
-     *
-     * @param c
-     */
     public WallMountedThermostat(DeviceConfiguration c) {
         super(c);
     }

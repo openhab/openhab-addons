@@ -27,7 +27,7 @@ public class T_Command extends CubeCommand {
     private static final int FORCE_UPDATE = 1;
     private static final int NO_FORCE_UPDATE = 0;
 
-    ArrayList<String> rfAddresses = new ArrayList<String>();
+    private ArrayList<String> rfAddresses = new ArrayList<>();
     private boolean forceUpdate = true;
 
     /**
