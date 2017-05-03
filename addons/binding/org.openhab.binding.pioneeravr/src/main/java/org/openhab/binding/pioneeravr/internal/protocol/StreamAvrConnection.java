@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class StreamAvrConnection implements AvrConnection {
 
-    private static final Logger logger = LoggerFactory.getLogger(StreamAvrConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(StreamAvrConnection.class);
 
     // The maximum time to wait incoming messages.
     private static final Integer READ_TIMEOUT = 1000;

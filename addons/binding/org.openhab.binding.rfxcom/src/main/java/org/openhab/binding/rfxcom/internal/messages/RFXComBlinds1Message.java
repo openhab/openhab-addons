@@ -100,10 +100,10 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.COMMAND);
 
-    private final static List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.SHUTTER);
 
     public SubType subType;
@@ -269,7 +269,7 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
                     command = Commands.STOP;
 
                 } else {
-                    throw new NumberFormatException("Can't convert " + type + " to Command");
+                    throw new RFXComException("Can't convert " + type + " to Command");
                 }
                 break;
 

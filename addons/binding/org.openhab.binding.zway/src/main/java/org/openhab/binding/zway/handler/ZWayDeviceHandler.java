@@ -52,6 +52,7 @@ import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Battery;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Doorlock;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorBinary;
+import de.fh_zwickau.informatik.sensor.model.devices.types.SensorDiscrete;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorMultilevel;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchBinary;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchControl;
@@ -69,7 +70,7 @@ import de.fh_zwickau.informatik.sensor.model.zwaveapi.devices.ZWaveDevice;
  * @author Patrick Hecker - Initial contribution
  */
 public abstract class ZWayDeviceHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private DevicePolling devicePolling;
     private ScheduledFuture<?> pollingJob;
@@ -126,9 +127,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 }
             } catch (Throwable t) {
                 if (t instanceof Exception) {
-                    logger.error(((Exception) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else if (t instanceof Error) {
-                    logger.error(((Error) t).getMessage());
+                    logger.error("{}", t.getMessage());
                 } else {
                     logger.error("Unexpected error");
                 }
@@ -260,9 +261,9 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             refreshChannel(channel);
                         } catch (Throwable t) {
                             if (t instanceof Exception) {
-                                logger.error("Error occurred when performing polling:" + ((Exception) t).getMessage());
+                                logger.error("Error occurred when performing polling:{}", t.getMessage());
                             } else if (t instanceof Error) {
-                                logger.error("Error occurred when performing polling: " + ((Error) t).getMessage());
+                                logger.error("Error occurred when performing polling:{}", t.getMessage());
                             } else {
                                 logger.error("Error occurred when performing polling: Unexpected error");
                             }
@@ -340,8 +341,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 try {
                     device.update();
                 } catch (Exception e) {
-                    logger.debug(device.getMetrics().getTitle()
-                            + " doesn't support update (triggered during refresh channel)");
+                    logger.debug("{} doesn't support update (triggered during refresh channel)",
+                            device.getMetrics().getTitle());
                 }
             } else {
                 logger.warn("Devices not loaded");
@@ -582,8 +583,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                     device.off();
                                 }
                             }
-                        } else if (device instanceof SwitchToggle) {
-                            // possible commands: ?
                         } else if (device instanceof Thermostat) {
                             if (command instanceof DecimalType) {
                                 logger.debug("Handle command: DecimalType");
@@ -603,10 +602,16 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                     device.off();
                                 }
                             }
-                        } else if (device instanceof ToggleButton) {
+                        } else if (device instanceof ToggleButton || device instanceof SwitchToggle) {
                             // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(),
                             // downstop()
-                            // TODO
+                            if (command instanceof OnOffType) {
+                                logger.debug("Handle command: OnOffType");
+
+                                if (command.equals(OnOffType.ON)) {
+                                    device.on();
+                                } // no else - only ON command is sent to Z-Way
+                            }
                         }
                     }
                 } catch (UnsupportedOperationException e) {
@@ -632,8 +637,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
     }
 
     protected synchronized void addDeviceAsChannel(Device device) {
-        logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
-
         // Device.probeType
         // |
         // Device.metrics.probeType
@@ -645,6 +648,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         // Default, depends on device type
 
         if (device != null) {
+            logger.debug("Add virtual device as channel: {}", device.getMetrics().getTitle());
+
             HashMap<String, String> properties = new HashMap<String, String>();
             properties.put("deviceId", device.getDeviceId());
 
@@ -670,8 +675,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             } else if (device instanceof SwitchMultilevel) {
                 id = SWITCH_MULTILEVEL_CHANNEL;
                 acceptedItemType = "Dimmer";
-            } else if (device instanceof SwitchToggle) {
-                // ?
             } else if (device instanceof SwitchRGBW) {
                 id = SWITCH_COLOR_CHANNEL;
                 acceptedItemType = "Color";
@@ -681,8 +684,12 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             } else if (device instanceof SwitchControl) {
                 id = SWITCH_CONTROL_CHANNEL;
                 acceptedItemType = "Switch";
-            } else if (device instanceof ToggleButton) {
-                // TODO
+            } else if (device instanceof ToggleButton || device instanceof SwitchToggle) {
+                id = SWITCH_CONTROL_CHANNEL;
+                acceptedItemType = "Switch";
+            } else if (device instanceof SensorDiscrete) {
+                id = SENSOR_DISCRETE_CHANNEL;
+                acceptedItemType = "Number";
             }
 
             // 2. Check if device information includes further information about sensor type

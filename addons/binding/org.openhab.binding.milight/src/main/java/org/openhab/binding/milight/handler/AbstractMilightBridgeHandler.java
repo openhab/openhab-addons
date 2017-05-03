@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,7 +43,7 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
     protected String bridgeid;
     protected ThingDiscoveryService thingDiscoveryService;
     private ScheduledFuture<?> keepAliveTimer;
-    protected int refrehIntervalSec;
+    protected int refrehIntervalSec = 5;
 
     public AbstractMilightBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -137,7 +137,7 @@ public abstract class AbstractMilightBridgeHandler extends BaseBridgeHandler {
             try {
                 com.setAddress(InetAddress.getByName(host_config));
             } catch (UnknownHostException e) {
-                e.printStackTrace();
+                logger.warn("Unknown host {}", host_config, e);
             }
         }
 

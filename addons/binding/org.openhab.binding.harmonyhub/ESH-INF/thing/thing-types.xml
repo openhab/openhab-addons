@@ -30,7 +30,7 @@
     
     <thing-type id="device">
         <supported-bridge-type-refs>
-            <bridge-type-ref id="harmonyHub" />
+            <bridge-type-ref id="hub" />
         </supported-bridge-type-refs>
         <label>Harmony Device</label>
         <description>Logitech Harmony Hub Device</description>

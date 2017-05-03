@@ -43,7 +43,6 @@
                 </description>
                 <advanced>true</advanced>
             </parameter>
-
             <parameter name="REFRESH_IN_SEC" type="integer" min="5" max="300">
                 <label>Refresh interval</label>
                 <description>Interval in seconds to check for device presence. The Bridge ID is used to check if the IP is still the right one.
@@ -109,6 +108,13 @@
                 does not respond with the correct Bride ID and a re-detection is started. Useful for DHCP environments where
                 IPs may change over time, after power outage etc. Will be resolved by discovery if auto configured.
                 </description>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="REFRESH_IN_SEC" type="integer" min="5" max="300">
+                <label>Keep alive interval</label>
+                <description>Interval in seconds to send a keep alive ping. If a session expires and need to be reestablished, the bridge and all devices could go offline for a few seconds.
+                </description>
+                <default>5</default>
                 <advanced>true</advanced>
             </parameter>
         </config-description>

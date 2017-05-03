@@ -67,7 +67,7 @@ public class RemoteController {
 
     /**
      * Create and initialize remote controller instance.
-     * 
+     *
      * @param host Host name of the Samsung TV.
      * @param port TCP port of the remote controller protocol.
      * @param appName Application name used to send key codes.
@@ -82,7 +82,7 @@ public class RemoteController {
 
     /**
      * Open Connection to Samsung TV.
-     * 
+     *
      * @throws RemoteControllerException
      */
     public void openConnection() throws RemoteControllerException {
@@ -180,7 +180,7 @@ public class RemoteController {
 
     /**
      * Close connection to Samsung TV.
-     * 
+     *
      * @throws RemoteControllerException
      */
     public void closeConnection() throws RemoteControllerException {
@@ -193,7 +193,7 @@ public class RemoteController {
 
     /**
      * Send key code to Samsung TV.
-     * 
+     *
      * @param key Key code to send.
      * @throws RemoteControllerException
      */
@@ -221,7 +221,7 @@ public class RemoteController {
 
     /**
      * Send sequence of key codes to Samsung TV.
-     * 
+     *
      * @param keys List of key codes to send.
      * @throws RemoteControllerException
      */
@@ -231,7 +231,7 @@ public class RemoteController {
 
     /**
      * Send sequence of key codes to Samsung TV.
-     * 
+     *
      * @param keys List of key codes to send.
      * @param sleepInMs Sleep between key code sending in milliseconds.
      * @throws RemoteControllerException
@@ -283,9 +283,9 @@ public class RemoteController {
          * Payload starts with 2 bytes: 0x64 and 0x00, then comes 3 strings
          * encoded with base64 algorithm. Every string is preceded by 2-bytes
          * field containing encoded string length.
-         * 
+         *
          * These three strings are as follow:
-         * 
+         *
          * remote control device IP, unique ID – value to distinguish
          * controllers, name – it will be displayed as controller name.
          */
@@ -331,7 +331,7 @@ public class RemoteController {
     }
 
     private void sendKeyData(KeyCode key) throws RemoteControllerException {
-        logger.debug("Sending key code " + key.getValue());
+        logger.debug("Sending key code {}", key.getValue());
 
         /* @formatter:off
          *

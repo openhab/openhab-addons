@@ -24,7 +24,7 @@ public class SerialPortThrottler {
 
     private static Logger logger = LoggerFactory.getLogger(SerialPortThrottler.class);
 
-    public final static long INTERVAL = 1000;
+    public static final long INTERVAL = 1000;
 
     private static ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<String, ReentrantLock>();
     private static ConcurrentHashMap<String, Long> timestamps = new ConcurrentHashMap<String, Long>();

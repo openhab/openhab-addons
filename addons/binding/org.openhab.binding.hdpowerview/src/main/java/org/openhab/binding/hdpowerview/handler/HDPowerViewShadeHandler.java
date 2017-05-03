@@ -113,7 +113,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         try {
             response = bridge.getWebTargets().moveShade(shadeId, position);
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("{}", e.getMessage(), e);
             return;
         }
         if (response != null) {

@@ -64,7 +64,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     private Logger logger = LoggerFactory.getLogger(HarmonyHubHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_HUB_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_HUB_THING_TYPE);
 
     // one minute should be plenty short, but not overwhelm the hub with requests
     private static final long CONFIG_CACHE_TIME = 60 * 1000;
@@ -124,6 +124,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     @Override
     public void initialize() {
+        cancelRetry();
         connect();
     }
 
@@ -131,6 +132,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
     public void dispose() {
         listeners.clear();
         buttonExecutor.shutdownNow();
+        cancelRetry();
         disconnectFromHub();
         factory.removeChannelTypesForThing(getThing().getUID());
     }
@@ -220,24 +222,19 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
             updateStatus(ThingStatus.ONLINE);
             buildChannel();
         } catch (Exception e) {
-            logger.error("Could not connect to HarmonyHub at " + host, e);
+            logger.debug("Could not connect to HarmonyHub at {}", host, e);
             setOfflineAndReconnect("Could not connect: " + e.getMessage());
         }
     }
 
     private void disconnectFromHub() {
-        if (retryJob != null && !retryJob.isDone()) {
-            retryJob.cancel(true);
-        }
-
         if (heartBeatJob != null && !heartBeatJob.isDone()) {
-            heartBeatJob.cancel(true);
+            heartBeatJob.cancel(false);
         }
 
         if (client != null) {
             client.removeListener(this);
             client.disconnect();
-            client = null;
         }
     }
 
@@ -250,6 +247,12 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
             }
         }, RETRY_TIME, TimeUnit.SECONDS);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+    }
+
+    private void cancelRetry() {
+        if (retryJob != null && !retryJob.isDone()) {
+            retryJob.cancel(false);
+        }
     }
 
     private void updateState(Activity activity) {

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class AbstractTypeConverter<T extends State> implements TypeConverter<T> {
-    private static final Logger logger = LoggerFactory.getLogger(TypeConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractTypeConverter.class);
 
     /**
      * Defines all devices where the state datapoint must be inverted.

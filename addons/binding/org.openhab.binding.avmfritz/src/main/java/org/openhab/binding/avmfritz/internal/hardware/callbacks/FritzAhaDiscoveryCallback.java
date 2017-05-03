@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private AvmDiscoveryService service;
 
@@ -50,7 +50,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
     public void execute(int status, String response) {
         super.execute(status, response);
         if (this.isValidRequest()) {
-            logger.debug("discovery callback response " + response);
+            logger.debug("discovery callback response {}", response);
             try {
                 JAXBContext jaxbContext = JAXBContext.newInstance(DevicelistModel.class);
                 Unmarshaller jaxbUM = jaxbContext.createUnmarshaller();
@@ -64,7 +64,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
                     logger.warn("no model in response");
                 }
             } catch (JAXBException e) {
-                logger.error(e.getLocalizedMessage(), e);
+                logger.error("{}", e.getLocalizedMessage(), e);
             }
         }
     }

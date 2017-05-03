@@ -25,7 +25,7 @@ public final class F_Message extends Message {
     /**
      * The {@link: F_Message} contains information about the Cube NTP Configuration
      *
-     * @param String with raw message
+     * @param raw String with raw message
      */
     public F_Message(String raw) {
         super(raw);

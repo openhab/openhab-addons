@@ -11,9 +11,9 @@
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.tesla.internal.TeslaHandlerFactory">
 
-   <scr:implementation class="org.openhab.binding.tesla.internal.TeslaHandlerFactory"/>
+   <implementation class="org.openhab.binding.tesla.internal.TeslaHandlerFactory"/>
 
-   <scr:reference bind="setStorageService"
+   <reference bind="setStorageService"
                   unbind="unsetStorageService"
                   cardinality="1..1"
                   interface="org.eclipse.smarthome.core.storage.StorageService"

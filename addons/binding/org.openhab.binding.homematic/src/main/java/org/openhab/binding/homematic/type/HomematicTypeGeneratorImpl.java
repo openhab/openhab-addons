@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
-    private static final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
     private static URI configDescriptionUriChannel;
 
     private HomematicThingTypeProvider thingTypeProvider;
@@ -254,10 +254,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
 
-                BigDecimal step = null;
-                if (dp.getStep() != null) {
-                    step = MetadataUtils.createBigDecimal(dp.getStep());
-                } else {
+                BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
+                if (step == null) {
                     step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
                 }
                 state = new StateDescription(min, max, step, MetadataUtils.getStatePattern(dp), dp.isReadOnly(),

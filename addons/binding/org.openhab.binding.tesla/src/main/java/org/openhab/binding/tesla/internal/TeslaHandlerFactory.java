@@ -31,7 +31,7 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
     private StorageService storageService;
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODELS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODELS);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

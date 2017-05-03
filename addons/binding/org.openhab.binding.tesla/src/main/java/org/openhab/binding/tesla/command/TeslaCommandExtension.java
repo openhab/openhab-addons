@@ -8,29 +8,33 @@
  */
 package org.openhab.binding.tesla.command;
 
-import com.google.gson.Gson;
+import static org.openhab.binding.tesla.TeslaBindingConstants.*;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.storage.Storage;
 import org.eclipse.smarthome.core.storage.StorageService;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.binding.tesla.TeslaBindingConstants;
-import org.openhab.binding.tesla.handler.TeslaHandler;
 import org.openhab.binding.tesla.internal.protocol.TokenRequest;
 import org.openhab.binding.tesla.internal.protocol.TokenRequestPassword;
 import org.openhab.binding.tesla.internal.protocol.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.List;
+import com.google.gson.Gson;
 
 /**
  * Console commands for interacting with the Tesla integration
@@ -42,7 +46,11 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
     private static final String CMD_LOGON = "logon";
 
     private final Logger logger = LoggerFactory.getLogger(TeslaCommandExtension.class);
+
     private StorageService storageService;
+    private final Client teslaClient = ClientBuilder.newClient();
+    private final WebTarget teslaTarget = teslaClient.target(TESLA_OWNERS_URI);
+    private final WebTarget tokenTarget = teslaTarget.path(TESLA_ACCESS_TOKEN_URI);
 
     public TeslaCommandExtension() {
         super("tesla", "Interact with the Tesla integration.");
@@ -54,10 +62,9 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
             String subCommand = args[0];
             switch (subCommand) {
                 case CMD_LOGON:
-                    if (args.length == 2){
+                    if (args.length == 2) {
                         try {
-                            BufferedReader br = new BufferedReader(new
-                                    InputStreamReader(System.in));
+                            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
                             console.print("Username (email): ");
                             String username = br.readLine();
                             console.println(username);
@@ -71,7 +78,7 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
                         } catch (Exception e) {
                             console.println(e.toString());
                         }
-                    } else if (args.length == 4){
+                    } else if (args.length == 4) {
                         logon(console, args[1], args[2], args[3]);
                     } else {
                         printUsage(console);
@@ -88,9 +95,8 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(
-                new String[]{buildCommandUsage(CMD_LOGON + " <thingid> [<user email>] [<password>]", "Authenticates and stores the access and refresh token. Does not store the username/password."),
-                });
+        return Arrays.asList(new String[] { buildCommandUsage(CMD_LOGON + " <thingid> [<user email>] [<password>]",
+                "Authenticates and stores the access and refresh token. Does not store the username/password."), });
     }
 
     public void setStorageService(StorageService storageService) {
@@ -108,7 +114,7 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
             TokenRequest token = new TokenRequestPassword(username, password);
             String payLoad = gson.toJson(token);
 
-            Response response = TeslaHandler.tokenTarget.request().post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
+            Response response = tokenTarget.request().post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
 
             if (response != null) {
                 if (response.getStatus() == 200 && response.hasEntity()) {
@@ -123,7 +129,8 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
                     console.println("Successfully logged on and stored token.");
 
                 } else {
-                    console.println("Failure:" + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase());
+                    console.println(
+                            "Failure:" + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase());
                 }
             }
         } catch (Exception e) {

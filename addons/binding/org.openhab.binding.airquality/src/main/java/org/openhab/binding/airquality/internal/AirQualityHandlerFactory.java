@@ -27,7 +27,7 @@ import org.openhab.binding.airquality.handler.AirQualityHandler;
  */
 public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AQI);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AQI);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

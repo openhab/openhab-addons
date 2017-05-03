@@ -60,6 +60,14 @@
 				<required>false</required>
 			</parameter>
 
+			<parameter name="useOnlyHttp" type="boolean">
+				<label>Use only HTTP API</label>
+				<description>Use HTTP API even if HTTPS is available</description>
+				<default>false</default>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+
 		</config-description>
 	</bridge-type>
 

@@ -15,6 +15,11 @@ package org.openhab.binding.russound.internal.rio.zone;
  */
 public class RioZoneConfig {
     /**
+     * Constant defined for the "zone" configuration field
+     */
+    public static final String Zone = "zone";
+
+    /**
      * ID of the zone
      */
     private int zone;

@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
-    private static final Logger logger = LoggerFactory.getLogger(PercentTypeConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(PercentTypeConverter.class);
 
     /**
      * {@inheritDoc}

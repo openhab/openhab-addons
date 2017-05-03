@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NetworkService {
 
-    private static Logger logger = LoggerFactory.getLogger(NetworkService.class);
+    private Logger logger = LoggerFactory.getLogger(NetworkService.class);
 
     private ScheduledFuture<?> refreshJob;
 
@@ -129,7 +129,7 @@ public class NetworkService {
             try {
                 ReceiveDHCPRequestPackets.register(InetAddress.getByName(hostname).getHostAddress(), stateUpdate);
             } catch (SocketException | UnknownHostException e) {
-                logger.error("Cannot use DHCP listen: " + e.getMessage());
+                logger.error("Cannot use DHCP listen: {}", e.getMessage());
             }
         }
     }

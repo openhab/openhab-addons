@@ -26,7 +26,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -52,7 +51,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
     protected static boolean discoveryRunning = false;
 
     /** The refresh interval for discovery of MAX! Cubes */
-    private final static long SEARCH_INTERVAL = 600;
+    private static final long SEARCH_INTERVAL = 600;
     private ScheduledFuture<?> cubeDiscoveryJob;
     private Runnable cubeDiscoveryRunnable = new Runnable() {
         @Override
@@ -164,12 +163,9 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
             properties.put(MaxBinding.PROPERTY_SERIAL_NUMBER, cubeSerialNumber);
             properties.put(MaxBinding.PROPERTY_RFADDRESS, rfAddress);
             ThingUID uid = new ThingUID(MaxBinding.CUBEBRIDGE_THING_TYPE, cubeSerialNumber);
-            if (uid != null) {
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty(MaxBinding.PROPERTY_SERIAL_NUMBER)
-                        .withThingType(CUBEBRIDGE_THING_TYPE).withLabel("MAX! Cube LAN Gateway").build();
-                thingDiscovered(result);
-            }
+            thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withRepresentationProperty(MaxBinding.PROPERTY_SERIAL_NUMBER).withThingType(CUBEBRIDGE_THING_TYPE)
+                    .withLabel("MAX! Cube LAN Gateway").build());
         }
     }
 
@@ -207,7 +203,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                             } catch (IOException e) {
                                 logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
                             } catch (Exception e) {
-                                logger.info(e.getMessage(), e);
+                                logger.info("{}", e.getMessage(), e);
                             }
                             logger.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
                                     networkInterface.getDisplayName());

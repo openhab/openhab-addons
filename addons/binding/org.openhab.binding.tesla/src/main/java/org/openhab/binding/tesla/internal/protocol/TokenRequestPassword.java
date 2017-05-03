@@ -8,9 +8,11 @@
  */
 package org.openhab.binding.tesla.internal.protocol;
 
+import java.security.GeneralSecurityException;
+
 /**
  * The {@link TokenRequestPassword} is a datastructure to capture
- * authentication/credentials required to log into the 
+ * authentication/credentials required to log into the
  * Tesla Remote Service
  *
  * @author Karel Goderis - Initial contribution
@@ -22,7 +24,7 @@ public class TokenRequestPassword extends TokenRequest {
     private String email;
     private String password;
 
-    public TokenRequestPassword(String email, String password) {
+    public TokenRequestPassword(String email, String password) throws GeneralSecurityException {
         super();
 
         this.email = email;

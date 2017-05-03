@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class MilightV2RGB extends AbstractBulbInterface {
-    protected static final Logger logger = LoggerFactory.getLogger(MilightV2RGB.class);
+    protected final Logger logger = LoggerFactory.getLogger(MilightV2RGB.class);
     protected static final int brLevels = 9;
 
     public MilightV2RGB(QueuedSend sendQueue, int zone) {

@@ -20,7 +20,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public abstract class RFXComBaseMessage implements RFXComMessage {
 
-    public final static String ID_DELIMITER = ".";
+    public static final String ID_DELIMITER = ".";
 
     public enum PacketType {
         INTERFACE_CONTROL(0),

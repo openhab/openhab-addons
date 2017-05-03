@@ -21,6 +21,7 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.toon.config.ToonBridgeConfiguration;
 import org.openhab.binding.toon.internal.api.Agreement;
 import org.openhab.binding.toon.internal.api.ToonConnectionException;
@@ -73,10 +74,10 @@ public class ToonApiClient {
     public void login() throws ToonConnectionException {
         logger.debug("login start");
 
-        if (configuration == null || configuration.username == null || configuration.username.length() == 0) {
+        if (configuration == null || StringUtils.isEmpty(configuration.username)) {
             throw new ToonConnectionException("Username not provided");
         }
-        if (configuration == null || configuration.password == null || configuration.password.length() == 0) {
+        if (StringUtils.isEmpty(configuration.password)) {
             throw new ToonConnectionException("Password not provided");
         }
 
@@ -112,10 +113,11 @@ public class ToonApiClient {
     public List<Agreement> getAgreements() throws ToonConnectionException {
         logger.debug("getAgreements start");
 
-        if (configuration == null || configuration.username == null || configuration.username.length() == 0) {
+        if (configuration == null) {
+            throw new ToonConnectionException("Configuration is missing or corrupted");
+        } else if (StringUtils.isEmpty(configuration.username)) {
             throw new ToonConnectionException("Username not provided");
-        }
-        if (configuration == null || configuration.password == null || configuration.password.length() == 0) {
+        } else if (StringUtils.isEmpty(configuration.password)) {
             throw new ToonConnectionException("Password not provided");
         }
 

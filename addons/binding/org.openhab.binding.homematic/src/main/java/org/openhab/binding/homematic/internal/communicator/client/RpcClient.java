@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public abstract class RpcClient {
-    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    private final Logger logger = LoggerFactory.getLogger(RpcClient.class);
     protected static final int MAX_RPC_RETRY = 1;
 
     protected HomematicConfig config;
@@ -202,7 +202,7 @@ public abstract class RpcClient {
         boolean isHomegear = StringUtils.equalsIgnoreCase(ddParser.getType(), "Homegear");
 
         request = createRpcRequest("listBidcosInterfaces");
-        ListBidcosInterfacesParser biParser = new ListBidcosInterfacesParser(ddParser.getDeviceInterface(), isHomegear);
+        ListBidcosInterfacesParser biParser = new ListBidcosInterfacesParser();
         biParser.parse(sendMessage(config.getRpcPort(HmInterface.RF), request));
 
         HmGatewayInfo gatewayInfo = new HmGatewayInfo();

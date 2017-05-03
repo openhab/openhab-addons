@@ -59,7 +59,7 @@ public class FritzahaWebInterface {
      */
     protected IFritzHandler fbHandler;
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     // Uses RegEx to handle bad FritzBox XML
     /**
      * RegEx Pattern to grab the session ID from a login XML response
@@ -219,10 +219,10 @@ public class FritzahaWebInterface {
         try {
             asyncclient.start();
         } catch (Exception e) {
-            logger.error("Could not start HTTP Client for " + getURL(""));
+            logger.error("Could not start HTTP Client for {}", getURL(""));
         }
         authenticate();
-        logger.debug("Starting with SID " + sid);
+        logger.debug("Starting with SID {}", sid);
     }
 
     /**
@@ -278,7 +278,7 @@ public class FritzahaWebInterface {
         asyncclient.newRequest(this.getURL(path, this.addSID(args))).method(HttpMethod.GET)
                 .onResponseSuccess(getExchange).onResponseFailure(getExchange) // .onComplete(getExchange)
                 .send(getExchange);
-        logger.debug("GETting URL " + getURL(path, addSID(args)));
+        logger.debug("GETting URL {}", getURL(path, addSID(args)));
         return getExchange;
     }
 

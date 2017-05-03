@@ -132,6 +132,10 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     public void currentPlayingTimeEvent(String mac, int time) {
     }
 
+    @Override
+    public void durationEvent(String mac, int duration) {
+    }
+
     /*
      * Monitor for when the playlist is updated
      */

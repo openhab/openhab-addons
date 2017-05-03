@@ -33,7 +33,7 @@ public class OceanicBindingConstants {
     public static final String BINDING_ID = "oceanic";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SOFTENER = new ThingTypeUID(BINDING_ID, "softener");
+    public static final ThingTypeUID THING_TYPE_SOFTENER = new ThingTypeUID(BINDING_ID, "softener");
 
     // List of all Channel ids
     public enum OceanicChannelSelector {
@@ -235,8 +235,6 @@ public class OceanicBindingConstants {
         getSRE("serviceregenerations", DecimalType.class, ValueSelectorType.GET, false),
         getINR("incompleteregenerations", DecimalType.class, ValueSelectorType.GET, false),
         getTOR("allregenerations", DecimalType.class, ValueSelectorType.GET, false);
-
-        static final Logger logger = LoggerFactory.getLogger(OceanicChannelSelector.class);
 
         private final String text;
         private Class<? extends Type> typeClass;

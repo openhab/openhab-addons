@@ -14,7 +14,7 @@ This binding support 6 different things types
 | thermostatplus | Thing | This is for the MAX! Heating Thermostat+. This is the type that can hold the program by itself |
 | wallthermostat | Thing | MAX! Wall Thermostat. |
 | ecoswitch  | Thing | MAX! Ecoswitch. |
-| shuttercontact  | Thing  | MAX! Shuttercontact / Window Contact. |
+| shuttercontact | Thing  | MAX! Shuttercontact / Window Contact. |
 
 Generally one does not have to worry about the thing types as they are automatically defined.
 If for any reason you need to manually define the Things and you are not exactly sure what type of thermostat you have, you can choose `thermostat` for both the thermostat and thermostat+, this will not affect their working.
@@ -45,16 +45,17 @@ Note that several configuration options are automatically populated. Later versi
 Depending on the thing it supports different Channels
 
 
-| Channel Type ID | Item Type    | Description  |
-|------------------|------------------------|--------------|----------------- |------------- |
-| mode | String       | This channel indicates the mode of a thermostat |
-| battery_low | Switch | This channel indicates if the device battery is low |
-| set_temp | Number | This channel indicates the sets temperature of a thermostat. |
-| actual_temp | Number | This channel indicates the measured temperature of a thermostat.  see below for more details|
-| valve | Number | This channel indicates the valve opening in %. Note this is an advaned setting, normally not visible |
-| contact_state | Contact | This channel indicates the contact state for a shutterswitch |
-| free_mem | Number |This channel indicates the free available memory on the cube to hold send commands. Note this is an advanced setting, normally not visible |
-| duty_cycle | Number |  This channel indicates the duty cycle (due to regulatory compliance reasons the cube is allowed only to send for a limited time. Duty cycle indicates how much of the available time is consumed) Note this is an advanced setting, normally not visible. |
+| Channel Type ID | Item Type    | Description  | Available on thing |
+|-------------|--------|-----------------------------|------------------------------------|
+| mode | String | This channel indicates the mode of a thermostat (AUTOMATIC/MANUAL/BOOST/VACATION). | thermostat, thermostatplus, wallthermostat |
+| battery_low | Switch | This channel indicates if the device battery is low. (ON/OFF) | thermostat, thermostatplus, wallthermostat, ecoswitch, shuttercontact |
+| set_temp | Number | This channel indicates the sets temperature (in °C) of a thermostat. | thermostat, thermostatplus, wallthermostat |
+| actual_temp | Number | This channel indicates the measured temperature (in °C) of a thermostat (see below for more details). | thermostat, thermostatplus, wallthermostat |
+| valve | Number | This channel indicates the valve opening in %. Note this is an advaned setting, normally not visible. | thermostat, thermostatplus, wallthermostat |
+| locked | Contact | This channel indocates if the thermostat is locked for adjustments (OPEN/CLOSED). Note this is an advanced setting, normally not visible. | thermostat, thermostatplus, wallthermostat |
+| contact_state | Contact | This channel indicates the contact state for a shutterswitch (OPEN/CLOSED). | shuttercontact |
+| free_mem | Number | This channel indicates the free available memory on the cube to hold send commands. Note this is an advanced setting, normally not visible. | bridge |
+| duty_cycle | Number | This channel indicates the duty cycle (due to regulatory compliance reasons the cube is allowed only to send for a limited time. Duty cycle indicates how much of the available time is consumed) Note this is an advanced setting, normally not visible. | bridge |
 
 
 ## Full Example

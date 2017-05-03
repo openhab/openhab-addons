@@ -39,7 +39,7 @@ import io.swagger.client.model.NAMeasureResponse;
  *
  */
 abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> extends BaseThingHandler {
-    private static Logger logger = LoggerFactory.getLogger(AbstractNetatmoThingHandler.class);
+    private Logger logger = LoggerFactory.getLogger(AbstractNetatmoThingHandler.class);
     private List<Integer> signalThresholds = null;
     protected List<String> measuredChannels = new ArrayList<String>();
     protected NAMeasureResponse measures = null;

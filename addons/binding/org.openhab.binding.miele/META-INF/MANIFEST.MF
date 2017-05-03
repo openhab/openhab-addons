@@ -22,7 +22,8 @@ Import-Package:
  org.eclipse.smarthome.io.transport.mdns.discovery,
  org.openhab.binding.miele.handler,
  org.osgi.framework,
- org.slf4j
+ org.slf4j,
+ org.openhab.binding.miele
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.miele,
  org.openhab.binding.miele.handler
