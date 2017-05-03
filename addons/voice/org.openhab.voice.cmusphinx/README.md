@@ -57,12 +57,12 @@ Note that the final command also includes the keyword you wish to use.
 
 Once everything is ready, configure the extension (using a `cmusphinx.cfg` file in the services folder or with Paper UI):
 
-- **dictionaryPath**: Locale e.g. _en-US_, _fr-FR_, _de-DE_, must match the globally configured locale;
+- **locale**: Locale e.g. _en-US_, _fr-FR_, _de-DE_, must match the globally configured locale;
 - **acousticModelPath**: Location of the folder containing the acoustic model (containing files like `feat.params`, `mdef`, `means`, `mixture_weights` etc.);
 - **dictionaryPath**: Path to the dictionary file;
 - **languageModelPath**: Path to the language model file (leave blank if you use a grammar);
 - **grammarPath**: Path to the _directory_ containing the grammar file;
-- **grammarName**: Name of the grammar file to use without the .gram extension
+- **grammarName**: Name of the grammar file to use without the .gram extension;
 - **startDialog**: If this option is switched on, voice commands will be immediately captured, recognized and interpreted when this extension is activated. Before you turn this option on, ensure you have configured defaults properly, for example in Paper UI. You need to have a default audio source, keyword spotter and speech-to-text services (likely this extension), a human language interpreter, a default text-to-speech service and audio sink (for spoken feedback) and finally a keyword to spot.
 
 
