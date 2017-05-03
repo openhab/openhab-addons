@@ -53,7 +53,7 @@ public class CMUSphinxRunnable implements Runnable {
     private volatile STTListener sttListener;
 
     /**
-     * The STTListener notified of STTEvents
+     * The KSListener notified of KSEvents
      */
     private volatile KSListener ksListener;
 
@@ -70,8 +70,7 @@ public class CMUSphinxRunnable implements Runnable {
     /**
      * Constructs an instance targeting the passed WsDuplexRecognitionSession
      *
-     * @param recognitionSession The WsDuplexRecognitionSession sesion
-     * @param sttListener The STTListener targeted for STTEvents
+     * @param speechRecognizer The StreamSpeechRecognizer from CMU Sphinx
      * @param audioStream The AudioSource data
      */
     public CMUSphinxRunnable(StreamSpeechRecognizer speechRecognizer, AudioStream audioStream) {
@@ -98,7 +97,7 @@ public class CMUSphinxRunnable implements Runnable {
                     // sttListener.sttEventReceived(
                     // new SpeechRecognitionErrorEvent("empty or unknown recognition hypothesis"));
                 } else {
-                    logger.debug(String.format("Hypothesis: %s", hypothesis));
+                    logger.debug("Hypothesis: {}", hypothesis);
 
                     // confidence doesn't seem to work yet
                     // float score = result.getResult().getBestToken().getAcousticScore();
@@ -106,8 +105,7 @@ public class CMUSphinxRunnable implements Runnable {
                     float confidence = 1;
 
                     if (hypothesis.equals(keyword) && this.ksListener != null) {
-                        logger.debug(String
-                                .format(String.format("Keyword recognized: %s, sending to KSListener", hypothesis)));
+                        logger.info("Keyword recognized: {}, speak command now", hypothesis);
 
                         ksListener.ksEventReceived(new KSpottedEvent(new AudioSource() {
                             // KSpottedEvent API inconsistent
@@ -134,10 +132,10 @@ public class CMUSphinxRunnable implements Runnable {
 
                     } else {
                         if (sttListener == null) {
-                            logger.info(String.format(
-                                    "Ignoring CMU Sphinx STT result '%s' because no STTListener attached.",
-                                    hypothesis));
+                            logger.warn("Ignoring CMU Sphinx STT result '{}' because no STTListener attached.",
+                                    hypothesis);
                         } else {
+                            logger.info("Command recognized: {}", hypothesis);
                             sttListener.sttEventReceived(new SpeechRecognitionEvent(hypothesis, confidence));
                         }
                     }
@@ -160,11 +158,7 @@ public class CMUSphinxRunnable implements Runnable {
         }
     }
 
-    public STTListener getSttListener() {
-        return sttListener;
-    }
-
-    public void setSttListener(STTListener sttListener) {
+    public void setSTTListener(STTListener sttListener) {
         if (this.sttListener != null) {
             this.sttListener.sttEventReceived(new RecognitionStopEvent());
         }
@@ -172,11 +166,7 @@ public class CMUSphinxRunnable implements Runnable {
         this.sttListener.sttEventReceived(new RecognitionStartEvent());
     }
 
-    public KSListener getKsListener() {
-        return ksListener;
-    }
-
-    public void setKsListener(KSListener ksListener) {
+    public void setKSListener(KSListener ksListener) {
         this.ksListener = ksListener;
         // this is to work around a logic flaw in the DialogProcessor
         if (this.ksListener instanceof STTListener) {

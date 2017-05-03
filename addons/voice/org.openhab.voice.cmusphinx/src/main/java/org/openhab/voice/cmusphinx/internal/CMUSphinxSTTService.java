@@ -131,13 +131,16 @@ public class CMUSphinxSTTService implements STTService, KSService {
         }
 
         CMUSphinxRunnable runnable = getRunnable(audioStream);
-        runnable.setSttListener(sttListener);
+        runnable.setSTTListener(sttListener);
 
         // Return STTServiceHandleCMUSphinx
         return new STTServiceHandleCMUSphinx(runnable);
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public KSServiceHandle spot(KSListener ksListener, AudioStream audioStream, Locale locale, String keyword)
             throws KSException {
@@ -167,7 +170,7 @@ public class CMUSphinxSTTService implements STTService, KSService {
         }
 
         CMUSphinxRunnable runnable = getRunnable(audioStream);
-        runnable.setKsListener(ksListener);
+        runnable.setKSListener(ksListener);
         runnable.setKeyword(keyword);
 
         // Return STTServiceHandleCMUSphinx

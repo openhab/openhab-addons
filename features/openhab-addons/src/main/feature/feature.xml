@@ -428,6 +428,10 @@
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.kaldi/${project.version}</bundle>
     </feature>
 -->
+    <feature name="openhab-voice-cmusphinx" description="CMU Sphinx Speech-to-Text" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.cmusphinx/${project.version}</bundle>
+    </feature>
 
     <feature name="openhab-voice-marytts" description="Mary Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
