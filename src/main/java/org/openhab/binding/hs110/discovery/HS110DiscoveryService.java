@@ -84,9 +84,12 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
         super.stopScan();
     }
 
+    private DatagramSocket datagramSocket;
+
     private void discoverThings() {
         if (scanFuture == null) {
-            try (DatagramSocket datagramSocket = new DatagramSocket(null)) {
+            try {
+                datagramSocket = new DatagramSocket(null);
                 datagramSocket.setBroadcast(true);
                 datagramSocket.send(discoverPacket);
 
