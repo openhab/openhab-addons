@@ -61,10 +61,11 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
                         info.getName(), label, Arrays.toString(addrs));
             }
 
+            Long defaultRefreshinterval = (long) 5000;
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_HOST, addrs[0].getHostAddress());
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_USER, "");
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_PASSWORD, "");
-            properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH, "5000");
+            properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH, defaultRefreshinterval);
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
         }
         return result;

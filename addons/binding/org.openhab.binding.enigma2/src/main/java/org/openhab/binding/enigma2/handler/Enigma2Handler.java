@@ -11,20 +11,29 @@ import static org.openhab.binding.enigma2.Enigma2BindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingFactory;
+import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.enigma2.internal.Enigma2CommandExecutor;
 import org.openhab.binding.enigma2.internal.Enigma2CommandExecutorListener;
-import org.openhab.binding.enigma2.internal.Enigma2Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,43 +58,112 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     @Override
     public void initialize() {
         stateMap = new HashMap<>();
-        commandExecutor = new Enigma2CommandExecutor(
-                Enigma2Util.createUserPasswordHostnamePrefix(getHostName(), getUserName(), getPassword()));
+        commandExecutor = new Enigma2CommandExecutor(this);
 
         refresher = new Enigma2Refresher();
         refresher.addListener(this);
-        refresher.start();
+
+        scheduler.scheduleWithFixedDelay(refresher, 60000, getRefreshInterval(), TimeUnit.MILLISECONDS);
 
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand() called, channelUID={}, command={}", channelUID, command);
-        if (command instanceof RefreshType) {
-            // getUpdate();
-        } else {
-            if (channelUID.equals(thing.getChannel(CHANNEL_POWER).getUID())) {
-                commandExecutor.setPowerState(command);
-            } else if (channelUID.equals(thing.getChannel(CHANNEL_VOLUME).getUID())) {
-                commandExecutor.setVolume(command);
-            } else if (channelUID.equals(thing.getChannel(CHANNEL_CHANNEL).getUID())) {
-                commandExecutor.setChannel(command);
-                refresher.callListener();
-            } else if (channelUID.equals(thing.getChannel(CHANNEL_MUTE).getUID())) {
-                commandExecutor.setMute(command);
-            } else if (channelUID.equals(thing.getChannel(CHANNEL_PLAYER_CONTROL).getUID())) {
-                commandExecutor.setPlayControl(command);
-            } else if (channelUID.equals(thing.getChannel(CHANNEL_REMOTE_KEY).getUID())) {
-                commandExecutor.sendRemoteKey(command);
-            } else if (channelUID.equals(thing.getChannel(CHANNEL_SEND_MESSAGE).getUID())) {
-                commandExecutor.sendMessage(command);
-            } else if (channelUID.equals(thing.getChannel(CHANNEL_SEND_WARNING).getUID())) {
-                commandExecutor.sendWarning(command);
-            } else if (channelUID.equals(thing.getChannel(CHANNEL_SEND_QUESTION).getUID())) {
-                commandExecutor.sendQuestion(command);
-            }
+        logger.debug("handleCommand({}, {});", channelUID, command);
+        switch (channelUID.getIdWithoutGroup()) {
+            case CHANNEL_POWER:
+                if (command instanceof OnOffType) {
+                    commandExecutor.setPowerState((OnOffType) command);
+                } else if (command instanceof RefreshType) {
+                    updateState(getChannelUID(CHANNEL_POWER), commandExecutor.getPowerState());
+                } else {
+                    logger.warn("Invalid command type: {}: {}", command.getClass(), command);
+                }
+                break;
+            case CHANNEL_VOLUME:
+                if (command instanceof PercentType) {
+                    commandExecutor.setVolume((PercentType) command);
+                } else if (command instanceof PercentType) {
+                    commandExecutor.setVolume((IncreaseDecreaseType) command);
+                } else if (command instanceof RefreshType) {
+                    updateState(getChannelUID(CHANNEL_VOLUME), commandExecutor.getVolumeState());
+                } else {
+                    logger.warn("Invalid command type: {}: {}", command.getClass(), command);
+                }
+                break;
+            case CHANNEL_MUTE:
+                if (command instanceof OnOffType) {
+                    commandExecutor.setMute((OnOffType) command);
+                } else if (command instanceof RefreshType) {
+                    updateState(getChannelUID(CHANNEL_MUTE), commandExecutor.getMutedState());
+                } else {
+                    logger.warn("Invalid command type: {}: {}", command.getClass(), command);
+                }
+                break;
+            case CHANNEL_CHANNEL:
+                if (command instanceof StringType) {
+                    commandExecutor.setChannel((StringType) command);
+                } else if (command instanceof RefreshType) {
+                    updateState(getChannelUID(CHANNEL_CHANNEL), commandExecutor.getChannelState());
+                } else {
+                    logger.warn("Invalid command type: {}: {}", command.getClass(), command);
+                }
+                break;
+            case CHANNEL_PLAYER_CONTROL:
+                if (command instanceof StringType) {
+                    String cmd = command.toString();
+                    if (cmd.equals("PLAY")) {
+                        command = PlayPauseType.PLAY;
+                    } else if (cmd.equals("PAUSE")) {
+                        command = PlayPauseType.PAUSE;
+                    } else if (cmd.equals("NEXT")) {
+                        command = NextPreviousType.NEXT;
+                    } else if (cmd.equals("PREVIOUS")) {
+                        command = NextPreviousType.PREVIOUS;
+                    }
+                }
+                if (command instanceof PlayPauseType) {
+                    commandExecutor.setPlayControl((PlayPauseType) command);
+                } else if (command instanceof NextPreviousType) {
+                    commandExecutor.setPlayControl((NextPreviousType) command);
+                } else {
+                    logger.warn("Invalid command type: {}: {}", command.getClass(), command);
+                }
+                break;
+            case CHANNEL_REMOTE_KEY:
+                if (command instanceof DecimalType) {
+                    commandExecutor.sendRemoteKey((DecimalType) command);
+                } else {
+                    logger.warn("Invalid command type: {}: {}", command.getClass(), command);
+                }
+                break;
+            case CHANNEL_SEND_MESSAGE:
+                if (command instanceof StringType) {
+                    commandExecutor.sendMessage((StringType) command);
+                } else {
+                    logger.warn("Invalid command type: {}: {}", command.getClass(), command);
+                }
+                break;
+            case CHANNEL_SEND_WARNING:
+                if (command instanceof StringType) {
+                    commandExecutor.sendWarning((StringType) command);
+                } else {
+                    logger.warn("Invalid command type: {}: {}", command.getClass(), command);
+                }
+                break;
+            case CHANNEL_SEND_QUESTION:
+                if (command instanceof StringType) {
+                    commandExecutor.sendQuestion((StringType) command);
+                } else {
+                    logger.warn("Invalid command type: {}: {}", command.getClass(), command);
+                }
+                break;
+            default:
+                logger.warn("{} : Got command '{}' for channel '{}' which is unhandled!", command, channelUID.getId());
+                break;
         }
+
     }
 
     @Override
@@ -158,21 +236,38 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         return (String) thing.getConfiguration().get(DEVICE_PARAMETER_HOST);
     }
 
-    public int getRefreshInterval() {
-        int returnVal;
-        try {
-            returnVal = Integer.parseInt((String) thing.getConfiguration().get(DEVICE_PARAMETER_REFRESH));
-        } catch (Exception e) {
-            returnVal = 5000;
-        }
-        return returnVal;
+    public long getRefreshInterval() {
+        return (Long) thing.getConfiguration().get(DEVICE_PARAMETER_REFRESH);
     }
 
-    private class Enigma2Refresher extends Thread {
-        private ArrayList<Enigma2CommandExecutorListener> listOfListener;
+    public void setOffline() {
+        updateStatus(ThingStatus.OFFLINE);
+    }
+
+    /**
+     * Returns the ChannelUID of a channelId String
+     *
+     * @param channelId the channelId is a String representing the channel
+     *
+     * @return the ChannelUID of a channelId String
+     */
+    private ChannelUID getChannelUID(String channelId) {
+        Channel chann = getThing().getChannel(channelId);
+        if (chann == null) {
+            // refresh thing...
+            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(getThing().getThingTypeUID()),
+                    getThing().getUID(), getThing().getConfiguration());
+            updateThing(newThing);
+            chann = getThing().getChannel(channelId);
+        }
+        return chann.getUID();
+    }
+
+    private class Enigma2Refresher implements Runnable {
+        private List<Enigma2CommandExecutorListener> listOfListener;
 
         public Enigma2Refresher() {
-            listOfListener = new ArrayList<Enigma2CommandExecutorListener>();
+            listOfListener = new ArrayList<>();
         }
 
         public void removeListener(Enigma2CommandExecutorListener listener) {
@@ -189,27 +284,14 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         }
 
         public void callListener() {
-            for (int i = 0; i < listOfListener.size(); i++) {
-                listOfListener.get(i).getUpdate();
+            for (Enigma2CommandExecutorListener curListener : listOfListener) {
+                curListener.getUpdate();
             }
         }
 
         @Override
         public void run() {
-            // Wait for init finished
-            try {
-                Thread.sleep(60000);
-            } catch (InterruptedException e) {
-                logger.error(thing + ": Error during refresh channels: {}", e);
-            }
-            while (true) {
-                callListener();
-                try {
-                    Thread.sleep(getRefreshInterval());
-                } catch (InterruptedException e) {
-                    logger.error(thing + ": Error during refresh channels: {}", e);
-                }
-            }
+            callListener();
         }
     }
 }

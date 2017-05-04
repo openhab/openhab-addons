@@ -1,9 +1,8 @@
-# openHAB2 binding for an Enigma2 device
+# openHAB binding for an Enigma2 device
 
-This is the openHAB2 binding for an Enigma2 device
-Here you can find a precompiled [Binding](https://github.com/tratho/org.openhab.binding.enigma2-dist)
+This is the openHAB binding for an Enigma2 device
 
-After installing the binding into the your openHAB2 distribution, you can start discovering your devices through the PaperUI GUI (btw: see discovery hints on the bottom of this document).
+After installing the binding into the your openHAB distribution, you can start discovering your devices through the PaperUI GUI (btw: see discovery hints on the bottom of this document).
 
 After discovering and configuring the device through the web GUI you may use it. To access them, the 'classical openHAB1 way', trough the items / sitemaps / rules way. Here a few samples for the configuration:
 
@@ -55,6 +54,7 @@ If you need support or have new ideas please use the [openHAB cummunity](https:/
 #### Known issues and Workarounds
 
 ##### Discovery
+
 At the moment not really stable
 Devices that should be found are
 -optimuss

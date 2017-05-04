@@ -16,9 +16,11 @@ import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.enigma2.handler.Enigma2Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -52,8 +54,10 @@ public class Enigma2CommandExecutor {
     private Enigma2ServiceContainer serviceContainer;
     private String deviceURL;
 
-    public Enigma2CommandExecutor(String deviceURL) {
-        this.deviceURL = deviceURL;
+    private Enigma2Handler handler;
+
+    public Enigma2CommandExecutor(Enigma2Handler handler) {
+        this.handler = handler;
         this.initialize();
     }
 
@@ -62,43 +66,42 @@ public class Enigma2CommandExecutor {
      *
      * @param command, OnOffType
      */
-    public void setPowerState(Command command) {
-        if (command instanceof OnOffType) {
-            String url = deviceURL + SUFFIX_TOGGLE_POWERSTATE;
-            try {
-                OnOffType currentState = (OnOffType) getPowerState();
-                OnOffType newState = (OnOffType) command;
-                if (currentState != newState) {
-                    Enigma2Util.executeUrl(url);
-                }
-            } catch (IOException e) {
-                logger.error("Error during send Command: {}", e);
+    public void setPowerState(OnOffType command) {
+        String url = deviceURL + SUFFIX_TOGGLE_POWERSTATE;
+        try {
+            OnOffType currentState = (OnOffType) getPowerState();
+            OnOffType newState = command;
+            if (currentState != newState) {
+                Enigma2Util.executeUrl(url);
             }
-        } else {
-            logger.error("Unsupported command type: {}", command.getClass().getName());
+        } catch (IOException e) {
+            logger.warn("Error during send Command");
         }
     }
 
     /**
      * Sets the volume
      *
-     * @param command, IncreaseDecreaseType or DecimalType
+     * @param command, PercentType
      */
-    public void setVolume(Command command) {
-        if (command instanceof IncreaseDecreaseType) {
-            sendRcCommand(((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE ? Enigma2RemoteKey.VOLUME_UP
-                    : Enigma2RemoteKey.VOLUME_DOWN);
-        } else if (command instanceof DecimalType) {
-            int value = ((DecimalType) command).intValue();
-            try {
-                String url = deviceURL + SUFFIX_SET_VOLUME + value;
-                Enigma2Util.executeUrl(url);
-            } catch (IOException e) {
-                logger.error("Error during send Command: {}", e);
-            }
-        } else {
-            logger.error("Unsupported command type");
+    public void setVolume(PercentType command) {
+        int value = ((DecimalType) command).intValue();
+        try {
+            String url = deviceURL + SUFFIX_SET_VOLUME + value;
+            Enigma2Util.executeUrl(url);
+        } catch (IOException e) {
+            logger.warn("Error during send Command");
         }
+    }
+
+    /**
+     * Sets the volume
+     *
+     * @param command, IncreaseDecreaseType
+     */
+    public void setVolume(IncreaseDecreaseType command) {
+        sendRcCommand(
+                (command) == IncreaseDecreaseType.INCREASE ? Enigma2RemoteKey.VOLUME_UP : Enigma2RemoteKey.VOLUME_DOWN);
     }
 
     /**
@@ -106,47 +109,42 @@ public class Enigma2CommandExecutor {
      *
      * @param command, OnOffType
      */
-    public void setMute(Command command) {
-        if (command instanceof OnOffType) {
-            OnOffType currentState = (OnOffType) getMutedState();
-            OnOffType newState = (OnOffType) command;
-            if (currentState != newState) {
-                sendRcCommand(Enigma2RemoteKey.MUTE);
-            }
-        } else {
-            logger.error("Unsupported command type: {}", command.getClass().getName());
+    public void setMute(OnOffType command) {
+        OnOffType currentState = (OnOffType) getMutedState();
+        OnOffType newState = command;
+        if (currentState != newState) {
+            sendRcCommand(Enigma2RemoteKey.MUTE);
         }
     }
 
     /**
      * Sets PlayControl
      *
-     * @param command, NextPreviousType or StringType
+     * @param command, PlayPauseType
      */
-    public void setPlayControl(Command command) {
-        if (command instanceof NextPreviousType) {
-            NextPreviousType type = (NextPreviousType) command;
-            if (type == NextPreviousType.NEXT) {
-                sendRcCommand(Enigma2RemoteKey.CHANNEL_UP);
-            }
-            if (type == NextPreviousType.PREVIOUS) {
-                sendRcCommand(Enigma2RemoteKey.CHANNEL_DOWN);
-            }
-        } else if (command instanceof StringType) {
-            String cmd = command.toString();
-            if (cmd.equals("NEXT")) {
-                sendRcCommand(Enigma2RemoteKey.CHANNEL_UP);
-            } else if (cmd.equals("PREVIOUS")) {
-                sendRcCommand(Enigma2RemoteKey.CHANNEL_DOWN);
-            } else if (cmd.equals("0")) {
-                sendRcCommand(Enigma2RemoteKey.KEY0);
-            } else {
-                logger.warn("Invalid command type: " + command.getClass() + ": " + command);
-            }
-        } else {
-            logger.warn("Invalid command type: " + command.getClass() + ": " + command);
+    public void setPlayControl(PlayPauseType command) {
+        PlayPauseType type = command;
+        if (type == PlayPauseType.PLAY) {
+            sendRcCommand(Enigma2RemoteKey.PLAY);
         }
-        command = null;
+        if (type == PlayPauseType.PAUSE) {
+            sendRcCommand(Enigma2RemoteKey.PAUSE);
+        }
+    }
+
+    /**
+     * Sets PlayControl
+     *
+     * @param command, NextPreviousType
+     */
+    public void setPlayControl(NextPreviousType command) {
+        NextPreviousType type = command;
+        if (type == NextPreviousType.NEXT) {
+            sendRcCommand(Enigma2RemoteKey.CHANNEL_UP);
+        }
+        if (type == NextPreviousType.PREVIOUS) {
+            sendRcCommand(Enigma2RemoteKey.CHANNEL_DOWN);
+        }
     }
 
     /**
@@ -154,21 +152,17 @@ public class Enigma2CommandExecutor {
      *
      * @param command, StringType
      */
-    public void setChannel(Command command) {
-        if (command instanceof StringType) {
-            String servicereference = serviceContainer.get(command.toString());
-            if ((servicereference == null) || (servicereference.length() == 0)) {
-                logger.error("Can not find Channel {}", command.toString());
-            } else {
-                try {
-                    String url = deviceURL + SUFFIX_ZAP + servicereference;
-                    Enigma2Util.executeUrl(url);
-                } catch (IOException e) {
-                    logger.error("Error during send Command: {}", e);
-                }
-            }
+    public void setChannel(StringType command) {
+        String servicereference = serviceContainer.get(command.toString());
+        if ((servicereference == null) || (servicereference.length() == 0)) {
+            logger.warn("Can not find Channel {}", command.toString());
         } else {
-            logger.error("Unsupported command type: {}", command.getClass().getName());
+            try {
+                String url = deviceURL + SUFFIX_ZAP + servicereference;
+                Enigma2Util.executeUrl(url);
+            } catch (IOException e) {
+                logger.warn("Error during send Command");
+            }
         }
     }
 
@@ -177,17 +171,8 @@ public class Enigma2CommandExecutor {
      *
      * @param command, StringType
      */
-    public void sendRemoteKey(Command command) {
-        if (command instanceof StringType) {
-            try {
-                int key = Integer.parseInt(command.toString());
-                sendRcCommand(key);
-            } catch (Exception e) {
-                logger.error("Error during send Command: {}", e);
-            }
-        } else {
-            logger.error("Unsupported command type: {}", command.getClass().getName());
-        }
+    public void sendRemoteKey(DecimalType command) {
+        sendRcCommand(command.intValue());
     }
 
     /**
@@ -195,14 +180,12 @@ public class Enigma2CommandExecutor {
      *
      * @param command, StringType
      */
-    public void sendMessage(Command command) {
-        if (command instanceof StringType) {
-            try {
-                String url = deviceURL + SUFFIX_MESSAGE + command.toString();
-                Enigma2Util.executeUrl(url);
-            } catch (IOException e) {
-                logger.error("Error during send Command: {}", e);
-            }
+    public void sendMessage(StringType command) {
+        try {
+            String url = deviceURL + SUFFIX_MESSAGE + command.toString();
+            Enigma2Util.executeUrl(url);
+        } catch (IOException e) {
+            logger.warn("Error during send Command");
         }
     }
 
@@ -211,14 +194,12 @@ public class Enigma2CommandExecutor {
      *
      * @param command, StringType
      */
-    public void sendWarning(Command command) {
-        if (command instanceof StringType) {
-            try {
-                String url = deviceURL + SUFFIX_WARNING + command.toString();
-                Enigma2Util.executeUrl(url);
-            } catch (IOException e) {
-                logger.error("Error during send Command: {}", e);
-            }
+    public void sendWarning(StringType command) {
+        try {
+            String url = deviceURL + SUFFIX_WARNING + command.toString();
+            Enigma2Util.executeUrl(url);
+        } catch (IOException e) {
+            logger.warn("Error during send Command");
         }
     }
 
@@ -227,14 +208,12 @@ public class Enigma2CommandExecutor {
      *
      * @param command, StringType
      */
-    public void sendQuestion(Command command) {
-        if (command instanceof StringType) {
-            try {
-                String url = deviceURL + SUFFIX_QUESTION + command.toString();
-                Enigma2Util.executeUrl(url);
-            } catch (IOException e) {
-                logger.error("Error during send Command: {}", e);
-            }
+    public void sendQuestion(StringType command) {
+        try {
+            String url = deviceURL + SUFFIX_QUESTION + command.toString();
+            Enigma2Util.executeUrl(url);
+        } catch (IOException e) {
+            logger.warn("Error during send Command");
         }
     }
 
@@ -251,7 +230,7 @@ public class Enigma2CommandExecutor {
             State returnState = content.contains("true") ? OnOffType.OFF : OnOffType.ON;
             return returnState;
         } catch (IOException e) {
-            return null;
+            return UnDefType.UNDEF;
         }
     }
 
@@ -268,7 +247,7 @@ public class Enigma2CommandExecutor {
             State returnState = new PercentType(content);
             return returnState;
         } catch (IOException e) {
-            return null;
+            return UnDefType.UNDEF;
         }
     }
 
@@ -286,7 +265,7 @@ public class Enigma2CommandExecutor {
             State returnState = new StringType(content);
             return returnState;
         } catch (IOException e) {
-            return null;
+            return UnDefType.UNDEF;
         }
     }
 
@@ -309,7 +288,7 @@ public class Enigma2CommandExecutor {
             }
             return returnState;
         } catch (IOException e) {
-            return null;
+            return UnDefType.UNDEF;
         }
     }
 
@@ -326,7 +305,7 @@ public class Enigma2CommandExecutor {
             State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
             return returnState;
         } catch (IOException e) {
-            return null;
+            return UnDefType.UNDEF;
         }
     }
 
@@ -346,7 +325,7 @@ public class Enigma2CommandExecutor {
             }
             return returnState;
         } catch (IOException e) {
-            return new StringType("-");
+            return UnDefType.UNDEF;
         }
     }
 
@@ -366,7 +345,7 @@ public class Enigma2CommandExecutor {
             }
             return returnState;
         } catch (IOException e) {
-            return new StringType("-");
+            return UnDefType.UNDEF;
         }
     }
 
@@ -386,15 +365,18 @@ public class Enigma2CommandExecutor {
             }
             return returnState;
         } catch (IOException e) {
-            return new StringType("-");
+            return UnDefType.UNDEF;
         }
     }
 
     private void initialize() {
+        this.deviceURL = Enigma2Util.createUserPasswordHostnamePrefix(handler.getHostName(), handler.getUserName(),
+                handler.getPassword());
         try {
             serviceContainer = Enigma2Util.generateServiceMaps(deviceURL);
         } catch (IOException | ParserConfigurationException | SAXException e) {
-            logger.error("Error during initialization: {}", e);
+            logger.error("Error during initialization");
+            handler.setOffline();
         }
     }
 

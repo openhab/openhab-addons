@@ -23,31 +23,31 @@ public class Enigma2BindingConstants {
     public static final String BINDING_ID = "enigma2";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // all thing types
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
             Arrays.asList(THING_TYPE_DEVICE));
 
     // List of all Channel ids
-    public final static String CHANNEL_POWER = "power";
-    public final static String CHANNEL_VOLUME = "volume";
-    public final static String CHANNEL_MUTE = "mute";
-    public final static String CHANNEL_PLAYER_CONTROL = "playerControl";
-    public final static String CHANNEL_CHANNEL = "channel";
-    public final static String CHANNEL_REMOTE_KEY = "remoteKey";
-    public final static String CHANNEL_SEND_MESSAGE = "sendMessage";
-    public final static String CHANNEL_SEND_WARNING = "sendWarning";
-    public final static String CHANNEL_SEND_QUESTION = "sendQuestion";
-    public final static String CHANNEL_GET_ANSWER = "getAnswer";
+    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_MUTE = "mute";
+    public static final String CHANNEL_PLAYER_CONTROL = "playerControl";
+    public static final String CHANNEL_CHANNEL = "channel";
+    public static final String CHANNEL_REMOTE_KEY = "remoteKey";
+    public static final String CHANNEL_SEND_MESSAGE = "sendMessage";
+    public static final String CHANNEL_SEND_WARNING = "sendWarning";
+    public static final String CHANNEL_SEND_QUESTION = "sendQuestion";
+    public static final String CHANNEL_GET_ANSWER = "getAnswer";
 
-    public final static String CHANNEL_NOW_PLAYING_TITLE = "nowPlayingTitle";
-    public final static String CHANNEL_NOW_PLAYING_DESCRIPTION = "nowPlayingDescription";
-    public final static String CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED = "nowPlayingDescriptionExtended";
+    public static final String CHANNEL_NOW_PLAYING_TITLE = "nowPlayingTitle";
+    public static final String CHANNEL_NOW_PLAYING_DESCRIPTION = "nowPlayingDescription";
+    public static final String CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED = "nowPlayingDescriptionExtended";
 
-    public final static String DEVICE_PARAMETER_HOST = "DEVICE_HOST";
+    public static final String DEVICE_PARAMETER_HOST = "DEVICE_HOST";
 
-    public final static String DEVICE_PARAMETER_USER = "USER";
-    public final static String DEVICE_PARAMETER_PASSWORD = "PASSWORD";
-    public final static String DEVICE_PARAMETER_REFRESH = "REFRESH";
+    public static final String DEVICE_PARAMETER_USER = "USER";
+    public static final String DEVICE_PARAMETER_PASSWORD = "PASSWORD";
+    public static final String DEVICE_PARAMETER_REFRESH = "REFRESH";
 }
