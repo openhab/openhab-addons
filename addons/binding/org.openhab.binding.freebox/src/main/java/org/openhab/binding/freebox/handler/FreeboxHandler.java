@@ -92,7 +92,8 @@ public class FreeboxHandler extends BaseBridgeHandler {
         if (command == null || command instanceof RefreshType) {
             return;
         }
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
+        if ((getThing().getStatus() == ThingStatus.OFFLINE)
+                && (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR)) {
             return;
         }
         try {
@@ -133,8 +134,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     break;
             }
         } catch (FreeboxException e) {
-            logger.warn("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
+            logger.debug("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
                     channelUID.getId(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -190,7 +192,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             loginManager.openSession();
             return true;
         } catch (Exception e) {
-            logger.warn("Thing {}: error while opening a session", getThing().getUID(), e);
+            logger.debug("Thing {}: error while opening a session", getThing().getUID(), e);
             return false;
         }
     }
@@ -276,7 +278,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             }
 
             if (errorMsg != null) {
-                logger.info("Thing {}: bad configuration: {}", getThing().getUID(), errorMsg);
+                logger.debug("Thing {}: bad configuration: {}", getThing().getUID(), errorMsg);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
             } else if (!authorize(useHttps, fqdn, apiBaseUrl, apiVersion)) {
                 if (StringUtils.isEmpty(configuration.appToken)) {
@@ -285,7 +287,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     errorMsg = "Check your app token in the thing configuration; opening session with " + fqdn
                             + " using " + (useHttps ? "HTTPS" : "HTTP") + " API version " + apiVersion + " failed";
                 }
-                logger.info("Thing {}: {}", getThing().getUID(), errorMsg);
+                logger.debug("Thing {}: {}", getThing().getUID(), errorMsg);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
             } else {
                 logger.info("Thing {}: session opened with {} using {} API version {}", getThing().getUID(), fqdn,

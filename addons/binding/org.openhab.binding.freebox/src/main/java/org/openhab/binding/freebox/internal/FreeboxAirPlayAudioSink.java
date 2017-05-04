@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.util.ThingHandlerHelper;
 import org.openhab.binding.freebox.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.handler.FreeboxThingHandler;
@@ -31,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes a AirPlay device to serve as an {@link AudioSink}-
+ * This makes an AirPlay device to serve as an {@link AudioSink}-
  *
  * @author Laurent Garnier - Initial contribution for AudioSink and notifications
  */
@@ -90,7 +91,10 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
     @Override
     public void process(AudioStream audioStream) throws UnsupportedAudioFormatException {
         if (!ThingHandlerHelper.isHandlerInitialized(handler)
-                || (handler.getThing().getStatus() != ThingStatus.ONLINE)) {
+                || ((handler.getThing().getStatus() == ThingStatus.OFFLINE)
+                        && ((handler.getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE)
+                                || (handler.getThing().getStatusInfo()
+                                        .getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR)))) {
             return;
         }
 
@@ -121,7 +125,7 @@ public class FreeboxAirPlayAudioSink implements AudioSink {
             logger.debug("AirPlay audio sink: process url {}", url);
             handler.playMedia(url);
         } catch (Exception e) {
-            logger.warn("Audio stream playback failed", e);
+            logger.warn("Audio stream playback failed: {}", e.getMessage());
         }
     }
 

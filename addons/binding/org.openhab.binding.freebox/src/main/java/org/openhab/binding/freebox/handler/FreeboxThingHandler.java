@@ -74,7 +74,9 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
+        if ((getThing().getStatus() == ThingStatus.OFFLINE)
+                && ((getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE)
+                        || (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR))) {
             return;
         }
         try {
@@ -89,8 +91,9 @@ public class FreeboxThingHandler extends BaseThingHandler {
                         channelUID.getId());
             }
         } catch (FreeboxException e) {
-            logger.warn("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
+            logger.debug("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
                     channelUID.getId(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
