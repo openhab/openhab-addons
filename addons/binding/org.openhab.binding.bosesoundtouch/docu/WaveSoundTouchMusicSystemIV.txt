@@ -1,0 +1,7 @@
+<info deviceID="XXXXXXXXXXXX">
+<type>...</type>
+</info>
+
+<sources deviceID="XXXXXXXXXXXX">
+<sourceItem>...</sourceItem>
+</sources>
