@@ -120,8 +120,8 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
                     }
                 }, 0, RECEIVE_JOB_TIMEOUT, TimeUnit.MICROSECONDS);
 
-            } catch (Throwable ex) {
-                logger.error("Error starting discovery", ex);
+            } catch (IOException e) {
+                logger.error("Error starting discovery", e);
             } finally {
                 scanFuture = null;
                 removeOlderResults(getTimestampOfLastScan());
