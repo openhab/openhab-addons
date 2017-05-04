@@ -3,11 +3,9 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-
 	<thing-type id="HS100">
 		<label>HS100 Binding Thing</label>
-		<description>Sample thing for HS100 Binding</description>
+		<description>Definition for TP-Link HS100 Wifi Power Plug</description>
 		<channels>
 			<channel id="switch" typeId="switch-channel" />
 			<channel id="sysinfo" typeId="sysinfo-channel" />
@@ -26,10 +24,11 @@
 
 	<thing-type id="HS110">
 		<label>HS110 Binding Thing</label>
-		<description>Sample thing for HS110 Binding</description>
+        <description>Definition for TP-Link HS110 Wifi Power Plug</description>
 		<channels>
 			<channel id="switch" typeId="switch-channel" />
-			<channel id="wattage" typeId="wattage-channel" />
+            <channel id="wattage" typeId="wattage-channel" />
+            <channel id="total" typeId="total-channel" />
 			<channel id="sysinfo" typeId="sysinfo-channel" />
 		</channels>
 		<config-description>
@@ -55,6 +54,11 @@
 		<item-type>Number</item-type>
 		<label>Wattage</label>
 		<description>Wattage of Plug</description>
+	</channel-type>
+	<channel-type id="total-channel">
+		<item-type>Number</item-type>
+		<label>Total power in kWh</label>
+		<description>Total power used</description>
 	</channel-type>
 	<channel-type id="sysinfo-channel">
 		<item-type>String</item-type>

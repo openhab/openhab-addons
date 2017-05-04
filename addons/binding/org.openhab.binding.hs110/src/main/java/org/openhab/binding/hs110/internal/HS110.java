@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.hs110.internal;
 
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
@@ -19,14 +26,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * TP-Link HS100
  *
- * @author Insxnity
- * @copyright Copyright (c) 2016, Insxnity Development
+ * The {@link HS110} acts as a protocol parser and interface to the physical device
+ *
+ * @author Christian Fischer - Initial contribution
  */
 public class HS110 {
 
-    private Logger log = LoggerFactory.getLogger(HS110.class);
+    private Logger logger = LoggerFactory.getLogger(HS110.class);
+
+    private static final int HS100_PORT = 9999;
 
     public enum Command {
         SWITCH_ON("{\"system\":{\"set_relay_state\":{\"state\":1}}}}"),
@@ -103,7 +112,7 @@ public class HS110 {
     }
 
     /* Energy related parsing */
-    public static JsonObject parseEnergyObject(String data) {
+    private static JsonObject parseEnergyObject(String data) {
         return new JsonParser().parse(data).getAsJsonObject().getAsJsonObject("emeter").getAsJsonObject("get_realtime");
     }
 
@@ -111,11 +120,15 @@ public class HS110 {
         return parseEnergyObject(data).get("power").getAsBigDecimal();
     }
 
+    public static BigDecimal parseTotal(String data) {
+        return parseEnergyObject(data).get("total").getAsBigDecimal();
+    }
+
     public String sendCommand(Command command) throws IOException, ConnectException {
 
-        log.debug("Executing command {}", command.value);
+        logger.debug("Executing command {}", command.value);
 
-        Socket socket = new Socket(ip, 9999);
+        Socket socket = new Socket(ip, HS100_PORT);
         OutputStream outputStream = socket.getOutputStream();
         outputStream.write(encryptWithHeader(command.value));
 
@@ -126,7 +139,7 @@ public class HS110 {
         inputStream.close();
         socket.close();
 
-        log.trace("Received answer {}", data);
+        logger.trace("Received answer {}", data);
 
         return data;
     }

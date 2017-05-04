@@ -31,10 +31,17 @@ Currently not, but if using the same communication protocol it should be easy to
 
 # Development
 
+## Building / Testing
+
+Make sure you have all requirements met for [developing openhab2-addons](http://docs.openhab.org/developers/development/bindings.html).
+
+* Use maven to build a package  `mvn clean package`
+* Copy the resulting `.jar` from `target/` to your openhab-`addons/` directory.
+
 ## Release Cycle
 
 Include the Project into openhab2-addons using
-`git subtree pull https://github.com/computerlyrik/openhab2-addon-hs110 --prefix addons/binding/org.openhab.binding.hs110 master` 
+`git subtree pull --squash --prefix addons/binding/org.openhab.binding.hs110 https://github.com/computerlyrik/openhab2-addon-hs110  master` 
 
 ## Authors
 

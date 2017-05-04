@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,14 +43,15 @@ import org.slf4j.LoggerFactory;
  */
 public class HS110Handler extends ConfigStatusThingHandler {
 
-    private Logger log = LoggerFactory.getLogger(HS110Handler.class);
+    private Logger logger = LoggerFactory.getLogger(HS110Handler.class);
 
-    HS110 plug;
-    BigDecimal refresh;
-    ScheduledFuture<?> refreshJob;
+    private HS110 plug;
+    private static final int REFRESH_DEFAULT = 5;
+    private BigDecimal refresh;
+    private ScheduledFuture<?> refreshJob;
 
-    String sysinfoData;
-    String energyData;
+    private String sysinfoData;
+    private String energyData;
 
     public HS110Handler(Thing thing) {
         super(thing);
@@ -58,13 +59,15 @@ public class HS110Handler extends ConfigStatusThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_SWITCH)) {
-            log.debug("Switching {} {}", thing.getUID().getAsString(), command.toFullString());
-            try {
-                plug.sendSwitch((OnOffType) command);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        if (command instanceof OnOffType) {
+            if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+                logger.debug("Switching {} {}", thing.getUID().getAsString(), command.toFullString());
+                try {
+                    plug.sendSwitch((OnOffType) command);
+                } catch (IOException e) {
+                    logger.error("Failed sending command {} to {}", command.toFullString(),
+                            thing.getUID().getAsString(), e);
+                }
             }
         }
 
@@ -75,6 +78,9 @@ public class HS110Handler extends ConfigStatusThingHandler {
                     case CHANNEL_WATTAGE:
                         updateState(channelUID, getWattage());
                         break;
+                    case CHANNEL_TOTAL:
+                        updateState(channelUID, getTotal());
+                        break;
                     case CHANNEL_SWITCH:
                         updateState(channelUID, getState());
                         break;
@@ -82,12 +88,12 @@ public class HS110Handler extends ConfigStatusThingHandler {
                         updateState(channelUID, getSysinfo());
                         break;
                     default:
-                        log.debug("Command received for an unknown channel: {}", channelUID.getId());
+                        logger.debug("Command received for an unknown channel: {}", channelUID.getId());
                         break;
                 }
             }
         } else {
-            log.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
+            logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
         }
 
     }
@@ -102,18 +108,13 @@ public class HS110Handler extends ConfigStatusThingHandler {
         Configuration config = getThing().getConfiguration();
 
         String ip = (String) config.get(CONFIG_IP);
-        log.info("Initializing plug on ip {}", ip);
+        logger.info("Initializing plug on ip {}", ip);
         plug = new HS110(ip);
 
-        try {
+        if (config.containsKey(CONFIG_REFRESH)) {
             refresh = (BigDecimal) config.get(CONFIG_REFRESH);
-        } catch (Exception e) {
-            log.debug("Cannot set refresh parameter.", e);
-        }
-
-        if (refresh == null) {
-            // let's go for the default
-            refresh = new BigDecimal(5);
+        } else {
+            refresh = new BigDecimal(REFRESH_DEFAULT);
         }
 
         startAutomaticRefresh();
@@ -126,15 +127,17 @@ public class HS110Handler extends ConfigStatusThingHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                log.debug("Refreshing {}", thing.getUID().getAsString());
+                logger.debug("Refreshing {}", thing.getUID().getAsString());
                 try {
                     boolean success = updateData();
                     if (success) {
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SWITCH), getState());
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_WATTAGE), getWattage());
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_TOTAL), getTotal());
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_SYSINFO), getSysinfo());
                     }
                 } catch (Exception e) {
-                    log.debug("Exception occurred during execution: {}", e.getMessage(), e);
+                    logger.debug("Exception occurred during execution", e);
                 }
             }
         };
@@ -143,18 +146,18 @@ public class HS110Handler extends ConfigStatusThingHandler {
     }
 
     private synchronized boolean updateData() {
-        log.trace("Updating data for Plug type {}", thing.getThingTypeUID().getAsString());
+        logger.trace("Updating data for Plug type {}", thing.getThingTypeUID().getAsString());
         try {
             sysinfoData = plug.sendCommand(HS110.Command.SYSINFO);
             if (thing.getThingTypeUID().equals(THING_TYPE_HS110)) {
                 energyData = plug.sendCommand(HS110.Command.ENERGY);
-                log.debug("Updated energy Data for {}: {}", thing.getUID().getAsString(), energyData);
+                logger.debug("Updated energy Data for {}: {}", thing.getUID(), energyData);
             }
-            log.debug("Updated sysinfo Data for {}: {}", thing.getUID().getAsString(), sysinfoData);
+            logger.debug("Updated sysinfo Data for {}: {}", thing.getUID(), sysinfoData);
             return true;
 
         } catch (IOException e) {
-            log.warn("Error accessing Yahoo weather: {}", e.getMessage());
+            logger.warn("Error accessing plug ", e);
             energyData = null;
             sysinfoData = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -174,7 +177,7 @@ public class HS110Handler extends ConfigStatusThingHandler {
                         ConfigStatusMessage.Builder.error("offline").withMessageKeySuffix("ip unreachable").build());
             }
         } catch (IOException e) {
-            log.debug("Communication error occurred while getting Yahoo weather information.", e);
+            logger.debug("Communication error ocurred reaching the device ", e);
         }
 
         return configStatus;
@@ -185,6 +188,16 @@ public class HS110Handler extends ConfigStatusThingHandler {
             BigDecimal wattage = HS110.parseWattage(energyData);
             if (wattage != null) {
                 return new DecimalType(wattage);
+            }
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private State getTotal() {
+        if (energyData != null) {
+            BigDecimal total = HS110.parseTotal(energyData);
+            if (total != null) {
+                return new DecimalType(total);
             }
         }
         return UnDefType.UNDEF;
