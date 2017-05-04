@@ -86,12 +86,9 @@ public abstract class RpcResponseHandler<T> {
      * Populates the extracted event to the listener.
      */
     private T handleEvent(Object[] message) throws IOException {
-        try {
-            EventParser eventParser = new EventParser();
-            HmDatapointInfo dpInfo = eventParser.parse(message);
-            listener.eventReceived(dpInfo, eventParser.getValue());
-        } finally {
-        }
+        EventParser eventParser = new EventParser();
+        HmDatapointInfo dpInfo = eventParser.parse(message);
+        listener.eventReceived(dpInfo, eventParser.getValue());
         return getEmptyStringResult();
     }
 
@@ -99,12 +96,9 @@ public abstract class RpcResponseHandler<T> {
      * Calls the listener when a devices has been detected.
      */
     private T handleNewDevice(Object[] message) throws IOException {
-        try {
-            NewDevicesParser ndParser = new NewDevicesParser();
-            List<String> adresses = ndParser.parse(message);
-            listener.newDevices(adresses);
-        } finally {
-        }
+        NewDevicesParser ndParser = new NewDevicesParser();
+        List<String> adresses = ndParser.parse(message);
+        listener.newDevices(adresses);
         return getEmptyArrayResult();
     }
 
@@ -112,12 +106,9 @@ public abstract class RpcResponseHandler<T> {
      * Calls the listener when devices has been deleted.
      */
     private T handleDeleteDevice(Object[] message) throws IOException {
-        try {
-            DeleteDevicesParser ddParser = new DeleteDevicesParser();
-            List<String> adresses = ddParser.parse(message);
-            listener.deleteDevices(adresses);
-        } finally {
-        }
+        DeleteDevicesParser ddParser = new DeleteDevicesParser();
+        List<String> adresses = ddParser.parse(message);
+        listener.deleteDevices(adresses);
         return getEmptyArrayResult();
     }
 
