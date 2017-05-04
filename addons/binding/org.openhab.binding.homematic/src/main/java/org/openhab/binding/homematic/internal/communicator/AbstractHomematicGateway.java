@@ -43,6 +43,7 @@ import org.openhab.binding.homematic.internal.communicator.virtual.DeleteDeviceV
 import org.openhab.binding.homematic.internal.communicator.virtual.DisplayOptionsVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.DisplayTextVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.FirmwareVirtualDatapointHandler;
+import org.openhab.binding.homematic.internal.communicator.virtual.HmwIoModuleVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeDurationVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.OnTimeAutomaticVirtualDatapointHandler;
@@ -117,6 +118,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         virtualDatapointHandlers.add(new StateContactVirtualDatapointHandler());
         virtualDatapointHandlers.add(new SignalStrengthVirtualDatapointHandler());
         virtualDatapointHandlers.add(new DisplayTextVirtualDatapoint());
+        virtualDatapointHandlers.add(new HmwIoModuleVirtualDatapointHandler());
     }
 
     public AbstractHomematicGateway(String id, HomematicConfig config, HomematicGatewayListener eventListener) {
@@ -174,7 +176,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         startClients();
         startServers();
         startWatchdogs();
-        initialized = true;
     }
 
     /**
@@ -421,6 +422,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         if (!cancelLoadAllMetadata) {
             devices.keySet().retainAll(loadedDevices);
         }
+        initialized = true;
     }
 
     /**
