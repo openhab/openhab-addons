@@ -220,7 +220,7 @@ public class ContentItem {
     @Override
     public String toString() {
         // if (presetID >= 1 && presetID <= 6) {
-        // StringBuffer buffer = new StringBuffer();
+        // StringBuilder buffer = new StringBuilder();
         // buffer.append("PRESET_");
         // buffer.append(presetID);
         // return buffer.toString();
@@ -241,7 +241,7 @@ public class ContentItem {
         // private String itemName;
         // private int unusedField;
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(presetID);
         sb.append(";");
         sb.append(source);

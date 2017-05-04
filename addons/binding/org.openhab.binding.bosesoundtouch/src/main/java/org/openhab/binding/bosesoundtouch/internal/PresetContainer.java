@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
+import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.BINDING_ID;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,8 +20,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.ContentItemNotPresetableException;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.NoPresetFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PresetContainer} class manages a PresetContainer which contains all additional Presets
@@ -27,18 +32,40 @@ import org.openhab.binding.bosesoundtouch.internal.exceptions.NoPresetFoundExcep
  * @author Thomas Traunbauer
  */
 public class PresetContainer {
+
+    private final Logger logger = LoggerFactory.getLogger(PresetContainer.class);
+
     private HashMap<Integer, ContentItem> mapOfPresets;
     private File presetFile;
 
     /**
      * Creates a new instance of this class
-     *
-     * @throws IOException if PresetFile could not be read
      */
-    public PresetContainer(File presetFile) throws IOException {
-        this.presetFile = presetFile;
+    public PresetContainer() {
+        init();
+    }
+
+    private void init() {
         this.mapOfPresets = new HashMap<Integer, ContentItem>();
-        readFromFile(presetFile);
+        File folder = new File(ConfigConstants.getUserDataFolder() + "/" + BINDING_ID);
+        if (!folder.exists()) {
+            logger.debug("Creating directory {}", folder.getPath());
+            folder.mkdirs();
+        }
+        presetFile = new File(folder, "presets.txt");
+        if (!presetFile.exists()) {
+            try {
+                presetFile.createNewFile();
+                logger.debug("Creating presetFile {}", presetFile.getPath());
+            } catch (IOException e1) {
+                presetFile = null;
+            }
+        }
+        try {
+            readFromFile();
+        } catch (IOException e) {
+            logger.debug("Could not load Presets from File: {}", presetFile.getPath());
+        }
     }
 
     /**
@@ -64,7 +91,7 @@ public class PresetContainer {
         preset.setPresetID(presetID);
         if (preset.isPresetable()) {
             mapOfPresets.put(presetID, preset);
-            writeToFile(presetFile);
+            writeToFile();
         } else {
             throw new ContentItemNotPresetableException();
         }
@@ -86,29 +113,31 @@ public class PresetContainer {
         }
     }
 
-    private void writeToFile(File presetFile) throws IOException {
-        if (presetFile.exists()) {
-            presetFile.delete();
+    private void writeToFile() throws IOException {
+        if (presetFile != null) {
+            if (presetFile.exists()) {
+                presetFile.delete();
+            }
+            BufferedWriter writer = new BufferedWriter(new FileWriter(presetFile));
+            Collection<ContentItem> colletionOfPresets = getAllPresets();
+            ArrayList<ContentItem> listOfPresets = new ArrayList<ContentItem>();
+            listOfPresets.addAll(colletionOfPresets);
+            // Only openhab Presets got saved
+            for (int i = 6; i < listOfPresets.size(); i++) {
+                ContentItem currentItem = listOfPresets.get(i);
+                writer.write(currentItem.stringToSave());
+                writer.newLine();
+            }
+            writer.close();
         }
-        BufferedWriter writer = new BufferedWriter(new FileWriter(presetFile));
-        Collection<ContentItem> colletionOfPresets = getAllPresets();
-        ArrayList<ContentItem> listOfPresets = new ArrayList<ContentItem>();
-        listOfPresets.addAll(colletionOfPresets);
-        // Only openhab Presets got saved
-        for (int i = 6; i < listOfPresets.size(); i++) {
-            ContentItem currentItem = listOfPresets.get(i);
-            writer.write(currentItem.stringToSave());
-            writer.newLine();
-        }
-        writer.close();
     }
 
-    private void readFromFile(File presetFile) throws IOException {
-        if (!presetFile.exists()) {
-            throw new IOException("Could not load save PRESETS");
-        }
-        if (presetFile.exists()) {
-            try {
+    private void readFromFile() throws IOException {
+        if (presetFile != null) {
+            if (!presetFile.exists()) {
+                throw new IOException("Could not load save PRESETS");
+            }
+            if (presetFile.exists()) {
                 BufferedReader reader = new BufferedReader(new FileReader(presetFile));
                 String line = reader.readLine();
                 while (line != null) {
@@ -121,8 +150,6 @@ public class PresetContainer {
                     line = reader.readLine();
                 }
                 reader.close();
-            } catch (IOException e) {
-                throw new IOException("Could not load save PRESETS");
             }
         }
     }

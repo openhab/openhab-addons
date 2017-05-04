@@ -9,7 +9,6 @@ package org.openhab.binding.bosesoundtouch.internal;
 
 import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -212,9 +210,8 @@ public class CommandExecutor implements AvailableSources {
             } catch (NoStoredMusicPresetFoundException e) {
                 logger.warn("{}: Unable to switch to mode: \"STORED_MUSIC\". No PRESET defined",
                         handler.getDeviceName());
-            } finally {
-                updateOperatingValues();
             }
+            updateOperatingValues();
         }
     }
 
@@ -490,18 +487,7 @@ public class CommandExecutor implements AvailableSources {
 
         mapOfAvailableFunctions = new HashMap<>();
 
-        File folder = new File(ConfigConstants.getUserDataFolder() + "/" + BINDING_ID);
-        if (!folder.exists()) {
-            logger.debug("Creating directory {}", folder.getPath());
-            folder.mkdirs();
-        }
-        File presetFile = new File(folder, "presets.txt");
-
-        try {
-            presetContainer = new PresetContainer(presetFile);
-        } catch (IOException e) {
-            logger.warn("{}: Could not load presets from file", handler.getDeviceName());
-        }
+        presetContainer = new PresetContainer();
     }
 
     private void postContentItem(ContentItem contentItem) {
