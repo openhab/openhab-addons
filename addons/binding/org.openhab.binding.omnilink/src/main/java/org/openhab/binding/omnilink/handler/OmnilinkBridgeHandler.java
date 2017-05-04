@@ -1,5 +1,6 @@
 package org.openhab.binding.omnilink.handler;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -202,20 +203,35 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             if (!childThing.getConfiguration().getProperties().containsKey("number")) {
                 throw new IllegalArgumentException("childThing does not have required 'number' property");
             }
-            areaThings.put(Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString()),
-                    childThing);
+            int areaNumber;
+            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
+                areaNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
+            } else {
+                areaNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
+            }
+            areaThings.put(areaNumber, childThing);
         } else if (childHandler instanceof UnitHandler) {
             if (!childThing.getConfiguration().getProperties().containsKey("number")) {
                 throw new IllegalArgumentException("childThing does not have required 'number' property");
             }
-            unitThings.put(Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString()),
-                    childThing);
+            int unitNumber;
+            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
+                unitNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
+            } else {
+                unitNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
+            }
+            unitThings.put(unitNumber, childThing);
         } else if (childHandler instanceof ZoneHandler) {
             if (!childThing.getConfiguration().getProperties().containsKey("number")) {
                 throw new IllegalArgumentException("childThing does not have required 'number' property");
             }
-            zoneThings.put(Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString()),
-                    childThing);
+            int zoneNumber;
+            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
+                zoneNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
+            } else {
+                zoneNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
+            }
+            zoneThings.put(zoneNumber, childThing);
         } else {
             logger.warn("Did not add childThing to a map: {}", childThing);
         }
