@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.openhab.binding.bosesoundtouch.internal.exceptions.ContentItemNotPresetableException;
@@ -120,7 +121,7 @@ public class PresetContainer {
             }
             BufferedWriter writer = new BufferedWriter(new FileWriter(presetFile));
             Collection<ContentItem> colletionOfPresets = getAllPresets();
-            ArrayList<ContentItem> listOfPresets = new ArrayList<ContentItem>();
+            List<ContentItem> listOfPresets = new ArrayList<>();
             listOfPresets.addAll(colletionOfPresets);
             // Only openhab Presets got saved
             for (int i = 6; i < listOfPresets.size(); i++) {

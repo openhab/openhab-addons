@@ -172,7 +172,7 @@ public class XMLResponseHandler extends DefaultHandler {
                         updateNowPlayingTrack(new StringType(""));
                     }
                 } else if ("zone".equals(localName)) {
-                    listOfZoneMembers = new ArrayList<BoseSoundTouchHandler>();
+                    listOfZoneMembers = new ArrayList<>();
                     String master = attributes.getValue("master");
                     if (master == null || master.isEmpty()) {
                         zoneMaster = null;

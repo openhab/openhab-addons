@@ -480,7 +480,7 @@ public class CommandExecutor implements AvailableSources {
 
     private void init() {
         getInformations(APIRequest.INFO);
-        listOfZoneMembers = new ArrayList<BoseSoundTouchHandler>();
+        listOfZoneMembers = new ArrayList<>();
         zoneMaster = null;
         currentOperationMode = OperationModeType.OFFLINE;
         currentContentItem = null;
