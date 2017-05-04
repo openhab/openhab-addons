@@ -312,19 +312,24 @@ public class NikoHomeControlCommunication {
             } else {
                 logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
             }
-        } catch (JsonSyntaxException je) {
+        } catch (JsonSyntaxException jeWrongForm) {
             // if that JSON cannot be converted, it should be an array of hashmaps in the data field
-            NHCCmdAck nhcCmdAck = gson.fromJson(nhcMessage, NHCCmdAck.class);
-            if ("listlocations".equals(nhcCmdAck.cmd)) {
-                listLocations(nhcCmdAck);
-            } else if ("listactions".equals(nhcCmdAck.cmd)) {
-                listActions(nhcCmdAck);
-            } else if ("listactions".equals(nhcCmdAck.event)) {
-                for (Map<String, String> action : nhcCmdAck.data) {
-                    int id = Integer.valueOf(action.get("id"));
-                    setActionState(id, Integer.valueOf(action.get("value1")));
+            try {
+                NHCCmdAck nhcCmdAck = gson.fromJson(nhcMessage, NHCCmdAck.class);
+                if ("listlocations".equals(nhcCmdAck.cmd)) {
+                    listLocations(nhcCmdAck);
+                } else if ("listactions".equals(nhcCmdAck.cmd)) {
+                    listActions(nhcCmdAck);
+                } else if ("listactions".equals(nhcCmdAck.event)) {
+                    for (Map<String, String> action : nhcCmdAck.data) {
+                        int id = Integer.valueOf(action.get("id"));
+                        setActionState(id, Integer.valueOf(action.get("value1")));
+                    }
+                } else {
+                    logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
                 }
-            } else {
+            } catch (JsonSyntaxException jeUnsupported) {
+                // fall through for JSON type not supported by binding
                 logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
             }
         }
