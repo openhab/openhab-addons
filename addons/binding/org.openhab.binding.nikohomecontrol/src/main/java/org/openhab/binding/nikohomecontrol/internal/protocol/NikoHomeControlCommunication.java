@@ -26,7 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link NikoHomeControlCommunication} class is able to do the following tasks with Niko Home Control
@@ -38,10 +39,7 @@ import com.google.gson.JsonSyntaxException;
  * <li>Listen to events from Niko Home Control.
  * </ul>
  *
- * Only switch, dimmer and rollershutter actions are currently implemented. There are placeholder methods for some other
- * types.
- * This is most likely incomplete because I don't have all possible equipment and don't have access to protocol
- * documentation.
+ * Only switch, dimmer and rollershutter actions are currently implemented.
  *
  * A class instance is instantiated from the {@link NikoHomeControlBridgeHandler} class initialization.
  *
@@ -86,79 +84,6 @@ public class NikoHomeControlCommunication {
     private final Map<Integer, Integer> actionStates = new HashMap<>();
 
     private final Map<Integer, NikoHomeControlHandler> actionThingHandlers = new HashMap<>();
-
-    /**
-     * Class {@link NHCCmd} used as input to gson to send commands to Niko Home Control.
-     * <p>
-     * Example: <code>{"cmd":"executeactions","id":1,"value1":0}</code>
-     *
-     * @author Mark Herwege
-     */
-    @SuppressWarnings("unused")
-    private static class NHCCmd {
-        private String cmd;
-        private Integer id;
-        private Integer value1;
-        private Integer value2;
-        private Integer value3;
-        private Integer startValue;
-        private Integer endValue;
-
-        NHCCmd(String cmd) {
-            this.cmd = cmd;
-        }
-
-        NHCCmd(String cmd, Integer id, Integer value1) {
-            this(cmd);
-            this.id = id;
-            this.value1 = value1;
-        }
-
-        NHCCmd(String cmd, Integer id, Integer value1, Integer value2, Integer value3) {
-            this(cmd, id, value1);
-            this.value2 = value2;
-            this.value3 = value3;
-        }
-
-        public void setStartValue(Integer startValue) {
-            this.startValue = startValue;
-        }
-
-        public void setEndValue(Integer endValue) {
-            this.endValue = endValue;
-        }
-
-    }
-
-    /**
-     * Class {@link NHCCmdAck} used as output from gson for cmd or event feedback from Niko Home Control where the data
-     * part is enclosed by [] and contains a list of json strings.
-     * <p>
-     * Example: <code>{"cmd":"listactions","data":[{"id":1,"name":"Garage","type":1,"location":1,"value1":0},
-     * {"id":25,"name":"Frontdoor","type":2,"location":2,"value1":0}]}</code>
-     *
-     * @author Mark Herwege
-     */
-    private static class NHCCmdAck {
-        private String cmd;
-        private String event;
-        private List<HashMap<String, String>> data = new ArrayList<>();
-    }
-
-    /**
-     * Class {@link NHCSimpleCmdAck} used as output from gson for cmd or event feedback from Niko Home Control where the
-     * data part is a simple json string.
-     * <p>
-     * Example: <code>{"cmd":"executeactions", "data":{"error":0}}</code>
-     *
-     * @author Mark Herwege
-     */
-    private static class NHCSimpleCmdAck {
-        private String cmd;
-        @SuppressWarnings("unused")
-        private String event;
-        private Map<String, String> data = new HashMap<>();
-    }
 
     /**
      * Constructor for Niko Home Control communication object, manages communication with
@@ -295,44 +220,37 @@ public class NikoHomeControlCommunication {
      */
     private void readMessage(String nhcMessage) {
 
-        Gson gson = new Gson();
-
         logger.debug("Niko Home Control: received json {}", nhcMessage);
 
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(NHCBaseMessage.class, new NikoHomeControlMessageDeserializer());
+        Gson gson = gsonBuilder.create();
+
         try {
-            // first try with simple reply form, a hashmap in the data field
-            NHCSimpleCmdAck nhcSimpleCmdAck = gson.fromJson(nhcMessage, NHCSimpleCmdAck.class);
-            if ("systeminfo".equals(nhcSimpleCmdAck.cmd)) {
-                systemInfo(nhcSimpleCmdAck);
-            } else if ("startevents".equals(nhcSimpleCmdAck.cmd)) {
-                startEvents(nhcSimpleCmdAck);
-            } else if ("executeactions".equals(nhcSimpleCmdAck.cmd)
-                    && (Integer.valueOf(nhcSimpleCmdAck.data.get("error")).equals(0))) {
-                logger.debug("Niko Home Control: execute action success");
+            NHCBaseMessage nhcMessageGson = gson.fromJson(nhcMessage, NHCBaseMessage.class);
+
+            String cmd = nhcMessageGson.getCmd();
+            String event = nhcMessageGson.getEvent();
+
+            if ("systeminfo".equals(cmd)) {
+                cmdSystemInfo(((NHCMessageMap) nhcMessageGson).getData());
+            } else if ("startevents".equals(cmd)) {
+                cmdStartEvents(((NHCMessageMap) nhcMessageGson).getData());
+            } else if ("listlocations".equals(cmd)) {
+                cmdListLocations(((NHCMessageListMap) nhcMessageGson).getData());
+            } else if ("listactions".equals(cmd)) {
+                cmdListActions(((NHCMessageListMap) nhcMessageGson).getData());
+            } else if ("executeactions".equals(cmd)) {
+                cmdExecuteActions(((NHCMessageMap) nhcMessageGson).getData());
+            } else if ("listactions".equals(event)) {
+                eventListActions(((NHCMessageListMap) nhcMessageGson).getData());
             } else {
                 logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
             }
-        } catch (JsonSyntaxException jeWrongForm) {
-            // if that JSON cannot be converted, it should be an array of hashmaps in the data field
-            try {
-                NHCCmdAck nhcCmdAck = gson.fromJson(nhcMessage, NHCCmdAck.class);
-                if ("listlocations".equals(nhcCmdAck.cmd)) {
-                    listLocations(nhcCmdAck);
-                } else if ("listactions".equals(nhcCmdAck.cmd)) {
-                    listActions(nhcCmdAck);
-                } else if ("listactions".equals(nhcCmdAck.event)) {
-                    for (Map<String, String> action : nhcCmdAck.data) {
-                        int id = Integer.valueOf(action.get("id"));
-                        setActionState(id, Integer.valueOf(action.get("value1")));
-                    }
-                } else {
-                    logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
-                }
-            } catch (JsonSyntaxException jeUnsupported) {
-                // fall through for JSON type not supported by binding
-                logger.debug("Niko Home Control: not acted on json {}", nhcMessage);
-            }
+        } catch (JsonParseException e) {
+            logger.debug("Niko Home Control: not acted on unsupported json {}", nhcMessage);
         }
+
     }
 
     /**
@@ -393,67 +311,68 @@ public class NikoHomeControlCommunication {
         readMessage(nhcIn.readLine());
     }
 
-    private void systemInfo(NHCSimpleCmdAck nhcCmdAck) {
+    private void cmdSystemInfo(Map<String, String> data) {
 
         logger.debug("Niko Home Control: systeminfo");
 
-        if (nhcCmdAck.data.containsKey("swversion")) {
-            setSwVersion(nhcCmdAck.data.get("swversion"));
+        if (data.containsKey("swversion")) {
+            setSwVersion(data.get("swversion"));
         }
-        if (nhcCmdAck.data.containsKey("api")) {
-            setApi(nhcCmdAck.data.get("api"));
+        if (data.containsKey("api")) {
+            setApi(data.get("api"));
         }
-        if (nhcCmdAck.data.containsKey("time")) {
-            setTime(nhcCmdAck.data.get("time"));
+        if (data.containsKey("time")) {
+            setTime(data.get("time"));
         }
-        if (nhcCmdAck.data.containsKey("language")) {
-            setLanguage(nhcCmdAck.data.get("language"));
+        if (data.containsKey("language")) {
+            setLanguage(data.get("language"));
         }
-        if (nhcCmdAck.data.containsKey("currency")) {
-            setCurrency(nhcCmdAck.data.get("currency"));
+        if (data.containsKey("currency")) {
+            setCurrency(data.get("currency"));
         }
-        if (nhcCmdAck.data.containsKey("units")) {
-            setUnits(nhcCmdAck.data.get("units"));
+        if (data.containsKey("units")) {
+            setUnits(data.get("units"));
         }
-        if (nhcCmdAck.data.containsKey("DST")) {
-            setDst(nhcCmdAck.data.get("DST"));
+        if (data.containsKey("DST")) {
+            setDst(data.get("DST"));
         }
-        if (nhcCmdAck.data.containsKey("TZ")) {
-            setTz(nhcCmdAck.data.get("TZ"));
+        if (data.containsKey("TZ")) {
+            setTz(data.get("TZ"));
         }
-        if (nhcCmdAck.data.containsKey("lastenergyerase")) {
-            setLastEnergyErase(nhcCmdAck.data.get("lastenergyerase"));
+        if (data.containsKey("lastenergyerase")) {
+            setLastEnergyErase(data.get("lastenergyerase"));
         }
-        if (nhcCmdAck.data.containsKey("lastconfig")) {
-            setLastConfig(nhcCmdAck.data.get("lastconfig"));
+        if (data.containsKey("lastconfig")) {
+            setLastConfig(data.get("lastconfig"));
         }
     }
 
-    private void startEvents(NHCSimpleCmdAck nhcCmdAck) {
+    private void cmdStartEvents(Map<String, String> data) {
 
-        logger.debug("Niko Home Control: startevents");
-        if (Integer.valueOf(nhcCmdAck.data.get("error")).equals(0)) {
+        Integer errorCode = Integer.valueOf(data.get("error"));
+
+        if (errorCode.equals(0)) {
             logger.debug("Niko Home Control: start events success");
+        } else {
+            logger.warn("Niko Home Control: error code {} returned on start events", errorCode);
         }
-
     }
 
-    private void listLocations(NHCCmdAck nhcCmdAck) {
+    private void cmdListLocations(List<HashMap<String, String>> data) {
 
         logger.debug("Niko Home Control: list locations");
 
         locations.clear();
         locationNames.clear();
 
-        for (HashMap<String, String> location : nhcCmdAck.data) {
+        for (HashMap<String, String> location : data) {
             int id = Integer.parseInt(location.get("id"));
             locations.add(id);
             locationNames.put(id, location.get("name"));
         }
-
     }
 
-    private void listActions(NHCCmdAck nhcCmdAck) {
+    private void cmdListActions(List<HashMap<String, String>> data) {
 
         logger.debug("Niko Home Control: list actions");
 
@@ -463,7 +382,7 @@ public class NikoHomeControlCommunication {
         actionLocations.clear();
         actionStates.clear();
 
-        for (HashMap<String, String> action : nhcCmdAck.data) {
+        for (HashMap<String, String> action : data) {
             int id = Integer.parseInt(action.get("id"));
             actions.add(id);
             actionNames.put(id, action.get("name"));
@@ -471,7 +390,24 @@ public class NikoHomeControlCommunication {
             actionLocations.put(id, Integer.parseInt(action.get("location")));
             actionStates.put(id, Integer.parseInt(action.get("value1")));
         }
+    }
 
+    private void cmdExecuteActions(Map<String, String> data) {
+
+        Integer errorCode = Integer.valueOf(data.get("error"));
+        if (errorCode.equals(0)) {
+            logger.debug("Niko Home Control: execute action success");
+        } else {
+            logger.warn("Niko Home Control: error code {} returned on command execution", errorCode);
+        }
+    }
+
+    private void eventListActions(List<HashMap<String, String>> data) {
+
+        for (Map<String, String> action : data) {
+            int id = Integer.valueOf(action.get("id"));
+            setActionState(id, Integer.valueOf(action.get("value1")));
+        }
     }
 
     /**
