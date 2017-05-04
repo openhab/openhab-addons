@@ -25,12 +25,12 @@ The binding requires no special configuration
 ## Thing Configuration
 This is optional, it is recommended to let the binding discover and add hubs and devices.
  
-To manually configure a Harmony Hub thing you may specify its name ("name") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heart beat interval (heartBeatInterval) in seconds. 
+To manually configure a Harmony Hub thing you may specify its host name  ("host") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heart beat interval (heartBeatInterval) in seconds. 
  
 In the thing file, this looks e.g. like
 
 ```
-Bridge harmonyhub:hub:GreatRoom [ name="Great Room"]
+Bridge harmonyhub:hub:GreatRoom [ host="192.168.1.100"]
 ```
 
 To manually configure a Harmony device thing you may specify its numeric id ("id") or its name ("name"), but not both. Note that this is prefixed by the hub the device is controlled from.

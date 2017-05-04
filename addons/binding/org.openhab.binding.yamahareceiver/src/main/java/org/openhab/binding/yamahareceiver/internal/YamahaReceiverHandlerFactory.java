@@ -27,7 +27,7 @@ import org.openhab.binding.yamahareceiver.handler.YamahaReceiverHandler;
  */
 public class YamahaReceiverHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_YAMAHAAV);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_YAMAHAAV);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

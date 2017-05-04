@@ -148,40 +148,39 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
     /**
      * Submit the discovered Devices to the Smarthome inbox,
      *
-     * @param ip The Device IP
+     * @param bridgeUID
+     * @param name name of the player
      */
     private void submitPlayerDiscoveryResults(ThingUID bridgeUID, String name) {
-
         String id = deviceNameToId(name);
         ThingUID uid = new ThingUID(MinecraftBindingConstants.THING_TYPE_PLAYER, bridgeUID, id);
 
-        if (uid != null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(MinecraftBindingConstants.PARAMETER_PLAYER_NAME, name);
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withBridge(bridgeUID)
-                    .withLabel(name).build();
-            thingDiscovered(result);
-        }
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(MinecraftBindingConstants.PARAMETER_PLAYER_NAME, name);
+        thingDiscovered(DiscoveryResultBuilder.create(uid)
+                .withProperties(properties)
+                .withBridge(bridgeUID)
+                .withLabel(name)
+                .build());
     }
 
     /**
      * Submit the discovered Signs to the Smarthome inbox,
      *
-     * @param serverName name of server
+     * @param bridgeUID
      * @param sign data describing sign
      */
     private void submitSignDiscoveryResults(ThingUID bridgeUID, SignData sign) {
-
         String id = deviceNameToId(sign.getName());
         ThingUID uid = new ThingUID(MinecraftBindingConstants.THING_TYPE_SIGN, bridgeUID, id);
 
-        if (uid != null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(MinecraftBindingConstants.PARAMETER_SIGN_NAME, sign.getName());
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withBridge(bridgeUID)
-                    .withLabel(sign.getName()).build();
-            thingDiscovered(result);
-        }
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(MinecraftBindingConstants.PARAMETER_SIGN_NAME, sign.getName());
+        thingDiscovered(DiscoveryResultBuilder.create(uid)
+                .withProperties(properties)
+                .withBridge(bridgeUID)
+                .withLabel(sign.getName())
+                .build());
     }
 
     /**

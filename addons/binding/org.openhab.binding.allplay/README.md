@@ -6,14 +6,16 @@ The binding uses native libraries for the AllJoyn framework. Libraries for the f
 * Linux ARM
 * Linux x86 (32 bit)
 * Linux x86-64 (64 bit)
-* Windows x86 (32 bit)
-* Windows x86-64 (64 bit)
+* Windows x86 (32 bit, AllJoyn v16.04a)
+* Windows x86-64 (64 bit, AllJoyn v16.04a)
+
+The Windows libraries have a dependency on the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-US/download/details.aspx?id=48145). If you are using Windows, please make sure to install these components before using the AllPlay binding.
 
 If there is need for another architecture/platform, please open a [ticket on GitHub](https://github.com/openhab/openhab/issues) so the missing native library can be added.
 
 ## Supported Things
 
-All AllPlay compatible speakers are supported by this binding. This includes for example the [Panasonic ALL series](http://www.panasonic.com/uk/consumer/home-entertainment/wireless-speaker-systems.html).
+All AllPlay compatible speakers are supported by this binding. This includes for example the [Panasonic ALL series](http://www.panasonic.com/uk/consumer/home-entertainment/wireless-speaker-systems.html). All AllPlay speakers are registered as an audio sink in the framework.
 
 ## Discovery
 
@@ -21,17 +23,25 @@ The AllPlay devices are discovered through the AllJoyn discovery mechanism and a
 
 ## Binding Configuration
 
-The binding does not require any special configuration
+The binding has the following configuration options, which can be set for "binding:allplay":
+
+| Parameter | Name | Description | Required |
+|-----------|------|-------------|----------|
+| rewindSkipTimeInSec | Rewind skip time (s) | Seconds to jump backwards if the rewind command is executed | yes |
+| fastForwardSkipTimeInSec | Fast forward skip time (s) | Seconds to jump forward if the fastforward command is executed | yes |
+| callbackUrl | Callback URL | URL to use for playing audio streams, e.g. http://192.168.0.2:8080 | no |
+
 
 ## Thing Configuration
 
-AllPlay Players are identified by their device ID.
+AllPlay Players are identified by their device ID (e.g. 9fbe37ca-d015-47a2-b76e-8fce7bc25687). Available configuration parameters are:
 
-In the thing file, this looks e.g. like
+| Parameter Label | Parameter ID | Description | Required | Default |
+|-----------------|--------------|-------------|----------|---------|
+| Device ID | deviceId | The device identifier identifies one certain speaker| true | |
+| Device Name | deviceName | The device name of the speaker| false | |
+| Volume step size | volumeStepSize | Step size to use if the volume is changed using the increase/decrease command.| true | 1 |
 
-```
-Thing allplay:speaker:mySpeaker [ deviceId="9fbe37ca-d015-47a2-b76e-8fce7bc25687"]
-```
 
 ## Channels
 
@@ -59,6 +69,10 @@ The devices support the following channels:
 | volumecontrol | Switch | Flag if the volume control is enabled (might be disabled if speaker is not master of the zone) |
 | zoneid | String | Id of the Zone the speaker belongs to |
 
+## Audio Support
+
+All AllPlay speakers are registered as an audio sink in the framework.
+Audio streams are sent to the `stream` channel.
 
 ## Full Example
 

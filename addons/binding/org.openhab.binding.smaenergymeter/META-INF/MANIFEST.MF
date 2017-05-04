@@ -4,7 +4,7 @@ Bundle-Name: SMAEnergyMeter Binding
 Bundle-SymbolicName: org.openhab.binding.smaenergymeter;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: com.google.common.collect,
  org.eclipse.smarthome.config.core,
@@ -13,7 +13,9 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.slf4j
-Service-Component: OSGI-INF/*
+ org.slf4j,
+ org.openhab.binding.smaenergymeter,
+ org.openhab.binding.smaenergymeter.handler
+Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.smaenergymeter,
  org.openhab.binding.smaenergymeter.handler

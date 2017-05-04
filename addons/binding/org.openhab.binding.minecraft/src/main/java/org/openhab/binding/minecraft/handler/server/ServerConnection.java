@@ -35,7 +35,7 @@ import rx.subscriptions.Subscriptions;
  */
 public class ServerConnection {
 
-    private static final Logger logger = LoggerFactory.getLogger(MinecraftDiscoveryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServerConnection.class);
 
     private String host;
     private int port;
@@ -126,12 +126,12 @@ public class ServerConnection {
 
         final String serverUrl = String.format("ws://%s:%d/stream", host, port);
 
-        return Observable.<ServerConnection> create(new OnSubscribe<ServerConnection>() {
+        return Observable.<ServerConnection>create(new OnSubscribe<ServerConnection>() {
 
             @Override
             public void call(final Subscriber<? super ServerConnection> subscriber) {
 
-                logger.info("Start connecting to Minecraft server at: " + serverUrl);
+                logger.info("Start connecting to Minecraft server at: {}", serverUrl);
                 if (!subscriber.isUnsubscribed()) {
 
                     ServerConnection serverConnection = new ServerConnection(thingUID, host, port);

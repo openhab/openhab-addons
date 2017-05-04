@@ -114,7 +114,7 @@ public class GrafikEyeConfig {
      * @returna non-null, non-empty comma delimited list of shade zones
      */
     public String getShadeZones() {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         for (int z = 0; z < shades.length; z++) {
             if (shades[z]) {
                 if (sb.length() > 0) {

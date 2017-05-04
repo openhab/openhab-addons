@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
         extends AbstractNetatmoThingHandler<X> {
-    private static Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
+    private Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
     private int batteryMin = 0;
     private int batteryLow = 0;
     private int batteryMax = 1;

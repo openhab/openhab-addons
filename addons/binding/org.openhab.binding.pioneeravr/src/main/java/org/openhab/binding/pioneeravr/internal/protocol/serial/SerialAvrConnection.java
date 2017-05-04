@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SerialAvrConnection extends StreamAvrConnection {
 
-    private static final Logger logger = LoggerFactory.getLogger(SerialAvrConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(SerialAvrConnection.class);
 
     private static final Integer LINK_SPEED = 9600;
 

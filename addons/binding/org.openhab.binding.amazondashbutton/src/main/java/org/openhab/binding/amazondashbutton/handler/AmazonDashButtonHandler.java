@@ -34,10 +34,6 @@ import org.slf4j.LoggerFactory;
  * @author Oliver Libutzki - Initial contribution
  */
 public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNetworkInterfaceListener {
-
-    @SuppressWarnings("unused")
-    private static final Logger logger = LoggerFactory.getLogger(AmazonDashButtonHandler.class);
-
     private PacketCapturingService packetCapturingService;
 
     private long lastCommandHandled = 0;

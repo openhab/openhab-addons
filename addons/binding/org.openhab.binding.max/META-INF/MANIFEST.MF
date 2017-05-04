@@ -4,11 +4,11 @@ Bundle-Name: MaxCube Binding
 Bundle-SymbolicName: org.openhab.binding.max;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
-Import-Package: com.google.common.base;version="10.0.1",
+Import-Package: com.google.common.base,
  com.google.common.collect,
- org.apache.commons.lang;version="2.6.0",
+ org.apache.commons.lang,
  org.apache.commons.net.util,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
@@ -19,8 +19,7 @@ Import-Package: com.google.common.base;version="10.0.1",
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
  org.osgi.framework,
- org.slf4j
-Service-Component: OSGI-INF/*
+ org.slf4j,
+ org.openhab.binding.max
+Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.max
-
-

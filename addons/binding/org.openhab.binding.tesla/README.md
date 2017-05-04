@@ -13,6 +13,21 @@ Currently, the Tesla Model S is supported by this binding.
 
 The binding uses a the owner's email address and password in order to access the Tesla Owners Remote API. This is the same email address and password as used in the Tesla smartphone app, that allows to remotely control the Tesla Model S
 
+## Alternative secure configuration
+
+After a successful connection (Thing is online), you can clear the username and password field from the configuration, leaving only the VIN. Instead of using the username and password, from now on, only the access token will be stored and used (access token + refresh token). This is a better approach for many reasons, one being that you cannot start the car without the password.
+If you really don't like the thought of your username and password being stored temporarily, there is also a third option: Leave username/password blank, go into the openHAB console (ssh -p 8101 openhab@localhost), and run the following command:
+
+```
+openhab> smarthome:tesla logon 1
+Username (email): ****@***.com
+Password: 
+Attempting logon...
+Successfully logged on and stored token.
+```
+
+This command will perform a single logon, store the auth tokens and forget it ever saw your username and password. In the second parameter to the logon comand above, "1" is the thing id.
+
 ## Thing Configuration
 
 The Tesla Thing requires the username and password as a configuration value in order for the binding to log into the Tesla service, as well as the VIN (Vehicle Identfication Number) to identify the vehicle tracked by the Thing.

@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
  */
 public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(Collections.singleton(THING_TYPE_HVAC), Collections.singleton(THING_TYPE_CONTROLLER));
 
     @Override

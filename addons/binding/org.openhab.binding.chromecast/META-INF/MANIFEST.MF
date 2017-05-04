@@ -7,15 +7,13 @@ Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/protobuf-java-2.6.0.jar,
- lib/api-v2-0.9.4-SNAPSHOT.jar
+ lib/api-v2-0.10.1-SNAPSHOT.jar,
+ lib/jackson-core-asl-1.9.2.jar,
+ lib/jackson-mapper-asl-1.9.2.jar
 Import-Package: 
  com.fasterxml.jackson.annotation,
  javax.jmdns,
  org.apache.commons.lang,
- org.codehaus.jackson,
- org.codehaus.jackson.annotate,
- org.codehaus.jackson.map,
- org.codehaus.jackson.map.annotate,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.audio,

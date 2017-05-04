@@ -2,14 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Urtsi Binding
 Bundle-SymbolicName: org.openhab.binding.urtsi;singleton:=true
-Bundle-Vendor: Eclipse.org/SmartHome
+Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: com.google.common.base,
  com.google.common.collect,
  gnu.io,
- org.apache.commons.io;version="2.2.0",
+ org.apache.commons.io,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,

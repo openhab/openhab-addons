@@ -39,7 +39,7 @@ public class NAModule3Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
                 case CHANNEL_RAIN:
                     return ChannelTypeUtils.toDecimalType(dashboardData.getRain());
                 case CHANNEL_SUM_RAIN1:
-                    return ChannelTypeUtils.toDecimalType(dashboardData.getSumRain24());
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getSumRain1());
                 case CHANNEL_SUM_RAIN24:
                     return ChannelTypeUtils.toDecimalType(dashboardData.getSumRain24());
 

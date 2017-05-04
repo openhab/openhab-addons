@@ -17,4 +17,12 @@
 
 	<packaging>eclipse-plugin</packaging>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.openhab.core</groupId>
+			<artifactId>org.openhab.core</artifactId>
+			<version>${ohc.version}</version>
+		</dependency>
+	</dependencies>
+
 </project>

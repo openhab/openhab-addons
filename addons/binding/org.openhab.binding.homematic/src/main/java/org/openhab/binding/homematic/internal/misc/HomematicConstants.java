@@ -17,6 +17,8 @@ public class HomematicConstants {
     public static final String DEVICE_TYPE_VIRTUAL = "HM-RCV-50";
     public static final String DEVICE_TYPE_VIRTUAL_WIRED = "HMW-RCV-50";
     public static final String DEVICE_TYPE_19_REMOTE_CONTROL = "HM-RC-19";
+    public static final String DEVICE_TYPE_STATUS_DISPLAY = "HM-Dis-WM55";
+    public static final String DEVICE_TYPE_EP_STATUS_DISPLAY = "HM-Dis-EP-WM55";
 
     public static final String DEVICE_TYPE_SHUTTER_CONTACT = "HM-Sec-SC";
     public static final String DEVICE_TYPE_SHUTTER_CONTACT_2 = "ZEL-STG-RM-FFK";
