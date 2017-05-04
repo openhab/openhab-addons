@@ -10,8 +10,8 @@ package org.openhab.binding.bosesoundtouch.handler;
 
 import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
 
+import java.io.IOException;
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +60,6 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private ScheduledFuture<?> connectionChecker;
     private WebSocketClient client;
     private Session session;
-    private ByteBuffer pingPayload = ByteBuffer.wrap("Are you still here?".getBytes());
 
     private XMLResponseProcessor xmlResponseProcessor;
     private BoseSoundTouchHandlerFactory factory;
@@ -465,8 +464,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         }
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                session.getRemote().sendPing(pingPayload);
-            } catch (Throwable e) {
+                session.getRemote().sendString("HELLO");
+            } catch (IOException e) {
                 onWebSocketError(e);
                 closeConnection();
                 openConnection();
