@@ -41,7 +41,7 @@ Make sure you have all requirements met for [developing openhab2-addons](http://
 ## Release Cycle
 
 Include the Project into openhab2-addons using
-`git subtree pull --squash --prefix addons/binding/org.openhab.binding.hs110 https://github.com/computerlyrik/openhab2-addon-hs110  master` 
+`git subtree pull --prefix addons/binding/org.openhab.binding.hs110 https://github.com/computerlyrik/openhab2-addon-hs110  master` 
 
 ## Authors
 
