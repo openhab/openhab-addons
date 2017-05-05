@@ -11,9 +11,7 @@ package org.openhab.binding.enigma2.handler;
 import static org.openhab.binding.enigma2.Enigma2BindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -32,7 +30,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingFactory;
 import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.enigma2.internal.Enigma2CommandExecutor;
 import org.openhab.binding.enigma2.internal.Enigma2CommandExecutorListener;
 import org.slf4j.Logger;
@@ -50,15 +47,12 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
     private Enigma2CommandExecutor commandExecutor;
     private Enigma2Refresher refresher;
 
-    private Map<String, String> stateMap;
-
     public Enigma2Handler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        stateMap = new HashMap<>();
         commandExecutor = new Enigma2CommandExecutor(this);
 
         refresher = new Enigma2Refresher();
@@ -205,22 +199,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 updateState(CHANNEL_NOW_PLAYING_TITLE, new StringType("-"));
                 updateState(CHANNEL_NOW_PLAYING_DESCRIPTION, new StringType("-"));
                 updateState(CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED, new StringType("-"));
-            }
-        }
-    }
-
-    @Override
-    protected void updateState(String channelID, State state) {
-        if (state != null) {
-            String newState = state.toString();
-            String oldState = stateMap.get(channelID);
-            if (oldState == null) {
-                stateMap.put(channelID, newState);
-                super.updateState(channelID, state);
-            } else {
-                if (!newState.equals(oldState)) {
-                    super.updateState(channelID, state);
-                }
             }
         }
     }

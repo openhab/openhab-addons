@@ -8,10 +8,8 @@
  */
 package org.openhab.binding.enigma2.internal;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,6 +20,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -39,11 +38,11 @@ public class Enigma2Util {
      * This is a quick and dirty method, it always delivers the first appearance of content in an element
      */
     public static String getContentOfFirstElement(String content, String element) {
-        final String beginTag = "<" + element + ">";
-        final String endTag = "</" + element + ">";
+        String beginTag = "<" + element + ">";
+        String endTag = "</" + element + ">";
 
-        final int startIndex = content.indexOf(beginTag) + beginTag.length();
-        final int endIndex = content.indexOf(endTag);
+        int startIndex = content.indexOf(beginTag) + beginTag.length();
+        int endIndex = content.indexOf(endTag);
 
         if (startIndex != -1 && endIndex != -1) {
             return content.substring(startIndex, endIndex);
@@ -70,16 +69,11 @@ public class Enigma2Util {
             throws IOException, ParserConfigurationException, SAXException {
         Enigma2ServiceContainer serviceContainer = new Enigma2ServiceContainer();
 
-        File inputFile = new File("services.xml");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile));
-
         String content = executeUrl(deviceURL + SUFFIX_ALL_SERVICES);
-        writer.write(content);
-        writer.close();
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(inputFile);
+        Document doc = dBuilder.parse(new InputSource(new StringReader(content)));
         doc.getDocumentElement().normalize();
         NodeList listOfBouquets = doc.getElementsByTagName("e2bouquet");
         for (int bouquetIndex = 0; bouquetIndex < listOfBouquets.getLength(); bouquetIndex++) {
@@ -99,30 +93,26 @@ public class Enigma2Util {
                 }
             }
         }
-        inputFile.delete();
         return serviceContainer;
     }
 
     public static String createUserPasswordHostnamePrefix(String hostName, String userName, String password) {
-        String returnString;
-        if ((userName == null) || (userName.length() == 0)) {
-            returnString = new StringBuffer("http://" + hostName).toString();
-        } else {
-            returnString = new StringBuffer("http://" + userName).append(":").append(password).append("@")
-                    .append(hostName).toString();
+        String returnString = "http://" + hostName;
+        if (!((userName == null) || (userName.length() == 0))) {
+            returnString = returnString + ":" + password + "@" + hostName;
         }
         return returnString;
     }
 
     public static String cleanString(String string) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(string);
-        for (int i = buffer.length() - 1; i >= 0; i--) {
-            if (!isValidChar(buffer.charAt(i))) {
-                buffer.deleteCharAt(i);
+        StringBuilder sb = new StringBuilder();
+        sb.append(string);
+        for (int i = sb.length() - 1; i >= 0; i--) {
+            if (!isValidChar(sb.charAt(i))) {
+                sb.deleteCharAt(i);
             }
         }
-        return buffer.toString();
+        return sb.toString();
     }
 
     private static boolean isValidChar(char c) {

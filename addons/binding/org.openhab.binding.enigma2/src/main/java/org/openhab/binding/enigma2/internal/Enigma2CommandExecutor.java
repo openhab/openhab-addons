@@ -387,7 +387,7 @@ public class Enigma2CommandExecutor {
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2servicereference");
             String[] temp = content.split(" ");
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < temp.length - 1; i++) {
                 sb.append(temp[i]);
                 sb.append("%20");

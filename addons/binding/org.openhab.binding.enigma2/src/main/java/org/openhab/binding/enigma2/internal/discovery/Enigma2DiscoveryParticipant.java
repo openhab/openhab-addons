@@ -48,24 +48,17 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         ThingUID uid = getThingUID(info);
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>(4);
-            String label;
-            try {
-                label = info.getName();
-            } catch (Exception e) {
-                label = "unnamed enigma2 device";
-            }
+            String label = info.getName();
             // remove the domain from the name
             InetAddress[] addrs = info.getInetAddresses();
 
             if (addrs.length > 1) {
-                logger.warn("Enigma2 device {} ({}) reports multiple addresses - using the first one! {}",
+                logger.info("Enigma2 device {} ({}) reports multiple addresses - using the first one! {}",
                         info.getName(), label, Arrays.toString(addrs));
             }
 
             Long defaultRefreshinterval = (long) 5000;
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_HOST, addrs[0].getHostAddress());
-            properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_USER, "");
-            properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_PASSWORD, "");
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH, defaultRefreshinterval);
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
         }
@@ -74,18 +67,12 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public ThingUID getThingUID(ServiceInfo info) {
-        if (info != null) {
-            logger.debug("ServiceInfo: {}", info);
-            if (info.getType() != null) {
-                if (info.getType().equals(getServiceType())) {
-                    logger.trace("Discovered a Enigma2 device thing with name '{}'", info.getName());
-                    String formatedIP = getFormattedIPAddress(info);
-                    if (formatedIP != null) {
-                        return new ThingUID(Enigma2BindingConstants.THING_TYPE_DEVICE, new String(formatedIP));
-                    } else {
-                        return null;
-                    }
-                }
+        logger.debug("ServiceInfo: {}", info);
+        if (info != null && getServiceType().equals(info.getType())) {
+            logger.trace("Discovered a Enigma2 device thing with name '{}'", info.getName());
+            String formatedIP = getFormattedIPAddress(info);
+            if (formatedIP != null) {
+                return new ThingUID(Enigma2BindingConstants.THING_TYPE_DEVICE, new String(formatedIP));
             }
         }
         return null;
@@ -104,10 +91,7 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         } catch (IOException e) {
             return false;
         }
-        if ((content != null) && (content.contains("e2enigmaversion"))) {
-            return true;
-        }
-        return false;
+        return content != null && content.contains("e2enigmaversion");
     }
 
     private String getFormattedIPAddress(ServiceInfo info) {
@@ -116,10 +100,8 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
             if (addrs.length > 0) {
                 String ip = addrs[0].getHostAddress();
                 if (isIPValid(ip)) {
-                    if (ip != null) {
-                        String formatedIP = ip.replace(".", "");
-                        return formatedIP;
-                    }
+                    String formatedIP = ip.replace(".", "");
+                    return formatedIP;
                 }
             }
         }

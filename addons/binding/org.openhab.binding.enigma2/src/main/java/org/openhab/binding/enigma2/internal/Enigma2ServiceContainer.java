@@ -9,10 +9,20 @@
 package org.openhab.binding.enigma2.internal;
 
 import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * The {@link Enigma2ServiceContainer} represents all Services found on the enigma2 device
+ *
+ * @author Thomas Traunbauer - Initial contribution
+ */
 public class Enigma2ServiceContainer {
 
-    private HashMap<String, String> mapOfServices = new HashMap<String, String>();
+    private Map<String, String> mapOfServices;
+
+    public Enigma2ServiceContainer() {
+        mapOfServices = new HashMap<>();
+    }
 
     public void add(String serviceName, String serviceReference) {
         String cleanServiceName = Enigma2Util.cleanString(serviceName);
