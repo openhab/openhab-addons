@@ -7,6 +7,20 @@ This happens by either using [ping](https://en.wikipedia.org/wiki/Ping_%28networ
 
 Every device with an IP address in the local network is supported.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Discovery
 
 Network devices can be manually discovered by sending a ping to every IP on the network.
