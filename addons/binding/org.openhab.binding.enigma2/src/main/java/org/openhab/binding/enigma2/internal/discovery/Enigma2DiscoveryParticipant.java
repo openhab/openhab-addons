@@ -9,9 +9,12 @@
 package org.openhab.binding.enigma2.internal.discovery;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,16 +52,9 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>(4);
             String label = info.getName();
-            // remove the domain from the name
-            InetAddress[] addrs = info.getInetAddresses();
-
-            if (addrs.length > 1) {
-                logger.info("Enigma2 device {} ({}) reports multiple addresses - using the first one! {}",
-                        info.getName(), label, Arrays.toString(addrs));
-            }
 
             Long defaultRefreshinterval = (long) 5000;
-            properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_HOST, addrs[0].getHostAddress());
+            properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_HOST, getIPAddress(info));
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH, defaultRefreshinterval);
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
         }
@@ -84,7 +80,7 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         return "_ssh._tcp.local.";
     }
 
-    private boolean isIPValid(String ip) {
+    private boolean isEnigma2Device(String ip) {
         String content;
         try {
             content = HttpUtil.executeUrl("GET", "http://" + ip + "/web/about", 5000);
@@ -94,16 +90,37 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         return content != null && content.contains("e2enigmaversion");
     }
 
-    private String getFormattedIPAddress(ServiceInfo info) {
+    private String getIPAddress(ServiceInfo info) {
         if (info != null) {
             InetAddress[] addrs = info.getInetAddresses();
-            if (addrs.length > 0) {
-                String ip = addrs[0].getHostAddress();
-                if (isIPValid(ip)) {
-                    String formatedIP = ip.replace(".", "");
-                    return formatedIP;
+            List<Inet4Address> listOfInt4Addresses = new ArrayList<>();
+
+            for (int i = 0; i < addrs.length; i++) {
+                if (addrs[i] instanceof Inet4Address) {
+                    listOfInt4Addresses.add((Inet4Address) addrs[i]);
                 }
             }
+
+            if (listOfInt4Addresses.size() > 1) {
+                logger.info("Enigma2 device {} reports multiple addresses - using the first one! {}", info.getName(),
+                        Arrays.toString(listOfInt4Addresses.toArray(new Inet4Address[listOfInt4Addresses.size()])));
+            }
+
+            if (listOfInt4Addresses.size() > 0) {
+                String ip = listOfInt4Addresses.get(0).getHostAddress();
+                if (isEnigma2Device(ip)) {
+                    return ip;
+                }
+            }
+        }
+        return null;
+    }
+
+    private String getFormattedIPAddress(ServiceInfo info) {
+        String ip = getIPAddress(info);
+        if (ip != null) {
+            String formatedIP = ip.replace(".", "");
+            return formatedIP;
         }
         return null;
     }
