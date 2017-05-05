@@ -43,6 +43,7 @@ import org.openhab.binding.homematic.internal.communicator.virtual.DeleteDeviceV
 import org.openhab.binding.homematic.internal.communicator.virtual.DisplayOptionsVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.DisplayTextVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.FirmwareVirtualDatapointHandler;
+import org.openhab.binding.homematic.internal.communicator.virtual.HmwIoModuleVirtualDatapointHandler;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeDurationVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.InstallModeVirtualDatapoint;
 import org.openhab.binding.homematic.internal.communicator.virtual.OnTimeAutomaticVirtualDatapointHandler;
@@ -82,7 +83,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private static final long CONNECTION_TRACKER_INTERVAL_SECONDS = 15;
     private static final String GATEWAY_POOL_NAME = "homematicGateway";
 
-    private Map<TransferMode, RpcClient> rpcClients = new HashMap<TransferMode, RpcClient>();
+    private Map<TransferMode, RpcClient<?>> rpcClients = new HashMap<TransferMode, RpcClient<?>>();
     private Map<TransferMode, RpcServer> rpcServers = new HashMap<TransferMode, RpcServer>();
 
     protected HomematicConfig config;
@@ -117,6 +118,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         virtualDatapointHandlers.add(new StateContactVirtualDatapointHandler());
         virtualDatapointHandlers.add(new SignalStrengthVirtualDatapointHandler());
         virtualDatapointHandlers.add(new DisplayTextVirtualDatapoint());
+        virtualDatapointHandlers.add(new HmwIoModuleVirtualDatapointHandler());
     }
 
     public AbstractHomematicGateway(String id, HomematicConfig config, HomematicGatewayListener eventListener) {
@@ -174,7 +176,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         startClients();
         startServers();
         startWatchdogs();
-        initialized = true;
     }
 
     /**
@@ -209,7 +210,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * Stops the Homematic gateway client.
      */
     protected void stopClients() {
-        for (RpcClient rpcClient : rpcClients.values()) {
+        for (RpcClient<?> rpcClient : rpcClients.values()) {
             rpcClient.dispose();
         }
         rpcClients.clear();
@@ -293,8 +294,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      * {@inheritDoc}
      */
     @Override
-    public RpcClient getRpcClient(HmInterface hmInterface) throws IOException {
-        RpcClient rpcClient = rpcClients.get(availableInterfaces.get(hmInterface));
+    public RpcClient<?> getRpcClient(HmInterface hmInterface) throws IOException {
+        RpcClient<?> rpcClient = rpcClients.get(availableInterfaces.get(hmInterface));
         if (rpcClient == null) {
             throw new IOException("RPC client for interface " + hmInterface + " not available");
         }
@@ -421,6 +422,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         if (!cancelLoadAllMetadata) {
             devices.keySet().retainAll(loadedDevices);
         }
+        initialized = true;
     }
 
     /**
@@ -869,7 +871,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 getRpcClient(getDefaultInterface()).validateConnection(getDefaultInterface());
             } catch (IOException ex) {
                 // connection lost validation
-                RpcClient rpcClient = null;
+                RpcClient<?> rpcClient = null;
                 try {
                     if (config.getGatewayInfo().isHomegear() || config.getGatewayInfo().isCCU()) {
                         rpcClient = new BinRpcClient(config);

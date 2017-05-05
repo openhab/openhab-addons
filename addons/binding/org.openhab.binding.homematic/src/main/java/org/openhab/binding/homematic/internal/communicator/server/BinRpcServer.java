@@ -24,8 +24,8 @@ public class BinRpcServer implements RpcServer {
 
     private Thread networkServiceThread;
     private BinRpcNetworkService networkService;
-    private RpcEventListener listener;
     private HomematicConfig config;
+    private RpcEventListener listener;
 
     public BinRpcServer(RpcEventListener listener, HomematicConfig config) {
         this.listener = listener;
