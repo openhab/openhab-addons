@@ -201,7 +201,9 @@ public class MetadataUtils {
             }
             sb.append(key).append(", ");
         }
-        logger.trace("Description not found for: {}", StringUtils.substring(sb.toString(), 0, -2));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Description not found for: {}", StringUtils.substring(sb.toString(), 0, -2));
+        }
         return null;
     }
 

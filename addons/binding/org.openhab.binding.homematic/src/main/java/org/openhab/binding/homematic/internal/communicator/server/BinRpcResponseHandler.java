@@ -42,9 +42,7 @@ public class BinRpcResponseHandler implements Runnable {
     public void run() {
         try {
             BinRpcMessage message = new BinRpcMessage(socket.getInputStream(), true, config.getEncoding());
-            if (logger.isTraceEnabled()) {
-                logger.trace("Event BinRpcMessage: {}", message.toString());
-            }
+            logger.trace("Event BinRpcMessage: {}", message);
             byte[] returnValue = rpcResponseHandler.handleMethodCall(message.getMethodName(),
                     message.getResponseData());
             if (returnValue != null) {
