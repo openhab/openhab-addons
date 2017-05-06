@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.ikeatradfri.discovery;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import static org.openhab.binding.ikeatradfri.IkeaTradfriBindingConstants.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -20,11 +23,8 @@ import org.openhab.binding.ikeatradfri.internal.IkeaTradfriDiscoverListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.openhab.binding.ikeatradfri.IkeaTradfriBindingConstants.*;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link IkeaTradfriDeviceDiscoveryService} is responsible for discovering all things
@@ -72,18 +72,16 @@ public class IkeaTradfriDeviceDiscoveryService extends AbstractDiscoveryService 
                     JsonObject state = data.get(TRADFRI_LIGHT).getAsJsonArray().get(0).getAsJsonObject();
 
                     // White spectrum light
-                    if(state.has(TRADFRI_COLOR)) {
+                    if (state.has(TRADFRI_COLOR)) {
                         thingId = new ThingUID(IkeaTradfriBindingConstants.THING_TYPE_WS_BULB, bridge, id);
-                    }
-                    else {
+                    } else {
                         thingId = new ThingUID(IkeaTradfriBindingConstants.THING_TYPE_WW_BULB, bridge, id);
                     }
 
                     String label = "IKEA Tradfri bulb";
                     try {
                         label = data.get(TRADFRI_NAME).getAsString();
-                    }
-                    catch (JsonSyntaxException e) {
+                    } catch (JsonSyntaxException e) {
                         logger.error("JSON error: {}", e.getMessage());
                     }
 
@@ -94,8 +92,7 @@ public class IkeaTradfriDeviceDiscoveryService extends AbstractDiscoveryService 
                     thingDiscovered(discoveryResult);
 
                 }
-            }
-            catch (JsonSyntaxException e) {
+            } catch (JsonSyntaxException e) {
                 logger.error("JSON error: {}", e.getMessage());
             }
         }

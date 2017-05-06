@@ -6,7 +6,6 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
- lib/californium-osgi-1.0.5.jar,
  lib/californium-core-1.0.5.jar,
  lib/scandium-1.0.5.jar,
  lib/element-connector-1.0.5.jar
@@ -30,3 +29,4 @@ Import-Package: com.google.common.base,
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.ikeatradfri,
  org.openhab.binding.ikeatradfri.handler
+Bundle-ActivationPolicy: lazy

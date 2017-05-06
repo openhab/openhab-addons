@@ -1,19 +1,21 @@
 package org.openhab.binding.ikeatradfri.discovery;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.jmdns.ServiceInfo;
+
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
-
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.ikeatradfri.IkeaTradfriBindingConstants;
 import org.openhab.binding.ikeatradfri.configuration.IkeaTradfriGatewayConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jmdns.ServiceInfo;
-import java.net.Inet4Address;
-import java.util.*;
 
 /**
  * Created by dansu on 2017-04-18.
@@ -69,14 +71,14 @@ public class IkeaTradfriGatewayDiscoveryParticipant implements MDNSDiscoveryPart
             Enumeration<String> props = service.getPropertyNames();
             Map<String, Object> properties = new HashMap<>(1);
             props = service.getPropertyNames();
-            while(props.hasMoreElements()) {
+            while (props.hasMoreElements()) {
                 String s = props.nextElement();
                 properties.put(s, service.getPropertyString(s));
             }
 
             properties.put(IkeaTradfriGatewayConfiguration.HOST, ip + ":" + service.getPort());
-            result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel("IKEA Trådfri Gateway")
-                    .build();
+            result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withLabel("IKEA Trådfri Gateway").build();
         }
         return result;
     }
