@@ -11,6 +11,7 @@ package org.openhab.binding.max.internal.device;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -29,11 +30,11 @@ public abstract class Device {
 
     private static final Logger logger = LoggerFactory.getLogger(Device.class);
 
-    private String serialNumber = "";
-    private String rfAddress = "";
-    private int roomId = -1;
-    private String roomName = "";
-    private String name = "";
+    private final String serialNumber;
+    private String rfAddress;
+    private int roomId;
+    private String roomName;
+    private String name;
 
     private boolean updated;
     private boolean batteryLow;
@@ -46,7 +47,7 @@ public abstract class Device {
     private boolean gatewayKnown;
     private boolean panelLocked;
     private boolean linkStatusError;
-    private HashMap<String, Object> properties = new HashMap<>();
+    private Map<String, Object> properties = new HashMap<>();
 
     public Device(DeviceConfiguration c) {
         this.serialNumber = c.getSerialNumber();
@@ -375,14 +376,14 @@ public abstract class Device {
     /**
      * @return the properties
      */
-    public HashMap<String, Object> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
     /**
      * @param properties the properties to set
      */
-    public void setProperties(HashMap<String, Object> properties) {
+    public void setProperties(Map<String, Object> properties) {
         this.properties = new HashMap<>(properties);
     }
 
@@ -390,5 +391,4 @@ public abstract class Device {
     public String toString() {
         return this.getType().toString() + " (" + rfAddress + ") '" + this.getName() + "'";
     }
-
 }

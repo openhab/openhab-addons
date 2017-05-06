@@ -27,13 +27,13 @@ public final class SendCommand {
 
     private ChannelUID channelUID;
     private Command command;
-    private CubeCommand cubeCommand = null;
+    private CubeCommand cubeCommand;
     private String serialNumber;
     private String key;
     private String commandText;
 
     public SendCommand(String serialNumber, ChannelUID channelUID, Command command) {
-        commandId += 1;
+        commandId++;
         id = commandId;
         this.serialNumber = serialNumber;
         this.channelUID = channelUID;
@@ -43,7 +43,7 @@ public final class SendCommand {
     }
 
     public SendCommand(String serialNumber, CubeCommand cubeCommand, String commandText) {
-        commandId += 1;
+        commandId++;
         id = commandId;
         this.serialNumber = serialNumber;
         this.cubeCommand = cubeCommand;
@@ -56,8 +56,7 @@ public final class SendCommand {
      * This is can be used to find duplicated commands in the queue
      */
     private static String getKey(String serialNumber, ChannelUID channelUID) {
-        String key = serialNumber + "-" + channelUID.getId();
-        return key;
+        return serialNumber + "-" + channelUID.getId();
     }
 
     /**
@@ -77,74 +76,44 @@ public final class SendCommand {
         return key;
     }
 
-    /**
-     * @return the id
-     */
     public int getId() {
         return id;
     }
 
-    /**
-     * @return the channelUID
-     */
     public ChannelUID getChannelUID() {
         return channelUID;
     }
 
-    /**
-     * @param channelUID the channelUID to set
-     */
     public void setChannelUID(ChannelUID channelUID) {
         this.channelUID = channelUID;
         key = getKey(serialNumber, channelUID);
     }
 
-    /**
-     * @return the command
-     */
     public Command getCommand() {
         return command;
     }
 
-    /**
-     * @param command the command to set
-     */
     public void setCommand(Command command) {
         this.command = command;
     }
 
-    /**
-     * @return the {@link CubeCommand}
-     */
     public CubeCommand getCubeCommand() {
         return cubeCommand;
     }
 
-    /**
-     * @return the device
-     */
     public String getDeviceSerial() {
         return serialNumber;
     }
 
-    /**
-     * @param device the device to set
-     */
     public void setDeviceSerial(String device) {
         this.serialNumber = device;
         key = getKey(serialNumber, channelUID);
     }
 
-    /**
-     * @return the commandText
-     */
     public String getCommandText() {
         return commandText;
     }
 
-    /**
-     * @param commandText the commandText to set
-     */
     public void setCommandText(String commandText) {
         this.commandText = commandText;
     }

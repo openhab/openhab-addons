@@ -20,7 +20,7 @@ public abstract class Message {
 
     public static final String DELIMETER = ",";
 
-    private String raw = null;
+    private final String raw;
 
     public Message(String raw) {
         this.raw = raw;

@@ -28,9 +28,6 @@ public class F_Command extends CubeCommand {
 
     /**
      * Updates the Cube the NTP info
-     *
-     * @param ntpServer1
-     * @param ntpServer2
      */
     public F_Command(String ntpServer1, String ntpServer2) {
         this.ntpServer1 = ntpServer1 != null ? ntpServer1 : "";
@@ -39,15 +36,14 @@ public class F_Command extends CubeCommand {
 
     @Override
     public String getCommandString() {
-        String servers;
+        final String servers;
         if (ntpServer1.length() > 0 && ntpServer2.length() > 0) {
             servers = ntpServer1 + "," + ntpServer2;
         } else {
             servers = ntpServer1 + ntpServer2;
         }
 
-        String cmd = "f:" + servers + '\r' + '\n';
-        return cmd;
+        return "f:" + servers + '\r' + '\n';
     }
 
     @Override

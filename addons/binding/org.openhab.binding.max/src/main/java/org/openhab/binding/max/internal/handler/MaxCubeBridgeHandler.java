@@ -90,11 +90,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class MaxCubeBridgeHandler extends BaseBridgeHandler {
-
-    public MaxCubeBridgeHandler(Bridge br) {
-        super(br);
-    }
-
     private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
 
     /** timeout on network connection **/
@@ -116,7 +111,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private static final int MAX_COMMANDS = 50;
     private BlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<>(MAX_COMMANDS);
 
-    private SendCommand lastCommandId = null;
+    private SendCommand lastCommandId;
 
     private long refreshInterval = 30;
     private String ipAddress;
@@ -125,9 +120,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private int maxRequestsPerConnection;
     private String ntpServer1;
     private String ntpServer2;
-    private int requestCount = 0;
-    private boolean propertiesSet = false;
-    private boolean roomPropertiesSet = false;
+    private int requestCount;
+    private boolean propertiesSet;
+    private boolean roomPropertiesSet;
 
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
@@ -138,7 +133,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /**
      * Duty cycle of the cube
      */
-    private int dutyCycle = 0;
+    private int dutyCycle;
 
     /**
      * The available memory slots of the cube
@@ -148,11 +143,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /**
      * connection socket and reader/writer for execute method
      */
-    private Socket socket = null;
-    private BufferedReader reader = null;
-    private OutputStreamWriter writer = null;
+    private Socket socket;
+    private BufferedReader reader;
+    private OutputStreamWriter writer;
 
-    private boolean previousOnline = false;
+    private boolean previousOnline;
 
     private Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
@@ -164,7 +159,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    private Thread queueConsumerThread = null;
+    private Thread queueConsumerThread;
+
+    public MaxCubeBridgeHandler(Bridge br) {
+        super(br);
+    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -284,7 +283,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private void cubeReboot() {
         logger.info("Rebooting MAX! Cube {}", getThing().getThingTypeUID());
         MaxCubeBridgeConfiguration maxConfiguration = getConfigAs(MaxCubeBridgeConfiguration.class);
-        UdpCubeCommand reset = new UdpCubeCommand(UdpCubeCommand.udpCommandType.RESET, maxConfiguration.serialNumber);
+        UdpCubeCommand reset = new UdpCubeCommand(UdpCubeCommand.UdpCommandType.RESET, maxConfiguration.serialNumber);
         reset.setIpAddress(maxConfiguration.ipAddress);
         reset.send();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Rebooting");
@@ -593,7 +592,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             socketClose(); // reconnect on next execution
             return false;
         } catch (UnknownHostException e) {
-            logger.warn("Host error occurred during execution", e);
+            logger.warn("Host error occurred during execution: {}", e.getMessage());
             socketClose(); // reconnect on next execution
             return false;
         } catch (IOException e) {
@@ -779,7 +778,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private void processNMessage(N_Message nMessage) {
         if (nMessage.getRfAddress() != null) {
-            newInclusionDeviceFound(nMessage);
+            logger.info("New {} found. Serial: {}, rfaddress: {}", nMessage.getDeviceType().toString(),
+                    nMessage.getSerialNumber(), nMessage.getRfAddress());
+            // Send C command to get the configuration so it will be added to discovery
+            String newSerial = nMessage.getSerialNumber();
+            queueCommand(new SendCommand(newSerial, new C_Command(nMessage.getRfAddress()), "Refresh " + newSerial));
         }
     }
 
@@ -807,17 +810,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         } finally {
             dutyCycleLock.unlock();
         }
-    }
-
-    /**
-     * @param {@link: N_Message} returned from the Cube with new device information
-     */
-    private void newInclusionDeviceFound(N_Message message) {
-        logger.info("New {} found. Serial: {}, rfaddress: {}", message.getDeviceType().toString(),
-                message.getSerialNumber(), message.getRfAddress());
-        // Send C command to get the configuration so it will be added to discovery
-        String newSerial = message.getSerialNumber();
-        queueCommand(new SendCommand(newSerial, new C_Command(message.getRfAddress()), "Refresh " + newSerial));
     }
 
     /**
@@ -981,8 +973,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         socket = new Socket(ipAddress, port);
         socket.setSoTimeout((NETWORK_TIMEOUT));
         logger.debug("Open new connection... to {} port {}", ipAddress, port);
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        writer = new OutputStreamWriter(socket.getOutputStream());
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+        writer = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
         requestCount = 0;
         return true;
     }
@@ -1000,7 +992,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_DUTY_CYCLE), new DecimalType(dutyCycle));
     }
 
-    private boolean hasExcessDutyCycle() {
+    public boolean hasExcessDutyCycle() {
         return dutyCycle >= MAX_DUTY_CYCLE;
     }
 }

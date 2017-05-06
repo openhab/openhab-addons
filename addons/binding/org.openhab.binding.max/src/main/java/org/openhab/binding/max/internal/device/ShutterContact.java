@@ -19,15 +19,16 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
  */
 public class ShutterContact extends Device {
 
-    private OpenClosedType shutterState = null;
+    private OpenClosedType shutterState;
 
     public ShutterContact(DeviceConfiguration c) {
         super(c);
     }
 
     public void setShutterState(OpenClosedType shutterState) {
-        if (this.shutterState != shutterState)
+        if (this.shutterState != shutterState) {
             setUpdated(true);
+        }
         this.shutterState = shutterState;
     }
 

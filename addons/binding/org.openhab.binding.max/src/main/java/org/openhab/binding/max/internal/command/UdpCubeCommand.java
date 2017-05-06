@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,14 +40,14 @@ public class UdpCubeCommand {
 
     private final Logger logger = LoggerFactory.getLogger(UdpCubeCommand.class);
 
-    protected static boolean commandRunning = false;
+    protected static boolean commandRunning;
 
-    private final udpCommandType commandType;
+    private final UdpCommandType commandType;
     private final String serialNumber;
     private Map<String, String> commandResponse = new HashMap<>();
-    private String ipAddress = null;
+    private String ipAddress;
 
-    public UdpCubeCommand(udpCommandType commandType, String serialNumber) {
+    public UdpCubeCommand(UdpCommandType commandType, String serialNumber) {
         this.commandType = commandType;
         if (serialNumber == null || serialNumber.isEmpty()) {
             this.serialNumber = "**********";
@@ -63,7 +64,7 @@ public class UdpCubeCommand {
      * URL - h get URL information
      * DEFAULTNET - c get network default info
      */
-    public enum udpCommandType {
+    public enum UdpCommandType {
         RESET,
         DISCOVERY,
         NETWORK,
@@ -76,15 +77,15 @@ public class UdpCubeCommand {
      */
     public synchronized boolean send() {
         String commandString;
-        if (commandType.equals(udpCommandType.RESET)) {
+        if (commandType.equals(UdpCommandType.RESET)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "R";
-        } else if (commandType.equals(udpCommandType.DISCOVERY)) {
+        } else if (commandType.equals(UdpCommandType.DISCOVERY)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "I";
-        } else if (commandType.equals(udpCommandType.NETWORK)) {
+        } else if (commandType.equals(UdpCommandType.NETWORK)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "N";
-        } else if (commandType.equals(udpCommandType.URL)) {
+        } else if (commandType.equals(UdpCommandType.URL)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "h";
-        } else if (commandType.equals(udpCommandType.DEFAULTNET)) {
+        } else if (commandType.equals(UdpCommandType.DEFAULTNET)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "c";
         } else {
             logger.info("Unknown Command {}", commandType.toString());
@@ -115,7 +116,7 @@ public class UdpCubeCommand {
 
                 // We have a response
                 String message = new String(receivePacket.getData(), receivePacket.getOffset(),
-                        receivePacket.getLength());
+                        receivePacket.getLength(), Charset.forName("UTF-8"));
                 logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
                         message);
 
@@ -130,19 +131,22 @@ public class UdpCubeCommand {
                     commandResponse.put("requestType", requestType);
 
                     if (requestType.equals("I")) {
-                        commandResponse.put("rfAddress",
-                                Utils.getHex(message.substring(21, 24).getBytes()).replace(" ", "").toLowerCase());
+                        commandResponse.put("rfAddress", Utils.getHex(message.substring(21, 24).getBytes("UTF-8"))
+                                .replace(" ", "").toLowerCase());
                         commandResponse.put("firmwareVersion",
-                                Utils.getHex(message.substring(24, 26).getBytes()).replace(" ", "."));
+                                Utils.getHex(message.substring(24, 26).getBytes("UTF-8")).replace(" ", "."));
                     } else {
                         // TODO: Further parsing of the other message types
-                        commandResponse.put("messageResponse", Utils.getHex(message.substring(24).getBytes()));
+                        commandResponse.put("messageResponse", Utils.getHex(message.substring(24).getBytes("UTF-8")));
                     }
 
                     commandRunning = false;
-                    logger.debug("MAX! UDP response");
-                    for (String key : commandResponse.keySet()) {
-                        logger.debug("{}:{}{}", key, Strings.repeat(" ", 25 - key.length()), commandResponse.get(key));
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("MAX! UDP response");
+                        for (Map.Entry<String, String> entry : commandResponse.entrySet()) {
+                            logger.debug("{}:{}{}", entry.getKey(), Strings.repeat(" ", 25 - entry.getKey().length()),
+                                    entry.getValue());
+                        }
                     }
                 }
             }
@@ -168,7 +172,7 @@ public class UdpCubeCommand {
             bcSend = new DatagramSocket();
             bcSend.setBroadcast(true);
 
-            byte[] sendData = commandString.getBytes();
+            byte[] sendData = commandString.getBytes("UTF-8");
 
             // Broadcast the message over all the network interfaces
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();

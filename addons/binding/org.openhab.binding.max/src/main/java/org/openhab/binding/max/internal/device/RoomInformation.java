@@ -16,9 +16,9 @@ package org.openhab.binding.max.internal.device;
  * @since 1.4.0
  */
 public class RoomInformation {
-    private int position = -1;
-    private String name = "";
-    private String rfAddress = "";
+    private int position;
+    private String name;
+    private String rfAddress;
 
     public RoomInformation(int position, String name, String rfAddress) {
         this.position = position;

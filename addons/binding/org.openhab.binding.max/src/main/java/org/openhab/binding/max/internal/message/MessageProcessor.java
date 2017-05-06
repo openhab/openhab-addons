@@ -207,16 +207,11 @@ public class MessageProcessor {
      *             when there was no message on the stack
      */
     public Message pull() throws NoMessageAvailableException {
-        Message result = null;
-
         if (this.currentMessage == null) {
             throw new NoMessageAvailableException();
-        } else {
-            result = this.currentMessage;
-            reset();
         }
-
-        return result;
+        reset();
+        return this.currentMessage;
     }
 
     /**

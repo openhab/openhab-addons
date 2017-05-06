@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,12 +40,11 @@ public class M_Command extends CubeCommand {
     private static int MAX_DEVICES_COUNT = 140;
     private static int MAX_MSG_LENGTH = 1900;
 
-    private List<Device> devices = new ArrayList<>();
-    public List<RoomInformation> rooms = new ArrayList<>();
+    private final List<Device> devices;
+    public final List<RoomInformation> rooms;
 
     public M_Command(List<Device> devices) {
-        this.devices = new ArrayList<Device>(devices);
-        roombuilder();
+        this(devices, new ArrayList<>());
     }
 
     public M_Command(List<Device> devices, List<RoomInformation> rooms) {
@@ -100,10 +100,9 @@ public class M_Command extends CubeCommand {
             byte[] header = { MAGIC_NR, M_VERSION, (byte) rooms.size() };
             message.write(header);
 
-            TreeSet<Integer> sortedRooms = new TreeSet<Integer>();
+            Set<Integer> sortedRooms = new TreeSet<Integer>();
             for (RoomInformation room : rooms) {
                 sortedRooms.add(room.getPosition());
-
             }
 
             for (Integer roomPos : sortedRooms) {
@@ -139,7 +138,7 @@ public class M_Command extends CubeCommand {
                     byte[] rfAddress = Utils.hexStringToByteArray(di.getRFAddress());
                     byte[] deviceName = StringUtils.abbreviate(di.getName(), MAX_NAME_LENGTH).getBytes("UTF-8");
                     byte[] nameLength = { (byte) deviceName.length };
-                    byte[] serialNumber = di.getSerialNumber().getBytes();
+                    byte[] serialNumber = di.getSerialNumber().getBytes("UTF-8");
                     byte[] roomId = { (byte) di.getRoomId() };
 
                     message.write(deviceType);
@@ -162,16 +161,16 @@ public class M_Command extends CubeCommand {
 
         }
 
-        String encodedString = Base64.encodeBase64StringUnChunked(message.toByteArray());
-
-        String commandString = "";
+        final String encodedString = Base64.encodeBase64StringUnChunked(message.toByteArray());
+        final StringBuilder commandStringBuilder = new StringBuilder();
         int parts = (int) Math.round(encodedString.length() / MAX_MSG_LENGTH + 0.5);
         for (int i = 0; i < parts; i++) {
             String partString = StringUtils.abbreviate(encodedString.substring((i) * MAX_MSG_LENGTH), MAX_MSG_LENGTH);
-            commandString = commandString + "m:" + String.format("%02d", i) + "," + partString + '\r' + '\n';
+            commandStringBuilder.append("m:").append(String.format("%02d", i)).append(",").append(partString)
+                    .append('\r').append('\n');
         }
 
-        return commandString;
+        return commandStringBuilder.toString();
     }
 
     @Override

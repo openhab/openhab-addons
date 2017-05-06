@@ -18,6 +18,8 @@ import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.DeviceConfiguration;
 import org.slf4j.Logger;
 
+import com.google.common.base.Charsets;
+
 /**
  * The L message contains real time information about all MAX! devices.
  *
@@ -34,15 +36,15 @@ public final class L_Message extends Message {
 
     public Collection<? extends Device> getDevices(List<DeviceConfiguration> configurations) {
 
-        List<Device> devices = new ArrayList<Device>();
+        final List<Device> devices = new ArrayList<Device>();
 
-        byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes());
+        final byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes(Charsets.UTF_8));
 
-        MaxTokenizer tokenizer = new MaxTokenizer(decodedRawMessage);
+        final MaxTokenizer tokenizer = new MaxTokenizer(decodedRawMessage);
 
         while (tokenizer.hasMoreElements()) {
             byte[] token = tokenizer.nextElement();
-            Device tempDevice = Device.create(token, configurations);
+            final Device tempDevice = Device.create(token, configurations);
             if (tempDevice != null) {
                 devices.add(tempDevice);
             }
@@ -53,7 +55,7 @@ public final class L_Message extends Message {
 
     public Collection<? extends Device> updateDevices(List<Device> devices, List<DeviceConfiguration> configurations) {
 
-        byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes());
+        byte[] decodedRawMessage = Base64.decodeBase64(getPayload().getBytes(Charsets.UTF_8));
 
         MaxTokenizer tokenizer = new MaxTokenizer(decodedRawMessage);
 

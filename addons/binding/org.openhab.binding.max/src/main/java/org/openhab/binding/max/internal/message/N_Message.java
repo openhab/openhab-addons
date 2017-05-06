@@ -9,7 +9,6 @@
 package org.openhab.binding.max.internal.message;
 
 import org.apache.commons.net.util.Base64;
-import org.openhab.binding.max.MaxBinding;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
 import org.slf4j.Logger;
@@ -26,9 +25,9 @@ public final class N_Message extends Message {
     private final Logger logger = LoggerFactory.getLogger(N_Message.class);
 
     private String decodedPayload;
-    private DeviceType deviceType = null;
-    private String rfAddress = null;
-    private String serialnr = null;
+    private DeviceType deviceType;
+    private String rfAddress;
+    private String serialnr;
 
     /**
      * The {@link: N_Message} contains information about a newly discovered Device
@@ -58,23 +57,14 @@ public final class N_Message extends Message {
         }
     }
 
-    /**
-     * @return the deviceType
-     */
     public DeviceType getDeviceType() {
         return deviceType;
     }
 
-    /**
-     * @return the rf Address
-     */
     public String getRfAddress() {
         return rfAddress;
     }
 
-    /**
-     * @return the Serial Number
-     */
     public String getSerialNumber() {
         return serialnr;
     }

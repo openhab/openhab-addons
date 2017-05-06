@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.util.Base64;
@@ -26,6 +27,7 @@ import org.openhab.binding.max.internal.device.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 /**
@@ -58,7 +60,7 @@ public final class C_Message extends Message {
     private BigDecimal boostValve = null;
     private String programData = null;
 
-    private HashMap<String, Object> properties = new HashMap<>();
+    private Map<String, Object> properties = new HashMap<>();
 
     public C_Message(String raw) {
         super(raw);
@@ -66,7 +68,7 @@ public final class C_Message extends Message {
 
         rfAddress = tokens[0];
 
-        byte[] bytes = Base64.decodeBase64(tokens[1].getBytes());
+        byte[] bytes = Base64.decodeBase64(tokens[1].getBytes(Charsets.UTF_8));
 
         int[] data = new int[bytes.length];
 
@@ -271,7 +273,7 @@ public final class C_Message extends Message {
         return deviceType;
     }
 
-    public HashMap<String, Object> getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
