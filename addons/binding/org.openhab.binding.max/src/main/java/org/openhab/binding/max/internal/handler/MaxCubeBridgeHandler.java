@@ -596,7 +596,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             socketClose(); // reconnect on next execution
             return false;
         } catch (IOException e) {
-            logger.warn("IO error occurred during execution", e);
+            logger.warn("IO error occurred during execution: {}", e.getMessage());
             socketClose(); // reconnect on next execution
             return false;
         } catch (Exception e) {
