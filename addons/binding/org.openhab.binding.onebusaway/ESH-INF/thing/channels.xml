@@ -4,17 +4,6 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <channel-group-type id="arrivalRange">
-        <label>Range</label>
-        <description>Range for a route event</description>
-        <channels>
-            <channel id="arrival" typeId="arrival" />
-            <channel id="departure" typeId="departure" />
-            <channel id="event" typeId="routeEvent" />
-            <channel id="update" typeId="update" />
-        </channels>
-    </channel-group-type>
-
     <channel-type id="arrival">
         <item-type>DateTime</item-type>
         <label>Arrival Time</label>

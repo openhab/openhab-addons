@@ -41,7 +41,7 @@ public class ApiHandler extends BaseBridgeHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("The OneBusAway binding is a read-only binding and can not handle commands.");
+        logger.warn("The API bridge is a read-only and can not handle commands.");
     }
 
     /**
@@ -50,7 +50,6 @@ public class ApiHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing OneBusAway bridge...");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
         config = loadAndCheckConfiguration();
         if (config == null) {

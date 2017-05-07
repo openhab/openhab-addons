@@ -11,17 +11,19 @@
         <label>OneBusAway Route</label>
         <description>Provides data about a route at a specific stop.</description>
 
-        <channel-groups>
-            <channel-group id="arrivalDeparture" typeId="arrivalRange" />
-        </channel-groups>
+        <channels>
+            <channel id="arrival" typeId="arrival" />
+            <channel id="departure" typeId="departure" />
+            <channel id="event" typeId="routeEvent" />
+            <channel id="update" typeId="update" />
+        </channels>
 
-        <properties>
-            <property name="headsign">Route Headsign</property>
-            <property name="longName">Route Long Name</property>
-            <property name="shortName">Route Short Name</property>
-        </properties>
-
-        <config-description-ref uri="thing-type:onebusaway:config" />
+        <config-description uri="thing-type:onebusaway:config">
+            <parameter name="routeId" type="text" required="true">
+                <label>Route ID</label>
+                <description>The OneBusAway route ID.</description>
+            </parameter>
+        </config-description>
     </thing-type>
 
 </thing:thing-descriptions>

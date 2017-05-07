@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -31,7 +32,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.onebusaway.internal.config.StopConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +62,7 @@ public class StopHandler extends BaseBridgeHandler {
             fetchAndUpdateStopData();
         }
     };
+    private AtomicBoolean fetchInProgress = new AtomicBoolean(false);
     private long routeDataLastUpdateMs = 0;
     private Multimap<String, ObaStopArrivalResponse.ArrivalAndDeparture> routeData = ArrayListMultimap.create();
     private List<RouteDataListener> routeDataListeners = new CopyOnWriteArrayList<>();
@@ -79,17 +80,8 @@ public class StopHandler extends BaseBridgeHandler {
             logger.debug("Refreshing {}...", channelUID);
             forceUpdate();
         } else {
-            logger.warn("The OneBusAway binding is a read-only binding and can not handle commands.");
+            logger.debug("The OneBusAway Stop is a read-only and can not handle commands.");
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        logger.warn("The OneBusAway binding is a read-only binding and can not handle channel updates.");
-        super.handleUpdate(channelUID, newState);
     }
 
     /**
@@ -98,7 +90,6 @@ public class StopHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing OneBusAway stop bridge...");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
         config = loadAndCheckConfiguration();
         if (config == null) {
@@ -107,26 +98,22 @@ public class StopHandler extends BaseBridgeHandler {
         }
 
         // Do the rest of the work asynchronously because it can take a while.
-        scheduler.submit(new Runnable() {
-            @Override
-            public void run() {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Initializing...");
-                httpClient = new HttpClient();
-                try {
-                    httpClient.start();
-                } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                    httpClient = null;
-                    return;
-                }
-                gson = new Gson();
-
-                if (!fetchAndUpdateStopData()) {
-                    return;
-                }
-
-                scheduleJob();
+        scheduler.submit(() -> {
+            httpClient = new HttpClient();
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                httpClient = null;
+                return;
             }
+            gson = new Gson();
+
+            if (!fetchAndUpdateStopData()) {
+                return;
+            }
+
+            scheduleJob();
         });
     }
 
@@ -192,12 +179,7 @@ public class StopHandler extends BaseBridgeHandler {
     }
 
     private ApiHandler getApiHandler() {
-        Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof ApiHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No API bridge available");
-            return null;
-        }
-        return (ApiHandler) bridge.getHandler();
+        return (ApiHandler) getBridge().getHandler();
     }
 
     private StopConfiguration loadAndCheckConfiguration() {
@@ -214,7 +196,6 @@ public class StopHandler extends BaseBridgeHandler {
     }
 
     private void scheduleJob() {
-        assert (pollingJob == null);
         pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, config.getInterval(), config.getInterval(),
                 TimeUnit.SECONDS);
     }
@@ -223,6 +204,10 @@ public class StopHandler extends BaseBridgeHandler {
         ApiHandler apiHandler = getApiHandler();
         if (apiHandler == null) {
             // We must be offline.
+            return false;
+        }
+        boolean alreadyFetching = !fetchInProgress.compareAndSet(false, true);
+        if (alreadyFetching) {
             return false;
         }
         String url = String.format("http://%s/api/where/arrivals-and-departures-for-stop/%s.json?key=%s",

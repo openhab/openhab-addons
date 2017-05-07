@@ -18,7 +18,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,7 +28,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.onebusaway.internal.config.ChannelConfig;
 import org.openhab.binding.onebusaway.internal.config.RouteConfiguration;
 import org.openhab.binding.onebusaway.internal.handler.ObaStopArrivalResponse.ArrivalAndDeparture;
@@ -73,20 +71,11 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
                     }
                     break;
                 default:
-                    logger.warn("Unhandled command for channel: {} with comamnd: {}", channelUID.getId(), command);
+                    logger.warn("Unnknown channel UID {} with comamnd {}", channelUID.getId(), command);
             }
         } else {
-            logger.warn("The OneBusAway binding is a read-only binding and can not handle commands.");
+            logger.debug("The OneBusAway route is read-only and can not handle commands.");
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        logger.warn("The OneBusAway binding is a read-only binding and can not handle channel updates.");
-        super.handleUpdate(channelUID, newState);
     }
 
     /**
@@ -95,7 +84,6 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
     @Override
     public void initialize() {
         logger.debug("Initializing OneBusAway route stop...");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
         config = loadAndCheckConfiguration();
         if (config == null) {
@@ -153,12 +141,7 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
     }
 
     private StopHandler getStopHandler() {
-        Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof StopHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No bridge available");
-            return null;
-        }
-        return (StopHandler) bridge.getHandler();
+        return (StopHandler) getBridge().getHandler();
     }
 
     private RouteConfiguration loadAndCheckConfiguration() {
@@ -243,11 +226,8 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
             if (remaining.isEmpty()) {
                 return;
             }
-            scheduledFutures.add(scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    publishChannel(channelUID, Calendar.getInstance(), lastUpdateTime, remaining);
-                }
+            scheduledFutures.add(scheduler.schedule(() -> {
+                publishChannel(channelUID, Calendar.getInstance(), lastUpdateTime, remaining);
             }, time.getTimeInMillis() - now.getTimeInMillis(), TimeUnit.MILLISECONDS));
             return;
         }
@@ -281,11 +261,8 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
             }
 
             // Schedule this trigger
-            scheduledFutures.add(scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    triggerChannel(channelUID, event);
-                }
+            scheduledFutures.add(scheduler.schedule(() -> {
+                triggerChannel(channelUID, event);
             }, cal.getTimeInMillis() - now.getTimeInMillis(), TimeUnit.MILLISECONDS));
         }
     }
