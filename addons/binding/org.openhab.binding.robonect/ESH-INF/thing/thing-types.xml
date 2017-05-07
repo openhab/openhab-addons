@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="robonect"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <thing-type id="mower">
+        <label>Mower</label>
+        <description>Mower robot connected via robonect module</description>
+
+        <channel-groups>
+            <channel-group id="mowerInfo" typeId="mowerInfoType"/>
+            <channel-group id="mowerStatus" typeId="mowerStatusType"/>
+            <channel-group id="timer" typeId="timerType"/>
+            <channel-group id="wlan" typeId="wlanType"/>
+            <channel-group id="job" typeId="jobGroupType"/>
+            <channel-group id="version" typeId="robonectVersionType"/>
+            <!-- TODO Version info -->
+        </channel-groups>
+        <config-description>
+            <parameter name="host" type="text" required="true">
+                <label>Host</label>
+                <description>Host name or network address of the Robonect module</description>
+            </parameter>
+                    
+        </config-description>
+    </thing-type>
+
+    <channel-group-type id="mowerInfoType">
+        <label>Mower Info</label>
+        <channels>
+            <channel id="name" typeId="nameType"/>
+        </channels>
+    </channel-group-type>
+    
+    <channel-group-type id="mowerStatusType">
+        <label>Mower Status</label>
+        <channels>
+            <channel id="battery" typeId="system.battery-level"/>
+            <channel id="duration" typeId="durationType"/>
+            <channel id="hours" typeId="hoursType"/>
+            <channel id="mode" typeId="modeType"/>
+            <channel id="status" typeId="mowerStatusType"/>
+            <channel id="stopped" typeId="stoppedType"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="timerType">
+        <label>Timer Info</label>
+        <channels>
+            <channel id="status" typeId="timerStatusType"/>
+            <channel id="nextDate" typeId="nextDateType"/>
+            <channel id="nextTime" typeId="nextTimeType"/>
+            <channel id="nextUnixTime" typeId="nextUnixType"/>
+        </channels>
+    </channel-group-type>
+    
+    
+    <channel-group-type id="jobGroupType">
+        <label>Job properties</label>
+        <channels>
+            <!--   private RemoteStart remoteStart;
+            
+                private Mode after;
+            
+                private String start;
+            
+                private String end;
+            -->
+            <channel id="remoteStart" typeId="remoteStartType"/>
+            <channel id="afterMode" typeId="modeType"/>
+            <channel id="start" typeId="timeStringType"/>
+            <channel id="end" typeId="timeStringType"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="wlanType">
+        <label>Timer Info</label>
+        <channels>
+            <channel id="signal" typeId="signalType"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="robonectVersionType">
+        <label>Robonect Version Info</label>
+        <channels>
+            <channel id="serial" typeId="serialType"/>
+            <channel id="version" typeId="versionType"/>
+            <channel id="compiled" typeId="compiledType"/>
+            <channel id="comment" typeId="commentType"/>
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="serialType">
+        <item-type>String</item-type>
+        <label>Robonect serial number</label>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="versionType">
+        <item-type>String</item-type>
+        <label>Robonect version</label>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="compiledType">
+        <item-type>String</item-type>
+        <label>Robonect version</label>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="commentType">
+        <item-type>String</item-type>
+        <label>Robonect firmware comment</label>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="nameType">
+        <item-type>String</item-type>
+        <label>Mower name</label>
+        <description>The name of the mower</description>
+        <state readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="durationType">
+        <item-type>Number</item-type>
+        <label>Mow duration</label>
+        <description>The mow duration</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="hoursType">
+        <item-type>Number</item-type>
+        <label>Mow hours</label>
+        <description>The mow hours</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="modeType">
+        <item-type>String</item-type>
+        <label>Mower mode</label>
+        <description>The mower mode</description>
+        <state readOnly="false">
+            <options>
+                <option value="AUTO"/>
+                <option value="HOME"/>
+                <option value="MANUAL"/>
+                <option value="EOD"/>
+                <option value="JOB"/>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="remoteStartType">
+        <item-type>String</item-type>
+        <label>Remote Start</label>
+        <description>The mower mode</description>
+        <state readOnly="false">
+            <options>
+                <option value="STANDARD"/>
+                <option value="REMOTE_1"/>
+                <option value="REMOTE_2"/>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="timeStringType">
+        <item-type>String</item-type>
+        <label>Time in the form hh:mm</label>
+        <description>A time in the current day</description>
+        <state readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="timerStatusType">
+        <item-type>String</item-type>
+        <label>Timer Status</label>
+        <description>The status of the timer</description>
+        <state readOnly="true">
+            <options>
+                <option value="INACTIVE"/>
+                <option value="ACTIVE"/>
+                <option value="STANDBY"/>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="mowerStatusType">
+        <item-type>String</item-type>
+        <label>Mower Status</label>
+        <description>The status of the mower</description>
+        <state readOnly="true">
+            <options>
+                <option value="DETECTING_STATUS"/>
+                <option value="PARKING"/>
+                <option value="MOWING"/>
+                <option value="SEARCH_CHARGING_STATION"/>
+                <option value="CHARGING"/>
+                <option value="SEARCHING"/>
+                <option value="UNKNOWN_6"/>
+                <option value="ERROR_STATUS"/>
+                <option value="OFF"/>
+                <option value="SLEEPING"/>
+                <option value="UNKNOWN"/>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="stoppedType">
+        <item-type>Switch</item-type>
+        <label>Mower stopped</label>
+        <description>The mower was stopped</description>
+        <state readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="nextDateType">
+        <item-type>String</item-type>
+        <label>Next timer date</label>
+        <description>The next date the timer starts</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="nextTimeType">
+        <item-type>String</item-type>
+        <label>Next timer time</label>
+        <description>The next time the timer starts</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="nextUnixType">
+        <item-type>String</item-type>
+        <label>Next timer unix timestamp</label>
+        <description>The unix timestamp of the next timer start</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="signalType">
+        <item-type>String</item-type>
+        <label>WLAN Signal</label>
+        <description>The WLAN singal strength</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    
+    
+</thing:thing-descriptions>
