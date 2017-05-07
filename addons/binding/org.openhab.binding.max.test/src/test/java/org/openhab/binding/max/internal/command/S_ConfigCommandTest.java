@@ -22,26 +22,26 @@ import org.openhab.binding.max.internal.command.S_ConfigCommand.ConfigCommandTyp
  */
 public class S_ConfigCommandTest {
 
-    private final String rfTestAddress = "0e15cc";
-    private final int testRoom = 2;
+    private static final String RF_TEST_ADDRESS = "0e15cc";
+    private static final int TEST_ROOM = 2;
 
-    private CubeCommand cubeCommand = null;
+    private CubeCommand cubeCommand;
 
     @Before
     public void Before() {
-        cubeCommand = new S_ConfigCommand(rfTestAddress, testRoom, ConfigCommandType.SetRoom);
+        cubeCommand = new S_ConfigCommand(RF_TEST_ADDRESS, TEST_ROOM, ConfigCommandType.SetRoom);
     }
 
     @Test
     public void setRoomTest() {
-        cubeCommand = new S_ConfigCommand(rfTestAddress, testRoom, ConfigCommandType.SetRoom);
+        cubeCommand = new S_ConfigCommand(RF_TEST_ADDRESS, TEST_ROOM, ConfigCommandType.SetRoom);
         String commandString = cubeCommand.getCommandString();
         assertEquals("s:AAAiAAAADhXMAAI=\r\n", commandString);
     }
 
     @Test
     public void removeRoomTest() {
-        cubeCommand = new S_ConfigCommand(rfTestAddress, 1, ConfigCommandType.RemoveRoom);
+        cubeCommand = new S_ConfigCommand(RF_TEST_ADDRESS, 1, ConfigCommandType.RemoveRoom);
         String commandString = cubeCommand.getCommandString();
         assertEquals("s:AAAjAAAADhXMAAE=\r\n", commandString);
     }

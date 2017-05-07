@@ -28,16 +28,10 @@ public class UtilsTest {
 
     @Test
     public void fromHexTest() {
-
-        int ar0 = Utils.fromHex("00");
-        int ar1 = Utils.fromHex("01");
-        int ar31 = Utils.fromHex("1F");
-        int ar255 = Utils.fromHex("FF");
-
-        assertEquals(0, ar0);
-        assertEquals(1, ar1);
-        assertEquals(31, ar31);
-        assertEquals(255, ar255);
+        assertEquals(0x00, Utils.fromHex("00"));
+        assertEquals(0x01, Utils.fromHex("01"));
+        assertEquals(0x1F, Utils.fromHex("1F"));
+        assertEquals(0xFF, Utils.fromHex("FF"));
     }
 
     @Test
