@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.phc.handler;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -19,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.phc.PHCBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +38,9 @@ public class PHCHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(PHCHandler.class);
 
-    String moduleAddress; // like DIP switches
-    PHCBridgeHandler bridgeHandler = null;
+    private String moduleAddress; // like DIP switches
+    private Map<String, State> channelState = new HashMap<String, State>();
+    private PHCBridgeHandler bridgeHandler;
 
     public PHCHandler(Thing thing) {
         super(thing);
@@ -44,15 +49,17 @@ public class PHCHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
-        logger.debug("Initializing PHC thing.");
         try {
-
-            moduleAddress = getConfig().get(PHCBindingConstants.ADDRESS).toString();
+            moduleAddress = (String) getConfig().get(PHCBindingConstants.ADDRESS);
 
             if (getPHCBridgeHandler() == null) {
                 return;
             }
+
+            getPHCBridgeHandler()
+                    .addModule(Byte.parseByte(getThing().getThingTypeUID().equals(PHCBindingConstants.THING_TYPE_EM)
+                            ? moduleAddress : "010" + moduleAddress)); // 010... = 0x4... for AM and JRM
+
             if (getBridge().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -64,8 +71,12 @@ public class PHCHandler extends BaseThingHandler {
         }
     }
 
-    public void handleIncoming(String type, OnOffType state) {
-        postCommand(type, state);
+    public void handleIncoming(String channelId, OnOffType state) {
+        logger.debug("EM command: {}, last: {}, in: {}", channelId, channelState.get(channelId), state);
+        if (!channelState.containsKey(channelId) || !channelState.get(channelId).equals(state)) {
+            postCommand(channelId, state);
+            channelState.put(channelId, state);
+        }
     }
 
     @Override
@@ -78,11 +89,26 @@ public class PHCHandler extends BaseThingHandler {
 
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        if (configurationParameters.containsKey(PHCBindingConstants.UP_DOWN_TIME)) {
-            if (configurationParameters.containsKey(PHCBindingConstants.ADDRESS)) {
-                configurationParameters.remove(PHCBindingConstants.ADDRESS);
-                super.handleConfigurationUpdate(configurationParameters);
+        if (isInitialized()) { // prevents change of address
+
+            validateConfigurationParameters(configurationParameters);
+
+            Configuration configuration = editConfiguration();
+            for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
+                if (!configurationParmeter.getKey().equals(PHCBindingConstants.ADDRESS)) {
+                    configuration.put(configurationParmeter.getKey(), configurationParmeter.getValue());
+                } else {
+                    configuration.put(configurationParmeter.getKey(), moduleAddress);
+                }
             }
+
+            // persist new configuration and reinitialize handler
+            dispose();
+            updateConfiguration(configuration);
+            initialize();
+
+        } else {
+            super.handleConfigurationUpdate(configurationParameters);
         }
     }
 

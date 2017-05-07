@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TooManyListenersException;
-import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -31,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -55,17 +55,17 @@ import gnu.io.UnsupportedCommOperationException;
 
 public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
 
-    private Logger logger = LoggerFactory.getLogger(PHCHandler.class);
+    private Logger logger = LoggerFactory.getLogger(PHCBridgeHandler.class);
 
     private static final int BAUD = 19200;
     private static final int SEND_RETRY_COUNT = 15; // max count to send the same message
     private static final int SEND_RETRY_TIME = 80; // time to wait for an acknowledge before send the message again
 
-    private InputStream serialIn = null;
-    private OutputStream serialOut = null;
+    private InputStream serialIn;
+    private OutputStream serialOut;
     short lastReceivedCrc;
-    byte[] messageFragment = null;
-    RXTXPort serialPort = null;
+    byte[] messageFragment;
+    RXTXPort serialPort;
 
     private Map<String, Boolean> toggleMap = new HashMap<String, Boolean>();
     private ConcurrentSkipListMap<Long, QueueObject> queue = new ConcurrentSkipListMap<Long, QueueObject>();
@@ -73,16 +73,15 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     private byte emLedOutputState[] = new byte[32];
     private byte amOutputState[] = new byte[32];
 
+    private List<Byte> modules = new ArrayList<Byte>();
+
     public PHCBridgeHandler(Bridge phcBridge) {
         super(phcBridge);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing PHC Bridge.");
-
         String port = ((String) getConfig().get(PHCBindingConstants.PORT));
-        logger.debug(port);
 
         try {
             CommPortIdentifier portId = null;
@@ -110,8 +109,9 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                         sb.append(id.getName() + "\n");
                     }
                 }
-                logger.error("Serial port '" + port + "' could not be found. Available ports are:\n" + sb.toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                logger.error("Serial port '{}' could not be found. Available ports are:\n {}", port, sb);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Serial port '" + port + "' could not be found.");
 
             } else {
                 // initialize serial port
@@ -134,8 +134,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 sendPorBroadcast((byte) 0xFF);
 
                 byte[] b = { 0x01 };
-                for (int j = 0; j <= 0x1F; j++) { // TODO: move to PHCHandler?
-                    serialWrite(buildMessage((byte) j, (byte) 0, b, (byte) 0));
+                for (int j = 0; j <= 0x1F; j++) {
+                    serialWrite(buildMessage((byte) j, 0, b, false));
 
                 }
                 updateStatus(ThingStatus.ONLINE);
@@ -151,24 +151,14 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
             }
 
-        } catch (NullPointerException e) { // needed?
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Could not find serial port " + port + ": " + e.getMessage());
-
-        } catch (PortInUseException e) {
+        } catch (PortInUseException | TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not open serial port " + serialPort + ": " + e.getMessage());
 
         } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not configure serial port " + serialPort + ": " + e.getMessage());
-
-        } catch (TooManyListenersException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Could not open serial port " + serialPort + ": " + e.getMessage());
-
         }
-
     }
 
     /**
@@ -176,11 +166,11 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
      */
     @Override
     public void serialEvent(SerialPortEvent event) {
-        if (!(event.getEventType() == SerialPortEvent.DATA_AVAILABLE)) {
+        if (event.getEventType() != SerialPortEvent.DATA_AVAILABLE) {
             return;
         }
-        StringBuffer binaryBuffer = new StringBuffer();
-        StringBuffer hexBuffer = new StringBuffer();
+        StringBuilder binaryBuffer = new StringBuilder();
+        StringBuilder hexBuffer = new StringBuilder();
         byte[] buffer;
 
         try {
@@ -205,13 +195,14 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                     hexBuffer.append(PHCHelper.byteToHexString(b));
                 }
 
-                logger.debug("Incoming Byte: " + binaryBuffer.toString());
-                logger.debug("Incoming Hex: " + hexBuffer.toString());
+                logger.debug("Incoming Byte: {}", binaryBuffer);
+                logger.debug("Incoming Hex: {}", hexBuffer);
             }
         } catch (IOException e) {
             // ignore
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
 
     }
@@ -228,49 +219,52 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
         List<String> repeat = new ArrayList<String>();
         int pos = 0;
         messageFragment = null;
-        byte moduleAddress = -1;
+        Byte moduleAddress = null;
 
         while (pos < buffer.length) {
             int messageStart = 0;
 
-            try {
-                for (byte b : buffer) {
-                    pos++;
-                    result.add(b);
-                    if ((b & 0xE0) == 0x00 || (b & 0xE0) == 0x40 || (b & 0xE0) == 0xA0) { // EM, AM, DIM(DIM not
-                                                                                          // implemented yet)
-                        // TODO: List with available addresses(things)? It would be more accurate.
-
-                        moduleAddress = b;
-                        messageStart = pos - 1;
-                        break;
-                    }
+            for (byte b : buffer) {
+                result.add(b);
+                if (modules.contains(b)) {
+                    moduleAddress = b;
+                    messageStart = pos;
+                    break;
                 }
+                pos++;
+            }
 
-                byte size = 0;
-                result.add(buffer[pos]);
-                size = (byte) (buffer[pos] & 0x7F);
+            if (moduleAddress == null) {
+                return result.toArray(new Byte[result.size()]);
+            }
 
-                if (size < 4) {
-                    byte[] inByte = new byte[size + 4];
-                    inByte[0] = moduleAddress;
-                    inByte[1] = buffer[pos++];
+            if (buffer.length - 1 - pos < 3) {
+                messageFragment = new byte[buffer.length - pos + 1];
+                System.arraycopy(buffer, messageStart, messageFragment, 0, messageFragment.length);
+            }
 
-                    for (int i = 2; i < size + 4; i++) {
-                        inByte[i] = buffer[pos++];
-                        result.add(inByte[i]);
-                    }
+            byte size = 0;
+            result.add(buffer[pos]);
+            size = (byte) (buffer[pos] & 0x7F);
 
-                    if (!repeat.contains(Arrays.toString(inByte))) { // avoids multiple processing of the same message
-                        processIncomingMessage(inByte, size);
-                        repeat.add(Arrays.toString(inByte));
-                    }
-                }
-
-            } catch (ArrayIndexOutOfBoundsException e) { // if the message is interrupted at the end of the buffer
-                if (messageStart < 0) {
+            if (size < 4) {
+                if (buffer.length - 1 - pos < size + 2) {
                     messageFragment = new byte[buffer.length - pos + 1];
                     System.arraycopy(buffer, messageStart, messageFragment, 0, messageFragment.length);
+                }
+
+                byte[] message = new byte[size + 4];
+                message[0] = moduleAddress;
+                message[1] = buffer[pos++];
+
+                for (int i = 2; i < size + 4; i++) {
+                    message[i] = buffer[pos++];
+                    result.add(message[i]);
+                }
+
+                if (!repeat.contains(Arrays.toString(message))) { // avoids multiple processing of the same message
+                    processIncomingMessage(message, size);
+                    repeat.add(Arrays.toString(message));
                 }
             }
         }
@@ -279,42 +273,40 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
     private void processQueueLoop() {
         while (true) {
-            try {
-                long limit = System.currentTimeMillis();
+            long limit = System.currentTimeMillis();
 
-                ConcurrentNavigableMap<Long, QueueObject> subQueue = queue.subMap(0L, true, limit, true);
+            Map<Long, QueueObject> subQueue = queue.subMap(0L, true, limit, true);
 
-                for (Long key : subQueue.keySet()) {
-                    QueueObject qo = subQueue.get(key);
-                    queue.remove(key);
-                    if (qo.getCounter() < SEND_RETRY_COUNT && !qo.getCommand().equals(
-                            isChannelOutputStateSet(qo.getModuleType(), qo.getmoduleAddress(), qo.getChannel()))) {
-                        qo.increaseCounter();
+            for (Long key : subQueue.keySet()) {
+                QueueObject qo = subQueue.get(key);
+                queue.remove(key);
+                if (qo.getCounter() < SEND_RETRY_COUNT && !qo.getCommand()
+                        .equals(isChannelOutputStateSet(qo.getModuleType(), qo.getModuleAddress(), qo.getChannel()))) {
+                    qo.increaseCounter();
 
-                        switch (qo.getModuleType()) {
-                            case PHCBindingConstants.CHANNELS_AM:
-                                sendAm(qo.getmoduleAddress(), qo.getChannel(), qo.getCommand());
-                                break;
-                            case PHCBindingConstants.CHANNELS_EM_LED:
-                                sendEm(qo.getmoduleAddress(), qo.getChannel(), qo.getCommand());
-                                break;
-                            case PHCBindingConstants.CHANNELS_JRM:
-                                sendJRM(qo.getmoduleAddress(), qo.getChannel(), qo.getCommand());
-                                break;
-                        }
-
-                        queue.put(System.currentTimeMillis() + SEND_RETRY_TIME, qo);
-                    } else if (qo.getCounter() >= SEND_RETRY_COUNT
-                            && !qo.getModuleType().equals(PHCBindingConstants.CHANNELS_JRM)) {
-                        // Can´t process the acknowledgement of JRM yet.
-                        // TODO: Thing state to offline?
-                        logger.info("No acknowlgdge from the module " + qo.getmoduleAddress() + " received.");
+                    switch (qo.getModuleType()) {
+                        case PHCBindingConstants.CHANNELS_AM:
+                            sendAm(qo.getModuleAddress(), qo.getChannel(), qo.getCommand());
+                            break;
+                        case PHCBindingConstants.CHANNELS_EM_LED:
+                            sendEm(qo.getModuleAddress(), qo.getChannel(), qo.getCommand());
+                            break;
+                        case PHCBindingConstants.CHANNELS_JRM:
+                            sendJRM(qo.getModuleAddress(), qo.getChannel(), qo.getCommand());
+                            break;
                     }
-                }
 
-            } catch (Exception e) {
-                logger.error("problem running QueueLoopThread", e);
+                    queue.put(System.currentTimeMillis() + SEND_RETRY_TIME, qo);
+
+                } else if (qo.getCounter() >= SEND_RETRY_COUNT
+                        && !qo.getModuleType().equals(PHCBindingConstants.CHANNELS_JRM)) {
+                    // Can´t process the acknowledgement of JRM yet.
+                    // TODO: If no acknowledge from the module received, perhaps set the status of the appropriate thing
+                    // to offline. The communication isn't yet enough reliable.
+                    logger.info("No acknowlgdge from the module {} received.", qo.getModuleAddress());
+                }
             }
+
         }
     }
 
@@ -373,43 +365,34 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
     private void sendAm(byte moduleAddress, byte channel, Command command) {
         moduleAddress |= 0x40;
-        byte t = 0;
         byte[] cmd = { (byte) (channel << 5) };
-        if (toggleChannel(moduleAddress, channel)) {
-            t = (byte) 0x80; // 1000 0000
-        }
+
         if (command.equals(OnOffType.ON)) {
             cmd[0] |= 2;
         } else {
             cmd[0] |= 3;
         }
-        serialWrite(buildMessage(moduleAddress, channel, cmd, t));
+        serialWrite(buildMessage(moduleAddress, channel, cmd, toggleChannel(moduleAddress, channel)));
     }
 
     private void sendEm(byte moduleAddress, byte channel, Command command) {
-        byte t = 0;
         byte[] cmd = { (byte) (channel << 4) };
-        if (toggleChannel(moduleAddress, channel)) {
-            t = (byte) 0x80; // 1000 0000
-        }
+
         if (command.equals(OnOffType.ON)) {
             cmd[0] |= 2;
         } else {
             cmd[0] |= 3;
         }
-        serialWrite(buildMessage(moduleAddress, channel, cmd, t));
+        serialWrite(buildMessage(moduleAddress, channel, cmd, toggleChannel(moduleAddress, channel)));
     }
 
     private void sendJRM(byte moduleAddress, byte channel, Command command) {
-        moduleAddress |= 0x40;
-        byte t = 0;
         // The up and the down message needs two additional bytes for the time.
         int size = (command == StopMoveType.STOP) ? 2 : 4;
         byte[] cmd = new byte[size];
 
-        if (toggleChannel(moduleAddress, channel)) {
-            t = (byte) 0x80; // 1000 0000
-        }
+        moduleAddress |= 0x40;
+
         cmd[0] = (byte) (channel << 5);
         cmd[1] = 0x3F;
 
@@ -429,12 +412,12 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 break;
         }
 
-        serialWrite(buildMessage(moduleAddress, channel, cmd, t));
+        serialWrite(buildMessage(moduleAddress, channel, cmd, toggleChannel(moduleAddress, channel)));
     }
 
     private void sendPorBroadcast(byte b) {
         byte[] cmd = { 0 };
-        writeMsg(buildMessage((byte) 0xFF, (byte) 0, cmd, (byte) 0), 20); // 20 times needed?
+        writeMsg(buildMessage((byte) 0xFF, 0, cmd, false), 20); // 20 times needed?
     }
 
     private void sendAmConfig(byte moduleAddress) {
@@ -444,7 +427,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
         cmd[1] = 0;
         cmd[2] = (byte) 0xFF;
 
-        serialWrite(buildMessage(moduleAddress, (byte) 0, cmd, (byte) 0));
+        serialWrite(buildMessage(moduleAddress, 0, cmd, false));
     }
 
     private void sendEmConfig(byte moduleAddress) {
@@ -463,12 +446,12 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             cmd[pos++] = (byte) ((i << 4) | 0x05);
         }
 
-        serialWrite(buildMessage(moduleAddress, (byte) 0, cmd, (byte) 0));
+        serialWrite(buildMessage(moduleAddress, 0, cmd, false));
     }
 
     private void sendEmAcknowledge(byte module, boolean toggle) {
         byte[] cmd = { 0 };
-        writeMsg(buildMessage(module, (byte) 0, cmd, (byte) (toggle ? 0x80 : 0)), 2); // 2 times needed?
+        writeMsg(buildMessage(module, 0, cmd, toggle), 2); // 2 times needed?
     }
 
     /**
@@ -480,12 +463,13 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
      * @param toggle
      * @return
      */
-    private byte[] buildMessage(byte modulAddr, byte channel, byte[] cmd, byte toggle) {
+    private byte[] buildMessage(byte modulAddr, int channel, byte[] cmd, boolean toggle) {
         int len = cmd.length;
         byte[] buffer = new byte[len + 4];
 
         buffer[0] = modulAddr;
-        buffer[1] = (byte) (toggle | len);
+        buffer[1] = (byte) (toggle ? (len | 0x80) : len); // 0x80: 1000 0000
+
         for (int i = 0; i < len; i++) {
             buffer[2 + i] = cmd[i];
         }
@@ -531,12 +515,15 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
         short rcvCrc = (short) (inByte[2 + size] & 0xFF);
         rcvCrc |= (inByte[size + 3] << 8);
         boolean toggleIn = false;
-        StringBuffer logMessage = new StringBuffer();
-        for (int i = 0; i < inByte.length; i++) {
-            logMessage.append(PHCHelper.byteToBinaryString(inByte[i]));
+
+        if (logger.isDebugEnabled()) {
+            StringBuilder logMessage = new StringBuilder();
+            for (int i = 0; i < inByte.length; i++) {
+                logMessage.append(PHCHelper.byteToBinaryString(inByte[i]));
+            }
+            logMessage.append(", " + inByte.length);
+            logger.debug("received: {}", logMessage);
         }
-        logMessage.append(", " + inByte.length);
-        logger.debug("received: " + logMessage.toString());
 
         if ((inByte[1] & 0x80) == 0x80) {
             toggleIn = true;
@@ -556,9 +543,9 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 cmd[i] = inByte[2 + i];
             }
 
-            byte[] channel = new byte[size];
+            int[] channel = new int[size];
             for (int i = 0; i < cmd.length; i++) {
-                channel[i] = (byte) ((inByte[2 + i] >> 4) & 0xF);
+                channel[i] = (inByte[2 + i] >> 4) & 0xF;
             }
 
             if ((moduleAddress & 0xE0) != 0xE0) {
@@ -569,17 +556,19 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                         setModuleOutputState(moduleType, moduleAddress, cmd[1]);
                     }
                 } else if (cmd[0] == (byte) 0xFF) {
-                    if ((moduleAddress & 0xE0) == 0x00) {
+                    if ((moduleAddress & 0xE0) == 0x00) { // EM
                         sendEmConfig(moduleAddress);
                     }
-                    if ((moduleAddress & 0xE0) == 0x40) { // auch JRM
+                    if ((moduleAddress & 0xE0) == 0x40) { // AM and JRM
                         sendAmConfig(moduleAddress);
                     }
 
-                } else if (cmd[0] != 0x01) { // Was wenn 01 kommt? Wann?
+                } else if (cmd[0] != 0x01) { // I'm not sure what the command 0x01 means. It isn't relevant for normal
+                                             // functionality.
                     if ((moduleAddress & 0xE0) == 0) {
                         if (rcvCrc == lastReceivedCrc) {
-                            sendEmAcknowledge(moduleAddress, toggleIn); // wenn Ack nicht erhalten
+                            sendEmAcknowledge(moduleAddress, toggleIn); // Just send the acknowledge message again, when
+                                                                        // PHC didn't recognize it.
                         } else {
                             sendEmAcknowledge(moduleAddress, toggleIn);
                             handleIncomingCommand(moduleAddress, channel[0], cmd, rcvCrc);
@@ -599,8 +588,9 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
      * @param cmd
      * @param rcvCrc
      */
-    private void handleIncomingCommand(byte moduleAddress, byte channel, byte[] cmd, short rcvCrc) {
-        Thing thing = getThingByUID(PHCHelper.getThingUIDreverse(PHCBindingConstants.THING_TYPE_EM, moduleAddress));
+    private void handleIncomingCommand(byte moduleAddress, int channel, byte[] cmd, short rcvCrc) {
+        ThingUID uid = PHCHelper.getThingUIDreverse(PHCBindingConstants.THING_TYPE_EM, moduleAddress);
+        Thing thing = getThingByUID(uid);
         String channelId = "em#" + StringUtils.leftPad(Integer.toString(channel), 2, '0');
 
         if (thing != null) {
@@ -609,16 +599,16 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                 state = OnOffType.ON;
             }
 
-            logger.debug(thing.toString() + ", " + state);
+            logger.debug("{}, {}", thing, state);
             ((PHCHandler) thing.getHandler()).handleIncoming(channelId, state);
 
         } else {
-            logger.info("No Thing with UID " + thing + "available.");
+            logger.info("No Thing with UID {} available.", uid.getAsString());
         }
     }
 
     /**
-     * Send massage to to serial port x times.
+     * Send message to to serial port x times.
      *
      * @param msg
      * @param sendCnt
@@ -631,15 +621,18 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     }
 
     private void serialWrite(byte[] msg) {
-        StringBuilder log = new StringBuilder();
-        for (byte b : msg) {
-            log.append(PHCHelper.byteToBinaryString(b));
-            log.append(' ');
+        if (logger.isDebugEnabled()) {
+            StringBuilder log = new StringBuilder();
+            for (byte b : msg) {
+                log.append(PHCHelper.byteToBinaryString(b));
+                log.append(' ');
+            }
+            logger.debug("send: {}", log);
         }
+
         try {
             // write to serial port
             serialPort.setRTS(false);
-            logger.debug("send: " + log.toString());
             serialOut.write(msg);
             serialOut.flush();
         } catch (IOException e) {
@@ -651,17 +644,26 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
     }
 
     /**
+     * Adds the given address to the module list.
+     *
+     * @param module
+     */
+    public void addModule(byte module) {
+        modules.add(module);
+    }
+
+    /**
      * Object to save a whole message.
      *
      * @author Jonas Hohaus
      */
     class QueueObject {
-        private String moduleType = null;
+        private String moduleType;
         private byte moduleAddress;
         private byte channel;
-        private Command command = null;
+        private Command command;
 
-        private int counter = 0;
+        private int counter;
 
         public QueueObject(String moduleType, String moduleAddress, String channel, Command command) {
             this.moduleType = moduleType;
@@ -682,7 +684,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             return moduleType;
         }
 
-        public byte getmoduleAddress() {
+        public byte getModuleAddress() {
             return moduleAddress;
         }
 
