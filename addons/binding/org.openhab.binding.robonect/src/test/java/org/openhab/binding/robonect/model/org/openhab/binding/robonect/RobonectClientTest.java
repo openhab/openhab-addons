@@ -34,7 +34,7 @@ public class RobonectClientTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        RobonectEndpoint dummyEndPoint = new RobonectEndpoint("123.456.789.123");
+        RobonectEndpoint dummyEndPoint = new RobonectEndpoint("123.456.789.123", "user", "password");
         client = new RobonectClient(httpClientMock, dummyEndPoint);
     }
 

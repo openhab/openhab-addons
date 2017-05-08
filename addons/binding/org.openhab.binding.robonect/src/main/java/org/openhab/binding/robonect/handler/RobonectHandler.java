@@ -243,10 +243,14 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_HOURS, new DecimalType(info.getStatus().getDuration()));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
             updateState(CHANNEL_STATUS_STOPPED, info.getStatus().isStopped() ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_TIMER_NEXT_DATE, new StringType(info.getTimer().getNext().getDate()));
-            updateState(CHANNEL_TIMER_NEXT_TIME, new StringType(info.getTimer().getNext().getTime()));
-            updateState(CHANNEL_TIMER_NEXT_UNIX_TS, new StringType(info.getTimer().getNext().getUnix()));
-            updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
+            if(info.getTimer() != null){
+                if(info.getTimer().getNext() != null){
+                    updateState(CHANNEL_TIMER_NEXT_DATE, new StringType(info.getTimer().getNext().getDate()));
+                    updateState(CHANNEL_TIMER_NEXT_TIME, new StringType(info.getTimer().getNext().getTime()));
+                    updateState(CHANNEL_TIMER_NEXT_UNIX_TS, new StringType(info.getTimer().getNext().getUnix()));
+                }
+                updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
+            }
             updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(info.getWlan().getSignal()));
         } else {
             logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());

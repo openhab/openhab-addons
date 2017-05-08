@@ -66,6 +66,18 @@ public class ModelParserTest {
         assertEquals("1493665200", mowerInfo.getTimer().getNext().getUnix());
         assertEquals(-76, mowerInfo.getWlan().getSignal());
     }
+
+    @Test
+    public void shouldParseCorrectStatusModelMowing() {
+        String correctModel = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 2, \"stopped\": false, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"wlan\": {\"signal\": -75}}";
+        MowerInfo mowerInfo = parser.parse(correctModel, MowerInfo.class);
+        assertTrue(mowerInfo.isSuccessful());
+        assertEquals("Mein Automower", mowerInfo.getName());
+        assertEquals(MowerStatus.MOWING, mowerInfo.getStatus().getStatus());
+        assertFalse(mowerInfo.getStatus().isStopped());
+        assertEquals(MowerMode.MANUAL, mowerInfo.getStatus().getMode());
+
+    }
     
     @Test
     public void shouldParseErrorsList(){
