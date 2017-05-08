@@ -1,10 +1,11 @@
 package org.openhab.binding.omnilink.handler;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,14 +20,11 @@ public class ButtonHandler extends AbstractOmnilinkHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand, channel: {}, command: {}", channelUID, command);
-
-    }
-
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         getOmnilinkBridgeHander().sendOmnilinkCommand(CommandMessage.CMD_BUTTON, 0, Integer.parseInt(channelParts[2]));
     }
 
+    public void buttonPressed() {
+        updateState(OmnilinkBindingConstants.CHANNEL_BUTTON_PRESS, OnOffType.ON);
+    }
 }

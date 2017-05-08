@@ -50,6 +50,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private Map<Integer, Thing> areaThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     private Map<Integer, Thing> unitThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     private Map<Integer, Thing> zoneThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
+    private Map<Integer, Thing> buttonThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     // private CacheHolder<Unit> nodes;
     private int secondsUntilReconnect = 1;
 
@@ -232,6 +233,17 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 zoneNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
             }
             zoneThings.put(zoneNumber, childThing);
+        } else if (childHandler instanceof ButtonHandler) {
+            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
+                throw new IllegalArgumentException("childThing does not have required 'number' property");
+            }
+            int buttonNumber;
+            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
+                buttonNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
+            } else {
+                buttonNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
+            }
+            buttonThings.put(buttonNumber, childThing);
         } else {
             logger.warn("Did not add childThing to a map: {}", childThing);
         }
@@ -243,7 +255,27 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     @Override
-    public void otherEventNotification(OtherEventNotifications arg0) {
+    public void otherEventNotification(OtherEventNotifications event) {
+        logger.debug("received other event notification: {}", event);
+        logger.debug("Event type: {}", event.getMessageType());
+        logger.debug("Event notification: {}", event.getNotifications());
+        // for a button, let's make sure we have only 1 notification
+        if (Message.MESG_TYPE_OTHER_EVENT_NOTIFY == event.getMessageType() && event.getNotifications().length == 1) {
+            int number = event.getNotifications()[0];
+            if (number > 0 && number <= 256) {
+                Thing theThing = buttonThings.get(number);
+                logger.debug("Detect button push: number={}", number);
+                if (theThing != null) {
+                    ((ButtonHandler) theThing.getHandler()).buttonPressed();
+                } else {
+                    logger.warn("Unhandled other event notification, type: {}, notification: {}",
+                            event.getMessageType(), event.getNotifications());
+                }
+            }
+        } else {
+            logger.warn("Unhandled other event notification, type: {}, notification: {}", event.getMessageType(),
+                    event.getNotifications());
+        }
 
     }
 
