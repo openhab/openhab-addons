@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 public class RobonectClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RobonectClient.class);
+    private final Logger logger = LoggerFactory.getLogger(RobonectClient.class);
 
     private HttpClient httpClient;
     private RobonectEndpoint endpoint;
@@ -41,7 +41,7 @@ public class RobonectClient {
             if(remoteStart != null){
                 return remoteStart;
             }else {
-                LOGGER.debug("No explicit remote start set. Returnt STANDARD.");
+                logger.debug("No explicit remote start set. Returnt STANDARD.");
                 return ModeCommand.RemoteStart.STANDARD;
             }
         }
@@ -66,7 +66,7 @@ public class RobonectClient {
             if (start != null && start.matches(TIME_REGEX)) {
                 this.start = start;
             } else {
-                LOGGER.debug("Got start value " + start + " but expected something matching " + TIME_REGEX);
+                logger.debug("Got start value {} but expected something matching {}", start, TIME_REGEX);
             }
         }
 
@@ -78,7 +78,7 @@ public class RobonectClient {
             if (end != null && end.matches(TIME_REGEX)) {
                 this.end = end;
             } else {
-                LOGGER.debug("Got start value " + end + " but expected something matching " + TIME_REGEX);
+                logger.debug("Got end value {} but expected something matching {}", end, TIME_REGEX);
             }
         }
     }
@@ -151,16 +151,18 @@ public class RobonectClient {
         try {
             response = httpClient.GET(command.toCommandURL(baseUrl));
         } catch (InterruptedException e) {
-            LOGGER.error("Could not send sommand " + command.toCommandURL(baseUrl) + " to rebonect", e);
+            logger.error("Could not send sommand {} to rebonect", command.toCommandURL(baseUrl), e);
             return parser.exceptionToJSON(e, 999);
         } catch (ExecutionException e) {
+            logger.error("Could not send sommand {} to rebonect", command.toCommandURL(baseUrl), e);
             return parser.exceptionToJSON(e, 888);
         } catch (TimeoutException e) {
+            logger.error("Could not send sommand {} to rebonect", command.toCommandURL(baseUrl), e);
             return parser.exceptionToJSON(e, 777);
         }
         String responseString = response.getContentAsString();
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Response body was: " + responseString);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Response body was: {} ", responseString);
         }
         return responseString;
     }

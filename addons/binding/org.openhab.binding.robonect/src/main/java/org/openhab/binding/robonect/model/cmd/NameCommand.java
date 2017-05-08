@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class NameCommand implements Command {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NameCommand.class);
+    private final Logger logger = LoggerFactory.getLogger(NameCommand.class);
 
     private String newName;
 
@@ -25,7 +25,7 @@ public class NameCommand implements Command {
             try {
                 return baseURL + "?cmd=name&name=" + URLEncoder.encode(newName, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                LOGGER.error("Could not encode name " + newName, e);
+                logger.error( "Could not encode name {} ",newName, e);
                 return baseURL + "?cmd=name";
             }
         }

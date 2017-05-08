@@ -106,56 +106,56 @@ public class RobonectHandler extends BaseThingHandler {
                         if (command instanceof StringType) {
                             updateName((StringType) command);
                         } else {
-                            logger.debug("Got name update of type " + command.getClass().getName()
-                                    + "but StringType is expected.");
+                            logger.debug("Got name update of type {} but StringType is expected.",
+                                    command.getClass().getName());
                         }
                         break;
                     case CHANNEL_STATUS_MODE:
                         if (command instanceof StringType) {
                             setMowerMode(command);
                         } else {
-                            logger.debug("Got job remote start update of type " + command.getClass().getName()
-                                    + "but StringType is expected.");
+                            logger.debug("Got job remote start update of type {} but StringType is expected.",
+                                    command.getClass().getName());
                         }
                         break;
                     case CHANNEL_STATUS_STOPPED:
                         if (command instanceof OnOffType) {
                             handleStartStop((OnOffType) command);
                         } else {
-                            logger.debug("Got stopped update of type " + command.getClass().getName()
-                                    + "but OnOffType is expected.");
+                            logger.debug("Got stopped update of type {} but StringType is expected.",
+                                    command.getClass().getName());
                         }
                         break;
                     case CHANNEL_JOB_REMOTE_START:
                         if (command instanceof StringType) {
                             setRemoteStartJobSetting(command);
                         } else {
-                            logger.debug("Got job remote start update of type " + command.getClass().getName()
-                                    + "but StringType is expected.");
+                            logger.debug("Got job remote start update of type {} but StringType is expected.",
+                                    command.getClass().getName());
                         }
                         break;
                     case CHANNEL_JOB_AFTER_MODE:
                         if (command instanceof StringType) {
                             setAfterModeJobSetting(command);
                         } else {
-                            logger.debug("Got job after mode update of type " + command.getClass().getName()
-                                    + "but StringType is expected.");
+                            logger.debug("Got job after mode update of type {} but StringType is expected.",
+                                    command.getClass().getName());
                         }
                         break;
                     case CHANNEL_JOB_START:
                         if (command instanceof StringType) {
                             setStartJobSetting(command);
                         } else {
-                            logger.debug("Got job start update of type " + command.getClass().getName()
-                                    + "but StringType is expected.");
+                            logger.debug("Got job start update of type {} but StringType is expected.",
+                                    command.getClass().getName());
                         }
                         break;
                     case CHANNEL_JOB_END:
                         if (command instanceof StringType) {
                             setEndJobSetting(command);
                         } else {
-                            logger.debug("Got job end update of type " + command.getClass().getName()
-                                    + "but StringType is expected.");
+                            logger.debug("Got job end update of type {} but StringType is expected.",
+                                    command.getClass().getName());
                         }
                         break;
                 }
@@ -200,10 +200,10 @@ public class RobonectHandler extends BaseThingHandler {
         robonectClient.getJobSettings().setEnd(end);
         updateState(CHANNEL_JOB_END, new StringType(robonectClient.getJobSettings().getEnd()));
     }
-    
+
     private void logErrorFromResponse(RobonectAnswer result) {
         if (!result.isSuccessful()) {
-            logger.error("Could not send EOD Trigger. Error message: " + result.getErrorMessage());
+            logger.error("Could not send EOD Trigger. Robonect error message: {}", result.getErrorMessage());
         }
     }
 
@@ -250,7 +250,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
             updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(info.getWlan().getSignal()));
         } else {
-            logger.error("Could not retrieve mower info. Error response message: " + info.getErrorMessage());
+            logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
         }
 
     }
@@ -264,7 +264,8 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_VERSION_COMMENT, new StringType(info.getRobonect().getComment()));
             updateState(CHANNEL_VERSION_SERIAL, new StringType(info.getRobonect().getSerial()));
         } else {
-            logger.error("Could not retrieve mower info. Error response message: " + info.getErrorMessage());
+            logger.error("Could not retrieve mower version info. Robonect error response message: {}",
+                    info.getErrorMessage());
         }
 
     }
@@ -288,7 +289,7 @@ public class RobonectHandler extends BaseThingHandler {
             pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, 30, TimeUnit.SECONDS);
 
             updateStatus(ThingStatus.ONLINE);
-            
+
         } catch (Exception e) {
             logger.error("Exception when trying to initialize", e);
             updateStatus(ThingStatus.UNINITIALIZED);
