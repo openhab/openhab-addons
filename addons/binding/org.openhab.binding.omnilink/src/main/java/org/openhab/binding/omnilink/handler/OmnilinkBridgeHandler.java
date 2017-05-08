@@ -266,6 +266,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 Thing theThing = buttonThings.get(number);
                 logger.debug("Detect button push: number={}, thing: {}", number, theThing);
                 if (theThing != null) {
+                    logger.debug("thing for button press is: {}", theThing.getUID());
                     ((ButtonHandler) theThing.getHandler()).buttonPressed();
                 } else {
                     logger.warn("Unhandled other event notification, type: {}, notification: {}",
