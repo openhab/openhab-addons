@@ -86,7 +86,7 @@
     </channel-group-type>
 
     <channel-group-type id="wlanType">
-        <label>Timer Info</label>
+        <label>WLAN Info</label>
         <channels>
             <channel id="signal" typeId="signalType"/>
         </channels>
