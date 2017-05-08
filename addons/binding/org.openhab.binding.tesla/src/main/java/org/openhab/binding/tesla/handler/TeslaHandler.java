@@ -129,6 +129,7 @@ public class TeslaHandler extends BaseThingHandler {
     protected ScheduledFuture<?> slowStateJob;
     protected QueueChannelThrottler stateThrottler;
 
+    protected long lastTimeStamp;
     protected long intervalTimestamp = 0;
     protected int intervalErrors = 0;
     protected ReentrantLock lock;
@@ -136,7 +137,6 @@ public class TeslaHandler extends BaseThingHandler {
     private StorageService storageService;
     protected Gson gson = new Gson();
     protected TeslaChannelSelectorProxy teslaChannelSelectorProxy = new TeslaChannelSelectorProxy();
-    private JsonParser parser = new JsonParser();
     private TokenResponse logonToken;
 
     public TeslaHandler(Thing thing, StorageService storageService) {
@@ -166,7 +166,7 @@ public class TeslaHandler extends BaseThingHandler {
             }
 
             Map<Object, Rate> channels = new HashMap<Object, Rate>();
-            channels.put(TESLA_DATA_THROTTLE, new Rate(10, 10, TimeUnit.SECONDS));
+            channels.put(TESLA_DATA_THROTTLE, new Rate(1, 1, TimeUnit.SECONDS));
             channels.put(TESLA_COMMAND_THROTTLE, new Rate(20, 1, TimeUnit.MINUTES));
 
             Rate firstRate = new Rate(20, 1, TimeUnit.MINUTES);
@@ -483,7 +483,7 @@ public class TeslaHandler extends BaseThingHandler {
         JsonObject jsonObject = null;
 
         try {
-            if (request != null && result != null && result != "null") {
+            if (request != null && result != null && !"null".equals(result)) {
                 // first, update state objects
                 switch (request) {
                     case TESLA_DRIVE_STATE: {
@@ -500,7 +500,7 @@ public class TeslaHandler extends BaseThingHandler {
                     }
                     case TESLA_CHARGE_STATE: {
                         chargeState = gson.fromJson(result, ChargeState.class);
-                        if (chargeState.charging_state != null && chargeState.charging_state.equals("Charging")) {
+                        if (chargeState.charging_state != null && "Charging".equals(chargeState.charging_state)) {
                             updateState(CHANNEL_CHARGE, OnOffType.ON);
                         } else {
                             updateState(CHANNEL_CHARGE, OnOffType.OFF);
@@ -530,7 +530,7 @@ public class TeslaHandler extends BaseThingHandler {
             }
 
             // process the result
-            if (jsonObject != null && result != null && !result.equals("null")) {
+            if (jsonObject != null && result != null && !"null".equals(result)) {
                 // deal with responses for "set" commands, which get confirmed
                 // positively, or negatively, in which case a reason for failure
                 // is provided
@@ -540,28 +540,63 @@ public class TeslaHandler extends BaseThingHandler {
                             requestResult ? "successful" : "not successful", jsonObject.get("reason").getAsString() });
                 } else {
                     Set<Map.Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
+
+                    long resultTimeStamp = 0;
                     for (Map.Entry<String, JsonElement> entry : entrySet) {
-                        try {
-                            TeslaChannelSelector selector = TeslaChannelSelector
-                                    .getValueSelectorFromRESTID(entry.getKey());
-                            if (!selector.isProperty()) {
-                                if (!entry.getValue().isJsonNull()) {
-                                    updateState(selector.getChannelID(), teslaChannelSelectorProxy
-                                            .getState(entry.getValue().getAsString(), selector, editProperties()));
-                                } else {
-                                    updateState(selector.getChannelID(), UnDefType.UNDEF);
-                                }
-                            } else {
-                                if (!entry.getValue().isJsonNull()) {
-                                    Map<String, String> properties = editProperties();
-                                    properties.put(selector.getChannelID(), entry.getValue().getAsString());
-                                    updateProperties(properties);
+                        if ("timestamp".equals(entry.getKey())) {
+                            resultTimeStamp = Long.valueOf(entry.getValue().getAsString());
+                            if (logger.isTraceEnabled()) {
+                                Date date = new Date(resultTimeStamp);
+                                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                                logger.trace("The request result timestamp is {}", dateFormatter.format(date));
+                            }
+                            break;
+                        }
+                    }
+
+                    try {
+                        lock.lock();
+
+                        boolean proceed = true;
+                        if (resultTimeStamp < lastTimeStamp && request == TESLA_DRIVE_STATE) {
+                            proceed = false;
+                        } else {
+                            lastTimeStamp = resultTimeStamp;
+                        }
+
+                        if (proceed) {
+                            for (Map.Entry<String, JsonElement> entry : entrySet) {
+                                try {
+                                    TeslaChannelSelector selector = TeslaChannelSelector
+                                            .getValueSelectorFromRESTID(entry.getKey());
+                                    if (!selector.isProperty()) {
+                                        if (!entry.getValue().isJsonNull()) {
+                                            updateState(selector.getChannelID(), teslaChannelSelectorProxy.getState(
+                                                    entry.getValue().getAsString(), selector, editProperties()));
+                                        } else {
+                                            updateState(selector.getChannelID(), UnDefType.UNDEF);
+                                        }
+                                    } else {
+                                        if (!entry.getValue().isJsonNull()) {
+                                            Map<String, String> properties = editProperties();
+                                            properties.put(selector.getChannelID(), entry.getValue().getAsString());
+                                            updateProperties(properties);
+                                        }
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    logger.trace("The variable/value pair '{}':'{}' is not (yet) supported",
+                                            entry.getKey(), entry.getValue());
+                                } catch (ClassCastException | IllegalStateException e) {
+                                    logger.trace("An exception occurred while converting the JSON data : '{}'",
+                                            e.getMessage(), e);
                                 }
                             }
-                        } catch (Exception e) {
-                            logger.trace("Unable to handle the variable/value pair '{}':'{}'", entry.getKey(),
-                                    entry.getValue());
+                        } else {
+                            logger.warn("The result for request '{}' is discarded due to an out of sync timestamp",
+                                    request);
                         }
+                    } finally {
+                        lock.unlock();
                     }
                 }
             }
@@ -571,14 +606,14 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected boolean isAwake() {
-        return (vehicle != null) ? (vehicle.state != "asleep" && vehicle.vehicle_id != null) : false;
+        return (vehicle != null) ? (!"asleep".equals(vehicle.state) && vehicle.vehicle_id != null) : false;
     }
 
     protected boolean isInMotion() {
         if (driveState != null) {
             if (driveState.speed != null && driveState.shift_state != null) {
-                return !driveState.speed.equals("Undefined")
-                        && (!driveState.shift_state.equals("P") || !driveState.shift_state.equals("Undefined"));
+                return !"Undefined".equals(driveState.speed)
+                        && (!"P".equals(driveState.shift_state) || !"Undefined".equals(driveState.shift_state));
             }
         }
         return false;
@@ -698,20 +733,20 @@ public class TeslaHandler extends BaseThingHandler {
 
         String storedToken = (String) storage.get(getStorageKey());
         TokenResponse token = storedToken == null ? null : gson.fromJson(storedToken, TokenResponse.class);
-        SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
         boolean hasExpired = true;
 
         if (token != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(token.created_at * 1000);
-            logger.info("Found a request token created at {}", DATE_FORMATTER.format(calendar.getTime()));
+            logger.info("Found a request token created at {}", dateFormatter.format(calendar.getTime()));
             calendar.setTimeInMillis(token.created_at * 1000 + 60 * token.expires_in);
 
             Date now = new Date();
 
             if (calendar.getTime().before(now)) {
-                logger.info("The token has expired at {}", DATE_FORMATTER.format(calendar.getTime()));
+                logger.info("The token has expired at {}", dateFormatter.format(calendar.getTime()));
                 hasExpired = true;
             } else {
                 hasExpired = false;
@@ -733,8 +768,7 @@ public class TeslaHandler extends BaseThingHandler {
         try {
             tokenRequest = new TokenRequestRefreshToken(token.refresh_token);
         } catch (GeneralSecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("An exception occurred while requesting a new token : '{}'", e.getMessage(), e);
         }
 
         String payLoad = gson.toJson(tokenRequest);
@@ -904,9 +938,7 @@ public class TeslaHandler extends BaseThingHandler {
         Response eventResponse;
         BufferedReader eventBufferedReader;
         InputStreamReader eventInputStreamReader;
-        long eventLastEventTimeStamp;
         boolean isEstablished = false;
-        SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
         protected boolean establishEventStream() {
             try {
@@ -971,37 +1003,49 @@ public class TeslaHandler extends BaseThingHandler {
                                 try {
                                     logger.debug("Event Stream : Received an event: '{}'", line);
                                     String vals[] = line.split(",");
-                                    if (Long.valueOf(vals[0]) > eventLastEventTimeStamp) {
-                                        eventLastEventTimeStamp = Long.valueOf(vals[0]);
-                                        logger.trace("Event Stream : event stamp is {}", DATE_FORMATTER.format(date));
-                                        for (int i = 0; i < EventKeys.values().length; i++) {
-                                            try {
-                                                TeslaChannelSelector selector = TeslaChannelSelector
-                                                        .getValueSelectorFromRESTID((EventKeys.values()[i]).toString());
-                                                if (!selector.isProperty()) {
-                                                    State newState = teslaChannelSelectorProxy.getState(vals[i],
-                                                            selector, editProperties());
-                                                    if (newState != null && !vals[i].equals("")) {
-                                                        updateState(selector.getChannelID(), newState);
-                                                    } else {
-                                                        updateState(selector.getChannelID(), UnDefType.UNDEF);
-
-                                                    }
-                                                } else {
-                                                    Map<String, String> properties = editProperties();
-                                                    properties.put(selector.getChannelID(),
-                                                            (selector.getState(vals[i])).toString());
-                                                    updateProperties(properties);
-                                                }
-                                            } catch (Exception e) {
-                                                logger.warn(
-                                                        "Event Stream : An exception occurred while processing an event received from the vehicle; '{}'",
-                                                        e.getMessage());
+                                    try {
+                                        lock.lock();
+                                        if (Long.valueOf(vals[0]) > lastTimeStamp) {
+                                            lastTimeStamp = Long.valueOf(vals[0]);
+                                            if (logger.isTraceEnabled()) {
+                                                date.setTime(lastTimeStamp);
+                                                SimpleDateFormat dateFormatter = new SimpleDateFormat(
+                                                        "yyyy-MM-dd'T'HH:mm:ss.SSS");
+                                                logger.trace("Event Stream : Event stamp is {}",
+                                                        dateFormatter.format(date));
                                             }
+                                            for (int i = 0; i < EventKeys.values().length; i++) {
+                                                try {
+                                                    TeslaChannelSelector selector = TeslaChannelSelector
+                                                            .getValueSelectorFromRESTID(
+                                                                    (EventKeys.values()[i]).toString());
+                                                    if (!selector.isProperty()) {
+                                                        State newState = teslaChannelSelectorProxy.getState(vals[i],
+                                                                selector, editProperties());
+                                                        if (newState != null && !"".equals(vals[i])) {
+                                                            updateState(selector.getChannelID(), newState);
+                                                        } else {
+                                                            updateState(selector.getChannelID(), UnDefType.UNDEF);
+
+                                                        }
+                                                    } else {
+                                                        Map<String, String> properties = editProperties();
+                                                        properties.put(selector.getChannelID(),
+                                                                (selector.getState(vals[i])).toString());
+                                                        updateProperties(properties);
+                                                    }
+                                                } catch (Exception e) {
+                                                    logger.warn(
+                                                            "Event Stream : An exception occurred while processing an event received from the vehicle; '{}'",
+                                                            e.getMessage());
+                                                }
+                                            }
+                                        } else {
+                                            logger.debug(
+                                                    "Event Stream : Discarding an event with an out of sync timestamp");
                                         }
-                                    } else {
-                                        logger.debug(
-                                                "Event Stream : Discarding an event with an out of sync timestamp");
+                                    } finally {
+                                        lock.unlock();
                                     }
 
                                 } catch (Exception e) {
@@ -1073,7 +1117,7 @@ public class TeslaHandler extends BaseThingHandler {
                     result = invokeAndParse(request, payLoad, target);
                 }
 
-                if (result != null && result != "") {
+                if (result != null && !"".equals(result)) {
                     parseAndUpdate(request, payLoad, result);
                 }
             } catch (Exception e) {
