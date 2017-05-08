@@ -8,14 +8,14 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 /**
- * Class {@link NHCCmd} used as input to gson to send commands to Niko Home Control. Extends {@link NHCBaseMessage}.
+ * Class {@link NhcMessageCmd} used as input to gson to send commands to Niko Home Control. Extends {@link NhcMessageBase}.
  * <p>
  * Example: <code>{"cmd":"executeactions","id":1,"value1":0}</code>
  *
  * @author Mark Herwege
  */
 @SuppressWarnings("unused")
-class NHCCmd extends NHCBaseMessage {
+class NhcMessageCmd extends NhcMessageBase {
     private Integer id;
     private Integer value1;
     private Integer value2;
@@ -23,17 +23,17 @@ class NHCCmd extends NHCBaseMessage {
     private Integer startValue;
     private Integer endValue;
 
-    NHCCmd(String cmd) {
+    NhcMessageCmd(String cmd) {
         super.setCmd(cmd);
     }
 
-    NHCCmd(String cmd, Integer id, Integer value1) {
+    NhcMessageCmd(String cmd, Integer id, Integer value1) {
         this(cmd);
         this.id = id;
         this.value1 = value1;
     }
 
-    NHCCmd(String cmd, Integer id, Integer value1, Integer value2, Integer value3) {
+    NhcMessageCmd(String cmd, Integer id, Integer value1, Integer value2, Integer value3) {
         this(cmd, id, value1);
         this.value2 = value2;
         this.value3 = value3;

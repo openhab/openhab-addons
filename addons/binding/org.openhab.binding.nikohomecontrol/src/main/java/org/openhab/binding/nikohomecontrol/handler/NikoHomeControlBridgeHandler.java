@@ -64,7 +64,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
         Configuration config = this.getConfig();
 
-        port = ((Number) config.get(CONFIG_PORT)).intValue();
+        this.port = ((Number) config.get(CONFIG_PORT)).intValue();
         logger.debug("Niko Home Control: bridge handler port {}", port);
 
         try {
@@ -73,7 +73,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
             // No hostname provided is a valid configuration, therefore allow null addr to pass through.
             if (config.get(CONFIG_HOST_NAME) != null) {
                 logger.debug("Niko Home Control: bridge handler host {}", config.get(CONFIG_HOST_NAME));
-                addr = InetAddress.getByName((String) config.get(CONFIG_HOST_NAME));
+                this.addr = InetAddress.getByName((String) config.get(CONFIG_HOST_NAME));
             }
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -137,9 +137,9 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      */
     private void setupRefreshTimer(Integer refreshInterval) {
 
-        if (refreshTimer != null) {
-            refreshTimer.cancel(true);
-            refreshTimer = null;
+        if (this.refreshTimer != null) {
+            this.refreshTimer.cancel(true);
+            this.refreshTimer = null;
         }
 
         if ((refreshInterval == null) || (refreshInterval == 0)) {
@@ -148,7 +148,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
         // This timer will restart the bridge connection periodically
         logger.debug("Niko Home Control: restart bridge connection every {} min", refreshInterval);
-        refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
+        this.refreshTimer = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
 
@@ -186,16 +186,16 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
         properties.put("ipAddress", addr.getHostAddress());
         properties.put("port", Integer.toString(port));
-        properties.put("softwareVersion", nhcComm.getSwVersion());
-        properties.put("apiVersion", nhcComm.getApi());
-        properties.put("language", nhcComm.getLanguage());
-        properties.put("currency", nhcComm.getCurrency());
-        properties.put("units", nhcComm.getUnits());
-        properties.put("tzOffset", nhcComm.getTz());
-        properties.put("dstOffset", nhcComm.getDst());
-        properties.put("configDate", nhcComm.getLastConfig());
-        properties.put("energyEraseDate", nhcComm.getLastEnergyErase());
-        properties.put("connectionStartDate", nhcComm.getTime());
+        properties.put("softwareVersion", nhcComm.getSystemInfo().getSwVersion());
+        properties.put("apiVersion", nhcComm.getSystemInfo().getApi());
+        properties.put("language", nhcComm.getSystemInfo().getLanguage());
+        properties.put("currency", nhcComm.getSystemInfo().getCurrency());
+        properties.put("units", nhcComm.getSystemInfo().getUnits());
+        properties.put("tzOffset", nhcComm.getSystemInfo().getTz());
+        properties.put("dstOffset", nhcComm.getSystemInfo().getDst());
+        properties.put("configDate", nhcComm.getSystemInfo().getLastConfig());
+        properties.put("energyEraseDate", nhcComm.getSystemInfo().getLastEnergyErase());
+        properties.put("connectionStartDate", nhcComm.getSystemInfo().getTime());
 
         thing.setProperties(properties);
 
@@ -203,10 +203,10 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (nhcComm != null) {
-            nhcComm.stopCommunication();
+        if (this.nhcComm != null) {
+            this.nhcComm.stopCommunication();
         }
-        nhcComm = null;
+        this.nhcComm = null;
     }
 
     /**
@@ -224,7 +224,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      * @return Niko Home Control communication object
      */
     public NikoHomeControlCommunication getCommunication() {
-        return nhcComm;
+        return this.nhcComm;
     }
 
 }

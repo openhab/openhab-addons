@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlHandler.class);
 
-    private NikoHomeControlBridgeHandler nhcBridgeHandler;
-    private NikoHomeControlCommunication nhcComm;
+    private NhcAction nhcAction;
 
     public NikoHomeControlHandler(Thing thing) {
         super(thing);
@@ -45,33 +45,26 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
-        if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Niko Home Control: no connection with Niko Home Control, could not handle command " + command
-                            + " for " + channelUID);
-            return;
-        }
-
         Integer actionId = ((Number) this.getConfig().get(CONFIG_ACTION_ID)).intValue();
 
-        if (nhcComm.getActions().contains(actionId)) {
+        if (this.nhcAction != null) {
 
             logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
 
             switch (channelUID.getId()) {
 
                 case CHANNEL_SWITCH:
-                    handleSwitchCommand(actionId, command);
+                    handleSwitchCommand(command);
                     updateStatus(ThingStatus.ONLINE);
                     break;
 
                 case CHANNEL_BRIGHTNESS:
-                    handleBrightnessCommand(actionId, command);
+                    handleBrightnessCommand(command);
                     updateStatus(ThingStatus.ONLINE);
                     break;
 
                 case CHANNEL_ROLLERSHUTTER:
-                    handleRollershutterCommand(actionId, command);
+                    handleRollershutterCommand(command);
                     updateStatus(ThingStatus.ONLINE);
                     break;
 
@@ -86,69 +79,64 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         }
     }
 
-    private void handleSwitchCommand(Integer actionId, Command command) {
+    private void handleSwitchCommand(Command command) {
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
             if (s == OnOffType.OFF) {
-                nhcComm.executeAction(actionId, 0);
+                this.nhcAction.execute(0);
             } else {
-                nhcComm.executeAction(actionId, 100);
+                this.nhcAction.execute(100);
             }
         }
     }
 
-    private void handleBrightnessCommand(Integer actionId, Command command) {
+    private void handleBrightnessCommand(Command command) {
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
             if (s == OnOffType.OFF) {
-                nhcComm.executeAction(actionId, 255);
+                this.nhcAction.execute(255);
             } else {
-                nhcComm.executeAction(actionId, 254);
+                this.nhcAction.execute(254);
             }
         } else if (command instanceof IncreaseDecreaseType) {
             IncreaseDecreaseType s = (IncreaseDecreaseType) command;
             int stepValue = ((Number) this.getConfig().get(CONFIG_STEP_VALUE)).intValue();
-            int currentValue = nhcComm.getActionState(actionId);
+            int currentValue = this.nhcAction.getState();
             int newValue;
             if (s == IncreaseDecreaseType.INCREASE) {
                 newValue = currentValue + stepValue;
                 // round down to step multiple
                 newValue = newValue - newValue % stepValue;
-                nhcComm.executeAction(actionId, (newValue > 100 ? 100 : newValue));
+                this.nhcAction.execute(newValue > 100 ? 100 : newValue);
             } else {
                 newValue = currentValue - stepValue;
                 // round up to step multiple
                 newValue = newValue + newValue % stepValue;
-                nhcComm.executeAction(actionId, (newValue < 0 ? 0 : newValue));
+                this.nhcAction.execute(newValue < 0 ? 0 : newValue);
             }
         } else if (command instanceof PercentType) {
             PercentType p = (PercentType) command;
-            nhcComm.executeAction(actionId, p.intValue());
+            this.nhcAction.execute(p.intValue());
         }
     }
 
-    private void handleRollershutterCommand(Integer actionId, Command command) {
+    private void handleRollershutterCommand(Command command) {
         if (command instanceof UpDownType) {
             UpDownType s = (UpDownType) command;
             if (s == UpDownType.UP) {
-                nhcComm.executeAction(actionId, 255);
-                logger.debug("Niko Home Control: rollershutter {} up pressed", actionId);
+                this.nhcAction.execute(255);
             } else {
-                nhcComm.executeAction(actionId, 254);
-                logger.debug("Niko Home Control: rollershutter {} down pressed", actionId);
+                this.nhcAction.execute(254);
             }
         } else if (command instanceof StopMoveType) {
             StopMoveType s = (StopMoveType) command;
             if (s == StopMoveType.STOP) {
-                nhcComm.executeAction(actionId, 253);
-                logger.debug("Niko Home Control: rollershutter {} stop pressed", actionId);
+                this.nhcAction.execute(253);
             } else {
-                logger.debug("Niko Home Control: rollershutter {} move pressed", actionId);
             }
         } else if (command instanceof PercentType) {
             PercentType p = (PercentType) command;
-            nhcComm.executeAction(actionId, p.intValue());
-            logger.debug("Niko Home Control: rollershutter {} percent {}", actionId, p.intValue());
+            this.nhcAction.execute(p.intValue());
         }
     }
 
@@ -159,8 +147,8 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
         Integer actionId = ((Number) config.get(CONFIG_ACTION_ID)).intValue();
 
-        nhcBridgeHandler = (NikoHomeControlBridgeHandler) getBridge().getHandler();
-        nhcComm = nhcBridgeHandler.getCommunication();
+        NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) getBridge().getHandler();
+        NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
 
         if (nhcComm == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -168,13 +156,16 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             return;
         }
 
-        if (nhcComm.getActions().contains(actionId)) {
+        this.nhcAction = nhcComm.getActions().get(actionId);
 
-            int actionState = nhcComm.getActionState(actionId);
-            int actionType = nhcComm.getActionType(actionId);
-            String actionLocation = nhcComm.getLocationName(nhcComm.getActionLocation(actionId));
+        if (this.nhcAction != null) {
 
-            nhcComm.setActionThingHandler(actionId, this);
+            int actionState = this.nhcAction.getState();
+            int actionType = this.nhcAction.getType();
+            String actionLocation = this.nhcAction.getLocation();
+
+            this.nhcAction.setThingHandler(this);
+            this.nhcAction.setNhcComm(nhcComm);
 
             switch (actionType) {
                 case 0:

@@ -72,7 +72,7 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
                         .getService(serviceReg.getReference());
                 nhcDiscoveryService.deactivate();
                 serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+                this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
     }

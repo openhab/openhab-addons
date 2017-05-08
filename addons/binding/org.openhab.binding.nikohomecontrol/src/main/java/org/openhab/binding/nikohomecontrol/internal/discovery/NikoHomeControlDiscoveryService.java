@@ -10,6 +10,7 @@ package org.openhab.binding.nikohomecontrol.internal.discovery;
 import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -17,6 +18,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants;
 import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlBridgeHandler;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,14 +47,14 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void activate() {
-        handler.setNhcDiscovery(this);
+        this.handler.setNhcDiscovery(this);
     }
 
     @Override
     public void deactivate() {
         removeOlderResults(new Date().getTime());
-        handler.setNhcDiscovery(null);
-        handler = null;
+        this.handler.setNhcDiscovery(null);
+        this.handler = null;
     }
 
     /**
@@ -60,38 +62,42 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
      */
     public void discoverDevices() {
 
-        NikoHomeControlCommunication nhcComm = handler.getCommunication();
+        NikoHomeControlCommunication nhcComm = this.handler.getCommunication();
 
         if ((nhcComm == null) || !nhcComm.communicationActive()) {
             logger.warn("Niko Home Control: not connected.");
             return;
         }
-        logger.debug("Niko Home Control: getting devices on {}", handler.getThing().getUID().getId());
+        logger.debug("Niko Home Control: getting devices on {}", this.handler.getThing().getUID().getId());
 
-        for (int actionId : nhcComm.getActions()) {
+        Map<Integer, NhcAction> actions = nhcComm.getActions();
 
-            String thingName = nhcComm.getActionName(actionId);
-            String thingLocation = nhcComm.getLocationName(nhcComm.getActionLocation(actionId));
+        for (Map.Entry<Integer, NhcAction> action : actions.entrySet()) {
 
-            switch (nhcComm.getActionType(actionId)) {
+            int actionId = action.getKey();
+            NhcAction nhcAction = action.getValue();
+            String thingName = nhcAction.getName();
+            String thingLocation = nhcAction.getLocation();
+
+            switch (nhcAction.getType()) {
                 case 0: // handles all-off
                 case 1: // switch
-                    addDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, handler.getThing().getUID(),
+                    addDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, this.handler.getThing().getUID(),
                             Integer.toString(actionId)), actionId, thingName, thingLocation);
 
                     break;
                 case 2: // dimmer
-                    addDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, handler.getThing().getUID(),
+                    addDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, this.handler.getThing().getUID(),
                             Integer.toString(actionId)), actionId, thingName, thingLocation);
                     break;
                 case 4: // rollershutter
                 case 5:
-                    addDevice(new ThingUID(THING_TYPE_BLIND, handler.getThing().getUID(), Integer.toString(actionId)),
-                            actionId, thingName, thingLocation);
+                    addDevice(new ThingUID(THING_TYPE_BLIND, this.handler.getThing().getUID(),
+                            Integer.toString(actionId)), actionId, thingName, thingLocation);
                     break;
                 default:
-                    logger.debug("Niko Home Control: unrecognized action type {} for {} {}",
-                            nhcComm.getActionType(actionId), actionId, thingName);
+                    logger.debug("Niko Home Control: unrecognized action type {} for {} {}", nhcAction.getType(),
+                            actionId, thingName);
             }
 
         }

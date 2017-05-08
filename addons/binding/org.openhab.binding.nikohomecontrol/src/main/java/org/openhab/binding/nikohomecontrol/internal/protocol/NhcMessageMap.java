@@ -11,14 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class {@link NHCMessageMap} used as output from gson for cmd or event feedback from Niko Home Control where the
- * data part is a simple json string. Extends {@link NHCBaseMessage}.
+ * Class {@link NhcMessageMap} used as output from gson for cmd or event feedback from Niko Home Control where the
+ * data part is a simple json string. Extends {@link NhcMessageBase}.
  * <p>
  * Example: <code>{"cmd":"executeactions", "data":{"error":0}}</code>
  *
  * @author Mark Herwege
  */
-public class NHCMessageMap extends NHCBaseMessage {
+public class NhcMessageMap extends NhcMessageBase {
 
     private Map<String, String> data = new HashMap<>();
 

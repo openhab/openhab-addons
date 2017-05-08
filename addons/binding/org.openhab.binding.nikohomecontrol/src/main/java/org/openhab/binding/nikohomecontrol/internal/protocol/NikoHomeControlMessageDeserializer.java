@@ -29,10 +29,10 @@ import com.google.gson.JsonParseException;
  * @author Mark Herwege
  *
  */
-public class NikoHomeControlMessageDeserializer implements JsonDeserializer<NHCBaseMessage> {
+public class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageBase> {
 
     @Override
-    public NHCBaseMessage deserialize(final JsonElement json, final Type typeOfT,
+    public NhcMessageBase deserialize(final JsonElement json, final Type typeOfT,
             final JsonDeserializationContext context) throws JsonParseException {
 
         final JsonObject jsonObject = json.getAsJsonObject();
@@ -52,25 +52,25 @@ public class NikoHomeControlMessageDeserializer implements JsonDeserializer<NHCB
                 jsonData = jsonObject.get("data");
             }
 
-            NHCBaseMessage message = null;
+            NhcMessageBase message = null;
 
             if (jsonData != null) {
 
                 if (jsonData.isJsonObject()) {
 
-                    message = new NHCMessageMap();
+                    message = new NhcMessageMap();
 
                     Map<String, String> data = new HashMap<>();
                     for (Entry<String, JsonElement> entry : jsonData.getAsJsonObject().entrySet()) {
                         data.put(entry.getKey(), entry.getValue().getAsString());
                     }
-                    ((NHCMessageMap) message).setData(data);
+                    ((NhcMessageMap) message).setData(data);
 
                 } else if (jsonData.isJsonArray()) {
 
                     JsonArray jsonDataArray = jsonData.getAsJsonArray();
 
-                    message = new NHCMessageListMap();
+                    message = new NhcMessageListMap();
 
                     List<HashMap<String, String>> dataList = new ArrayList<>();
                     for (int i = 0; i < jsonDataArray.size(); i++) {
@@ -82,7 +82,7 @@ public class NikoHomeControlMessageDeserializer implements JsonDeserializer<NHCB
                         }
                         dataList.add((HashMap<String, String>) data);
                     }
-                    ((NHCMessageListMap) message).setData(dataList);
+                    ((NhcMessageListMap) message).setData(dataList);
                 }
 
             }
