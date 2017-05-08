@@ -185,6 +185,9 @@ public class RobonectClient {
     private String sendCommand(Command command) {
         ContentResponse response = null;
         try {
+            if (logger.isDebugEnabled()) {
+                logger.debug("send HTTP GET to: {} ", command.toCommandURL(baseUrl));
+            }
             response = httpClient.GET(command.toCommandURL(baseUrl));
         } catch (Exception e) {
             throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(baseUrl), e);

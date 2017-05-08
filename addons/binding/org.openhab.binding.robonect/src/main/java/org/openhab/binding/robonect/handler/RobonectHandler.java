@@ -43,7 +43,7 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STAT
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_DURATION;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_HOURS;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_MODE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_STOPPED;
+import static org.openhab.binding.robonect.RobonectBindingConstants.MOWER_STATUS_STARTED;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_NEXT_DATE;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIME;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_NEXT_UNIX_TS;
@@ -83,7 +83,7 @@ public class RobonectHandler extends BaseThingHandler {
                     case CHANNEL_STATUS_DURATION:
                     case CHANNEL_STATUS_HOURS:
                     case CHANNEL_STATUS_MODE:
-                    case CHANNEL_STATUS_STOPPED:
+                    case MOWER_STATUS_STARTED:
                     case CHANNEL_TIMER_NEXT_DATE:
                     case CHANNEL_TIMER_NEXT_TIME:
                     case CHANNEL_TIMER_NEXT_UNIX_TS:
@@ -117,7 +117,7 @@ public class RobonectHandler extends BaseThingHandler {
                                     command.getClass().getName());
                         }
                         break;
-                    case CHANNEL_STATUS_STOPPED:
+                    case MOWER_STATUS_STARTED:
                         if (command instanceof OnOffType) {
                             handleStartStop((OnOffType) command);
                         } else {
@@ -207,13 +207,13 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void handleStartStop(OnOffType command) {
-        OnOffType stopped = command;
+        OnOffType started = command;
         RobonectAnswer answer = null;
         boolean currentlyStopped = robonectClient.getMowerInfo().getStatus().isStopped();
-        if (stopped == OnOffType.ON && !currentlyStopped) {
-            answer = robonectClient.stop();
-        } else if (currentlyStopped) {
+        if (started == OnOffType.ON && currentlyStopped) {
             answer = robonectClient.start();
+        } else if (!currentlyStopped) {
+            answer = robonectClient.stop();
         }
         if (answer != null) {
             logErrorFromResponse(answer);
@@ -242,7 +242,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_DURATION, new DecimalType(info.getStatus().getDuration()));
             updateState(CHANNEL_STATUS_HOURS, new DecimalType(info.getStatus().getDuration()));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
-            updateState(CHANNEL_STATUS_STOPPED, info.getStatus().isStopped() ? OnOffType.ON : OnOffType.OFF);
+            updateState(MOWER_STATUS_STARTED, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
             if(info.getTimer() != null){
                 if(info.getTimer().getNext() != null){
                     updateState(CHANNEL_TIMER_NEXT_DATE, new StringType(info.getTimer().getNext().getDate()));

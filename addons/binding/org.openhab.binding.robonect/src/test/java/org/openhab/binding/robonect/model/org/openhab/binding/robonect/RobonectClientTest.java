@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.robonect.RobonectClient;
+import org.openhab.binding.robonect.RobonectCommunicationException;
 import org.openhab.binding.robonect.RobonectEndpoint;
 import org.openhab.binding.robonect.model.ErrorList;
 import org.openhab.binding.robonect.model.MowerInfo;
@@ -34,7 +35,7 @@ public class RobonectClientTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-        RobonectEndpoint dummyEndPoint = new RobonectEndpoint("123.456.789.123", "user", "password");
+        RobonectEndpoint dummyEndPoint = new RobonectEndpoint("123.456.789.123", null, null);
         client = new RobonectClient(httpClientMock, dummyEndPoint);
     }
 
@@ -108,34 +109,28 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).GET("http://123.456.789.123/json?cmd=version");
     }
 
-    @Test
+    @Test(expected = RobonectCommunicationException.class)
     public void shouldReceiveErrorAnswerOnInterruptedException()
             throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.GET("http://123.456.789.123/json?cmd=status"))
                 .thenThrow(new InterruptedException("Mock Interrupted Exception"));
         MowerInfo answer = client.getMowerInfo();
-        assertEquals("Mock Interrupted Exception", answer.getErrorMessage());
-        assertEquals(new Integer(999), answer.getErrorCode());
     }
 
-    @Test
+    @Test(expected = RobonectCommunicationException.class)
     public void shouldReceiveErrorAnswerOnExecutionException()
             throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.GET("http://123.456.789.123/json?cmd=status"))
                 .thenThrow(new ExecutionException(new Exception("Mock Exception")));
         MowerInfo answer = client.getMowerInfo();
-        assertEquals("java.lang.Exception: Mock Exception", answer.getErrorMessage());
-        assertEquals(new Integer(888), answer.getErrorCode());
     }
 
-    @Test
+    @Test(expected = RobonectCommunicationException.class)
     public void shouldReceiveErrorAnswerOnTimeoutException()
             throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.GET("http://123.456.789.123/json?cmd=status"))
                 .thenThrow(new TimeoutException("Mock Timeout Exception"));
         MowerInfo answer = client.getMowerInfo();
-        assertEquals("Mock Timeout Exception", answer.getErrorMessage());
-        assertEquals(new Integer(777), answer.getErrorCode());
     }
 
 }
