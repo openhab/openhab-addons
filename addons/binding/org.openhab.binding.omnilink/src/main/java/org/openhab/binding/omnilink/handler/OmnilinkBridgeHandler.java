@@ -264,7 +264,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             int number = event.getNotifications()[0];
             if (number > 0 && number <= 256) {
                 Thing theThing = buttonThings.get(number);
-                logger.debug("Detect button push: number={}", number);
+                logger.debug("Detect button push: number={}, thing: {}", number, theThing);
                 if (theThing != null) {
                     ((ButtonHandler) theThing.getHandler()).buttonPressed();
                 } else {
