@@ -1,10 +1,15 @@
 package org.openhab.binding.robonect;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Authentication;
+import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.util.B64Code;
 import org.openhab.binding.robonect.model.ErrorList;
 import org.openhab.binding.robonect.model.ModelParser;
 import org.openhab.binding.robonect.model.MowerInfo;
@@ -27,7 +32,7 @@ public class RobonectClient {
     private final Logger logger = LoggerFactory.getLogger(RobonectClient.class);
 
     private HttpClient httpClient;
-    private RobonectEndpoint endpoint;
+
     private ModelParser parser;
 
     public class JobSettings {
@@ -38,9 +43,9 @@ public class RobonectClient {
         private String end;
 
         public ModeCommand.RemoteStart getRemoteStart() {
-            if(remoteStart != null){
+            if (remoteStart != null) {
                 return remoteStart;
-            }else {
+            } else {
                 logger.debug("No explicit remote start set. Returnt STANDARD.");
                 return ModeCommand.RemoteStart.STANDARD;
             }
@@ -83,16 +88,49 @@ public class RobonectClient {
         }
     }
 
+    private static class BasicResult implements Authentication.Result {
+        private final HttpHeader header;
+        private final URI uri;
+        private final String value;
+
+        public BasicResult(HttpHeader header, URI uri, String value) {
+            this.header = header;
+            this.uri = uri;
+            this.value = value;
+        }
+
+        public URI getURI() {
+            return this.uri;
+        }
+
+        public void apply(Request request) {
+            request.header(this.header, this.value);
+        }
+
+        public String toString() {
+            return String.format("Basic authentication result for %s", this.uri );
+        }
+    }
+
     private JobSettings jobSettings;
 
     private final String baseUrl;
 
     public RobonectClient(HttpClient httpClient, RobonectEndpoint endpoint) {
         this.httpClient = httpClient;
-        this.endpoint = endpoint;
-        this.parser = new ModelParser();
         this.baseUrl = "http://" + endpoint.getIpAddress() + "/json";
+        this.parser = new ModelParser();
         this.jobSettings = new JobSettings();
+        if (endpoint.isUseAuthentication()) {
+            addPreemptiveAuthentication(httpClient, endpoint);
+        }
+    }
+
+    private void addPreemptiveAuthentication(HttpClient httpClient, RobonectEndpoint endpoint) {
+        AuthenticationStore auth = httpClient.getAuthenticationStore();
+        URI uri = URI.create(baseUrl);
+        auth.addAuthenticationResult(new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic " + B64Code
+                .encode(endpoint.getUser() + ":" + endpoint.getPassword(), StandardCharsets.ISO_8859_1)));
     }
 
     public MowerInfo getMowerInfo() {
@@ -126,13 +164,11 @@ public class RobonectClient {
     }
 
     private ModeCommand createCommand(ModeCommand.Mode mode) {
-        if(mode != ModeCommand.Mode.JOB){
+        if (mode != ModeCommand.Mode.JOB) {
             return new ModeCommand(mode);
-        }else {
-            return new ModeCommand(mode)
-                    .withRemoteStart(jobSettings.remoteStart)
-                    .withAfter(jobSettings.after).withStart(jobSettings.start)
-                                    .withEnd(jobSettings.end);
+        } else {
+            return new ModeCommand(mode).withRemoteStart(jobSettings.remoteStart).withAfter(jobSettings.after)
+                    .withStart(jobSettings.start).withEnd(jobSettings.end);
         }
     }
 
@@ -150,15 +186,8 @@ public class RobonectClient {
         ContentResponse response = null;
         try {
             response = httpClient.GET(command.toCommandURL(baseUrl));
-        } catch (InterruptedException e) {
-            logger.error("Could not send sommand {} to rebonect", command.toCommandURL(baseUrl), e);
-            return parser.exceptionToJSON(e, 999);
-        } catch (ExecutionException e) {
-            logger.error("Could not send sommand {} to rebonect", command.toCommandURL(baseUrl), e);
-            return parser.exceptionToJSON(e, 888);
-        } catch (TimeoutException e) {
-            logger.error("Could not send sommand {} to rebonect", command.toCommandURL(baseUrl), e);
-            return parser.exceptionToJSON(e, 777);
+        } catch (Exception e) {
+            throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(baseUrl), e);
         }
         String responseString = response.getContentAsString();
         if (logger.isDebugEnabled()) {

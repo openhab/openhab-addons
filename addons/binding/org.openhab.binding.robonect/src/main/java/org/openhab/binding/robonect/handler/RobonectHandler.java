@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -238,7 +237,7 @@ public class RobonectHandler extends BaseThingHandler {
         MowerInfo info = robonectClient.getMowerInfo();
         if (info.isSuccessful()) {
             updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
-            updateState(CHANNEL_STATUS_BATTERY, new PercentType(info.getStatus().getBattery()));
+            updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
             updateState(CHANNEL_STATUS, new StringType(info.getStatus().getStatus().name()));
             updateState(CHANNEL_STATUS_DURATION, new DecimalType(info.getStatus().getDuration()));
             updateState(CHANNEL_STATUS_HOURS, new DecimalType(info.getStatus().getDuration()));
@@ -274,7 +273,8 @@ public class RobonectHandler extends BaseThingHandler {
     public void initialize() {
         try {
             RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
-            RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost());
+            RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
+                    robonectConfig.getPassword());
             httpClient = new HttpClient();
             httpClient.start();
             robonectClient = new RobonectClient(httpClient, endpoint);
@@ -283,10 +283,10 @@ public class RobonectHandler extends BaseThingHandler {
                 @Override
                 public void run() {
                     refreshMowerInfo();
-                    //refreshVersionInfo();
                 }
             };
-            pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, 30, TimeUnit.SECONDS);
+            int pollInterval = robonectConfig.getPollInterval() > 0 ? robonectConfig.getPollInterval() : 30;
+            pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollInterval, TimeUnit.SECONDS);
 
             updateStatus(ThingStatus.ONLINE);
 

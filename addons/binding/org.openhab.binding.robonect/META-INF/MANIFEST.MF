@@ -16,6 +16,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.slf4j,
  org.eclipse.jetty.client,
+ org.eclipse.jetty.client.util,
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.http,
  org.eclipse.jetty.util,

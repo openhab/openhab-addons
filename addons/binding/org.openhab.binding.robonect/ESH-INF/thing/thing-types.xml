@@ -16,14 +16,24 @@
             <channel-group id="wlan" typeId="wlanType"/>
             <channel-group id="job" typeId="jobGroupType"/>
             <channel-group id="version" typeId="robonectVersionType"/>
-            <!-- TODO Version info -->
         </channel-groups>
         <config-description>
             <parameter name="host" type="text" required="true">
                 <label>Host</label>
                 <description>Host name or network address of the Robonect module</description>
             </parameter>
-                    
+            <parameter name="user" type="text" required="false">
+                <label>User</label>
+                <description>The user id if authentication has been enabled on the mower</description>
+            </parameter>
+            <parameter name="password" type="text" required="false">
+                <label>Password</label>
+                <description>The password if authentication has been enabled on the mower</description>
+            </parameter>
+            <parameter name="pollInterval" type="integer" required="false" unit="s">
+                <label>Polling interval.</label>
+                <description>The interval for the binding to poll the mowers status information. Defaults to 30 seconds.</description>
+            </parameter>
         </config-description>
     </thing-type>
 
@@ -143,11 +153,11 @@
         <description>The mower mode</description>
         <state readOnly="false">
             <options>
-                <option value="AUTO"/>
-                <option value="HOME"/>
-                <option value="MANUAL"/>
-                <option value="EOD"/>
-                <option value="JOB"/>
+                <option value="AUTO">AUTO</option>
+                <option value="HOME">HOME</option>
+                <option value="MANUAL">MANUAL</option>
+                <option value="EOD">EOD</option>
+                <option value="JOB">JOB</option>
             </options>
         </state>
     </channel-type>
@@ -158,9 +168,9 @@
         <description>The mower mode</description>
         <state readOnly="false">
             <options>
-                <option value="STANDARD"/>
-                <option value="REMOTE_1"/>
-                <option value="REMOTE_2"/>
+                <option value="STANDARD">STANDARD</option>
+                <option value="REMOTE_1">REMOTE_1</option>
+                <option value="REMOTE_2">REMOTE_2</option>
             </options>
         </state>
     </channel-type>
@@ -178,9 +188,9 @@
         <description>The status of the timer</description>
         <state readOnly="true">
             <options>
-                <option value="INACTIVE"/>
-                <option value="ACTIVE"/>
-                <option value="STANDBY"/>
+                <option value="INACTIVE">INACTIVE</option>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="STANDBY">STANDBY</option>
             </options>
         </state>
     </channel-type>
@@ -191,17 +201,17 @@
         <description>The status of the mower</description>
         <state readOnly="true">
             <options>
-                <option value="DETECTING_STATUS"/>
-                <option value="PARKING"/>
-                <option value="MOWING"/>
-                <option value="SEARCH_CHARGING_STATION"/>
-                <option value="CHARGING"/>
-                <option value="SEARCHING"/>
-                <option value="UNKNOWN_6"/>
-                <option value="ERROR_STATUS"/>
-                <option value="OFF"/>
-                <option value="SLEEPING"/>
-                <option value="UNKNOWN"/>
+                <option value="DETECTING_STATUS">DETECTING_STATUS</option>
+                <option value="PARKING">PARKING</option>
+                <option value="MOWING">MOWING</option>
+                <option value="SEARCH_CHARGING_STATION">SEARCH_CHARGING_STATION</option>
+                <option value="CHARGING">CHARGING</option>
+                <option value="SEARCHING">SEARCHING</option>
+                <option value="UNKNOWN_6">UNKNOWN_6</option>
+                <option value="ERROR_STATUS">ERROR_STATUS</option>
+                <option value="OFF">OFF</option>
+                <option value="SLEEPING">SLEEPING</option>
+                <option value="UNKNOWN">UNKNOWN</option>
             </options>
         </state>
     </channel-type>
