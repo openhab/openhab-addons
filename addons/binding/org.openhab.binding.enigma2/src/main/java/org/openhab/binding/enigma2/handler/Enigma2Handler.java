@@ -21,13 +21,10 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingFactory;
-import org.eclipse.smarthome.core.thing.type.TypeResolver;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.enigma2.internal.Enigma2CommandExecutor;
@@ -71,7 +68,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 if (command instanceof OnOffType) {
                     commandExecutor.setPowerState((OnOffType) command);
                 } else if (command instanceof RefreshType) {
-                    updateState(getChannelUID(CHANNEL_POWER), commandExecutor.getPowerState());
+                    updateState(CHANNEL_POWER, commandExecutor.getPowerState());
                 } else {
                     logger.warn("Invalid command type: {}: {}", command.getClass(), command);
                 }
@@ -82,7 +79,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 } else if (command instanceof PercentType) {
                     commandExecutor.setVolume((IncreaseDecreaseType) command);
                 } else if (command instanceof RefreshType) {
-                    updateState(getChannelUID(CHANNEL_VOLUME), commandExecutor.getVolumeState());
+                    updateState(CHANNEL_VOLUME, commandExecutor.getVolumeState());
                 } else {
                     logger.warn("Invalid command type: {}: {}", command.getClass(), command);
                 }
@@ -91,7 +88,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 if (command instanceof OnOffType) {
                     commandExecutor.setMute((OnOffType) command);
                 } else if (command instanceof RefreshType) {
-                    updateState(getChannelUID(CHANNEL_MUTE), commandExecutor.getMutedState());
+                    updateState(CHANNEL_MUTE, commandExecutor.getMutedState());
                 } else {
                     logger.warn("Invalid command type: {}: {}", command.getClass(), command);
                 }
@@ -100,7 +97,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
                 if (command instanceof StringType) {
                     commandExecutor.setChannel((StringType) command);
                 } else if (command instanceof RefreshType) {
-                    updateState(getChannelUID(CHANNEL_CHANNEL), commandExecutor.getChannelState());
+                    updateState(CHANNEL_CHANNEL, commandExecutor.getChannelState());
                 } else {
                     logger.warn("Invalid command type: {}: {}", command.getClass(), command);
                 }
@@ -221,25 +218,6 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
 
     public void setOffline() {
         updateStatus(ThingStatus.OFFLINE);
-    }
-
-    /**
-     * Returns the ChannelUID of a channelId String
-     *
-     * @param channelId the channelId is a String representing the channel
-     *
-     * @return the ChannelUID of a channelId String
-     */
-    private ChannelUID getChannelUID(String channelId) {
-        Channel chann = getThing().getChannel(channelId);
-        if (chann == null) {
-            // refresh thing...
-            Thing newThing = ThingFactory.createThing(TypeResolver.resolve(getThing().getThingTypeUID()),
-                    getThing().getUID(), getThing().getConfiguration());
-            updateThing(newThing);
-            chann = getThing().getChannel(channelId);
-        }
-        return chann.getUID();
     }
 
     private class Enigma2Refresher implements Runnable {
