@@ -11,8 +11,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
@@ -43,12 +41,14 @@ import com.google.gson.JsonParseException;
  *
  * @author Mark Herwege
  */
-public class NikoHomeControlCommunication {
+public final class NikoHomeControlCommunication {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication.class);
 
+    private boolean fixedIp;
     private InetAddress nhcAddress;
     private int nhcPort;
+    private InetAddress broadcastAddr;
 
     private Socket nhcSocket;
     private PrintWriter nhcOut;
@@ -56,101 +56,60 @@ public class NikoHomeControlCommunication {
 
     private Boolean listenerStopped;
 
-    public class NhcLocation {
-
-        private String name;
-
-        NhcLocation(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-    }
+    // We keep only 2 gson adapters used to serialize and deserialize all messages sent and received
+    private Gson gsonIn = new Gson();
+    private Gson gsonOut;
 
     private final NhcSystemInfo systemInfo = new NhcSystemInfo();
     private final Map<Integer, NhcLocation> locations = new HashMap<>();
     private final Map<Integer, NhcAction> actions = new HashMap<>();
 
+    private NikoHomeControlBridgeHandler bridgeCallBack;
+
     /**
      * Constructor for Niko Home Control communication object, manages communication with
      * Niko Home Control IP-interface.
      *
-     * @param addr Can be null or omitted, will attempt to discover IP address.
-     * @param port
-     */
-    public NikoHomeControlCommunication(InetAddress addr, int port) {
-
-        startCommunication(addr, port);
-    }
-
-    public NikoHomeControlCommunication(int port) {
-
-        startCommunication(null, port);
-    }
-
-    /**
-     * Get Niko Home Control IP-interface IP address.
-     * <p>
-     * The method sends a UDP packet with content 0x44 to the local network on port 10000.
-     * The Niko Home Control IP-interface responds to this UDP packet.
-     * The IP-address from the Niko Home Control IP-interface is then extracted from the response packet.
+     * @param addr Can be null or omitted, will attempt to discover IP address if omitted.
      *
-     * @param IP address used to get local broadcast address, will be broadcast in local subnet if null
-     * @return IP address
-     * @throws IOException
+     * @throws IOException when Niko Home Control IP-interface cannot be found
      */
-    private InetAddress nikoHomeControlFindAddr(InetAddress broadcastaddr) throws IOException {
+    public NikoHomeControlCommunication(InetAddress addr, InetAddress broadcastAddr) throws IOException {
 
-        byte[] discoverbuffer = { (byte) 0x44 };
-        int broadcastport = 10000;
+        this.broadcastAddr = broadcastAddr;
 
-        if (broadcastaddr == null) {
-            broadcastaddr = InetAddress.getLocalHost();
-        }
-        byte[] ipaddr = broadcastaddr.getAddress();
-        ipaddr[3] = (byte) 0xff;
-        broadcastaddr = InetAddress.getByAddress(ipaddr);
-
-        DatagramPacket discoveryPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcastaddr,
-                broadcastport);
-        byte[] buffer = new byte[1024];
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-
-        try (DatagramSocket datagramSocket = new DatagramSocket(null)) {
-            datagramSocket.setBroadcast(true);
-            datagramSocket.setSoTimeout(500);
-            datagramSocket.send(discoveryPacket);
-            datagramSocket.receive(packet);
-            InetAddress addr = packet.getAddress();
-            logger.debug("Niko Home Control: IP address is {}", addr);
-            return addr;
+        if (addr == null) {
+            NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
+            this.nhcAddress = nhcDiscover.getAddr();
+            this.fixedIp = false;
+        } else {
+            this.nhcAddress = addr;
+            this.fixedIp = true;
         }
 
+        // When we set up this object, we also want to get the proper gson adapter set up once
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(NhcMessageBase.class, new NikoHomeControlMessageDeserializer());
+        this.gsonOut = gsonBuilder.create();
+    }
+
+    public NikoHomeControlCommunication() throws IOException {
+
+        this(null, null);
     }
 
     /**
      * Start communication with Niko Home Control IP-interface, run through initialization and start thread listening
      * to all messages coming from Niko Home Control.
      *
-     * @param addr address used as a basis to calculate broadcast address, automatically set to previous address used
-     * @param port port number for TCP communication, 8000 by default
      */
-    private void startCommunication(InetAddress addr, int port) {
+    public void startCommunication(int port) {
 
+        this.nhcPort = port;
         try {
-            nhcPort = port;
-            nhcAddress = nikoHomeControlFindAddr(addr);
-
-            if (nhcAddress == null) {
-                logger.warn("Niko Home Control: did not find real IP of gateway");
-                return;
-            }
-
-            nhcSocket = new Socket(nhcAddress, nhcPort);
-            nhcOut = new PrintWriter(nhcSocket.getOutputStream(), true);
-            nhcIn = new BufferedReader(new InputStreamReader(nhcSocket.getInputStream()));
+            this.nhcSocket = new Socket(this.nhcAddress, this.nhcPort);
+            this.nhcOut = new PrintWriter(this.nhcSocket.getOutputStream(), true);
+            this.nhcIn = new BufferedReader(new InputStreamReader(this.nhcSocket.getInputStream()));
             logger.info("Niko Home Control: connected");
 
             // initialize all info in local fields
@@ -173,15 +132,15 @@ public class NikoHomeControlCommunication {
      *
      */
     public synchronized void stopCommunication() {
-        listenerStopped = true;
+        this.listenerStopped = true;
 
-        if (nhcSocket != null) {
+        if (this.nhcSocket != null) {
             try {
-                nhcSocket.close();
+                this.nhcSocket.close();
             } catch (IOException ignore) {
                 // ignore IO Error when trying to close the socket if the intention is to close it anyway
             }
-            nhcSocket = null;
+            this.nhcSocket = null;
         }
         logger.warn("Niko Home Control: communication stopped");
 
@@ -195,7 +154,19 @@ public class NikoHomeControlCommunication {
         stopCommunication();
 
         logger.info("Niko Home Control: restart communication");
-        startCommunication(nhcAddress, nhcPort);
+        if (!this.fixedIp) {
+            try {
+                NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
+                this.nhcAddress = nhcDiscover.getAddr();
+            } catch (IOException e) {
+                // if the error occurs in the initialization, don't try to restart
+                logger.warn("Niko Home Control: cannot find IP-interface");
+                // take bridge offline
+                this.bridgeCallBack.bridgeOffline();
+                return;
+            }
+        }
+        startCommunication(this.nhcPort);
 
     }
 
@@ -205,7 +176,7 @@ public class NikoHomeControlCommunication {
      * @return True if active
      */
     public boolean communicationActive() {
-        return nhcSocket != null;
+        return this.nhcSocket != null;
     }
 
     /**
@@ -250,12 +221,8 @@ public class NikoHomeControlCommunication {
 
         logger.debug("Niko Home Control: received json {}", nhcMessage);
 
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(NhcMessageBase.class, new NikoHomeControlMessageDeserializer());
-        Gson gson = gsonBuilder.create();
-
         try {
-            NhcMessageBase nhcMessageGson = gson.fromJson(nhcMessage, NhcMessageBase.class);
+            NhcMessageBase nhcMessageGson = this.gsonOut.fromJson(nhcMessage, NhcMessageBase.class);
 
             String cmd = nhcMessageGson.getCmd();
             String event = nhcMessageGson.getEvent();
@@ -305,7 +272,7 @@ public class NikoHomeControlCommunication {
 
     private void sendAndReadMessage(String command) throws IOException {
         sendMessage(new NhcMessageCmd(command));
-        readMessage(nhcIn.readLine());
+        readMessage(this.nhcIn.readLine());
     }
 
     private void cmdSystemInfo(Map<String, String> data) {
@@ -313,34 +280,34 @@ public class NikoHomeControlCommunication {
         logger.debug("Niko Home Control: systeminfo");
 
         if (data.containsKey("swversion")) {
-            systemInfo.setSwVersion(data.get("swversion"));
+            this.systemInfo.setSwVersion(data.get("swversion"));
         }
         if (data.containsKey("api")) {
-            systemInfo.setApi(data.get("api"));
+            this.systemInfo.setApi(data.get("api"));
         }
         if (data.containsKey("time")) {
-            systemInfo.setTime(data.get("time"));
+            this.systemInfo.setTime(data.get("time"));
         }
         if (data.containsKey("language")) {
-            systemInfo.setLanguage(data.get("language"));
+            this.systemInfo.setLanguage(data.get("language"));
         }
         if (data.containsKey("currency")) {
-            systemInfo.setCurrency(data.get("currency"));
+            this.systemInfo.setCurrency(data.get("currency"));
         }
         if (data.containsKey("units")) {
-            systemInfo.setUnits(data.get("units"));
+            this.systemInfo.setUnits(data.get("units"));
         }
         if (data.containsKey("DST")) {
-            systemInfo.setDst(data.get("DST"));
+            this.systemInfo.setDst(data.get("DST"));
         }
         if (data.containsKey("TZ")) {
-            systemInfo.setTz(data.get("TZ"));
+            this.systemInfo.setTz(data.get("TZ"));
         }
         if (data.containsKey("lastenergyerase")) {
-            systemInfo.setLastEnergyErase(data.get("lastenergyerase"));
+            this.systemInfo.setLastEnergyErase(data.get("lastenergyerase"));
         }
         if (data.containsKey("lastconfig")) {
-            systemInfo.setLastConfig(data.get("lastconfig"));
+            this.systemInfo.setLastConfig(data.get("lastconfig"));
         }
     }
 
@@ -416,15 +383,14 @@ public class NikoHomeControlCommunication {
      * @param nhcMessage
      */
     public void sendMessage(Object nhcMessage) {
-        Gson gson = new Gson();
-        String json = gson.toJson(nhcMessage);
+        String json = gsonIn.toJson(nhcMessage);
         logger.debug("Niko Home Control: send json {}", json);
-        nhcOut.println(json);
-        if (nhcOut.checkError()) {
-            logger.warn("Niko Home Control: error sending message to gateway, trying to restart communication");
+        this.nhcOut.println(json);
+        if (this.nhcOut.checkError()) {
+            logger.warn("Niko Home Control: error sending message, trying to restart communication");
             restartCommunication();
             // retry sending after restart
-            nhcOut.println(json);
+            this.nhcOut.println(json);
         }
     }
 
@@ -434,7 +400,7 @@ public class NikoHomeControlCommunication {
      * @return IP address
      */
     public InetAddress getAddr() {
-        return nhcAddress;
+        return this.nhcAddress;
     }
 
     /**
@@ -443,7 +409,7 @@ public class NikoHomeControlCommunication {
      * @return port
      */
     public int getPort() {
-        return nhcSocket.getPort();
+        return this.nhcPort;
     }
 
     /**
@@ -452,16 +418,7 @@ public class NikoHomeControlCommunication {
      * @return the systemInfo
      */
     public NhcSystemInfo getSystemInfo() {
-        return systemInfo;
-    }
-
-    /**
-     * Return all locations in the Niko Home Control Controller.
-     *
-     * @return <code>Map&ltInteger, {@link NhcLocation}></code>
-     */
-    public Map<Integer, NhcLocation> getLocations() {
-        return this.locations;
+        return this.systemInfo;
     }
 
     /**
@@ -471,6 +428,13 @@ public class NikoHomeControlCommunication {
      */
     public Map<Integer, NhcAction> getActions() {
         return this.actions;
+    }
+
+    /**
+     * @param bridgeCallBack the bridgeCallBack to set
+     */
+    public void setBridgeCallBack(NikoHomeControlBridgeHandler bridgeCallBack) {
+        this.bridgeCallBack = bridgeCallBack;
     }
 
 }

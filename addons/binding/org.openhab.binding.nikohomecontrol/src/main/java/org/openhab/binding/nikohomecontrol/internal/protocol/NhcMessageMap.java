@@ -18,15 +18,15 @@ import java.util.Map;
  *
  * @author Mark Herwege
  */
-public class NhcMessageMap extends NhcMessageBase {
+class NhcMessageMap extends NhcMessageBase {
 
     private Map<String, String> data = new HashMap<>();
 
-    public Map<String, String> getData() {
+    Map<String, String> getData() {
         return this.data;
     }
 
-    public void setData(Map<String, String> data) {
+    void setData(Map<String, String> data) {
         this.data = data;
     }
 

@@ -20,15 +20,15 @@ import java.util.List;
  *
  * @author Mark Herwege
  */
-public class NhcMessageListMap extends NhcMessageBase {
+class NhcMessageListMap extends NhcMessageBase {
 
     private List<HashMap<String, String>> data = new ArrayList<>();
 
-    public List<HashMap<String, String>> getData() {
+    List<HashMap<String, String>> getData() {
         return this.data;
     }
 
-    public void setData(List<HashMap<String, String>> data) {
+    void setData(List<HashMap<String, String>> data) {
         this.data = data;
     }
 

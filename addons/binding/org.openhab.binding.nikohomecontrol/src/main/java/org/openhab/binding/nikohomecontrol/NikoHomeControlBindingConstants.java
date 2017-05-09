@@ -49,6 +49,7 @@ public class NikoHomeControlBindingConstants {
     public static final String CONFIG_HOST_NAME = "ADDR";
     public static final String CONFIG_PORT = "PORT";
     public static final String CONFIG_REFRESH = "REFRESH";
+    public static final String CONFIG_BROADCAST_ADDRESS = "BROADCASTADDR";
 
     // Thing config properties
     public static final String CONFIG_ACTION_ID = "ACTIONID";

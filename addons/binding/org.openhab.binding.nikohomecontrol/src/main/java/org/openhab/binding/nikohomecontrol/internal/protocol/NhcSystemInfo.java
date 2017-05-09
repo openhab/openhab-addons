@@ -13,7 +13,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
  *
  * @author Mark Herwege
  */
-public class NhcSystemInfo {
+public final class NhcSystemInfo {
 
     // Initialize with empty strings. If null, downstream methods may throw null pointer exceptions. These
     // exceptions cause threads to stop without warning, no way to catch the exception. This behavior happened when
@@ -34,7 +34,7 @@ public class NhcSystemInfo {
         return swVersion;
     }
 
-    public void setSwVersion(String swVersion) {
+    void setSwVersion(String swVersion) {
         this.swVersion = swVersion;
     }
 
@@ -42,7 +42,7 @@ public class NhcSystemInfo {
         return api;
     }
 
-    public void setApi(String api) {
+    void setApi(String api) {
         this.api = api;
     }
 
@@ -50,7 +50,7 @@ public class NhcSystemInfo {
         return time;
     }
 
-    public void setTime(String time) {
+    void setTime(String time) {
         this.time = time;
     }
 
@@ -58,7 +58,7 @@ public class NhcSystemInfo {
         return language;
     }
 
-    public void setLanguage(String language) {
+    void setLanguage(String language) {
         this.language = language;
     }
 
@@ -66,7 +66,7 @@ public class NhcSystemInfo {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    void setCurrency(String currency) {
         this.currency = currency;
     }
 
@@ -74,7 +74,7 @@ public class NhcSystemInfo {
         return units;
     }
 
-    public void setUnits(String units) {
+    void setUnits(String units) {
         this.units = units;
     }
 
@@ -82,7 +82,7 @@ public class NhcSystemInfo {
         return dst;
     }
 
-    public void setDst(String dst) {
+    void setDst(String dst) {
         this.dst = dst;
     }
 
@@ -90,7 +90,7 @@ public class NhcSystemInfo {
         return tz;
     }
 
-    public void setTz(String tz) {
+    void setTz(String tz) {
         this.tz = tz;
     }
 
@@ -98,7 +98,7 @@ public class NhcSystemInfo {
         return lastEnergyErase;
     }
 
-    public void setLastEnergyErase(String lastEnergyErase) {
+    void setLastEnergyErase(String lastEnergyErase) {
         this.lastEnergyErase = lastEnergyErase;
     }
 
@@ -106,7 +106,7 @@ public class NhcSystemInfo {
         return lastConfig;
     }
 
-    public void setLastConfig(String lastConfig) {
+    void setLastConfig(String lastConfig) {
         this.lastConfig = lastConfig;
     }
 }

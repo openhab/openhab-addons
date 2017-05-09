@@ -18,6 +18,11 @@
 				<default>8000</default>
 				<advanced>true</advanced>
 			</parameter>
+            <parameter name="BROADCASTADDR" type="text" required="false">
+                <label>Broadcast address</label>
+                <description>Broadcast address used when to discover Niko Home Control gateway, will be derived from local IP if left empty.</description>
+                <advanced>true</advanced>
+            </parameter>
 			<parameter name="REFRESH" type="integer" required="false">
 				<label>Refresh interval</label>
 				<description>Refresh interval for connection with Niko Home Control gateway (min), default 300. If set to 0 or left empty, no refresh will be scheduled</description>

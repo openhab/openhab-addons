@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege
  */
-public class NhcAction {
+public final class NhcAction {
 
     private Logger logger = LoggerFactory.getLogger(NhcAction.class);
 
@@ -109,10 +109,11 @@ public class NhcAction {
      * State is a value between 0 and 100 for a dimmer or rollershutter.
      * State is 0 or 100 for a switch.
      * If a thing handler is registered for the action, send a state update through the handler.
+     * This method should only be called from inside this package.
      *
      * @param state
      */
-    public void setState(int state) {
+    void setState(int state) {
         this.state = state;
         if (thingHandler != null) {
             logger.debug("Niko Home Control: update channel state for {} with {}", id, state);

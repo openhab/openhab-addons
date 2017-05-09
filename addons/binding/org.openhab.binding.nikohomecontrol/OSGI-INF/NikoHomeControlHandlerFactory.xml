@@ -9,11 +9,8 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="openhab.binding.nikohomecontrol.internal.NikoHomeControlHandlerFactory">
-
-   <implementation class="org.openhab.binding.nikohomecontrol.internal.NikoHomeControlHandlerFactory"/>
-
-   <service>
-      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
-   </service>
-
+    <implementation class="org.openhab.binding.nikohomecontrol.internal.NikoHomeControlHandlerFactory"/>
+    <service>
+        <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+    </service>
 </scr:component>

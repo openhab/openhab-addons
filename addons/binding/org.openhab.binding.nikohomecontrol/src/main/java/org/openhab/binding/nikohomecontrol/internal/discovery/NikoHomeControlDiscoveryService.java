@@ -104,7 +104,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
     }
 
-    protected void addDevice(ThingUID uid, int actionId, String thingName, String thingLocation) {
+    private void addDevice(ThingUID uid, int actionId, String thingName, String thingLocation) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(thingName)
                 .withProperty("Location", thingLocation).withProperty(CONFIG_ACTION_ID, actionId).build();
         thingDiscovered(discoveryResult);

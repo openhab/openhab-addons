@@ -29,7 +29,7 @@ import com.google.gson.JsonParseException;
  * @author Mark Herwege
  *
  */
-public class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageBase> {
+class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageBase> {
 
     @Override
     public NhcMessageBase deserialize(final JsonElement json, final Type typeOfT,

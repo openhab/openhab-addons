@@ -9,30 +9,32 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 /**
  * Class {@link NhcMessageBase} used as base class for output from gson for cmd or event feedback from Niko Home
- * Control. This class only contains the common base fields required for the deserializer {@link NikoHomeControlMessageDeserializer}
- * to select the specific formats implemented in {@link NhcMessageMap}, {@link NhcMessageListMap}, {@link NhcMessageCmd}.
+ * Control. This class only contains the common base fields required for the deserializer
+ * {@link NikoHomeControlMessageDeserializer}
+ * to select the specific formats implemented in {@link NhcMessageMap}, {@link NhcMessageListMap},
+ * {@link NhcMessageCmd}.
  * <p>
  *
  * @author Mark Herwege
  */
-public class NhcMessageBase {
+abstract class NhcMessageBase {
 
     private String cmd;
     private String event;
 
-    public String getCmd() {
+    String getCmd() {
         return this.cmd;
     }
 
-    public void setCmd(String cmd) {
+    void setCmd(String cmd) {
         this.cmd = cmd;
     }
 
-    public String getEvent() {
+    String getEvent() {
         return this.event;
     }
 
-    public void setEvent(String event) {
+    void setEvent(String event) {
         this.event = event;
     }
 
