@@ -8,12 +8,12 @@
  */
 package org.openhab.voice.cmusphinx.internal;
 
-import java.util.Locale;
-import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.smarthome.core.audio.AudioException;
-import org.eclipse.smarthome.core.audio.AudioFormat;
-import org.eclipse.smarthome.core.audio.AudioSource;
 import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.voice.KSListener;
 import org.eclipse.smarthome.core.voice.KSpottedEvent;
@@ -38,9 +38,21 @@ public class CMUSphinxRunnable implements Runnable {
     private Logger logger = LoggerFactory.getLogger(CMUSphinxRunnable.class);
 
     /**
+     * Timeout in seconds for a (non-keyword) hypothesis to be sent as a
+     * {@code SpeechRecognitionEvent} before a the keyword has to be uttered again.
+     */
+    private static final int TIMEOUT = 10;
+
+    /**
      * Boolean indicating if the thread is aborting
      */
     private volatile boolean isAborting;
+
+    /**
+     * Boolean indicating if a keyword has been spotted and
+     * a SST result is now expected within the timeout period.
+     */
+    private AtomicBoolean isKeywordSpotted = new AtomicBoolean();
 
     /**
      * The source of audio data
@@ -68,10 +80,15 @@ public class CMUSphinxRunnable implements Runnable {
     private final StreamSpeechRecognizer speechRecognizer;
 
     /**
-     * Constructs an instance targeting the passed WsDuplexRecognitionSession
+     * The scheduler for timeout events
+     */
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    /**
+     * Constructs an instance targeting the passed StreamSpeechRecognizer and AudioStream
      *
      * @param speechRecognizer The StreamSpeechRecognizer from CMU Sphinx
-     * @param audioStream The AudioSource data
+     * @param audioStream The audio stream data
      */
     public CMUSphinxRunnable(StreamSpeechRecognizer speechRecognizer, AudioStream audioStream) {
         this.isAborting = false;
@@ -80,22 +97,23 @@ public class CMUSphinxRunnable implements Runnable {
     }
 
     /**
-     * This method sends AudioSource data in the WsDuplexRecognitionSession
+     * This method processes CMU Sphinx results and sends keyword spotting
+     * or STT events to the provided listeners.
      */
     @Override
     public void run() {
         try {
             this.speechRecognizer.startRecognition(this.audioStream);
+            logger.info("CMU Sphinx: StreamSpeechRecognizer recognition started");
 
             SpeechResult result;
+            ScheduledFuture<?> timeoutFuture = null;
+
             while ((result = this.speechRecognizer.getResult()) != null) {
                 String hypothesis = result.getHypothesis();
 
-                if ("<unk>".equals(result.getHypothesis()) || result.getHypothesis().isEmpty()) {
+                if ("<unk>".equals(hypothesis) || hypothesis.isEmpty()) {
                     logger.debug("Unknown or empty hypothesis");
-
-                    // sttListener.sttEventReceived(
-                    // new SpeechRecognitionErrorEvent("empty or unknown recognition hypothesis"));
                 } else {
                     logger.debug("Hypothesis: {}", hypothesis);
 
@@ -105,38 +123,46 @@ public class CMUSphinxRunnable implements Runnable {
                     float confidence = 1;
 
                     if (hypothesis.equals(keyword) && this.ksListener != null) {
-                        logger.info("Keyword recognized: {}, speak command now", hypothesis);
+                        if (this.isKeywordSpotted.get() == true) {
+                            logger.debug("Spotted keyword, but ignoring because already we're awaiting a command");
+                            continue;
+                        } else {
+                            logger.info("Keyword recognized: {}, speak command now", hypothesis);
 
-                        ksListener.ksEventReceived(new KSpottedEvent(new AudioSource() {
-                            // KSpottedEvent API inconsistent
-                            @Override
-                            public Set<AudioFormat> getSupportedFormats() {
-                                return null;
+                            ksListener.ksEventReceived(new KSpottedEvent());
+
+                            // Indicate we're now listening for a spoken command
+                            if (this.sttListener != null) {
+                                this.sttListener.sttEventReceived(new RecognitionStartEvent());
                             }
+                            this.isKeywordSpotted.set(true);
+                            AtomicBoolean isKeywordSpotted = this.isKeywordSpotted;
+                            STTListener sttListener = this.sttListener;
+                            Logger logger = this.logger;
+                            timeoutFuture = this.scheduler.schedule(new Runnable() {
+                                @Override
+                                public void run() {
+                                    logger.info("Timeout reached after keyword spotted: dialog interrupted");
+                                    isKeywordSpotted.set(false);
+                                    sttListener.sttEventReceived(new RecognitionStopEvent());
+                                }
+                            }, TIMEOUT, TimeUnit.SECONDS);
 
-                            @Override
-                            public String getLabel(Locale locale) {
-                                return null;
-                            }
+                        }
 
-                            @Override
-                            public AudioStream getInputStream(AudioFormat format) throws AudioException {
-                                return null;
-                            }
+                    } else if (timeoutFuture != null && !timeoutFuture.isDone()) {
+                        // Non-keyword recognized during the timeout period
 
-                            @Override
-                            public String getId() {
-                                return null;
-                            }
-                        }));
+                        timeoutFuture.cancel(false);
+                        this.isKeywordSpotted.set(false);
 
-                    } else {
                         if (sttListener == null) {
                             logger.warn("Ignoring CMU Sphinx STT result '{}' because no STTListener attached.",
                                     hypothesis);
                         } else {
                             logger.info("Command recognized: {}", hypothesis);
                             sttListener.sttEventReceived(new SpeechRecognitionEvent(hypothesis, confidence));
+                            sttListener.sttEventReceived(new RecognitionStopEvent());
                         }
                     }
 
@@ -147,18 +173,24 @@ public class CMUSphinxRunnable implements Runnable {
                 }
             }
             this.speechRecognizer.stopRecognition();
+            logger.info("CMU Sphinx: StreamSpeechRecognizer recognition stopped");
             if (this.sttListener != null) {
                 sttListener.sttEventReceived(new RecognitionStopEvent());
             }
 
         } catch (Exception e) {
             logger.error("Recognition error", e);
-            e.printStackTrace();
             sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(e.toString()));
         }
     }
 
+    /**
+     * Sets the {@code STTListener} to send speech-to-text events to
+     *
+     * @param sttListener the STT listener
+     */
     public void setSTTListener(STTListener sttListener) {
+        logger.debug("CMU Sphinx: STTListener set");
         if (this.sttListener != null) {
             this.sttListener.sttEventReceived(new RecognitionStopEvent());
         }
@@ -166,19 +198,23 @@ public class CMUSphinxRunnable implements Runnable {
         this.sttListener.sttEventReceived(new RecognitionStartEvent());
     }
 
+    /**
+     * Sets the {@code KSListener} to send keyword spotting events to
+     *
+     * @param sttListener the keyword spotting listener
+     */
     public void setKSListener(KSListener ksListener) {
         this.ksListener = ksListener;
-        // this is to work around a logic flaw in the DialogProcessor
-        if (this.ksListener instanceof STTListener) {
-            ((STTListener) this.ksListener).sttEventReceived(new RecognitionStopEvent());
-        }
+        logger.debug("CMU Sphinx: KSListener set");
     }
 
-    public String getKeyword() {
-        return keyword;
-    }
-
+    /**
+     * Sets the keyword to spot
+     *
+     * @param keyword to spot
+     */
     public void setKeyword(String keyword) {
+        logger.debug("CMU Sphinx: Keyword set: {}", keyword);
         this.keyword = keyword;
     }
 
