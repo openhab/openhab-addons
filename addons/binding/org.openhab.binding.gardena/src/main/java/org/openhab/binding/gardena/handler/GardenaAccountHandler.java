@@ -182,19 +182,17 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         for (ThingUID thingUID : UidUtils.getThingUIDs(device, getThing())) {
             Thing gardenaThing = getThingByUID(thingUID);
             try {
-                if (gardenaThing != null) {
-                    GardenaThingHandler gardenaThingHandler = (GardenaThingHandler) gardenaThing.getHandler();
-                    gardenaThingHandler.updateProperties(device);
-                    for (Channel channel : gardenaThing.getChannels()) {
-                        gardenaThingHandler.updateChannel(channel.getUID());
-                    }
-                    gardenaThingHandler.updateStatus(device);
+                GardenaThingHandler gardenaThingHandler = (GardenaThingHandler) gardenaThing.getHandler();
+                gardenaThingHandler.updateProperties(device);
+                for (Channel channel : gardenaThing.getChannels()) {
+                    gardenaThingHandler.updateChannel(channel.getUID());
                 }
+                gardenaThingHandler.updateStatus(device);
             } catch (GardenaException ex) {
                 logger.error("There is something wrong with your thing, please recreate the thing {}",
                         gardenaThing.getUID(), ex);
-            } catch (AccountHandlerNotAvailableException ex) {
-                // ignore
+                updateStatus(ThingStatus.OFFLINE);
+            } catch (AccountHandlerNotAvailableException ignore) {
             }
         }
     }

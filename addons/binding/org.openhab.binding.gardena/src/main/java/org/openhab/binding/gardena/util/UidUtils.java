@@ -45,7 +45,7 @@ public class UidUtils {
             if (deviceId == null) {
                 deviceId = thing.getUID().getId();
             }
-            if (device.getId().equals(deviceId)) {
+            if (deviceId.equals(device.getId())) {
                 thingUIDs.add(thing.getUID());
             }
         }

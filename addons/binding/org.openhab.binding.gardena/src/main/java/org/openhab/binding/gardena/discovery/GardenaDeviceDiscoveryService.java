@@ -158,9 +158,8 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
      * Removes the Gardena device.
      */
     public void deviceRemoved(Device device) {
-        for (ThingUID thingUID : UidUtils.getThingUIDs(device, accountHandler.getThing())) {
-            thingRemoved(thingUID);
-        }
+        ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
+        thingRemoved(thingUID);
     }
 
 }
