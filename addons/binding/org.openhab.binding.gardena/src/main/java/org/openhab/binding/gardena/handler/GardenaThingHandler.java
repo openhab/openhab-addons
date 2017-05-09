@@ -251,11 +251,7 @@ public class GardenaThingHandler extends BaseThingHandler {
      * Returns the Gardena device for this ThingHandler.
      */
     private Device getDevice() throws GardenaException, AccountHandlerNotAvailableException {
-        String deviceId = getConfig().as(GardenaDeviceConfig.class).deviceId;
-        if (deviceId == null) {
-            deviceId = UidUtils.getGardenaDeviceId(getThing());
-        }
-        return getGardenaSmart().getDevice(deviceId);
+        return getGardenaSmart().getDevice(UidUtils.getGardenaDeviceId(getThing()));
     }
 
     /**
