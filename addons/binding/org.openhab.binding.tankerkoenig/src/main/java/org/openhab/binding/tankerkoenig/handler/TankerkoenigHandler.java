@@ -179,3 +179,4 @@ public class TankerkoenigHandler extends BaseThingHandler {
         this.openingTimes = openingTimes;
     }
 }
+

@@ -65,5 +65,4 @@ public class LittleStation {
     public void setID(String id) {
         this.id = id;
     }
-
 }

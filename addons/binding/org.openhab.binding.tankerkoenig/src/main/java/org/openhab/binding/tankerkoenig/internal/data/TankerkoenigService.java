@@ -6,6 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.openhab.binding.tankerkoenig.internal.data;
 
 import java.io.IOException;
@@ -16,9 +17,9 @@ import java.net.URLConnection;
 import org.apache.commons.io.IOUtils;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigListResultDeserializer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -63,5 +64,4 @@ public class TankerkoenigService {
         TankerkoenigListResult res = gson.fromJson(jsonData, TankerkoenigListResult.class);
         return res;
     }
-
 }

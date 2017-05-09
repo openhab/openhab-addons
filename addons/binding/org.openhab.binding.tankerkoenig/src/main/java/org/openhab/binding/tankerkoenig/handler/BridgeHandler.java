@@ -10,6 +10,7 @@ package org.openhab.binding.tankerkoenig.handler;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -29,6 +31,7 @@ import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTime;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
+
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigService;
 import org.slf4j.Logger;
@@ -47,6 +50,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     private int refreshInterval;
     private boolean setupMode;
     private boolean use_OpeningTime;
+
     private ArrayList<Thing> tankstellenThingList;
     private HashMap<String, LittleStation> tankstellenList;
 
@@ -72,6 +76,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         this.setRefreshInterval(((BigDecimal) config.get(TankerkoenigBindingConstants.CONFIG_REFRESH)).intValue());
         this.setSetupMode((boolean) config.get(TankerkoenigBindingConstants.CONFIG_SETUP_MODE));
         this.setUseOpeningTime((boolean) config.get(TankerkoenigBindingConstants.CONFIG_USE_OPENINGTIME));
+
         updateStatus(ThingStatus.ONLINE);
 
         int pollingPeriod = this.getRefreshInterval();
