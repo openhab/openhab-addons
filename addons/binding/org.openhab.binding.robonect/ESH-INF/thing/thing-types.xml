@@ -60,9 +60,7 @@
         <label>Timer Info</label>
         <channels>
             <channel id="status" typeId="timerStatusType"/>
-            <channel id="nextDate" typeId="nextDateType"/>
-            <channel id="nextTime" typeId="nextTimeType"/>
-            <channel id="nextUnixTime" typeId="nextUnixType"/>
+            <channel id="nextTimer" typeId="nextTimerType"/>
         </channels>
     </channel-group-type>
     
@@ -196,22 +194,22 @@
     </channel-type>
     
     <channel-type id="mowerStatusType">
-        <item-type>String</item-type>
+        <item-type>Number</item-type>
         <label>Mower Status</label>
         <description>The status of the mower</description>
         <state readOnly="true">
             <options>
-                <option value="DETECTING_STATUS">DETECTING_STATUS</option>
-                <option value="PARKING">PARKING</option>
-                <option value="MOWING">MOWING</option>
-                <option value="SEARCH_CHARGING_STATION">SEARCH_CHARGING_STATION</option>
-                <option value="CHARGING">CHARGING</option>
-                <option value="SEARCHING">SEARCHING</option>
-                <option value="UNKNOWN_6">UNKNOWN_6</option>
-                <option value="ERROR_STATUS">ERROR_STATUS</option>
-                <option value="OFF">OFF</option>
-                <option value="SLEEPING">SLEEPING</option>
-                <option value="UNKNOWN">UNKNOWN</option>
+                <option value="0">DETECTING_STATUS</option>
+                <option value="1">PARKING</option>
+                <option value="2">MOWING</option>
+                <option value="3">SEARCH_CHARGING_STATION</option>
+                <option value="4">CHARGING</option>
+                <option value="5">SEARCHING</option>
+                <option value="6">UNKNOWN_6</option>
+                <option value="7">ERROR_STATUS</option>
+                <option value="16">OFF</option>
+                <option value="17">SLEEPING</option>
+                <option value="99">UNKNOWN</option>
             </options>
         </state>
     </channel-type>
@@ -223,29 +221,16 @@
         <state readOnly="false"/>
     </channel-type>
 
-    <channel-type id="nextDateType">
-        <item-type>String</item-type>
+    <channel-type id="nextTimerType">
+        <item-type>DateTime</item-type>
         <label>Next timer date</label>
         <description>The next date the timer starts</description>
         <state readOnly="true"/>
     </channel-type>
-
-    <channel-type id="nextTimeType">
-        <item-type>String</item-type>
-        <label>Next timer time</label>
-        <description>The next time the timer starts</description>
-        <state readOnly="true"/>
-    </channel-type>
-
-    <channel-type id="nextUnixType">
-        <item-type>String</item-type>
-        <label>Next timer unix timestamp</label>
-        <description>The unix timestamp of the next timer start</description>
-        <state readOnly="true"/>
-    </channel-type>
+    
 
     <channel-type id="signalType">
-        <item-type>String</item-type>
+        <item-type>Number</item-type>
         <label>WLAN Signal</label>
         <description>The WLAN singal strength</description>
         <state readOnly="true"/>

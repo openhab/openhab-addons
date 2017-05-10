@@ -32,4 +32,28 @@ public class Status {
     public MowerMode getMode() {
         return mode;
     }
+
+    public void setBattery(int battery) {
+        this.battery = battery;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setHours(int hours) {
+        this.hours = hours;
+    }
+
+    public void setStatus(MowerStatus status) {
+        this.status = status;
+    }
+
+    public void setMode(MowerMode mode) {
+        this.mode = mode;
+    }
+
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
+    }
 }

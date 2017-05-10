@@ -8,10 +8,15 @@
  */
 package org.openhab.binding.robonect.handler;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -43,16 +48,14 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STAT
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_DURATION;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_HOURS;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_MODE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.MOWER_STATUS_STARTED;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_NEXT_DATE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIME;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_NEXT_UNIX_TS;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_STATUS;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_COMMENT;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_COMPILED;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_SERIAL;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_VERSION;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_WLAN_SIGNAL;
+import static org.openhab.binding.robonect.RobonectBindingConstants.MOWER_STATUS_STARTED;
 
 /**
  * The {@link RobonectHandler} is responsible for handling commands, which are
@@ -84,9 +87,7 @@ public class RobonectHandler extends BaseThingHandler {
                     case CHANNEL_STATUS_HOURS:
                     case CHANNEL_STATUS_MODE:
                     case MOWER_STATUS_STARTED:
-                    case CHANNEL_TIMER_NEXT_DATE:
-                    case CHANNEL_TIMER_NEXT_TIME:
-                    case CHANNEL_TIMER_NEXT_UNIX_TS:
+                    case CHANNEL_TIMER_NEXT_TIMER:
                     case CHANNEL_TIMER_STATUS:
                     case CHANNEL_WLAN_SIGNAL:
                         refreshMowerInfo();
@@ -238,16 +239,14 @@ public class RobonectHandler extends BaseThingHandler {
         if (info.isSuccessful()) {
             updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
             updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
-            updateState(CHANNEL_STATUS, new StringType(info.getStatus().getStatus().name()));
+            updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
             updateState(CHANNEL_STATUS_DURATION, new DecimalType(info.getStatus().getDuration()));
             updateState(CHANNEL_STATUS_HOURS, new DecimalType(info.getStatus().getDuration()));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
             updateState(MOWER_STATUS_STARTED, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
-            if(info.getTimer() != null){
-                if(info.getTimer().getNext() != null){
-                    updateState(CHANNEL_TIMER_NEXT_DATE, new StringType(info.getTimer().getNext().getDate()));
-                    updateState(CHANNEL_TIMER_NEXT_TIME, new StringType(info.getTimer().getNext().getTime()));
-                    updateState(CHANNEL_TIMER_NEXT_UNIX_TS, new StringType(info.getTimer().getNext().getUnix()));
+            if (info.getTimer() != null) {
+                if (info.getTimer().getNext() != null) {
+                    updateNextTimer(info);
                 }
                 updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
             }
@@ -256,6 +255,19 @@ public class RobonectHandler extends BaseThingHandler {
             logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
         }
 
+    }
+
+    private void updateNextTimer(MowerInfo info) {
+        try {
+            Date nextTimer = new SimpleDateFormat("dd.MM.yy'T'HH:mm:ss")
+                    .parse(info.getTimer().getNext().getDate() + "T" + info.getTimer().getNext().getTime());
+            GregorianCalendar calendar = new GregorianCalendar();
+            calendar.setTime(nextTimer);
+            updateState(CHANNEL_TIMER_NEXT_TIMER, new DateTimeType(calendar));
+        } catch (ParseException e) {
+            logger.error("Could not parse next timer date: {}T{} with pattern 'dd.MM.yy'T'HH:mm:ss'",
+                    info.getTimer().getNext().getDate(), info.getTimer().getNext().getTime(), e);
+        }
     }
 
     private void refreshVersionInfo() {
@@ -312,4 +324,27 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
+    protected ScheduledFuture<?> getPollingJob() {
+        return pollingJob;
+    }
+
+    protected void setPollingJob(ScheduledFuture<?> pollingJob) {
+        this.pollingJob = pollingJob;
+    }
+
+    protected HttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    protected void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    protected RobonectClient getRobonectClient() {
+        return robonectClient;
+    }
+
+    protected void setRobonectClient(RobonectClient robonectClient) {
+        this.robonectClient = robonectClient;
+    }
 }

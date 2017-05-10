@@ -7,4 +7,8 @@ public class Wlan {
     public int getSignal() {
         return signal;
     }
+
+    public void setSignal(int signal) {
+        this.signal = signal;
+    }
 }

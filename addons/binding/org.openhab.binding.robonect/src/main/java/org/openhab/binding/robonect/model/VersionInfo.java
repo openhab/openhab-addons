@@ -30,11 +30,31 @@ public class VersionInfo extends RobonectAnswer {
         public String getComment() {
             return comment;
         }
+
+        public void setSerial(String serial) {
+            this.serial = serial;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
+        }
+
+        public void setCompiled(String compiled) {
+            this.compiled = compiled;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
     }
     
     private RobonectVersion robonect;
 
     public RobonectVersion getRobonect() {
         return robonect;
+    }
+
+    public void setRobonect(RobonectVersion robonect) {
+        this.robonect = robonect;
     }
 }

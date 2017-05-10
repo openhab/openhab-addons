@@ -42,4 +42,16 @@ public class RobonectAnswer {
     public String getErrorMessage() {
         return errorMessage;
     }
+
+    public void setSuccessful(boolean successful) {
+        this.successful = successful;
+    }
+
+    public void setErrorCode(Integer errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }

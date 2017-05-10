@@ -36,4 +36,12 @@ public class Timer {
     public NextTimer getNext() {
         return next;
     }
+
+    public void setStatus(TimerMode status) {
+        this.status = status;
+    }
+
+    public void setNext(NextTimer next) {
+        this.next = next;
+    }
 }
