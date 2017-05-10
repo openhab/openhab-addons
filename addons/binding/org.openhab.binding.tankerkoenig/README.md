@@ -31,7 +31,7 @@ The prices itself are represented by Channels: Diesel, E5 and E10
 Since the binding should not claim the tankerkeonig api too much (and avoid a temporary ban), it's implemented that there are as few requests as possible.
 Therefore the tankerkoenig config (bridge) has an setup mode. It's turned on by default and it's preventing the binding to make a request to the tankerkoenig api.
 Additionally you may select the mode Use_OpeningTime in which only those gas stations are polled for data which are actually open. 
-If you're setting up your binding it's recommended to first add all gas stations ("Tankstelle" things) and then switching the setup mode to off. Now the config will collect the data all gas stations at once.
+If you're setting up your binding it's recommended to first add all gas stations ("Tankstelle" things) and then switching the setup mode to off. Now the config will collect the data off all gas stations at once.
 
 The data will be updated 30 seconds after the binding initializing (after starting openhab), every time you change something at the config (brige) (changing the config will also cause the refresh intervall to restart) and of course with the refresh intervall.
 
