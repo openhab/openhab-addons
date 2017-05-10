@@ -8,12 +8,16 @@
  */
 package org.openhab.binding.phc.handler;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -39,6 +43,7 @@ public class PHCHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(PHCHandler.class);
 
     private String moduleAddress; // like DIP switches
+    private short[] upDownTimes = new short[4];
     private Map<String, State> channelState = new HashMap<String, State>();
     private PHCBridgeHandler bridgeHandler;
 
@@ -58,7 +63,20 @@ public class PHCHandler extends BaseThingHandler {
 
             getPHCBridgeHandler()
                     .addModule(Byte.parseByte(getThing().getThingTypeUID().equals(PHCBindingConstants.THING_TYPE_EM)
-                            ? moduleAddress : "010" + moduleAddress)); // 010... = 0x4... for AM and JRM
+                            ? new StringBuilder(moduleAddress).reverse().toString()
+                            : ("010" + new StringBuilder(moduleAddress).reverse().toString()), 2)); // 010x = 0x4x for
+                                                                                                    // AM and JRM
+
+            if (getThing().getThingTypeUID().equals(PHCBindingConstants.THING_TYPE_JRM)) {
+                upDownTimes[0] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_1))
+                        .shortValue() * 10);
+                upDownTimes[1] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_2))
+                        .shortValue() * 10);
+                upDownTimes[2] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_3))
+                        .shortValue() * 10);
+                upDownTimes[3] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_4))
+                        .shortValue() * 10);
+            }
 
             if (getBridge().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
@@ -72,18 +90,37 @@ public class PHCHandler extends BaseThingHandler {
     }
 
     public void handleIncoming(String channelId, OnOffType state) {
-        logger.debug("EM command: {}, last: {}, in: {}", channelId, channelState.get(channelId), state);
         if (!channelState.containsKey(channelId) || !channelState.get(channelId).equals(state)) {
             postCommand(channelId, state);
             channelState.put(channelId, state);
         }
+        logger.debug("EM command: {}, last: {}, in: {}", channelId, channelState.get(channelId), state);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!channelUID.getGroupId().equals(PHCBindingConstants.CHANNELS_EM)) {
-            getPHCBridgeHandler().send(channelUID.getGroupId(), new StringBuilder(moduleAddress).reverse().toString(),
-                    channelUID.getIdWithoutGroup(), command);
+        if ((channelUID.getGroupId().equals(PHCBindingConstants.CHANNELS_AM)
+                || channelUID.getGroupId().equals(PHCBindingConstants.CHANNELS_JRM))
+                && (command instanceof OnOffType || command instanceof UpDownType || command instanceof StopMoveType)) {
+
+            if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                getPHCBridgeHandler().send(channelUID.getGroupId(),
+                        new StringBuilder(moduleAddress).reverse().toString(), channelUID.getIdWithoutGroup(), command,
+                        channelUID.getGroupId().equals(PHCBindingConstants.CHANNELS_JRM)
+                                ? upDownTimes[Integer.parseInt(channelUID.getIdWithoutGroup())] : 0);
+                logger.debug("send command: {}, {}", channelUID, command);
+
+            } else {
+                logger.info("The Thing {} is offline it requires to select a Bridge", getThing().getUID());
+            }
+        }
+    }
+
+    @Override
+    public void handleUpdate(ChannelUID channelUID, State newState) {
+        if (channelUID.getGroupId().equals(PHCBindingConstants.CHANNELS_JRM_TIME)) {
+            upDownTimes[Integer
+                    .parseInt(channelUID.getIdWithoutGroup())] = (short) (((DecimalType) newState).floatValue() * 10);
         }
     }
 

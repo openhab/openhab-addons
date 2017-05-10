@@ -25,13 +25,13 @@ The binding was tested with QinHeng Electronics HL-340 USB-Serial adapter (RS485
 
 | Device/OS                | adaptor       | result       |
 |--------------------------|---------------|--------------|
-| Windows 10               | HL-340        | good         |
+| Windows 10               | HL-340        | ok         |
 |                          | FTDI          | good         |
 | Raspberry Pi 3B/Jessie   | HL-340        | not reliable |
 |                          | FTDI          | doesn´t work |
 |                          | on board      | bad          |
 | Up Board/ubilinux(Jessie)| HL-340        | not reliable |
-|                          | FTDI          | ok           |
+|                          | FTDI          | good           |
  
 For all devices running with Linux that use the ch341 driver (HL-340), the new version (ch34x) is needed.
 A guide how to install this can be found here: [CH340/341 UART Driver for Raspberry Pi](https://github.com/aperepel/raspberrypi-ch340-driver).  
@@ -60,19 +60,26 @@ Please note, if you define the things manually (not in the UI) that the ThingID 
 
 - **Address:** Type the address of the module like the DIP switches (you can also find in the PHC software) of the module, e.g. 10110. (mandatory)
 
-- **UpDownTime (only JRM):** (advanced) NOT IMPLEMENTED YET! The time in seconds that the shutter needs to move up or down. The default, if no value is specified, is 30 seconds. For an exact calculation of the shutter's position, an exact time is needed.
+- **UpDownTime[1-4] (only JRM):** (advanced) The time in seconds that the shutter needs to move up or down. The default, if no value is specified, is 30 seconds.
 
 ## Channels
 
-| Thing Type             | Channel Group | Channels | Item Type        |
-|------------------------|---------------|----------|------------------|
-| AM                     | am            | 00-07    | Switch           |
-| EM                     | em            | 00-15    | Switch(read only)|
-| EM                     | emLed         | 00-07    | Switch           |
-| JRM                    | jrm           | 00-03    | Rollershutter    |
+| Thing Type             | Channel-Group Id | Channels | Item Type        |
+|------------------------|------------------|----------|------------------|
+| AM                     | am               | 00-07    | Switch           |
+| EM                     | em               | 00-15    | Switch(read only)|
+| EM                     | emLed            | 00-07    | Switch           |
+| JRM                    | jrm              | 00-03    | Rollershutter    |
+| JRM                    | jrmT             | 00-03    | Number           |
 
 **Channel UID:**
 ```phc:<Thing Type>:<ThingID>:<Channel Group>#<Channel>``` e.g. ```phc:AM:01101:am#03```
+
+- **am:** Outgoing switch channels (relay).
+- **em:** Incoming channels.
+- **emLed:** Outgoing switch channels e.g. for LEDs in light shutters.
+- **jrm:** Outgoing shutter channels.
+- **jrmT:** Time for shutter channels in seconds with an accuracy of 1/10 seconds. These channels are used instead of the configuration parameters. If you send the time via this channel, the Binding uses this time till you send another. After reboot the config parameter is used by default.
 
 ## Full Example
 
@@ -82,7 +89,7 @@ Bridge phc:bridge:demo [port="/dev/ttyUSB0"]{
     // The ThingID have to be the address.
     Thing AM 10110 [address="01101"]
     Thing EM 00110 [address="00110"]
-    Thing JRM 10111 [address="10111", upDownTime="30"]
+    Thing JRM 10111 [address="10111", upDownTime3="60", upDownTime4="20"]
 ```
 
 .items
@@ -99,6 +106,8 @@ Rollershutter Shutter_1 {channel="phc:JRM:10111:jrm#00"}
 Rollershutter Shutter_2 {channel="phc:JRM:10111:jrm#01"}
 Rollershutter Shutter_3 {channel="phc:JRM:10111:jrm#02"}
 Rollershutter Shutter_4 {channel="phc:JRM:10111:jrm#03"}
+
+Number ShutterTime_1 {channel="phc:JRM:10111:jrmT#00"}
 
 // EM Module
 Switch InputLed_1 {channel="phc:EM:00110:emLed#03"}

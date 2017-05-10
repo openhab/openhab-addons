@@ -32,9 +32,13 @@ public class PHCBindingConstants {
     public static final String CHANNELS_EM = "em";
     public static final String CHANNELS_EM_LED = "emLed";
     public static final String CHANNELS_JRM = "jrm";
+    public static final String CHANNELS_JRM_TIME = "jrmT";
 
     // List of all configuration parameters
     public static final String PORT = "port";
     public static final String ADDRESS = "address";
-    public static final String UP_DOWN_TIME = "upDownTime";
+    public static final String UP_DOWN_TIME_1 = "upDownTime1";
+    public static final String UP_DOWN_TIME_2 = "upDownTime2";
+    public static final String UP_DOWN_TIME_3 = "upDownTime3";
+    public static final String UP_DOWN_TIME_4 = "upDownTime4";
 }

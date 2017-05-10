@@ -74,6 +74,7 @@
 
 		<channel-groups>
 			<channel-group id="jrm" typeId="jrmChannels" />
+			<channel-group id="jrmT" typeId="jrmTimeChannels" />
 		</channel-groups>
 
 		<config-description>
@@ -82,10 +83,31 @@
 				<description>Address of the module as binary, like the DIP switches.</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="upDownTime" type="decimal">
+			<parameter name="upDownTime1" type="integer">
 				<advanced>true</advanced>
-				<label>UpDownTime</label>
-				<description>The Time which the shutter needs to move up/down</description>
+				<label>Time shutter 1</label>
+				<description>The Time which the first shutter needs to move up/down.</description>
+				<required>false</required>
+				<default>30</default>
+			</parameter>
+			<parameter name="upDownTime2" type="integer">
+				<advanced>true</advanced>
+				<label>Time shutter 2</label>
+				<description>The Time which the second shutter needs to move up/down.</description>
+				<required>false</required>
+				<default>30</default>
+			</parameter>
+			<parameter name="upDownTime3" type="integer">
+				<advanced>true</advanced>
+				<label>Time shutter 3</label>
+				<description>The Time which the third shutter needs to move up/down.</description>
+				<required>false</required>
+				<default>30</default>
+			</parameter>
+			<parameter name="upDownTime4" type="integer">
+				<advanced>true</advanced>
+				<label>Time shutter 4</label>
+				<description>The Time which the fourth shutter needs to move up/down.</description>
 				<required>false</required>
 				<default>30</default>
 			</parameter>
