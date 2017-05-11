@@ -259,6 +259,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         logger.debug("received other event notification: {}", event);
         logger.debug("Event type: {}", event.getMessageType());
         logger.debug("Event notification: {}", event.getNotifications());
+        if (event.getNotifications().length > 0) {
+            logger.debug("First notification: {}", Integer.toString(event.getNotifications()[0], 2));
+        }
         // for a button, let's make sure we have only 1 notification
         if (Message.MESG_TYPE_OTHER_EVENT_NOTIFY == event.getMessageType() && event.getNotifications().length == 1) {
             int number = event.getNotifications()[0];
@@ -275,7 +278,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             }
         } else {
             logger.warn("Unhandled other event notification, type: {}, notification: {}", event.getMessageType(),
-                    event.getNotifications());
+                    Integer.toString(event.getNotifications()[0], 2));
         }
 
     }
