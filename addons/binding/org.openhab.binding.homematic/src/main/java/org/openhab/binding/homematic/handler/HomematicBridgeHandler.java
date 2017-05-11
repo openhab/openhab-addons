@@ -86,7 +86,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                             logger.error("{}", ex.getMessage(), ex);
                         }
                     }
-
+                    gateway.startWatchdogs();
                 } catch (IOException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                     dispose();
@@ -237,8 +237,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     public void onStateUpdated(HmDatapoint dp) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
         if (hmThing != null && hmThing.getHandler() != null) {
-            HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
-            thingHandler.updateDatapointState(dp);
+            final ThingStatus status = hmThing.getStatus();
+            if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE) {
+                HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
+                thingHandler.updateDatapointState(dp);
+            }
         }
     }
 
