@@ -70,8 +70,8 @@ demo.Things:
 
 ```
 Bridge avmfritz:fritzbox:1 [ ipAddress="192.168.xxx.xxx", password ="xxx", user="xxx" ] {
-	FRITZ_DECT_200 DECT1 [ ain="xxxxxxxxxxx" ]
-	FRITZ_Powerline_546E PL1 [ ain="yy:yy:yy:yy:yyy" ]
+	FRITZ_DECT_200 xxxxxxxxxxx "Name"
+	FRITZ_Powerline_546E yy:yy:yy:yy:yyy "Name"
 }
 ```
 
