@@ -5,138 +5,67 @@
 
 	<!-- Thing Type for BigAssFan -->
 	<thing-type id="fan">
-
 		<label>BigAssFan</label>
-		<description>Haiku Big Ass Fan</description>
+		<description>Big Ass Fan</description>
 
 		<channels>
-
 			<!-- Channels related to fan functions -->
-			<channel id="fan-power" typeId="on-off">
-				<label>Fan Power</label>
-				<description>Turn the fan on or off.</description>
-			</channel>
-
-			<channel id="fan-speed" typeId="speed">
-				<label>Fan Speed</label>
-				<description>Adjust the speed of the fan.</description>
-			</channel>
-
-			<channel id="fan-direction" typeId="direction">
-				<label>Fan Direction</label>
-				<description>Change the direction in which the fan blades spin.</description>
-			</channel>
-
-			<channel id="fan-auto" typeId="on-off">
-				<label>Fan Auto Mode</label>
-				<description>Enable or disable fan auto mode.</description>
-			</channel>
-
-			<channel id="fan-whoosh" typeId="on-off">
-				<label>Fan Whoosh Mode</label>
-				<description>Enable or disable whoosh mode.</description>
-			</channel>
-
-			<channel id="fan-smartmode" typeId="smartmode">
-				<label>Fan Smartmode</label>
-				<description>Set Smartmode to OFF, Cooling, or HEATING</description>
-			</channel>
-
-			<channel id="fan-speed-min" typeId="speed">
-				<label>Fan Minimum Speed</label>
-				<description>Set the minimum fan speed when in Smart Cooling mode.</description>
-			</channel>
-
-			<channel id="fan-speed-max" typeId="speed">
-				<label>Fan Maximum Speed</label>
-				<description>Set the maximum fan speed when in Smart Cooling mode.</description>
-			</channel>
+			<channel id="fan-power" typeId="fan-power" />
+			<channel id="fan-speed" typeId="fan-speed" />
+			<channel id="fan-direction" typeId="fan-direction" />
+			<channel id="fan-auto" typeId="fan-auto" />
+			<channel id="fan-whoosh" typeId="fan-whoosh" />
+			<channel id="fan-smartmode" typeId="fan-smartmode" />
+			<channel id="fan-speed-min" typeId="fan-speed-min" />
+			<channel id="fan-speed-max" typeId="fan-speed-min" />
 
 			<!-- Channels related to light functions -->
-			<channel id="light-power" typeId="on-off">
-				<label>Light Power</label>
-				<description>Turn the light on or off</description>
-			</channel>
-
-			<channel id="light-level" typeId="level">
-				<label>Light Brightness</label>
-				<description>Set the brightness level of the light.</description>
-			</channel>
-
-			<channel id="light-auto" typeId="on-off">
-				<label>Light Auto Mode</label>
-				<description>Enable or disable light auto mode.</description>
-			</channel>
-
-			<channel id="light-smarter" typeId="on-off">
-				<label>Smarter Lighting</label>
-				<description>Enable or disable Smarter Lighting.</description>
-			</channel>
-
-			<channel id="light-level-min" typeId="level">
-				<label>Light Minimum Brightness</label>
-				<description>Set the minimum brightness level when using Smarter Lighting.</description>
-			</channel>
-
-			<channel id="light-level-max" typeId="level">
-				<label>Light Maximum Brightness</label>
-				<description>Set the maximum brightness level when using Smarter Lighting.</description>
-			</channel>
+			<channel id="light-power" typeId="light-power" />
+			<channel id="light-level" typeId="light-level" />
+			<channel id="light-auto" typeId="light-auto" />
+			<channel id="light-smarter" typeId="light-smarter" />
+			<channel id="light-level-min" typeId="light-level-min" />
+			<channel id="light-level-max" typeId="light-level-max" />
 
 			<!-- Channels related to motion sensor -->
-			<channel id="motion" typeId="motion">
-				<label>Motion Detected</label>
-				<description>The fan's motion sensor has detected motion.</description>
-			</channel>
+			<channel id="motion" typeId="motion" />
 
 			<!-- Miscellaneous channels -->
-			<channel id="time" typeId="time">
-				<label>Fan Time</label>
-				<description>Date and time reported by the fan.</description>
-			</channel>
-
+			<channel id="time" typeId="time" />
 		</channels>
 
 		<config-description>
-
 			<parameter name="label" type="text" required="true">
 				<label>Name of Device</label>
 				<description>Enter the name you've given to the device</description>
 			</parameter>
-
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>
 				<description>Enter the IP address of the fan</description>
 				<context>network-address</context>
 			</parameter>
-
 			<parameter name="macAddress" type="text" required="true">
 				<label>MAC Address</label>
 				<description>Enter the MAC address of the fan</description>
-				<context>network-address</context>
 			</parameter>
-
 		</config-description>
-
 	</thing-type>
 
 	<!-- Channel types -->
-	<channel-type id="on-off">
+	<channel-type id="fan-power">
 		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch on or off</description>
+		<label>Fan Power</label>
+		<description>Turn the fan on and off</description>
 		<category>Switch</category>
 	</channel-type>
-
-	<channel-type id="speed">
+	<channel-type id="fan-speed">
 		<item-type>Dimmer</item-type>
 		<label>Fan Speed</label>
-		<description>Control the speed of the fan.</description>
+		<description>Control the speed of the fan</description>
 	</channel-type>
-
-	<channel-type id="direction">
+	<channel-type id="fan-direction">
 		<item-type>Switch</item-type>
-		<label>Direction</label>
+		<label>Fan Direction</label>
 		<description>Forward or reverse</description>
 		<state>
 			<options>
@@ -145,24 +74,80 @@
 			</options>
 		</state>
 	</channel-type>
-
-	<channel-type id="smartmode">
+	<channel-type id="fan-auto">
+		<item-type>Switch</item-type>
+		<label>Fan Auto Mode</label>
+		<description>Enable or disable fan auto mode</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="fan-whoosh">
+		<item-type>Switch</item-type>
+		<label>Fan Whoosh Mode</label>
+		<description>Enable or disable fan whoosh mode</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="fan-smartmode">
 		<item-type>String</item-type>
-		<label>Smartmode</label>
-		<description>Smartmode of OFF, COOLING, or HEATING.</description>
+		<label>Fan Smartmode</label>
+		<description>Set Smartmode to OFF, COOLING, or HEATING</description>
+		<state>
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="COOLING">COOLING</option>
+				<option value="HEATING">HEATING</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="fan-speed-min">
+		<item-type>Dimmer</item-type>
+		<label>Minimum Fan Speed</label>
+		<description>Set the minimum fan speed when in Smart Cooling mode</description>
+	</channel-type>
+	<channel-type id="fan-speed-max">
+		<item-type>Dimmer</item-type>
+		<label>Maximum Fan Speed</label>
+		<description>Set the maximum fan speed when in Smart Cooling mode</description>
 	</channel-type>
 
-	<channel-type id="level">
+	<channel-type id="light-power">
+		<item-type>Switch</item-type>
+		<label>Light Power</label>
+		<description>Turn the fan's light on and off</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="light-level">
 		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>The brightness of the light.</description>
+		<label>Light Brightness</label>
+		<description>The brightness level of the fan's light</description>
 		<category>DimmableLight</category>
+	</channel-type>
+	<channel-type id="light-auto">
+		<item-type>Switch</item-type>
+		<label>Light Auto Mode</label>
+		<description>Enable or disable light auto mode</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="light-smarter">
+		<item-type>Switch</item-type>
+		<label>Smarter Lighting</label>
+		<description>Enable or disable Smarter Lighting</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="light-level-min">
+		<item-type>Dimmer</item-type>
+		<label>Minimum Brightness</label>
+		<description>Set the minimum brightness level when using Smarter Lighting</description>
+	</channel-type>
+	<channel-type id="light-level-max">
+		<item-type>Dimmer</item-type>
+		<label>Maximum Brightness</label>
+		<description>Set the maximum brightness level when using Smarter Lighting</description>
 	</channel-type>
 
 	<channel-type id="motion">
 		<item-type>Switch</item-type>
 		<label>Motion Sensor</label>
-		<description>Motion detected.</description>
+		<description>The fan's motion sensor has detected motion</description>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Triggered</option>
@@ -171,11 +156,10 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="time">
+	<channel-type id="time" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Time</label>
-		<description>Time reported by the fan.</description>
+		<description>Time reported by the fan</description>
 		<state readOnly="true"></state>
 	</channel-type>
-
 </thing:thing-descriptions>

@@ -496,7 +496,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 try {
                     listener();
                 } catch (RuntimeException e) {
-                    logger.warn("FanListener had unhandled exception: ", e.getMessage(), e);
+                    logger.warn("FanListener had unhandled exception: {}", e.getMessage(), e);
                 }
             }
         };
@@ -904,7 +904,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             if (isConnected()) {
                 return;
             }
-            logger.trace("Connecting to fan thing {} at IP {}", thingID(), ipAddress);
+            logger.trace("Connecting to fan {} at {}", thingID(), ipAddress);
 
             // Open socket
             try {
@@ -912,7 +912,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 fanSocket.bind(new InetSocketAddress(ifAddress, 0));
                 fanSocket.connect(new InetSocketAddress(ipAddress, BAF_PORT), SOCKET_CONNECT_TIMEOUT);
             } catch (IOException e) {
-                logger.debug("IOException connecting to fan thing {} at {}: {}", thingID(), ipAddress, e.getMessage());
+                logger.debug("IOException connecting to fan  {} at {}: {}", thingID(), ipAddress, e.getMessage());
                 markOfflineWithMessage(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 disconnect();
                 return;
@@ -924,13 +924,13 @@ public class BigAssFanHandler extends BaseThingHandler {
                 fanScanner = new Scanner(fanSocket.getInputStream());
                 fanScanner.useDelimiter("[)]");
             } catch (IOException e) {
-                logger.warn("IOException getting streams for thing {} at {}: {}", thingID(), ipAddress, e.getMessage(),
+                logger.warn("IOException getting streams for fan {} at {}: {}", thingID(), ipAddress, e.getMessage(),
                         e);
                 markOfflineWithMessage(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 disconnect();
                 return;
             }
-            logger.info("Got a connection to fan thing {} at {}", thingID(), ipAddress);
+            logger.info("Connected to fan {} at {}", thingID(), ipAddress);
             deviceIsConnected = true;
             markOnline();
         }
@@ -939,7 +939,7 @@ public class BigAssFanHandler extends BaseThingHandler {
             if (!isConnected()) {
                 return;
             }
-            logger.debug("Disconnecting from fan thing {} at IP {}", thingID(), ipAddress);
+            logger.debug("Disconnecting from fan {} at {}", thingID(), ipAddress);
 
             try {
                 if (fanWriter != null) {
@@ -952,7 +952,8 @@ public class BigAssFanHandler extends BaseThingHandler {
                     fanSocket.close();
                 }
             } catch (IOException e) {
-                logger.warn("IOException closing fan connection at IP {}: {}", thingID(), ipAddress, e.getMessage(), e);
+                logger.warn("IOException closing connection to fan {} at {}: {}", thingID(), ipAddress, e.getMessage(),
+                        e);
             }
             deviceIsConnected = false;
             fanSocket = null;
@@ -986,8 +987,8 @@ public class BigAssFanHandler extends BaseThingHandler {
          */
         private void scheduleConnectionMonitorJob() {
             if (connectionMonitorJob == null) {
-                logger.debug("Starting connection monitor job in {} seconds for thing {} at IP {}",
-                        CONNECTION_MONITOR_DELAY, thingID(), ipAddress);
+                logger.debug("Starting connection monitor job in {} seconds for fan {} at {}", CONNECTION_MONITOR_DELAY,
+                        thingID(), ipAddress);
                 connectionMonitorJob = scheduler.scheduleWithFixedDelay(connectionMonitorRunnable,
                         CONNECTION_MONITOR_DELAY, CONNECTION_MONITOR_FREQ, TimeUnit.SECONDS);
             }
@@ -995,19 +996,19 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         private void cancelConnectionMonitorJob() {
             if (connectionMonitorJob != null) {
-                logger.debug("Canceling connection monitor job for thing {} at IP {}", thingID(), ipAddress);
+                logger.debug("Canceling connection monitor job for fan {} at {}", thingID(), ipAddress);
                 connectionMonitorJob.cancel(true);
                 connectionMonitorJob = null;
             }
         }
 
         private void checkConnection() {
-            logger.trace("Checking status of connection for thing {} at IP {}", thingID(), ipAddress);
+            logger.trace("Checking status of connection for fan {} at {}", thingID(), ipAddress);
             if (!isConnected()) {
-                logger.debug("Connection check FAILED for thing {} at IP {}", thingID(), ipAddress);
+                logger.debug("Connection check FAILED for fan {} at {}", thingID(), ipAddress);
                 connect();
             } else {
-                logger.debug("Connection check OK for thing {} at IP {}", thingID(), ipAddress);
+                logger.debug("Connection check OK for fan {} at {}", thingID(), ipAddress);
             }
         }
     }
