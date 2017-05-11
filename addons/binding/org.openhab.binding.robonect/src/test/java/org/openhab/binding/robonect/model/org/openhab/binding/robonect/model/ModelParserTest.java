@@ -63,6 +63,7 @@ public class ModelParserTest {
         assertEquals("19:00:00", mowerInfo.getTimer().getNext().getTime());
         assertEquals("1493665200", mowerInfo.getTimer().getNext().getUnix());
         assertEquals(-76, mowerInfo.getWlan().getSignal());
+        assertNull(mowerInfo.getError());
     }
 
     @Test
@@ -75,6 +76,22 @@ public class ModelParserTest {
         assertFalse(mowerInfo.getStatus().isStopped());
         assertEquals(MowerMode.MANUAL, mowerInfo.getStatus().getMode());
 
+    }
+
+    @Test
+    public void shouldParseCorrectErrorModelInErrorState() {
+        String correctModel = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Mein Automower ist angehoben\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}";
+        MowerInfo mowerInfo = parser.parse(correctModel, MowerInfo.class);
+        assertTrue(mowerInfo.isSuccessful());
+        assertEquals("Mein Automower", mowerInfo.getName());
+        assertEquals(MowerStatus.ERROR_STATUS, mowerInfo.getStatus().getStatus());
+        assertTrue(mowerInfo.getStatus().isStopped());
+        assertNotNull(mowerInfo.getError());
+        assertEquals("Mein Automower ist angehoben", mowerInfo.getError().getErrorMessage());
+        assertEquals(new Integer(15), mowerInfo.getError().getErrorCode());
+        assertEquals("02.05.2017", mowerInfo.getError().getDate());
+        assertEquals("20:36:43", mowerInfo.getError().getTime());
+        assertEquals("1493757403",mowerInfo.getError().getUnix());
     }
 
     @Test

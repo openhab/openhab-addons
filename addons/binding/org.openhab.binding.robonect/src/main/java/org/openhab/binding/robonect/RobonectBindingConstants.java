@@ -45,5 +45,9 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_JOB_START = "job#start";
     public static final String CHANNEL_JOB_END = "job#end";
     
+    public static final String CHANNEL_ERROR_CODE = "error#code";
+    public static final String CHANNEL_ERROR_MESSAGE = "error#message";
+    public static final String CHANNEL_ERROR_DATE = "error#date";
+    
 
 }

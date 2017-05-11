@@ -44,4 +44,24 @@ public class ErrorEntry  {
     public String getUnix() {
         return unix;
     }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setErrorCode(Integer errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public void setUnix(String unix) {
+        this.unix = unix;
+    }
 }

@@ -27,10 +27,15 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.robonect.RobonectClient;
+import org.openhab.binding.robonect.RobonectCommunicationException;
 import org.openhab.binding.robonect.RobonectEndpoint;
 import org.openhab.binding.robonect.config.RobonectConfig;
+import org.openhab.binding.robonect.model.ErrorEntry;
 import org.openhab.binding.robonect.model.MowerInfo;
+import org.openhab.binding.robonect.model.MowerStatus;
 import org.openhab.binding.robonect.model.Name;
 import org.openhab.binding.robonect.model.RobonectAnswer;
 import org.openhab.binding.robonect.model.VersionInfo;
@@ -38,6 +43,9 @@ import org.openhab.binding.robonect.model.cmd.ModeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_ERROR_CODE;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_ERROR_DATE;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_ERROR_MESSAGE;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_AFTER_MODE;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_END;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_REMOTE_START;
@@ -61,7 +69,7 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.MOWER_STATUS
  * The {@link RobonectHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author marco.meyer - Initial contribution
+ * @author Marco Meyer - Initial contribution
  */
 public class RobonectHandler extends BaseThingHandler {
 
@@ -162,9 +170,13 @@ public class RobonectHandler extends BaseThingHandler {
 
             }
             updateStatus(ThingStatus.ONLINE);
+        } catch (RobonectCommunicationException rce){
+            logger.error("Failed to communicate with the mower. Taking it offline.", rce);
+            updateState(CHANNEL_STATUS, new DecimalType(MowerStatus.OFFLINE.getStatusCode()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
         } catch (Exception e) {
-            logger.error("Failed to communicate with the mower. Taking it offline.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.error("Unexpected exception. Setting thing offline", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
     }
 
@@ -250,6 +262,11 @@ public class RobonectHandler extends BaseThingHandler {
                 }
                 updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
             }
+            if(info.getError() != null){
+                updateErrorInfo(info.getError());
+            }else {
+                clearErrorInfo();
+            }
             updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(info.getWlan().getSignal()));
         } else {
             logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
@@ -257,16 +274,36 @@ public class RobonectHandler extends BaseThingHandler {
 
     }
 
+    private void clearErrorInfo() {
+        updateState(CHANNEL_ERROR_DATE, UnDefType.UNDEF);
+        updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF);
+        updateState(CHANNEL_ERROR_MESSAGE, UnDefType.UNDEF);
+    }
+
+    private void updateErrorInfo(ErrorEntry error) {
+        State dateTime = convertDateTimeType(error.getDate(), error.getTime());
+        updateState(CHANNEL_ERROR_DATE, dateTime);
+        updateState(CHANNEL_ERROR_CODE, new DecimalType(error.getErrorCode()));
+        updateState(CHANNEL_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
+    }
+
     private void updateNextTimer(MowerInfo info) {
-        try {
+        State dateTime = convertDateTimeType(info.getTimer().getNext().getDate(), info.getTimer().getNext().getTime());
+        updateState(CHANNEL_TIMER_NEXT_TIMER, dateTime);
+    }
+
+    private State convertDateTimeType(String date, String time) {
+        try{
             Date nextTimer = new SimpleDateFormat("dd.MM.yy'T'HH:mm:ss")
-                    .parse(info.getTimer().getNext().getDate() + "T" + info.getTimer().getNext().getTime());
+                    .parse(date + "T" + time);
             GregorianCalendar calendar = new GregorianCalendar();
             calendar.setTime(nextTimer);
-            updateState(CHANNEL_TIMER_NEXT_TIMER, new DateTimeType(calendar));
+            return new DateTimeType(calendar);
         } catch (ParseException e) {
-            logger.error("Could not parse next timer date: {}T{} with pattern 'dd.MM.yy'T'HH:mm:ss'",
-                    info.getTimer().getNext().getDate(), info.getTimer().getNext().getTime(), e);
+            logger.error("Could not parse date: {}T{} with pattern 'dd.MM.yy'T'HH:mm:ss'",
+                            date, time, e);
+            return UnDefType.UNDEF;
+            
         }
     }
 

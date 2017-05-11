@@ -20,13 +20,19 @@ public enum MowerStatus {
     UNKNOWN_15(15),
     OFF(16),
     SLEEPING(17),
+    OFFLINE(98),
     UNKNOWN(99);
+    
 
     private int statusCode;
+    
+    // this is just a workaround to support future, undocumented or unknown codes in rules.
+    private Integer unknownCode;
 
     MowerStatus(int statusCode) {
         this.statusCode = statusCode;
     }
+    
 
     public static MowerStatus fromCode(int code) {
         for (MowerStatus status : MowerStatus.values()) {
@@ -34,11 +40,16 @@ public enum MowerStatus {
                 return status;
             }
         }
+        UNKNOWN.unknownCode = new Integer(code);
         return UNKNOWN;
     }
 
     public int getStatusCode() {
-        return statusCode;
+        if(unknownCode == null){
+            return statusCode;
+        }else {
+            return unknownCode;
+        }
     }
     
     /*

@@ -3,18 +3,17 @@
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
                           xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
-    <!-- Sample Thing Type -->
+    
     <thing-type id="mower">
         <label>Mower</label>
         <description>Mower robot connected via robonect module</description>
-
         <channel-groups>
             <channel-group id="mowerInfo" typeId="mowerInfoType"/>
             <channel-group id="mowerStatus" typeId="mowerStatusType"/>
             <channel-group id="timer" typeId="timerType"/>
             <channel-group id="wlan" typeId="wlanType"/>
             <channel-group id="job" typeId="jobGroupType"/>
+            <channel-group id="error" typeId="errorGroupType"/>
             <channel-group id="version" typeId="robonectVersionType"/>
         </channel-groups>
         <config-description>
@@ -32,7 +31,9 @@
             </parameter>
             <parameter name="pollInterval" type="integer" required="false" unit="s">
                 <label>Polling interval.</label>
-                <description>The interval for the binding to poll the mowers status information. Defaults to 30 seconds.</description>
+                <description>The interval for the binding to poll the mowers status information. Defaults to 30
+                    seconds.
+                </description>
             </parameter>
         </config-description>
     </thing-type>
@@ -43,7 +44,7 @@
             <channel id="name" typeId="nameType"/>
         </channels>
     </channel-group-type>
-    
+
     <channel-group-type id="mowerStatusType">
         <label>Mower Status</label>
         <channels>
@@ -63,19 +64,19 @@
             <channel id="nextTimer" typeId="nextTimerType"/>
         </channels>
     </channel-group-type>
-    
+
+    <channel-group-type id="errorGroupType">
+        <label>Timer Info</label>
+        <channels>
+            <channel id="code" typeId="errorCodeType"/>
+            <channel id="message" typeId="errorMessageType"/>
+            <channel id="date" typeId="errorDateType"/>
+        </channels>
+    </channel-group-type>
     
     <channel-group-type id="jobGroupType">
         <label>Job properties</label>
         <channels>
-            <!--   private RemoteStart remoteStart;
-            
-                private Mode after;
-            
-                private String start;
-            
-                private String end;
-            -->
             <channel id="remoteStart" typeId="remoteStartType"/>
             <channel id="afterMode" typeId="modeType"/>
             <channel id="start" typeId="timeStringType"/>
@@ -117,7 +118,7 @@
         <label>Robonect version</label>
         <state readOnly="true"/>
     </channel-type>
-    
+
     <channel-type id="commentType">
         <item-type>String</item-type>
         <label>Robonect firmware comment</label>
@@ -192,7 +193,7 @@
             </options>
         </state>
     </channel-type>
-    
+
     <channel-type id="mowerStatusType">
         <item-type>Number</item-type>
         <label>Mower Status</label>
@@ -209,6 +210,7 @@
                 <option value="7">ERROR_STATUS</option>
                 <option value="16">OFF</option>
                 <option value="17">SLEEPING</option>
+                <option value="98">OFFLINE</option>
                 <option value="99">UNKNOWN</option>
             </options>
         </state>
@@ -228,7 +230,6 @@
         <state readOnly="true"/>
     </channel-type>
     
-
     <channel-type id="signalType">
         <item-type>Number</item-type>
         <label>WLAN Signal</label>
@@ -236,6 +237,25 @@
         <state readOnly="true"/>
     </channel-type>
 
+    <channel-type id="errorCodeType">
+        <item-type>Number</item-type>
+        <label>Error code</label>
+        <description>Error code defined by the mower manufacturer</description>
+        <state readOnly="true"/>
+    </channel-type>
     
+    <channel-type id="errorMessageType">
+        <item-type>String</item-type>
+        <label>Error message</label>
+        <description>The error message</description>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="errorDateType">
+        <item-type>DateTime</item-type>
+        <label>Error date</label>
+        <description>The date and time the error occurred</description>
+        <state readOnly="true"/>
+    </channel-type>
     
 </thing:thing-descriptions>

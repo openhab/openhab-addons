@@ -6,6 +6,7 @@ public class MowerInfo extends RobonectAnswer{
     private Status status;
     private Timer timer;
     private Wlan wlan;
+    private ErrorEntry error;
 
     public String getName() {
         return name;
@@ -37,5 +38,13 @@ public class MowerInfo extends RobonectAnswer{
 
     public void setWlan(Wlan wlan) {
         this.wlan = wlan;
+    }
+
+    public ErrorEntry getError() {
+        return error;
+    }
+
+    public void setError(ErrorEntry error) {
+        this.error = error;
     }
 }
