@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="int-rs">
+		<label>@text/intrs.label</label>
+		<description>@text/intrs.description</description>
+
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>@text/intrs.port.label</label>
+				<description>@text/intrs.port.description</description>
+			</parameter>
+			<parameter name="timeout" type="integer">
+				<label>@text/intrs.timeout.label</label>
+				<description>@text/intrs.timeout.description</description>
+				<default>5000</default>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>@text/intrs.refresh.label</label>
+				<description>@text/intrs.refresh.description</description>
+				<default>5000</default>
+			</parameter>
+			<parameter name="userCode" type="text" pattern="[0-9]{4,8}">
+				<label>@text/intrs.userCode.label</label>
+				<description>@text/intrs.userCode.description</description>
+			</parameter>
+			<parameter name="encoding" type="text">
+				<label>@text/intrs.encoding.label</label>
+				<description>@text/intrs.encoding.description</description>
+				<default>windows-1250</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

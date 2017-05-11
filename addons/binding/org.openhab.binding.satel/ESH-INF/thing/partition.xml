@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="partition">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ethm-1" />
+			<bridge-type-ref id="int-rs" />
+		</supported-bridge-type-refs>
+
+		<label>@text/partition.label</label>
+		<description>@text/partition.description</description>
+
+		<channels>
+			<channel typeId="state" id="armed">
+				<label>@text/partition.armed.label</label>
+				<description>@text/partition.armed.description</description>
+			</channel>
+			<channel typeId="state" id="really_armed">
+				<label>@text/partition.really_armed.label</label>
+				<description>@text/partition.really_armed.description</description>
+			</channel>
+			<channel typeId="state_adv" id="armed_mode_1">
+				<label>@text/partition.armed_mode_1.label</label>
+				<description>@text/partition.armed_mode_1.description</description>
+			</channel>
+			<channel typeId="state_adv" id="armed_mode_2">
+				<label>@text/partition.armed_mode_2.label</label>
+				<description>@text/partition.armed_mode_2.description</description>
+			</channel>
+			<channel typeId="state_adv" id="armed_mode_3">
+				<label>@text/partition.armed_mode_3.label</label>
+				<description>@text/partition.armed_mode_3.description</description>
+			</channel>
+			<channel typeId="state_adv_ro" id="first_code_entered">
+				<label>@text/partition.first_code_entered.label</label>
+				<description>@text/partition.first_code_entered.description</description>
+			</channel>
+			<channel typeId="state_adv_ro" id="entry_time">
+				<label>@text/partition.entry_time.label</label>
+				<description>@text/partition.entry_time.description</description>
+			</channel>
+			<channel typeId="state_adv_ro" id="exit_time_gt_10">
+				<label>@text/partition.exit_time_gt_10.label</label>
+				<description>@text/partition.exit_time_gt_10.description</description>
+			</channel>
+			<channel typeId="state_adv_ro" id="exit_time_lt_10">
+				<label>@text/partition.exit_time_lt_10.label</label>
+				<description>@text/partition.exit_time_lt_10.description</description>
+			</channel>
+			<channel typeId="state_adv_ro" id="temporary_blocked">
+				<label>@text/partition.temporary_blocked.label</label>
+				<description>@text/partition.temporary_blocked.description</description>
+			</channel>
+			<channel typeId="state_adv_ro" id="blocked_for_guard">
+				<label>@text/partition.blocked_for_guard.label</label>
+				<description>@text/partition.blocked_for_guard.description</description>
+			</channel>
+			<channel typeId="state" id="alarm">
+				<label>@text/partition.alarm.label</label>
+				<description>@text/partition.alarm.description</description>
+			</channel>
+			<channel typeId="state" id="alarm_memory">
+				<label>@text/partition.alarm_memory.label</label>
+				<description>@text/partition.alarm_memory.description</description>
+			</channel>
+			<channel typeId="state" id="fire_alarm">
+				<label>@text/partition.fire_alarm.label</label>
+				<description>@text/partition.fire_alarm.description</description>
+			</channel>
+			<channel typeId="state" id="fire_alarm_memory">
+				<label>@text/partition.fire_alarm_memory.label</label>
+				<description>@text/partition.fire_alarm_memory.description</description>
+			</channel>
+			<channel typeId="state_adv" id="verified_alarms">
+				<label>@text/partition.verified_alarms.label</label>
+				<description>@text/partition.verified_alarms.description</description>
+			</channel>
+			<channel typeId="state_adv" id="warning_alarms">
+				<label>@text/partition.warning_alarms.label</label>
+				<description>@text/partition.warning_alarms.description</description>
+			</channel>
+			<channel typeId="state_adv_ro" id="violated_zones">
+				<label>@text/partition.violated_zones.label</label>
+				<description>@text/partition.violated_zones.description</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" min="1" max="32" required="true">
+				<label>@text/partition.id.label</label>
+				<description>@text/partition.id.description</description>
+			</parameter>
+			<parameter name="forceArming" type="boolean" required="false">
+				<label>@text/partition.forceArming.label</label>
+				<description>@text/partition.forceArming.description</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>
