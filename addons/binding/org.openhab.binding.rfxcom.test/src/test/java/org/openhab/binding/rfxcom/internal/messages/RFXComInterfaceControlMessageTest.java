@@ -30,6 +30,7 @@ public class RFXComInterfaceControlMessageTest {
 
     @Before
     public void resetConfig() {
+        configuration.transmitPower = -18;
         configuration.enableUndecoded = false;
         configuration.enableImagintronixOpus = false;
         configuration.enableByronSX = false;
@@ -207,6 +208,12 @@ public class RFXComInterfaceControlMessageTest {
     public void testX10Message() throws RFXComException {
         configuration.enableX10 = true;
         testMessage(_433_92MHZ_TRANSCEIVER, configuration, "0D00000203530000000100000000");
+    }
+
+    @Test
+    public void testTransmitPower() throws RFXComException {
+        configuration.transmitPower = 0;
+        testMessage(_433_92MHZ_TRANSCEIVER, configuration, "0D00000203531200000000000000");
     }
 
     @Test

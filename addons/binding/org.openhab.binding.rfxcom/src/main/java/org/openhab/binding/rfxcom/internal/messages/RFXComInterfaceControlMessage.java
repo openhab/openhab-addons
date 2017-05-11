@@ -19,6 +19,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 /**
  * RFXCOM data class for control message.
  *
+ * @author Mike Jagdis
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
@@ -33,7 +34,7 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
         data[3] = 2;
         data[4] = RFXComInterfaceMessage.Commands.SET_MODE.toByte();
         data[5] = transceiverType.toByte();
-        data[6] = 0;
+        data[6] = (byte) (configuration.transmitPower + 18);
 
         data[7] = (byte)(
               (configuration.enableUndecoded        ? 0x80 : 0x00)
@@ -116,11 +117,11 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return null;
+        throw new RFXComException("Not supported");
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return null;
+        throw new RFXComException("Not supported");
     }
 }
