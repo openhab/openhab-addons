@@ -19,7 +19,7 @@
             <channel id="comfort_temp" typeId="comfort_temp" />
             <channel id="next_change" typeId="next_change" />
             <channel id="next_temp" typeId="next_temp" />
-            <channel id="battery_low" typeId="battery_low" />
+            <channel id="battery_low" typeId="system.low-battery" />
         </channels>
         <config-description>
             <parameter name="ain" type="text" required="true">
@@ -43,7 +43,7 @@
             <channel id="comfort_temp" typeId="comfort_temp" />
             <channel id="next_change" typeId="next_change" />
             <channel id="next_temp" typeId="next_temp" />
-            <channel id="battery_low" typeId="battery_low" />
+            <channel id="battery_low" typeId="system.low-battery" />
         </channels>
         <config-description>
             <parameter name="ain" type="text" required="true">
@@ -230,75 +230,50 @@
 
     <channel-type id="actual_temp" advanced="true">
         <item-type>Number</item-type>
-        <label>Actual Temperature of heating thermostat</label>
+        <label>Actual Temperature</label>
         <description>Actual measured temperature</description>
         <category>Temperature</category>
-        <tags>
-            <tag>heating</tag>
-        </tags>
         <state pattern="%.1f °C" readOnly="true"/>
     </channel-type>
 
     <channel-type id="set_temp">
         <item-type>Number</item-type>
-        <label>Set Temperature of heating thermostat</label>
+        <label>Setpoint Temperature</label>
         <description>Thermostat temperature setpoint</description>
         <category>Temperature</category>
-        <tags>
-            <tag>heating</tag>
-        </tags>
         <state min="8" max="28" step="0.5" pattern="%.1f °C" readOnly="false"/>
     </channel-type>
 
     <channel-type id="eco_temp">
         <item-type>Number</item-type>
-        <label>Eco Temperature of heating thermostat</label>
+        <label>Eco Temperature</label>
         <description>Eco measured temperature</description>
         <category>Temperature</category>
-        <tags>
-            <tag>heating</tag>
-        </tags>
         <state pattern="%.1f °C" readOnly="true"/>
     </channel-type>
     
     <channel-type id="comfort_temp">
         <item-type>Number</item-type>
-        <label>Comfort Temperature of heating thermostat</label>
+        <label>Comfort Temperature</label>
         <description>Comfort measured temperature</description>
         <category>Temperature</category>
-        <tags>
-            <tag>heating</tag>
-        </tags>
         <state pattern="%.1f °C" readOnly="true"/>
     </channel-type>
 
     <channel-type id="next_change" advanced="true">
         <item-type>DateTime</item-type>
-        <label>Next change of Set Temperature</label>
+        <label>Next Setpoint Change</label>
         <description>Next change of Set Temperature</description>
-        <tags>
-            <tag>heating</tag>
-        </tags>
+        <category>Temperature</category>
         <state readOnly="true"/>
     </channel-type>
 
     <channel-type id="next_temp" advanced="true">
         <item-type>Number</item-type>
-        <label>Next Set Temperature</label>
+        <label>Next Setpoint Temperature</label>
         <description>Next Set Temperature</description>
         <category>Temperature</category>
-        <tags>
-            <tag>heating</tag>
-        </tags>
         <state pattern="%.1f °C" readOnly="true"/>
-    </channel-type>
-
-    <channel-type id="battery_low" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Battery Level Low</label>
-        <description>Battery charge Level</description>
-        <category>Battery</category>
-        <state readOnly="true"/>
     </channel-type>
 
 </thing:thing-descriptions>
