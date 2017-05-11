@@ -236,7 +236,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     @Override
     public void onStateUpdated(HmDatapoint dp) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
-        if (hmThing != null) {
+        if (hmThing != null && hmThing.getHandler() != null) {
             HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
             thingHandler.updateDatapointState(dp);
         }
