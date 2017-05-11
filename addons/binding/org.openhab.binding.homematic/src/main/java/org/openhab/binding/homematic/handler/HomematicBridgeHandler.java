@@ -167,7 +167,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 gateway.getDevice(UidUtils.getHomematicAddress(hmThing));
             } catch (HomematicClientException e) {
                 if (hmThing.getHandler() != null) {
-                    ((HomematicThingHandler) hmThing.getHandler()).updateStatus(ThingStatus.OFFLINE);
+                    ((HomematicThingHandler) hmThing.getHandler()).handleRemoval();
                 }
             }
         }

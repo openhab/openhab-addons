@@ -303,14 +303,6 @@ public class HomematicThingHandler extends BaseThingHandler {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
-    }
-
-    /**
      * Returns true, if the channel is linked at least to one item.
      */
     private boolean isLinked(Channel channel) {
