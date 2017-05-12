@@ -8,17 +8,20 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import java.math.BigDecimal;
+
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Callback implementation for updating switch states Supports reauthorization
- *
- * @author Robert Bausdorf
- *
+ * Callback implementation for updating heating values Supports reauthorization
+ * 
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
+ *         DECT
+ * 
  */
-public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
+public class FritzAhaSetHeatingTemperatureCallback extends FritzAhaReauthCallback {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     /**
      * Item to update
@@ -27,21 +30,16 @@ public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
 
     /**
      * Constructor
-     *
+     * 
      * @param webIface Interface to FRITZ!Box
      * @param ain AIN of the device that should be switched
-     * @param switchOn true - switch on, false - switch off
+     * @param temperature New temperature
      */
-    public FritzAhaSetSwitchCallback(FritzahaWebInterface webIface, String ain, boolean switchOn) {
-        super(WEBSERVICE_PATH, "ain=" + ain + "&switchcmd=" + (switchOn ? "setswitchon" : "setswitchoff"), webIface,
-                Method.GET, 1);
+    public FritzAhaSetHeatingTemperatureCallback(FritzahaWebInterface webIface, String ain, BigDecimal temperature) {
+        super(WEBSERVICE_PATH, "ain=" + ain + "&switchcmd=sethkrtsoll&param=" + temperature, webIface, Method.GET, 1);
         itemName = ain;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void execute(int status, String response) {
         super.execute(status, response);
         if (isValidRequest()) {

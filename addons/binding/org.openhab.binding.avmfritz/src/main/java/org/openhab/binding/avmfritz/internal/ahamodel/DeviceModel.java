@@ -20,6 +20,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * In the functionbitmask element value the following bits are used:
  *
  * <ol>
+ * <li>Bit 6: Comet DECT, Heizkostenregler</li>
  * <li>Bit 7: Energie Messgerät</li>
  * <li>Bit 8: Temperatursensor</li>
  * <li>Bit 9: Schaltsteckdose</li>
@@ -27,11 +28,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * </ol>
  *
  * @author Robert Bausdorf
- *
- *
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
+ *         DECT
+ * 
  */
 @XmlRootElement(name = "device")
 public class DeviceModel {
+    public static final int HEATING_THERMOSTAT_BIT = 64;
     public static final int POWERMETER_BIT = 128;
     public static final int TEMPSENSOR_BIT = 256;
     public static final int SWITCH_BIT = 512;
@@ -67,6 +70,8 @@ public class DeviceModel {
 
     private TemperatureModel temperatureModel;
 
+    private HeatingModel heatingModel;
+
     public PowerMeterModel getPowermeter() {
         return powermeterModel;
     }
@@ -81,6 +86,14 @@ public class DeviceModel {
 
     public void setTemperature(TemperatureModel temperature) {
         this.temperatureModel = temperature;
+    }
+
+    public HeatingModel getHkr() {
+        return heatingModel;
+    }
+
+    public void setHkr(HeatingModel heating) {
+        this.heatingModel = heating;
     }
 
     public SwitchModel getSwitch() {
@@ -115,6 +128,10 @@ public class DeviceModel {
         return (bitmask & DeviceModel.DECT_REPEATER_BIT) > 0;
     }
 
+    public boolean isHeatingThermostat() {
+        return (bitmask & DeviceModel.HEATING_THERMOSTAT_BIT) > 0;
+    }
+
     public String getFirmwareVersion() {
         return firmwareVersion;
     }
@@ -136,9 +153,10 @@ public class DeviceModel {
         return new ToStringBuilder(this).append("ain", this.getIdentifier()).append("bitmask", this.bitmask)
                 .append("isDectRepeater", this.isDectRepeater()).append("isPowermeter", this.isPowermeter())
                 .append("isTempSensor", this.isTempSensor()).append("isSwitchableOutlet", this.isSwitchableOutlet())
-                .append("id", this.deviceId).append("manufacturer", this.deviceManufacturer)
-                .append("productname", this.getProductName()).append("fwversion", this.getFirmwareVersion())
-                .append("present", this.present).append("name", this.name).append(this.getSwitch())
-                .append(this.getPowermeter()).append(this.getTemperature()).toString();
+                .append("isHeatingThermostat", this.isHeatingThermostat()).append("id", this.deviceId)
+                .append("manufacturer", this.deviceManufacturer).append("productname", this.getProductName())
+                .append("fwversion", this.getFirmwareVersion()).append("present", this.present)
+                .append("name", this.name).append(this.getSwitch()).append(this.getPowermeter())
+                .append(this.getTemperature()).append(this.getHkr()).toString();
     }
 }
