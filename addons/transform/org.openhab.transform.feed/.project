@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.openhab.binding.feed.transform.test</name>
-	<comment>Feed Transformation Service Tests</comment>
+	<name>org.openhab.transform.feed</name>
+	<comment>Feed Transformation Service</comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -17,6 +17,11 @@
 		</buildCommand>
 		<buildCommand>
 			<name>org.eclipse.pde.SchemaBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.pde.ds.core.builder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
