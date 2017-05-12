@@ -63,7 +63,7 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERS
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_SERIAL;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_VERSION;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_WLAN_SIGNAL;
-import static org.openhab.binding.robonect.RobonectBindingConstants.MOWER_STATUS_STARTED;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_STARTED;
 
 /**
  * The {@link RobonectHandler} is responsible for handling commands, which are
@@ -94,7 +94,7 @@ public class RobonectHandler extends BaseThingHandler {
                     case CHANNEL_STATUS_DURATION:
                     case CHANNEL_STATUS_HOURS:
                     case CHANNEL_STATUS_MODE:
-                    case MOWER_STATUS_STARTED:
+                    case CHANNEL_MOWER_STATUS_STARTED:
                     case CHANNEL_TIMER_NEXT_TIMER:
                     case CHANNEL_TIMER_STATUS:
                     case CHANNEL_WLAN_SIGNAL:
@@ -126,7 +126,7 @@ public class RobonectHandler extends BaseThingHandler {
                                     command.getClass().getName());
                         }
                         break;
-                    case MOWER_STATUS_STARTED:
+                    case CHANNEL_MOWER_STATUS_STARTED:
                         if (command instanceof OnOffType) {
                             handleStartStop((OnOffType) command);
                         } else {
@@ -253,9 +253,9 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
             updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
             updateState(CHANNEL_STATUS_DURATION, new DecimalType(info.getStatus().getDuration()));
-            updateState(CHANNEL_STATUS_HOURS, new DecimalType(info.getStatus().getDuration()));
+            updateState(CHANNEL_STATUS_HOURS, new DecimalType(info.getStatus().getHours()));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
-            updateState(MOWER_STATUS_STARTED, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_MOWER_STATUS_STARTED, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {
                     updateNextTimer(info);

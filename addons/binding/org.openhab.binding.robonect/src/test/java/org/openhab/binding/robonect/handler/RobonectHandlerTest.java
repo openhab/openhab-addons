@@ -4,6 +4,7 @@ import java.util.Calendar;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -215,6 +216,64 @@ public class RobonectHandlerTest {
 
     }
 
+    @Test
+    public void shouldUpdateAllChannels() {
+        ArgumentCaptor<State> stateCaptorName = ArgumentCaptor.forClass(State.class);
+        ArgumentCaptor<State> stateCaptorBattery = ArgumentCaptor.forClass(State.class);
+        ArgumentCaptor<State> stateCaptorStatus = ArgumentCaptor.forClass(State.class);
+        ArgumentCaptor<State> stateCaptorDuration = ArgumentCaptor.forClass(State.class);
+        ArgumentCaptor<State> stateCaptorHours = ArgumentCaptor.forClass(State.class);
+        ArgumentCaptor<State> stateCaptorMode = ArgumentCaptor.forClass(State.class);
+        ArgumentCaptor<State> stateCaptorStarted = ArgumentCaptor.forClass(State.class);
+        ArgumentCaptor<State> stateCaptorWlan = ArgumentCaptor.forClass(State.class);
+
+        // given
+        MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
+
+        // when
+        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
+
+        testObj.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
+                RefreshType.REFRESH);
+        
+        // then
+        verify(callbackMock, times(1))
+                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_NAME)),
+                        stateCaptorName.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_BATTERY)),
+                stateCaptorBattery.capture());
+        verify(callbackMock, times(1))
+                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS)),
+                        stateCaptorStatus.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_DURATION)),
+                stateCaptorDuration.capture());
+        verify(callbackMock, times(1))
+                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_HOURS)),
+                        stateCaptorHours.capture());
+        verify(callbackMock, times(1))
+                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_MODE)),
+                        stateCaptorMode.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_STATUS_STARTED)),
+                stateCaptorStarted.capture());
+        verify(callbackMock, times(1))
+                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_WLAN_SIGNAL)),
+                        stateCaptorWlan.capture());
+
+        assertEquals("Mowy", stateCaptorName.getValue().toFullString());
+        assertEquals(99, ((DecimalType)stateCaptorBattery.getValue()).intValue());
+        assertEquals(4, ((DecimalType)stateCaptorStatus.getValue()).intValue());
+        assertEquals(55, ((DecimalType)stateCaptorDuration.getValue()).intValue());
+        assertEquals(22, ((DecimalType)stateCaptorHours.getValue()).intValue());
+        assertEquals(MowerMode.AUTO.name(), stateCaptorMode.getValue().toFullString());
+        assertEquals(OnOffType.ON, stateCaptorStarted.getValue());
+        assertEquals(-88, ((DecimalType)stateCaptorWlan.getValue()).intValue());
+        
+    }
+
     private MowerInfo createSuccessfulMowerInfoResponse() {
         MowerInfo mowerInfo = new MowerInfo();
         Timer timer = new Timer();
@@ -237,6 +296,7 @@ public class RobonectHandlerTest {
         wlan.setSignal(-88);
         mowerInfo.setWlan(wlan);
         mowerInfo.setSuccessful(true);
+        mowerInfo.getStatus().setStopped(false);
         return mowerInfo;
     }
 }

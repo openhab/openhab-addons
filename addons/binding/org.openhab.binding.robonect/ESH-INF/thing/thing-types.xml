@@ -66,7 +66,7 @@
     </channel-group-type>
 
     <channel-group-type id="errorGroupType">
-        <label>Timer Info</label>
+        <label>Error Info</label>
         <channels>
             <channel id="code" typeId="errorCodeType"/>
             <channel id="message" typeId="errorMessageType"/>
