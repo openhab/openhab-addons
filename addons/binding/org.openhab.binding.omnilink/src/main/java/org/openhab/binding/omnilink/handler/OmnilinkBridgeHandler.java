@@ -256,12 +256,14 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     @Override
     public void otherEventNotification(OtherEventNotifications event) {
-        logger.debug("received other event notification: {}", event);
-        logger.debug("Event type: {}", event.getMessageType());
-        logger.debug("Event notification: {}", event.getNotifications());
-        if (event.getNotifications().length > 0) {
+        logger.debug("Other event otification, type: {}", event.getMessageType());
+
+        if (event.getNotifications() != null && event.getNotifications().length > 0) {
             logger.debug("First notification: {}", Integer.toString(event.getNotifications()[0], 2));
+        } else {
+            logger.debug("Event notification: {}", event.getNotifications());
         }
+
         // for a button, let's make sure we have only 1 notification
         if (Message.MESG_TYPE_OTHER_EVENT_NOTIFY == event.getMessageType() && event.getNotifications().length == 1) {
             int number = event.getNotifications()[0];
