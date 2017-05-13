@@ -15,7 +15,8 @@
 		    <channel id="mute" typeId="mute" />
 			<channel id="operationMode" typeId="operationMode" />
 			<channel id="playerControl" typeId="playerControl" />
-			<channel id="zoneControl" typeId="zoneControl" />
+			<channel id="zoneAdd" typeId="zoneAdd" />
+			<channel id="zoneRemove" typeId="zoneRemove" />
 			<channel id="preset" typeId="preset" />
 			<channel id="presetControl" typeId="presetControl" />
 			<channel id="saveAsPreset" typeId="saveAsPreset" />
@@ -100,10 +101,15 @@
         <description>Control the Player, e.g. play/pause/stop/next/previous</description>
         <category>Player</category>
     </channel-type>
-    <channel-type id="zoneControl">
+    <channel-type id="zoneAdd">
         <item-type>String</item-type>
-        <label>Zone Control</label>
-        <description>Control the Zones, e.g. "add kitchen"/"remove kitchen"</description>
+        <label>Zone Add</label>
+        <description>Adds a Device to a zone, e.g. "kitchen"/"MACOFKITCHEN"</description>
+    </channel-type>
+    <channel-type id="zoneRemove">
+        <item-type>String</item-type>
+        <label>Zone Romove</label>
+        <description>Removes a Device from a zone, e.g. "kitchen"/"MACOFKITCHEN"</description>
     </channel-type>
     <channel-type id="preset">
         <item-type>Number</item-type>
