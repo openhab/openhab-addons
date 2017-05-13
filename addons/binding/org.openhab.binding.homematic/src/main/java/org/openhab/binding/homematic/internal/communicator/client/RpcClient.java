@@ -212,6 +212,7 @@ public abstract class RpcClient<T> {
             gatewayInfo.setType(ddParser.getType());
             gatewayInfo.setFirmware(ddParser.getFirmware());
         } else if (StringUtils.startsWithIgnoreCase(biParser.getType(), "CCU")
+                || StringUtils.startsWithIgnoreCase(ddParser.getType(), "HM-RCV-50")
                 || config.getGatewayType().equalsIgnoreCase(HomematicConfig.GATEWAY_TYPE_CCU)) {
             gatewayInfo.setId(HmGatewayInfo.ID_CCU);
             String type = StringUtils.isBlank(biParser.getType()) ? "CCU" : biParser.getType();
