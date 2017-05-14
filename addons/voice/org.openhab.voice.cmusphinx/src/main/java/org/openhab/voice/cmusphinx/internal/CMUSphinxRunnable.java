@@ -191,11 +191,13 @@ public class CMUSphinxRunnable implements Runnable {
      */
     public void setSTTListener(STTListener sttListener) {
         logger.debug("CMU Sphinx: STTListener set");
-        if (this.sttListener != null) {
+        if (this.sttListener != null && !this.sttListener.equals(sttListener)) {
             this.sttListener.sttEventReceived(new RecognitionStopEvent());
         }
         this.sttListener = sttListener;
-        this.sttListener.sttEventReceived(new RecognitionStartEvent());
+        if (this.sttListener != null) {
+            this.sttListener.sttEventReceived(new RecognitionStartEvent());
+        }
     }
 
     /**
