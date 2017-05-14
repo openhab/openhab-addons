@@ -281,10 +281,16 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void updateErrorInfo(ErrorEntry error) {
-        State dateTime = convertDateTimeType(error.getDate(), error.getTime());
-        updateState(CHANNEL_ERROR_DATE, dateTime);
-        updateState(CHANNEL_ERROR_CODE, new DecimalType(error.getErrorCode()));
-        updateState(CHANNEL_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
+        if(error.getDate() != null){
+            State dateTime = convertDateTimeType(error.getDate(), error.getTime());
+            updateState(CHANNEL_ERROR_DATE, dateTime);
+        }
+        if(error.getErrorCode() != null){
+            updateState(CHANNEL_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
+        }
+        if(error.getErrorMessage() != null){
+            updateState(CHANNEL_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
+        }
     }
 
     private void updateNextTimer(MowerInfo info) {
@@ -335,7 +341,17 @@ public class RobonectHandler extends BaseThingHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    refreshMowerInfo();
+                    try {
+                        refreshMowerInfo();
+                        updateStatus(ThingStatus.ONLINE);
+                    } catch (RobonectCommunicationException rce) {
+                        logger.error("Failed to communicate with the mower. Taking it offline.", rce);
+                        updateState(CHANNEL_STATUS, new DecimalType(MowerStatus.OFFLINE.getStatusCode()));
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
+                    } catch (Exception e) {
+                        logger.error("Unexpected exception. Setting thing offline", e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+                    }
                 }
             };
             int pollInterval = robonectConfig.getPollInterval() > 0 ? robonectConfig.getPollInterval() : 30;

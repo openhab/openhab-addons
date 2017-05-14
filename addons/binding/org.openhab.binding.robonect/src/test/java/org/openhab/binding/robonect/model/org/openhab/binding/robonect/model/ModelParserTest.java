@@ -65,6 +65,18 @@ public class ModelParserTest {
         assertEquals(-76, mowerInfo.getWlan().getSignal());
         assertNull(mowerInfo.getError());
     }
+    
+    @Test
+    public void shouldParseCorrectStatusModelWithErrorCode() {
+        String correctModel = "{\"successful\": true, \"name\": \"Grasi\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 423, \"mode\": 0, \"battery\": 83, \"hours\": 55}, \"timer\": {\"status\": 2, \"next\": {\"date\": \"15.05.2017\", \"time\": \"19:00:00\", \"unix\": 1494874800}}, \"wlan\": {\"signal\": -76}, \"error\": {\"error_code\": 9, \"error_message\": \"Grasi ist eingeklemmt\", \"date\": \"13.05.2017\", \"time\": \"23:00:22\", \"unix\": 1494716422}}";
+        MowerInfo mowerInfo = parser.parse(correctModel, MowerInfo.class);
+        assertTrue(mowerInfo.isSuccessful());
+        assertEquals("Grasi", mowerInfo.getName());
+        assertEquals(MowerStatus.ERROR_STATUS, mowerInfo.getStatus().getStatus());
+        assertTrue(mowerInfo.getStatus().isStopped());
+        assertEquals(9, mowerInfo.getError().getErrorCode().intValue());
+        assertEquals("Grasi ist eingeklemmt", mowerInfo.getError().getErrorMessage());
+    }
 
     @Test
     public void shouldParseCorrectStatusModelMowing() {

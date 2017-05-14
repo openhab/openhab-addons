@@ -87,7 +87,7 @@
     <channel-group-type id="wlanType">
         <label>WLAN Info</label>
         <channels>
-            <channel id="signal" typeId="signalType"/>
+            <channel id="signal" typeId="system.signal-strength"/>
         </channels>
     </channel-group-type>
 
@@ -227,13 +227,6 @@
         <item-type>DateTime</item-type>
         <label>Next timer date</label>
         <description>The next date the timer starts</description>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="signalType">
-        <item-type>Number</item-type>
-        <label>WLAN Signal</label>
-        <description>The WLAN singal strength</description>
         <state readOnly="true"/>
     </channel-type>
 

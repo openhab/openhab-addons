@@ -12,9 +12,9 @@ The binding exposes just one Thing type which is the `mower`.
 
 Tested mowers
 
-| Mower                   | Robonect module | Robonect firmware version  |
+| Mower                   | Robonect module  | Robonect firmware version |
 |-------------------------|------------------|---------------------------|
-| Husqvarna Automower 105 | Robonect Hx      | 0.9c                      |
+| Husqvarna Automower 105 | Robonect Hx      | 0.9c, 0.9e                |
 
 ## Discovery
 
