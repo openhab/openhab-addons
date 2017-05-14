@@ -249,6 +249,11 @@ public class RobonectHandler extends BaseThingHandler {
 
         MowerInfo info = robonectClient.getMowerInfo();
         if (info.isSuccessful()) {
+            if(info.getError() != null){
+                updateErrorInfo(info.getError());
+            }else {
+                clearErrorInfo();
+            }
             updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
             updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
             updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
@@ -261,11 +266,6 @@ public class RobonectHandler extends BaseThingHandler {
                     updateNextTimer(info);
                 }
                 updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
-            }
-            if(info.getError() != null){
-                updateErrorInfo(info.getError());
-            }else {
-                clearErrorInfo();
             }
             updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(info.getWlan().getSignal()));
         } else {
