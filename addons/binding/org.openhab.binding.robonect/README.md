@@ -77,7 +77,7 @@ Number mowerBattery "Mower battery [%d %%]" <energy> {robonect:mower:automower:m
 Number mowerHours "Mower operation hours [%d h]" <clock> {robonect:mower:automower:mowerStatus#hours"}
 Number mowerDuration "Duration of current mode" {robonect:mower:automower:mowerStatus#duration"}
 String mowerMode "Mower mode" {robonect:mower:automower:mowerStatus#mode"}
-Number mowerStatus "Mower Status [%d]" {robonect:mower:automower:mowerStatus#status"}
+Number mowerStatus "Mower Status [MAP(robonect_status.map):%s]" {robonect:mower:automower:mowerStatus#status"}
 Switch mowerStarted "Mower started" {robonect:mower:automower:mowerStatus#started"}
 String mowerTimerStatus "Mower timer status" {robonect:mower:automower:timer#status"}
 DateTime mowerNextTimer "Next timer [%1$td/%1$tm %1$tH:%1$tM]" <clock> {robonect:mower:automower:timer#nextTimer"}
@@ -93,6 +93,23 @@ String mowerRobonectSerial "Robonect serialnumber" {robonect:mower:automower:ver
 String mowerRobonectVersion "Robonect version" {robonect:mower:automower:version#version"}
 String mowerRobonectVersionComment "Robonect Version comment" {robonect:mower:automower:version#comment"}
 ```
+
+Map transformation for mower status (`robonect_status.map`)
+```
+0=DETECTING_STATUS
+1=PARKING
+2=MOWING
+3=SEARCH_CHARGING_STATION
+4=CHARGING
+5=SEARCHING
+7=ERROR_STATUS
+8=LOST_SIGNAL
+16=OFF
+17=SLEEPING
+98=OFFLINE
+99=UNKNOWN
+```
+
 
 Sitemaps `.sitemap`
 
