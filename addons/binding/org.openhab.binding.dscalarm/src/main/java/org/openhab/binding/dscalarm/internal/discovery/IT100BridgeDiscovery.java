@@ -32,7 +32,7 @@ import gnu.io.UnsupportedCommOperationException;
  *
  */
 public class IT100BridgeDiscovery {
-    private final static Logger logger = LoggerFactory.getLogger(IT100BridgeDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(IT100BridgeDiscovery.class);
 
     static final int BAUD_RATE = 9600;
     static final int RECEIVE_TIMEOUT = 15000;

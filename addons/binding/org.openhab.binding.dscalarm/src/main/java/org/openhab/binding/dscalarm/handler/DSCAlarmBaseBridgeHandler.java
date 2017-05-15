@@ -606,14 +606,15 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             case CommandOutputControl: /* 020 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-8]")) {
                     logger.error(
-                            "sendCommand(): Partition number must be a single character string from 1 to 8, it was: "
-                                    + dscAlarmData[0]);
+                            "sendCommand(): Partition number must be a single character string from 1 to 8, it was: {}",
+                            dscAlarmData[0]);
                     break;
                 }
 
                 if (dscAlarmData[1] == null || !dscAlarmData[1].matches("[1-4]")) {
-                    logger.error("sendCommand(): Output number must be a single character string from 1 to 4, it was: "
-                            + dscAlarmData[1]);
+                    logger.error(
+                            "sendCommand(): Output number must be a single character string from 1 to 4, it was: {}",
+                            dscAlarmData[1]);
                     break;
                 }
 

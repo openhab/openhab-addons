@@ -9,6 +9,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.items.DateTimeItem;
@@ -53,21 +54,21 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.DATE_TIME);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
     public SubType subType;
     public int sensorId;
     String dateTime;
-    int year;
-    int month;
-    int day;
-    int dayOfWeek;
-    int hour;
-    int minute;
-    int second;
+    private int year;
+    private int month;
+    private int day;
+    private int dayOfWeek;
+    private int hour;
+    private int minute;
+    private int second;
 
     public byte signalLevel;
     public byte batteryLevel;
@@ -82,9 +83,8 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
 
     @Override
     public String toString() {
-        String str = "";
+        String str = super.toString();
 
-        str += super.toString();
         str += ", Sub type = " + subType;
         str += ", Id = " + sensorId;
         str += ", Date Time = " + dateTime;
@@ -193,17 +193,16 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 
     @Override
     public Object convertSubType(String subType) throws RFXComException {
-
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;

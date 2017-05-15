@@ -82,10 +82,10 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.COMMAND, RFXComValueSelector.CONTACT);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.COMMAND);
 
     public SubType subType;
@@ -281,12 +281,12 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 
 }

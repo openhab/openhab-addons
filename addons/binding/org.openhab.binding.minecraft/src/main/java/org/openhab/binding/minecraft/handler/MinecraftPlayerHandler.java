@@ -165,7 +165,7 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
     private void sendPlayerCommand(String type, String playerName, String value) {
         PlayerCommandData playerCommand = new PlayerCommandData(type, playerName, value);
         JsonElement serializedCommand = gson.toJsonTree(playerCommand);
-        logger.debug("Command: " + serializedCommand);
+        logger.debug("Command: {}", serializedCommand);
         bridgeHandler.sendMessage(new OHMessage(OHMessage.MESSAGE_TYPE_PLAYER_COMMANDS, serializedCommand));
     }
 

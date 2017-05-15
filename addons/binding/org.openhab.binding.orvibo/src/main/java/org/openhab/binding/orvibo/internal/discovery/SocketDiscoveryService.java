@@ -36,7 +36,7 @@ import com.github.tavalin.s20.Socket;
 public class SocketDiscoveryService extends AbstractDiscoveryService implements SocketDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(SocketDiscoveryService.class);
-    private final static int SEARCH_TIME = 60;
+    private static final int SEARCH_TIME = 60;
     private S20Client s20Client;
 
     public SocketDiscoveryService() throws SocketException {
@@ -53,7 +53,7 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
             s20Client = S20Client.getInstance();
             super.activate(configProperties);
         } catch (SocketException ex) {
-            logger.error("Error occurred while activating S20 discovery service: " + ex.getMessage(), ex);
+            logger.error("Error occurred while activating S20 discovery service: {}", ex.getMessage(), ex);
         }
     }
 

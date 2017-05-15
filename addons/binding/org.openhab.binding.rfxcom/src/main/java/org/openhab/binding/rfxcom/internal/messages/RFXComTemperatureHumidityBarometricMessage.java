@@ -113,10 +113,10 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(SIGNAL_LEVEL,
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(SIGNAL_LEVEL,
             BATTERY_LEVEL, TEMPERATURE, HUMIDITY, HUMIDITY_STATUS, PRESSURE, FORECAST);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Collections.emptyList();
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
     public SubType subType;
     public int sensorId;
@@ -276,11 +276,11 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 }

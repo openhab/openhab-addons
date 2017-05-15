@@ -21,10 +21,10 @@ public class OrviboBindingConstants {
     public static final String BINDING_ID = "orvibo";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_S20 = new ThingTypeUID(BINDING_ID, "s20");
+    public static final ThingTypeUID THING_TYPE_S20 = new ThingTypeUID(BINDING_ID, "s20");
 
     // List of all Channel ids
-    public final static String CHANNEL_S20_SWITCH = "power";
+    public static final String CHANNEL_S20_SWITCH = "power";
 
     // List of all Config properties
     public static final String CONFIG_PROPERTY_DEVICE_ID = "deviceId";

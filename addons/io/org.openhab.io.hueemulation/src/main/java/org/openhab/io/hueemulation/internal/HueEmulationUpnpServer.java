@@ -33,8 +33,8 @@ public class HueEmulationUpnpServer extends Thread {
     private Logger logger = LoggerFactory.getLogger(HueEmulationUpnpServer.class);
 
     // jUPNP shares port 1900, but since this is multicast, we can also bind to it
-    static final private int UPNP_PORT_RECV = 1900;
-    static final private String MULTI_ADDR = "239.255.255.250";
+    private static final int UPNP_PORT_RECV = 1900;
+    private static final String MULTI_ADDR = "239.255.255.250";
     private boolean running;
     private String discoPath;
     private String usn;
@@ -102,8 +102,8 @@ public class HueEmulationUpnpServer extends Thread {
                     recvSocket.receive(recv);
                     if (recv.getLength() > 0) {
                         String data = new String(recv.getData());
-                        logger.trace("Got SSDP Discovery packet from " + recv.getAddress().getHostAddress() + ":"
-                                + recv.getPort());
+                        logger.trace("Got SSDP Discovery packet from {}:{}", recv.getAddress().getHostAddress(),
+                                recv.getPort());
                         if (data.startsWith("M-SEARCH")) {
                             String msg = String
                                     .format(discoString,
@@ -113,7 +113,7 @@ public class HueEmulationUpnpServer extends Thread {
                             DatagramPacket response = new DatagramPacket(msg.getBytes(), msg.length(),
                                     recv.getAddress(), recv.getPort());
                             try {
-                                logger.trace("Sending to " + recv.getAddress().getHostAddress() + " : " + msg);
+                                logger.trace("Sending to {} : {}", recv.getAddress().getHostAddress(), msg);
                                 sendSocket.send(response);
                             } catch (IOException e) {
                                 logger.error("Could not send UPNP response", e);

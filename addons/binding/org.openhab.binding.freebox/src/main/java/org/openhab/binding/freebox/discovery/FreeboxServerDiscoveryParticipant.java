@@ -73,6 +73,7 @@ public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipa
             logger.info("Created a DiscoveryResult for Freebox Server {} on IP {}", thingUID, ip);
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(FreeboxServerConfiguration.FQDN, ip + ":" + service.getPort());
+            properties.put(FreeboxServerConfiguration.USE_ONLY_HTTP, "true");
             if (service.getPropertyString("device_type") != null) {
                 properties.put(Thing.PROPERTY_HARDWARE_VERSION, service.getPropertyString("device_type"));
             }

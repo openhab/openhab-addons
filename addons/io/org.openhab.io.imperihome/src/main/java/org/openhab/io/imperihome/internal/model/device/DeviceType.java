@@ -40,18 +40,24 @@ public enum DeviceType {
     SMOKE("DevSmoke"),
     TEMPERATURE("DevTemperature"),
     TEMP_HYGRO("DevTempHygro"),
-    THERMOSTAT("DevThermostat"),
+    THERMOSTAT("DevThermostat", "curmode", "curtemp"),
     UV("DevUV"),
     WIND("DevWind");
 
     private final String apiString;
+    private final String[] requiredLinks;
 
-    DeviceType(String apiString) {
+    DeviceType(String apiString, String... requiredLinks) {
         this.apiString = apiString;
+        this.requiredLinks = requiredLinks;
     }
 
     public String getApiString() {
         return apiString;
+    }
+
+    public String[] getRequiredLinks() {
+        return requiredLinks;
     }
 
     public static DeviceType forApiString(String apiString) {

@@ -21,12 +21,12 @@ public class FoldingBindingConstants {
     public static final String BINDING_ID = "folding";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_CLIENT = new ThingTypeUID(BINDING_ID, "client");
-    public final static ThingTypeUID THING_TYPE_SLOT = new ThingTypeUID(BINDING_ID, "slot");
+    public static final ThingTypeUID THING_TYPE_CLIENT = new ThingTypeUID(BINDING_ID, "client");
+    public static final ThingTypeUID THING_TYPE_SLOT = new ThingTypeUID(BINDING_ID, "slot");
 
-    public final static String PARAM_SLOT_ID = "id";
+    public static final String PARAM_SLOT_ID = "id";
 
     // List of all Channel ids
-    public final static String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_STATUS = "status";
 
 }

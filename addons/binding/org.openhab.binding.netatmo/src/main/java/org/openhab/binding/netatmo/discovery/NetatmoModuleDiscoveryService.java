@@ -43,7 +43,7 @@ import io.swagger.client.model.NAThermostatDataBody;
  *
  */
 public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService {
-    private final static int SEARCH_TIME = 2;
+    private static final int SEARCH_TIME = 2;
     private NetatmoBridgeHandler netatmoBridgeHandler;
 
     public NetatmoModuleDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {

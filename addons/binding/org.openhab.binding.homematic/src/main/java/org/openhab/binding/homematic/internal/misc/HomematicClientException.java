@@ -10,17 +10,17 @@ package org.openhab.binding.homematic.internal.misc;
 
 /**
  * Exception if something happens in the communication to the Homematic gateway.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicClientException extends Exception {
-	private static final long serialVersionUID = 76348991234346L;
+    private static final long serialVersionUID = 76348991234346L;
 
-	public HomematicClientException(String message) {
-		super(message);
-	}
+    public HomematicClientException(String message) {
+        super(message);
+    }
 
-	public HomematicClientException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public HomematicClientException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

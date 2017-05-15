@@ -25,6 +25,16 @@ public class NameToDataType extends XmlAdapter<String, DataType> {
                 return DataType.TEMPERATURE;
             case "humidity":
                 return DataType.HUMIDITY;
+            case "rainrate":
+                return DataType.RAINRATE;
+            case "rainttotal":
+                return DataType.RAINTOTAL;
+            case "windaverage":
+                return DataType.WINDAVERAGE;
+            case "winddirection":
+                return DataType.WINDDIRECTION;
+            case "windgust":
+                return DataType.WINDGUST;
             default:
                 return null;
         }
@@ -37,6 +47,16 @@ public class NameToDataType extends XmlAdapter<String, DataType> {
                 return "temp";
             case HUMIDITY:
                 return "humidity";
+            case RAINRATE:
+                return "rainrate";
+            case RAINTOTAL:
+                return "raintotal";
+            case WINDAVERAGE:
+                return "windaverage";
+            case WINDDIRECTION:
+                return "winddirection";
+            case WINDGUST:
+                return "windgust";
             default:
                 return null;
         }

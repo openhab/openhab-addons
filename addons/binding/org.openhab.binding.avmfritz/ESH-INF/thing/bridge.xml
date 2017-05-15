@@ -6,7 +6,7 @@
 
 	<bridge-type id="fritzbox">
 		<label>FRITZ!Box</label>
-		<description>This bridge represents a Fritz!Box device
+		<description>This bridge represents a FRITZ!Box device
 		</description>
 
 		<config-description>

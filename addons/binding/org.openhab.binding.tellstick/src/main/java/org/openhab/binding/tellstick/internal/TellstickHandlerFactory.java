@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Jarle Hjortland - Initial contribution
  */
 public class TellstickHandlerFactory extends BaseThingHandlerFactory {
-    private final static Logger logger = LoggerFactory.getLogger(TellstickHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(TellstickHandlerFactory.class);
     private TellstickDiscoveryService discoveryService = null;
 
     @Override

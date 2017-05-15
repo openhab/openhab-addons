@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class BinRpcMessage implements RpcRequest, RpcResponse {
-    private final static Logger logger = LoggerFactory.getLogger(BinRpcMessage.class);
+public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
+    private final Logger logger = LoggerFactory.getLogger(BinRpcMessage.class);
 
     public enum TYPE {
         REQUEST,
@@ -238,7 +238,7 @@ public class BinRpcMessage implements RpcRequest, RpcResponse {
 
             default:
                 for (int i = 0; i < binRpcData.length; i++) {
-                    logger.info(Integer.toHexString(binRpcData[i]) + " " + (char) binRpcData[i]);
+                    logger.info("{} {}", Integer.toHexString(binRpcData[i]), (char) binRpcData[i]);
                 }
                 throw new IOException("Unknown data type " + type);
         }

@@ -73,49 +73,49 @@ class AtlonaPro3PortocolHandler {
      * A special (invalid) command used internally by this handler to identify whether the switch wants a login or not
      * (see {@link #login()})
      */
-    private final static String NOTVALID_USER_OR_CMD = "notvalid$934%912";
+    private static final String NOTVALID_USER_OR_CMD = "notvalid$934%912";
 
     // ------------------------------------------------------------------------------------------------
     // The following are the various command formats specified by the Atlona protocol
-    private final static String CMD_POWERON = "PWON";
-    private final static String CMD_POWEROFF = "PWOFF";
-    private final static String CMD_POWER_STATUS = "PWSTA";
-    private final static String CMD_VERSION = "Version";
-    private final static String CMD_TYPE = "Type";
-    private final static String CMD_PANELLOCK = "Lock";
-    private final static String CMD_PANELUNLOCK = "Unlock";
-    private final static String CMD_PORT_RESETALL = "All#";
-    private final static String CMD_PORT_POWER_FORMAT = "x%d$ %s";
-    private final static String CMD_PORT_ALL_FORMAT = "x%dAll";
-    private final static String CMD_PORT_SWITCH_FORMAT = "x%dAVx%d";
-    private final static String CMD_PORT_MIRROR_FORMAT = "MirrorHdmi%d Out%d";
-    private final static String CMD_PORT_MIRROR_STATUS_FORMAT = "MirrorHdmi%d sta";
-    private final static String CMD_PORT_UNMIRROR_FORMAT = "UnMirror%d";
-    private final static String CMD_VOLUME_FORMAT = "VOUT%d %s";
-    private final static String CMD_VOLUME_MUTE_FORMAT = "VOUTMute%d %s";
-    private final static String CMD_IROFF = "IROFF";
-    private final static String CMD_IRON = "IRON";
-    private final static String CMD_PORT_STATUS = "Status";
-    private final static String CMD_PORT_STATUS_FORMAT = "Statusx%d";
-    private final static String CMD_SAVEIO_FORMAT = "Save%d";
-    private final static String CMD_RECALLIO_FORMAT = "Recall%d";
-    private final static String CMD_CLEARIO_FORMAT = "Clear%d";
-    private final static String CMD_MATRIX_RESET = "Mreset";
-    private final static String CMD_BROADCAST_ON = "Broadcast on";
+    private static final String CMD_POWERON = "PWON";
+    private static final String CMD_POWEROFF = "PWOFF";
+    private static final String CMD_POWER_STATUS = "PWSTA";
+    private static final String CMD_VERSION = "Version";
+    private static final String CMD_TYPE = "Type";
+    private static final String CMD_PANELLOCK = "Lock";
+    private static final String CMD_PANELUNLOCK = "Unlock";
+    private static final String CMD_PORT_RESETALL = "All#";
+    private static final String CMD_PORT_POWER_FORMAT = "x%d$ %s";
+    private static final String CMD_PORT_ALL_FORMAT = "x%dAll";
+    private static final String CMD_PORT_SWITCH_FORMAT = "x%dAVx%d";
+    private static final String CMD_PORT_MIRROR_FORMAT = "MirrorHdmi%d Out%d";
+    private static final String CMD_PORT_MIRROR_STATUS_FORMAT = "MirrorHdmi%d sta";
+    private static final String CMD_PORT_UNMIRROR_FORMAT = "UnMirror%d";
+    private static final String CMD_VOLUME_FORMAT = "VOUT%d %s";
+    private static final String CMD_VOLUME_MUTE_FORMAT = "VOUTMute%d %s";
+    private static final String CMD_IROFF = "IROFF";
+    private static final String CMD_IRON = "IRON";
+    private static final String CMD_PORT_STATUS = "Status";
+    private static final String CMD_PORT_STATUS_FORMAT = "Statusx%d";
+    private static final String CMD_SAVEIO_FORMAT = "Save%d";
+    private static final String CMD_RECALLIO_FORMAT = "Recall%d";
+    private static final String CMD_CLEARIO_FORMAT = "Clear%d";
+    private static final String CMD_MATRIX_RESET = "Mreset";
+    private static final String CMD_BROADCAST_ON = "Broadcast on";
 
     // ------------------------------------------------------------------------------------------------
     // The following are the various responses specified by the Atlona protocol
-    private final static String RSP_FAILED = "Command FAILED:";
+    private static final String RSP_FAILED = "Command FAILED:";
 
-    private final static String RSP_LOGIN = "Login";
-    private final static String RSP_PASSWORD = "Password";
+    private static final String RSP_LOGIN = "Login";
+    private static final String RSP_PASSWORD = "Password";
 
     private final Pattern _powerStatusPattern = Pattern.compile("PW(\\w+)");
     private final Pattern _versionPattern = Pattern.compile("Firmware (.*)");
     private final Pattern _typePattern = Pattern.compile("AT-UHD-PRO3-(\\d+)M");
-    private final static String RSP_ALL = "All#";
-    private final static String RSP_LOCK = "Lock";
-    private final static String RSP_UNLOCK = "Unlock";
+    private static final String RSP_ALL = "All#";
+    private static final String RSP_LOCK = "Lock";
+    private static final String RSP_UNLOCK = "Unlock";
     private final Pattern _portStatusPattern = Pattern.compile("x(\\d+)AVx(\\d+),?+");
     private final Pattern _portPowerPattern = Pattern.compile("x(\\d+)\\$ (\\w+)");
     private final Pattern _portAllPattern = Pattern.compile("x(\\d+)All");
@@ -123,18 +123,18 @@ class AtlonaPro3PortocolHandler {
     private final Pattern _portUnmirrorPattern = Pattern.compile("UnMirror(\\d+)");
     private final Pattern _volumePattern = Pattern.compile("VOUT(\\d+) (-?\\d+)");
     private final Pattern _volumeMutePattern = Pattern.compile("VOUTMute(\\d+) (\\w+)");
-    private final static String RSP_IROFF = "IROFF";
-    private final static String RSP_IRON = "IRON";
+    private static final String RSP_IROFF = "IROFF";
+    private static final String RSP_IRON = "IRON";
     private final Pattern _saveIoPattern = Pattern.compile("Save(\\d+)");
     private final Pattern _recallIoPattern = Pattern.compile("Recall(\\d+)");
     private final Pattern _clearIoPattern = Pattern.compile("Clear(\\d+)");
     private final Pattern _broadCastPattern = Pattern.compile("Broadcast (\\w+)");
-    private final static String RSP_MATRIX_RESET = "Mreset";
+    private static final String RSP_MATRIX_RESET = "Mreset";
 
     // ------------------------------------------------------------------------------------------------
     // The following isn't part of the atlona protocol and is generated by us
-    private final static String CMD_PING = "ping";
-    private final static String RSP_PING = "Command FAILED: (ping)";
+    private static final String CMD_PING = "ping";
+    private static final String RSP_PING = "Command FAILED: (ping)";
 
     /**
      * Constructs the protocol handler from given parameters
@@ -968,7 +968,7 @@ class AtlonaPro3PortocolHandler {
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleCommandFailure(String resp) {
-        logger.info(resp);
+        logger.info("{}", resp);
     }
 
     /**

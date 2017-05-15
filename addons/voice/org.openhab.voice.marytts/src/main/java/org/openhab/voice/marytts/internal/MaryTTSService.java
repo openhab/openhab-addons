@@ -206,7 +206,7 @@ public class MaryTTSService implements TTSService {
      *
      * @return The MaryInterface
      */
-    private final static MaryInterface getMaryInterface() {
+    private static final MaryInterface getMaryInterface() {
         MaryInterface maryInterface = null;
         try {
             maryInterface = new LocalMaryInterface();

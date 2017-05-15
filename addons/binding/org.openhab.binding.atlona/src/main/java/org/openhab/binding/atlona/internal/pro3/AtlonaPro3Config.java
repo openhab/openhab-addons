@@ -21,7 +21,7 @@ public class AtlonaPro3Config {
      * Constant field used in {@link AtlonaDiscovery} to set the config property during discovery. Value of this field
      * needs to match {@link #ipAddress}
      */
-    public final static String IpAddress = "ipAddress";
+    public static final String IpAddress = "ipAddress";
 
     /**
      * IP Address (or host name) of switch
