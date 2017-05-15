@@ -16,6 +16,7 @@
 
 		<channels>
 			<channel id="command" typeId="command" />
+			<channel id="commandId" typeId="commandId" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
 		</channels>
 
@@ -31,8 +32,58 @@
 					<option value="PT2262">PT2262</option>
 				</options>
 			</parameter>
+			<parameter name="pulse" type="integer" min="100" max="800">
+				<label>Pulse length</label>
+				<description>Pulse length of the device</description>
+				<default>350</default>
+			</parameter>
+			<parameter name="onCommandId" type="integer" required="true">
+				<label>On command</label>
+				<description>Specifies command to be send when ON must be transmitted</description>
+				<options>
+					<option value="0">OFF (value 0)</option>
+					<option value="1">ON (value 1)</option>
+					<option value="2">OFF (value 2)</option>
+					<option value="3">ON (value 3)</option>
+					<option value="4">OFF (value 4)</option>
+					<option value="5">ON (value 5)</option>
+					<option value="6">value 5</option>
+					<option value="7">ON (value 7)</option>
+					<option value="8">value 8</option>
+					<option value="9">ON (value 9)</option>
+					<option value="10">value 10</option>
+					<option value="11">value 11</option>
+					<option value="12">ON (value 12)</option>
+					<option value="13">value 13</option>
+					<option value="14">value 14</option>
+					<option value="15">value 15</option>
+				</options>
+				<default>1</default>
+			</parameter>
+			<parameter name="offCommandId" type="integer" required="true">
+				<label>Off command</label>
+				<description>Specifies command to be send when OFF must be transmitted</description>
+				<options>
+					<option value="0">OFF (value 0)</option>
+					<option value="1">ON (value 1)</option>
+					<option value="2">OFF (value 2)</option>
+					<option value="3">ON (value 3)</option>
+					<option value="4">OFF (value 4)</option>
+					<option value="5">ON (value 5)</option>
+					<option value="6">value 5</option>
+					<option value="7">ON (value 7)</option>
+					<option value="8">value 8</option>
+					<option value="9">ON (value 9)</option>
+					<option value="10">value 10</option>
+					<option value="11">value 11</option>
+					<option value="12">ON (value 12)</option>
+					<option value="13">value 13</option>
+					<option value="14">value 14</option>
+					<option value="15">value 15</option>
+				</options>
+				<default>4</default>
+			</parameter>
 		</config-description>
-
 	</thing-type>
 
 </thing:thing-descriptions>
