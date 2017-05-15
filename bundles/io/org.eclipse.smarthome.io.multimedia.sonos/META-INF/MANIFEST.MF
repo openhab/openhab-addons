@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Eclipse SmartHome Multimedia I/O Bundle for Sonos
+Bundle-SymbolicName: org.eclipse.smarthome.io.multimedia.sonos
+Bundle-Version: 0.7.0.qualifier
+Bundle-Vendor: Eclipse.org/SmartHome
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .
+Import-Package: javax.servlet;version="2.6.0",
+ javax.servlet.http;version="2.6.0",
+ org.apache.commons.collections,
+ org.apache.commons.io,
+ org.apache.commons.lang,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.library.items,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.scriptengine,
+ org.eclipse.smarthome.core.scriptengine.action,
+ org.eclipse.smarthome.io.multimedia.tts,
+ org.osgi.framework,
+ org.osgi.service.component;version="1.2.2",
+ org.osgi.service.http;version="1.2.1",
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipse.smarthome.io.multimedia.sonos.internal.MultimediaSonosActivator
