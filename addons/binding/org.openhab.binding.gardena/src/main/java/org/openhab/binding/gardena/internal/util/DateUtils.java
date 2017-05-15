@@ -10,6 +10,10 @@ package org.openhab.binding.gardena.internal.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -36,6 +40,9 @@ public class DateUtils {
             for (String dateFormat : dateFormats) {
                 try {
                     parsedDate = new SimpleDateFormat(dateFormat).parse(text);
+                    ZonedDateTime gmt = ZonedDateTime.ofInstant(parsedDate.toInstant(), ZoneOffset.UTC);
+                    LocalDateTime here = gmt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+                    parsedDate = Date.from(here.toInstant(ZoneOffset.UTC));
                     break;
                 } catch (ParseException ex) {
                 }

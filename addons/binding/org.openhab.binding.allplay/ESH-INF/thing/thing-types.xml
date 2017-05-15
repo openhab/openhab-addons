@@ -18,6 +18,7 @@
 			<channel id="currenttitle" typeId="currenttitle" />
 			<channel id="currenturl" typeId="currenturl" />
 			<channel id="currentuserdata" typeId="currentuserdata" />
+			<channel id="input" typeId="input" />
 			<channel id="loopmode" typeId="loopmode" />
 			<channel id="mute" typeId="mute" />
 			<channel id="playstate" typeId="playstate" />
@@ -109,6 +110,11 @@
 		<label>Current URL</label>
 		<description>URL of the track or radio station currently playing</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="input" advanced="true">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>Current input of the speaker</description>
 	</channel-type>
 	<channel-type id="loopmode" advanced="true">
 		<item-type>String</item-type>

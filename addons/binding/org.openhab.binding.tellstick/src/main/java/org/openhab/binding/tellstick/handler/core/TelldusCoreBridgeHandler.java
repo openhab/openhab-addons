@@ -89,10 +89,10 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     private String init(String libraryPath) {
         if (!initialized) {
             if (libraryPath != null) {
-                logger.info("Loading " + JNA.library + " from " + libraryPath);
+                logger.info("Loading {} from {}", JNA.library, libraryPath);
                 System.setProperty("jna.library.path", libraryPath);
             } else {
-                logger.info("Loading " + JNA.library + " from system default paths");
+                logger.info("Loading {} from system default paths", JNA.library);
             }
             TellstickDevice.setSupportedMethods(JNA.CLibrary.TELLSTICK_BELL | JNA.CLibrary.TELLSTICK_TURNOFF
                     | JNA.CLibrary.TELLSTICK_TURNON | JNA.CLibrary.TELLSTICK_DIM);

@@ -13,7 +13,7 @@ package org.openhab.binding.homematic.internal.communicator.message;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public interface RpcRequest {
+public interface RpcRequest<T> {
 
     /**
      * Adds arguments to the RPC method.
@@ -23,7 +23,7 @@ public interface RpcRequest {
     /**
      * Generates the RPC data.
      */
-    public byte[] createMessage();
+    public T createMessage();
 
     /**
      * Returns the name of the rpc method.

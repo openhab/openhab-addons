@@ -51,13 +51,13 @@ Apple provides build-in FTDI drivers for OS X, which need to be disabled to get 
 FTDI driver disabling can be done by the following command
 
 ```
-sudo kextload -b com.apple.driver.AppleUSBFTDI
+sudo kextunload -b com.apple.driver.AppleUSBFTDI
 ```
 
 FTDI driver can be enabled by the following command
 
 ```
-sudo kextunload -b com.apple.driver.AppleUSBFTDI
+sudo kextload -b com.apple.driver.AppleUSBFTDI
 ```
 
 If you have any problems with JD2XX or you don't want to disable FTDI driver on OS X, you can also configure RFXCOM transceivers/receivers manually.

@@ -4,21 +4,21 @@ Bundle-Name: CometVisu backend
 Bundle-SymbolicName: org.openhab.ui.cometvisu;singleton:=true
 Bundle-Version: 2.1.0.qualifier
 Bundle-Vendor: openHAB
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: 
- com.google.gson;version="[2.3,3)",
- javax.servlet;version="[3.1,4)",
- javax.servlet.http;version="[3.1,4)",
- javax.ws.rs;version="[2.0,3)",
- javax.ws.rs.core;version="[2.0,3)",
- javax.ws.rs.ext;version="[2.0,3)",
+ com.google.gson,
+ javax.servlet,
+ javax.servlet.http,
+ javax.ws.rs,
+ javax.ws.rs.core,
+ javax.ws.rs.ext,
  javax.xml.bind,
  javax.xml.bind.annotation,
  javax.xml.bind.annotation.adapters,
  javax.xml.namespace,
  javax.xml.validation,
- org.apache.commons.io;version="[2.2,3)",
- org.apache.commons.lang;version="[2.6,3)",
+ org.apache.commons.io,
+ org.apache.commons.lang,
  org.eclipse.emf.common.util,
  org.eclipse.emf.ecore,
  org.eclipse.smarthome.config.core,
@@ -34,22 +34,22 @@ Import-Package:
  org.eclipse.smarthome.model.sitemap,
  org.eclipse.smarthome.ui.icon,
  org.eclipse.smarthome.ui.items,
- org.glassfish.hk2.utilities.binding;version="[2.4,3)",
- org.glassfish.jersey.internal.inject;version="[2.22,3)",
- org.glassfish.jersey.media.sse;version="[2.22,3)",
- org.glassfish.jersey.server;version="[2.22,3)",
- org.glassfish.jersey.servlet.spi;version="[2.22,3)",
+ org.glassfish.hk2.utilities.binding,
+ org.glassfish.jersey.internal.inject,
+ org.glassfish.jersey.media.sse,
+ org.glassfish.jersey.server,
+ org.glassfish.jersey.servlet.spi,
  org.openhab.ui.dashboard,
- org.osgi.framework;version="[1.8,2)",
- org.osgi.service.cm;version="[1.5,2)",
- org.osgi.service.http;version="[1.2,2)",
- org.slf4j;version="[1.7,2)",
- org.xml.sax
+ org.osgi.framework,
+ org.osgi.service.cm,
+ org.osgi.service.http,
+ org.slf4j,
+ org.xml.sax,
+ org.openhab.ui.cometvisu.php
 Service-Component: OSGI-INF/*.xml
 Bundle-ClassPath: .,
  lib/rrd4j-2.2.jar,
  lib/sqlite-jdbc-3.8.7.jar
 Export-Package: org.openhab.ui.cometvisu.php
 Bundle-Activator: org.openhab.ui.cometvisu.internal.CvActivator
- 
- 
+Bundle-ActivationPolicy: lazy

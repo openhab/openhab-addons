@@ -21,14 +21,14 @@ public class LgTvSerialBindingConstants {
     public static final String BINDING_ID = "lgtvserial";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_LGTV = new ThingTypeUID(BINDING_ID, "lgtv");
+    public static final ThingTypeUID THING_TYPE_LGTV = new ThingTypeUID(BINDING_ID, "lgtv");
 
     // List of all Channel ids
-    public final static String CHANNEL_POWER = "power";
-    public final static String CHANNEL_INPUT = "input";
-    public final static String CHANNEL_VOLUME = "volume";
-    public final static String CHANNEL_MUTE = "mute";
-    public final static String CHANNEL_BACKLIGHT = "backlight";
-    public final static String CHANNEL_COLOR_TEMPERATURE = "color-temperature";
+    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_INPUT = "input";
+    public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_MUTE = "mute";
+    public static final String CHANNEL_BACKLIGHT = "backlight";
+    public static final String CHANNEL_COLOR_TEMPERATURE = "color-temperature";
 
 }

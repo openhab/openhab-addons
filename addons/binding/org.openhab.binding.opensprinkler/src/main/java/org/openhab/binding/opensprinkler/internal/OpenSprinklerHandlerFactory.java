@@ -28,7 +28,7 @@ import org.openhab.binding.opensprinkler.handler.OpenSprinklerPiHandler;
  * @author Chris Graham - Initial contribution
  */
 public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
             Arrays.asList(OPENSPRINKLER_THING, OPENSPRINKLERPI_THING));
 
     @Override

@@ -53,14 +53,14 @@ public enum HoodChannelSelector implements ApplianceChannelSelector {
     },
     STOP(null, "stop", OnOffType.class, false);
 
-    protected Logger logger = LoggerFactory.getLogger(HoodChannelSelector.class);
+    private final Logger logger = LoggerFactory.getLogger(HoodChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    private HoodChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    HoodChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;

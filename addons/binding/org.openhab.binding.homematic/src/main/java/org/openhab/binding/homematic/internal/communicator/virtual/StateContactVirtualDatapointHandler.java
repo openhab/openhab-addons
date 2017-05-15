@@ -10,7 +10,6 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
-import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -61,7 +60,7 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
      * {@inheritDoc}
      */
     @Override
-    public void handleEvent(VirtualGateway gateway, HmDatapoint dp) throws HomematicClientException {
+    public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         Object value = convertState(dp.getValue());
         HmDatapoint vdp = getVirtualDatapoint(dp.getChannel());
         vdp.setValue(value);

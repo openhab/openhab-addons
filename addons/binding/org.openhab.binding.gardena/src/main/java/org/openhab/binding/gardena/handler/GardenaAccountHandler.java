@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -61,7 +62,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
 
         gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
-        logger.debug(gardenaConfig.toString());
+        logger.debug("{}", gardenaConfig);
 
         initializeGardena();
     }
@@ -86,7 +87,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                     disposeGardena();
                     scheduleReinitialize();
-                    logger.debug(ex.getMessage(), ex);
+                    logger.debug("{}", ex.getMessage(), ex);
                 }
             }
         });
@@ -178,22 +179,21 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      */
     @Override
     public void onDeviceUpdated(Device device) {
-        Thing gardenaThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
-        try {
-            if (gardenaThing != null) {
+        for (ThingUID thingUID : UidUtils.getThingUIDs(device, getThing())) {
+            Thing gardenaThing = getThingByUID(thingUID);
+            try {
                 GardenaThingHandler gardenaThingHandler = (GardenaThingHandler) gardenaThing.getHandler();
                 gardenaThingHandler.updateProperties(device);
                 for (Channel channel : gardenaThing.getChannels()) {
                     gardenaThingHandler.updateChannel(channel.getUID());
                 }
                 gardenaThingHandler.updateStatus(device);
+            } catch (GardenaException ex) {
+                logger.error("There is something wrong with your thing, please recreate the thing {}",
+                        gardenaThing.getUID(), ex);
+                updateStatus(ThingStatus.OFFLINE);
+            } catch (AccountHandlerNotAvailableException ignore) {
             }
-        } catch (GardenaException ex) {
-            logger.error(ex.getMessage(), ex);
-            logger.error("There is something wrong with your thing, please recreate the thing {}",
-                    gardenaThing.getUID());
-        } catch (AccountHandlerNotAvailableException ex) {
-            // ignore
         }
     }
 

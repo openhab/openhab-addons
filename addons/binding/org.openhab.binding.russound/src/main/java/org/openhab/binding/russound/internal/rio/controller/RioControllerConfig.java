@@ -15,6 +15,11 @@ package org.openhab.binding.russound.internal.rio.controller;
  */
 public class RioControllerConfig {
     /**
+     * Constant defined for the "controller" configuration field
+     */
+    public static final String Controller = "controller";
+
+    /**
      * ID of the controller
      */
     private int controller;

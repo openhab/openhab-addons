@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: openHAB RFXCOM Binding Tests
 Bundle-SymbolicName: org.openhab.binding.rfxcom.test;singleton:=true
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: openHAB
 Fragment-Host: org.openhab.binding.rfxcom
 Import-Package: org.slf4j,
@@ -13,6 +13,8 @@ Import-Package: org.slf4j,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
  org.openhab.binding.rfxcom,
  org.osgi.service.device
-Require-Bundle: org.junit;bundle-version="4.11.0"

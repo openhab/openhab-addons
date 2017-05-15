@@ -58,17 +58,17 @@ public abstract class NADeviceAdapter<DeviceClass> {
         }
     }
 
-    abstract public Integer getLastStatusStore();
+    public abstract Integer getLastStatusStore();
 
-    abstract public NAPlace getPlace();
+    public abstract NAPlace getPlace();
 
-    abstract public Integer getWifiStatus();
+    public abstract Integer getWifiStatus();
 
-    abstract public String getType();
+    public abstract String getType();
 
-    abstract public String getId();
+    public abstract String getId();
 
-    abstract public String getTypeName();
+    public abstract String getTypeName();
 
     public NAUserAdministrative getUserAdministrative() {
         return userAdministrative;
@@ -81,6 +81,6 @@ public abstract class NADeviceAdapter<DeviceClass> {
         return modules;
     }
 
-    abstract protected void populateModules();
+    protected abstract void populateModules();
 
 }

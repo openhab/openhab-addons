@@ -29,7 +29,7 @@ import com.google.gson.JsonElement;
  */
 public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector> {
 
-    protected Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
 
     public WashingMachineHandler(Thing thing) {
         super(thing, WashingMachineChannelSelector.class, "WashingMachine");

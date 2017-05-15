@@ -10,10 +10,10 @@ package org.openhab.binding.squeezebox.config;
 
 /**
  * Configuration for a player
- * 
+ *
  * @author Dan Cunningham
  *
  */
 public class SqueezeBoxPlayerConfig {
-	public String mac;
+    public String mac;
 }

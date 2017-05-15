@@ -42,7 +42,7 @@ import org.tellstick.device.iface.SwitchableDevice;
  *
  */
 public class TelldusCoreDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
-    private static final Logger logger = LoggerFactory.getLogger(TelldusCoreBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TelldusCoreDeviceController.class);
     private long lastSend = 0;
     long resendInterval = 100;
     public static final long DEFAULT_INTERVAL_BETWEEN_SEND = 250;
@@ -171,7 +171,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
                     turnOff(device);
                 }
             } else {
-                logger.warn("Cannot send to " + device);
+                logger.warn("Cannot send to {}", device);
             }
         }
     }
@@ -238,7 +238,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
 
     /**
      * This class is a worker which execute the commands sent to the TelldusCoreDeviceController.
-     * This enables separation between Telldus Core and OpenHAB for preventing latency on the bus.
+     * This enables separation between Telldus Core and openHAB for preventing latency on the bus.
      * The Tellstick have an send pace of 4 Hz which is far slower then the bus itself.
      *
      * @author Elias Gabrielsson

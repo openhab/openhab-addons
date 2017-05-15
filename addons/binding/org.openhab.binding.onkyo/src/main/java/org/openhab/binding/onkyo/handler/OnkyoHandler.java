@@ -446,7 +446,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     @Override
     public void connectionError(String ip) {
-        logger.debug("Connection error occured to Onkyo Receiver @{}", ip);
+        logger.debug("Connection error occurred to Onkyo Receiver @{}", ip);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
     }
 

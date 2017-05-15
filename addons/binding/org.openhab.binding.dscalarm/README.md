@@ -1,10 +1,10 @@
 # DSC Alarm Binding
 
-This is an OpenHAB binding for a DSC PowerSeries Alarm System utilizing the EyezOn Envisalink 3/2DS interface or the DSC IT-100 RS-232 interface.
+This is an openHAB binding for a DSC PowerSeries Alarm System utilizing the EyezOn Envisalink 3/2DS interface or the DSC IT-100 RS-232 interface.
 
 The DSC PowerSeries Alarm System is a popular do-it-yourself home security system, which can be monitored and controlled remotely through a standard web-browser or mobile device.
 
-The OpenHAB DSC Alarm binding provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.
+The openHAB DSC Alarm binding provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.
 
 ## Supported Things
 
@@ -27,11 +27,11 @@ There are essentially no overall binding configuration settings that need to be 
 
 ## Discovery
 
-The DSC Alarm binding incorporates several discovery modes in order to find DSC Alarm systems.  First, there is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.  Second, there is The IT-100 bridge discovery mode which will search serial ports for any IT-100 adapters and add them to the discovery inbox.  The bridge discovery modes are started manually through PaperUI.  Third, after a bridge is discovered and available to OpenHAB, the binding will attempt to discover DSC Alarm devices and add them to the discovery inbox.  The TCP Server bridge does not implement bridge discovery but will utilize device discovery once it is online.  
+The DSC Alarm binding incorporates several discovery modes in order to find DSC Alarm systems.  First, there is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.  Second, there is The IT-100 bridge discovery mode which will search serial ports for any IT-100 adapters and add them to the discovery inbox.  The bridge discovery modes are started manually through PaperUI.  Third, after a bridge is discovered and available to openHAB, the binding will attempt to discover DSC Alarm devices and add them to the discovery inbox.  The TCP Server bridge does not implement bridge discovery but will utilize device discovery once it is online.
 
 ## Thing Configuration
 
-DSC Alarm things can be configured either through the online configuration utility via discovery, or manually through the 'dscalarm.thing' configuration file.  The following table shows the available configuration parameters for each thing.
+DSC Alarm things can be configured either through the online configuration utility via discovery, or manually through the 'dscalarm.things' configuration file.  The following table shows the available configuration parameters for each thing.
 
 <table>
 	<tr><td><b>Thing</b></td><td><b>Configuration Parameters</b></td></tr>	
@@ -44,7 +44,7 @@ DSC Alarm things can be configured either through the online configuration utili
 	<tr><td>keypad</td><td>No parameters</td></tr>
 </table>
 
-The binding can be configured manually if discovery is not used.  A thing configuration file in the format 'bindingName.thing' would need to be created, and placed in the 'conf/things' folder.  Here is an example of a thing configuration file called 'dscalarm.thing':
+The binding can be configured manually if discovery is not used.  A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.  Here is an example of a thing configuration file called 'dscalarm.things':
 
 ```
 Bridge dscalarm:envisalink:MyBridgeName [ ipAddress="192.168.0.100" ]
@@ -585,15 +585,15 @@ Here is an example sitemap:
 
 ## Change Log
 
-### OpenHAB 2.0.0 Beta 1
+### openHAB 2.0.0 Beta 1
 
 * Initial commit of the DSC Alarm Binding. ([#324](https://github.com/openhab/openhab2-addons/pull/324))
 
-### OpenHAB 2.0.0 Beta 3
+### openHAB 2.0.0 Beta 3
 
 * Added support for the DSC Alarm binding to communicate with an IT-100 through a TCP/IP serial server.  Also, fixed a bug where the IT-100 serial interface requires a 6 digit usercode but was only receiving 4 digits.  The channel named `PANEL_COMMAND` was changed from type String to type Number.  Fixed bug where the IT-100 bridge would not connect.  ([#846](https://github.com/openhab/openhab2-addons/pull/846))
 
-### OpenHAB 2.0.0 Beta 4
+### openHAB 2.0.0 Beta 4
 
 * Fixed bug where the binding would prematurely set the channel `PARTITION_ARM_MODE` when issuing a partition arm command.
 * Fixed issue where the binding stopped handling incoming messages from the DSC Alarm system.

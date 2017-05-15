@@ -13,7 +13,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 
 /**
- * Converter interface for converting between openHab states/commands and Homematic values.
+ * Converter interface for converting between openHAB states/commands and Homematic values.
  *
  * @author Gerhard Riegler - Initial contribution
  */

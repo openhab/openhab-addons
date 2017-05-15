@@ -4,11 +4,11 @@ Bundle-Name: Freebox Binding
 Bundle-SymbolicName: org.openhab.binding.freebox;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
- lib/json-simple-1.1.jar,
+ lib/json-simple-1.1.1.jar,
  lib/httpmime-4.3.1.jar,
- lib/freeboxos-client-0.3.9.jar,
+ lib/freeboxos-client-0.3.10.jar,
  lib/jackson-core-asl-1.9.13.jar,
  lib/jackson-mapper-asl-1.9.13.jar,
  lib/httpclient-4.3.1.jar,
@@ -18,6 +18,7 @@ Import-Package: com.google.common.base,
  javax.jmdns,
  javax.net,
  javax.net.ssl,
+ org.apache.commons.codec.binary,
  org.apache.commons.lang,
  org.apache.commons.logging,
  org.eclipse.smarthome.config.core,
@@ -30,9 +31,9 @@ Import-Package: com.google.common.base,
  org.eclipse.smarthome.io.net.http,
  org.eclipse.smarthome.io.transport.mdns.discovery,
  org.osgi.framework,
- org.slf4j
-Service-Component: OSGI-INF/*
+ org.slf4j,
+ org.openhab.binding.freebox,
+ org.openhab.binding.freebox.handler
+Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.freebox,
  org.openhab.binding.freebox.handler
-Require-Bundle: org.apache.commons.io,
- org.apache.commons.codec

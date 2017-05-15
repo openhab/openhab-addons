@@ -63,7 +63,8 @@ public class ReceiveDHCPRequestPackets extends Thread {
             }
             try {
                 instance.join(1000);
-            } catch (InterruptedException e) { }
+            } catch (InterruptedException e) {
+            }
             instance.interrupt();
             instance.dsocket = null;
         }
@@ -109,17 +110,17 @@ public class ReceiveDHCPRequestPackets extends Thread {
                 String requestedAddressStr = requestedAddress.getHostAddress();
                 StateUpdate receiver = registeredListeners.get(requestedAddressStr);
                 if (receiver != null) {
-                    logger.info("DHCP request for registered address: " + requestedAddressStr);
+                    logger.info("DHCP request for registered address: {}", requestedAddressStr);
                     receiver.newState(0);
                 } else {
-                    logger.info("DHCP request for unknown address: " + requestedAddressStr);
+                    logger.info("DHCP request for unknown address: {}", requestedAddressStr);
                 }
             }
         } catch (IOException e) {
             if (willbeclosed) {
                 return;
             }
-            logger.error(e.getLocalizedMessage());
+            logger.error("{}", e.getLocalizedMessage());
         }
     }
 

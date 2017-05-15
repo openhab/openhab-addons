@@ -21,7 +21,7 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
 public class RFXComMessageFactory {
 
     @SuppressWarnings("serial")
-    private static final Map<PacketType, Class<? extends RFXComMessage>> messageClasses = Collections
+    private static final Map<PacketType, Class<? extends RFXComMessage>> MESSAGE_CLASSES = Collections
             .unmodifiableMap(new HashMap<PacketType, Class<? extends RFXComMessage>>() {
                 {
                     put(PacketType.INTERFACE_CONTROL, RFXComControlMessage.class);
@@ -77,34 +77,34 @@ public class RFXComMessageFactory {
      * Command to reset RFXCOM controller.
      *
      */
-    public final static byte[] CMD_RESET = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    public static final byte[] CMD_RESET = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00 };
 
     /**
      * Command to get RFXCOM controller status.
      *
      */
-    public final static byte[] CMD_GET_STATUS = new byte[] { 0x0D, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00,
+    public static final byte[] CMD_GET_STATUS = new byte[] { 0x0D, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00 };
 
     /**
      * Command to save RFXCOM controller configuration.
      *
      */
-    public final static byte[] CMD_SAVE = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    public static final byte[] CMD_SAVE = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00 };
 
     /**
      * Command to start RFXCOM receiver.
      *
      */
-    public final static byte[] CMD_START_RECEIVER = new byte[] { 0x0D, 0x00, 0x00, 0x03, 0x07, 0x00, 0x00, 0x00, 0x00,
+    public static final byte[] CMD_START_RECEIVER = new byte[] { 0x0D, 0x00, 0x00, 0x03, 0x07, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00 };
 
     public static RFXComMessage createMessage(PacketType packetType) throws RFXComException {
 
         try {
-            Class<? extends RFXComMessage> cl = messageClasses.get(packetType);
+            Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
             if (cl == null) {
                 throw new RFXComMessageNotImplementedException("Message " + packetType + " not implemented");
             }
@@ -118,7 +118,7 @@ public class RFXComMessageFactory {
         PacketType packetType = PacketType.fromByte(packet[1]);
 
         try {
-            Class<? extends RFXComMessage> cl = messageClasses.get(packetType);
+            Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
             if (cl == null) {
                 throw new RFXComMessageNotImplementedException("Message " + packetType + " not implemented");
             }

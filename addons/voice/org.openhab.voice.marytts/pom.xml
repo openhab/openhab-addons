@@ -201,7 +201,7 @@
 				<plugin>
 					<groupId>com.savage7.maven.plugins</groupId>
 					<artifactId>maven-external-dependency-plugin</artifactId>
-					<version>0.4</version>
+					<version>0.5</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
