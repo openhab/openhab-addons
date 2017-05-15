@@ -9,7 +9,9 @@
 package org.openhab.binding.rfxcom.handler;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +22,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.rfxcom.RFXComBindingConstants;
@@ -67,6 +70,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     private Object notifierObject = new Object();
     private RFXComBridgeConfiguration configuration = null;
     private ScheduledFuture<?> connectorTask;
+    private Set<ThingUID> knownDevices = new HashSet<>();
 
     public RFXComBridgeHandler(Bridge br) {
         super(br);
