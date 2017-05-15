@@ -15,6 +15,7 @@ Tested mowers
 | Mower                   | Robonect module  | Robonect firmware version |
 |-------------------------|------------------|---------------------------|
 | Husqvarna Automower 105 | Robonect Hx      | 0.9c, 0.9e                |
+| Husqvarna Automower 315 | Robonect Hx      | 0.9e                      |
 
 ## Discovery
 
