@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- * <p>
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,15 +8,17 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-
-import java.util.Arrays;
-import java.util.List;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for Current and Energy message.
@@ -25,12 +27,10 @@ import java.util.List;
  * @since 1.9.0
  */
 public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
-    private static float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;
+    private static final float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;
 
     public enum SubType {
-        ELEC4(1), // OWL - CM180i
-
-        UNKNOWN(255);
+        ELEC4(1); // OWL - CM180i
 
         private final int subType;
 
@@ -42,38 +42,38 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
             return (byte) subType;
         }
 
-        public static SubType fromByte(int input) {
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
             for (SubType c : SubType.values()) {
                 if (c.subType == input) {
                     return c;
                 }
             }
 
-            return SubType.UNKNOWN;
+            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.CHANNEL1_AMPS,
             RFXComValueSelector.CHANNEL2_AMPS, RFXComValueSelector.CHANNEL3_AMPS, RFXComValueSelector.TOTAL_USAGE);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
-    public SubType subType = SubType.UNKNOWN;
-    public int sensorId = 0;
-    public byte count = 0;
-    public double channel1Amps = 0.0;
-    public double channel2Amps = 0.0;
-    public double channel3Amps = 0.0;
-    public double totalUsage = 0.0;
-    public byte signalLevel = 0;
-    public byte batteryLevel = 0;
+    public SubType subType;
+    public int sensorId;
+    public byte count;
+    public double channel1Amps;
+    public double channel2Amps;
+    public double channel3Amps;
+    public double totalUsage;
+    public byte signalLevel;
+    public byte batteryLevel;
 
     public RFXComCurrentEnergyMessage() {
         packetType = PacketType.CURRENT_ENERGY;
     }
 
-    public RFXComCurrentEnergyMessage(byte[] data) {
+    public RFXComCurrentEnergyMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -96,7 +96,7 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
 
         super.encodeMessage(data);
 
@@ -188,12 +188,12 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 
     @Override

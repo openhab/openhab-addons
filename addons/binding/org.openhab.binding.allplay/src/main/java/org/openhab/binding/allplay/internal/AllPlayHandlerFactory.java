@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,14 +12,22 @@ import static org.openhab.binding.allplay.AllPlayBindingConstants.SPEAKER_THING_
 
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.smarthome.core.audio.AudioHTTPServer;
+import org.eclipse.smarthome.core.audio.AudioSink;
+import org.eclipse.smarthome.core.net.HttpServiceUtil;
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.allplay.AllPlayBindingConstants;
 import org.openhab.binding.allplay.handler.AllPlayHandler;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +46,13 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(AllPlayHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(SPEAKER_THING_TYPE);
+    private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     private AllPlay allPlay;
-    private CommonSpeakerProperties speakerProperties;
+    private AllPlayBindingProperties bindingProperties;
+
+    private AudioHTTPServer audioHTTPServer;
+    private String callbackUrl;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -52,9 +64,34 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(AllPlayBindingConstants.SPEAKER_THING_TYPE)) {
             logger.debug("Creating AllPlayHandler for thing {}", thing.getUID());
-            return new AllPlayHandler(thing, allPlay, speakerProperties);
+
+            AllPlayHandler handler = new AllPlayHandler(thing, allPlay, bindingProperties);
+            registerAudioSink(thing, handler);
+
+            return handler;
         }
         return null;
+    }
+
+    private void registerAudioSink(Thing thing, AllPlayHandler handler) {
+        AllPlayAudioSink audioSink = new AllPlayAudioSink(handler, audioHTTPServer, callbackUrl);
+        @SuppressWarnings("unchecked")
+        ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+        audioSinkRegistrations.put(thing.getUID().toString(), reg);
+    }
+
+    @Override
+    public void unregisterHandler(Thing thing) {
+        super.unregisterHandler(thing);
+        unregisterAudioSink(thing);
+    }
+
+    private void unregisterAudioSink(Thing thing) {
+        ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(thing.getUID().toString());
+        if (reg != null) {
+            reg.unregister();
+        }
     }
 
     @Override
@@ -69,7 +106,8 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
             logger.error("Cannot initialize AllPlay", e);
         }
         Dictionary<String, Object> properties = componentContext.getProperties();
-        speakerProperties = new CommonSpeakerProperties(properties);
+        bindingProperties = new AllPlayBindingProperties(properties);
+        callbackUrl = assembleCallbackUrl();
     }
 
     @Override
@@ -78,6 +116,33 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
         allPlay.disconnect();
         allPlay = null;
         super.deactivate(componentContext);
+    }
+
+    protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = audioHTTPServer;
+    }
+
+    protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = null;
+    }
+
+    private String assembleCallbackUrl() {
+        String callbackUrl = bindingProperties.getCallbackUrl();
+        if (callbackUrl == null) {
+            String ipAddress = NetUtil.getLocalIpv4HostAddress();
+            if (ipAddress == null) {
+                logger.warn("No network interface could be found.");
+                return null;
+            }
+            // we do not use SSL as it can cause certificate validation issues.
+            final int port = HttpServiceUtil.getHttpServicePort(bundleContext);
+            if (port == -1) {
+                logger.warn("Cannot find port of the http service.");
+                return null;
+            }
+            callbackUrl = "http://" + ipAddress + ":" + port;
+        }
+        return callbackUrl;
     }
 
 }

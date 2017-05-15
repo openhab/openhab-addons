@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,118 +19,134 @@ import org.openhab.binding.russound.RussoundBindingConstants;
 public class RioConstants {
 
     // BRIDGE TYPE IDS
-    public final static ThingTypeUID BRIDGE_TYPE_RIO = new ThingTypeUID(RussoundBindingConstants.BINDING_ID, "rio");
-    public final static ThingTypeUID BRIDGE_TYPE_CONTROLLER = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
+    public static final ThingTypeUID BRIDGE_TYPE_RIO = new ThingTypeUID(RussoundBindingConstants.BINDING_ID, "rio");
+    public static final ThingTypeUID BRIDGE_TYPE_CONTROLLER = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
             "controller");
 
-    public final static ThingTypeUID BRIDGE_TYPE_ZONE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID, "zone");
-    public final static ThingTypeUID BRIDGE_TYPE_SOURCE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID, "zone");
+    public static final ThingTypeUID THING_TYPE_SOURCE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
             "source");
 
-    public final static ThingTypeUID BRIDGE_TYPE_BANK = new ThingTypeUID(RussoundBindingConstants.BINDING_ID, "bank");
-
-    // THING TYPE IDS
-    public final static ThingTypeUID THING_TYPE_BANK_PRESET = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
-            "bankpreset");
-    public final static ThingTypeUID THING_TYPE_ZONE_PRESET = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
-            "zonepreset");
-    public final static ThingTypeUID THING_TYPE_SYSTEM_FAVORITE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
-            "sysfavorite");
-    public final static ThingTypeUID THING_TYPE_ZONE_FAVORITE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
-            "zonefavorite");
+    // the port number rio listens on
+    public static final int RioPort = 9621;
 
     // SYSTEM PROPERTIES
-    public final static String PROPERTY_SYSVERSION = "Firmware Version";
+    public static final String PROPERTY_SYSVERSION = "Firmware Version";
 
     // SYSTEM CHANNELS
-    public final static String CHANNEL_SYSSTATUS = "status"; // readonly
-    public final static String CHANNEL_SYSLANG = "lang"; // read/write - english, chinese, russian
-    public final static String CHANNEL_SYSALLON = "allon"; // read/write - english, chinese, russian
+    public static final String CHANNEL_SYSSTATUS = "status"; // readonly
+    public static final String CHANNEL_SYSLANG = "lang"; // read/write - english, chinese, russian
+    public static final String CHANNEL_SYSALLON = "allon"; // read/write - english, chinese, russian
+    public static final String CHANNEL_SYSCONTROLLERS = "controllers"; // json array [1,2,etc]
+    public static final String CHANNEL_SYSSOURCES = "sources"; // json array [{id: 1, name: xxx},{id:2, name: xxx}, etc]
 
     // CONTROLLER PROPERTIES
-    public final static String PROPERTY_CTLTYPE = "Model Type";
-    public final static String PROPERTY_CTLIPADDRESS = "IP Address";
-    public final static String PROPERTY_CTLMACADDRESS = "MAC Address";
+    public static final String PROPERTY_CTLTYPE = "Model Type";
+    public static final String PROPERTY_CTLIPADDRESS = "IP Address";
+    public static final String PROPERTY_CTLMACADDRESS = "MAC Address";
+
+    // CONTROLLER CHANNELS
+    public static final String CHANNEL_CTLZONES = "zones"; // json array [{id: 1, name: xxx},{id:2, name: xxx}, etc]
 
     // ZONE CHANNELS
-    public final static String CHANNEL_ZONENAME = "name"; // 12 max
-    public final static String CHANNEL_ZONESOURCE = "source"; // 1-8 or 1-12
-    public final static String CHANNEL_ZONEBASS = "bass"; // -10 to 10
-    public final static String CHANNEL_ZONETREBLE = "treble"; // -10 to 10
-    public final static String CHANNEL_ZONEBALANCE = "balance"; // -10 to 10
-    public final static String CHANNEL_ZONELOUDNESS = "loudness"; // OFF/ON
-    public final static String CHANNEL_ZONETURNONVOLUME = "turnonvolume"; // 0 to 50
-    public final static String CHANNEL_ZONEDONOTDISTURB = "donotdisturb"; // OFF/ON/SLAVE
-    public final static String CHANNEL_ZONEPARTYMODE = "partymode"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONESTATUS = "status"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONEVOLUME = "volume"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONEMUTE = "mute"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONEPAGE = "page"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONERATING = "rating"; // OFF=Dislike, On=Like
-    public final static String CHANNEL_ZONESHAREDSOURCE = "sharedsource"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONESLEEPTIMEREMAINING = "sleeptimeremaining"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONELASTERROR = "lasterror"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONEENABLED = "enabled"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONEREPEAT = "repeat"; // OFF/ON/MASTER
-    public final static String CHANNEL_ZONESHUFFLE = "shuffle"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONENAME = "name"; // 12 max
+    public static final String CHANNEL_ZONESOURCE = "source"; // 1-8 or 1-12
+    public static final String CHANNEL_ZONEBASS = "bass"; // -10 to 10
+    public static final String CHANNEL_ZONETREBLE = "treble"; // -10 to 10
+    public static final String CHANNEL_ZONEBALANCE = "balance"; // -10 to 10
+    public static final String CHANNEL_ZONELOUDNESS = "loudness"; // OFF/ON
+    public static final String CHANNEL_ZONETURNONVOLUME = "turnonvolume"; // 0 to 50
+    public static final String CHANNEL_ZONEDONOTDISTURB = "donotdisturb"; // OFF/ON/SLAVE
+    public static final String CHANNEL_ZONEPARTYMODE = "partymode"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONESTATUS = "status"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONEVOLUME = "volume"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONEMUTE = "mute"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONEPAGE = "page"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONERATING = "rating"; // OFF=Dislike, On=Like
+    public static final String CHANNEL_ZONESHAREDSOURCE = "sharedsource"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONESLEEPTIMEREMAINING = "sleeptimeremaining"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONELASTERROR = "lasterror"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONEENABLED = "enabled"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONEREPEAT = "repeat"; // OFF/ON/MASTER
+    public static final String CHANNEL_ZONESHUFFLE = "shuffle"; // OFF/ON/MASTER
+
+    public static final String CHANNEL_ZONESYSFAVORITES = "systemfavorites"; // json array
+    public static final String CHANNEL_ZONEFAVORITES = "zonefavorites"; // json array
+    public static final String CHANNEL_ZONEPRESETS = "presets"; // json array
 
     // ZONE EVENT BASED
-    public final static String CHANNEL_ZONEKEYPRESS = "keypress";
-    public final static String CHANNEL_ZONEKEYRELEASE = "keyrelease";
-    public final static String CHANNEL_ZONEKEYHOLD = "keyhold";
-    public final static String CHANNEL_ZONEKEYCODE = "keycode";
-    public final static String CHANNEL_ZONEEVENT = "event";
+    public static final String CHANNEL_ZONEKEYPRESS = "keypress";
+    public static final String CHANNEL_ZONEKEYRELEASE = "keyrelease";
+    public static final String CHANNEL_ZONEKEYHOLD = "keyhold";
+    public static final String CHANNEL_ZONEKEYCODE = "keycode";
+    public static final String CHANNEL_ZONEEVENT = "event";
+
+    // ZONE MEDIA CHANNELS
+    public static final String CHANNEL_ZONEMMINIT = "mminit";
+    public static final String CHANNEL_ZONEMMCONTEXTMENU = "mmcontextmenu";
 
     // FAVORITE CHANNELS
-    public final static String CHANNEL_FAVNAME = "name";
-    public final static String CHANNEL_FAVVALID = "valid";
-    public final static String CHANNEL_FAVCMD = "cmd";
+    public static final String CHANNEL_FAVNAME = "name";
+    public static final String CHANNEL_FAVVALID = "valid";
+    public static final String CHANNEL_FAVCMD = "cmd";
 
     // FAVORITE COMMANDS
-    public final static String CMD_FAVSAVESYS = "savesystem";
-    public final static String CMD_FAVRESTORESYS = "restoresystem";
-    public final static String CMD_FAVDELETESYS = "deletesystem";
-    public final static String CMD_FAVSAVEZONE = "savezone";
-    public final static String CMD_FAVRESTOREZONE = "restorezone";
-    public final static String CMD_FAVDELETEZONE = "deletezone";
+    public static final String CMD_FAVSAVESYS = "savesystem";
+    public static final String CMD_FAVRESTORESYS = "restoresystem";
+    public static final String CMD_FAVDELETESYS = "deletesystem";
+    public static final String CMD_FAVSAVEZONE = "savezone";
+    public static final String CMD_FAVRESTOREZONE = "restorezone";
+    public static final String CMD_FAVDELETEZONE = "deletezone";
 
     // BANK CHANNELS
-    public final static String CHANNEL_BANKNAME = "name";
+    public static final String CHANNEL_BANKNAME = "name";
 
     // PRESET CHANNELS
-    public final static String CHANNEL_PRESETNAME = "name";
-    public final static String CHANNEL_PRESETVALID = "valid";
-    public final static String CHANNEL_PRESETCMD = "cmd";
+    public static final String CHANNEL_PRESETNAME = "name";
+    public static final String CHANNEL_PRESETVALID = "valid";
+    public static final String CHANNEL_PRESETCMD = "cmd";
 
     // PRESET COMMANDS
-    public final static String CMD_PRESETSAVE = "save";
-    public final static String CMD_PRESETRESTORE = "restore";
-    public final static String CMD_PRESETDELETE = "delete";
+    public static final String CMD_PRESETSAVE = "save";
+    public static final String CMD_PRESETRESTORE = "restore";
+    public static final String CMD_PRESETDELETE = "delete";
 
     // SOURCE PROPERTIES
-    public final static String PROPERTY_SOURCETYPE = "Source Type";
-    public final static String PROPERTY_SOURCEIPADDRESS = "IP Address";
+    public static final String PROPERTY_SOURCEIPADDRESS = "IP Address";
 
     // SOURCE CHANNELS
-    public final static String CHANNEL_SOURCENAME = "name";
-    public final static String CHANNEL_SOURCECOMPOSERNAME = "composername";
-    public final static String CHANNEL_SOURCECHANNEL = "channel";
-    public final static String CHANNEL_SOURCECHANNELNAME = "channelname";
-    public final static String CHANNEL_SOURCEGENRE = "genre";
-    public final static String CHANNEL_SOURCEARTISTNAME = "artistname";
-    public final static String CHANNEL_SOURCEALBUMNAME = "albumname";
-    public final static String CHANNEL_SOURCECOVERARTURL = "coverarturl";
-    public final static String CHANNEL_SOURCECOVERART = "coverart";
-    public final static String CHANNEL_SOURCEPLAYLISTNAME = "playlistname";
-    public final static String CHANNEL_SOURCESONGNAME = "songname";
-    public final static String CHANNEL_SOURCEMODE = "mode";
-    public final static String CHANNEL_SOURCESHUFFLEMODE = "shufflemode";
-    public final static String CHANNEL_SOURCEREPEATMODE = "repeatmode";
-    public final static String CHANNEL_SOURCERATING = "rating";
-    public final static String CHANNEL_SOURCEPROGRAMSERVICENAME = "programservicename";
-    public final static String CHANNEL_SOURCERADIOTEXT = "radiotext";
-    public final static String CHANNEL_SOURCERADIOTEXT2 = "radiotext2";
-    public final static String CHANNEL_SOURCERADIOTEXT3 = "radiotext3";
-    public final static String CHANNEL_SOURCERADIOTEXT4 = "radiotext4";
-    public final static String CHANNEL_SOURCEVOLUME = "volume";
+    public static final String CHANNEL_SOURCETYPE = "type";
+    public static final String CHANNEL_SOURCENAME = "name";
+    public static final String CHANNEL_SOURCECOMPOSERNAME = "composername";
+    public static final String CHANNEL_SOURCECHANNEL = "channel";
+    public static final String CHANNEL_SOURCECHANNELNAME = "channelname";
+    public static final String CHANNEL_SOURCEGENRE = "genre";
+    public static final String CHANNEL_SOURCEARTISTNAME = "artistname";
+    public static final String CHANNEL_SOURCEALBUMNAME = "albumname";
+    public static final String CHANNEL_SOURCECOVERARTURL = "coverarturl";
+    public static final String CHANNEL_SOURCEPLAYLISTNAME = "playlistname";
+    public static final String CHANNEL_SOURCESONGNAME = "songname";
+    public static final String CHANNEL_SOURCEMODE = "mode";
+    public static final String CHANNEL_SOURCESHUFFLEMODE = "shufflemode";
+    public static final String CHANNEL_SOURCEREPEATMODE = "repeatmode";
+    public static final String CHANNEL_SOURCERATING = "rating";
+    public static final String CHANNEL_SOURCEPROGRAMSERVICENAME = "programservicename";
+    public static final String CHANNEL_SOURCERADIOTEXT = "radiotext";
+    public static final String CHANNEL_SOURCERADIOTEXT2 = "radiotext2";
+    public static final String CHANNEL_SOURCERADIOTEXT3 = "radiotext3";
+    public static final String CHANNEL_SOURCERADIOTEXT4 = "radiotext4";
+    public static final String CHANNEL_SOURCEVOLUME = "volume";
+
+    public static final String CHANNEL_SOURCEBANKS = "banks";
+
+    // SOURCE MEDIA Channels
+    public static final String CHANNEL_SOURCEMMSCREEN = "mmscreen";
+    public static final String CHANNEL_SOURCEMMTITLE = "mmtitle";
+    public static final String CHANNEL_SOURCEMMMENU = "mmmenu";
+    public static final String CHANNEL_SOURCEMMATTR = "mmattr";
+    public static final String CHANNEL_SOURCEMMBUTTONOKTEXT = "mmmenubuttonoktext";
+    public static final String CHANNEL_SOURCEMMBUTTONBACKTEXT = "mmmenubuttonbacktext";
+    public static final String CHANNEL_SOURCEMMINFOTEXT = "mminfotext";
+    public static final String CHANNEL_SOURCEMMHELPTEXT = "mmhelptext";
+    public static final String CHANNEL_SOURCEMMTEXTFIELD = "mmtextfield";
 }

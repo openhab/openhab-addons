@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,17 +21,17 @@ public class HarmonyHubBindingConstants {
     public static final String BINDING_ID = "harmonyhub";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID HARMONY_HUB_THING_TYPE = new ThingTypeUID(BINDING_ID, "hub");
-    public final static ThingTypeUID HARMONY_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "device");
+    public static final ThingTypeUID HARMONY_HUB_THING_TYPE = new ThingTypeUID(BINDING_ID, "hub");
+    public static final ThingTypeUID HARMONY_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids
-    public final static String CHANNEL_CURRENT_ACTIVITY = "currentActivity";
+    public static final String CHANNEL_CURRENT_ACTIVITY = "currentActivity";
 
-    public final static String CHANNEL_BUTTON_PRESS = "buttonPress";
+    public static final String CHANNEL_BUTTON_PRESS = "buttonPress";
 
-    public final static String HUB_PROPERTY_SESSIONID = "sessionId";
-    public final static String HUB_PROPERTY_ACCOUNTID = "accountId";
-    public final static String HUB_PROPERTY_HOST = "host";
-    public final static String HUB_PROPERTY_ID = "id";
+    public static final String HUB_PROPERTY_SESSIONID = "sessionId";
+    public static final String HUB_PROPERTY_ACCOUNTID = "accountId";
+    public static final String HUB_PROPERTY_HOST = "host";
+    public static final String HUB_PROPERTY_ID = "id";
 
 }

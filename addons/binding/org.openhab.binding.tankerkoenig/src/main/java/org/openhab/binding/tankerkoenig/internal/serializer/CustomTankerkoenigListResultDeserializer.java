@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package org.openhab.binding.tankerkoenig.internal.serializer;
 
 import java.lang.reflect.Type;
@@ -18,7 +27,7 @@ import com.google.gson.JsonParseException;
 
 /***
  * Custom Deserializer fopr the list result of tankerkoenigs api response
- * 
+ *
  * @author Dennis Dollinger
  *
  */
@@ -32,28 +41,19 @@ public class CustomTankerkoenigListResultDeserializer implements JsonDeserialize
 
         TankerkoenigListResult result = new TankerkoenigListResult();
         result.setOk(jsonObject.get("ok").getAsBoolean());
-
         JsonObject jsonPrices = jsonObject.get("prices").getAsJsonObject();
-
         Set<Entry<String, JsonElement>> objects = jsonPrices.entrySet();
-
         Gson gson = new Gson();
-
         Prices p = new Prices();
         result.setPrices(p);
-
         ArrayList<LittleStation> list = new ArrayList<>();
-
         for (Entry<String, JsonElement> entry : objects) {
             JsonElement jsonElement = entry.getValue();
             LittleStation station = gson.fromJson(jsonElement, LittleStation.class);
             station.setID(entry.getKey());
             list.add(station);
         }
-
         result.getPrices().setStations(list);
-
         return result;
     }
-
 }

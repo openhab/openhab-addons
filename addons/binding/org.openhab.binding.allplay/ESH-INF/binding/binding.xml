@@ -19,6 +19,11 @@
 			<default>10</default>
 			<unitLabel>s</unitLabel>
 		</parameter>
+		<parameter name="callbackUrl" type="text">
+			<label>Callback URL</label>
+			<description>URL to use for playing audio streams, e.g. http://192.168.0.2:8080</description>
+			<required>false</required>
+		</parameter>
 	</config-description>
 
 </binding:binding>

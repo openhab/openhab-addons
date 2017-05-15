@@ -1,9 +1,3 @@
----
-layout: documentation
----
-
-{% include base.html %}
-
 # Miele@home Binding
 
 This binding integrates Miele@home appliances. Miele@home is a Zigbee based network to interconnect and control Miele appliances that are equipped with special modules. See [www.miele.de](http://www.miele.de) for the list of available appliances.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,9 +41,29 @@ public interface RioHandlerCallback {
 
     /**
      * Callback to set a property for the thing
-     * 
+     *
      * @param propertyName a non-null, non-empty property name
      * @param propertyValue a non-null, possibly empty property value
      */
     void setProperty(String propertyName, String propertyValue);
+
+    /**
+     * Adds a listener to changes to the channelId
+     *
+     * @param channelId a non-null, non-empty channelID
+     * @param listener a non-null listener
+     * @throws IllegalArgumentException if channelId is null or empty
+     * @throws IllegalArgumentException if listener is null
+     */
+    void addListener(String channelId, RioHandlerCallbackListener listener);
+
+    /**
+     * Removes the specified listener for the specified channel
+     *
+     * @param channelId a non-null, non-empty channelID
+     * @param listener a non-null listener
+     * @throws IllegalArgumentException if channelId is null or empty
+     * @throws IllegalArgumentException if listener is null
+     */
+    void removeListener(String channelId, RioHandlerCallbackListener listener);
 }

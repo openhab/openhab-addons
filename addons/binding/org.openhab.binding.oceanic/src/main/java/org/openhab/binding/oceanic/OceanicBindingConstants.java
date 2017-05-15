@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,7 +33,7 @@ public class OceanicBindingConstants {
     public static final String BINDING_ID = "oceanic";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SOFTENER = new ThingTypeUID(BINDING_ID, "softener");
+    public static final ThingTypeUID THING_TYPE_SOFTENER = new ThingTypeUID(BINDING_ID, "softener");
 
     // List of all Channel ids
     public enum OceanicChannelSelector {
@@ -215,15 +215,15 @@ public class OceanicBindingConstants {
             @Override
             public String convertValue(String value) {
 
-                final SimpleDateFormat IN_DATE_FORMATTER = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
-                final SimpleDateFormat OUT_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                final SimpleDateFormat inDateFormatter = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
+                final SimpleDateFormat outDateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
                 Date date = null;
                 String convertedValue = null;
 
                 try {
-                    date = IN_DATE_FORMATTER.parse(value);
-                    convertedValue = OUT_DATE_FORMATTER.format(date);
+                    date = inDateFormatter.parse(value);
+                    convertedValue = outDateFormatter.format(date);
                 } catch (ParseException fpe) {
                     throw new IllegalArgumentException(value + " is not in a valid format.", fpe);
                 }
@@ -235,8 +235,6 @@ public class OceanicBindingConstants {
         getSRE("serviceregenerations", DecimalType.class, ValueSelectorType.GET, false),
         getINR("incompleteregenerations", DecimalType.class, ValueSelectorType.GET, false),
         getTOR("allregenerations", DecimalType.class, ValueSelectorType.GET, false);
-
-        static final Logger logger = LoggerFactory.getLogger(OceanicChannelSelector.class);
 
         private final String text;
         private Class<? extends Type> typeClass;

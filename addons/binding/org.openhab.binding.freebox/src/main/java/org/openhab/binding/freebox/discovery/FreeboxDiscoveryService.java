@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.matmaul.freeboxos.FreeboxException;
 import org.matmaul.freeboxos.lan.LanHostConfig;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FreeboxDiscoveryService extends AbstractDiscoveryService implements FreeboxDataListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(FreeboxDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(FreeboxDiscoveryService.class);
 
     private static final int SEARCH_TIME = 10;
 
@@ -64,11 +65,14 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     @Override
     protected void startScan() {
         logger.debug("Starting Freebox discovery scan");
-        try {
-            LanHostsConfig lanHostsConfiguration = bridgeHandler.getFbClient().getLanManager().getAllLanHostsConfig();
-            onDataFetched(bridgeHandler.getThing().getUID(), lanHostsConfiguration);
-        } catch (FreeboxException e) {
-            logger.error(e.getMessage());
+        if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+            try {
+                LanHostsConfig lanHostsConfiguration = bridgeHandler.getFbClient().getLanManager()
+                        .getAllLanHostsConfig();
+                onDataFetched(bridgeHandler.getThing().getUID(), lanHostsConfiguration);
+            } catch (FreeboxException e) {
+                logger.error("{}", e.getMessage());
+            }
         }
     }
 

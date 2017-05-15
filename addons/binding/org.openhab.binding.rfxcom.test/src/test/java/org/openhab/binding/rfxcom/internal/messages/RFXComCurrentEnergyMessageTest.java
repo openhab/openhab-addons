@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- * <p>
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,13 +8,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import static org.junit.Assert.assertEquals;
 
 import javax.xml.bind.DatatypeConverter;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
 /**
  * Test for RFXCom-binding
@@ -24,8 +23,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class RFXComCurrentEnergyMessageTest {
     private void testMessage(String hexMsg, RFXComCurrentEnergyMessage.SubType subType, int seqNbr, String deviceId,
-                             int count, double channel1, double channel2, double channel3, double totalUsage, int signalLevel,
-                             int batteryLevel) throws RFXComException, RFXComNotImpException {
+            int count, double channel1, double channel2, double channel3, double totalUsage, int signalLevel,
+            int batteryLevel) throws RFXComException {
         final RFXComCurrentEnergyMessage msg = (RFXComCurrentEnergyMessage) RFXComMessageFactory
                 .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
         assertEquals("SubType", subType, msg.subType);
@@ -45,10 +44,11 @@ public class RFXComCurrentEnergyMessageTest {
     }
 
     @Test
-    public void testSomeMessages() throws RFXComException, RFXComNotImpException {
+    public void testSomeMessages() throws RFXComException {
         testMessage("135B0106B800000016000000000000006F148889", RFXComCurrentEnergyMessage.SubType.ELEC4, 6, "47104", 0,
                 2.2d, 0d, 0d, 32547.4d, 8, 9);
         testMessage("135B014FB80002001D0000000000000000000079", RFXComCurrentEnergyMessage.SubType.ELEC4, 79, "47104",
                 2, 2.9d, 0d, 0d, 0d, 7, 9);
+
     }
 }

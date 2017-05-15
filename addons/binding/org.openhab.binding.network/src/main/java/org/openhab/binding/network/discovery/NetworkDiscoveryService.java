@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,7 +19,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.network.service.DiscoveryCallback;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class NetworkDiscoveryService extends AbstractDiscoveryService implements DiscoveryCallback {
     private final Logger logger = LoggerFactory.getLogger(NetworkDiscoveryService.class);
     private ExecutorService executorService = null;
-    final static int PING_TIMEOUT_IN_MS = 500;
+    static final int PING_TIMEOUT_IN_MS = 500;
     private int scanningNetworkSize = 0;
 
     public NetworkDiscoveryService() {
@@ -88,17 +87,14 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
      */
     @Override
     public void newDevice(String ip) {
-        logger.info("Found " + ip);
+        logger.info("Found {}", ip);
 
         // uid must not contains dots
         ThingUID uid = new ThingUID(THING_TYPE_DEVICE, ip.replace('.', '_'));
 
-        if (uid != null) {
-            Map<String, Object> properties = new HashMap<>(1);
-            properties.put(PARAMETER_HOSTNAME, ip);
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel("Network Device (" + ip + ")").build();
-            thingDiscovered(result);
-        }
+        Map<String, Object> properties = new HashMap<>(1);
+        properties.put(PARAMETER_HOSTNAME, ip);
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withLabel("Network Device (" + ip + ")").build());
     }
 }

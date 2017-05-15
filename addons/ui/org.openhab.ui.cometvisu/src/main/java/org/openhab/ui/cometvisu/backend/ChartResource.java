@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -63,14 +63,14 @@ import org.slf4j.LoggerFactory;
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_CHART_ALIAS)
 public class ChartResource implements RESTResource {
-    private static final Logger logger = LoggerFactory.getLogger(ChartResource.class);
+    private final Logger logger = LoggerFactory.getLogger(ChartResource.class);
 
     // pattern RRDTool uses to format doubles in XML files
     static final String PATTERN = "0.0000000000E00";
 
     static final DecimalFormat df;
 
-    protected final static String RRD_FOLDER = org.eclipse.smarthome.config.core.ConfigConstants.getUserDataFolder()
+    protected static final String RRD_FOLDER = org.eclipse.smarthome.config.core.ConfigConstants.getUserDataFolder()
             + File.separator + "persistence" + File.separator + "rrd4j";
 
     static {
@@ -79,7 +79,7 @@ public class ChartResource implements RESTResource {
         // df.setPositivePrefix("+");
     }
 
-    static protected Map<String, QueryablePersistenceService> persistenceServices = new HashMap<String, QueryablePersistenceService>();
+    protected static Map<String, QueryablePersistenceService> persistenceServices = new HashMap<String, QueryablePersistenceService>();
 
     private ItemRegistry itemRegistry;
 
@@ -96,7 +96,7 @@ public class ChartResource implements RESTResource {
         persistenceServices.remove(service.getId());
     }
 
-    static public Map<String, QueryablePersistenceService> getPersistenceServices() {
+    public static Map<String, QueryablePersistenceService> getPersistenceServices() {
         return persistenceServices;
     }
 
@@ -237,7 +237,7 @@ public class ChartResource implements RESTResource {
             logger.debug("no rrd file found '{}'", (RRD_FOLDER + File.separator + item.getName() + ".rrd"));
             return getPersistenceSeries(persistenceService, item, timeBegin, timeEnd, resolution);
         } catch (Exception e) {
-            logger.error(e.getLocalizedMessage() + ": fallback to generic persistance service");
+            logger.error("{}: fallback to generic persistance service", e.getLocalizedMessage());
             return getPersistenceSeries(persistenceService, item, timeBegin, timeEnd, resolution);
         }
         return convertToRrd(data);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -108,28 +108,28 @@ public class GrafikEyeHandler extends BaseThingHandler {
                 final int scene = ((DecimalType) command).intValue();
                 getProtocolHandler().selectScene(_config.getControlUnit(), scene);
             } else {
-                logger.error("Received a SCENE command with a non DecimalType: " + command);
+                logger.error("Received a SCENE command with a non DecimalType: {}", command);
             }
 
         } else if (id.equals(PrgConstants.CHANNEL_SCENELOCK)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setSceneLock(_config.getControlUnit(), command == OnOffType.ON);
             } else {
-                logger.error("Received a SCENELOCK command with a non OnOffType: " + command);
+                logger.error("Received a SCENELOCK command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(PrgConstants.CHANNEL_SCENESEQ)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setSceneSequence(_config.getControlUnit(), command == OnOffType.ON);
             } else {
-                logger.error("Received a SCENESEQ command with a non OnOffType: " + command);
+                logger.error("Received a SCENESEQ command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(PrgConstants.CHANNEL_ZONELOCK)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setZoneLock(_config.getControlUnit(), command == OnOffType.ON);
             } else {
-                logger.error("Received a ZONELOCK command with a non OnOffType: " + command);
+                logger.error("Received a ZONELOCK command with a non OnOffType: {}", command);
             }
 
         } else if (id.startsWith(PrgConstants.CHANNEL_ZONELOWER)) {
@@ -151,7 +151,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
                 final int fade = ((DecimalType) command).intValue();
                 setFade(fade);
             } else {
-                logger.error("Received a ZONEFADE command with a non DecimalType: " + command);
+                logger.error("Received a ZONEFADE command with a non DecimalType: {}", command);
             }
 
         } else if (id.startsWith(PrgConstants.CHANNEL_ZONEINTENSITY)) {
@@ -168,7 +168,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
                     getProtocolHandler().setZoneIntensity(_config.getControlUnit(), zone, _fade,
                             command == IncreaseDecreaseType.INCREASE);
                 } else {
-                    logger.error("Received a ZONEINTENSITY command with a non DecimalType: " + command);
+                    logger.error("Received a ZONEINTENSITY command with a non DecimalType: {}", command);
                 }
             }
 
@@ -186,12 +186,12 @@ public class GrafikEyeHandler extends BaseThingHandler {
                     getProtocolHandler().setZoneIntensity(_config.getControlUnit(), zone, _fade,
                             command == UpDownType.UP ? 1 : 2);
                 } else {
-                    logger.error("Received a ZONEINTENSITY command with a non DecimalType: " + command);
+                    logger.error("Received a ZONEINTENSITY command with a non DecimalType: {}", command);
                 }
             }
 
         } else {
-            logger.error("Unknown/Unsupported Channel id: " + id);
+            logger.error("Unknown/Unsupported Channel id: {}", id);
         }
     }
 
@@ -229,7 +229,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
         try {
             return Integer.parseInt(id.substring(channelConstant.length()));
         } catch (NumberFormatException e) {
-            logger.warn("Unknown channel port #: " + id);
+            logger.warn("Unknown channel port #: {}", id);
             return null;
         }
     }

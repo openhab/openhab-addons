@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -46,7 +46,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     /**
      * Logger
      */
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     /**
      * the refresh interval which is used to poll values from the fritzaha.
      * server (optional, defaults to 15 s)
@@ -86,11 +86,11 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     @Override
     public void initialize() {
-        logger.debug("About to initialize bridge " + BindingConstants.BRIDGE_FRITZBOX);
+        logger.debug("About to initialize bridge {}", BindingConstants.BRIDGE_FRITZBOX);
         Bridge bridge = this.getThing();
         AvmFritzConfiguration config = this.getConfigAs(AvmFritzConfiguration.class);
 
-        logger.debug("discovered fritzaha bridge initialized: " + config.toString());
+        logger.debug("discovered fritzaha bridge initialized: {}", config);
 
         this.refreshInterval = config.getPollingInterval();
         this.connection = new FritzahaWebInterface(config, this);
@@ -120,16 +120,16 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     @Override
     public void addDeviceList(DeviceModel model) {
         try {
-            logger.debug("set device model: " + model.toString());
+            logger.debug("set device model: {}", model);
             this.deviceList.put(model.getIdentifier(), model);
             ThingUID thingUID = this.getThingUID(model);
             Thing thing = this.getThingByUID(thingUID);
             if (thing != null) {
-                logger.debug("update thing " + thingUID + " with device model: " + model.toString());
+                logger.debug("update thing {} with device model: {}", thingUID, model);
                 this.updateThingFromDevice(thing, model);
             }
         } catch (Exception e) {
-            logger.error(e.getLocalizedMessage(), e);
+            logger.error("{}", e.getLocalizedMessage(), e);
         }
     }
 
@@ -155,7 +155,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
         }
         if (device.getPresent() == 1) {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
-            logger.debug("about to update " + thing.getUID() + " from " + device.toString());
+            logger.debug("about to update {} from {}", thing.getUID(), device);
             if (device.isTempSensor()) {
                 Channel channel = thing.getChannel(CHANNEL_TEMP);
                 this.updateState(channel.getUID(), new DecimalType(device.getTemperature().getCelsius()));
@@ -173,7 +173,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                 } else if (device.getSwitch().getState().equals(SwitchModel.OFF)) {
                     this.updateState(channel.getUID(), OnOffType.OFF);
                 } else {
-                    logger.warn("unknown state " + device.getSwitch().getState() + " for channel " + channel.getUID());
+                    logger.warn("unknown state {} for channel {}", device.getSwitch().getState(), channel.getUID());
                 }
             }
         } else {
@@ -210,7 +210,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     private synchronized void onUpdate() {
         if (this.getThing() != null) {
             if (pollingJob == null || pollingJob.isCancelled()) {
-                logger.debug("start polling job at intervall " + refreshInterval);
+                logger.debug("start polling job at intervall {}", refreshInterval);
                 pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
             } else {
                 logger.debug("pollingJob active");
@@ -225,7 +225,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("update " + channelUID.getAsString() + " with " + command.toString());
+        logger.debug("update {} with {}", channelUID, command);
     }
 
     /**

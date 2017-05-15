@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,42 +12,45 @@ package org.openhab.binding.squeezebox.handler;
  * @author Markus Wolters
  * @author Ben Jones
  * @author Dan Cunningham (OH2 Port)
+ * @author Mark Hilbush added durationEvent
  */
 public interface SqueezeBoxPlayerEventListener {
 
-	void playerAdded(SqueezeBoxPlayer player);
+    void playerAdded(SqueezeBoxPlayer player);
 
-	void powerChangeEvent(String mac, boolean power);
+    void powerChangeEvent(String mac, boolean power);
 
-	void modeChangeEvent(String mac, String mode);
+    void modeChangeEvent(String mac, String mode);
 
-	void volumeChangeEvent(String mac, int volume);
+    void volumeChangeEvent(String mac, int volume);
 
-	void muteChangeEvent(String mac, boolean mute);
+    void muteChangeEvent(String mac, boolean mute);
 
-	void currentPlaylistIndexEvent(String mac, int index);
+    void currentPlaylistIndexEvent(String mac, int index);
 
-	void currentPlayingTimeEvent(String mac, int time);
+    void currentPlayingTimeEvent(String mac, int time);
 
-	void numberPlaylistTracksEvent(String mac, int track);
+    void durationEvent(String mac, int duration);
 
-	void currentPlaylistShuffleEvent(String mac, int shuffle);
+    void numberPlaylistTracksEvent(String mac, int track);
 
-	void currentPlaylistRepeatEvent(String mac, int repeat);
+    void currentPlaylistShuffleEvent(String mac, int shuffle);
 
-	void titleChangeEvent(String mac, String title);
+    void currentPlaylistRepeatEvent(String mac, int repeat);
 
-	void albumChangeEvent(String mac, String album);
+    void titleChangeEvent(String mac, String title);
 
-	void artistChangeEvent(String mac, String artist);
+    void albumChangeEvent(String mac, String album);
 
-	void coverArtChangeEvent(String mac, String coverArtUrl);
+    void artistChangeEvent(String mac, String artist);
 
-	void yearChangeEvent(String mac, String year);
+    void coverArtChangeEvent(String mac, String coverArtUrl);
 
-	void genreChangeEvent(String mac, String genre);
+    void yearChangeEvent(String mac, String year);
 
-	void remoteTitleChangeEvent(String mac, String title);
+    void genreChangeEvent(String mac, String genre);
 
-	void irCodeChangeEvent(String mac, String ircode);
+    void remoteTitleChangeEvent(String mac, String title);
+
+    void irCodeChangeEvent(String mac, String ircode);
 }

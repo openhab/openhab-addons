@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,7 @@ import static org.openhab.binding.rfxcom.RFXComValueSelector.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.UNDECODED_RF_MESSAGE;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
@@ -85,10 +86,10 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(RAW_MESSAGE,
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(RAW_MESSAGE,
             RAW_PAYLOAD);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
 
     public SubType subType = SubType.UNKNOWN;
     public byte[] rawPayload = new byte[0];
@@ -97,7 +98,7 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         packetType = UNDECODED_RF_MESSAGE;
     }
 
-    public RFXComUndecodedRFMessage(byte[] message) {
+    public RFXComUndecodedRFMessage(byte[] message) throws RFXComException {
         encodeMessage(message);
     }
 
@@ -115,7 +116,7 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] message) {
+    public void encodeMessage(byte[] message) throws RFXComException {
 
         super.encodeMessage(message);
 
@@ -125,7 +126,6 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
 
     @Override
     public byte[] decodeMessage() throws RFXComException {
-
         if (rawPayload.length > 33) {
             throw new RFXComMessageTooLongException("Longest payload according to RFXCOM spec is 33 bytes.");
         }
@@ -138,9 +138,7 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         data[2] = subType.toByte();
         data[3] = seqNbr;
 
-        for (int i = 0; i < rawPayloadLen; i++) {
-            data[i + 4] = rawPayload[i];
-        }
+        System.arraycopy(rawPayload, 0, data, 4, rawPayloadLen);
         return data;
     }
 
@@ -197,12 +195,12 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 
 }

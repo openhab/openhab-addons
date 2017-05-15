@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,26 +12,16 @@ package org.openhab.binding.tankerkoenig.internal.config;
 /***
  * The {@link TankerkoenigDetailResult} class is the representing java model for the json result of the tankerkoenig.de
  * details request
- * Actually not in use. Will be needed for detailed information of gas stations
+ * Actually used for OpeningTimes only.
  *
- * @author Dennis Dollinger
+ * @author Dennis Dollinger/Jürgen Baginski
  *
  */
 public class TankerkoenigDetailResult {
 
-    private String status;
     private boolean ok;
-    private String message;
-
-    private Station[] stations;
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    private boolean wholeDay;
+    private OpeningTime[] openingtimes;
 
     public boolean isOk() {
         return ok;
@@ -40,20 +31,19 @@ public class TankerkoenigDetailResult {
         this.ok = ok;
     }
 
-    public String getMessage() {
-        return message;
+    public boolean iswholeDay() {
+        return wholeDay;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setwholeDay(boolean WholeDay) {
+        this.wholeDay = WholeDay;
     }
 
-    public Station[] getStations() {
-        return stations;
+    public OpeningTime[] getOpeningtimes() {
+        return openingtimes;
     }
 
-    public void setStations(Station[] stations) {
-        this.stations = stations;
+    public void setOpeningtimes(OpeningTime[] openingtimes) {
+        this.openingtimes = openingtimes;
     }
-
 }

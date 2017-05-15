@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableSet;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
-    private static final Logger logger = LoggerFactory.getLogger(HomematicDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(HomematicDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
 
     private HomematicBridgeHandler bridgeHandler;
@@ -110,7 +110,7 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
                         logger.debug("Finished Homematic device discovery scan on gateway '{}'",
                                 bridgeHandler.getGateway().getId());
                     } catch (Throwable ex) {
-                        logger.error(ex.getMessage(), ex);
+                        logger.error("{}", ex.getMessage(), ex);
                     } finally {
                         scanFuture = null;
                         bridgeHandler.setOfflineStatus();

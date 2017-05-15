@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,49 +19,44 @@ import java.util.concurrent.TimeUnit;
  * The {@link ScheduledChannelThrottler} implements a throttler that maintains a
  * single execution rates, and does not maintains order of calls (thus have to
  * start from back rather than try to insert things in middle)
- * 
+ *
  * @author Karel Goderis - Initial contribution
  */
 public final class ScheduledChannelThrottler extends AbstractChannelThrottler {
 
-	public ScheduledChannelThrottler(Rate totalRate) {
-		this(totalRate, Executors.newSingleThreadScheduledExecutor(),
-				new HashMap<Object, Rate>(), TimeProvider.SYSTEM_PROVIDER);
-	}
+    public ScheduledChannelThrottler(Rate totalRate) {
+        this(totalRate, Executors.newSingleThreadScheduledExecutor(), new HashMap<Object, Rate>(),
+                TimeProvider.SYSTEM_PROVIDER);
+    }
 
-	public ScheduledChannelThrottler(Rate totalRate, Map<Object, Rate> channels) {
-		this(totalRate, Executors.newSingleThreadScheduledExecutor(), channels,
-				TimeProvider.SYSTEM_PROVIDER);
-	}
+    public ScheduledChannelThrottler(Rate totalRate, Map<Object, Rate> channels) {
+        this(totalRate, Executors.newSingleThreadScheduledExecutor(), channels, TimeProvider.SYSTEM_PROVIDER);
+    }
 
-	public ScheduledChannelThrottler(Rate totalRate,
-			ScheduledExecutorService scheduler, Map<Object, Rate> channels,
-			TimeProvider timeProvider) {
-		super(totalRate, scheduler, channels, timeProvider);
-	}
+    public ScheduledChannelThrottler(Rate totalRate, ScheduledExecutorService scheduler, Map<Object, Rate> channels,
+            TimeProvider timeProvider) {
+        super(totalRate, scheduler, channels, timeProvider);
+    }
 
-	public void submitSync(Object channelKey, Runnable task)
-			throws InterruptedException {
-		Thread.sleep(getThrottleDelay(channelKey));
-		task.run();
-	}
+    public void submitSync(Object channelKey, Runnable task) throws InterruptedException {
+        Thread.sleep(getThrottleDelay(channelKey));
+        task.run();
+    }
 
-	public void submitSync(Runnable task) throws InterruptedException {
-		long delay = callTime(null) - timeProvider.getCurrentTimeInMillis();
-		Thread.sleep(getThrottleDelay(delay));
-		task.run();
-	}
+    public void submitSync(Runnable task) throws InterruptedException {
+        long delay = callTime(null) - timeProvider.getCurrentTimeInMillis();
+        Thread.sleep(getThrottleDelay(delay));
+        task.run();
+    }
 
-	@Override
-	public Future<?> submit(Runnable task) {
-		long delay = callTime(null) - timeProvider.getCurrentTimeInMillis();
-		return scheduler.schedule(task, delay < 0 ? 0 : delay,
-				TimeUnit.MILLISECONDS);
-	}
+    @Override
+    public Future<?> submit(Runnable task) {
+        long delay = callTime(null) - timeProvider.getCurrentTimeInMillis();
+        return scheduler.schedule(task, delay < 0 ? 0 : delay, TimeUnit.MILLISECONDS);
+    }
 
-	@Override
-	public Future<?> submit(Object channelKey, Runnable task) {
-		return scheduler.schedule(task, getThrottleDelay(channelKey),
-				TimeUnit.MILLISECONDS);
-	}
+    @Override
+    public Future<?> submit(Object channelKey, Runnable task) {
+        return scheduler.schedule(task, getThrottleDelay(channelKey), TimeUnit.MILLISECONDS);
+    }
 }

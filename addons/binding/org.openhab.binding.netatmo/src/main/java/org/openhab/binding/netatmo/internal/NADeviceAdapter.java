@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -58,17 +58,17 @@ public abstract class NADeviceAdapter<DeviceClass> {
         }
     }
 
-    abstract public Integer getLastStatusStore();
+    public abstract Integer getLastStatusStore();
 
-    abstract public NAPlace getPlace();
+    public abstract NAPlace getPlace();
 
-    abstract public Integer getWifiStatus();
+    public abstract Integer getWifiStatus();
 
-    abstract public String getType();
+    public abstract String getType();
 
-    abstract public String getId();
+    public abstract String getId();
 
-    abstract public String getTypeName();
+    public abstract String getTypeName();
 
     public NAUserAdministrative getUserAdministrative() {
         return userAdministrative;
@@ -81,6 +81,6 @@ public abstract class NADeviceAdapter<DeviceClass> {
         return modules;
     }
 
-    abstract protected void populateModules();
+    protected abstract void populateModules();
 
 }

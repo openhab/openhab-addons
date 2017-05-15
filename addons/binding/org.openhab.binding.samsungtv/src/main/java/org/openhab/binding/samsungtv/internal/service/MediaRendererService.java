@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MediaRendererService implements UpnpIOParticipant, SamsungTvService {
 
-    public final static String SERVICE_NAME = "MediaRenderer";
+    public static final String SERVICE_NAME = "MediaRenderer";
     private final List<String> supportedCommands = Arrays.asList(VOLUME, MUTE, BRIGHTNESS, CONTRAST, SHARPNESS,
             COLOR_TEMPERATURE);
 
@@ -188,8 +188,8 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     public void onValueReceived(String variable, String value, String service) {
 
         String oldValue = stateMap.get(variable);
-        if (value.equals(oldValue)) {
-            logger.trace("Variable '{}' value haven't been changed, ignore update", variable);
+        if ((value == null && oldValue == null) || (value != null && value.equals(oldValue))) {
+            logger.trace("Value '{}' for {} hasn't changed, ignoring update", value, variable);
             return;
         }
 

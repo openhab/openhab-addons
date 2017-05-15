@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,15 @@
  */
 package org.openhab.binding.homematic.internal.communicator.parser;
 
+import java.io.IOException;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
+import org.openhab.binding.homematic.internal.model.HmParamsetType;
+import org.openhab.binding.homematic.internal.model.HmValueType;
 
 /**
  * Abstract base class for all parsers with common methods.
@@ -35,7 +39,11 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (object == null || object instanceof Integer) {
             return (Integer) object;
         }
-        return NumberUtils.createInteger(ObjectUtils.toString(object));
+        try {
+            return Double.valueOf(ObjectUtils.toString(object)).intValue();
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 
     /**
@@ -86,26 +94,96 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     protected void adjustRssiValue(HmDatapoint dp) {
         if (dp.getValue() != null && dp.getName().startsWith("RSSI_") && dp.isIntegerType()) {
             int rssiValue = ((Number) dp.getValue()).intValue();
-            if (rssiValue >= 255 || rssiValue <= -255) {
-                dp.setValue(new Integer(0));
-            }
+            dp.setValue(getAdjustedRssiValue(rssiValue));
         }
     }
 
     /**
-     * Converts the type of the value if necessary and sets the value of the datapoint.
+     * Adjust a rssi value if it is out of range.
      */
-    protected void setDatapointValue(HmDatapoint dp, Object value) {
+    protected Integer getAdjustedRssiValue(Integer rssiValue) {
+        if (rssiValue == null || rssiValue >= 255 || rssiValue <= -255) {
+            return 0;
+        }
+        return rssiValue;
+    }
+
+    /**
+     * Converts the value to the correct type if necessary.
+     */
+    protected Object convertToType(HmDatapoint dp, Object value) {
         if (dp.isBooleanType()) {
-            dp.setValue(toBoolean(value));
+            return toBoolean(value);
         } else if (dp.isIntegerType()) {
-            dp.setValue(toInteger(value));
+            return toInteger(value);
         } else if (dp.isFloatType()) {
-            dp.setValue(toNumber(value));
+            return toNumber(value);
         } else if (dp.isStringType()) {
-            dp.setValue(toString(value));
+            return toString(value);
         } else {
-            dp.setValue(value);
+            return value;
+        }
+    }
+
+    /**
+     * Assembles a datapoint with the given parameters.
+     */
+    protected HmDatapoint assembleDatapoint(String name, String unit, String type, String[] options, Object min,
+            Object max, Integer operations, Object defaultValue, HmParamsetType paramsetType, boolean isHmIpDevice)
+            throws IOException {
+        HmDatapoint dp = new HmDatapoint();
+        dp.setName(name);
+        dp.setDescription(name);
+        dp.setUnit(StringUtils.replace(StringUtils.trimToNull(unit), "\ufffd", "°"));
+        if (dp.getUnit() == null && StringUtils.startsWith(dp.getName(), "RSSI_")) {
+            dp.setUnit("dBm");
+        }
+
+        HmValueType valueType = HmValueType.parse(type);
+        if (valueType == null || valueType == HmValueType.UNKNOWN) {
+            throw new IOException("Unknown datapoint type: " + type);
+        }
+        dp.setType(valueType);
+
+        dp.setOptions(options);
+        if (dp.isNumberType() || dp.isEnumType()) {
+            if (isHmIpDevice && dp.isEnumType()) {
+                dp.setMinValue(dp.getOptionIndex(toString(min)));
+                dp.setMaxValue(dp.getOptionIndex(toString(max)));
+            } else {
+                dp.setMinValue(toNumber(min));
+                dp.setMaxValue(toNumber(max));
+            }
+        }
+        dp.setReadOnly((operations & 2) != 2);
+        dp.setReadable((operations & 1) == 1);
+        dp.setParamsetType(paramsetType);
+        if (isHmIpDevice && dp.isEnumType()) {
+            dp.setDefaultValue(dp.getOptionIndex(toString(defaultValue)));
+        } else {
+            dp.setDefaultValue(convertToType(dp, defaultValue));
+        }
+        dp.setValue(dp.getDefaultValue());
+        return dp;
+    }
+
+    /**
+     * Converts a string value to the type.
+     */
+    protected Object convertToType(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("on")) {
+            return (Boolean.TRUE);
+        } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("off")) {
+            return (Boolean.FALSE);
+        } else if (value.matches("(-|\\+)?[0-9]+")) {
+            return (Integer.valueOf(value));
+        } else if (value.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
+            return (Double.valueOf(value));
+        } else {
+            return value;
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,7 +29,6 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -44,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDiscoveryService.class);
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
             Arrays.asList(OPENSPRINKLER_THING));
 
     private ExecutorService discoverySearchPool;
@@ -88,19 +87,15 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     public void submitDiscoveryResults(String ip) {
         ThingUID uid = new ThingUID(OPENSPRINKLER_THING, ip.replace('.', '_'));
 
-        if (uid != null) {
-            HashMap<String, Object> properties = new HashMap<String, Object>();
+        HashMap<String, Object> properties = new HashMap<String, Object>();
 
-            properties.put("hostname", ip);
-            properties.put("port", DEFAULT_API_PORT);
-            properties.put("password", DEFAULT_ADMIN_PASSWORD);
-            properties.put("refresh", DEFAULT_REFRESH_RATE);
+        properties.put("hostname", ip);
+        properties.put("port", DEFAULT_API_PORT);
+        properties.put("password", DEFAULT_ADMIN_PASSWORD);
+        properties.put("refresh", DEFAULT_REFRESH_RATE);
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel("OpenSprinkler").build();
-
-            thingDiscovered(result);
-        }
+        thingDiscovered(
+                DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("OpenSprinkler").build());
     }
 
     /**

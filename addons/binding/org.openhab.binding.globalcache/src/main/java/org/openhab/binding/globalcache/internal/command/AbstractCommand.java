@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -338,7 +338,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * Errors returned by GlobalCache iTach devices
      */
-    private final static String[] gcItachErrorMessages = {
+    private static final String[] gcItachErrorMessages = {
             // 0
             "Unknown error",
             // 1
@@ -401,7 +401,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * Errors returned by GlobalCache GC-100 devices
      */
-    private final static String[] gcGC100ErrorMessages = {
+    private static final String[] gcGC100ErrorMessages = {
             // 0
             "Unknown error.",
             // 1
@@ -456,7 +456,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * General errors returned by Flex devices
      */
-    private final static String[] gcFlexGeneralErrorMessages = {
+    private static final String[] gcFlexGeneralErrorMessages = {
             // 0
             "Unknown error.",
             // 1
@@ -477,7 +477,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * Infrared errors returned by Flex devices
      */
-    private final static String[] gcFlexIRErrorMessages = {
+    private static final String[] gcFlexIRErrorMessages = {
             // 0
             "Unknown error.",
             // 1
@@ -500,7 +500,7 @@ public abstract class AbstractCommand implements CommandInterface {
     /*
      * Serial errors returned by Flex devices
      */
-    private final static String[] gcFlexSLErrorMessages = {
+    private static final String[] gcFlexSLErrorMessages = {
             // 0
             "Unknown error.",
             // 1

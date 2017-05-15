@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -224,19 +224,19 @@ public class FeedHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (MalformedURLException e) {
-            logger.warn("Url '{}' is not valid: {}", urlString, e);
+            logger.warn("Url '{}' is not valid: ", urlString, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         } catch (IOException e) {
-            logger.warn("Error accessing feed: " + urlString, e);
+            logger.warn("Error accessing feed: {}", urlString, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             return null;
         } catch (IllegalArgumentException e) {
-            logger.warn("Feed URL is null", e);
+            logger.warn("Feed URL is null ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         } catch (FeedException e) {
-            logger.warn("Feed content is not valid: " + urlString, e);
+            logger.warn("Feed content is not valid: {} ", urlString, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         }

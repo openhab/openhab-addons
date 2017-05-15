@@ -51,13 +51,13 @@ Apple provides build-in FTDI drivers for OS X, which need to be disabled to get 
 FTDI driver disabling can be done by the following command
 
 ```
-sudo kextload -b com.apple.driver.AppleUSBFTDI
+sudo kextunload -b com.apple.driver.AppleUSBFTDI
 ```
 
 FTDI driver can be enabled by the following command
 
 ```
-sudo kextunload -b com.apple.driver.AppleUSBFTDI
+sudo kextload -b com.apple.driver.AppleUSBFTDI
 ```
 
 If you have any problems with JD2XX or you don't want to disable FTDI driver on OS X, you can also configure RFXCOM transceivers/receivers manually.
@@ -91,26 +91,26 @@ This binding currently supports following channels:
 
 | Channel Type ID | Item Type    | Description  |
 |-----------------|------------------------|--------------|
-| batterylevel | Number | Battery level. |
+| batteryLevel | Number | Battery level. |
 | command | Switch | Command channel. |
 | contact | Contact | Contact channel. |
-| dimminglevel | Dimmer | Dimming level channel. |
+| dimmingLevel | Dimmer | Dimming level channel. |
 | humidity | Number | Relative humidity level in percentages. |
-| humiditystatus | String | Current humidity status. |
+| humidityStatus | String | Current humidity status. |
 | instantamp | Number | Instant current in Amperes. |
 | instantpower | Number | Instant power consumption in Watts. |
 | status | String | Status channel. |
 | setpoint | Number | Requested temperature. |
 | mood | Number | Mood channel. |
 | motion | Switch | Motion detection sensor state. |
-| rainrate | Number | Rain fall rate in millimeters per hour. |
-| raintotal | Number | Total rain in millimeters. |
-| rawmessage | String | Hexadecimal string of the raw RF message. |
-| rawpayload | String | Hexadecimal string of the message payload, without header. |
+| rainRate | Number | Rain fall rate in millimeters per hour. |
+| rainTotal | Number | Total rain in millimeters. |
+| rawMessage | String | Hexadecimal string of the raw RF message. |
+| rawPayload | String | Hexadecimal string of the message payload, without header. |
 | shutter | Rollershutter | Shutter channel. |
-| signallevel | Number | Received signal strength level. |
+| signalLevel | Number | Received signal strength level. |
 | temperature | Number | Current temperature in degree Celsius. |
-| totalusage | Number | Used energy in Watt hours. |
-| totalamphour | Number | Used "energy" in ampere-hours. |
-| winddirection | Number | Wind direction in degrees. |
-| windspeed | Number | Average wind speed in meters per second. |
+| totalUsage | Number | Used energy in Watt hours. |
+| totalAmpHour | Number | Used "energy" in ampere-hours. |
+| windDirection | Number | Wind direction in degrees. |
+| windSpeed | Number | Average wind speed in meters per second. |

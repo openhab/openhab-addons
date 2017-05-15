@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,7 +32,29 @@ import org.slf4j.LoggerFactory;
 public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketDiscoveryService.class);
-    private final SilvercrestWifiSocketMediator mediator;
+    private SilvercrestWifiSocketMediator mediator;
+
+    /**
+     * Used by OSGI to inject the mediator in the discovery service.
+     *
+     * @param mediator the mediator
+     */
+    public void setMediator(final SilvercrestWifiSocketMediator mediator) {
+        logger.debug("Mediator has been injected on discovery service.");
+        this.mediator = mediator;
+        mediator.setDiscoveryService(this);
+    }
+
+    /**
+     * Used by OSGI to unset the mediator in the discovery service.
+     *
+     * @param mediator the mediator
+     */
+    public void unsetMediator(final SilvercrestWifiSocketMediator mitsubishiMediator) {
+        logger.debug("Mediator has been unsetted from discovery service.");
+        this.mediator.setDiscoveryService(null);
+        this.mediator = null;
+    }
 
     /**
      * Constructor of the discovery service.
@@ -42,8 +64,6 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
     public SilvercrestWifiSocketDiscoveryService() throws IllegalArgumentException {
         super(SilvercrestWifiSocketBindingConstants.SUPPORTED_THING_TYPES_UIDS,
                 SilvercrestWifiSocketBindingConstants.DISCOVERY_TIMEOUT_SECONDS);
-        logger.debug("SilvercrestWifiSocketMediator is not initialized yet will create one mediator...");
-        this.mediator = new SilvercrestWifiSocketMediator(this);
     }
 
     @Override

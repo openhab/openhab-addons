@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,9 +8,11 @@
  */
 package org.openhab.binding.russound.internal.rio.system;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -32,23 +34,26 @@ import org.slf4j.LoggerFactory;
  */
 class RioSystemProtocol extends AbstractRioProtocol {
     // Logger
-    private Logger logger = LoggerFactory.getLogger(RioSystemProtocol.class);
+    private final Logger logger = LoggerFactory.getLogger(RioSystemProtocol.class);
 
     // Protocol Constants
-    private final static String SYS_VERSION = "VERSION"; // 12 max
-    private final static String SYS_STATUS = "status"; // 12 max
-    private final static String SYS_LANG = "language"; // 12 max
+    private static final String SYS_VERSION = "version"; // 12 max
+    private static final String SYS_STATUS = "status"; // 12 max
+    private static final String SYS_LANG = "language"; // 12 max
 
     // Response patterns
-    private final Pattern RSP_VERSION = Pattern.compile("^S VERSION=\"(.+)\"$");
-    private final Pattern RSP_FAILURE = Pattern.compile("^E (.*)");
-    private final Pattern RSP_SYSTEMNOTIFICATION = Pattern.compile("^[SN] System\\.(\\w+)=\"(.*)\"$");
+    private static final Pattern RSP_VERSION = Pattern.compile("(?i)^S VERSION=\"(.+)\"$");
+    private static final Pattern RSP_FAILURE = Pattern.compile("(?i)^E (.*)");
+    private static final Pattern RSP_SYSTEMNOTIFICATION = Pattern.compile("(?i)^[SN] System\\.(\\w+)=\"(.*)\"$");
+
+    // all on state (there is no corresponding value)
+    private final AtomicBoolean allOn = new AtomicBoolean(false);
 
     /**
      * This represents our ping command. There is no ping command in the protocol so we simply send an empty command to
      * keep things alive (and not generate any errors)
      */
-    private final static String CMD_PING = "";
+    private static final String CMD_PING = "";
 
     /**
      * Constructs the protocol handler from given parameters
@@ -58,7 +63,6 @@ class RioSystemProtocol extends AbstractRioProtocol {
      */
     RioSystemProtocol(SocketSession session, RioHandlerCallback callback) {
         super(session, callback);
-
     }
 
     /**
@@ -116,8 +120,8 @@ class RioSystemProtocol extends AbstractRioProtocol {
     /**
      * Refresh the system status
      */
-    void refreshSystemStatus() {
-        refreshSystemKey(SYS_STATUS);
+    void refreshSystemAllOn() {
+        stateChanged(RioConstants.CHANNEL_SYSALLON, allOn.get() ? OnOffType.ON : OnOffType.OFF);
     }
 
     /**
@@ -125,6 +129,13 @@ class RioSystemProtocol extends AbstractRioProtocol {
      */
     void refreshSystemLanguage() {
         refreshSystemKey(SYS_LANG);
+    }
+
+    /**
+     * Refresh the system status
+     */
+    void refreshSystemStatus() {
+        refreshSystemKey(SYS_STATUS);
     }
 
     /**
@@ -143,6 +154,8 @@ class RioSystemProtocol extends AbstractRioProtocol {
      */
     void setSystemAllOn(boolean on) {
         sendCommand("EVENT C[1].Z[1]!All" + (on ? "On" : "Off"));
+        allOn.set(on);
+        refreshSystemAllOn();
     }
 
     /**
@@ -193,7 +206,7 @@ class RioSystemProtocol extends AbstractRioProtocol {
             throw new IllegalArgumentException("m (matcher) cannot be null");
         }
         if (m.groupCount() == 2) {
-            final String key = m.group(1);
+            final String key = m.group(1).toLowerCase();
             final String value = m.group(2);
 
             switch (key) {
@@ -221,7 +234,7 @@ class RioSystemProtocol extends AbstractRioProtocol {
      * @param resp a possibly null, possibly empty response
      */
     private void handleFailureNotification(Matcher m, String resp) {
-        logger.info("Error notification: {}", resp);
+        logger.debug("Error notification: {}", resp);
     }
 
     /**
@@ -232,7 +245,7 @@ class RioSystemProtocol extends AbstractRioProtocol {
      */
     @Override
     public void responseReceived(String response) {
-        if (response == null || response == "") {
+        if (StringUtils.isEmpty(response)) {
             return;
         }
 
@@ -253,6 +266,7 @@ class RioSystemProtocol extends AbstractRioProtocol {
             handleFailureNotification(m, response);
             return;
         }
+
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -88,44 +88,42 @@ public class YamahaReceiverCommunication {
     public void updateDeviceInformation(YamahaReceiverState state) throws IOException {
         Document doc = postAndGetXmlResponse(
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?><YAMAHA_AV cmd=\"GET\"><System><Config>GetParam</Config></System></YAMAHA_AV>");
-        if (doc != null) {
-            Node basicStatus = getNode(doc.getFirstChild(), "System/Config");
+        Node basicStatus = getNode(doc.getFirstChild(), "System/Config");
 
-            Node node;
-            String value;
+        Node node;
+        String value;
 
-            node = getNode(basicStatus, "Model_Name");
-            value = node != null ? node.getTextContent() : "";
-            state.name = value;
+        node = getNode(basicStatus, "Model_Name");
+        value = node != null ? node.getTextContent() : "";
+        state.name = value;
 
-            node = getNode(basicStatus, "System_ID");
-            value = node != null ? node.getTextContent() : "";
-            state.id = value;
+        node = getNode(basicStatus, "System_ID");
+        value = node != null ? node.getTextContent() : "";
+        state.id = value;
 
-            node = getNode(basicStatus, "Version");
-            value = node != null ? node.getTextContent() : "";
-            state.version = value;
+        node = getNode(basicStatus, "Version");
+        value = node != null ? node.getTextContent() : "";
+        state.version = value;
 
-            state.additional_zones.clear();
+        state.additional_zones.clear();
 
-            node = getNode(basicStatus, "Feature_Existence");
-            if (node != null) {
-                Node subnode;
-                subnode = getNode(node, "Zone_2");
-                value = subnode != null ? subnode.getTextContent() : null;
-                if (value != null && (value.equals("1") || value.equals("Available"))) {
-                    state.additional_zones.add(Zone.Zone_2);
-                }
-                subnode = getNode(node, "Zone_3");
-                value = subnode != null ? subnode.getTextContent() : null;
-                if (value != null && (value.equals("1") || value.equals("Available"))) {
-                    state.additional_zones.add(Zone.Zone_3);
-                }
-                subnode = getNode(node, "Zone_4");
-                value = subnode != null ? subnode.getTextContent() : null;
-                if (value != null && (value.equals("1") || value.equals("Available"))) {
-                    state.additional_zones.add(Zone.Zone_4);
-                }
+        node = getNode(basicStatus, "Feature_Existence");
+        if (node != null) {
+            Node subnode;
+            subnode = getNode(node, "Zone_2");
+            value = subnode != null ? subnode.getTextContent() : null;
+            if (value != null && (value.equals("1") || value.equals("Available"))) {
+                state.additional_zones.add(Zone.Zone_2);
+            }
+            subnode = getNode(node, "Zone_3");
+            value = subnode != null ? subnode.getTextContent() : null;
+            if (value != null && (value.equals("1") || value.equals("Available"))) {
+                state.additional_zones.add(Zone.Zone_3);
+            }
+            subnode = getNode(node, "Zone_4");
+            value = subnode != null ? subnode.getTextContent() : null;
+            if (value != null && (value.equals("1") || value.equals("Available"))) {
+                state.additional_zones.add(Zone.Zone_4);
             }
         }
     }
@@ -247,7 +245,7 @@ public class YamahaReceiverCommunication {
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new InputSource(new StringReader(response)));
-            if (doc.getFirstChild().hasChildNodes() == false) {
+            if (!doc.getFirstChild().hasChildNodes()) {
                 throw new IOException("Could not handle response");
             }
             return doc;
@@ -278,7 +276,7 @@ public class YamahaReceiverCommunication {
             InputStream is = connection.getInputStream();
             BufferedReader rd = new BufferedReader(new InputStreamReader(is));
             String line;
-            StringBuffer response = new StringBuffer();
+            StringBuilder response = new StringBuilder();
             while ((line = rd.readLine()) != null) {
                 response.append(line);
                 response.append('\r');

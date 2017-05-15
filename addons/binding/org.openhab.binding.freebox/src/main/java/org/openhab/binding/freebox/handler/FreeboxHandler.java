@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -120,7 +120,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     setReboot(command);
             }
         } catch (FreeboxException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
     }
 
@@ -130,20 +130,20 @@ public class FreeboxHandler extends BaseBridgeHandler {
      *
      * @throws FreeboxException
      */
-    private boolean authorize() {
+    private boolean authorize(boolean useHttps, String fqdn, String apiBaseUrl, String apiVersion) {
 
         FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
 
         Bundle bundle = FrameworkUtil.getBundle(getClass());
 
         fbClient = new FreeboxOsClient(bundle.getSymbolicName(), /* org.openhab.binding.freebox */
-                configuration.fqdn);
+                useHttps, fqdn, apiBaseUrl, apiVersion);
 
         LoginManager loginManager = fbClient.getLoginManager();
         TrackAuthorizeStatus authorizeStatus = TrackAuthorizeStatus.UNKNOWN;
         try {
 
-            if (configuration.appToken == null || configuration.appToken.isEmpty()) {
+            if (StringUtils.isEmpty(configuration.appToken)) {
 
                 Authorize authorize = loginManager.newAuthorize(bundle.getHeaders().get("Bundle-Name"), // Freebox
                                                                                                         // Binding
@@ -156,7 +156,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 logger.info("####################################################################");
                 logger.info("# Please accept activation request directly on your freebox        #");
                 logger.info("# Once done, record Apptoken in the Freebox Item configuration     #");
-                logger.info("# " + configuration.appToken + " #");
+                logger.info("# {} #", configuration.appToken);
                 logger.info("####################################################################");
 
                 do {
@@ -171,12 +171,12 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 return false;
             }
 
-            logger.debug("Apptoken valide : [" + configuration.appToken + "]");
+            logger.debug("Apptoken valide : [{}]", configuration.appToken);
             loginManager.setAppToken(configuration.appToken);
             loginManager.openSession();
             return true;
         } catch (FreeboxException | InterruptedException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
             return false;
         }
     }
@@ -186,7 +186,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
         logger.debug("initializing Freebox Server handler.");
 
         FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
-        if ((configuration != null) && (configuration.fqdn != null) && !configuration.fqdn.isEmpty()) {
+        if ((configuration != null) && StringUtils.isNotEmpty(configuration.fqdn)) {
             updateStatus(ThingStatus.OFFLINE);
 
             logger.debug("Binding will schedule a job to establish a connection...");
@@ -194,66 +194,111 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 authorizeJob = scheduler.schedule(authorizeRunnable, 1, TimeUnit.SECONDS);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Freebox Server FQDN not set in the thing configuration");
         }
     }
 
     private Runnable authorizeRunnable = new Runnable() {
         @Override
+        @SuppressWarnings("null")
         public void run() {
             logger.debug("Authorize job...");
 
+            FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
+            String result = null;
+            boolean httpsRequestOk = false;
+            if (!Boolean.TRUE.equals(configuration.useOnlyHttp)) {
+                try {
+                    result = HttpUtil.executeUrl("GET", "https://" + configuration.fqdn + "/api_version", 5000);
+                    httpsRequestOk = true;
+                } catch (IOException e) {
+                    logger.debug("Can't connect to {} with HTTPS", configuration.fqdn, e);
+                }
+            }
+            if (result == null) {
+                try {
+                    result = HttpUtil.executeUrl("GET", "http://" + configuration.fqdn + "/api_version", 5000);
+                } catch (IOException e) {
+                    logger.debug("Can't connect to {} with HTTP", configuration.fqdn, e);
+                }
+            }
             String apiBaseUrl = null;
             String apiVersion = null;
             String hardwareVersion = null;
-            FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
-            String result = null;
-            try {
-                result = HttpUtil.executeUrl("GET", "http://" + configuration.fqdn + "/api_version", 5000);
-            } catch (IOException e) {
-                logger.debug("Cann't connect to Freebox server {}", e);
-            }
-            if (result != null) {
+            String apiDomain = null;
+            boolean httpsAvailable = false;
+            String httpsPort = null;
+            boolean useHttps = false;
+            String fqdn = configuration.fqdn;
+            String errorMsg = null;
+            if (result == null) {
+                errorMsg = "Can't connect to " + configuration.fqdn;
+            } else {
                 apiBaseUrl = StringUtils.trim(StringUtils
                         .replace(StringUtils.substringBetween(result, "\"api_base_url\":\"", "\""), "\\/", "/"));
                 apiVersion = StringUtils.trim(StringUtils.substringBetween(result, "\"api_version\":\"", "\""));
                 hardwareVersion = StringUtils.trim(StringUtils.substringBetween(result, "\"device_type\":\"", "\""));
+                apiDomain = StringUtils.trim(StringUtils.substringBetween(result, "\"api_domain\":\"", "\""));
+                httpsAvailable = StringUtils.containsIgnoreCase(result, "\"https_available\":true");
+                httpsPort = StringUtils.trim(StringUtils.substringBetween(result, "\"https_port\":", ","));
+                if (StringUtils.isEmpty(apiBaseUrl)) {
+                    errorMsg = configuration.fqdn + " does not deliver any API base URL";
+                } else if (StringUtils.isEmpty(apiVersion)) {
+                    errorMsg = configuration.fqdn + " does not deliver any API version";
+                } else if (httpsAvailable && !Boolean.TRUE.equals(configuration.useOnlyHttp)) {
+                    if (StringUtils.isEmpty(httpsPort) || StringUtils.isEmpty(apiDomain)) {
+                        if (httpsRequestOk) {
+                            useHttps = true;
+                        } else {
+                            logger.info("{} does not deliver API domain or HTTPS port; use HTTP API",
+                                    configuration.fqdn);
+                        }
+                    } else {
+                        useHttps = true;
+                        fqdn = apiDomain + ":" + httpsPort;
+                    }
+                }
             }
 
-            if ((apiBaseUrl != null) && (apiVersion != null) && (hardwareVersion != null)) {
-                if (authorize()) {
-                    updateStatus(ThingStatus.ONLINE);
-
-                    if (globalJob == null || globalJob.isCancelled()) {
-                        long polling_interval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
-                        logger.debug("Scheduling server state update every {} seconds...", polling_interval);
-                        globalJob = scheduler.scheduleAtFixedRate(globalRunnable, 1, polling_interval,
-                                TimeUnit.SECONDS);
-                    }
+            if (errorMsg != null) {
+                logger.info("Bad thing configuration: {}", errorMsg);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+            } else if (!authorize(useHttps, fqdn, apiBaseUrl, apiVersion)) {
+                if (StringUtils.isEmpty(configuration.appToken)) {
+                    errorMsg = "App token not set in the thing configuration";
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    errorMsg = "Check your app token in the thing configuration; opening session with " + fqdn
+                            + " using " + (useHttps ? "HTTPS" : "HTTP") + " API version " + apiVersion + " failed";
                 }
+                logger.info("{}", errorMsg);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                logger.info("Session opened with {} using {} API version {}", fqdn, (useHttps ? "HTTPS" : "HTTP"),
+                        apiVersion);
+                updateStatus(ThingStatus.ONLINE);
+
+                if (globalJob == null || globalJob.isCancelled()) {
+                    long pollingInterval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
+                    logger.debug("Scheduling server state update every {} seconds...", pollingInterval);
+                    globalJob = scheduler.scheduleAtFixedRate(globalRunnable, 1, pollingInterval, TimeUnit.SECONDS);
+                }
             }
 
             Map<String, String> properties = editProperties();
             boolean update = false;
-            if ((apiBaseUrl != null) && !apiBaseUrl.isEmpty()
-                    && ((properties.get(FreeboxBindingConstants.API_BASE_URL) == null)
-                            || !properties.get(FreeboxBindingConstants.API_BASE_URL).equals(apiBaseUrl))) {
+            if (StringUtils.isNotEmpty(apiBaseUrl)
+                    && !apiBaseUrl.equals(properties.get(FreeboxBindingConstants.API_BASE_URL))) {
                 update = true;
                 properties.put(FreeboxBindingConstants.API_BASE_URL, apiBaseUrl);
             }
-            if ((apiVersion != null) && !apiVersion.isEmpty()
-                    && ((properties.get(FreeboxBindingConstants.API_VERSION) == null)
-                            || !properties.get(FreeboxBindingConstants.API_VERSION).equals(apiVersion))) {
+            if (StringUtils.isNotEmpty(apiVersion)
+                    && !apiVersion.equals(properties.get(FreeboxBindingConstants.API_VERSION))) {
                 update = true;
                 properties.put(FreeboxBindingConstants.API_VERSION, apiVersion);
             }
-            if ((hardwareVersion != null) && !hardwareVersion.isEmpty()
-                    && ((properties.get(Thing.PROPERTY_HARDWARE_VERSION) == null)
-                            || !properties.get(Thing.PROPERTY_HARDWARE_VERSION).equals(hardwareVersion))) {
+            if (StringUtils.isNotEmpty(hardwareVersion)
+                    && !hardwareVersion.equals(properties.get(Thing.PROPERTY_HARDWARE_VERSION))) {
                 update = true;
                 properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareVersion);
             }
@@ -305,7 +350,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 } else {
                     t.printStackTrace(new PrintWriter(sw));
                 }
-                logger.error(sw.toString());
+                logger.error("{}", sw);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
@@ -418,14 +463,13 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
         Map<String, String> properties = editProperties();
         boolean update = false;
-        if (!systemConfiguration.getSerial().isEmpty() && ((properties.get(Thing.PROPERTY_SERIAL_NUMBER) == null)
-                || !properties.get(Thing.PROPERTY_SERIAL_NUMBER).equals(systemConfiguration.getSerial()))) {
+        if (!systemConfiguration.getSerial().isEmpty()
+                && !systemConfiguration.getSerial().equals(properties.get(Thing.PROPERTY_SERIAL_NUMBER))) {
             update = true;
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, systemConfiguration.getSerial());
         }
         if (!systemConfiguration.getFirmware_version().isEmpty()
-                && ((properties.get(Thing.PROPERTY_FIRMWARE_VERSION) == null) || !properties
-                        .get(Thing.PROPERTY_FIRMWARE_VERSION).equals(systemConfiguration.getFirmware_version()))) {
+                && !systemConfiguration.getFirmware_version().equals(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
             update = true;
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemConfiguration.getFirmware_version());
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -119,6 +119,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     } else if (command.equals(RewindFastforwardType.FASTFORWARD)) {
                         connection.playerFastForward();
                     }
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    connection.updatePlayerStatus();
+                }
+                break;
+            case CHANNEL_STOP:
+                if (command.equals(OnOffType.ON)) {
+                    connection.playerStop();
                 } else if (command.equals(RefreshType.REFRESH)) {
                     connection.updatePlayerStatus();
                 }
@@ -272,17 +279,24 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         switch (state) {
             case Play:
                 updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             case Pause:
+                updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
+                break;
             case Stop:
             case End:
                 updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+                updateState(CHANNEL_STOP, OnOffType.ON);
                 break;
             case FastForward:
                 updateState(CHANNEL_CONTROL, RewindFastforwardType.FASTFORWARD);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             case Rewind:
                 updateState(CHANNEL_CONTROL, RewindFastforwardType.REWIND);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
         }
     }

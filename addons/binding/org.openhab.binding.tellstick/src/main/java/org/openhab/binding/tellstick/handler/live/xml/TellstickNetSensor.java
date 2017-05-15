@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tellstick.device.iface.Device;
+import org.tellstick.enums.DataType;
 import org.tellstick.enums.DeviceType;
 
 /**
@@ -90,7 +91,7 @@ public class TellstickNetSensor implements Device {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -164,5 +165,27 @@ public class TellstickNetSensor implements Device {
 
     public boolean isUpdated() {
         return updated;
+    }
+
+    public boolean isWindSensor() {
+        boolean res = false;
+        for (DataTypeValue val : data) {
+            if (val.getName() == DataType.WINDAVERAGE) {
+                res = true;
+
+            }
+        }
+        return res;
+    }
+
+    public boolean isRainSensor() {
+        boolean res = false;
+        for (DataTypeValue val : data) {
+            if (val.getName() == DataType.RAINTOTAL) {
+                res = true;
+
+            }
+        }
+        return res;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,11 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -23,25 +27,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Milight bridges can be discovered by sending specially formated UDP packets.
- * This class sends UDP packets on port PORT_SEND_DISCOVER up to three times in a row
+ * Milight bridges v3/v4/v5 and v6 can be discovered by sending specially formated UDP packets.
+ * This class sends UDP packets on port PORT_DISCOVER up to three times in a row
  * and listens for the response and will call discoverResult.bridgeDetected() eventually.
  *
- * @author David Graeff - Initial contribution
+ * @author David Graeff <david.graeff@web.de>
  */
 public class MilightDiscover extends Thread {
     /**
      * Result callback interface.
      */
     public interface DiscoverResult {
-        void bridgeDetected(InetAddress addr, String id);
+        void bridgeDetected(InetAddress addr, String id, int version);
 
         void noBridgeDetected();
     }
 
     ///// Network
-    private byte[] discoverbuffer = "Link_Wi-Fi".getBytes();
-    final private DatagramPacket discoverPacket;
+    private byte[] discoverbuffer_v3 = "Link_Wi-Fi".getBytes();
+    private byte[] discoverbuffer_v6 = "HF-A11ASSISTHREAD".getBytes();
+    private final DatagramPacket discoverPacket_v3;
+    private final DatagramPacket discoverPacket_v6;
     private boolean willbeclosed = false;
     private DatagramSocket datagramSocket;
     private byte[] buffer = new byte[1024];
@@ -51,25 +57,26 @@ public class MilightDiscover extends Thread {
     private Logger logger = LoggerFactory.getLogger(MilightDiscover.class);
 
     ///// Result and resend
-    final private DiscoverResult discoverResult;
+    private final DiscoverResult discoverResult;
     private int resendCounter = 0;
     private ScheduledFuture<?> resendTimer;
-    final private int resendTimeoutInMillis;
-    final private int resendAttempts;
+    private final int resendTimeoutInMillis;
+    private final int resendAttempts;
+    private InetAddress destIP;
 
-    public MilightDiscover(InetAddress broadcast, DiscoverResult discoverResult, int resendTimeoutInMillis,
-            int resendAttempts) throws SocketException {
+    public MilightDiscover(DiscoverResult discoverResult, int resendTimeoutInMillis, int resendAttempts)
+            throws SocketException {
         this.resendAttempts = resendAttempts;
-        this.resendTimeoutInMillis = resendTimeoutInMillis;
-        discoverPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcast,
-                MilightBindingConstants.PORT_SEND_DISCOVER);
+        this.resendTimeoutInMillis = Math.min(resendTimeoutInMillis, 200);
+        discoverPacket_v3 = new DatagramPacket(discoverbuffer_v3, discoverbuffer_v3.length);
+        discoverPacket_v6 = new DatagramPacket(discoverbuffer_v6, discoverbuffer_v6.length);
         datagramSocket = new DatagramSocket(null);
         datagramSocket.setBroadcast(true);
         datagramSocket.bind(null);
         this.discoverResult = discoverResult;
     }
 
-    public void stopReceiving() {
+    public void dispose() {
         willbeclosed = true;
         datagramSocket.close();
         try {
@@ -89,19 +96,62 @@ public class MilightDiscover extends Thread {
     private class SendDiscoverRunnable implements Runnable {
         @Override
         public void run() {
-            try {
-                if (++resendCounter > resendAttempts) {
-                    if (resendTimer != null) {
-                        resendTimer.cancel(false);
-                        resendTimer = null;
-                    }
-                    discoverResult.noBridgeDetected();
+            if (++resendCounter > resendAttempts) {
+                if (resendTimer != null) {
+                    resendTimer.cancel(false);
+                    resendTimer = null;
+                }
+                discoverResult.noBridgeDetected();
+                return;
+            }
+
+            if (destIP != null) {
+                sendDiscover(destIP);
+            } else {
+                Enumeration<NetworkInterface> e;
+                try {
+                    e = NetworkInterface.getNetworkInterfaces();
+                } catch (SocketException e1) {
+                    logger.error("Could not enumerate network interfaces for sending the discover packet!");
+                    stopResend();
                     return;
                 }
-                datagramSocket.send(discoverPacket);
-                logger.debug("Sent discovery packet");
-            } catch (Exception e) {
-                logger.error("Sending a discovery packet failed. " + e.getLocalizedMessage());
+                while (e.hasMoreElements()) {
+                    NetworkInterface networkInterface = e.nextElement();
+                    Iterator<InterfaceAddress> it = networkInterface.getInterfaceAddresses().iterator();
+                    while (it.hasNext()) {
+                        InterfaceAddress address = it.next();
+                        if (address == null) {
+                            continue;
+                        }
+                        InetAddress broadcast = address.getBroadcast();
+                        if (broadcast != null && !address.getAddress().isLoopbackAddress()) {
+                            sendDiscover(broadcast);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        private void sendDiscover(InetAddress destIP) {
+            discoverPacket_v3.setAddress(destIP);
+            discoverPacket_v3.setPort(MilightBindingConstants.PORT_DISCOVER);
+            discoverPacket_v6.setAddress(destIP);
+            discoverPacket_v6.setPort(MilightBindingConstants.PORT_DISCOVER);
+
+            try {
+                datagramSocket.send(discoverPacket_v3);
+            } catch (IOException e) {
+                logger.error("Sending a V3 discovery packet to {} failed. {}", destIP.getHostAddress(),
+                        e.getLocalizedMessage());
+            }
+
+            try {
+                datagramSocket.send(discoverPacket_v6);
+            } catch (IOException e) {
+                logger.error("Sending a V6 discovery packet to {} failed. {}", destIP.getHostAddress(),
+                        e.getLocalizedMessage());
             }
         }
     }
@@ -133,31 +183,38 @@ public class MilightDiscover extends Thread {
     @Override
     public void run() {
         try {
-            logger.debug("Discovery receive thread ready");
+            // logger.debug("Discovery receive thread ready");
 
             // Now loop forever, waiting to receive packets and printing them.
             while (!willbeclosed) {
+                packet.setLength(buffer.length);
                 datagramSocket.receive(packet);
-                String[] msg = new String(buffer).split(",");
+                // example: 10.1.1.27,ACCF23F57AD4,HF-LPB100
+                String[] msg = new String(buffer, 0, packet.getLength()).split(",");
                 if (msg.length >= 2 && msg[1].length() == 12) {
                     // Stop resend timer if we got a packet.
                     if (resendTimer != null) {
                         resendTimer.cancel(true);
                         resendTimer = null;
                     }
-                    discoverResult.bridgeDetected(((InetSocketAddress) packet.getSocketAddress()).getAddress(), msg[1]);
+                    // Determine version: Version 6 sends a third argument != ""
+                    int version = msg.length >= 3 && msg[2].trim().length() > 0 ? 6 : 3;
+                    // Notify all observers
+                    discoverResult.bridgeDetected(((InetSocketAddress) packet.getSocketAddress()).getAddress(), msg[1],
+                            version);
                 } else {
-                    logger.error("Unexpected data received " + msg[0]);
+                    logger.error("Unexpected data received {}", msg[0]);
                 }
-
-                // Reset the length of the packet before reusing it.
-                packet.setLength(buffer.length);
             }
         } catch (IOException e) {
             if (willbeclosed) {
                 return;
             }
-            logger.error(e.getLocalizedMessage());
+            logger.error("{}", e.getLocalizedMessage());
         }
+    }
+
+    public void setFixedAddr(InetAddress addr) {
+        destIP = addr;
     }
 }

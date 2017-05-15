@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
-    private static final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
     private static URI configDescriptionUriChannel;
 
     private HomematicThingTypeProvider thingTypeProvider;
@@ -67,8 +67,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     private static final String[] STATUS_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_UNREACH,
             DATAPOINT_NAME_CONFIG_PENDING, DATAPOINT_NAME_DEVICE_IN_BOOTLOADER, DATAPOINT_NAME_UPDATE_PENDING };
 
-    private static final String[] IGNORE_DATAPOINT_NAMES = new String[] { VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE,
-            VIRTUAL_DATAPOINT_NAME_FIRMWARE, VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY, DATAPOINT_NAME_AES_KEY };
+    private static final String[] IGNORE_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_AES_KEY,
+            VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY };
 
     public HomematicTypeGeneratorImpl() {
         try {
@@ -101,6 +101,14 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
     protected void unsetConfigDescriptionProvider(HomematicConfigDescriptionProvider configDescriptionProvider) {
         this.configDescriptionProvider = null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize() {
+        MetadataUtils.initialize();
     }
 
     /**
@@ -226,7 +234,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         ChannelType channelType;
         if (dp.getName().equals(DATAPOINT_NAME_LOWBAT)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY;
-        } else if (dp.getName().equals(DATAPOINT_NAME_RSSI_DEVICE)) {
+        } else if (dp.getName().equals(VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_SIGNAL_STRENGTH;
         } else {
             String itemType = MetadataUtils.getItemType(dp);
@@ -245,7 +253,11 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             if (dp.isNumberType()) {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-                BigDecimal step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
+
+                BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
+                if (step == null) {
+                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
+                }
                 state = new StateDescription(min, max, step, MetadataUtils.getStatePattern(dp), dp.isReadOnly(),
                         options);
             } else {
@@ -297,7 +309,6 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 
-                    builder.withPattern(MetadataUtils.getPattern(dp));
                     builder.withGroupName(groupName);
                     parms.add(builder.build());
                 }

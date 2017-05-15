@@ -9,8 +9,8 @@ The binding can auto-discover the Pioneer AVRs present on your local network. Th
 org.openhab.pioneeravr:enableAutoDiscovery=false
 ```
 
-This configuration parameter only control the PioneerAVR auto-discovery process, not the OpenHAB auto-discovery. Moreover, 
-if the OpenHAB auto-discovery is disabled, the PioneerAVR auto-discovery is disabled too.
+This configuration parameter only control the PioneerAVR auto-discovery process, not the openHAB auto-discovery. Moreover,
+if the openHAB auto-discovery is disabled, the PioneerAVR auto-discovery is disabled too.
 
 ##Thing configuration
 

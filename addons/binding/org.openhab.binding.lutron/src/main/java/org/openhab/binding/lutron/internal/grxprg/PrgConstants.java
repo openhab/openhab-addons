@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,36 +18,36 @@ import org.openhab.binding.lutron.LutronBindingConstants;
  */
 public class PrgConstants {
 
-    public final static ThingTypeUID THING_TYPE_PRGBRIDGE = new ThingTypeUID(LutronBindingConstants.BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_PRGBRIDGE = new ThingTypeUID(LutronBindingConstants.BINDING_ID,
             "prgbridge");
-    public final static ThingTypeUID THING_TYPE_GRAFIKEYE = new ThingTypeUID(LutronBindingConstants.BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_GRAFIKEYE = new ThingTypeUID(LutronBindingConstants.BINDING_ID,
             "grafikeye");
 
     // Channels for the PRG Interface
-    final static String CHANNEL_BUTTONPRESS = "buttonpress";
-    final static String CHANNEL_ZONELOWERSTOP = "zonelowerstop";
-    final static String CHANNEL_ZONERAISESTOP = "zoneraisestop";
-    final static String CHANNEL_TIMECLOCK = "timeclock";
-    final static String CHANNEL_SCHEDULE = "schedule";
-    final static String CHANNEL_SUNRISE = "sunrise";
-    final static String CHANNEL_SUNSET = "sunset";
-    final static String CHANNEL_SUPERSEQUENCESTART = "ssstart";
-    final static String CHANNEL_SUPERSEQUENCEPAUSE = "sspause";
-    final static String CHANNEL_SUPERSEQUENCERESUME = "ssresume";
+    static final String CHANNEL_BUTTONPRESS = "buttonpress";
+    static final String CHANNEL_ZONELOWERSTOP = "zonelowerstop";
+    static final String CHANNEL_ZONERAISESTOP = "zoneraisestop";
+    static final String CHANNEL_TIMECLOCK = "timeclock";
+    static final String CHANNEL_SCHEDULE = "schedule";
+    static final String CHANNEL_SUNRISE = "sunrise";
+    static final String CHANNEL_SUNSET = "sunset";
+    static final String CHANNEL_SUPERSEQUENCESTART = "ssstart";
+    static final String CHANNEL_SUPERSEQUENCEPAUSE = "sspause";
+    static final String CHANNEL_SUPERSEQUENCERESUME = "ssresume";
 
-    final static String CHANNEL_SUPERSEQUENCESTATUS = "ssstatus";
-    final static String CHANNEL_SUPERSEQUENCENEXTSTEP = "ssnextstep";
-    final static String CHANNEL_SUPERSEQUENCENEXTMIN = "ssnextminute";
-    final static String CHANNEL_SUPERSEQUENCENEXTSEC = "ssnextsecond";
+    static final String CHANNEL_SUPERSEQUENCESTATUS = "ssstatus";
+    static final String CHANNEL_SUPERSEQUENCENEXTSTEP = "ssnextstep";
+    static final String CHANNEL_SUPERSEQUENCENEXTMIN = "ssnextminute";
+    static final String CHANNEL_SUPERSEQUENCENEXTSEC = "ssnextsecond";
 
     // Channels for the Grafik Eye
-    final static String CHANNEL_SCENE = "scene";
-    final static String CHANNEL_SCENELOCK = "scenelock";
-    final static String CHANNEL_SCENESEQ = "sceneseq";
-    final static String CHANNEL_ZONELOCK = "zonelock";
-    final static String CHANNEL_ZONELOWER = "zonelower";
-    final static String CHANNEL_ZONERAISE = "zoneraise";
-    final static String CHANNEL_ZONEFADE = "zonefade";
-    final static String CHANNEL_ZONEINTENSITY = "zoneintensity";
-    final static String CHANNEL_ZONESHADE = "zoneshade";
+    static final String CHANNEL_SCENE = "scene";
+    static final String CHANNEL_SCENELOCK = "scenelock";
+    static final String CHANNEL_SCENESEQ = "sceneseq";
+    static final String CHANNEL_ZONELOCK = "zonelock";
+    static final String CHANNEL_ZONELOWER = "zonelower";
+    static final String CHANNEL_ZONERAISE = "zoneraise";
+    static final String CHANNEL_ZONEFADE = "zonefade";
+    static final String CHANNEL_ZONEINTENSITY = "zoneintensity";
+    static final String CHANNEL_ZONESHADE = "zoneshade";
 }

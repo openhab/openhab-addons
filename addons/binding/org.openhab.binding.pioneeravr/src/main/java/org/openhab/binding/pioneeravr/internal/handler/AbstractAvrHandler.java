@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -154,7 +154,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Send a command to the AVR based on the OpenHAB command received.
+     * Send a command to the AVR based on the openHAB command received.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -241,7 +241,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Notify an AVR power state update to OpenHAB
+     * Notify an AVR power state update to openHAB
      *
      * @param response
      */
@@ -259,7 +259,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Notify an AVR volume level update to OpenHAB
+     * Notify an AVR volume level update to openHAB
      *
      * @param response
      */
@@ -273,7 +273,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Notify an AVR mute state update to OpenHAB
+     * Notify an AVR mute state update to openHAB
      *
      * @param response
      */
@@ -283,7 +283,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Notify an AVR input source channel update to OpenHAB
+     * Notify an AVR input source channel update to openHAB
      *
      * @param response
      */
@@ -293,7 +293,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
     }
 
     /**
-     * Notify an AVR displayed information update to OpenHAB
+     * Notify an AVR displayed information update to openHAB
      *
      * @param response
      */

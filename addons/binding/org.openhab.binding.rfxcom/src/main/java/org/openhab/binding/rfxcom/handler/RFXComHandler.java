@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,6 @@ package org.openhab.binding.rfxcom.handler;
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -30,7 +29,7 @@ import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
@@ -45,14 +44,11 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComHandler extends BaseThingHandler implements DeviceMessageListener {
+    private static final int LOW_BATTERY_LEVEL = 1;
 
-    private Logger logger = LoggerFactory.getLogger(RFXComHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RFXComHandler.class);
 
-    private final int LOW_BATTERY_LEVEL = 1;
-
-    ScheduledFuture<?> refreshJob;
     private RFXComBridgeHandler bridgeHandler;
-
     private RFXComDeviceConfiguration config;
 
     public RFXComHandler(Thing thing) {
@@ -66,8 +62,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
         if (bridgeHandler != null) {
 
             if (command instanceof RefreshType) {
-                // Not supported
-
+                logger.trace("Received unsupported Refresh command");
             } else {
 
                 try {
@@ -91,10 +86,10 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                         logger.warn("RFXCOM doesn't support transmitting for channel '{}'", channelUID.getId());
                     }
 
-                } catch (RFXComNotImpException e) {
-                    logger.error("Message not supported: {}", e.getMessage());
+                } catch (RFXComMessageNotImplementedException e) {
+                    logger.error("Message not supported", e);
                 } catch (RFXComException e) {
-                    logger.error("Transmitting error: {}", e.getMessage());
+                    logger.error("Transmitting error", e);
                 }
             }
 
@@ -160,7 +155,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
             String id = message.getDeviceId();
             if (config.deviceId.equals(id)) {
                 RFXComBaseMessage msg = (RFXComBaseMessage) message;
-                String receivedId = packetTypeThingMap.get(msg.packetType).getId();
+                String receivedId = PACKET_TYPE_THING_TYPE_UID_MAP.get(msg.packetType).getId();
                 logger.debug("Received message from bridge: {} message: {}", bridge, message);
 
                 if (receivedId.equals(getThing().getThingTypeUID().getId())) {
@@ -272,7 +267,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                 }
             }
         } catch (Exception e) {
-            logger.error("Error occurred during message receiving: {}", e.getMessage());
+            logger.error("Error occurred during message receiving", e);
         }
     }
 
@@ -285,7 +280,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
     private State convertSignalLevelToSystemWideLevel(State signalLevel) {
 
         int level = ((DecimalType) signalLevel).intValue();
-        int newLevel = 0;
+        int newLevel;
 
         /*
          * RFXCOM signal levels are always between 0-15.
@@ -340,11 +335,6 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
      * @return Battery level in system wide level
      */
     private State convertBatteryLevelToSystemWideLevel(State batteryLevel) {
-
-        /*
-         * RFXCOM signal levels are always between 0-9.
-         *
-         */
         int level = ((DecimalType) batteryLevel).intValue();
         level = (level + 1) * 10;
         return new DecimalType(level);

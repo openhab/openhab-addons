@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,7 +31,7 @@ import org.openhab.binding.rfxcom.internal.connector.RFXComJD2XXConnector;
 import org.openhab.binding.rfxcom.internal.connector.RFXComSerialConnector;
 import org.openhab.binding.rfxcom.internal.connector.RFXComTcpConnector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Commands;
@@ -53,6 +53,7 @@ import gnu.io.NoSuchPortException;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComBridgeHandler extends BaseBridgeHandler {
+    private static final int TIMEOUT = 5000;
 
     private Logger logger = LoggerFactory.getLogger(RFXComBridgeHandler.class);
 
@@ -61,7 +62,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
     private List<DeviceMessageListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
-    private static final int timeout = 5000;
     private static byte seqNbr = 0;
     private static RFXComTransmitterMessage responseMessage = null;
     private Object notifierObject = new Object();
@@ -78,7 +78,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         logger.debug("Handler disposed.");
 
         for (DeviceMessageListener deviceStatusListener : deviceStatusListeners) {
@@ -139,7 +139,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         responseMessage = respMessage;
     }
 
-    private void connect() {
+    private synchronized void connect() {
         logger.debug("Connecting to RFXCOM transceiver");
 
         try {
@@ -175,7 +175,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 Thread.sleep(200);
 
                 if (configuration.ignoreConfig) {
-                    logger.debug("Ignoring tranceiver configuration");
+                    logger.debug("Ignoring transceiver configuration");
                 } else {
 
                     byte[] setMode = new byte[0];
@@ -185,7 +185,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
                     } catch (IllegalArgumentException e) {
 
-                        if (configuration.setMode != null && configuration.setMode.isEmpty() == false) {
+                        if (configuration.setMode != null && !configuration.setMode.isEmpty()) {
                             try {
                                 setMode = DatatypeConverter.parseHexBinary(configuration.setMode);
 
@@ -212,9 +212,9 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (NoSuchPortException e) {
-            logger.error("Connection to RFXCOM transceiver failed: invalid port");
+            logger.error("Connection to RFXCOM transceiver failed", e);
         } catch (IOException e) {
-            logger.error("Connection to RFXCOM transceiver failed, reason: {}", e.getMessage());
+            logger.error("Connection to RFXCOM transceiver failed", e);
             if ("device not opened (3)".equalsIgnoreCase(e.getMessage())) {
                 if (connector instanceof RFXComJD2XXConnector) {
                     logger.info("Automatically Discovered RFXCOM bridges use FTDI chip driver (D2XX)."
@@ -225,7 +225,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (Exception e) {
-            logger.error("Connection to RFXCOM transceiver failed, reason: {}", e.getMessage());
+            logger.error("Connection to RFXCOM transceiver failed", e);
         } catch (UnsatisfiedLinkError e) {
             logger.error("Error occurred when trying to load native library for OS '{}' version '{}', processor '{}'",
                     System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"), e);
@@ -241,14 +241,14 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX315:
                     if (conf.transceiverType != null) {
                         switch (conf.transceiverType) {
-                            case RFXComBindingConstants.TRANSCEIVER_310MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_310MHZ:
                                 msg.transceiverType = TransceiverType._310MHZ;
                                 break;
-                            case RFXComBindingConstants.TRANSCEIVER_315MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_315MHZ:
                                 msg.transceiverType = TransceiverType._315MHZ;
                                 break;
                             default:
-                                throw new IllegalArgumentException("Illegal tranceiver type");
+                                throw new IllegalArgumentException("Illegal transceiver type");
                         }
                     }
                     break;
@@ -265,26 +265,26 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 case RFXComBindingConstants.BRIDGE_TYPE_TCP_BRIDGE:
                     if (conf.transceiverType != null) {
                         switch (conf.transceiverType) {
-                            case RFXComBindingConstants.TRANSCEIVER_433_92MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_433_92MHZ:
                                 msg.transceiverType = TransceiverType._433_92MHZ_TRANSCEIVER;
                                 break;
-                            case RFXComBindingConstants.TRANSCEIVER_433_92MHz_R:
+                            case RFXComBindingConstants.RECEIVER_433_92MHZ:
                                 msg.transceiverType = TransceiverType._433_92MHZ_RECEIVER_ONLY;
                                 break;
-                            case RFXComBindingConstants.TRANSCEIVER_310MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_310MHZ:
                                 msg.transceiverType = TransceiverType._310MHZ;
                                 break;
-                            case RFXComBindingConstants.TRANSCEIVER_315MHz:
+                            case RFXComBindingConstants.TRANSCEIVER_315MHZ:
                                 msg.transceiverType = TransceiverType._315MHZ;
                                 break;
                             default:
-                                throw new IllegalArgumentException("Illegal tranceiver type");
+                                throw new IllegalArgumentException("Illegal transceiver type");
                         }
                     }
                     break;
 
                 default:
-                    throw new IllegalArgumentException("Illegal tranceiver type");
+                    throw new IllegalArgumentException("Illegal transceiver type");
             }
 
             msg.enableUndecodedPackets = configuration.enableUndecoded;
@@ -336,9 +336,9 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
         try {
 
-            RFXComTransmitterMessage resp = null;
+            RFXComTransmitterMessage resp;
             synchronized (notifierObject) {
-                notifierObject.wait(timeout);
+                notifierObject.wait(TIMEOUT);
                 resp = getResponseMessage();
             }
 
@@ -351,9 +351,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
                     case NAK:
                     case NAK_INVALID_AC_ADDRESS:
-                    case UNKNOWN:
-                        logger.error("Command transmit failed, '{}' received", resp.response);
-                        break;
                 }
             } else {
                 logger.warn("No response received from transceiver");
@@ -361,7 +358,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             }
 
         } catch (InterruptedException ie) {
-            logger.error("No acknowledge received from RFXCOM controller, timeout {}ms ", timeout);
+            logger.error("No acknowledge received from RFXCOM controller, timeout {}ms ", TIMEOUT);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
@@ -404,11 +401,11 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                         }
                     }
                 }
-            } catch (RFXComNotImpException e) {
+            } catch (RFXComMessageNotImplementedException e) {
                 logger.debug("Message not supported, data: {}", DatatypeConverter.printHexBinary(packet));
             } catch (RFXComException e) {
-                logger.error("Error occurred during packet receiving, data: {}, cause: {}",
-                        DatatypeConverter.printHexBinary(packet), e.getMessage());
+                logger.error("Error occurred during packet receiving, data: {}",
+                        DatatypeConverter.printHexBinary(packet), e);
             }
 
             updateStatus(ThingStatus.ONLINE);

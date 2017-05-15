@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2014-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,21 +26,22 @@ public class TankerkoenigBindingConstants {
     public static final String BINDING_ID = "tankerkoenig";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_TANKSTELLE = new ThingTypeUID(BINDING_ID, "tankstelle");
-    public final static ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "config");
+    public static final ThingTypeUID THING_TYPE_TANKSTELLE = new ThingTypeUID(BINDING_ID, "tankstelle");
+    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "config");
 
-    public final static Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_TANKSTELLE);
 
     // List of all Channel ids
-    public final static String CHANNEL_DIESEL = "diesel";
-    public final static String CHANNEL_E10 = "e10";
-    public final static String CHANNEL_E5 = "e5";
+    public static final String CHANNEL_DIESEL = "diesel";
+    public static final String CHANNEL_E10 = "e10";
+    public static final String CHANNEL_E5 = "e5";
 
     // config
-    public final static String CONFIG_LOCATION_ID = "locationid";
-    public final static String CONFIG_API_KEY = "apikey";
-    public final static String CONFIG_REFRESH = "refresh";
-    public final static String CONFIG_SETUP_MODE = "setupmode";
+    public static final String CONFIG_LOCATION_ID = "locationid";
+    public static final String CONFIG_API_KEY = "apikey";
+    public static final String CONFIG_REFRESH = "refresh";
+    public static final String CONFIG_SETUP_MODE = "setupmode";
+    public static final String CONFIG_USE_OPENINGTIME = "use_OpeningTime";
 
 }

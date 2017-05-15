@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- * <p>
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,10 +8,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.CURTAIN1;
+
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
-import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
 /**
  * Test for RFXCom-binding
@@ -21,13 +21,18 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
  */
 public class RFXComCurtain1MessageTest {
     @Test
-    public void checkForSupportTest() throws RFXComException, RFXComNotImpException {
-        RFXComMessageFactory.createMessage(PacketType.CURTAIN1);
+    public void checkForSupportTest() throws RFXComException {
+        RFXComMessageFactory.createMessage(CURTAIN1);
     }
 
     @Test
-    public void basicBoundaryCheck() throws RFXComException, RFXComNotImpException {
-        RFXComTestHelper.basicBoundaryCheck(PacketType.CURTAIN1);
+    public void basicBoundaryCheck() throws RFXComException {
+        RFXComCurtain1Message message = (RFXComCurtain1Message) RFXComMessageFactory.createMessage(CURTAIN1);
+
+        message.subType = RFXComCurtain1Message.SubType.HARRISON;
+        message.command = RFXComCurtain1Message.Commands.OPEN;
+
+        RFXComTestHelper.basicBoundaryCheck(CURTAIN1, message);
     }
 
     // TODO please add tests for real messages
