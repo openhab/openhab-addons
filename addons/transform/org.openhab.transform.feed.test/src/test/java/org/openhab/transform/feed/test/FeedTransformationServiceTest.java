@@ -42,22 +42,22 @@ public class FeedTransformationServiceTest {
      * This is invalid XML 1.0 file, because the {@literal <br>
      * } tag is not closed
      */
-    private static String MOCK_CONTENT_INVALID_XML = "rss_2.0_invalid";
+    private static final String MOCK_CONTENT_INVALID_XML = "rss_2.0_invalid";
 
     /**
      * This file does not contain {@literal <xml>} declaration
      */
-    private static String MOCK_CONTENT_MISSING_XML_DECLARATION = "rss_2.0_missing_xml_declaration";
+    private static final String MOCK_CONTENT_MISSING_XML_DECLARATION = "rss_2.0_missing_xml_declaration";
 
     /**
      * Name of the test resources output folder
      */
-    private static String TEST_OUTPUT_FOLDER = "output";
+    private static final String TEST_OUTPUT_FOLDER = "output";
 
     /**
      * Name of the test resources input folder
      */
-    private static String TEST_INPUT_FOLDER = "input";
+    private static final String TEST_INPUT_FOLDER = "input";
 
     private FeedTransformationService processor;
 
