@@ -1,53 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/">
-  <channel rdf:about="http://www.feedforall.com">
-    <title>Sample Feed</title>
-    <link>http://www.feedforall.com</link>
-    <description>Take a look at some of FeedForAll's favorite software and resources for learning more about RSS.</description>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/">
+  <channel rdf:about="http://example.com/">
+    <title>ExampleChannel</title>
+    <link>http://example.com/</link>
+    <description>Myexamplechannel</description>
     <items>
       <rdf:Seq>
-        <rdf:li rdf:resource="http://www.feedforall.com" />
-        <rdf:li rdf:resource="http://www.feedforall.com/feedforall-partners.htm" />
-        <rdf:li rdf:resource="http://www.feedforall.com/feedforall-partners.htm" />
+        <rdf:li rdf:resource="http://example.com/2002/09/01" />
+        <rdf:li rdf:resource="http://example.com/2002/09/02" />
       </rdf:Seq>
     </items>
-    <dc:creator>marketing@feedforall.com</dc:creator>
-    <dc:subject>
-      <rdf:Description>
-        <taxo:topic rdf:resource="www.dmoz.com" />
-        <rdf:value>Computers/Software/Internet/Site Management/Content Management</rdf:value>
-      </rdf:Description>
-    </dc:subject>
-    <dc:date>2004-10-26T19:06:44Z</dc:date>
-    <dc:language>en-us</dc:language>
-    <dc:rights>Copyright 2004 NotePage, Inc.</dc:rights>
   </channel>
-  <image>
-    <title>FeedForAll Sample Feed</title>
-    <url>http://www.feedforall.com/feedforall-temp.gif</url>
-    <link>http://www.feedforall.com/industry-solutions.htm</link>
-  </image>
-  <item rdf:about="http://www.feedforall.com">
-    <title>RSS Resources</title>
-    <link>http://www.feedforall.com</link>
-    <description>Be sure to take a look at some of our favorite RSS Resources&lt;br&gt;
-&lt;a href="http://www.rss-specifications.com"&gt;RSS Specifications&lt;/a&gt;&lt;br&gt;
-&lt;a href="http://www.blog-connection.com"&gt;Blog Connection&lt;/a&gt;&lt;br&gt;
-&lt;br&gt;</description>
-    <dc:date>2004-10-26T19:01:01Z</dc:date>
+  <item rdf:about="http://example.com/2002/09/01">
+    <title>NewsforSeptembertheSecond</title>
+    <link>http://example.com/2002/09/01</link>
+    <description>otherthingshappenedtoday</description>
   </item>
-  <item rdf:about="http://www.feedforall.com/feedforall-partners.htm">
-    <title>Recommended Desktop Feed Reader Software</title>
-    <link>http://www.feedforall.com/feedforall-partners.htm</link>
-    <description>&lt;b&gt;FeedDemon&lt;/b&gt; enables you to quickly read and gather information from hundreds of web sites - without having to visit them. Don't waste any more time checking your favorite web sites for updates. Instead, use FeedDemon and make them come to you. &lt;br&gt;
-More &lt;a href="http://store.esellerate.net/a.asp?c=1_SKU5139890208_AFL403073819"&gt;FeedDemon Information&lt;/a&gt;</description>
-    <dc:date>2004-10-26T19:03:25Z</dc:date>
-  </item>
-  <item rdf:about="http://www.feedforall.com/feedforall-partners.htm">
-    <title>Recommended Web Based Feed Reader Software</title>
-    <link>http://www.feedforall.com/feedforall-partners.htm</link>
-    <description>&lt;b&gt;FeedScout&lt;/b&gt; enables you to view RSS/ATOM/RDF feeds from different sites directly in Internet Explorer. You can even set your Home Page to show favorite feeds. Feed Scout is a plug-in for Internet Explorer, so you won't have to learn anything except for how to press 2 new buttons on Internet Explorer toolbar. &lt;br&gt;
-More &lt;a href="http://www.bytescout.com/feedscout.html"&gt;Information on FeedScout&lt;/a&gt;&lt;br&gt;</description>
-    <dc:date>2004-10-26T19:06:44Z</dc:date>
+  <item rdf:about="http://example.com/2002/09/02">
+    <title>NewsforSeptembertheFirst</title>
+    <link>http://example.com/2002/09/02</link>
   </item>
 </rdf:RDF>

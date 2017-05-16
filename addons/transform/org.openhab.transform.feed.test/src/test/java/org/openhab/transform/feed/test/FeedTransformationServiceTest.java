@@ -81,13 +81,6 @@ public class FeedTransformationServiceTest {
     }
 
     @Test
-    public void testTransformToRss20() {
-        String inputFile = MOCK_CONTENT_DEFAULT;
-        String outputFormat = FeedTransformationService.RSS_2_00;
-        testTransformation(inputFile, outputFormat, false);
-    }
-
-    @Test
     public void testTransformToRss100() {
         String inputFile = MOCK_CONTENT_DEFAULT;
         String outputFormat = FeedTransformationService.RSS_1_00;

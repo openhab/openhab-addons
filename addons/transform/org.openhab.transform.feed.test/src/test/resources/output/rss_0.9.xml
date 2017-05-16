@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://my.netscape.com/rdf/simple/0.9/">
   <channel>
-    <title>Sample Feed</title>
-    <link>http://www.feedforall.com</link>
-    <description>Take a look at some of FeedForAll's favorite software and resources for learning more about RSS.</description>
+    <title>ExampleChannel</title>
+    <link>http://example.com/</link>
+    <description>Myexamplechannel</description>
   </channel>
-  <image>
-    <title>FeedForAll Sample Feed</title>
-    <url>http://www.feedforall.com/feedforall-temp.gif</url>
-    <link>http://www.feedforall.com/industry-solutions.htm</link>
-  </image>
   <item>
-    <title>RSS Resources</title>
-    <link>http://www.feedforall.com</link>
+    <title>NewsforSeptembertheSecond</title>
+    <link>http://example.com/2002/09/01</link>
   </item>
   <item>
-    <title>Recommended Desktop Feed Reader Software</title>
-    <link>http://www.feedforall.com/feedforall-partners.htm</link>
-  </item>
-  <item>
-    <title>Recommended Web Based Feed Reader Software</title>
-    <link>http://www.feedforall.com/feedforall-partners.htm</link>
+    <title>NewsforSeptembertheFirst</title>
+    <link>http://example.com/2002/09/02</link>
   </item>
 </rdf:RDF>
