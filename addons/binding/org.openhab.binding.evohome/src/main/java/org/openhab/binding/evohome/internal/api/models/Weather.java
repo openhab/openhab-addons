@@ -1,4 +1,4 @@
-package org.openhab.binding.evohome.internal.api;
+package org.openhab.binding.evohome.internal.api.models;
 
 //
 // import java.math.BigDecimal;

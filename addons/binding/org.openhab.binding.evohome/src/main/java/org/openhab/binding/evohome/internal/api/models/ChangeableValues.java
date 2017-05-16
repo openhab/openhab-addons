@@ -1,4 +1,5 @@
-// package org.openhab.binding.evohome.internal.api;
+package org.openhab.binding.evohome.internal.api.models;
+
 //
 // import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 // import org.codehaus.jackson.annotate.JsonProperty;
