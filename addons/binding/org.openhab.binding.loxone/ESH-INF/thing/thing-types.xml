@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="loxone"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="miniserver">
+    
+        <label>Miniserver</label>
+        <description>www.loxone.de</description>
+        
+        <properties>
+            <property name="Serial number"></property>
+            <property name="Project name"></property>           
+            <property name="Miniserver name"></property>
+            <property name="Cloud address"></property>
+        </properties>
+        
+        <config-description>
+        
+            <parameter-group name="miniserver">
+                <label>Miniserver settings</label>
+                <description>Connection to Miniserver</description>
+                <advanced>false</advanced>
+            </parameter-group>
+
+            <parameter-group name="timeouts">
+                <label>Timeout settings</label>
+                <description>Various timeout parameters</description>
+                <advanced>true</advanced>
+            </parameter-group>
+                
+            <parameter name="host" type="text" required="true" groupName="miniserver">
+                <label>Host</label>
+                <context>network_address</context>
+                <description>Host address or IP of the Loxone Miniserver</description>
+            </parameter>
+            <parameter name="port" type="integer" min="0" required="true" groupName="miniserver">
+                <label>Port</label>
+                <description>Web interface port of the Loxone Miniserver</description>
+            </parameter>
+            <parameter name="user" type="text" required="true" groupName="miniserver">
+                <label>User</label>
+                <description>User name on the Loxone Miniserver</description>
+            </parameter>
+            <parameter name="password" type="text" required="true" groupName="miniserver">
+                <label>Password</label>
+                <context>password</context>
+                <description>User password on the Loxone Miniserver</description>
+            </parameter>
+            
+            <parameter name="firstConDelay" type="integer" min="0" max="120" required="true" groupName="timeouts">
+                <label>First connection delay</label>
+                <description>Time between binding initialization and first connection attempt (seconds, 0-120)</description>
+                <advanced>true</advanced>
+                <default>1</default>                
+            </parameter>
+            <parameter name="keepAlivePeriod" type="integer" min="1" max="600" required="true" groupName="timeouts">
+                <label>Period between connection keep-alive messages</label>
+                <description>Time between sending two consecutive keep-alive messages (seconds, 1-600)</description>
+                <advanced>true</advanced>
+                <default>240</default>                
+            </parameter>
+            <parameter name="connectErrDelay" type="integer" min="0" max="600" required="true" groupName="timeouts">
+                <label>Connect error delay</label>
+                <description>Time between failed websocket connect attempts (seconds, 0-600)</description>
+                <advanced>true</advanced>
+                <default>10</default>                
+            </parameter>
+            <parameter name="userErrorDelay" type="integer" min="0" max="3600" required="true" groupName="timeouts">
+                <label>Authentication error delay</label>
+                <description>Time in seconds between user login error as a result of wrong name/password or no authority and next connection attempt (seconds, 0-3600)</description>
+                <advanced>true</advanced>
+                <default>60</default>                
+            </parameter>
+            <parameter name="comErrorDelay" type="integer" min="0" max="3600" required="true" groupName="timeouts">
+                <label>Communication error delay</label>
+                <description>Time between connection close (as a result of some communication error) and next connection attempt (seconds, 0-3600)</description>
+                <advanced>true</advanced>
+                <default>30</default>                
+            </parameter>
+
+        </config-description>
+        
+    </thing-type>
+
+</thing:thing-descriptions>
+
