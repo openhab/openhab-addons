@@ -1,6 +1,8 @@
 package org.openhab.binding.omnilink.handler;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +15,11 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.openhab.binding.omnilink.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
@@ -79,6 +83,18 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("handleCommand called); " + command);
+        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
+        if (OmnilinkBindingConstants.CHANNEL_SYSTEMDATE.equals(channelParts[3])) {
+            if (command instanceof DateTimeType) {
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(((DateTimeType) command).getCalendar().toInstant(),
+                        ZoneId.systemDefault());
+                setOmnilinkSystemDate(zdt);
+            } else if (command instanceof RefreshType) {
+                getSystemStatus();
+            } else {
+                logger.warn("Invalid command for system date, must be DateTimeType, instead was: {}", command);
+            }
+        }
     }
 
     public Connection getOmnilinkConnection() {
@@ -429,4 +445,24 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             }
         }, listeningExecutor);
     }
+
+    public void setOmnilinkSystemDate(ZonedDateTime date) {
+
+        boolean inDaylightSavings = date.getZone().getRules().isDaylightSavings(date.toInstant());
+
+        try {
+            listeningExecutor.submit(new Callable<Void>() {
+
+                @Override
+                public Void call() throws Exception {
+                    omniConnection.setTimeCommand(date.getYear() - 2000, date.getMonthValue(), date.getDayOfMonth(),
+                            date.getDayOfWeek().getValue(), date.getHour(), date.getMinute(), inDaylightSavings);
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("Error sending command", e);
+        }
+    }
+
 }

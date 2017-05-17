@@ -9,6 +9,7 @@
         <description>Ethernet access point to Omnilink control system</description>
             <channels>
                 <channel id="sysdate" typeId="sysDate" />
+                
             </channels>
         <config-description>
             <parameter name="ipAddress" type="text" required="true">
