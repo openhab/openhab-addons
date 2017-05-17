@@ -152,6 +152,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
                 } catch (Exception e) {
                     logger.error("Error trying to reconnect", e);
+                    updateStatus(ThingStatus.OFFLINE);
                     if (secondsUntilReconnect < 300) {
                         secondsUntilReconnect = secondsUntilReconnect * 2;
                     }
