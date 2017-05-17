@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -57,6 +58,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private Map<Integer, Thing> unitThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     private Map<Integer, Thing> zoneThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     private Map<Integer, Thing> buttonThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
+
+    private ScheduledFuture<?> scheduledRefresh;
     // private CacheHolder<Unit> nodes;
     private int secondsUntilReconnect = 1;
 
@@ -124,6 +127,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
         getSystemInfo();
         getSystemStatus();
+        // let's start a task which refreshes status every 6 hours
+        scheduleRefresh();
     }
 
     private void makeOmnilinkConnection() throws Exception {
@@ -163,19 +168,21 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }, secondsUntilReconnect, TimeUnit.SECONDS);
     }
 
+    private void handleUnitStatus(UnitStatus stat) {
+        Integer number = stat.getNumber();
+        Thing theThing = unitThings.get(number);
+        logger.debug("received status update for unit: " + number + ", status: " + stat.getStatus());
+        if (theThing != null) {
+            ((UnitHandler) theThing.getHandler()).handleUnitStatus(stat);
+        }
+    }
+
     @Override
     public void objectStausNotification(ObjectStatus status) {
         Status[] statuses = status.getStatuses();
         for (Status s : statuses) {
             if (s instanceof UnitStatus) {
-                UnitStatus stat = (UnitStatus) s;
-                Integer number = stat.getNumber();
-                Thing theThing = unitThings.get(number);
-                logger.debug("received status update for unit: " + number + ", status: " + stat.getStatus());
-                if (theThing != null) {
-                    ((UnitHandler) theThing.getHandler()).handleUnitStatus(stat);
-                    break;
-                }
+                handleUnitStatus((UnitStatus) s);
             } else if (s instanceof ZoneStatus) {
                 ZoneStatus stat = (ZoneStatus) s;
                 Integer number = new Integer(stat.getNumber());
@@ -183,7 +190,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
                 if (theThing != null) {
                     ((ZoneHandler) theThing.getHandler()).handleZoneStatus(stat);
-                    break;
                 }
             } else if (s instanceof AreaStatus) {
                 AreaStatus areaStatus = (AreaStatus) s;
@@ -209,7 +215,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             @Override
             public void onSuccess(UnitStatus[] status) {
                 for (UnitStatus unitStatus : status) {
-                    logger.debug("received unit status: {}", unitStatus);
+                    handleUnitStatus(unitStatus);
                 }
             }
         });
@@ -466,4 +472,16 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
+    private void scheduleRefresh() {
+        int interval = 60 * 60 * 6;
+        logger.info("Scheduling refresh updates at {} seconds", interval);
+        scheduledRefresh = scheduler.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                logger.debug("Running scheduled refresh");
+                getSystemStatus();
+                loadUnitStatuses();
+            }
+        }, interval, interval, TimeUnit.SECONDS);
+    }
 }
