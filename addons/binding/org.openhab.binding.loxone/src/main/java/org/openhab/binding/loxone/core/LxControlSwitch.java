@@ -91,7 +91,7 @@ public class LxControlSwitch extends LxControl {
 
     /**
      * Get current value of the switch'es state.
-     * 
+     *
      * @return
      *         0 - switch off, 1 - switch on
      */
@@ -100,6 +100,6 @@ public class LxControlSwitch extends LxControl {
         if (state != null) {
             return state.getValue();
         }
-        throw new NullPointerException("Switch state 'active' is null");
+        return -1;
     }
 }

@@ -31,9 +31,6 @@ public class LxUuid {
      *            identifier retrieved from Loxone Miniserver
      */
     public LxUuid(String uuid) {
-        if (uuid == null) {
-            throw new NullPointerException("UUID can't be null");
-        }
         this.uuid = uuid;
         updated = true;
     }

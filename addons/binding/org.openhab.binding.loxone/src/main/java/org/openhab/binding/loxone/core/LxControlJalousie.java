@@ -173,14 +173,16 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      */
     public void moveToPosition(double position) throws IOException {
         double currentPosition = getPosition();
-        if (currentPosition > position) {
-            logger.debug("Moving jalousie up from {} to {}", currentPosition, position);
-            targetPosition = position;
-            fullUp();
-        } else if (currentPosition < position) {
-            logger.debug("Moving jalousie down from {} to {}", currentPosition, position);
-            targetPosition = position;
-            fullDown();
+        if (currentPosition >= 0 && currentPosition <= 1) {
+            if (currentPosition > position) {
+                logger.debug("Moving jalousie up from {} to {}", currentPosition, position);
+                targetPosition = position;
+                fullUp();
+            } else if (currentPosition < position) {
+                logger.debug("Moving jalousie down from {} to {}", currentPosition, position);
+                targetPosition = position;
+                fullDown();
+            }
         }
     }
 
@@ -195,7 +197,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
         if (state != null) {
             return state.getValue();
         }
-        throw new NullPointerException("Jalousie state 'position' is null");
+        return -1;
     }
 
     /**

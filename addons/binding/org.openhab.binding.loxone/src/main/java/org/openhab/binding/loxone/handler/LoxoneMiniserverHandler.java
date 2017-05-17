@@ -146,7 +146,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.info("Channel linked: " + channelUID.getAsString());
+        logger.debug("Channel linked: {}", channelUID.getAsString());
         LxControl control = getControlFromChannelUID(channelUID);
         if (control != null) {
             updateChannelState(channelUID, control);
@@ -331,10 +331,12 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             }
         } else if (control instanceof LxControlJalousie) {
             double value = ((LxControlJalousie) control).getPosition();
-            updateState(channelUID, new PercentType((int) (value * 100)));
-            // state UP or DOWN from Loxone indicates blinds are moving up or down
-            // state UP in OpenHAB means blinds are fully up (0%) and DOWN means fully down (100%)
-            // so we will update only position and not up or down states
+            if (value >= 0 && value <= 1) {
+                // state UP or DOWN from Loxone indicates blinds are moving up or down
+                // state UP in OpenHAB means blinds are fully up (0%) and DOWN means fully down (100%)
+                // so we will update only position and not up or down states
+                updateState(channelUID, new PercentType((int) (value * 100)));
+            }
         } else if (control instanceof LxControlInfoOnlyDigital) {
             String value = ((LxControlInfoOnlyDigital) control).getFormattedValue();
             if (value != null) {

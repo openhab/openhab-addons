@@ -55,6 +55,7 @@ public class LxServer {
     private final int port;
     private final String user, password;
     private String miniserverName, projectName, location, serial, cloudAddress;
+    @SuppressWarnings("unused")
     private String roomTitle, categoryTitle;
     private int firstConDelay = 1, connectErrDelay = 10, userErrorDelay = 60, comErrorDelay = 30;
 
@@ -787,57 +788,5 @@ public class LxServer {
             return "";
         }
         return name;
-    }
-
-    /**
-     * Logs all UUIDs recognized on the Miniserver (rooms, categories, controls).
-     */
-    public void traceUuids() {
-        logger.trace("*** (" + uuids.size() + ") UUIDS ***");
-        for (LxUuid i : uuids) {
-            logger.trace("Uuid: " + i.toString());
-        }
-    }
-
-    /**
-     * Logs all rooms recognized on the Miniserever
-     */
-    public void traceRooms() {
-        logger.trace("*** (" + rooms.size() + ") ROOMS (" + roomTitle + ") ***");
-        for (LxContainer r : rooms.values()) {
-            logger.trace(r.toString());
-        }
-    }
-
-    /**
-     * Logs all categories recognized on the Miniserver
-     */
-    public void traceCategories() {
-        logger.trace("*** (" + categories.size() + ") CATEGORIES (" + categoryTitle + ") ***");
-        for (LxContainer c : categories.values()) {
-            logger.trace(c.toString());
-        }
-    }
-
-    /**
-     * Logs all controls recognized on the Miniserver
-     */
-    public void traceControls() {
-        logger.trace("*** (" + controls.size() + ") CONTROLS ***");
-        for (LxControl c : controls.values()) {
-            logger.trace(c.toString());
-        }
-    }
-
-    /**
-     * Logs general Miniserver configuration
-     */
-    public void traceInfo() {
-        logger.trace("host       :" + host.toString());
-        logger.trace("port       :" + port);
-        logger.trace("Miniserver :" + miniserverName);
-        logger.trace("Project    :" + projectName);
-        logger.trace("Location   :" + location);
-        logger.trace("Serial     :" + serial);
     }
 }
