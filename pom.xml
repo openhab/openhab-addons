@@ -1,270 +1,149 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
-    
+
+    <parent>
+        <groupId>org.openhab</groupId>
+        <artifactId>pom-tycho</artifactId>
+        <version>2.1.0-SNAPSHOT</version>
+        <relativePath></relativePath>
+    </parent>
+
     <groupId>org.openhab</groupId>
-    <artifactId>pom</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
-    <name>openHAB</name>
-    
+    <artifactId>pom-addons2</artifactId>
+    <name>openHAB 2 Add-ons</name>
+
     <organization>
         <name>openHAB.org</name>
         <url>http://www.openhab.org</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>Eclipse Public License</name>
             <url>http://www.eclipse.org/legal/epl-v10.html</url>
         </license>
     </licenses>
-    
+
     <scm>
-        <connection>scm:git:https://github.com/openhab/openhab2.git</connection>
-        <developerConnection>scm:git:https://github.com/openhab/openhab2.git</developerConnection>
-        <url>https://github.com/openhab/openhab2</url>
+        <connection>scm:git:https://github.com/openhab/openhab2-addons.git</connection>
+        <developerConnection>scm:git:https://github.com/openhab/openhab2-addons.git</developerConnection>
+        <url>https://github.com/openhab/openhab2-addons</url>
     </scm>
-        
+
     <issueManagement>
-        <url>https://github.com/openhab/openhab2/issues</url>
+        <url>https://github.com/openhab/openhab2-addons/issues</url>
         <system>Github</system>
     </issueManagement>
-    
-    <description>This is the open Home Automation Bus (openHAB)</description>
-    
-    <properties>
-        <esh.version>0.8.0-SNAPSHOT</esh.version>
-        <tycho-version>0.22.0</tycho-version>
-        <tycho-groupid>org.eclipse.tycho</tycho-groupid>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    
-    <packaging>pom</packaging>
-    
-    <modules>
-	<module>addons</module>
-        <module>bundles</module>
-        <module>features</module>
-        <module>products</module>
-        <module>targetplatform</module>
-        <module>distribution</module>
-    </modules>
-        
-    <!-- dependencies, which are not available in a p2-repository -->
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.fileinstall</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-    </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>${tycho-groupid}</groupId>
-                <artifactId>tycho-maven-plugin</artifactId>
-                <version>${tycho-version}</version>
-                <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <groupId>${tycho-groupid}</groupId>
-                <artifactId>target-platform-configuration</artifactId>
-                <version>${tycho-version}</version>
-                <configuration>
-                    <resolver>p2</resolver>
-                    <ignoreTychoRepositories>true</ignoreTychoRepositories>
-                    <pomDependencies>consider</pomDependencies>
-                    <target>
-                        <artifact>
-                            <groupId>org.openhab</groupId>
-                            <artifactId>targetplatform</artifactId>
-                            <version>${project.version}</version>
-                            <classifier>openhab</classifier>
-                        </artifact>
-                    </target>
-                    <environments>
-                        <environment>
-                            <os>linux</os>
-                            <ws>gtk</ws>
-                            <arch>x86</arch>
-                        </environment>
-                        <environment>
-                            <os>linux</os>
-                            <ws>gtk</ws>
-                            <arch>x86_64</arch>
-                        </environment>
-                        <environment>
-                            <os>win32</os>
-                            <ws>win32</ws>
-                            <arch>x86</arch>
-                        </environment>
-                        <environment>
-                            <os>macosx</os>
-                            <ws>cocoa</ws>
-                            <arch>x86_64</arch>
-                        </environment>
-                    </environments>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>${tycho-groupid}</groupId>
-                <artifactId>tycho-packaging-plugin</artifactId>
-                <version>${tycho-version}</version>
-                <configuration>
-                    <strictVersions>false</strictVersions>
-                </configuration>
-            </plugin>
-        </plugins>
-        
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>${tycho-groupid}</groupId>
-                    <artifactId>tycho-compiler-plugin</artifactId>
-                    <version>${tycho-version}</version>
-                    <configuration>
-                        <encoding>UTF-8</encoding>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>com.mycila</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>2.10</version>
-                    <configuration>
-                        <basedir>${basedir}</basedir>
-                        <header>src/etc/header.txt</header>
-                        <quiet>false</quiet>
-                        <failIfMissing>true</failIfMissing>
-                        <strictCheck>true</strictCheck>
-                        <aggregate>true</aggregate>
-                        <includes>
-                            <include>**/org/openhab/**/*.java</include>
-                            <include>**/feature.xml</include>
-                            <include>**/OSGI-INF/*.xml</include>
-                        </includes>
-                        <excludes>
-                            <exclude>target/**</exclude>
-                            <exclude>**/pom.xml</exclude>
-                            <exclude>_*.java</exclude>
-                        </excludes>
-                        <useDefaultExcludes>true</useDefaultExcludes>
-                        <properties>
-                            <year>2015</year>
-                        </properties>
-                        <encoding>UTF-8</encoding>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>${tycho-groupid}</groupId>
-                    <artifactId>tycho-versions-plugin</artifactId>
-                    <version>${tycho-version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-    
-    <profiles>
-        <profile>
-            <id>prepare-release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.eclipse.tycho</groupId>
-                        <artifactId>tycho-versions-plugin</artifactId>
-                        <version>${tycho-version}</version>
-                        <executions>
-                            <execution>
-                                <id>update-version</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>set-version</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        
-        <profile>
-            <id>deploy</id>
-            <distributionManagement>
-                <repository>
-                    <id>${repo.id}</id>
-                    <url>${repo.url}/maven</url>
-                    <uniqueVersion>false</uniqueVersion>
-                </repository>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>${tycho-groupid}</groupId>
-                        <artifactId>tycho-source-plugin</artifactId>
-                        <version>${tycho-version}</version>
-                        <executions>
-                            <execution>
-                                <id>plugin-source</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>plugin-source</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <sourceBundle>true</sourceBundle>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        
-        <profile>
-            <id>prepare-next-snapshot</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.eclipse.tycho</groupId>
-                        <artifactId>tycho-versions-plugin</artifactId>
-                        <version>${tycho-version}</version>
-                        <executions>
-                            <execution>
-                                <id>update-version</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>set-version</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
-	<repositories>
-		<repository>
-			<id>eclipse</id>
-			<name>Eclipse Snapshot Repository</name>
-			<layout>default</layout>
-			<url>https://repo.eclipse.org/content/repositories/snapshots/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-    
+    <distributionManagement>
+        <repository>
+            <id>bintray</id>
+            <url>https://api.bintray.com/maven/openhab/mvn/openhab2-addons/;publish=1</url>
+        </repository>
+        <snapshotRepository>
+            <id>jfrog</id>
+            <url>https://openhab.jfrog.io/openhab/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <description>This is the open Home Automation Bus (openHAB)</description>
+
+    <packaging>pom</packaging>
+
+    <properties>
+        <ohc.version>${project.version}</ohc.version>
+    </properties>
+
+    <modules>
+        <module>addons</module>
+        <module>features</module>
+    </modules>
+
+    <pluginRepositories>
+      <pluginRepository>
+            <id>jcenter</id>
+            <name>JCenter Repository</name>
+            <url>https://jcenter.bintray.com/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+      </pluginRepository>
+      <pluginRepository>
+          <id>artifactory</id>
+          <name>JFrog Artifactory Repository</name>
+          <url>https://openhab.jfrog.io/openhab/libs-release</url>
+          <releases>
+              <enabled>true</enabled>
+              <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+              <enabled>false</enabled>
+          </snapshots>
+      </pluginRepository>
+    </pluginRepositories>
+
+    <repositories>
+        
+        <!-- releases -->
+        <repository>
+            <id>jcenter</id>
+            <name>JCenter Repository</name>
+            <url>https://jcenter.bintray.com/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>openhab-artifactory-release</id>
+            <name>JFrog Artifactory Repository</name>
+            <url>https://openhab.jfrog.io/openhab/libs-release</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- snapshots -->
+        <repository>
+            <id>openhab-artifactory-snapshot</id>
+            <name>JFrog Artifactory Repository</name>
+            <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+
+        <!-- SmartHome p2 repository -->
+        <repository>
+            <id>p2-smarthome</id>
+            <url>https://openhab.jfrog.io/openhab/eclipse-smarthome-stable</url>
+            <layout>p2</layout>
+        </repository>
+
+        <!-- openHAB dependencies p2 repository -->
+        <repository>
+            <id>p2-openhab-deps-repo</id>
+            <url>https://dl.bintray.com/openhab/p2/openhab-deps-repo/${ohdr.version}</url>
+            <layout>p2</layout>
+        </repository>
+
+    </repositories>
+
 </project>

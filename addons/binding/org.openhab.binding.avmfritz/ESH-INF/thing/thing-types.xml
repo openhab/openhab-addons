@@ -4,7 +4,78 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Supported Fritz! devices and features -->
+    <!-- Supported FRITZ! devices and features -->
+    <thing-type id="Comet_DECT">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="fritzbox" />
+        </supported-bridge-type-refs>
+        <label>Comet DECT</label>
+        <description>Comet DECT heating thermostat</description>
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+            <channel id="actual_temp" typeId="actual_temp" />
+            <channel id="set_temp" typeId="set_temp" />
+            <channel id="eco_temp" typeId="eco_temp" />
+            <channel id="comfort_temp" typeId="comfort_temp" />
+            <channel id="next_change" typeId="next_change" />
+            <channel id="next_temp" typeId="next_temp" />
+            <channel id="battery_low" typeId="system.low-battery" />
+        </channels>
+        <config-description>
+            <parameter name="ain" type="text" required="true">
+                <label>AIN</label>
+                <description>The AHA id (AIN) that identifies one specific device.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="FRITZ_DECT_300">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="fritzbox" />
+        </supported-bridge-type-refs>
+        <label>FRITZ!DECT 300</label>
+        <description>FRITZ!DECT 300 heating thermostat</description>
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+            <channel id="actual_temp" typeId="actual_temp" />
+            <channel id="set_temp" typeId="set_temp" />
+            <channel id="eco_temp" typeId="eco_temp" />
+            <channel id="comfort_temp" typeId="comfort_temp" />
+            <channel id="next_change" typeId="next_change" />
+            <channel id="next_temp" typeId="next_temp" />
+            <channel id="battery_low" typeId="system.low-battery" />
+        </channels>
+        <config-description>
+            <parameter name="ain" type="text" required="true">
+                <label>AIN</label>
+                <description>The AHA id (AIN) that identifies one specific device.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <thing-type id="FRITZ_DECT_210">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="fritzbox" />
+        </supported-bridge-type-refs>
+
+        <label>FRITZ!DECT 210</label>
+        <description>FRITZ!DECT210 switchable outlet</description>
+
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+            <channel id="energy" typeId="energy" />
+            <channel id="power" typeId="power" />
+            <channel id="outlet" typeId="outlet" />
+        </channels>
+
+        <config-description>
+            <parameter name="ain" type="text" required="true">
+                <label>AIN</label>
+                <description>The AHA id (AIN) that identifies one specific device.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
     <thing-type id="FRITZ_DECT_200">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />
@@ -109,7 +180,22 @@
 		</config-description>
     </thing-type>
 
-	<!-- Channel definitions of fritz devices -->
+    <thing-type id="FRITZ_DECT_Repeater_100">
+    	<supported-bridge-type-refs>
+    		<bridge-type-ref id="fritzbox" />
+    	</supported-bridge-type-refs>
+    	<label>FRITZ!DECT Repeater 100</label>
+    	<description>FRITZ!DECT Repeater 100 DECT repeater</description>
+    	<channels>
+    		<channel typeId="temperature" id="temperature"></channel>
+    	</channels>
+    	<config-description>
+    		<parameter name="ain" type="text" required="true">
+    			<label>AIN</label>
+    			<description>The AHA id (AIN) that identifies one specific device.</description></parameter></config-description>
+    </thing-type>
+
+    <!-- Channel definitions of FRITZ! devices -->
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
 		<label>Actual Temperature</label>
@@ -117,13 +203,15 @@
 		<category>Temperature</category>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="energy">
 		<item-type>Number</item-type>
 		<label>Energy Consumption</label>
 		<description>Accumulated energy consumption</description>
 		<category>Energy</category>
-		<state pattern="%.2f kWh" readOnly="true"/>
+		<state pattern="%.3f kWh" readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="power">
 		<item-type>Number</item-type>
 		<label>Power</label>
@@ -131,12 +219,61 @@
 		<category>Energy</category>
 		<state pattern="%.2f W" readOnly="true"/>
 	</channel-type>
+
     <channel-type id="outlet">
         <item-type>Switch</item-type>
         <label>Outlet</label>
         <description>Switched outlet</description>
         <category>PowerOutlet</category>
 		<state readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="actual_temp" advanced="true">
+        <item-type>Number</item-type>
+        <label>Actual Temperature</label>
+        <description>Actual measured temperature</description>
+        <category>Temperature</category>
+        <state pattern="%.1f °C" readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="set_temp">
+        <item-type>Number</item-type>
+        <label>Setpoint Temperature</label>
+        <description>Thermostat temperature setpoint</description>
+        <category>Temperature</category>
+        <state min="8" max="28" step="0.5" pattern="%.1f °C" readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="eco_temp">
+        <item-type>Number</item-type>
+        <label>Eco Temperature</label>
+        <description>Eco measured temperature</description>
+        <category>Temperature</category>
+        <state pattern="%.1f °C" readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="comfort_temp">
+        <item-type>Number</item-type>
+        <label>Comfort Temperature</label>
+        <description>Comfort measured temperature</description>
+        <category>Temperature</category>
+        <state pattern="%.1f °C" readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="next_change" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Next Setpoint Change</label>
+        <description>Next change of Set Temperature</description>
+        <category>Temperature</category>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="next_temp" advanced="true">
+        <item-type>Number</item-type>
+        <label>Next Setpoint Temperature</label>
+        <description>Next Set Temperature</description>
+        <category>Temperature</category>
+        <state pattern="%.1f °C" readOnly="true"/>
     </channel-type>
 
 </thing:thing-descriptions>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+    Copyright (c) 2010-2017 by the respective copyright holders.
 
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
@@ -10,8 +10,8 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" modified="modified" name="org.openhab.binding.autelis.discovery.AutelisDiscoveryService">
-   <implementation class="org.openhab.binding.autelis.discovery.AutelisDiscoveryService"/>
+   <implementation class="org.openhab.binding.autelis.discovery.AutelisDiscoveryParticipant"/>
    <service>
-      <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+      <provide interface="org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant"/>
    </service>
 </scr:component>

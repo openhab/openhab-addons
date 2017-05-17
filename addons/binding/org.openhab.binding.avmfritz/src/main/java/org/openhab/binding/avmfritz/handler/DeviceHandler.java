@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,9 +10,13 @@ package org.openhab.binding.avmfritz.handler;
 
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -26,231 +30,309 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.BindingConstants;
 import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
- * 
+ *
  * @author Robert Bausdorf - Initial contribution
- * 
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
+ *         DECT
+ *
  */
-public class DeviceHandler extends BaseThingHandler 
-implements IFritzHandler {
-	/**
-	 * Logger
-	 */
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
+    /**
+     * Logger
+     */
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	/**
-	 * Ip of PL546E in standalone mode
-	 */
-	private String soloIp;
-	/**
-	 * the refresh interval which is used to poll values from the fritzaha.
-	 * server (optional, defaults to 15 s)
-	 */
-	protected long refreshInterval = 15;
-	/**
-	 * Interface object for querying the FRITZ!Box web interface
-	 */
-	protected FritzahaWebInterface connection;
-	/**
-	 * Job which will do the FRITZ!Box polling
-	 */
-	private DeviceListPolling pollingRunnable;
-	/**
-	 * Schedule for polling
-	 */
-	private ScheduledFuture<?> pollingJob;
-	
-	public DeviceHandler(Thing thing) {
-		super(thing);
-		this.pollingRunnable = new DeviceListPolling(this);
-	}
-	/**
-	 * Initializes the bridge.
-	 */
-	@Override
-	public void initialize() {
-		if( this.getThing().getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE) ) {
-			logger.debug("About to initialize thing "
-					+ BindingConstants.DEVICE_PL546E_STANDALONE);
-			Thing thing = this.getThing();
-			AvmFritzConfiguration config = this.getConfigAs(AvmFritzConfiguration.class);
-			this.soloIp = config.getIpAddress();
-			
-			logger.debug("discovered PL546E initialized: "
-					+ config.toString());
+    /**
+     * Ip of PL546E in standalone mode
+     */
+    private String soloIp;
+    /**
+     * the refresh interval which is used to poll values from the FRITZ!Box web
+     * interface server (optional, defaults to 15 s)
+     */
+    protected long refreshInterval = 15;
+    /**
+     * Interface object for querying the FRITZ!Box web interface
+     */
+    protected FritzahaWebInterface connection;
+    /**
+     * Job which will do the FRITZ!Box polling
+     */
+    private DeviceListPolling pollingRunnable;
+    /**
+     * Schedule for polling
+     */
+    private ScheduledFuture<?> pollingJob;
 
-			this.refreshInterval = config.getPollingInterval();
-			this.connection = new FritzahaWebInterface(config, this);
-			if (config.getPassword() != null) {
-				this.onUpdate();
-			} else {
-				thing.setStatusInfo(new ThingStatusInfo(
-						ThingStatus.OFFLINE, 
-						ThingStatusDetail.CONFIGURATION_ERROR, 
-						"no password set"));
-			}
-		}
-	}
+    public DeviceHandler(Thing thing) {
+        super(thing);
+        this.pollingRunnable = new DeviceListPolling(this);
+    }
 
-	/**
-	 * Disposes the thing.
-	 */
-	@Override
-	public void dispose() {
-		if( this.getThing().getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE) ) {
-			logger.debug("Handler disposed.");
-			if (pollingJob != null && !pollingJob.isCancelled()) {
-				pollingJob.cancel(true);
-				pollingJob = null;
-			}
-		}
-	}
+    /**
+     * Initializes the bridge.
+     */
+    @Override
+    public void initialize() {
+        if (this.getThing().getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE)) {
+            logger.debug("About to initialize thing {}", BindingConstants.DEVICE_PL546E_STANDALONE);
+            Thing thing = this.getThing();
+            AvmFritzConfiguration config = this.getConfigAs(AvmFritzConfiguration.class);
+            this.soloIp = config.getIpAddress();
 
-	/**
-	 * Start the polling.
-	 */
-	private synchronized void onUpdate() {
-		if (this.getThing() != null) {
-			if (pollingJob == null || pollingJob.isCancelled()) {
-				logger.debug("start polling job at intervall " + refreshInterval);
-				pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1,
-						refreshInterval, TimeUnit.SECONDS);
-			} else {
-				logger.debug("pollingJob active");
-			}
-		} else {
-			logger.warn("thing is null");
-		}
-	}
-	/**
-	 * Handle the commands for switchable outlets.
-	 * TODO: test switch behaviour on PL546E standalone
-	 */
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-		logger.debug("command for " + channelUID.getAsString() + ": "
-				+ command.toString());
-		if (channelUID.getId().equals(CHANNEL_SWITCH)) {
-			logger.debug("update " + channelUID.getAsString() + " with "
-					+ command.toString());
-			FritzahaWebInterface fritzBox = null;
-			if( ! thing.getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE) ) {
-				Bridge bridge = this.getBridge();
-				if (bridge != null && bridge.getHandler() instanceof BoxHandler) {
-					fritzBox = ((BoxHandler) bridge
-							.getHandler()).getWebInterface();
-				}
-			} else {
-				fritzBox = this.getWebInterface();
-			}
-			if( fritzBox != null && this.getThing().getConfiguration().get(THING_AIN) != null ) {
-				FritzAhaSetSwitchCallback callback = new FritzAhaSetSwitchCallback(
-						this.getWebInterface(), this.getThing().getConfiguration()
-								.get(THING_AIN).toString(),
-						command.equals(OnOffType.ON) ? true : false);
-				this.getWebInterface().asyncGet(callback);
-			}
-		} else {
-			logger.error("unknown channel uid " + channelUID);
-		}
-	}
+            logger.debug("discovered PL546E initialized: {}", config);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setStatusInfo(ThingStatus status,
-			ThingStatusDetail statusDetail, String description) {
-			super.updateStatus(status, statusDetail, description);
-	}
-	
-	@Override
-	public FritzahaWebInterface getWebInterface() {
-		return this.connection;
-	}
+            this.refreshInterval = config.getPollingInterval();
+            this.connection = new FritzahaWebInterface(config, this);
+            if (config.getPassword() != null) {
+                this.onUpdate();
+            } else {
+                thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "no password set"));
+            }
+        }
+    }
 
-	@Override
-	public void addDeviceList(DeviceModel model) {
-		try {
-			logger.debug("set device model: " + model.toString());
-			Thing thing = this.getThing();
-			if( thing != null ) {
-				logger.debug("update thing " + thing.getUID() + " with device model: "
-						+ model.toString());
-				logger.debug("about to update " + thing.getUID() + " from "
-						+ model.toString());
-				if (model.isTempSensor()) {
-					Channel channel = thing.getChannel(CHANNEL_TEMP);
-					this.updateState(channel.getUID(), new DecimalType(model
-							.getTemperature().getCelsius()));
-				}
-				if (model.isPowermeter()) {
-					Channel channelEnergy = thing.getChannel(CHANNEL_ENERGY);
-					this.updateState(channelEnergy.getUID(), new DecimalType(model
-							.getPowermeter().getEnergy()));
-					Channel channelPower = thing.getChannel(CHANNEL_POWER);
-					this.updateState(channelPower.getUID(), new DecimalType(model
-							.getPowermeter().getPower()));
-				}
-				if (model.isSwitchableOutlet()) {
-					Channel channel = thing.getChannel(CHANNEL_SWITCH);
-					if (model.getSwitch().getState().equals(SwitchModel.ON)) {
-						this.updateState(channel.getUID(), OnOffType.ON);
-					} else if (model.getSwitch().getState().equals(SwitchModel.OFF)) {
-						this.updateState(channel.getUID(), OnOffType.OFF);
-					} else {
-						logger.warn("unknown state " + model.getSwitch().getState()
-								+ " for channel " + channel.getUID());
-					}
-				}
-				// save AIN to config for PL546E standalone
-				if( thing.getConfiguration().get(THING_AIN) == null )
-				{
-					thing.getConfiguration().put(THING_AIN, model.getIdentifier());
-				}
-			}
-		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage(), e);
-		}
-	}
+    /**
+     * Disposes the thing.
+     */
+    @Override
+    public void dispose() {
+        if (this.getThing().getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE)) {
+            logger.debug("Handler disposed.");
+            if (pollingJob != null && !pollingJob.isCancelled()) {
+                pollingJob.cancel(true);
+                pollingJob = null;
+            }
+        }
+    }
 
-	/**
-	 * Builds a {@link ThingUID} from a device model. The UID is build from 
-	 * the {@link BindingConstants#BINDING_ID} and value of 
-	 * {@link DeviceModel#getProductName()} in which all characters NOT matching
-	 * the regex [^a-zA-Z0-9_] are replaced by "_".
-	 * 
-	 * @param device Discovered device model
-	 * @return ThingUID without illegal characters.
-	 */
-	public ThingUID getThingUID(DeviceModel device) {
-		ThingUID bridgeUID = this.getThing().getUID();
-		ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device
-				.getProductName().replaceAll("[^a-zA-Z0-9_]", "_"));
+    /**
+     * Start the polling.
+     */
+    private synchronized void onUpdate() {
+        if (this.getThing() != null) {
+            if (pollingJob == null || pollingJob.isCancelled()) {
+                logger.debug("start polling job at intervall {}", refreshInterval);
+                pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, refreshInterval, TimeUnit.SECONDS);
+            } else {
+                logger.debug("pollingJob active");
+            }
+        } else {
+            logger.warn("thing is null");
+        }
+    }
 
-		if (BindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-			String thingName = device.getIdentifier()
-					.replaceAll("[^a-zA-Z0-9_]", "_");
-			ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingName);
-			return thingUID;
-		} else if (thingTypeUID.equals(PL546E_STANDALONE_THING_TYPE)) {
-			String thingName = this.soloIp
-					.replaceAll("[^a-zA-Z0-9_]", "_");
-			ThingUID thingUID = new ThingUID(thingTypeUID, thingName);
-			return thingUID;
-		} else {
-			return null;
-		}
-	}
+    /**
+     * Handle the commands for switchable outlets or heating thermostats. TODO:
+     * test switch behaviour on PL546E standalone
+     */
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Handle command {} for channel {}", channelUID.getIdWithoutGroup(), command);
+        FritzahaWebInterface fritzBox = null;
+        if (!getThing().getThingTypeUID().equals(PL546E_STANDALONE_THING_TYPE)) {
+            Bridge bridge = getBridge();
+            if (bridge != null && bridge.getHandler() instanceof BoxHandler) {
+                fritzBox = ((BoxHandler) bridge.getHandler()).getWebInterface();
+            }
+        } else {
+            fritzBox = getWebInterface();
+        }
+        String ain = getThing().getConfiguration().get(THING_AIN).toString();
+        switch (channelUID.getIdWithoutGroup()) {
+            case CHANNEL_TEMP:
+            case CHANNEL_ENERGY:
+            case CHANNEL_POWER:
+            case CHANNEL_ECOTEMP:
+            case CHANNEL_COMFORTTEMP:
+            case CHANNEL_ACTUALTEMP:
+            case CHANNEL_NEXTCHANGE:
+            case CHANNEL_NEXTTEMP:
+            case CHANNEL_BATTERY:
+                break;
+            case CHANNEL_SWITCH:
+                if (command instanceof OnOffType) {
+                    fritzBox.setSwitch(ain, command.equals(OnOffType.ON) ? true : false);
+                }
+                break;
+            case CHANNEL_SETTEMP:
+                if (command instanceof DecimalType) {
+                    BigDecimal temperature = new BigDecimal(command.toString());
+                    if (temperature.compareTo(HeatingModel.TEMP_MIN) == -1) {
+                        temperature = HeatingModel.TEMP_MIN;
+                    } else if (temperature.compareTo(HeatingModel.TEMP_MAX) == 1) {
+                        temperature = HeatingModel.TEMP_MAX;
+                    }
+                    fritzBox.setSetTemp(ain, temperature.divide(HeatingModel.TEMP_FACTOR));
+                } else if (command instanceof OnOffType) {
+                    BigDecimal temperature = command.equals(OnOffType.ON) ? HeatingModel.TEMP_ON
+                            : HeatingModel.TEMP_OFF;
+                    fritzBox.setSetTemp(ain, temperature);
+                }
+                break;
+            default:
+                logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
+                break;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+        super.updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    public FritzahaWebInterface getWebInterface() {
+        return this.connection;
+    }
+
+    @Override
+    public void addDeviceList(DeviceModel device) {
+        try {
+            logger.debug("set device model: {}", device);
+            ThingUID thingUID = getThingUID(device);
+            if (getThing() != null) {
+                logger.debug("update thing {} with device model: {}", thingUID, device);
+                if (device.isTempSensor() && device.getTemperature() != null) {
+                    updateTemperatureChannel(device.getTemperature().getCelsius());
+                }
+                if (device.isPowermeter() && device.getPowermeter() != null) {
+                    updateEnergyChannel(device.getPowermeter().getEnergy());
+                    updatePowerChannel(device.getPowermeter().getPower());
+                }
+                if (device.isSwitchableOutlet() && device.getSwitch() != null) {
+                    if (device.getSwitch().getState() == null) {
+                        updateState(CHANNEL_SWITCH, UnDefType.UNDEF);
+                    } else if (device.getSwitch().getState().equals(SwitchModel.ON)) {
+                        updateSwitchChannel(OnOffType.ON);
+                    } else if (device.getSwitch().getState().equals(SwitchModel.OFF)) {
+                        updateSwitchChannel(OnOffType.OFF);
+                    } else {
+                        logger.warn("Received unknown value {} for channel {}", device.getSwitch().getState(),
+                                CHANNEL_SWITCH);
+                    }
+                }
+                if (device.isHeatingThermostat() && device.getHkr() != null) {
+                    updateActualTempChannel(device.getHkr().getTist());
+                    updateSetTempChannel(device.getHkr().getTsoll());
+                    updateEcoTempChannel(device.getHkr().getAbsenk());
+                    updateComfortTempChannel(device.getHkr().getKomfort());
+                    if (device.getHkr().getNextchange() != null) {
+                        if (device.getHkr().getNextchange().getEndperiod() == 0) {
+                            updateState(CHANNEL_NEXTCHANGE, UnDefType.UNDEF);
+                        } else {
+                            updateNextChangeChannel(device.getHkr().getNextchange().getEndperiod());
+                        }
+                        updateNextTempChannel(device.getHkr().getNextchange().getTchange());
+                    }
+                    if (device.getHkr().getBatterylow() == null) {
+                        updateState(CHANNEL_BATTERY, UnDefType.UNDEF);
+                    } else if (device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_ON)) {
+                        updateBatteryChannel(OnOffType.ON);
+                    } else if (device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_OFF)) {
+                        updateBatteryChannel(OnOffType.OFF);
+                    } else {
+                        logger.warn("Received unknown value {} for channel {}", device.getHkr().getBatterylow(),
+                                INPUT_BATTERY);
+                    }
+                }
+                // save AIN to config for PL546E standalone
+                if (getThing().getConfiguration().get(THING_AIN) == null) {
+                    getThing().getConfiguration().put(THING_AIN, device.getIdentifier());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("{}", e.getLocalizedMessage(), e);
+        }
+    }
+
+    /**
+     * Builds a {@link ThingUID} from a device model. The UID is build from the
+     * {@link BindingConstants#BINDING_ID} and value of
+     * {@link DeviceModel#getProductName()} in which all characters NOT matching
+     * the regex [^a-zA-Z0-9_] are replaced by "_".
+     *
+     * @param device Discovered device model
+     * @return ThingUID without illegal characters.
+     */
+    public ThingUID getThingUID(DeviceModel device) {
+        ThingUID bridgeUID = this.getThing().getUID();
+        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID,
+                device.getProductName().replaceAll("[^a-zA-Z0-9_]", "_"));
+
+        if (BindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            String thingName = device.getIdentifier().replaceAll("[^a-zA-Z0-9_]", "_");
+            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingName);
+            return thingUID;
+        } else if (thingTypeUID.equals(PL546E_STANDALONE_THING_TYPE)) {
+            String thingName = this.soloIp.replaceAll("[^a-zA-Z0-9_]", "_");
+            ThingUID thingUID = new ThingUID(thingTypeUID, thingName);
+            return thingUID;
+        } else {
+            return null;
+        }
+    }
+
+    public void updateTemperatureChannel(BigDecimal temperature) {
+        updateState(CHANNEL_TEMP, new DecimalType(temperature));
+    }
+
+    public void updateEnergyChannel(BigDecimal energy) {
+        updateState(CHANNEL_ENERGY, new DecimalType(energy));
+    }
+
+    public void updatePowerChannel(BigDecimal power) {
+        updateState(CHANNEL_POWER, new DecimalType(power));
+    }
+
+    public void updateSwitchChannel(OnOffType state) {
+        updateState(CHANNEL_SWITCH, state);
+    }
+
+    public void updateActualTempChannel(BigDecimal temperature) {
+        updateState(CHANNEL_ACTUALTEMP, new DecimalType(temperature));
+    }
+
+    public void updateSetTempChannel(BigDecimal temperature) {
+        updateState(CHANNEL_SETTEMP, new DecimalType(temperature));
+    }
+
+    public void updateEcoTempChannel(BigDecimal temperature) {
+        updateState(CHANNEL_ECOTEMP, new DecimalType(temperature));
+    }
+
+    public void updateComfortTempChannel(BigDecimal temperature) {
+        updateState(CHANNEL_COMFORTTEMP, new DecimalType(temperature));
+    }
+
+    public void updateNextChangeChannel(int timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(timestamp * 1000L));
+        updateState(CHANNEL_NEXTCHANGE, new DateTimeType(calendar));
+    }
+
+    public void updateNextTempChannel(BigDecimal temperature) {
+        updateState(CHANNEL_NEXTTEMP, new DecimalType(temperature));
+    }
+
+    public void updateBatteryChannel(OnOffType state) {
+        updateState(CHANNEL_BATTERY, state);
+    }
 }

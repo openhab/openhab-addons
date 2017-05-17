@@ -4,7 +4,7 @@
         xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-    <name>Keba Binding</name>
+    <name>openHAB Keba Binding</name>
     <description>This is the binding for Keba EV Charging Stations</description>
     <author>Karel Goderis</author>
 

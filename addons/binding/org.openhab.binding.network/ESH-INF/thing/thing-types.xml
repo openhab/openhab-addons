@@ -9,6 +9,7 @@
 
         <channels>
             <channel id="online" typeId="online"></channel>
+            <channel id="time" typeId="time"></channel>
         </channels>
         <config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -46,6 +47,12 @@
 				<default>false</default>
 			</parameter>		
 
+            <parameter name="dhcplisten" type="boolean">
+                <label>Listen for DHCP requests</label>
+                <description>Whether to use DHCP listen or not (may require running as root)</description>
+                <default>false</default>
+            </parameter>
+
 		</config-description>
     </thing-type>
     <channel-type id="online">
@@ -53,6 +60,13 @@
         <label>Online</label>
         <description>States whether a device is online or not</description>
         <category>Switch</category>
+	    <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="time">
+        <item-type>Number</item-type>
+        <label>Time</label>
+        <description>States the Ping time</description>
+        <category>Number</category>
 	    <state readOnly="true"></state>
     </channel-type>
 
