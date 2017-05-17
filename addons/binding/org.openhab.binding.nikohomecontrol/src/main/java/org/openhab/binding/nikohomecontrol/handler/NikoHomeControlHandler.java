@@ -215,7 +215,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         String actionLocation = this.nhcAction.getLocation();
 
         this.nhcAction.setThingHandler(this);
-        this.nhcAction.setNhcComm(nhcComm);
 
         switch (actionType) {
             case 0:
@@ -239,8 +238,18 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: unknown action type " + actionType);
         }
-        thing.setLocation(actionLocation);
+        if (thing.getLocation() == null) {
+            thing.setLocation(actionLocation);
+        }
 
+    }
+
+    @Override
+    public void dispose() {
+        if (this.nhcAction != null) {
+            this.nhcAction.setThingHandler(null);
+        }
+        this.nhcAction = null;
     }
 
     public void handleStateUpdate(int actionType, int actionState) {

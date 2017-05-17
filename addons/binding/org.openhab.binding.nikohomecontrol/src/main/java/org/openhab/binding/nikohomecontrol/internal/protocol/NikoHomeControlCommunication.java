@@ -57,8 +57,8 @@ public final class NikoHomeControlCommunication {
     private Boolean listenerStopped;
 
     // We keep only 2 gson adapters used to serialize and deserialize all messages sent and received
-    private Gson gsonIn = new Gson();
-    private Gson gsonOut;
+    private Gson gsonOut = new Gson();
+    private Gson gsonIn;
 
     private final NhcSystemInfo systemInfo = new NhcSystemInfo();
     private final Map<Integer, NhcLocation> locations = new HashMap<>();
@@ -90,7 +90,7 @@ public final class NikoHomeControlCommunication {
         // When we set up this object, we also want to get the proper gson adapter set up once
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(NhcMessageBase.class, new NikoHomeControlMessageDeserializer());
-        this.gsonOut = gsonBuilder.create();
+        this.gsonIn = gsonBuilder.create();
     }
 
     public NikoHomeControlCommunication() throws IOException {
@@ -222,7 +222,7 @@ public final class NikoHomeControlCommunication {
         logger.debug("Niko Home Control: received json {}", nhcMessage);
 
         try {
-            NhcMessageBase nhcMessageGson = this.gsonOut.fromJson(nhcMessage, NhcMessageBase.class);
+            NhcMessageBase nhcMessageGson = this.gsonIn.fromJson(nhcMessage, NhcMessageBase.class);
 
             String cmd = nhcMessageGson.getCmd();
             String event = nhcMessageGson.getEvent();
@@ -340,22 +340,25 @@ public final class NikoHomeControlCommunication {
 
         logger.debug("Niko Home Control: list actions");
 
-        this.actions.clear();
-
         for (HashMap<String, String> action : data) {
 
             int id = Integer.valueOf(action.get("id"));
-            String name = action.get("name");
-            Integer type = Integer.valueOf(action.get("type"));
-            Integer locationId = Integer.valueOf(action.get("location"));
-            String location = null;
-            if (locationId != null) {
-                location = this.locations.get(locationId).getName();
-            }
             Integer state = Integer.valueOf(action.get("value1"));
 
-            NhcAction nhcAction = new NhcAction(id, name, type, location, state);
-            this.actions.put(id, nhcAction);
+            if (!this.actions.containsKey(id)) {
+                String name = action.get("name");
+                Integer type = Integer.valueOf(action.get("type"));
+                Integer locationId = Integer.valueOf(action.get("location"));
+                String location = null;
+                if (locationId != null) {
+                    location = this.locations.get(locationId).getName();
+                }
+                NhcAction nhcAction = new NhcAction(id, name, type, location, state);
+                nhcAction.setNhcComm(this);
+                this.actions.put(id, nhcAction);
+            } else {
+                this.actions.get(id).setState(state);
+            }
         }
     }
 
@@ -371,8 +374,12 @@ public final class NikoHomeControlCommunication {
 
     private void eventListActions(List<HashMap<String, String>> data) {
 
-        for (Map<String, String> action : data) {
+        for (HashMap<String, String> action : data) {
             int id = Integer.valueOf(action.get("id"));
+            if (!this.actions.containsKey(id)) {
+                logger.warn("Niko Home Control: action in controller not known to openHab {}", id);
+                return;
+            }
             this.actions.get(id).setState(Integer.valueOf(action.get("value1")));
         }
     }
@@ -383,7 +390,7 @@ public final class NikoHomeControlCommunication {
      * @param nhcMessage
      */
     public void sendMessage(Object nhcMessage) {
-        String json = gsonIn.toJson(nhcMessage);
+        String json = gsonOut.toJson(nhcMessage);
         logger.debug("Niko Home Control: send json {}", json);
         this.nhcOut.println(json);
         if (this.nhcOut.checkError()) {

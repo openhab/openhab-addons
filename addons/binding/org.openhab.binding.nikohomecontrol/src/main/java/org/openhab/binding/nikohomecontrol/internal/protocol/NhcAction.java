@@ -24,13 +24,13 @@ public final class NhcAction {
 
     private NikoHomeControlCommunication nhcComm;
 
-    int id;
-    String name;
-    Integer type;
-    String location;
-    Integer state;
+    private int id;
+    private String name;
+    private Integer type;
+    private String location;
+    private Integer state;
 
-    NikoHomeControlHandler thingHandler;
+    private NikoHomeControlHandler thingHandler;
 
     NhcAction(int id, String name, Integer type, String location, Integer state) {
         this.id = id;

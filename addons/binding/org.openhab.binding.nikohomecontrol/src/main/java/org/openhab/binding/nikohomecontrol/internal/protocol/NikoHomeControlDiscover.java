@@ -63,14 +63,7 @@ public final class NikoHomeControlDiscover {
             datagramSocket.send(discoveryPacket);
             datagramSocket.receive(packet);
             this.addr = packet.getAddress();
-            byte[] packetData = packet.getData();
-            int packetLength = packet.getLength();
-            packetLength = packetLength > 6 ? 6 : packetLength;
-            StringBuilder sb = new StringBuilder(packet.getLength() * 2);
-            for (int i = 0; i < packetLength; i++) {
-                sb.append(String.format("%02x", packetData[i]));
-            }
-            this.nhcBridgeId = sb.toString();
+            setNhcBridgeId(packet);
             logger.debug("Niko Home Control: IP address is {}, unique ID is {}", this.addr, this.nhcBridgeId);
         }
 
@@ -92,6 +85,24 @@ public final class NikoHomeControlDiscover {
      */
     public String getNhcBridgeId() {
         return this.nhcBridgeId;
+    }
+
+    /**
+     * Retrieves a unique ID from the returned datagram packet received after sending the UDP discovery message.
+     *
+     * @param packet
+     */
+    private void setNhcBridgeId(DatagramPacket packet) {
+
+        byte[] packetData = packet.getData();
+        int packetLength = packet.getLength();
+        packetLength = packetLength > 6 ? 6 : packetLength;
+        StringBuilder sb = new StringBuilder(packetLength);
+        for (int i = 0; i < packetLength; i++) {
+            sb.append(String.format("%02x", packetData[i]));
+        }
+        this.nhcBridgeId = sb.toString();
+
     }
 
     /**
