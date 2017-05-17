@@ -7,7 +7,9 @@
     <bridge-type id="omnilinkBridge">
         <label>Omnilink IP Access Point</label>
         <description>Ethernet access point to Omnilink control system</description>
-
+            <channels>
+                <channel id="sysdate" typeId="sysDate" />
+            </channels>
         <config-description>
             <parameter name="ipAddress" type="text" required="true">
                 <context>network-address</context>
@@ -215,5 +217,13 @@
         <description>Button Press</description>
         <category>Contact</category>
         <state pattern="%s"></state>
+    </channel-type>
+    
+    <channel-type id="sysDate">
+        <item-type>DateTime</item-type>
+        <label>Omnilink System Time</label>
+        <description>The date/time of omnilink last time received system status</description>
+        <!-- <state readOnly="true"  />
+        pattern="%1$tF %1$tR" -->
     </channel-type>
 </thing:thing-descriptions>

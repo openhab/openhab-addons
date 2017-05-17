@@ -30,7 +30,7 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_FLAG = "value";
     public final static String CHANNEL_FLAGSWITCH = "switch";
     public final static String CHANNEL_BUTTON_PRESS = "press";
-
+    public final static String CHANNEL_SYSTEMDATE = "sysdate";
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "omnilinkBridge");
     public final static ThingTypeUID THING_TYPE_AREA = new ThingTypeUID(BINDING_ID, "area");

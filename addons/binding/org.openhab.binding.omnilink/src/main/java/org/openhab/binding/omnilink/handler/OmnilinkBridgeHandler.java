@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -15,6 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.openhab.binding.omnilink.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.protocol.AreaAlarmStatus;
@@ -104,7 +106,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             doOmnilinkReconnect();
         }
-
+        getSystemInfo();
+        getSystemStatus();
     }
 
     private void makeOmnilinkConnection() throws Exception {
@@ -121,8 +124,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         });
         updateStatus(ThingStatus.ONLINE);
         secondsUntilReconnect = 1;
-        getSystemInfo();
-        getSystemStatus();
     }
 
     private void doOmnilinkReconnect() {
@@ -354,6 +355,15 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             @Override
             public void onSuccess(SystemStatus status) {
                 logger.debug("received system status: {}", status);
+                // let's update system time
+                String dateString = new StringBuilder().append(2000 + status.getYear()).append("-")
+                        .append(status.getMonth()).append("-").append(status.getDay()).append("T")
+                        .append(status.getHour()).append(":").append(status.getMinute()).append(":")
+                        .append(status.getSecond()).toString();
+                DateTimeType sysDateTime = new DateTimeType(dateString);
+
+                updateState(OmnilinkBindingConstants.CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
+                logger.debug("System date is: {}", sysDateTime);
             }
         });
 
