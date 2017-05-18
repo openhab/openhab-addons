@@ -46,14 +46,14 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
         ThingUID uid = getThingUID(service);
 
         final DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                .withThingType(HyperionBindingConstants.THING_TYPE_SERVER).withProperties(properties)
+                .withThingType(HyperionBindingConstants.THING_TYPE_SERVER_V1).withProperties(properties)
                 .withLabel(friendlyName).build();
         return result;
     }
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
-        return new ThingUID(HyperionBindingConstants.THING_TYPE_SERVER, "server");
+        return new ThingUID(HyperionBindingConstants.THING_TYPE_SERVER_V1, "server");
     }
 
 }

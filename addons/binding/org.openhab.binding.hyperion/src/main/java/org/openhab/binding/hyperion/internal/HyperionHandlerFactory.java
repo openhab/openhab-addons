@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.hyperion.internal;
 
-import static org.openhab.binding.hyperion.HyperionBindingConstants.THING_TYPE_SERVER;
+import static org.openhab.binding.hyperion.HyperionBindingConstants.THING_TYPE_SERVER_V1;
 
 import java.util.Collections;
 import java.util.Set;
@@ -27,7 +27,7 @@ import org.openhab.binding.hyperion.handler.HyperionHandler;
  */
 public class HyperionHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SERVER);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SERVER_V1);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -39,7 +39,7 @@ public class HyperionHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SERVER)) {
+        if (thingTypeUID.equals(THING_TYPE_SERVER_V1)) {
             return new HyperionHandler(thing);
         }
 

@@ -23,30 +23,36 @@ public class HyperionBindingConstants {
 
     public static final String BINDING_ID = "hyperion";
 
-    // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER);
-    }
-
     // List of all Channel ids
-    public final static String CHANNEL_BRIGHTNESS = "brightness";
-    public final static String CHANNEL_COLOR = "color";
-    public final static String CHANNEL_CLEAR_ALL = "clear_all";
-    public final static String CHANNEL_CLEAR = "clear";
-    public final static String CHANNEL_EFFECT = "effect";
+    public static final String CHANNEL_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_CLEAR_ALL = "clear_all";
+    public static final String CHANNEL_CLEAR = "clear";
+    public static final String CHANNEL_EFFECT = "effect";
 
     // List of all properties
-    public final static String PROP_HOST = "host";
-    public final static String PROP_PORT = "port";
-    public final static String PROP_PRIORITY = "priority";
-    public final static String PROP_POLL_FREQUENCY = "poll_frequency";
+    public static final String PROP_HOST = "host";
+    public static final String PROP_PORT = "port";
+    public static final String PROP_PRIORITY = "priority";
+    public static final String PROP_POLL_FREQUENCY = "poll_frequency";
 
     // config
     public static final String HOST = "host";
     public static final String PORT = "port";
+
+    // thing-types
+    public static final String SERVER_V1 = "serverV1";
+    public static final String SERVER_NG = "serverNG";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_SERVER_V1 = new ThingTypeUID(BINDING_ID, SERVER_V1);
+    public static final ThingTypeUID THING_TYPE_SERVER_NG = new ThingTypeUID(BINDING_ID, SERVER_NG);
+
+    static {
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER_V1);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER_NG);
+    }
 
 }
