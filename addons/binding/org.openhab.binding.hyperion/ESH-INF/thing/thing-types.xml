@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="serverV1">
-		<label>Hyperion Server</label>
+	<label>Hyperion Server</label>
 		<description>This is a Hyperion server</description>
 		<channels>
 			<channel id="brightness" typeId="brightness" />
@@ -42,7 +42,6 @@
 		</config-description>
 
 	</thing-type>
-	
 	   <thing-type id="serverNG">
         <label>Hyperion.NG Server</label>
         <description>This is a Hyperion.NG server</description>
