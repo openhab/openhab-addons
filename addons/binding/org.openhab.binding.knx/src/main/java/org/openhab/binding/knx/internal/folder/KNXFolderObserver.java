@@ -1,10 +1,12 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.openhab.binding.knx.internal.folder;
 
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -231,8 +233,8 @@ public class KNXFolderObserver extends AbstractWatchService implements ManagedSe
                     }
                 }
             } catch (Exception e) {
-                LoggerFactory.getLogger(KNXFolderObserver.class)
-                        .warn("Cannot open file '" + file.getAbsolutePath() + "' for reading.", e);
+                LoggerFactory.getLogger(KNXFolderObserver.class).warn("Cannot open file '{}' for reading. '{}'",
+                        file.getAbsolutePath(), e.getMessage());
             }
         }
     }
