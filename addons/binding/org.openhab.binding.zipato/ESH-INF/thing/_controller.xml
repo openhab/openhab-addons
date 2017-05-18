@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zipato"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <!-- Sample Thing Type -->
+    <bridge-type id="zipabox">
+        <label>Zipato Zipabox Controller</label>
+        <description>Binding for the Zipabox controller</description>
+        <config-description-ref uri="bridge-type:zipato:zipabox" />
+    </bridge-type>
+</thing:thing-descriptions>

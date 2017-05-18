@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="lib/asm-all-repackaged-2.2.0-b14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cglib-2.2.0-b14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/guava-14.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hk2-api-2.2.0-b14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hk2-locator-2.2.0-b14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hk2-utils-2.2.0-b14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.8.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs-base-2.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs-json-provider-2.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-module-jaxb-annotations-2.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.annotation-api-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.inject-2.2.0-b14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.servlet-api-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxb-api-2.2.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-client.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-common.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-container-servlet-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-container-servlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-server.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/JZipatoClient-0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.17.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/persistence-api-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/validation-api-1.1.0.Final.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
