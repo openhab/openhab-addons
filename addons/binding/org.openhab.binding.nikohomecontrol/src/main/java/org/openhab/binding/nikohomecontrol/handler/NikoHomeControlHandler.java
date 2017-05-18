@@ -254,9 +254,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     public void handleStateUpdate(int actionType, int actionState) {
 
-        logger.debug("Niko Home Control: handle state update {} for {}", actionState,
-                this.getConfig().get(CONFIG_ACTION_ID));
-
         switch (actionType) {
             case 0:
             case 1:
