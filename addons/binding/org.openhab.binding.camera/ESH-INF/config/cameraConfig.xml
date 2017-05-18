@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+    <config-description uri="thing-type:camera:camera">
+        <parameter name="poll" unit="s" type="integer">
+            <label>Poll time:</label>
+            <description>Interval of image being refreshed in seconds</description>
+            <default>5</default>
+        </parameter>
+        <parameter name="urlSnapshot" type="text">
+            <label>Snapshot Url:</label>
+            <description>Url for receiving the camera snapshot</description>
+            <default>http://ip/image.jpg</default>
+        </parameter>
+        <parameter name="urlVideo" type="text">
+            <label>Video Url:</label>
+            <description>Url for receiving the camera video. ..TODO..</description>
+            <default>http://ip/image.mjpg</default>
+        </parameter>
+    </config-description>
+</config-description:config-descriptions>
