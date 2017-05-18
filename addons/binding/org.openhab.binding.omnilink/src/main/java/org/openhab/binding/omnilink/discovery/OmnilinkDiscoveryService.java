@@ -142,7 +142,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         int objnum = 0;
         Message m;
         int currentRoom = 0;
-        // String currentRoomName = null;
+        String currentRoomName = null;
 
         while ((m = c.reqObjectProperties(Message.OBJ_TYPE_UNIT, objnum, 1, ObjectProperties.FILTER_1_NAMED,
                 ObjectProperties.FILTER_2_AREA_ALL, ObjectProperties.FILTER_3_ANY_LOAD))
@@ -156,7 +156,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             if (o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM
                     || o.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM) {
                 currentRoom = objnum;
-
+                currentRoomName = o.getName();
                 isRoomController = true;
             } else if (objnum < currentRoom + 8) {
                 // isInRoom = true;
@@ -182,7 +182,9 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
                 } else {
                     thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT, thingID);
-
+                    // let's prepend room name to unit name for label
+                    // TODO could make this configurable
+                    thingLabel = currentRoomName + ": " + o.getName();
                 }
                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withBridge(bridgeUID).withLabel(thingLabel).build();
