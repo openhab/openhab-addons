@@ -42,6 +42,18 @@ import com.google.common.collect.ImmutableSet;
  * @author Craig - Initial contribution
  */
 public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        // if the omnilink bridge, let's fix up discovery
+        super.removeHandler(thingHandler);
+        if (thingHandler instanceof OmnilinkBridgeHandler) {
+            ServiceRegistration<?> discovery = discoveryServiceRegistrations.get(thingHandler.getThing().getUID());
+            logger.debug("unRegistering omnilink discovery: {} ", discovery);
+            discovery.unregister();
+        }
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_AREA,
             THING_TYPE_ZONE, THING_TYPE_UNIT, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM, THING_TYPE_BUTTON);

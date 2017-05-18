@@ -117,34 +117,40 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void initialize() {
         listeningExecutor = MoreExecutors.listeningDecorator(scheduler);
+        // TODO make this non-blocking
+        makeOmnilinkConnection();
 
+    }
+
+    private void makeOmnilinkConnection() {
+        OmnilinkBridgeConfig config = getThing().getConfiguration().as(OmnilinkBridgeConfig.class);
         try {
-            makeOmnilinkConnection();
+            omniConnection = new Connection(config.getIpAddress(), 4369, config.getKey1() + ":" + config.getKey2());
+
+            omniConnection.enableNotifications();
+
+            omniConnection.addNotificationListener(this);
+            omniConnection.addDisconnectListener(new DisconnectListener() {
+                @Override
+                public void notConnectedEvent(Exception e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    doOmnilinkReconnect();
+                }
+            });
             updateStatus(ThingStatus.ONLINE);
+            secondsUntilReconnect = 1;
+            getSystemInfo();
+            getSystemStatus();
+            // let's start a task which refreshes status every 6 hours
+            scheduleRefresh();
+        } catch (StringIndexOutOfBoundsException e) {
+            // key format error
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             doOmnilinkReconnect();
         }
-        getSystemInfo();
-        getSystemStatus();
-        // let's start a task which refreshes status every 6 hours
-        scheduleRefresh();
-    }
 
-    private void makeOmnilinkConnection() throws Exception {
-        OmnilinkBridgeConfig config = getThing().getConfiguration().as(OmnilinkBridgeConfig.class);
-        omniConnection = new Connection(config.getIpAddress(), 4369, config.getKey1() + ":" + config.getKey2());
-        omniConnection.enableNotifications();
-
-        omniConnection.addNotificationListener(this);
-        omniConnection.addDisconnectListener(new DisconnectListener() {
-            @Override
-            public void notConnectedEvent(Exception e) {
-                doOmnilinkReconnect();
-            }
-        });
-        updateStatus(ThingStatus.ONLINE);
-        secondsUntilReconnect = 1;
     }
 
     private void doOmnilinkReconnect() {
@@ -361,35 +367,35 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private void getSystemStatus() {
+        if (omniConnection != null) {
+            ListenableFuture<SystemStatus> systemStatus = listeningExecutor.submit(new Callable<SystemStatus>() {
 
-        ListenableFuture<SystemStatus> systemStatus = listeningExecutor.submit(new Callable<SystemStatus>() {
+                @Override
+                public SystemStatus call() throws Exception {
+                    return omniConnection.reqSystemStatus();
+                }
+            });
+            Futures.addCallback(systemStatus, new FutureCallback<SystemStatus>() {
+                @Override
+                public void onFailure(Throwable arg0) {
+                    logger.error("Error retrieving system status", arg0);
+                }
 
-            @Override
-            public SystemStatus call() throws Exception {
-                return omniConnection.reqSystemStatus();
-            }
-        });
-        Futures.addCallback(systemStatus, new FutureCallback<SystemStatus>() {
-            @Override
-            public void onFailure(Throwable arg0) {
-                logger.error("Error retrieving system status", arg0);
-            }
+                @Override
+                public void onSuccess(SystemStatus status) {
+                    logger.debug("received system status: {}", status);
+                    // let's update system time
+                    String dateString = new StringBuilder().append(2000 + status.getYear()).append("-")
+                            .append(status.getMonth()).append("-").append(status.getDay()).append("T")
+                            .append(status.getHour()).append(":").append(status.getMinute()).append(":")
+                            .append(status.getSecond()).toString();
+                    DateTimeType sysDateTime = new DateTimeType(dateString);
 
-            @Override
-            public void onSuccess(SystemStatus status) {
-                logger.debug("received system status: {}", status);
-                // let's update system time
-                String dateString = new StringBuilder().append(2000 + status.getYear()).append("-")
-                        .append(status.getMonth()).append("-").append(status.getDay()).append("T")
-                        .append(status.getHour()).append(":").append(status.getMinute()).append(":")
-                        .append(status.getSecond()).toString();
-                DateTimeType sysDateTime = new DateTimeType(dateString);
-
-                updateState(OmnilinkBindingConstants.CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
-                logger.debug("System date is: {}", sysDateTime);
-            }
-        });
-
+                    updateState(OmnilinkBindingConstants.CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
+                    logger.debug("System date is: {}", sysDateTime);
+                }
+            });
+        }
     }
 
     public ListenableFuture<SecurityCodeValidation> validateSecurity(int area, final int code1, final int code2,
@@ -483,5 +489,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 loadUnitStatuses();
             }
         }, interval, interval, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        // TODO Auto-generated method stub
+        super.handleConfigurationUpdate(configurationParameters);
     }
 }
