@@ -51,10 +51,13 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         if (checkConfig()) {
             disposeApiClient();
             apiClient = new EvohomeApiClient(configuration);
-            apiClient.login();
-            startRefreshTask();
-
-            updateStatus(ThingStatus.ONLINE);
+            if (apiClient.login()) {
+                //TODO refresh token task?
+                startRefreshTask();
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
         }
     }
 
