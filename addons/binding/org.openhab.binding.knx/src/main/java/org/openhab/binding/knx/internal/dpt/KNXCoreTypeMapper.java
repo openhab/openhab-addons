@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016, openHAB.org and others.
+ * Copyright (c) 2010-2017, openHAB.org and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,9 +12,11 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -42,6 +44,8 @@ import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteSigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteUnsigned;
+import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
+import tuwien.auto.calimero.dptxlator.DPTXlator8BitSigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDate;
@@ -51,6 +55,10 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorSceneControl;
 import tuwien.auto.calimero.dptxlator.DPTXlatorSceneNumber;
 import tuwien.auto.calimero.dptxlator.DPTXlatorString;
 import tuwien.auto.calimero.dptxlator.DPTXlatorTime;
+import tuwien.auto.calimero.dptxlator.DPTXlatorUtf8;
+//calimero 2.4 import tuwien.auto.calimero.dptxlator.DPTXlator8BitEnum;
+//calimero 2.4 import tuwien.auto.calimero.dptxlator.DPtXlator8BitSet;
+//calimero 2.4 import tuwien.auto.calimero.dptxlator.DPtXlatorMeteringValue;
 import tuwien.auto.calimero.dptxlator.TranslatorTypes;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -61,175 +69,460 @@ import tuwien.auto.calimero.exception.KNXIllegalArgumentException;
  *
  * @author Kai Kreuzer
  * @author Volker Daube
+ * @author Helmut Lehmeyer
+ *         generic DPT Mapper
  * @since 0.3.0
- *
  */
 public class KNXCoreTypeMapper implements KNXTypeMapper {
 
-    static private final Logger logger = LoggerFactory.getLogger(KNXCoreTypeMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KNXCoreTypeMapper.class);
 
-    // TODO: Isn't is bad to use SimpleDateFormat?
-    // private final static SimpleDateFormat TIME_DAY_FORMATTER = new SimpleDateFormat("EEE, HH:mm:ss", Locale.US);
-    // private final static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm:ss", Locale.US);
-    // private final static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-    // private final static SimpleDateFormat FULL_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private static final String TIME_DAY_FORMAT = new String("EEE, HH:mm:ss");
+    private static final String DATE_FORMAT = new String("yyyy-MM-dd");
 
-    static private final String TIME_DAY_FORMAT = new String("EEE, HH:mm:ss");
-    static private final String DATE_FORMAT = new String("yyyy-MM-dd");
+    /**
+     * stores the openHAB type class for (supported) KNX datapoint types in a generic way.
+     * dptTypeMap stores more specific type class and exceptions.
+     */
+    private static Map<Integer, Class<? extends Type>> dptMainTypeMap;
 
     /** stores the openHAB type class for all (supported) KNX datapoint types */
-    static private Map<String, Class<? extends Type>> dptTypeMap;
+    private static Map<String, Class<? extends Type>> dptTypeMap;
 
     /** stores the default KNX DPT to use for each openHAB type */
-    static private Map<Class<? extends Type>, String> defaultDptMap;
+    private static Map<Class<? extends Type>, String> defaultDptMap;
 
     static {
-        dptTypeMap = new HashMap<String, Class<? extends Type>>();
 
-        // Datapoint Types "B1", Main number 1
-        dptTypeMap.put(DPTXlatorBoolean.DPT_SWITCH.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_BOOL.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_ENABLE.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_RAMP.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_ALARM.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_BINARYVALUE.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_STEP.getID(), OnOffType.class);
+        @SuppressWarnings("unused")
+        final List<Class<?>> xlators = Arrays.<Class<?>> asList(DPTXlator1BitControlled.class,
+                DPTXlator2ByteFloat.class, DPTXlator2ByteUnsigned.class, DPTXlator3BitControlled.class,
+                DPTXlator4ByteFloat.class, DPTXlator4ByteSigned.class, DPTXlator4ByteUnsigned.class,
+                DPTXlator64BitSigned.class, DPTXlator8BitSigned.class, DPTXlator8BitUnsigned.class,
+                DPTXlatorBoolean.class, DPTXlatorDate.class, DPTXlatorDateTime.class, DPTXlatorRGB.class,
+                DPTXlatorSceneControl.class, DPTXlatorSceneNumber.class, DPTXlatorString.class, DPTXlatorTime.class,
+                DPTXlatorUtf8.class
+        // calimero 2.4 DPTXlator8BitEnum.class,
+        // calimero 2.4 DptXlator8BitSet.class,
+        // calimero 2.4 DptXlatorMeteringValue.class
+        );
+
+        dptTypeMap = new HashMap<String, Class<? extends Type>>();
+        dptMainTypeMap = new HashMap<Integer, Class<? extends Type>>();
+
+        /**
+         * MainType: 1
+         * 1.005: Alarm, values no alarm alarm
+         * 1.016: Acknowledge, values no action acknowledge
+         * 1.006: Binary value, values low high
+         * 1.017: Trigger, values trigger trigger
+         * 1.007: Step, values decrease increase
+         * 1.018: Occupancy, values not occupied occupied
+         * 1.008: Up/Down, values up down
+         * 1.019: Window/Door, values closed open
+         * 1.009: Open/Close, values open close
+         * 1.010: Start, values stop start
+         * 1.021: Logical function, values OR AND
+         * 1.011: State, values inactive active
+         * 1.022: Scene A/B, values scene A scene B
+         * 1.001: Switch, values off on
+         * 1.012: Invert, values not inverted inverted
+         * 1.023: Shutter/Blinds mode, values only move up/down move up/down + step-stop
+         * 1.100: Heat/Cool, values cooling heating
+         * 1.002: Boolean, values false true
+         * 1.013: Dim send-style, values start/stop cyclic
+         * 1.003: Enable, values disable enable
+         * 1.014: Input source, values fixed calculated
+         * 1.004: Ramp, values no ramp ramp
+         * 1.015: Reset, values no action reset
+         */
+        dptMainTypeMap.put(1, OnOffType.class);
+        /** Exceptions Datapoint Types "B1", Main number 1 */
         dptTypeMap.put(DPTXlatorBoolean.DPT_UPDOWN.getID(), UpDownType.class);
         dptTypeMap.put(DPTXlatorBoolean.DPT_OPENCLOSE.getID(), OpenClosedType.class);
         dptTypeMap.put(DPTXlatorBoolean.DPT_START.getID(), StopMoveType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_STATE.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_INVERT.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_DIMSENDSTYLE.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_INPUTSOURCE.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_RESET.getID(), OnOffType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_OCCUPANCY.getID(), OnOffType.class);
         dptTypeMap.put(DPTXlatorBoolean.DPT_WINDOW_DOOR.getID(), OpenClosedType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_LOGICAL_FUNCTION.getID(), OnOffType.class);
         dptTypeMap.put(DPTXlatorBoolean.DPT_SCENE_AB.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlatorBoolean.DPT_SHUTTER_BLINDS_MODE.getID(), OnOffType.class);
 
-        // Datapoint Types "B2", Main number 2
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_SWITCH_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_BOOL_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_ENABLE_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_RAMP_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_ALARM_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_BINARY_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_STEP_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_UPDOWN_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_OPENCLOSE_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_START_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_STATE_CONTROL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator1BitControlled.DPT_INVERT_CONTROL.getID(), DecimalType.class);
+        /**
+         * MainType: 2
+         * 2.002: Boolean Controlled, values 0 false 1 true
+         * 2.003: Enable Controlled, values 0 disable 1 enable
+         * 2.011: State Controlled, values 0 inactive 1 active
+         * 2.001: Switch Controlled, values 0 off 1 on
+         * 2.012: Invert Controlled, values 0 not inverted 1 inverted
+         * 2.010: Start Controlled, values 0 stop 1 start
+         * 2.008: Up/Down Controlled, values 0 up 1 down
+         * 2.009: Open/Close Controlled, values 0 open 1 close
+         * 2.006: Binary Controlled, values 0 low 1 high
+         * 2.007: Step Controlled, values 0 decrease 1 increase
+         * 2.004: Ramp Controlled, values 0 no ramp 1 ramp
+         * 2.005: Alarm Controlled, values 0 no alarm 1 alarm
+         */
+        dptMainTypeMap.put(2, DecimalType.class);
+        /** Exceptions Datapoint Types "B2", Main number 2 */
+        // Example: dptTypeMap.put(DPTXlator1BitControlled.DPT_SWITCH_CONTROL.getID(), DecimalType.class);
 
-        // Datapoint Types "B1U3", Main number 3
-        dptTypeMap.put(DPTXlator3BitControlled.DPT_CONTROL_DIMMING.getID(), IncreaseDecreaseType.class);
+        /**
+         * MainType: 3
+         * 3.007: Dimming, values decrease 7 increase 7
+         * 3.008: Blinds, values up 7 down 7
+         */
+        dptMainTypeMap.put(3, IncreaseDecreaseType.class);
+        /** Exceptions Datapoint Types "B1U3", Main number 3 */
+        dptTypeMap.put(DPTXlator3BitControlled.DPT_CONTROL_BLINDS.getID(), UpDownType.class);
 
-        // Datapoint Types "8-Bit Unsigned Value", Main number 5
+        /**
+         * MainType: 5
+         * 5.010: Unsigned count, values 0 255 counter pulses
+         * 5.001: Scaling, values 0 100 %
+         * 5.003: Angle, values 0 360 °
+         * 5.004: Percent (8 Bit), values 0 255 %
+         * 5.005: Decimal factor, values 0 255 ratio
+         * 5.006: Tariff information, values 0 254
+         */
+        dptMainTypeMap.put(5, DecimalType.class);
+        /** Exceptions Types "8-Bit Unsigned Value", Main number 5 */
         dptTypeMap.put(DPTXlator8BitUnsigned.DPT_SCALING.getID(), PercentType.class);
-        dptTypeMap.put(DPTXlator8BitUnsigned.DPT_ANGLE.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator8BitUnsigned.DPT_PERCENT_U8.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator8BitUnsigned.DPT_DECIMALFACTOR.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator8BitUnsigned.DPT_TARIFF.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator8BitUnsigned.DPT_VALUE_1_UCOUNT.getID(), DecimalType.class);
 
-        // Datapoint Types "2-Octet Unsigned Value", Main number 7
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_VALUE_2_UCOUNT.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_SEC.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_MIN.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_HOURS.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_PROP_DATATYPE.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_LENGTH.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_ELECTRICAL_CURRENT.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_BRIGHTNESS.getID(), DecimalType.class);
+        /**
+         * MainType: 6
+         * 6.001: Percent (8 Bit), values -128 127 %
+         * 6.020: status with mode, values 0/0/0/0/0 0 1/1/1/1/1 2
+         * 6.010: signed count, values -128 127 counter pulses
+         */
+        dptMainTypeMap.put(6, DecimalType.class);
+        /** Exceptions Datapoint Types "8-Bit Signed Value", Main number 6 */
+        dptTypeMap.put(DPTXlator8BitSigned.DPT_STATUS_MODE3.getID(), StringType.class);
 
-        // Datapoint Types "2-Octet Float Value", Main number 9
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_TEMPERATURE.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_TEMPERATURE_DIFFERENCE.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_TEMPERATURE_GRADIENT.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_INTENSITY_OF_LIGHT.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_WIND_SPEED.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_AIR_PRESSURE.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_HUMIDITY.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_AIRQUALITY.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_TIME_DIFFERENCE1.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_TIME_DIFFERENCE2.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_VOLTAGE.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_ELECTRICAL_CURRENT.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_POWERDENSITY.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_KELVIN_PER_PERCENT.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_POWER.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_VOLUME_FLOW.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_RAIN_AMOUNT.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_TEMP_F.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator2ByteFloat.DPT_WIND_SPEED_KMH.getID(), DecimalType.class);
+        /**
+         * MainType: 7
+         * 7.003: Time period (resolution 10 ms), values 0 655350 ms
+         * 7.004: Time period (resolution 100 ms), values 0 6553500 ms
+         * 7.005: Time period in seconds, values 0 65535 s
+         * 7.006: Time period in minutes, values 0 65535 min
+         * 7.010: Interface object property ID, values 0 65535
+         * 7.011: Length in mm, values 0 65535 mm
+         * 7.001: Unsigned count, values 0 65535 pulses
+         * 7.012: Electrical current, values 0 65535 mA
+         * 7.002: Time period in ms, values 0 65535 ms
+         * 7.013: Brightness, values 0 65535 lx
+         * 7.007: Time period in hours, values 0 65535 h
+         */
+        dptMainTypeMap.put(7, DecimalType.class);
+        /** Exceptions Datapoint Types "2-Octet Unsigned Value", Main number 7 */
+        // Example: dptTypeMap.put(DPTXlator2ByteUnsigned.DPT_VALUE_2_UCOUNT.getID(), DecimalType.class);
 
-        // Datapoint Types "Time", Main number 10
-        dptTypeMap.put(DPTXlatorTime.DPT_TIMEOFDAY.getID(), DateTimeType.class);
+        /**
+         * MainType: 9
+         * 9.020: Voltage, values -670760 +670760 mV
+         * 9.010: Time difference 1, values -670760 +670760 s
+         * 9.021: Electrical current, values -670760 +670760 mA
+         * 9.011: Time difference 2, values -670760 +670760 ms
+         * 9.022: Power density, values -670760 +670760 W/m²
+         * 9.001: Temperature, values -273 +670760 °C
+         * 9.023: Kelvin/percent, values -670760 +670760 K/%
+         * 9.002: Temperature difference, values -670760 +670760 K
+         * 9.024: Power, values -670760 +670760 kW
+         * 9.003: Temperature gradient, values -670760 +670760 K/h
+         * 9.025: Volume flow, values -670760 +670760 l/h
+         * 9.004: Light intensity, values 0 +670760 lx
+         * 9.026: Rain amount, values -671088.64 670760.96 l/m²
+         * 9.005: Wind speed, values 0 +670760 m/s
+         * 9.027: Temperature, values -459.6 670760.96 °F
+         * 9.006: Air pressure, values 0 +670760 Pa
+         * 9.028: Wind speed, values 0 670760.96 km/h
+         * 9.007: Humidity, values 0 +670760 %
+         * 9.008: Air quality, values 0 +670760 ppm
+         */
+        dptMainTypeMap.put(9, DecimalType.class);
+        /** Exceptions Datapoint Types "2-Octet Float Value", Main number 9 */
+        // Example: dptTypeMap.put(DPTXlator2ByteFloat.DPT_TEMPERATURE.getID(), DecimalType.class);
 
-        // Datapoint Types “Date”", Main number 11
-        dptTypeMap.put(DPTXlatorDate.DPT_DATE.getID(), DateTimeType.class);
+        /**
+         * MainType: 10
+         * 10.001: Time of day, values no-day, 00:00:00 Sun, 23:59:59 dow, hh:mm:ss
+         */
+        dptMainTypeMap.put(10, DateTimeType.class);
+        /** Exceptions Datapoint Types "Time", Main number 10 */
+        // Example: dptTypeMap.put(DPTXlatorTime.DPT_TIMEOFDAY.getID(), DateTimeType.class);
 
-        // Datapoint Types "4-Octet Unsigned Value", Main number 12
-        dptTypeMap.put(DPTXlator4ByteUnsigned.DPT_VALUE_4_UCOUNT.getID(), DecimalType.class);
+        /**
+         * MainType: 11
+         * 11.001: Date, values 1990-01-01 2089-12-31 yyyy-mm-dd
+         */
+        dptMainTypeMap.put(11, DateTimeType.class);
+        /** Exceptions Datapoint Types “Date”", Main number 11 */
+        // Example: dptTypeMap.put(DPTXlatorDate.DPT_DATE.getID(), DateTimeType.class);
 
-        // Datapoint Types "4-Octet Signed Value", Main number 13
-        dptTypeMap.put(DPTXlator4ByteSigned.DPT_COUNT.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteSigned.DPT_FLOWRATE.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteSigned.DPT_ACTIVE_ENERGY.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteSigned.DPT_APPARENT_ENERGY.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteSigned.DPT_REACTIVE_ENERGY.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteSigned.DPT_ACTIVE_ENERGY_KWH.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteSigned.DPT_APPARENT_ENERGY_KVAH.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteSigned.DPT_REACTIVE_ENERGY_KVARH.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteSigned.DPT_DELTA_TIME.getID(), DecimalType.class);
+        /**
+         * MainType: 12
+         * 12.001: Unsigned count, values 0 4294967295 counter pulses
+         */
+        dptMainTypeMap.put(12, DecimalType.class);
+        /** Exceptions Datapoint Types "4-Octet Unsigned Value", Main number 12 */
+        // Example: dptTypeMap.put(DPTXlator4ByteUnsigned.DPT_VALUE_4_UCOUNT.getID(), DecimalType.class);
 
-        // Datapoint Types "4-Octet Float Value", Main number 14
-        dptTypeMap.put(DPTXlator4ByteFloat.DPT_ACCELERATION_ANGULAR.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteFloat.DPT_ANGLE_DEG.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteFloat.DPT_ELECTRIC_CURRENT.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteFloat.DPT_ELECTRIC_POTENTIAL.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteFloat.DPT_FREQUENCY.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteFloat.DPT_POWER.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteFloat.DPT_PRESSURE.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteFloat.DPT_AMPLITUDE.getID(), DecimalType.class);
-        dptTypeMap.put(DPTXlator4ByteFloat.DPT_DENSITY.getID(), DecimalType.class);
+        /**
+         * MainType: 13
+         * 13.010: Active Energy, values -2147483648 2147483647 Wh
+         * 13.001: Counter pulses, values -2147483648 2147483647 counter pulses
+         * 13.012: Reactive energy, values -2147483648 2147483647 VARh
+         * 13.100: Delta time in seconds, values -2147483648 2147483647 s
+         * 13.011: Apparent energy, values -2147483648 2147483647 VAh
+         * 13.014: Apparent energy in kVAh, values -2147483648 2147483647 kVAh
+         * 13.002: Flow rate, values -2147483648 2147483647 m3/h
+         * 13.013: Active energy in kWh, values -2147483648 2147483647 kWh
+         * 13.015: Reactive energy in kVARh, values -2147483648 2147483647 kVARh
+         */
+        dptMainTypeMap.put(13, DecimalType.class);
+        /** Exceptions Datapoint Types "4-Octet Signed Value", Main number 13 */
+        // Example: dptTypeMap.put(DPTXlator4ByteSigned.DPT_COUNT.getID(), DecimalType.class);
 
-        // Datapoint Types "String", Main number 16
-        dptTypeMap.put(DPTXlatorString.DPT_STRING_8859_1.getID(), StringType.class);
-        dptTypeMap.put(DPTXlatorString.DPT_STRING_ASCII.getID(), StringType.class);
+        /**
+         * MainType: 14
+         * 14.019: Electric current, values -3.40282347e+38f..3.40282347e+38f A
+         * 14.018: Electric charge, values -3.40282347e+38f..3.40282347e+38f C
+         * 14.017: Density, values -3.40282347e+38f..3.40282347e+38f kg m⁻³
+         * 14.016: Conductivity, electrical, values -3.40282347e+38f..3.40282347e+38f Ω⁻¹m⁻¹
+         * 14.015: Conductance, values -3.40282347e+38f..3.40282347e+38f Ω⁻¹
+         * 14.059: Reactance, values -3.40282347e+38f..3.40282347e+38f Ω
+         * 14.014: Compressibility, values -3.40282347e+38f..3.40282347e+38f m²/N
+         * 14.058: Pressure, values -3.40282347e+38f..3.40282347e+38f Pa
+         * 14.013: Charge density (volume), values -3.40282347e+38f..3.40282347e+38f C m⁻³
+         * 14.057: Power factor, values -3.40282347e+38f..3.40282347e+38f
+         * 14.012: Charge density (surface), values -3.40282347e+38f..3.40282347e+38f C m⁻²
+         * 14.056: Power, values -3.40282347e+38f..3.40282347e+38f W
+         * 14.011: Capacitance, values -3.40282347e+38f..3.40282347e+38f F
+         * 14.055: Phase angle, degree, values -3.40282347e+38f..3.40282347e+38f °
+         * 14.010: Area, values -3.40282347e+38f..3.40282347e+38f m²
+         * 14.054: Phase angle, radiant, values -3.40282347e+38f..3.40282347e+38f rad
+         * 14.053: Momentum, values -3.40282347e+38f..3.40282347e+38f N/s
+         * 14.052: Mass flux, values -3.40282347e+38f..3.40282347e+38f kg/s
+         * 14.051: Mass, values -3.40282347e+38f..3.40282347e+38f kg
+         * 14.050: Magneto motive force, values -3.40282347e+38f..3.40282347e+38f A
+         * 14.060: Resistance, values -3.40282347e+38f..3.40282347e+38f Ω
+         * 14.029: Electromagnetic moment, values -3.40282347e+38f..3.40282347e+38f A m²
+         * 14.028: Electric potential difference, values -3.40282347e+38f..3.40282347e+38f V
+         * 14.027: Electric potential, values -3.40282347e+38f..3.40282347e+38f V
+         * 14.026: Electric polarization, values -3.40282347e+38f..3.40282347e+38f C m⁻²
+         * 14.025: Electric flux density, values -3.40282347e+38f..3.40282347e+38f C m⁻²
+         * 14.069: Temperature, absolute, values -3.40282347e+38f..3.40282347e+38f K
+         * 14.024: Electric flux, values -3.40282347e+38f..3.40282347e+38f Vm
+         * 14.068: Temperature in Celsius Degree, values -3.40282347e+38f..3.40282347e+38f °C
+         * 14.023: Electric field strength, values -3.40282347e+38f..3.40282347e+38f V/m
+         * 14.067: Surface tension, values -3.40282347e+38f..3.40282347e+38f N/m
+         * 14.022: Electric displacement, values -3.40282347e+38f..3.40282347e+38f C m⁻²
+         * 14.066: Stress, values -3.40282347e+38f..3.40282347e+38f Pa
+         * 14.021: Electric dipole moment, values -3.40282347e+38f..3.40282347e+38f Cm
+         * 14.065: Speed, values -3.40282347e+38f..3.40282347e+38f m/s
+         * 14.020: Electric current density, values -3.40282347e+38f..3.40282347e+38f A m⁻²
+         * 14.064: Sound intensity, values -3.40282347e+38f..3.40282347e+38f W m⁻²
+         * 14.063: Solid angle, values -3.40282347e+38f..3.40282347e+38f sr
+         * 14.062: Self inductance, values -3.40282347e+38f..3.40282347e+38f H
+         * 14.061: Resistivity, values -3.40282347e+38f..3.40282347e+38f Ωm
+         * 14.071: Thermal capacity, values -3.40282347e+38f..3.40282347e+38f J/K
+         * 14.070: Temperature difference, values -3.40282347e+38f..3.40282347e+38f K
+         * 14.039: Length, values -3.40282347e+38f..3.40282347e+38f m
+         * 14.038: Impedance, values -3.40282347e+38f..3.40282347e+38f Ω
+         * 14.037: Heat quantity, values -3.40282347e+38f..3.40282347e+38f J
+         * 14.036: Heat flow rate, values -3.40282347e+38f..3.40282347e+38f W
+         * 14.035: Heat capacity, values -3.40282347e+38f..3.40282347e+38f J/K
+         * 14.079: Work, values -3.40282347e+38f..3.40282347e+38f J
+         * 14.034: Frequency, angular, values -3.40282347e+38f..3.40282347e+38f rad/s
+         * 14.078: Weight, values -3.40282347e+38f..3.40282347e+38f N
+         * 14.033: Frequency, values -3.40282347e+38f..3.40282347e+38f Hz
+         * 14.077: Volume flux, values -3.40282347e+38f..3.40282347e+38f m³/s
+         * 14.032: Force, values -3.40282347e+38f..3.40282347e+38f N
+         * 14.076: Volume, values -3.40282347e+38f..3.40282347e+38f m³
+         * 14.031: Energy, values -3.40282347e+38f..3.40282347e+38f J
+         * 14.075: Torque, values -3.40282347e+38f..3.40282347e+38f Nm
+         * 14.030: Electromotive force, values -3.40282347e+38f..3.40282347e+38f V
+         * 14.074: Time, values -3.40282347e+38f..3.40282347e+38f s
+         * 14.073: Thermoelectric power, values -3.40282347e+38f..3.40282347e+38f V/K
+         * 14.072: Thermal conductivity, values -3.40282347e+38f..3.40282347e+38f W/m K⁻¹
+         * 14.009: Angular velocity, values -3.40282347e+38f..3.40282347e+38f rad/s
+         * 14.008: Momentum, values -3.40282347e+38f..3.40282347e+38f Js
+         * 14.007: Angle, values -3.40282347e+38f..3.40282347e+38f °
+         * 14.006: Angle, values -3.40282347e+38f..3.40282347e+38f rad
+         * 14.005: Amplitude, values -3.40282347e+38f..3.40282347e+38f
+         * 14.049: Magnetization, values -3.40282347e+38f..3.40282347e+38f A/m
+         * 14.004: Mol, values -3.40282347e+38f..3.40282347e+38f mol
+         * 14.048: Magnetic polarization, values -3.40282347e+38f..3.40282347e+38f T
+         * 14.003: Activity, values -3.40282347e+38f..3.40282347e+38f s⁻¹
+         * 14.047: Magnetic moment, values -3.40282347e+38f..3.40282347e+38f A m²
+         * 14.002: Activation energy, values -3.40282347e+38f..3.40282347e+38f J/mol
+         * 14.046: Magnetic flux density, values -3.40282347e+38f..3.40282347e+38f T
+         * 14.001: Acceleration, angular, values -3.40282347e+38f..3.40282347e+38f rad s⁻²
+         * 14.045: Magnetic flux, values -3.40282347e+38f..3.40282347e+38f Wb
+         * 14.000: Acceleration, values -3.40282347e+38f..3.40282347e+38f ms⁻²
+         * 14.044: Magnetic field strength, values -3.40282347e+38f..3.40282347e+38f A/m
+         * 14.043: Luminous intensity, values -3.40282347e+38f..3.40282347e+38f cd
+         * 14.042: Luminous flux, values -3.40282347e+38f..3.40282347e+38f lm
+         * 14.041: Luminance, values -3.40282347e+38f..3.40282347e+38f cd m⁻²
+         * 14.040: Quantity of Light, values -3.40282347e+38f..3.40282347e+38f J
+         */
+        dptMainTypeMap.put(14, DecimalType.class);
+        /** Exceptions Datapoint Types "4-Octet Float Value", Main number 14 */
+        // Example: dptTypeMap.put(DPTXlator4ByteFloat.DPT_ACCELERATION_ANGULAR.getID(), DecimalType.class);
 
-        // Datapoint Types "Scene Number", Main number 17
-        dptTypeMap.put(DPTXlatorSceneNumber.DPT_SCENE_NUMBER.getID(), DecimalType.class);
+        /**
+         * MainType: 16
+         * 16.000: ASCII string, values
+         * 16.001: ISO-8859-1 string (Latin 1), values
+         */
+        dptMainTypeMap.put(16, StringType.class);
+        /** Exceptions Datapoint Types "String", Main number 16 */
+        // Example: dptTypeMap.put(DPTXlatorString.DPT_STRING_ASCII.getID(), StringType.class);
 
-        // Datapoint Types "Scene Control", Main number 18
-        dptTypeMap.put(DPTXlatorSceneControl.DPT_SCENE_CONTROL.getID(), DecimalType.class);
+        /**
+         * MainType: 17
+         * 17.001: Scene Number, values 0 63
+         */
+        dptMainTypeMap.put(17, DecimalType.class);
+        /** Exceptions Datapoint Types "Scene Number", Main number 17 */
+        // Example: dptTypeMap.put(DPTXlatorSceneNumber.DPT_SCENE_NUMBER.getID(), DecimalType.class);
 
-        // Datapoint Types "DateTime", Main number 19
-        dptTypeMap.put(DPTXlatorDateTime.DPT_DATE_TIME.getID(), DateTimeType.class);
+        /**
+         * MainType: 18
+         * 18.001: Scene Control, values activate 0 learn 63
+         */
+        dptMainTypeMap.put(18, DecimalType.class);
+        /** Exceptions Datapoint Types "Scene Control", Main number 18 */
+        // Example: dptTypeMap.put(DPTXlatorSceneControl.DPT_SCENE_CONTROL.getID(), DecimalType.class);
 
-        // Datapoint Types "RGB Color", Main number 232
-        dptTypeMap.put(DPTXlatorRGB.DPT_RGB.getID(), HSBType.class);
+        /**
+         * MainType: 19
+         * 19.001: Date with time, values 1900, 01/01 00:00:00 2155, 12/31 24:00:00 yr/mth/day hr:min:sec
+         */
+        dptMainTypeMap.put(19, DateTimeType.class);
+        /** Exceptions Datapoint Types "DateTime", Main number 19 */
+        // Example: dptTypeMap.put(DPTXlatorDateTime.DPT_DATE_TIME.getID(), DateTimeType.class);
+
+        /**
+         * MainType: 20
+         * 20.606: PB Action, enumeration [0..3]
+         * 20.804: Blinds Control Mode, enumeration [0..1]
+         * 20.607: Dimm PB Model, enumeration [1..4]
+         * 20.608: Switch On Mode, enumeration [0..2]
+         * 20.609: Load Type Set, enumeration [0..2]
+         * 20.008: PSU Mode, enumeration [0..2]
+         * 20.602: DALI Fade Time, enumeration [0..15]
+         * 20.603: Blinking Mode, enumeration [0..2]
+         * 20.801: SAB Except Behavior, enumeration [0..4]
+         * 20.604: Light Control Mode, enumeration [0..1]
+         * 20.802: SAB Behavior Lock/Unlock, enumeration [0..6]
+         * 20.605: Switch PB Model, enumeration [1..2]
+         * 20.803: SSSB Mode, enumeration [1..4]
+         * 20.004: Priority, enumeration [0..3]
+         * 20.005: Light Application Mode, enumeration [0..2]
+         * 20.006: Application Area, enumeration [0..14]
+         * 20.600: Behavior Lock/Unlock, enumeration [0..6]
+         * 20.007: Alarm Class Type, enumeration [0..3]
+         * 20.601: Behavior Bus Power Up/Down, enumeration [0..4]
+         * 20.121: Backup Mode, enumeration [0..1]
+         * 20.001: System Clock Mode, enumeration [0..2]
+         * 20.122: Start Synchronization, enumeration [0..2]
+         * 20.002: Building Mode, enumeration [0..2]
+         * 20.003: Occupancy Mode, enumeration [0..2]
+         * 20.610: Load Type Detected, enumeration [0..3]
+         * 20.017: Sensor Select, enumeration [0..4]
+         * 20.011: Error Class System, enumeration [0..18]
+         * 20.012: Error Class HVAC, enumeration [0..4]
+         * 20.013: Time Delay, enumeration [0..25]
+         * 20.014: Beaufort Wind Force Scale, enumeration [0..12]
+         * 20.020: Actuator Connect Type, enumeration [1..2]
+         * 20.107: Changeover Mode, enumeration [0..2]
+         * 20.108: Valve Mode, enumeration [1..5]
+         * 20.109: Damper Mode, enumeration [1..4]
+         * 20.103: DHW Mode, enumeration [0..4]
+         * 20.104: Load Priority, enumeration [0..2]
+         * 20.105: HVAC Control Mode, enumeration [0..20]
+         * 20.106: HVAC Emergency Mode, enumeration [0..5]
+         * 20.100: Fuel Type, enumeration [0..3]
+         * 20.101: Burner Type, enumeration [0..3]
+         * 20.102: HVAC Mode, enumeration [0..4]
+         * 20.114: Metering Device Type, enumeration [0..41/255]
+         * 20.110: Heater Mode, enumeration [1..3]
+         * 20.1202: Gas Measurement Condition, enumeration [0..3]
+         * 20.111: Fan Mode, enumeration [0..2]
+         * 20.1003: RF Filter Select, enumeration [0..3]
+         * 20.112: Master/Slave Mode, enumeration [0..2]
+         * 20.1002: RF Mode Select, enumeration [0..2]
+         * 20.1200: M-Bus Breaker/Valve State, enumeration [0..255]
+         * 20.113: Status Room Setpoint, enumeration [0..2]
+         * 20.1001: Additional Info Type, enumeration [0..7]
+         * 20.1000: Comm Mode, enumeration [0..255]
+         * 20.120: Air Damper Actuator Type, enumeration [1..2]
+         */
+        dptMainTypeMap.put(20, StringType.class);
+        /** Exceptions Datapoint Types, Main number 20 */
+        // Example since calimero 2.4: dptTypeMap.put(DPTXlator8BitEnum.DptSystemClockMode.getID(), StringType.class);
+
+        /**
+         * MainType: 21
+         * 21.106: Ventilation Controller Status, values 0..15
+         * 21.601: Light Actuator Error Info, values 0..127
+         * 21.001: General Status, values 0..31
+         * 21.100: Forcing Signal, values 0..255
+         * 21.002: Device Control, values 0..7
+         * 21.101: Forcing Signal Cool, values 0..1
+         * 21.1010: Channel Activation State, values 0..255
+         * 21.1000: R F Comm Mode Info, values 0..7
+         * 21.1001: R F Filter Modes, values 0..7
+         * 21.104: Fuel Type Set, values 0..7
+         * 21.105: Room Cooling Controller Status, values 0..1
+         * 21.102: Room Heating Controller Status, values 0..255
+         * 21.103: Solar Dhw Controller Status, values 0..7
+         */
+        dptMainTypeMap.put(21, StringType.class);
+        /** Exceptions Datapoint Types, Main number 21 */
+        // Example since calimero 2.4: dptTypeMap.put(DptXlator8BitSet.DptGeneralStatus.getID(), StringType.class);
+
+        /**
+         * MainType: 28
+         * 28.001: UTF-8, values
+         */
+        dptMainTypeMap.put(28, StringType.class);
+        /** Exceptions Datapoint Types "String" UTF-8, Main number 28 */
+        // Example: dptTypeMap.put(DPTXlatorUtf8.DPT_UTF8.getID(), StringType.class);
+
+        /**
+         * MainType: 29
+         * 29.012: Reactive energy, values -9223372036854775808 9223372036854775807 VARh
+         * 29.011: Apparent energy, values -9223372036854775808 9223372036854775807 VAh
+         * 29.010: Active Energy, values -9223372036854775808 9223372036854775807 Wh
+         */
+        dptMainTypeMap.put(29, DecimalType.class);
+        /** Exceptions Datapoint Types "64-Bit Signed Value", Main number 29 */
+        // Example: dptTypeMap.put(DPTXlator64BitSigned.DPT_ACTIVE_ENERGY.getID(), DecimalType.class);
+
+        /**
+         * MainType: 229
+         * 229.001: Metering Value, values -2147483648..2147483647
+         */
+        dptMainTypeMap.put(229, DecimalType.class);
+        /** Exceptions Datapoint Types "4-Octet Signed Value", Main number 229 */
+        // Example: dptTypeMap.put(DptXlatorMeteringValue.DptMeteringValue.getID(), DecimalType.class);
+
+        /**
+         * MainType: 232
+         * 232.600: RGB, values 0 0 0 255 255 255 r g b
+         */
+        dptMainTypeMap.put(232, HSBType.class);
+        /** Exceptions Datapoint Types "RGB Color", Main number 232 */
+        // Example: dptTypeMap.put(DPTXlatorRGB.DPT_RGB.getID(), HSBType.class);
 
         defaultDptMap = new HashMap<Class<? extends Type>, String>();
         defaultDptMap.put(OnOffType.class, DPTXlatorBoolean.DPT_SWITCH.getID());
         defaultDptMap.put(UpDownType.class, DPTXlatorBoolean.DPT_UPDOWN.getID());
         defaultDptMap.put(StopMoveType.class, DPTXlatorBoolean.DPT_START.getID());
         defaultDptMap.put(OpenClosedType.class, DPTXlatorBoolean.DPT_WINDOW_DOOR.getID());
-
         defaultDptMap.put(IncreaseDecreaseType.class, DPTXlator3BitControlled.DPT_CONTROL_DIMMING.getID());
-
         defaultDptMap.put(PercentType.class, DPTXlator8BitUnsigned.DPT_SCALING.getID());
-
         defaultDptMap.put(DecimalType.class, DPTXlator2ByteFloat.DPT_TEMPERATURE.getID());
-
         defaultDptMap.put(DateTimeType.class, DPTXlatorTime.DPT_TIMEOFDAY.getID());
-
         defaultDptMap.put(StringType.class, DPTXlatorString.DPT_STRING_8859_1.getID());
-
         defaultDptMap.put(HSBType.class, DPTXlatorRGB.DPT_RGB.getID());
     }
 
@@ -244,7 +537,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         DPT dpt;
         int mainNumber = getMainNumber(dptID);
         if (mainNumber == -1) {
-            logger.error("toDPTValue couldn't identify mainnumber in dptID: {}", dptID);
+            LOGGER.error("toDPTValue couldn't identify mainnumber in dptID: {}", dptID);
             return null;
         }
 
@@ -258,7 +551,6 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         try {
             // check for HSBType first, because it extends PercentType as well
             if (type instanceof HSBType) {
-                // TODO lewie: THIS IS UNTETED!!!
                 HSBType hc = ((HSBType) type);
                 return "r:" + Integer.toString(hc.getRed().intValue()) + " g:"
                         + Integer.toString(hc.getGreen().intValue()) + " b:"
@@ -309,12 +601,12 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 return formatDateTime((DateTimeType) type, dptID);
             }
         } catch (Exception e) {
-            logger.error("An exception occurred converting type {} to dpt id {} : {}",
+            LOGGER.error("An exception occurred converting type {} to dpt id {} : {}",
                     new Object[] { type, dptID, e.getMessage() });
             return null;
         }
 
-        logger.debug("toDPTValue: Couldn't convert type {} to dpt id {} (no mapping).", type, dptID);
+        LOGGER.debug("toDPTValue: Couldn't convert type {} to dpt id {} (no mapping).", type, dptID);
 
         return null;
     }
@@ -335,12 +627,12 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
 
             int mainNumber = getMainNumber(id);
             if (mainNumber == -1) {
-                logger.debug("toType: couldn't identify mainnumber in dptID: {}.", id);
+                LOGGER.debug("toType: couldn't identify mainnumber in dptID: {}.", id);
                 return null;
             }
             int subNumber = getSubNumber(id);
             if (subNumber == -1) {
-                logger.debug("toType: couldn't identify su number in dptID: {}.", id);
+                LOGGER.debug("toType: couldn't identify su number in dptID: {}.", id);
                 return null;
             }
             /*
@@ -373,7 +665,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                     DPTXlator3BitControlled translator3BitControlled = (DPTXlator3BitControlled) translator;
                     if (translator3BitControlled.getStepCode() == 0) {
                         // Not supported: break
-                        logger.debug("toType: KNX DPT_Control_Dimming: break ignored.");
+                        LOGGER.debug("toType: KNX DPT_Control_Dimming: break ignored.");
                         return null;
                     }
                     switch (subNumber) {
@@ -418,25 +710,25 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                     DPTXlatorDateTime translatorDateTime = (DPTXlatorDateTime) translator;
                     if (translatorDateTime.isFaultyClock()) {
                         // Not supported: faulty clock
-                        logger.debug("toType: KNX clock msg ignored: clock faulty bit set, which is not supported");
+                        LOGGER.debug("toType: KNX clock msg ignored: clock faulty bit set, which is not supported");
                         return null;
                     } else if (!translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                             && translatorDateTime.isValidField(DPTXlatorDateTime.DATE)) {
                         // Not supported: "/1/1" (month and day without year)
-                        logger.debug(
+                        LOGGER.debug(
                                 "toType: KNX clock msg ignored: no year, but day and month, which is not supported");
                         return null;
                     } else if (translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                             && !translatorDateTime.isValidField(DPTXlatorDateTime.DATE)) {
                         // Not supported: "1900" (year without month and day)
-                        logger.debug(
+                        LOGGER.debug(
                                 "toType: KNX clock msg ignored: no day and month, but year, which is not supported");
                         return null;
                     } else if (!translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                             && !translatorDateTime.isValidField(DPTXlatorDateTime.DATE)
                             && !translatorDateTime.isValidField(DPTXlatorDateTime.TIME)) {
                         // Not supported: No year, no date and no time
-                        logger.debug("toType: KNX clock msg ignored: no day and month or year, which is not supported");
+                        LOGGER.debug("toType: KNX clock msg ignored: no day and month or year, which is not supported");
                         return null;
                     }
 
@@ -484,7 +776,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             if (typeClass.equals(DateTimeType.class)) {
                 String date = formatDateTime(value, datapoint.getDPT());
                 if ((date == null) || (date.isEmpty())) {
-                    logger.debug("toType: KNX clock msg ignored: date object null or empty {}.", date);
+                    LOGGER.debug("toType: KNX clock msg ignored: date object null or empty {}.", date);
                     return null;
                 } else {
                     return DateTimeType.valueOf(date);
@@ -500,13 +792,13 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                 return HSBType.fromRGB(r, g, b);
             }
         } catch (KNXFormatException kfe) {
-            logger.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXFormatException).",
+            LOGGER.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXFormatException).",
                     datapoint.getDPT());
         } catch (KNXIllegalArgumentException kiae) {
-            logger.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXIllegalArgumentException).",
+            LOGGER.info("Translator couldn't parse data for datapoint type ‘{}‘ (KNXIllegalArgumentException).",
                     datapoint.getDPT());
         } catch (KNXException e) {
-            logger.warn("Failed creating a translator for datapoint type ‘{}‘.", datapoint.getDPT(), e);
+            LOGGER.warn("Failed creating a translator for datapoint type ‘{}‘.", datapoint.getDPT(), e);
         }
 
         return null;
@@ -518,8 +810,17 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @param dptId the datapoint type id
      * @return the openHAB type (command or state) class or {@code null} if the datapoint type id is not supported.
      */
-    static public Class<? extends Type> toTypeClass(String dptId) {
-        return dptTypeMap.get(dptId);
+    public static Class<? extends Type> toTypeClass(String dptId) {
+        Class<? extends Type> ohClass = dptTypeMap.get(dptId);
+        if (ohClass == null) {
+            int mainNumber = getMainNumber(dptId);
+            if (mainNumber == -1) {
+                LOGGER.debug("toType: couldn't convert dptID toTypeClass: {}.", dptId);
+                return null;
+            }
+            ohClass = dptMainTypeMap.get(mainNumber);
+        }
+        return ohClass;
     }
 
     /**
@@ -528,7 +829,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @param typeClass the openHAB type class
      * @return the datapoint type id
      */
-    static public String toDPTid(Class<? extends Type> typeClass) {
+    public static String toDPTid(Class<? extends Type> typeClass) {
         return defaultDptMap.get(typeClass);
     }
 
@@ -566,7 +867,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             }
         } catch (ParseException pe) {
             // do nothing but logging
-            logger.warn("Could not parse '{}' to a valid date", value);
+            LOGGER.warn("Could not parse '{}' to a valid date", value);
         }
 
         return date != null ? new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(date) : "";
@@ -586,7 +887,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @throws IllegalArgumentException if none of the datapoint types DPT_DATE or
      *             DPT_TIMEOFDAY has been used.
      */
-    static private String formatDateTime(DateTimeType dateType, String dpt) {
+    private static String formatDateTime(DateTimeType dateType, String dpt) {
         if (DPTXlatorDate.DPT_DATE.getID().equals(dpt)) {
             return dateType.format("%tF");
         } else if (DPTXlatorTime.DPT_TIMEOFDAY.getID().equals(dpt)) {
@@ -615,10 +916,10 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             try {
                 result = Integer.parseInt(dptID.substring(dptSepratorPosition + 1, dptID.length()));
             } catch (NumberFormatException nfe) {
-                logger.error("toType couldn't identify main and/or sub number in dptID (NumberFormatException): {}",
+                LOGGER.error("toType couldn't identify main and/or sub number in dptID (NumberFormatException): {}",
                         dptID);
             } catch (IndexOutOfBoundsException ioobe) {
-                logger.error("toType couldn't identify main and/or sub number in dptID (IndexOutOfBoundsException): {}",
+                LOGGER.error("toType couldn't identify main and/or sub number in dptID (IndexOutOfBoundsException): {}",
                         dptID);
             }
         }
@@ -631,7 +932,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
      * @param dptID String with DPT ID
      * @return main number or -1
      */
-    private int getMainNumber(String dptID) {
+    private static int getMainNumber(String dptID) {
         int result = -1;
         if (dptID == null) {
             throw new IllegalArgumentException("Parameter dptID cannot be null");
@@ -642,10 +943,10 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             try {
                 result = Integer.parseInt(dptID.substring(0, dptSepratorPosition));
             } catch (NumberFormatException nfe) {
-                logger.error("toType couldn't identify main and/or sub number in dptID (NumberFormatException): {}",
+                LOGGER.error("toType couldn't identify main and/or sub number in dptID (NumberFormatException): {}",
                         dptID);
             } catch (IndexOutOfBoundsException ioobe) {
-                logger.error("toType couldn't identify main and/or sub number in dptID (IndexOutOfBoundsException): {}",
+                LOGGER.error("toType couldn't identify main and/or sub number in dptID (IndexOutOfBoundsException): {}",
                         dptID);
             }
         }

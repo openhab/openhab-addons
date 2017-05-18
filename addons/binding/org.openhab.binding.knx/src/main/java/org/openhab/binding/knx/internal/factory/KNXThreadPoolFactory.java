@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.knx.internal.factory;
 
 import java.util.Map;
@@ -17,9 +25,9 @@ public class KNXThreadPoolFactory {
     protected static final long THREAD_TIMEOUT = 65L;
     protected static final long THREAD_MONITOR_SLEEP = 60000;
 
-    static protected Map<String, ExecutorService> pools = new WeakHashMap<>();
+    protected static Map<String, ExecutorService> pools = new WeakHashMap<>();
 
-    static public ScheduledExecutorService getPrioritizedScheduledPool(String poolName, int coreThreads) {
+    public static ScheduledExecutorService getPrioritizedScheduledPool(String poolName, int coreThreads) {
         ExecutorService pool = pools.get(poolName);
         if (pool == null) {
             synchronized (pools) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -520,7 +520,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         return getType(datapoint, asdu);
     }
 
-    public synchronized final boolean isReachable(IndividualAddress address) {
+    public final synchronized boolean isReachable(IndividualAddress address) {
         if (managementProcedures == null || address == null) {
             return false;
         }
@@ -535,7 +535,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         return false;
     }
 
-    public synchronized final void restartNetworkDevice(IndividualAddress address) {
+    public final synchronized void restartNetworkDevice(IndividualAddress address) {
         if (address == null) {
             return;
         }
@@ -650,7 +650,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         if (!link.isOpen() && !(CloseEvent.USER_REQUEST == e.getInitiator()) && !shutdown) {
             logger.warn("KNX link has been lost (reason: {} on object {})", e.getReason(), e.getSource().toString());
             if (config.getAutoReconnectPeriod().intValue() > 0) {
-                logger.info("KNX link will be retried in " + config.getAutoReconnectPeriod().intValue() + " seconds");
+                logger.info("KNX link will be retried in '{}' seconds", config.getAutoReconnectPeriod().intValue());
                 if (connectJob.isDone()) {
                     scheduleConnectJob();
                 }
