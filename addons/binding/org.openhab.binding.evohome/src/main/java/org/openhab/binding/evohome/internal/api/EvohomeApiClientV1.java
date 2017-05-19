@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class EvohomeApiClient {
+public class EvohomeApiClientV1 implements EvoHomeApiClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(EvohomeApiClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV1.class);
 
     private static final String ROOT = "https://tccna.honeywell.com/WebAPI/api";
 
@@ -38,7 +38,7 @@ public class EvohomeApiClient {
 
     private Map<String, String> headers = new HashMap<>();
 
-    public EvohomeApiClient(EvohomeGatewayConfiguration configuration) {
+    public EvohomeApiClientV1(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -88,6 +88,10 @@ public class EvohomeApiClient {
         return out;
     }
 
+    /* (non-Javadoc)
+     * @see org.openhab.binding.evohome.internal.api.EvoHomeApiClient#login()
+     */
+    @Override
     public boolean login() {
         logger.debug("Calling EvoHome login");
         LoginRequest loginRequest = new LoginRequest(configuration.username, configuration.password,
@@ -98,10 +102,18 @@ public class EvohomeApiClient {
         return userInfo != null;
     }
 
+    /* (non-Javadoc)
+     * @see org.openhab.binding.evohome.internal.api.EvoHomeApiClient#logout()
+     */
+    @Override
     public void logout() {
         userInfo = null;
     }
 
+    /* (non-Javadoc)
+     * @see org.openhab.binding.evohome.internal.api.EvoHomeApiClient#getData()
+     */
+    @Override
     public DataModelResponse[] getData() {
         logger.debug("Calling EvoHome getData()");
         if (userInfo == null) {

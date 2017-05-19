@@ -20,7 +20,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
-import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
+import org.openhab.binding.evohome.internal.api.EvoHomeApiClient;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClientV1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler implements BridgeHa
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeGatewayHandler.class);
     private EvohomeGatewayConfiguration configuration = null;
-    private EvohomeApiClient apiClient = null;
+    private EvoHomeApiClient apiClient = null;
 
     protected ScheduledFuture<?> refreshTask;
 
@@ -51,7 +52,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler implements BridgeHa
 
         if (checkConfig()) {
             disposeApiClient();
-            apiClient = new EvohomeApiClient(configuration);
+            apiClient = new EvohomeApiClientV1(configuration);
             apiClient.login();
             startRefreshTask();
 
