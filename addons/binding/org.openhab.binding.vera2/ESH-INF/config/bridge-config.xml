@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd"
+>
+    <config-description uri="binding:vera2:veraController">
+
+		<parameter-group name="veraController">
+            <label>Vera controller</label>
+            <description>The configuration of the Vera. All the information can be detected during the discovery.</description>
+        </parameter-group>
+
+		<parameter name="veraControllerIpAddress" groupName="veraController" type="text">
+		    <context>network-address</context>
+		    <label>IP address</label>
+		    <description>The IP address or hostname of the Vera controller.</description>
+		    <default>localhost</default>
+		</parameter>
+
+		<parameter name="veraControllerPort" groupName="veraController" type="integer" required="false" min="0" max="65335">
+		    <label>Port</label>
+		    <description>The port of the Vera controller</description>
+		    <default>3480</default>
+		</parameter>
+
+		<parameter name="pollingInterval" groupName="binding" type="integer" required="false" min="5" max="3600" unit="s">
+		    <label>Polling Interval</label>
+		    <description>Refresh device states and registration from Vera.</description>
+		    <unitLabel>Seconds</unitLabel>
+		    <default>60</default>
+		</parameter>
+    </config-description>
+
+</config-description:config-descriptions>
