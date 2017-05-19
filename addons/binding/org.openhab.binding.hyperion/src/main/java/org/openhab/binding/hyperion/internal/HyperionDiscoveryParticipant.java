@@ -39,21 +39,23 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
         final Map<String, Object> properties = new HashMap<>(2);
         String host = service.getHostAddresses()[0];
         int port = service.getPort();
+
         properties.put(HyperionBindingConstants.HOST, host);
         properties.put(HyperionBindingConstants.PORT, port);
 
-        String friendlyName = "Hyperion Server";
+        // String friendlyName = "Hyperion Server";
+        String friendlyName = service.getName();
         ThingUID uid = getThingUID(service);
 
         final DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                .withThingType(HyperionBindingConstants.THING_TYPE_SERVER_V1).withProperties(properties)
+                .withThingType(HyperionBindingConstants.THING_TYPE_SERVER_NG).withProperties(properties)
                 .withLabel(friendlyName).build();
         return result;
     }
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
-        return new ThingUID(HyperionBindingConstants.THING_TYPE_SERVER_V1, "server");
+        return new ThingUID(HyperionBindingConstants.THING_TYPE_SERVER_NG, "server");
     }
 
 }
