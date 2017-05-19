@@ -26,6 +26,7 @@ public class EvoHomeBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_EVOHOME_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_EVOHOME_RADIATOR_VALVE = new ThingTypeUID(BINDING_ID, "radiatorValve");
+    public static final ThingTypeUID THING_TYPE_EVOHOME_LOCATION = new ThingTypeUID(BINDING_ID, "location");
 
     // List of all Channel ids
     public static final String TEMPERATURE_CHANNEL = "temperature";

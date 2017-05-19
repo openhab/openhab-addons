@@ -8,8 +8,9 @@
  */
 package org.openhab.binding.evohome.discovery;
 
-import static org.openhab.binding.evohome.EvoHomeBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.evohome.EvoHomeBindingConstants.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -18,6 +19,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
+import org.openhab.binding.evohome.internal.api.models.DataModelResponse;
+import org.openhab.binding.evohome.internal.api.models.Device;
+import org.openhab.binding.evohome.internal.api.models.Weather;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +33,11 @@ import org.slf4j.LoggerFactory;
 public class EvoHomeDiscoveryService extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(EvoHomeDiscoveryService.class);
     private static final int SEARCH_TIME = 2;
+    private static final String LOCATION_NAME = "Location Name";
+    private static final String LOCATION_ID = "Location Id";
+    private static final String DEVICE_NAME = "Device Name";
+    private static final String DEVICE_ID = "Device Id";
+
     private EvohomeGatewayHandler evoHomeBridgeHandler;
 
     public EvoHomeDiscoveryService(EvohomeGatewayHandler evoHomeBridgeHandler) {
@@ -41,9 +50,11 @@ public class EvoHomeDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Evohome start scan");
         if (evoHomeBridgeHandler != null) {
             try {
-                // EvoHomeData evoHomeData = evoHomeBridgeHandler.refreshData();
-                // discoverWeather(evoHomeData);
-                // discoverRadiatorValves(evoHomeData);
+                DataModelResponse[] dataArray = evoHomeBridgeHandler.getData();
+                for (DataModelResponse data : dataArray) {
+                    discoverWeather(data.getWeather(), data.getName(), data.getLocationId());
+                    discoverRadiatorValves(data.getDevices(), data.getName(), data.getLocationId());
+                }
             } catch (Exception e) {
                 logger.warn("{}", e.getMessage(), e);
             }
@@ -51,45 +62,31 @@ public class EvoHomeDiscoveryService extends AbstractDiscoveryService {
         stopScan();
     }
 
-    // private void discoverWeather(EvoHomata evoHomeData) throws IllegalArgumentException {
-    // for (EvoHomeWeather evoHomeWeather : evoHomeData.getWeather()) {
+    private void discoverWeather(Weather weather, String name, String locationId) throws IllegalArgumentException {
+        ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_LOCATION.getId(), name);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("LOCATION_NAME", name);
+        properties.put("LOCATION_ID", locationId);
+        addDiscoveredThing(thingUID, properties, name);
+    }
 
-    // TODO implement this...
-    // ThingUID thingUID = findThingUID(MAIN_THING_TYPE.getId(), agreement.getAgreementId());
+    private void discoverRadiatorValves(Device[] devices, String locationName, String locationId)
+            throws IllegalArgumentException {
+        for (Device device : devices) {
+            ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_RADIATOR_VALVE.getId(),
+                    Integer.toString(device.getDeviceId()));
+            String name = device.getName();
+            logger.debug("found Valve device_name:{} device_id:{} location_name:{} location_id:{}", name,
+                    device.getDeviceId(), locationName, locationId);
 
-    // Map<String, Object> properties = new HashMap<>();
-
-    // properties.put(PROPERTY_AGREEMENT_ID, agreement.getAgreementId());
-    // properties.put(PROPERTY_COMMON_NAME, agreement.getDisplayCommonName());
-    // properties.put(PROPERTY_ADDRESS,
-    // String.format("%s %s, %s", agreement.getStreet(), agreement.getHouseNumber(), agreement.getCity()));
-
-    // String name = String.format("Toon display @ %s %s", agreement.getStreet(), agreement.getHouseNumber());
-
-    // addDiscoveredThing(thingUID, properties, name);
-
-    // only the first agreement is handled at the moment
-    // return;
-    // }
-    // }
-    //
-    // private void discoverRadiatorValves(EvoHomeData evoHomeData) throws IllegalArgumentException {
-    // if (evoHomeData == null) {
-    // return;
-    // }
-    // TODO implement this
-    // for (EvoHomeDeviceConfig device : evoHomeData.getDevice()) {
-    //
-    // ThingUID thingUID = findThingUID(PLUG_THING_TYPE.getId(), device.getDevUUID());
-    // Map<String, Object> properties = new HashMap<>();
-    // properties.put(PROPERTY_DEV_TYPE, device.getDevType());
-    // properties.put(PROPERTY_DEV_UUID, device.getDevUUID());
-
-    // String name = device.getName();
-    // logger.debug("found plug name:{} type:{} uuid:{}", name, device.getDevType(), device.getDevUUID());
-
-    // addDiscoveredThing(thingUID, properties, name);
-    // }
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(DEVICE_ID, device.getDeviceId());
+            properties.put(DEVICE_NAME, device.getName());
+            properties.put(LOCATION_ID, locationId);
+            properties.put(LOCATION_NAME, locationName);
+            addDiscoveredThing(thingUID, properties, name);
+        }
+    }
 
     private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)

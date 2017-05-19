@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.EvoHomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV1;
+import org.openhab.binding.evohome.internal.api.models.DataModelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,8 +114,12 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler implements BridgeHa
     }
 
     private void update() {
-        apiClient.getData();
+        DataModelResponse[] data = getData();
         // TODO trigger update requests on the client here and delegate them to the Things
+    }
+
+    public DataModelResponse[] getData() {
+        return apiClient.getData();
     }
 
     @Override
