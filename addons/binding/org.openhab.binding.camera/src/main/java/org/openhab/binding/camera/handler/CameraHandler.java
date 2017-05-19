@@ -57,7 +57,9 @@ public class CameraHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.INITIALIZING);
-        logger.debug("Initialize thing: " + getThing().getLabel() + "::" + getThing().getUID());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Initialize thing: {}::{}", getThing().getLabel(), getThing().getUID());
+        }
         Object param = getConfig().get("urlSnapshot");
         urlSnapshot = String.valueOf(param);
         try {
@@ -84,8 +86,8 @@ public class CameraHandler extends BaseThingHandler {
                 for (Channel cx : getThing().getChannels()) {
                     if (cx.getAcceptedItemType().equals("Image")) {
                         if (logger.isTraceEnabled()) {
-                            logger.trace("Will update: " + cx.getChannelTypeUID().getId() + "::" + getThing().getLabel()
-                                    + "::" + getThing().getUID().getId());
+                            logger.trace("Will update: {}::{}::{}" + getThing().getUID().getId(),
+                                    cx.getChannelTypeUID().getId(), getThing().getLabel());
                         }
                         if (urlSnapshot != null) {
                             try {
@@ -93,15 +95,15 @@ public class CameraHandler extends BaseThingHandler {
                                 updateState(cx.getUID(), new RawType(readImage(url).toByteArray()));
                                 updateStatus(ThingStatus.ONLINE);
                             } catch (MalformedURLException e) {
-                                logger.warn("could not update value: " + getThing(), e);
+                                logger.warn("could not update value: {}", getThing(), e);
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                         "snapshot url not valid: " + e.toString());
                             } catch (IOException e) {
-                                logger.warn("could not update value: " + getThing(), e);
+                                logger.warn("could not update value: {}", getThing(), e);
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         "camera not reachable: " + e.toString());
                             } catch (Exception e) {
-                                logger.warn("could not update value: " + getThing(), e);
+                                logger.warn("could not update value: {}", getThing(), e);
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                                         "unknown error: " + e.toString());
                             }
