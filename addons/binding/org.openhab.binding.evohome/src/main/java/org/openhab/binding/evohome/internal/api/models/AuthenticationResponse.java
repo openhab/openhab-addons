@@ -5,18 +5,18 @@ import com.google.gson.annotations.SerializedName;
 public class AuthenticationResponse {
 
     @SerializedName("access_token")
-    String AccessToken;
+    public String AccessToken;
 
     @SerializedName("token_type")
-    String TokenType;
+    public String TokenType;
 
     @SerializedName("expires_in")
-    int ExpiresIn;
+    public int ExpiresIn;
 
     @SerializedName("refresh_token")
-    String RefreshToken;
+    public String RefreshToken;
 
     @SerializedName("scope")
-    String Scope;
+    public String Scope;
 
 }

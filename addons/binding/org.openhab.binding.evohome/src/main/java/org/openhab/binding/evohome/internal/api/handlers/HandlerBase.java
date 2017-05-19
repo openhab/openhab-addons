@@ -5,8 +5,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpProxy;
-import org.eclipse.jetty.client.ProxyConfiguration;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
@@ -25,14 +23,8 @@ public class HandlerBase {
             TIn requestContainer, TOut out) {
         try {
             SslContextFactory sslContextFactory = new SslContextFactory();
-            sslContextFactory.setTrustAll(true);
             HttpClient httpClient = new HttpClient(sslContextFactory);
             httpClient.start();
-
-            ProxyConfiguration proxyConfig = httpClient.getProxyConfiguration();
-            HttpProxy proxy = new HttpProxy("localhost", 8888);
-            proxyConfig.getProxies().add(proxy);
-
             Request request = httpClient.newRequest(url).method(method);
 
             if (headers != null) {

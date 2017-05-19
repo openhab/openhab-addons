@@ -65,4 +65,8 @@ public class AuthenticationHandler extends HandlerBase {
 
         return authenticationData != null;
     }
+
+    public String getApplicationId() {
+        return applicationId;
+    }
 }

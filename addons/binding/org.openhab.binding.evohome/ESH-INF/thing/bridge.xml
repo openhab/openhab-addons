@@ -43,7 +43,7 @@
             <parameter name="applicationId" type="text" required="true">
                 <label>Application Id</label>
                 <description>The application id to use (probably don't change).</description>
-                <default>91db1612-73fd-4500-91b2-e63b069b185c</default>
+                <default>b013aa26-9724-4dbd-8897-048b9aada249</default>
                 <advanced>true</advanced>
             </parameter>    
         </config-description>
