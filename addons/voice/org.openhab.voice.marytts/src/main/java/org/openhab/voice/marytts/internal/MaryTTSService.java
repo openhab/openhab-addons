@@ -64,7 +64,7 @@ public class MaryTTSService implements TTSService {
             voices = initVoices();
             audioFormats = initAudioFormats();
         } catch (Throwable t) {
-            logger.error("Failed to initialize MaryTTS: {}", t.getMessage(), t);
+            logger.error("Failed to initialize MaryTTS", t);
         }
     }
 
