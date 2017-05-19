@@ -7,15 +7,26 @@ Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
- org.openhab.binding.evohome,
- org.openhab.binding.evohome.handler,
+ com.google.common.collect;version="10.0.1",
+ com.google.gson;version="2.5.0",
+ com.google.gson.annotations;version="2.5.0",
+ org.apache.commons.lang;version="2.6.0",
+ org.eclipse.jetty.client;version="9.2.12",
+ org.eclipse.jetty.client.api;version="9.2.12",
+ org.eclipse.jetty.client.util;version="9.2.12",
+ org.eclipse.jetty.http;version="8.1.16",
+ org.eclipse.jetty.util.component;version="9.2.12",
+ org.eclipse.jetty.util.ssl;version="9.2.12",
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.evohome,
+ org.openhab.binding.evohome.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.evohome,

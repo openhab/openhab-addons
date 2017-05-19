@@ -12,22 +12,25 @@ import static org.openhab.binding.evohome.EvoHomeBindingConstants.*;
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.evohome.handler.EvoHomeHandler;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.evohome.handler.EvoHomeHandler;
+import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 
 /**
- * The {@link EvoHomeHandlerFactory} is responsible for creating things and thing 
+ * The {@link EvoHomeHandlerFactory} is responsible for creating things and thing
  * handlers.
- * 
+ *
  * @author Neil Renaud - Initial contribution
  */
 public class EvoHomeHandlerFactory extends BaseThingHandlerFactory {
-    
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
-    
+
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(THING_TYPE_EVOHOME_GATEWAY);
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -38,11 +41,18 @@ public class EvoHomeHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (thingTypeUID.equals(THING_TYPE_EVOHOME_GATEWAY)) {
+            return new EvohomeGatewayHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(THING_TYPE_EVOHOME_RADIATOR_VALVE)) {
             return new EvoHomeHandler(thing);
         }
 
         return null;
     }
-}
 
+    @Override
+    public ThingHandler registerHandler(Thing thing) {
+        // TODO Auto-generated method stub
+        return super.registerHandler(thing);
+    }
+}

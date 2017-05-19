@@ -7,7 +7,7 @@
  */
 package org.openhab.binding.evohome.handler;
 
-import static org.openhab.binding.evohome.EvoHomeBindingConstants.CHANNEL_1;
+import static org.openhab.binding.evohome.EvoHomeBindingConstants.TEMPERATURE_CHANNEL;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -33,7 +33,7 @@ public class EvoHomeHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_1)) {
+        if (channelUID.getId().equals(TEMPERATURE_CHANNEL)) {
             // TODO: handle command
 
             // Note: if communication with thing fails for some reason,

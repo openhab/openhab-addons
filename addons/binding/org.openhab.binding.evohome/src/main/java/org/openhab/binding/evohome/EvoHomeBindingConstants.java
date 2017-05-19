@@ -7,22 +7,32 @@
  */
 package org.openhab.binding.evohome;
 
+import java.util.Set;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
+import com.google.common.collect.ImmutableSet;
+
 /**
- * The {@link EvoHomeBinding} class defines common constants, which are 
+ * The {@link EvoHomeBinding} class defines common constants, which are
  * used across the whole binding.
- * 
+ *
  * @author Neil Renaud - Initial contribution
  */
 public class EvoHomeBindingConstants {
 
-    public static final String BINDING_ID = "evohome";
-    
+    private static final String BINDING_ID = "evohome";
+
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_EVOHOME_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
+    public static final ThingTypeUID THING_TYPE_EVOHOME_RADIATOR_VALVE = new ThingTypeUID(BINDING_ID, "radiatorValve");
 
     // List of all Channel ids
-    public final static String CHANNEL_1 = "channel1";
+    public static final String TEMPERATURE_CHANNEL = "temperature";
+    public static final String SET_POINT_CHANNEL = "setpoint";
+
+    // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_EVOHOME_GATEWAY,
+            THING_TYPE_EVOHOME_RADIATOR_VALVE);
 
 }
