@@ -32,12 +32,11 @@ public final class NhcAction {
 
     private NikoHomeControlHandler thingHandler;
 
-    NhcAction(int id, String name, Integer type, String location, Integer state) {
+    NhcAction(int id, String name, Integer type, String location) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.location = location;
-        this.state = state;
     }
 
     /**

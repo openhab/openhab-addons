@@ -54,7 +54,8 @@ public final class NikoHomeControlCommunication {
     private PrintWriter nhcOut;
     private BufferedReader nhcIn;
 
-    private Boolean listenerStopped;
+    private boolean listenerStopped;
+    private boolean nhcEventsRunning;
 
     // We keep only 2 gson adapters used to serialize and deserialize all messages sent and received
     private Gson gsonOut = new Gson();
@@ -105,12 +106,23 @@ public final class NikoHomeControlCommunication {
      */
     public void startCommunication(int port) {
 
-        if (communicationActive()) {
-            logger.error("Niko Home Control: starting on thread {}, but connection already active",
-                    Thread.currentThread().getId());
-        }
-        this.nhcPort = port;
         try {
+            for (int i = 1; nhcEventsRunning && (i <= 5); i++) {
+                // the events listener thread did not finish yet, so wait max 5000ms before restarting
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new IOException();
+                }
+            }
+            if (nhcEventsRunning) {
+                logger.error(
+                        "Niko Home Control: starting from thread {}, but previous connection still active after 5000ms",
+                        Thread.currentThread().getId());
+                throw new IOException();
+            }
+
+            this.nhcPort = port;
             this.nhcSocket = new Socket(this.nhcAddress, this.nhcPort);
             this.nhcOut = new PrintWriter(this.nhcSocket.getOutputStream(), true);
             this.nhcIn = new BufferedReader(new InputStreamReader(this.nhcSocket.getInputStream()));
@@ -128,6 +140,8 @@ public final class NikoHomeControlCommunication {
             logger.warn("Niko Home Control: error initializing communication from thread {}",
                     Thread.currentThread().getId());
             stopCommunication();
+            // take bridge offline
+            this.bridgeCallBack.bridgeOffline();
         }
 
     }
@@ -181,7 +195,7 @@ public final class NikoHomeControlCommunication {
      * @return True if active
      */
     public boolean communicationActive() {
-        return this.nhcSocket != null;
+        return (this.nhcSocket != null);
     }
 
     /**
@@ -200,6 +214,7 @@ public final class NikoHomeControlCommunication {
 
             logger.debug("Niko Home Control: listening for events on thread {}", Thread.currentThread().getId());
             listenerStopped = false;
+            nhcEventsRunning = true;
 
             try {
                 while (!listenerStopped & ((nhcMessage = nhcIn.readLine()) != null)) {
@@ -207,17 +222,18 @@ public final class NikoHomeControlCommunication {
                 }
             } catch (IOException e) {
                 if (!listenerStopped) {
+                    nhcEventsRunning = false;
                     // this is not an communication stop triggered from outside this runnable
                     logger.warn("Niko Home Control: IO error in listener on thread {}", Thread.currentThread().getId());
                     // the IO has stopped working, so we need to close cleanly and try to restart
                     restartCommunication();
-                } else {
-                    logger.debug("Niko Home Control: event listener thread stopped (catched exception) on thread {}",
-                            Thread.currentThread().getId());
                     return;
                 }
             }
-            logger.debug("Niko Home Control: event listener thread stopped (listener stopped flag) on thread {}",
+
+            nhcEventsRunning = false;
+            // this is a stop from outside the runnable, so just log it and stop
+            logger.debug("Niko Home Control: event listener thread stopped on thread {}",
                     Thread.currentThread().getId());
         }
 
@@ -357,6 +373,7 @@ public final class NikoHomeControlCommunication {
             Integer state = Integer.valueOf(action.get("value1"));
 
             if (!this.actions.containsKey(id)) {
+                // Initial instantiation of NhcAction class for action object
                 String name = action.get("name");
                 Integer type = Integer.valueOf(action.get("type"));
                 Integer locationId = Integer.valueOf(action.get("location"));
@@ -364,10 +381,14 @@ public final class NikoHomeControlCommunication {
                 if (locationId != null) {
                     location = this.locations.get(locationId).getName();
                 }
-                NhcAction nhcAction = new NhcAction(id, name, type, location, state);
+                NhcAction nhcAction = new NhcAction(id, name, type, location);
+                nhcAction.setState(state);
                 nhcAction.setNhcComm(this);
                 this.actions.put(id, nhcAction);
             } else {
+                // Action object already exists, so only update state.
+                // If we would re-instantiate action, we would lose pointer back from action to thing handler that was
+                // set in thing handler initialize().
                 this.actions.get(id).setState(state);
             }
         }
