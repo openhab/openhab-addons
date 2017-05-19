@@ -1,6 +1,5 @@
 package org.openhab.binding.evohome.internal.api;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -76,8 +75,6 @@ public class EvohomeApiClient {
                         .content(new StringContentProvider(gson.toJson(requestContainer)), "application/json").send();
             }
 
-            Collection<channelSearchEnum> enums = gson.fromJson(yourJson, collectionType);
-
             String reply = response.getContentAsString();
             logger.debug("Got reply: " + reply);
             out = (TOut) new Gson().fromJson(reply, out.getClass());
@@ -119,10 +116,8 @@ public class EvohomeApiClient {
             headers.put("Accept", "application/json");
             headers.put("sessionId", userInfo.getSessionId());
 
-            DataModelResponse response = doRequest(HttpMethod.GET, dataUrlWithUserId, null, new DataModelResponse(),
-                    parameters);
-
-            // String response = doRequest("GET", dataUrlWithUserId, httpHeaders, null, "application/json", 10000);
+            DataModelResponse[] response = doRequest(HttpMethod.GET, dataUrlWithUserId, null,
+                    new DataModelResponse[] {}, parameters);
 
             if (response != null) {
                 logger.debug("GetData Response[{}]", response);
