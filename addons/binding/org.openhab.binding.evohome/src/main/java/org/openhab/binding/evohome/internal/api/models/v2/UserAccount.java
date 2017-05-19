@@ -2,7 +2,7 @@ package org.openhab.binding.evohome.internal.api.models.v2;
 
 import com.google.gson.annotations.SerializedName;
 
-public class UserAccountResponse {
+public class UserAccount {
 
     @SerializedName("userId")
     public int UserId;

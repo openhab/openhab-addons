@@ -15,7 +15,8 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v2.Authentication;
-import org.openhab.binding.evohome.internal.api.models.v2.UserAccountResponse;
+import org.openhab.binding.evohome.internal.api.models.v2.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private EvohomeGatewayConfiguration configuration = null;
 
     private Authentication authenticationData;
+
+    private UserAccount useraccount;
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
@@ -89,16 +92,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return doRequest(method, url, headers, requestContainer, out);
     }
 
-    public UserAccountResponse getUserAccount() {
-        String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
-
-        UserAccountResponse userAccount =  new UserAccountResponse();
-        userAccount = doAuthenticatedRequest(HttpMethod.GET, url, null, null, userAccount);
-
-        return userAccount;
-    }
-
-
     @Override
     public boolean login() {
         SslContextFactory sslContextFactory = new SslContextFactory();
@@ -136,10 +129,33 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             logger.error("Authorization failed",e);
         }
 
-        UserAccountResponse foo = getUserAccount();
+        useraccount = getUserAccount();
+        Locations locations = getLocations();
 
 
         return authenticationData != null;
+    }
+
+    public UserAccount getUserAccount() {
+        String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
+
+        UserAccount userAccount =  new UserAccount();
+        userAccount = doAuthenticatedRequest(HttpMethod.GET, url, null, null, userAccount);
+
+        return userAccount;
+    }
+
+    public Locations getLocations() {
+        Locations locations = null;
+        if (useraccount != null) {
+            String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATIONS;
+            url = String.format(url, useraccount.UserId);
+
+            locations = new Locations();
+            locations = doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
+        }
+
+        return locations;
     }
 
     @Override
