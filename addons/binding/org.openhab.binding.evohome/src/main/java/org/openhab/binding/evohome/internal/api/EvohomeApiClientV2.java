@@ -5,15 +5,15 @@ import org.openhab.binding.evohome.internal.api.handlers.AuthenticationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EvohomeApiClient {
-    private static final Logger logger = LoggerFactory.getLogger(EvohomeApiClient.class);
+public class EvohomeApiClientV2 {
+    private static final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV2.class);
 
     private EvohomeGatewayConfiguration configuration = null;
 
     private AuthenticationHandler authenticationHandler = new AuthenticationHandler();
     private AccountHandler accountHandler = new AccountHandler(authenticationHandler);
 
-    public EvohomeApiClient(EvohomeGatewayConfiguration configuration) {
+    public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
     }
 

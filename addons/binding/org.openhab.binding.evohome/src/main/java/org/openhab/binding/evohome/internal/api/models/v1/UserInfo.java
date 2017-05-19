@@ -1,4 +1,4 @@
-package org.openhab.binding.evohome.internal.api.models;
+package org.openhab.binding.evohome.internal.api.models.v1;
 
 import com.google.gson.annotations.SerializedName;
 

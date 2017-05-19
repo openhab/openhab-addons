@@ -1,4 +1,7 @@
-package org.openhab.binding.evohome.internal.api.models;
+package org.openhab.binding.evohome.internal.api.models.v1;
+
+import org.openhab.binding.evohome.internal.api.models.v1.Device;
+import org.openhab.binding.evohome.internal.api.models.v1.Weather;
 
 public class DataModelResponse {
 
