@@ -113,8 +113,14 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         }, 50, configuration.refreshInterval, TimeUnit.MILLISECONDS);
     }
 
+
     private void update() {
+        DataModelResponse[] data = getData();
         // TODO trigger update requests on the client here and delegate them to the Things
+    }
+
+    public DataModelResponse[] getData() {
+        return apiClient.getData();
     }
 
     @Override

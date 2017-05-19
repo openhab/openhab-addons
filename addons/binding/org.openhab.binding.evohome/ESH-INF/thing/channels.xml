@@ -5,11 +5,20 @@
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
         
 
-    <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
-        <item-type>Switch</item-type>
-        <label>Evohome Binding Channel</label>
-        <description>Sample channel for Evohome Binding</description>
+    <channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Current room temperature</description>
+        <category>temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
     </channel-type>
-        
-</thing:thing-descriptions>
+    
+    <channel-type id="setpoint">
+        <item-type>Number</item-type>
+        <label>Setpoint</label>
+        <description>Thermostat setpoint</description>
+        <category>heating</category>
+        <state min="4.5" max="30" step="0.1" pattern="%.1f °C" readOnly="false"/>
+    </channel-type>
+
