@@ -9,9 +9,12 @@ Additionally video streams like H264.x oder MJPEG and others are very wide sprea
 
 ## Supported Cameras
 
-### _More to add_
+All cameras supporting simple HTTP based API fetching for JPG/PNG images.
+Please contact the author Thomas Hartwig <thomas.hartwig@gmail.com> for camera Url examples if not listed here.
 
-Please contact the author Thomas Hartwig<thomas.hartwig@gmail.com> for camera Url examples if not listed here.
+Vendor | Single snapshot URL | Video capture (not yet supported) |
+:------:|:-------------------:|:---------------------------------:|
+ Axis | http://<CAMERA>/jpg/image.jpg 
 
 ## Discovery
 
@@ -26,7 +29,7 @@ Currently camera discovery is not supported, probably ONVIF might supported soon
 
 ### image
 
-This is the base image channel which is updated periodically in the configured intervall. This is currently the only supported channel.
+This is the base image channel which is updated periodically in the configured interval. This is currently the only supported channel.
 
 ## Near Future
 
