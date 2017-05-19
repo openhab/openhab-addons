@@ -3,7 +3,7 @@ package org.openhab.binding.evohome.internal.api;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.evohome.internal.api.handlers.AuthenticatedHandlerBase;
 import org.openhab.binding.evohome.internal.api.handlers.AuthenticationHandler;
-import org.openhab.binding.evohome.internal.api.models.UserAccountResponse;
+import org.openhab.binding.evohome.internal.api.models.v2.UserAccountResponse;
 
 public class AccountHandler extends AuthenticatedHandlerBase {
     private UserAccountResponse userAccount = null;

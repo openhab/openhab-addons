@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.evohome.internal.api.models.AuthenticationResponse;
+import org.openhab.binding.evohome.internal.api.models.v2.AuthenticationResponse;
 
 public class AuthenticatedHandlerBase extends HandlerBase {
     private AuthenticationHandler authenticationHandler;

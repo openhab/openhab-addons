@@ -19,9 +19,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
-import org.openhab.binding.evohome.internal.api.models.DataModelResponse;
-import org.openhab.binding.evohome.internal.api.models.Device;
-import org.openhab.binding.evohome.internal.api.models.Weather;
+import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
+import org.openhab.binding.evohome.internal.api.models.v1.Device;
+import org.openhab.binding.evohome.internal.api.models.v1.Weather;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

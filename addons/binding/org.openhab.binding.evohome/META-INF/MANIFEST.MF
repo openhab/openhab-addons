@@ -19,6 +19,7 @@ Import-Package:
  org.eclipse.jetty.util.component;version="9.2.12",
  org.eclipse.jetty.util.ssl;version="9.2.12",
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,

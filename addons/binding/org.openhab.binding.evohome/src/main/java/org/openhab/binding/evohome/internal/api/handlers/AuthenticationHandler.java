@@ -9,7 +9,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.internal.api.EvohomeApiConstants;
-import org.openhab.binding.evohome.internal.api.models.AuthenticationResponse;
+import org.openhab.binding.evohome.internal.api.models.v2.AuthenticationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

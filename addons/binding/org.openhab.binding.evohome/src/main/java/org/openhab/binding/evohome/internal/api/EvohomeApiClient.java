@@ -1,8 +1,8 @@
 package org.openhab.binding.evohome.internal.api;
 
-import org.openhab.binding.evohome.internal.api.models.DataModelResponse;
+import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 
-public interface EvoHomeApiClient {
+public interface EvohomeApiClient {
 
     boolean login();
 

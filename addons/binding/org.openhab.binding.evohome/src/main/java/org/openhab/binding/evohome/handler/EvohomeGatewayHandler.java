@@ -19,7 +19,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
+import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeGatewayHandler.class);
     private EvohomeGatewayConfiguration configuration = null;
-    private EvohomeApiClientV2 apiClient = null;
+    private EvohomeApiClient apiClient = null;
 
     protected ScheduledFuture<?> refreshTask;
 

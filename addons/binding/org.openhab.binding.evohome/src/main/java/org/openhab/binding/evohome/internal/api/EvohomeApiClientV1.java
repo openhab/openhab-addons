@@ -12,16 +12,16 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
-import org.openhab.binding.evohome.internal.api.models.DataModelResponse;
-import org.openhab.binding.evohome.internal.api.models.LoginRequest;
-import org.openhab.binding.evohome.internal.api.models.LoginResponse;
+import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
+import org.openhab.binding.evohome.internal.api.models.v1.LoginRequest;
+import org.openhab.binding.evohome.internal.api.models.v1.LoginResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class EvohomeApiClientV1 implements EvoHomeApiClient {
+public class EvohomeApiClientV1 implements EvohomeApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV1.class);
 
