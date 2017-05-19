@@ -16,7 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * handler classes
  *
  * @author Karel Goderis - Initial contribution
- * @since 2.0.0
+ * @since 2.1.0
  *
  **/
 public class IRtransBindingConstants {
