@@ -32,6 +32,7 @@ public class AllPlayBindingConstants {
     public static final String CURRENT_TITLE = "currenttitle";
     public static final String CURRENT_URL = "currenturl";
     public static final String CURRENT_USER_DATA = "currentuserdata";
+    public static final String INPUT = "input";
     public static final String LOOP_MODE = "loopmode";
     public static final String MUTE = "mute";
     public static final String PLAY_STATE = "playstate";

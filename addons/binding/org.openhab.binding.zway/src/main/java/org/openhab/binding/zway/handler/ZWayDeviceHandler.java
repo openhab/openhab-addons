@@ -52,6 +52,7 @@ import de.fh_zwickau.informatik.sensor.model.devices.DeviceList;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Battery;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Doorlock;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorBinary;
+import de.fh_zwickau.informatik.sensor.model.devices.types.SensorDiscrete;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorMultilevel;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchBinary;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchControl;
@@ -582,8 +583,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                     device.off();
                                 }
                             }
-                        } else if (device instanceof SwitchToggle) {
-                            // possible commands: ?
                         } else if (device instanceof Thermostat) {
                             if (command instanceof DecimalType) {
                                 logger.debug("Handle command: DecimalType");
@@ -603,10 +602,16 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                     device.off();
                                 }
                             }
-                        } else if (device instanceof ToggleButton) {
+                        } else if (device instanceof ToggleButton || device instanceof SwitchToggle) {
                             // possible commands: on(), off(), exact(level), upstart(), upstop(), downstart(),
                             // downstop()
-                            // TODO
+                            if (command instanceof OnOffType) {
+                                logger.debug("Handle command: OnOffType");
+
+                                if (command.equals(OnOffType.ON)) {
+                                    device.on();
+                                } // no else - only ON command is sent to Z-Way
+                            }
                         }
                     }
                 } catch (UnsupportedOperationException e) {
@@ -670,8 +675,6 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             } else if (device instanceof SwitchMultilevel) {
                 id = SWITCH_MULTILEVEL_CHANNEL;
                 acceptedItemType = "Dimmer";
-            } else if (device instanceof SwitchToggle) {
-                // ?
             } else if (device instanceof SwitchRGBW) {
                 id = SWITCH_COLOR_CHANNEL;
                 acceptedItemType = "Color";
@@ -681,8 +684,12 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             } else if (device instanceof SwitchControl) {
                 id = SWITCH_CONTROL_CHANNEL;
                 acceptedItemType = "Switch";
-            } else if (device instanceof ToggleButton) {
-                // TODO
+            } else if (device instanceof ToggleButton || device instanceof SwitchToggle) {
+                id = SWITCH_CONTROL_CHANNEL;
+                acceptedItemType = "Switch";
+            } else if (device instanceof SensorDiscrete) {
+                id = SENSOR_DISCRETE_CHANNEL;
+                acceptedItemType = "Number";
             }
 
             // 2. Check if device information includes further information about sensor type

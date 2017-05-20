@@ -27,11 +27,6 @@ public class RFXComBindingConstants {
 
     public static final String BINDING_ID = "rfxcom";
 
-    public static final String SERIAL_PORT = "serialPort";
-    public static final String BRIDGE_ID = "bridgeId";
-    public static final String DEVICE_ID = "deviceId";
-    public static final String SUB_TYPE = "subType";
-
     // List of all Bridge Type UIDs
     public static final String BRIDGE_TYPE_MANUAL_BRIDGE = "bridge";
     public static final String BRIDGE_TYPE_TCP_BRIDGE = "tcpbridge";
@@ -68,6 +63,7 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_RAW_PAYLOAD = "rawPayload";
     public static final String CHANNEL_SHUTTER = "shutter";
     public static final String CHANNEL_COMMAND = "command";
+    public static final String CHANNEL_COMMAND_ID = "commandId";
     public static final String CHANNEL_MOOD = "mood";
     public static final String CHANNEL_SIGNAL_LEVEL = "signalLevel";
     public static final String CHANNEL_DIMMING_LEVEL = "dimmingLevel";

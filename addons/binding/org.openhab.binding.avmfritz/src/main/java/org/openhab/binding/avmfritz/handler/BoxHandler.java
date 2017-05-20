@@ -10,11 +10,14 @@ package org.openhab.binding.avmfritz.handler;
 
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -28,11 +31,15 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.BindingConstants;
 import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateXmlCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +47,8 @@ import org.slf4j.LoggerFactory;
  * Handler for a FRITZ!Box device. Handles polling of values from AHA devices.
  *
  * @author Robert Bausdorf
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
+ *         DECT
  *
  */
 public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
@@ -72,8 +81,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     /**
      * Constructor
      *
-     * @param bridge
-     *            Bridge object representing a FRITZ!Box
+     * @param bridge Bridge object representing a FRITZ!Box
      */
     public BoxHandler(Bridge bridge) {
         super(bridge);
@@ -86,11 +94,11 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     @Override
     public void initialize() {
-        logger.debug("About to initialize bridge {}", BindingConstants.BRIDGE_FRITZBOX);
+        logger.debug("About to initialize FRITZ!Box {}", BindingConstants.BRIDGE_FRITZBOX);
         Bridge bridge = this.getThing();
         AvmFritzConfiguration config = this.getConfigAs(AvmFritzConfiguration.class);
 
-        logger.debug("discovered fritzaha bridge initialized: {}", config);
+        logger.debug("Discovered FRITZ!Box initialized: {}", config);
 
         this.refreshInterval = config.getPollingInterval();
         this.connection = new FritzahaWebInterface(config, this);
@@ -118,15 +126,15 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      * {@inheritDoc}
      */
     @Override
-    public void addDeviceList(DeviceModel model) {
+    public void addDeviceList(DeviceModel device) {
         try {
-            logger.debug("set device model: {}", model);
-            this.deviceList.put(model.getIdentifier(), model);
-            ThingUID thingUID = this.getThingUID(model);
+            logger.debug("set device model: {}", device);
+            this.deviceList.put(device.getIdentifier(), device);
+            ThingUID thingUID = this.getThingUID(device);
             Thing thing = this.getThingByUID(thingUID);
             if (thing != null) {
-                logger.debug("update thing {} with device model: {}", thingUID, model);
-                this.updateThingFromDevice(thing, model);
+                logger.debug("update thing {} with device model: {}", thingUID, device);
+                this.updateThingFromDevice(thing, device);
             }
         } catch (Exception e) {
             logger.error("{}", e.getLocalizedMessage(), e);
@@ -144,10 +152,8 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     /**
      * Updates things from device model.
      *
-     * @param thing
-     *            Thing to be updated.
-     * @param device
-     *            Device model with new data.
+     * @param thing Thing to be updated.
+     * @param device Device model with new data.
      */
     private void updateThingFromDevice(Thing thing, DeviceModel device) {
         if (thing == null || device == null) {
@@ -155,25 +161,62 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
         }
         if (device.getPresent() == 1) {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
-            logger.debug("about to update {} from {}", thing.getUID(), device);
-            if (device.isTempSensor()) {
-                Channel channel = thing.getChannel(CHANNEL_TEMP);
-                this.updateState(channel.getUID(), new DecimalType(device.getTemperature().getCelsius()));
+            logger.debug("about to update thing {} from device {}", thing.getUID(), device);
+            if (device.isTempSensor() && device.getTemperature() != null) {
+                Channel channelTemp = thing.getChannel(CHANNEL_TEMP);
+                updateState(channelTemp.getUID(), new DecimalType(device.getTemperature().getCelsius()));
             }
-            if (device.isPowermeter()) {
+            if (device.isPowermeter() && device.getPowermeter() != null) {
                 Channel channelEnergy = thing.getChannel(CHANNEL_ENERGY);
-                this.updateState(channelEnergy.getUID(), new DecimalType(device.getPowermeter().getEnergy()));
+                updateState(channelEnergy.getUID(), new DecimalType(device.getPowermeter().getEnergy()));
                 Channel channelPower = thing.getChannel(CHANNEL_POWER);
-                this.updateState(channelPower.getUID(), new DecimalType(device.getPowermeter().getPower()));
+                updateState(channelPower.getUID(), new DecimalType(device.getPowermeter().getPower()));
             }
-            if (device.isSwitchableOutlet()) {
-                Channel channel = thing.getChannel(CHANNEL_SWITCH);
-                if (device.getSwitch().getState().equals(SwitchModel.ON)) {
-                    this.updateState(channel.getUID(), OnOffType.ON);
+            if (device.isSwitchableOutlet() && device.getSwitch() != null) {
+                Channel channelSwitch = thing.getChannel(CHANNEL_SWITCH);
+                if (device.getSwitch().getState() == null) {
+                    updateState(channelSwitch.getUID(), UnDefType.UNDEF);
+                } else if (device.getSwitch().getState().equals(SwitchModel.ON)) {
+                    updateState(channelSwitch.getUID(), OnOffType.ON);
                 } else if (device.getSwitch().getState().equals(SwitchModel.OFF)) {
-                    this.updateState(channel.getUID(), OnOffType.OFF);
+                    updateState(channelSwitch.getUID(), OnOffType.OFF);
                 } else {
-                    logger.warn("unknown state {} for channel {}", device.getSwitch().getState(), channel.getUID());
+                    logger.warn("Received unknown value {} for channel {}", device.getSwitch().getState(),
+                            channelSwitch.getUID());
+                }
+            }
+            if (device.isHeatingThermostat() && device.getHkr() != null) {
+                Channel channelActualTemp = thing.getChannel(CHANNEL_ACTUALTEMP);
+                updateState(channelActualTemp.getUID(), new DecimalType(device.getHkr().getTist()));
+                Channel channelSetTemp = thing.getChannel(CHANNEL_SETTEMP);
+                updateState(channelSetTemp.getUID(), new DecimalType(device.getHkr().getTsoll()));
+                Channel channelEcoTemp = thing.getChannel(CHANNEL_ECOTEMP);
+                updateState(channelEcoTemp.getUID(), new DecimalType(device.getHkr().getAbsenk()));
+                Channel channelComfortTemp = thing.getChannel(CHANNEL_COMFORTTEMP);
+                updateState(channelComfortTemp.getUID(), new DecimalType(device.getHkr().getKomfort()));
+                if (device.getHkr().getNextchange() != null) {
+                    Channel channelNextChange = thing.getChannel(CHANNEL_NEXTCHANGE);
+                    if (device.getHkr().getNextchange().getEndperiod() == 0) {
+                        updateState(channelNextChange.getUID(), UnDefType.UNDEF);
+                    } else {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(new Date(device.getHkr().getNextchange().getEndperiod() * 1000L));
+                        updateState(channelNextChange.getUID(), new DateTimeType(calendar));
+                    }
+                    Channel channelNextTemp = thing.getChannel(CHANNEL_NEXTTEMP);
+                    updateState(channelNextTemp.getUID(),
+                            new DecimalType(device.getHkr().getNextchange().getTchange()));
+                }
+                Channel channelBattery = thing.getChannel(CHANNEL_BATTERY);
+                if (device.getHkr().getBatterylow() == null) {
+                    updateState(channelBattery.getUID(), UnDefType.UNDEF);
+                } else if (device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_ON)) {
+                    updateState(channelBattery.getUID(), OnOffType.ON);
+                } else if (device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_OFF)) {
+                    updateState(channelBattery.getUID(), OnOffType.OFF);
+                } else {
+                    logger.warn("Received unknown value {} for channel {}", device.getHkr().getBatterylow(),
+                            channelBattery.getUID());
                 }
             }
         } else {
@@ -182,8 +225,8 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     }
 
     /**
-     * Builds a {@link ThingUID} from a device model. The UID is build from
-     * the {@link BindingConstants#BINDING_ID} and value of
+     * Builds a {@link ThingUID} from a device model. The UID is build from the
+     * {@link BindingConstants#BINDING_ID} and value of
      * {@link DeviceModel#getProductName()} in which all characters NOT matching
      * the regex [^a-zA-Z0-9_] are replaced by "_".
      *
@@ -225,12 +268,20 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("update {} with {}", channelUID, command);
+        logger.debug("command for {}: {}", channelUID, command);
+        if (command instanceof RefreshType) {
+            if (getWebInterface() != null) {
+                logger.debug("polling FRITZ!Box {}", getWebInterface().getConfig());
+                FritzAhaUpdateXmlCallback callback = new FritzAhaUpdateXmlCallback(getWebInterface(), this);
+                getWebInterface().asyncGet(callback);
+            }
+            return;
+        }
     }
 
     /**
-     * Called from {@link FritzahaWebInterface#authenticate()} to update
-     * the bridge status because updateStatus is protected.
+     * Called from {@link FritzahaWebInterface#authenticate()} to update the
+     * bridge status because updateStatus is protected.
      *
      * @param status Bridge status
      * @param statusDetail Bridge status detail

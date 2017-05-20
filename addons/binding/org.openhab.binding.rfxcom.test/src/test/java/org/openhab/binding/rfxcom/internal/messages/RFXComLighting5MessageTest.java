@@ -30,7 +30,7 @@ public class RFXComLighting5MessageTest {
 
     @Test
     public void convertFromStateItMessage() throws RFXComException {
-        RFXComMessage itMessageObject = RFXComMessageFactory.createMessage(LIGHTING5);
+        RFXComBaseMessage itMessageObject = (RFXComBaseMessage) RFXComMessageFactory.createMessage(LIGHTING5);
         itMessageObject.setDeviceId("2061.1");
         itMessageObject.setSubType(IT);
         itMessageObject.convertFromState(RFXComValueSelector.COMMAND, OnOffType.ON);

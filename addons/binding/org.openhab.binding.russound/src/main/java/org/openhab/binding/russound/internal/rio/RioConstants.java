@@ -23,21 +23,12 @@ public class RioConstants {
     public static final ThingTypeUID BRIDGE_TYPE_CONTROLLER = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
             "controller");
 
-    public static final ThingTypeUID BRIDGE_TYPE_ZONE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID, "zone");
-    public static final ThingTypeUID BRIDGE_TYPE_SOURCE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
+    public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID, "zone");
+    public static final ThingTypeUID THING_TYPE_SOURCE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
             "source");
 
-    public static final ThingTypeUID BRIDGE_TYPE_BANK = new ThingTypeUID(RussoundBindingConstants.BINDING_ID, "bank");
-
-    // THING TYPE IDS
-    public static final ThingTypeUID THING_TYPE_BANK_PRESET = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
-            "bankpreset");
-    public static final ThingTypeUID THING_TYPE_ZONE_PRESET = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
-            "zonepreset");
-    public static final ThingTypeUID THING_TYPE_SYSTEM_FAVORITE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
-            "sysfavorite");
-    public static final ThingTypeUID THING_TYPE_ZONE_FAVORITE = new ThingTypeUID(RussoundBindingConstants.BINDING_ID,
-            "zonefavorite");
+    // the port number rio listens on
+    public static final int RioPort = 9621;
 
     // SYSTEM PROPERTIES
     public static final String PROPERTY_SYSVERSION = "Firmware Version";
@@ -46,11 +37,16 @@ public class RioConstants {
     public static final String CHANNEL_SYSSTATUS = "status"; // readonly
     public static final String CHANNEL_SYSLANG = "lang"; // read/write - english, chinese, russian
     public static final String CHANNEL_SYSALLON = "allon"; // read/write - english, chinese, russian
+    public static final String CHANNEL_SYSCONTROLLERS = "controllers"; // json array [1,2,etc]
+    public static final String CHANNEL_SYSSOURCES = "sources"; // json array [{id: 1, name: xxx},{id:2, name: xxx}, etc]
 
     // CONTROLLER PROPERTIES
     public static final String PROPERTY_CTLTYPE = "Model Type";
     public static final String PROPERTY_CTLIPADDRESS = "IP Address";
     public static final String PROPERTY_CTLMACADDRESS = "MAC Address";
+
+    // CONTROLLER CHANNELS
+    public static final String CHANNEL_CTLZONES = "zones"; // json array [{id: 1, name: xxx},{id:2, name: xxx}, etc]
 
     // ZONE CHANNELS
     public static final String CHANNEL_ZONENAME = "name"; // 12 max
@@ -74,12 +70,20 @@ public class RioConstants {
     public static final String CHANNEL_ZONEREPEAT = "repeat"; // OFF/ON/MASTER
     public static final String CHANNEL_ZONESHUFFLE = "shuffle"; // OFF/ON/MASTER
 
+    public static final String CHANNEL_ZONESYSFAVORITES = "systemfavorites"; // json array
+    public static final String CHANNEL_ZONEFAVORITES = "zonefavorites"; // json array
+    public static final String CHANNEL_ZONEPRESETS = "presets"; // json array
+
     // ZONE EVENT BASED
     public static final String CHANNEL_ZONEKEYPRESS = "keypress";
     public static final String CHANNEL_ZONEKEYRELEASE = "keyrelease";
     public static final String CHANNEL_ZONEKEYHOLD = "keyhold";
     public static final String CHANNEL_ZONEKEYCODE = "keycode";
     public static final String CHANNEL_ZONEEVENT = "event";
+
+    // ZONE MEDIA CHANNELS
+    public static final String CHANNEL_ZONEMMINIT = "mminit";
+    public static final String CHANNEL_ZONEMMCONTEXTMENU = "mmcontextmenu";
 
     // FAVORITE CHANNELS
     public static final String CHANNEL_FAVNAME = "name";
@@ -108,10 +112,10 @@ public class RioConstants {
     public static final String CMD_PRESETDELETE = "delete";
 
     // SOURCE PROPERTIES
-    public static final String PROPERTY_SOURCETYPE = "Source Type";
     public static final String PROPERTY_SOURCEIPADDRESS = "IP Address";
 
     // SOURCE CHANNELS
+    public static final String CHANNEL_SOURCETYPE = "type";
     public static final String CHANNEL_SOURCENAME = "name";
     public static final String CHANNEL_SOURCECOMPOSERNAME = "composername";
     public static final String CHANNEL_SOURCECHANNEL = "channel";
@@ -120,7 +124,6 @@ public class RioConstants {
     public static final String CHANNEL_SOURCEARTISTNAME = "artistname";
     public static final String CHANNEL_SOURCEALBUMNAME = "albumname";
     public static final String CHANNEL_SOURCECOVERARTURL = "coverarturl";
-    public static final String CHANNEL_SOURCECOVERART = "coverart";
     public static final String CHANNEL_SOURCEPLAYLISTNAME = "playlistname";
     public static final String CHANNEL_SOURCESONGNAME = "songname";
     public static final String CHANNEL_SOURCEMODE = "mode";
@@ -133,4 +136,17 @@ public class RioConstants {
     public static final String CHANNEL_SOURCERADIOTEXT3 = "radiotext3";
     public static final String CHANNEL_SOURCERADIOTEXT4 = "radiotext4";
     public static final String CHANNEL_SOURCEVOLUME = "volume";
+
+    public static final String CHANNEL_SOURCEBANKS = "banks";
+
+    // SOURCE MEDIA Channels
+    public static final String CHANNEL_SOURCEMMSCREEN = "mmscreen";
+    public static final String CHANNEL_SOURCEMMTITLE = "mmtitle";
+    public static final String CHANNEL_SOURCEMMMENU = "mmmenu";
+    public static final String CHANNEL_SOURCEMMATTR = "mmattr";
+    public static final String CHANNEL_SOURCEMMBUTTONOKTEXT = "mmmenubuttonoktext";
+    public static final String CHANNEL_SOURCEMMBUTTONBACKTEXT = "mmmenubuttonbacktext";
+    public static final String CHANNEL_SOURCEMMINFOTEXT = "mminfotext";
+    public static final String CHANNEL_SOURCEMMHELPTEXT = "mmhelptext";
+    public static final String CHANNEL_SOURCEMMTEXTFIELD = "mmtextfield";
 }

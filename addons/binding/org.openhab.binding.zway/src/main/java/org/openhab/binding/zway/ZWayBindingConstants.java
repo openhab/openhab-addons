@@ -40,6 +40,7 @@ public class ZWayBindingConstants {
     public static final String DOORLOCK_CHANNEL = "doorlock";
     public static final String SENSOR_BINARY_CHANNEL = "sensorBinary";
     public static final String SENSOR_MULTILEVEL_CHANNEL = "sensorMultilevel";
+    public static final String SENSOR_DISCRETE_CHANNEL = "sensorDiscrete";
     public static final String SWITCH_BINARY_CHANNEL = "switchBinary";
     public static final String SWITCH_CONTROL_CHANNEL = "switchControl";
     public static final String SWITCH_MULTILEVEL_CHANNEL = "switchMultilevel";
