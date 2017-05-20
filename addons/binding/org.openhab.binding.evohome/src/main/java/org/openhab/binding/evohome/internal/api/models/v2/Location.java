@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Locations {
+public class Location {
 
     @SerializedName("locationInfo")
     public LocationInfo LocationInfo;

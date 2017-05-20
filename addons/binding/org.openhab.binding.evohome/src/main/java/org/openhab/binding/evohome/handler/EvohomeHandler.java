@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.evohome.handler;
 
-import static org.openhab.binding.evohome.EvohomeBindingConstants.CHANNEL_1;
-
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -34,7 +32,7 @@ public class EvohomeHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
+/*
         if (channelUID.getId().equals(CHANNEL_1)) {
             int i = 5;
 
@@ -46,7 +44,7 @@ public class EvohomeHandler extends BaseThingHandler {
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
             // "Could not control device at IP address x.x.x.x");
         }
-
+*/
     }
 
     @Override

@@ -12,7 +12,7 @@ public class LocationOwner {
     @SerializedName("firstname")
     public String FirstName;
 
-    @SerializedName("lastnameOwner")
+    @SerializedName("lastname")
     public String LastName;
 
 }

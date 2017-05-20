@@ -22,8 +22,6 @@ import com.google.common.collect.ImmutableSet;
  */
 public class EvohomeBindingConstants {
 
-
-
     private static final String BINDING_ID = "evohome";
 
     // List of all Thing Type UIDs

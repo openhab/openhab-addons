@@ -15,7 +15,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v2.Authentication;
-import org.openhab.binding.evohome.internal.api.models.v2.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.Location;
 import org.openhab.binding.evohome.internal.api.models.v2.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +130,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         }
 
         useraccount = getUserAccount();
-        Locations locations = getLocations();
+        Location locations = getLocations();
 
 
         return authenticationData != null;
@@ -145,7 +145,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return userAccount;
     }
 
-    public Locations getLocations() {
+    public Location getLocations() {
         Locations locations = null;
         if (useraccount != null) {
             String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATIONS;
@@ -155,7 +155,13 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             locations = doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
         }
 
-        return locations;
+
+        Location one = locations.get(0);
+
+
+
+
+        return one;//locations;
     }
 
     @Override
