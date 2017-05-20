@@ -8,22 +8,34 @@
  */
 package org.openhab.binding.evohome.internal;
 
-import static org.openhab.binding.evohome.EvohomeBindingConstants.*;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.Set;
 
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.evohome.EvohomeBindingConstants;
+import org.openhab.binding.evohome.discovery.EvohomeDiscoveryService;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
+import org.openhab.binding.evohome.handler.EvohomeHandler;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * The {@link EvohomeHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Jasper van Zuijlen - Initial contribution
+ * @author Jasper van Zuijlen  + Neil Renaud
  */
 public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
+
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(EvohomeBindingConstants.THING_TYPE_EVOHOME_GATEWAY);
+
+    private ServiceRegistration<?> discoveryServiceReg;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -32,12 +44,40 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
+
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_EVOHOME_BRIDGE)) {
-            return new EvohomeGatewayHandler((Bridge) thing);
+        if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_GATEWAY)) {
+            EvohomeGatewayHandler evohomeGatewayHandler = new EvohomeGatewayHandler((Bridge) thing);
+            registerDeviceDiscoveryService(evohomeGatewayHandler);
+            return evohomeGatewayHandler;
+        } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_RADIATOR_VALVE)) {
+            return new EvohomeHandler(thing);
         }
 
         return null;
     }
+
+    private void registerDeviceDiscoveryService(EvohomeGatewayHandler evohomeBridgeHandler) {
+        EvohomeDiscoveryService discoveryService = new EvohomeDiscoveryService(evohomeBridgeHandler);
+
+        discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                new Hashtable<String, Object>());
+    }
+
+    @Override
+    public ThingHandler registerHandler(Thing thing) {
+        return super.registerHandler(thing);
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (discoveryServiceReg != null && thingHandler.getThing().getThingTypeUID()
+                .equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_GATEWAY)) {
+            discoveryServiceReg.unregister();
+            discoveryServiceReg = null;
+        }
+        super.removeHandler(thingHandler);
+    }
+
 }

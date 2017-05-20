@@ -89,11 +89,11 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
     }
 
     /* (non-Javadoc)
-     * @see org.openhab.binding.evohome.internal.api.EvoHomeApiClient#login()
+     * @see org.openhab.binding.evohome.internal.api.EvohomeApiClient#login()
      */
     @Override
     public boolean login() {
-        logger.debug("Calling EvoHome login");
+        logger.debug("Calling Evohome login");
         LoginRequest loginRequest = new LoginRequest(configuration.username, configuration.password,
                 configuration.applicationId);
         userInfo = new LoginResponse();
@@ -103,7 +103,7 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
     }
 
     /* (non-Javadoc)
-     * @see org.openhab.binding.evohome.internal.api.EvoHomeApiClient#logout()
+     * @see org.openhab.binding.evohome.internal.api.EvohomeApiClient#logout()
      */
     @Override
     public void logout() {
@@ -111,11 +111,11 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
     }
 
     /* (non-Javadoc)
-     * @see org.openhab.binding.evohome.internal.api.EvoHomeApiClient#getData()
+     * @see org.openhab.binding.evohome.internal.api.EvohomeApiClient#getData()
      */
     @Override
     public DataModelResponse[] getData() {
-        logger.debug("Calling EvoHome getData()");
+        logger.debug("Calling Evohome getData()");
         if (userInfo == null) {
             logger.error("Not logged in when calling getData()");
             return null;

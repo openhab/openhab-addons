@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.evohome.discovery;
 
-import static org.openhab.binding.evohome.EvoHomeBindingConstants.*;
+import static org.openhab.binding.evohome.EvohomeBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,31 +26,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link EvoHomeDiscoveryService} class is capable of discovering the available data from Evohome
+ * The {@link EvohomeDiscoveryService} class is capable of discovering the available data from Evohome
  *
  * @author Neil Renaud - Initial contribution
  */
-public class EvoHomeDiscoveryService extends AbstractDiscoveryService {
-    private Logger logger = LoggerFactory.getLogger(EvoHomeDiscoveryService.class);
+public class EvohomeDiscoveryService extends AbstractDiscoveryService {
+    private Logger logger = LoggerFactory.getLogger(EvohomeDiscoveryService.class);
     private static final int SEARCH_TIME = 2;
     private static final String LOCATION_NAME = "Location Name";
     private static final String LOCATION_ID = "Location Id";
     private static final String DEVICE_NAME = "Device Name";
     private static final String DEVICE_ID = "Device Id";
 
-    private EvohomeGatewayHandler evoHomeBridgeHandler;
+    private EvohomeGatewayHandler evohomeBridgeHandler;
 
-    public EvoHomeDiscoveryService(EvohomeGatewayHandler evoHomeBridgeHandler) {
+    public EvohomeDiscoveryService(EvohomeGatewayHandler evohomeBridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
-        this.evoHomeBridgeHandler = evoHomeBridgeHandler;
+        this.evohomeBridgeHandler = evohomeBridgeHandler;
     }
 
     @Override
     public void startScan() {
         logger.debug("Evohome start scan");
-        if (evoHomeBridgeHandler != null) {
+        if (evohomeBridgeHandler != null) {
             try {
-                DataModelResponse[] dataArray = evoHomeBridgeHandler.getData();
+                DataModelResponse[] dataArray = evohomeBridgeHandler.getData();
                 for (DataModelResponse data : dataArray) {
                     discoverWeather(data.getWeather(), data.getName(), data.getLocationId());
                     discoverRadiatorValves(data.getDevices(), data.getName(), data.getLocationId());
@@ -90,7 +90,7 @@ public class EvoHomeDiscoveryService extends AbstractDiscoveryService {
 
     private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withBridge(evoHomeBridgeHandler.getThing().getUID()).withLabel(displayLabel).build();
+                .withBridge(evohomeBridgeHandler.getThing().getUID()).withLabel(displayLabel).build();
 
         thingDiscovered(discoveryResult);
     }
@@ -101,7 +101,7 @@ public class EvoHomeDiscoveryService extends AbstractDiscoveryService {
 
             if (uid.equalsIgnoreCase(thingType)) {
 
-                return new ThingUID(supportedThingTypeUID, evoHomeBridgeHandler.getThing().getUID(),
+                return new ThingUID(supportedThingTypeUID, evohomeBridgeHandler.getThing().getUID(),
                         thingId.replaceAll("[^a-zA-Z0-9_]", ""));
             }
         }

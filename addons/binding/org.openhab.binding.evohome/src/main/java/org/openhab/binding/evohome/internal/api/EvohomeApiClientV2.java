@@ -15,7 +15,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v2.Authentication;
-import org.openhab.binding.evohome.internal.api.models.v2.Location;
 import org.openhab.binding.evohome.internal.api.models.v2.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +30,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private Authentication authenticationData;
 
     private UserAccount useraccount;
+
+    private Locations locations;
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
@@ -51,18 +52,13 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 }
             }
 
-            if (requestContainer == null) {
-                logger.debug("Do request '" + method + "' for url '" + url + "'");
-            } else {
+            if (requestContainer != null) {
                 Gson gson = new GsonBuilder().create();
                 String json = gson.toJson(requestContainer);
-                logger.debug("Do request '" + method + "' for url '" + url + "' with data '" + json + "'");
                 request.method(method).content(new StringContentProvider(json), "application/json");
             }
 
             String reply = request.send().getContentAsString();
-            logger.debug("Got reply: " + reply);
-
             if (out != null) {
                 out = (TOut) new Gson().fromJson(reply, out.getClass());
             }
@@ -129,14 +125,17 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             logger.error("Authorization failed",e);
         }
 
-        useraccount = getUserAccount();
-        Location locations = getLocations();
+        boolean success = authenticationData != null;
 
+        if (success ==true) {
+            useraccount = requestUserAccount();
+            locations   = requestLocations();
+        }
 
-        return authenticationData != null;
+        return success;
     }
 
-    public UserAccount getUserAccount() {
+    private UserAccount requestUserAccount() {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
         UserAccount userAccount =  new UserAccount();
@@ -145,7 +144,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return userAccount;
     }
 
-    public Location getLocations() {
+    private Locations requestLocations() {
         Locations locations = null;
         if (useraccount != null) {
             String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATIONS;
@@ -155,13 +154,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             locations = doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
         }
 
-
-        Location one = locations.get(0);
-
-
-
-
-        return one;//locations;
+        return locations;
     }
 
     @Override

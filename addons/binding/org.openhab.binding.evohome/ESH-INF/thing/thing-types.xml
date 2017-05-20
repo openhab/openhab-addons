@@ -22,8 +22,8 @@
             <bridge-type-ref id="gateway" />
         </supported-bridge-type-refs>
         
-        <label>EvoHome Radiator Valve</label>
-        <description>This represents the EvoHome Radiator Valves.</description>
+        <label>Evohome Radiator Valve</label>
+        <description>This represents the Evohome Radiator Valves.</description>
 
         <channels>
             <channel id="Temperature" typeId="temperature" />
