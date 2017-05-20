@@ -76,7 +76,7 @@
 			<bridge-type-ref id="server" />
 		</supported-bridge-type-refs>
 
-		<label>Freebox Phone</label>
+		<label>Phone</label>
 		<description>Provides various informations regarding the phone state and the phone calls</description>
 
 		<channel-groups>
@@ -110,8 +110,8 @@
 			<bridge-type-ref id="server" />
 		</supported-bridge-type-refs>
 
-		<label>Freebox Network Device</label>
-		<description>Provides various informations regarding one network device</description>
+		<label>Network Device</label>
+		<description>Provides network device reachability</description>
 
 		<channels>
 			<channel id="reachable" typeId="reachable" />
@@ -133,8 +133,8 @@
 			<bridge-type-ref id="server" />
 		</supported-bridge-type-refs>
 
-		<label>Freebox Network Interface</label>
-		<description>Provides various informations regarding one network interface</description>
+		<label>Network Interface</label>
+		<description>Provides network interface reachability</description>
 
 		<channels>
 			<channel id="reachable" typeId="reachable" />
@@ -148,6 +148,42 @@
 				<required>true</required>
 			</parameter>
 
+		</config-description>
+	</thing-type>
+
+	<thing-type id="airplay">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server" />
+		</supported-bridge-type-refs>
+
+		<label>AirPlay Receiver</label>
+		<description>Provides media control from one AirPlay device</description>
+
+		<channels>
+			<channel id="playurl" typeId="playurl" />
+			<channel id="stop" typeId="stop" />
+		</channels>
+
+		<config-description>
+			<parameter name="name" type="text">
+				<label>Name</label>
+				<description>Name of the AirPlay device</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>AirPlay password</description>
+				<default></default>
+				<required>false</required>
+			</parameter>
+			<parameter name="acceptAllMp3" type="boolean">
+				<label>Accept all MP3</label>
+				<description>Accept any bitrate for MP3 audio or only bitrates greater than 64 kbps</description>
+				<default>true</default>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -476,6 +512,18 @@
 		<description>Indicates whether the network device is reachable</description>
 		<category>Switch</category>
 		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playurl">
+		<item-type>String</item-type>
+		<label>Play audio or video URL</label>
+		<description>Play an audio or video media from the given URL</description>
+	</channel-type>
+
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop playback</label>
+		<description>Stop the media playback</description>
 	</channel-type>
 
 </thing:thing-descriptions>

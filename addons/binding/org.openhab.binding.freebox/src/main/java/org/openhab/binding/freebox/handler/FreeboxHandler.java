@@ -34,10 +34,12 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.matmaul.freeboxos.FreeboxException;
 import org.matmaul.freeboxos.FreeboxOsClient;
 import org.matmaul.freeboxos.airmedia.AirMediaConfig;
+import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
 import org.matmaul.freeboxos.connection.ConnectionStatus;
 import org.matmaul.freeboxos.connection.xDslStatus;
 import org.matmaul.freeboxos.ftp.FtpConfig;
@@ -87,6 +89,13 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == null || command instanceof RefreshType) {
+            return;
+        }
+        if ((getThing().getStatus() == ThingStatus.OFFLINE)
+                && (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR)) {
+            return;
+        }
         try {
             switch (channelUID.getId()) {
                 case LCDBRIGHTNESS:
@@ -118,9 +127,16 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     break;
                 case REBOOT:
                     setReboot(command);
+                    break;
+                default:
+                    logger.debug("Thing {}: unexpected command {} from channel {}", getThing().getUID(), command,
+                            channelUID.getId());
+                    break;
             }
         } catch (FreeboxException e) {
-            logger.error("{}", e.getMessage());
+            logger.debug("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
+                    channelUID.getId(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -175,15 +191,15 @@ public class FreeboxHandler extends BaseBridgeHandler {
             loginManager.setAppToken(configuration.appToken);
             loginManager.openSession();
             return true;
-        } catch (FreeboxException | InterruptedException e) {
-            logger.error("{}", e.getMessage());
+        } catch (Exception e) {
+            logger.debug("Thing {}: error while opening a session", getThing().getUID(), e);
             return false;
         }
     }
 
     @Override
     public void initialize() {
-        logger.debug("initializing Freebox Server handler.");
+        logger.debug("initializing Freebox Server handler for thing {}", getThing().getUID());
 
         FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
         if ((configuration != null) && StringUtils.isNotEmpty(configuration.fqdn)) {
@@ -262,7 +278,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             }
 
             if (errorMsg != null) {
-                logger.info("Bad thing configuration: {}", errorMsg);
+                logger.debug("Thing {}: bad configuration: {}", getThing().getUID(), errorMsg);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
             } else if (!authorize(useHttps, fqdn, apiBaseUrl, apiVersion)) {
                 if (StringUtils.isEmpty(configuration.appToken)) {
@@ -271,11 +287,11 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     errorMsg = "Check your app token in the thing configuration; opening session with " + fqdn
                             + " using " + (useHttps ? "HTTPS" : "HTTP") + " API version " + apiVersion + " failed";
                 }
-                logger.info("{}", errorMsg);
+                logger.debug("Thing {}: {}", getThing().getUID(), errorMsg);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
             } else {
-                logger.info("Session opened with {} using {} API version {}", fqdn, (useHttps ? "HTTPS" : "HTTP"),
-                        apiVersion);
+                logger.info("Thing {}: session opened with {} using {} API version {}", getThing().getUID(), fqdn,
+                        (useHttps ? "HTTPS" : "HTTP"), apiVersion);
                 updateStatus(ThingStatus.ONLINE);
 
                 if (globalJob == null || globalJob.isCancelled()) {
@@ -324,10 +340,11 @@ public class FreeboxHandler extends BaseBridgeHandler {
                 fetchUPnPAVConfig();
                 fetchSambaConfig();
                 LanHostsConfig lanHostsConfiguration = fetchLanHostsConfig();
+                List<AirMediaReceiver> airPlayDevices = fetchAirPlayDevices();
 
                 // Trigger a new discovery of things
                 for (FreeboxDataListener dataListener : dataListeners) {
-                    dataListener.onDataFetched(getThing().getUID(), lanHostsConfiguration);
+                    dataListener.onDataFetched(getThing().getUID(), lanHostsConfiguration, airPlayDevices);
                 }
 
                 if (getThing().getStatus() == ThingStatus.OFFLINE) {
@@ -361,7 +378,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing Freebox Server handler.");
+        logger.debug("Disposing Freebox Server handler for thing {}", getThing().getUID());
         if (authorizeJob != null && !authorizeJob.isCancelled()) {
             authorizeJob.cancel(true);
             authorizeJob = null;
@@ -502,6 +519,19 @@ public class FreeboxHandler extends BaseBridgeHandler {
         }
 
         return lanHostsConfiguration;
+    }
+
+    private synchronized List<AirMediaReceiver> fetchAirPlayDevices() throws FreeboxException {
+        List<AirMediaReceiver> airPlayDevices = fbClient.getAirMediaManager().getReceivers();
+
+        // The update of channels is delegated to each thing handler
+        for (Thing thing : getThing().getThings()) {
+            if (thing.getHandler() != null) {
+                ((FreeboxThingHandler) thing.getHandler()).updateAirPlayDevice(airPlayDevices);
+            }
+        }
+
+        return airPlayDevices;
     }
 
     public void setBrightness(Command command) throws FreeboxException {

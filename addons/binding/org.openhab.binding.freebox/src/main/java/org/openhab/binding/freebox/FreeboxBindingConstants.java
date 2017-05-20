@@ -31,13 +31,14 @@ public class FreeboxBindingConstants {
     public static final ThingTypeUID FREEBOX_THING_TYPE_PHONE = new ThingTypeUID(BINDING_ID, "phone");
     public static final ThingTypeUID FREEBOX_THING_TYPE_NET_DEVICE = new ThingTypeUID(BINDING_ID, "net_device");
     public static final ThingTypeUID FREEBOX_THING_TYPE_NET_INTERFACE = new ThingTypeUID(BINDING_ID, "net_interface");
+    public static final ThingTypeUID FREEBOX_THING_TYPE_AIRPLAY = new ThingTypeUID(BINDING_ID, "airplay");
 
     // All supported Bridge types
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = ImmutableSet.of(FREEBOX_BRIDGE_TYPE_SERVER);
 
     // All supported Thing types
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(FREEBOX_THING_TYPE_PHONE,
-            FREEBOX_THING_TYPE_NET_DEVICE, FREEBOX_THING_TYPE_NET_INTERFACE);
+            FREEBOX_THING_TYPE_NET_DEVICE, FREEBOX_THING_TYPE_NET_INTERFACE, FREEBOX_THING_TYPE_AIRPLAY);
 
     // List of properties
     public static final String API_BASE_URL = "apiBaseUrl";
@@ -83,4 +84,6 @@ public class FreeboxBindingConstants {
     public static final String SAMBAFILESTATUS = "sambafileshare_status";
     public static final String SAMBAPRINTERSTATUS = "sambaprintershare_status";
     public static final String REACHABLE = "reachable";
+    public static final String PLAYURL = "playurl";
+    public static final String STOP = "stop";
 }
