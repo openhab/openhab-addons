@@ -14,7 +14,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
-import org.openhab.binding.evohome.internal.api.models.Gateway;
+import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v2.Authentication;
 import org.openhab.binding.evohome.internal.api.models.v2.Location;
@@ -175,8 +175,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     }
 
     @Override
-    public Gateway[] getGateways() {
-        ArrayList<Gateway> result = new ArrayList<Gateway>();
+    public ControlSystem[] getControlSystems() {
+        ArrayList<ControlSystem> result = new ArrayList<ControlSystem>();
 
         if (locations != null) {
             for (Location location : locations) {
@@ -185,7 +185,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                         if (gateway.TemperatureControlSystems != null) {
                             for (org.openhab.binding.evohome.internal.api.models.v2.TemperatureControlSystem system: gateway.TemperatureControlSystems) {
 
-                                result.add(new Gateway(system.SystemId, system.ModelType));
+                                result.add(new ControlSystem(system.SystemId, system.ModelType));
                             }
                         }
                     }
@@ -193,7 +193,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             }
         }
 
-        return result.toArray(new Gateway[result.size()]);
+        return result.toArray(new ControlSystem[result.size()]);
     }
 
 }

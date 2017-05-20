@@ -8,9 +8,7 @@
  */
 package org.openhab.binding.evohome.internal;
 
-import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -20,6 +18,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.discovery.EvohomeDiscoveryService;
+import org.openhab.binding.evohome.handler.EvohomeControlSystemHandler;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 import org.openhab.binding.evohome.handler.EvohomeHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -32,25 +31,23 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(EvohomeBindingConstants.THING_TYPE_EVOHOME_GATEWAY);
-
     private ServiceRegistration<?> discoveryServiceReg;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return EvohomeBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_GATEWAY)) {
             EvohomeGatewayHandler evohomeGatewayHandler = new EvohomeGatewayHandler((Bridge) thing);
             registerDeviceDiscoveryService(evohomeGatewayHandler);
             return evohomeGatewayHandler;
+        } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY)) {
+            return new EvohomeControlSystemHandler(thing);
         } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_RADIATOR_VALVE)) {
             return new EvohomeHandler(thing);
         }

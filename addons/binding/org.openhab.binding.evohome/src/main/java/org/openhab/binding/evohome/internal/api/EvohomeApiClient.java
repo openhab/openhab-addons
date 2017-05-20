@@ -1,6 +1,6 @@
 package org.openhab.binding.evohome.internal.api;
 
-import org.openhab.binding.evohome.internal.api.models.Gateway;
+import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 
 public interface EvohomeApiClient {
@@ -11,6 +11,6 @@ public interface EvohomeApiClient {
 
     DataModelResponse[] getData();
 
-    Gateway[] getGateways();
+    ControlSystem[] getControlSystems();
 
 }

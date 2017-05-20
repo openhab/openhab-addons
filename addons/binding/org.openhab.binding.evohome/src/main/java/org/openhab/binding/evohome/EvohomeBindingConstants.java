@@ -26,18 +26,20 @@ public class EvohomeBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_EVOHOME_GATEWAY        = new ThingTypeUID(BINDING_ID, "gateway");
-    public static final ThingTypeUID THING_TYPE_EVOHOME_SYSTEM         = new ThingTypeUID(BINDING_ID, "system");
+    public static final ThingTypeUID THING_TYPE_EVOHOME_DISPLAY        = new ThingTypeUID(BINDING_ID, "display");
     public static final ThingTypeUID THING_TYPE_EVOHOME_RADIATOR_VALVE = new ThingTypeUID(BINDING_ID, "radiatorValve");
     public static final ThingTypeUID THING_TYPE_EVOHOME_LOCATION       = new ThingTypeUID(BINDING_ID, "location");
 
     // List of all Channel ids
     public static final String TEMPERATURE_CHANNEL = "temperature";
     public static final String SET_POINT_CHANNEL   = "setpoint";
+    public static final String SYSTEM_MODE         = "SystemMode";
+
 
     // List of all addressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
             THING_TYPE_EVOHOME_GATEWAY,
             THING_TYPE_EVOHOME_RADIATOR_VALVE,
-            THING_TYPE_EVOHOME_SYSTEM);
+            THING_TYPE_EVOHOME_DISPLAY);
 
 }

@@ -1,11 +1,11 @@
 package org.openhab.binding.evohome.internal.api.models;
 
-public class Gateway {
+public class ControlSystem {
 
     private int id;
     private String name;
 
-    public Gateway(int id, String name) {
+    public ControlSystem(int id, String name) {
         this.id   = id;
         this.name = name;
     }

@@ -4,16 +4,16 @@
                           xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
                           xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <thing-type id="system" listed="false">
+    <thing-type id="display" listed="false">
         <supported-bridge-type-refs>
             <bridge-type-ref id="gateway" />
         </supported-bridge-type-refs>
         
-        <label>Evohome Gateway</label>
-        <description>This represents the Evohome gateway.</description>
+        <label>Evohome Display</label>
+        <description>This represents the Evohome control display.</description>
 
         <channels>
-            <channel id="Temperature" typeId="temperature" />
+            <channel id="SystemMode" typeId="systemMode" />
         </channels>
     </thing-type>
 
