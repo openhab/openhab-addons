@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="plclogo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!--Siemens LOGO! PLC bridge -->
+	<bridge-type id="device">
+		<label>Siemens LOGO! PLC</label>
+		<description>Bridge for Siemens LOGO! PLC's</description>
+		<channels>
+			<channel id="rtc" typeId="rtc" />
+		</channels>
+		<config-description-ref uri="thing-type:plclogo:bridge" />
+	</bridge-type>
+
+	<channel-type id="rtc">
+		<item-type>DateTime</item-type>
+		<label>Siemens LOGO! RTC</label>
+		<description>The value of Siemens LOGO! RTC</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>
