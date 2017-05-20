@@ -24,6 +24,11 @@
 		</channels>
 
 		<config-description>
+			<parameter name="receiveOnly" type="boolean" required="true">
+				<label>Receive only?</label>
+				<description>Set to disable all attempts to transmit to this device.</description>
+				<default>true</default>
+			</parameter>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
 				<description>Sensor Id. Example 56923</description>
