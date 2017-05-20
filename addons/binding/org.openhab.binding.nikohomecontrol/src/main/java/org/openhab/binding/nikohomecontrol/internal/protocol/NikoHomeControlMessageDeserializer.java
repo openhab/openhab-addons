@@ -73,7 +73,7 @@ class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageB
 
                     message = new NhcMessageListMap();
 
-                    List<HashMap<String, String>> dataList = new ArrayList<>();
+                    List<Map<String, String>> dataList = new ArrayList<>();
                     for (int i = 0; i < jsonDataArray.size(); i++) {
                         JsonObject jsonDataObject = jsonDataArray.get(i).getAsJsonObject();
 
@@ -81,7 +81,7 @@ class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageB
                         for (Entry<String, JsonElement> entry : jsonDataObject.entrySet()) {
                             data.put(entry.getKey(), entry.getValue().getAsString());
                         }
-                        dataList.add((HashMap<String, String>) data);
+                        dataList.add(data);
                     }
                     ((NhcMessageListMap) message).setData(dataList);
                 }

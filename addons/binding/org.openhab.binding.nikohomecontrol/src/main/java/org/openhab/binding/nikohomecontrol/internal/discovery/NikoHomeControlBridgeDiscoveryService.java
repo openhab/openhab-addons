@@ -49,9 +49,7 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
             addBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
         } catch (IOException e) {
             logger.debug("Niko Home Control: no bridge found.");
-            return;
         }
-
     }
 
     private void addBridge(InetAddress addr, String bridgeId) {

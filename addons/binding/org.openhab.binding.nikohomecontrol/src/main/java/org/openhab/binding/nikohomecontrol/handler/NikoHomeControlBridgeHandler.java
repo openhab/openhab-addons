@@ -71,8 +71,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
         if (config.get(CONFIG_HOST_NAME) != null) {
             try {
                 // If hostname or address was provided in the configuration, try to use this to for bridge and give
-                // error
-                // when hostname parameter was not valid.
+                // error when hostname parameter was not valid.
                 // No hostname provided is a valid configuration, therefore allow null addr to pass through.
                 logger.debug("Niko Home Control: configure bridge with host parameter {}",
                         config.get(CONFIG_HOST_NAME));
@@ -180,19 +179,16 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
                 logger.debug("Niko Home Control: restart communication at scheduled time");
 
-                try {
-                    nhcComm.restartCommunication();
-                    if (!nhcComm.communicationActive()) {
-                        throw new IOException("Niko Home Control: communication socket error");
-                    }
-
-                    updateProperties();
-
-                    updateStatus(ThingStatus.ONLINE);
-
-                } catch (IOException e) {
+                nhcComm.restartCommunication();
+                if (!nhcComm.communicationActive()) {
+                    logger.debug("Niko Home Control: communication socket error");
                     bridgeOffline();
                 }
+
+                updateProperties();
+
+                updateStatus(ThingStatus.ONLINE);
+
             }
         }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
     }

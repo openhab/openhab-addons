@@ -21,7 +21,6 @@ import com.google.common.collect.Sets;
  *
  * @author Mark Herwege
  */
-
 public class NikoHomeControlBindingConstants {
 
     public static final String BINDING_ID = "nikohomecontrol";

@@ -9,8 +9,8 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class {@link NhcMessageListMap} used as output from gson for cmd or event feedback from Niko Home Control where the
@@ -23,13 +23,13 @@ import java.util.List;
  */
 class NhcMessageListMap extends NhcMessageBase {
 
-    private List<HashMap<String, String>> data = new ArrayList<>();
+    private List<Map<String, String>> data = new ArrayList<>();
 
-    List<HashMap<String, String>> getData() {
+    List<Map<String, String>> getData() {
         return this.data;
     }
 
-    void setData(List<HashMap<String, String>> data) {
+    void setData(List<Map<String, String>> data) {
         this.data = data;
     }
 

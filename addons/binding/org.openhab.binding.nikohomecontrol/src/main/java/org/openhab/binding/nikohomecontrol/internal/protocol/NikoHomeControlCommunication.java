@@ -110,11 +110,7 @@ public final class NikoHomeControlCommunication {
         try {
             for (int i = 1; nhcEventsRunning && (i <= 5); i++) {
                 // the events listener thread did not finish yet, so wait max 5000ms before restarting
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new IOException();
-                }
+                Thread.sleep(1000);
             }
             if (nhcEventsRunning) {
                 logger.error(
@@ -136,7 +132,7 @@ public final class NikoHomeControlCommunication {
             // IP-interface.
             (new Thread(nhcEvents)).start();
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             // if the error occurs in the initialization, don't try to restart
             logger.warn("Niko Home Control: error initializing communication from thread {}",
                     Thread.currentThread().getId());
@@ -350,13 +346,13 @@ public final class NikoHomeControlCommunication {
         }
     }
 
-    private void cmdListLocations(List<HashMap<String, String>> data) {
+    private void cmdListLocations(List<Map<String, String>> data) {
 
         logger.debug("Niko Home Control: list locations");
 
         this.locations.clear();
 
-        for (HashMap<String, String> location : data) {
+        for (Map<String, String> location : data) {
             int id = Integer.valueOf(location.get("id"));
             String name = location.get("name");
             NhcLocation nhcLocation = new NhcLocation(name);
@@ -364,13 +360,13 @@ public final class NikoHomeControlCommunication {
         }
     }
 
-    private void cmdListActions(List<HashMap<String, String>> data) {
+    private void cmdListActions(List<Map<String, String>> data) {
 
         logger.debug("Niko Home Control: list actions");
 
-        for (HashMap<String, String> action : data) {
+        for (Map<String, String> action : data) {
 
-            int id = Integer.valueOf(action.get("id"));
+            int id = Integer.parseInt(action.get("id"));
             Integer state = Integer.valueOf(action.get("value1"));
 
             if (!this.actions.containsKey(id)) {
@@ -405,9 +401,9 @@ public final class NikoHomeControlCommunication {
         }
     }
 
-    private void eventListActions(List<HashMap<String, String>> data) {
+    private void eventListActions(List<Map<String, String>> data) {
 
-        for (HashMap<String, String> action : data) {
+        for (Map<String, String> action : data) {
             int id = Integer.valueOf(action.get("id"));
             if (!this.actions.containsKey(id)) {
                 logger.warn("Niko Home Control: action in controller not known to openHab {}", id);
@@ -415,11 +411,7 @@ public final class NikoHomeControlCommunication {
             }
             Integer state = Integer.valueOf(action.get("value1"));
             logger.debug("Niko Home Control: event execute action {} with state {}", id, state);
-            try {
-                this.actions.get(id).setState(state);
-            } catch (Exception e) {
-                logger.error("Niko Home Control: {}", e.getMessage(), e);
-            }
+            this.actions.get(id).setState(state);
         }
     }
 
