@@ -19,6 +19,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
+import org.openhab.binding.evohome.internal.api.models.Gateway;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v1.Device;
 import org.openhab.binding.evohome.internal.api.models.v1.Weather;
@@ -50,6 +52,11 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Evohome start scan");
         if (evohomeBridgeHandler != null) {
             try {
+                EvohomeApiClient client = evohomeBridgeHandler.getClient();
+                for (Gateway gateway : client.getGateways()) {
+                    discoverGateway(gateway);
+                }
+
                 DataModelResponse[] dataArray = evohomeBridgeHandler.getData();
                 for (DataModelResponse data : dataArray) {
                     discoverWeather(data.getWeather(), data.getName(), data.getLocationId());
@@ -60,6 +67,15 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
             }
         }
         stopScan();
+    }
+
+    private void discoverGateway(Gateway gateway) {
+        String name = gateway.getName();
+        ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_SYSTEM.getId(), name);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("LOCATION_NAME", name);
+        properties.put("LOCATION_ID", gateway.getId());
+        addDiscoveredThing(thingUID, properties, name);
     }
 
     private void discoverWeather(Weather weather, String name, String locationId) throws IllegalArgumentException {

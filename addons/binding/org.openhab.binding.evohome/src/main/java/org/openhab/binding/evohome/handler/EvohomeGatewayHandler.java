@@ -121,6 +121,10 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         // TODO trigger update requests on the client here and delegate them to the Things
     }
 
+    public EvohomeApiClient getClient() {
+        return apiClient;
+    }
+
     public DataModelResponse[] getData() {
         return apiClient.getData();
     }

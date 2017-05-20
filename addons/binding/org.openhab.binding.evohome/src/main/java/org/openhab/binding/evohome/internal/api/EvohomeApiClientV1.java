@@ -12,6 +12,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
+import org.openhab.binding.evohome.internal.api.models.Gateway;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v1.LoginRequest;
 import org.openhab.binding.evohome.internal.api.models.v1.LoginResponse;
@@ -140,5 +141,11 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
         } finally {
         }
         return null;
+    }
+
+    @Override
+    public Gateway[] getGateways() {
+        // TODO Auto-generated method stub
+        return new Gateway[0];
     }
 }

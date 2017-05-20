@@ -1,6 +1,7 @@
 package org.openhab.binding.evohome.internal.api;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -13,8 +14,10 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
+import org.openhab.binding.evohome.internal.api.models.Gateway;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v2.Authentication;
+import org.openhab.binding.evohome.internal.api.models.v2.Location;
 import org.openhab.binding.evohome.internal.api.models.v2.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +33,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private Authentication authenticationData;
 
     private UserAccount useraccount;
-
     private Locations locations;
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
@@ -88,6 +90,29 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return doRequest(method, url, headers, requestContainer, out);
     }
 
+    private UserAccount requestUserAccount() {
+        String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
+
+        UserAccount userAccount =  new UserAccount();
+        userAccount = doAuthenticatedRequest(HttpMethod.GET, url, null, null, userAccount);
+
+        return userAccount;
+    }
+
+    private Locations requestLocations() {
+        Locations locations = null;
+        if (useraccount != null) {
+            String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATIONS;
+            url = String.format(url, useraccount.UserId);
+
+            locations = new Locations();
+            locations = doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
+        }
+
+        return locations;
+    }
+
+
     @Override
     public boolean login() {
         SslContextFactory sslContextFactory = new SslContextFactory();
@@ -127,6 +152,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         boolean success = authenticationData != null;
 
+        // If the authentication succeeded, gather the basic intel as well
         if (success ==true) {
             useraccount = requestUserAccount();
             locations   = requestLocations();
@@ -135,37 +161,39 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return success;
     }
 
-    private UserAccount requestUserAccount() {
-        String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
-
-        UserAccount userAccount =  new UserAccount();
-        userAccount = doAuthenticatedRequest(HttpMethod.GET, url, null, null, userAccount);
-
-        return userAccount;
-    }
-
-    private Locations requestLocations() {
-        Locations locations = null;
-        if (useraccount != null) {
-            String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATIONS;
-            url = String.format(url, useraccount.UserId);
-
-            locations = new Locations();
-            locations = doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
-        }
-
-        return locations;
-    }
-
     @Override
     public void logout() {
-        // userInfo = null;
+        authenticationData = null;
+        useraccount = null;
+        locations = null;
     }
 
     @Override
     public DataModelResponse[] getData() {
         // TODO Auto-generated method stub
-        return null;
+        return new DataModelResponse[0];
+    }
+
+    @Override
+    public Gateway[] getGateways() {
+        ArrayList<Gateway> result = new ArrayList<Gateway>();
+
+        if (locations != null) {
+            for (Location location : locations) {
+                if (location.Gateways != null) {
+                    for (org.openhab.binding.evohome.internal.api.models.v2.Gateway gateway : location.Gateways) {
+                        if (gateway.TemperatureControlSystems != null) {
+                            for (org.openhab.binding.evohome.internal.api.models.v2.TemperatureControlSystem system: gateway.TemperatureControlSystems) {
+
+                                result.add(new Gateway(system.SystemId, system.ModelType));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return result.toArray(new Gateway[result.size()]);
     }
 
 }

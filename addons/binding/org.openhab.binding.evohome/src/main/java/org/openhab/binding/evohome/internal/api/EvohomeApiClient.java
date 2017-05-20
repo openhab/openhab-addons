@@ -1,5 +1,6 @@
 package org.openhab.binding.evohome.internal.api;
 
+import org.openhab.binding.evohome.internal.api.models.Gateway;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 
 public interface EvohomeApiClient {
@@ -9,5 +10,7 @@ public interface EvohomeApiClient {
     void logout();
 
     DataModelResponse[] getData();
+
+    Gateway[] getGateways();
 
 }

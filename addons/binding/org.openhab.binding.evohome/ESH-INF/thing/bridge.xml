@@ -6,10 +6,10 @@
 
     <!-- Evohome Gateway Bridge -->
     <bridge-type id="gateway">
-        <label>Evohome Gateway Account</label>
+        <label>Evohome Account</label>
         <description>
-            The Evohome Gateway account is used to connect to your Gateway via Total Connect Comfort (TCC)
-            your TCC Username and password.  
+            The Evohome account is used to connect to your Total Connect Comfort (TCC)
+            using your TCC username and password.  
         </description>
 
         <config-description>
