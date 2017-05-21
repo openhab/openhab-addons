@@ -17,9 +17,9 @@ import java.net.URLConnection;
 import org.apache.commons.io.IOUtils;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigListResultDeserializer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -31,6 +31,7 @@ import com.google.gson.GsonBuilder;
  */
 public class TankerkoenigService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Gson gson;
 
     public TankerkoenigListResult getTankstellenListData(String apikey, String locationIDs) {
         TankerkoenigListResult result = this.getTankerkoenigListResult(apikey, locationIDs);
@@ -56,11 +57,11 @@ public class TankerkoenigService {
         try {
             jsonData = getResponseString(apikey, locationIDs);
         } catch (IOException e) {
-            logger.debug("Error in getTankerkoenigListResult: {}", e.toString());
+            logger.error("Error in getTankerkoenigListResult: {}", e.toString());
         }
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(TankerkoenigListResult.class, new CustomTankerkoenigListResultDeserializer());
-        Gson gson = gsonBuilder.create();
+        gson = gsonBuilder.create();
         TankerkoenigListResult res = gson.fromJson(jsonData, TankerkoenigListResult.class);
         return res;
     }

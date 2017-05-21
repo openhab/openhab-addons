@@ -32,6 +32,7 @@ import com.google.gson.GsonBuilder;
  */
 public class TankerkoenigDetailService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Gson gson;
 
     public OpeningTimes getTankstellenDetailData(String apikey, String locationID) {
         TankerkoenigDetailResult detailresult = this.getTankerkoenigDetailResult(apikey, locationID);
@@ -68,7 +69,7 @@ public class TankerkoenigDetailService {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(TankerkoenigDetailResult.class,
                 new CustomTankerkoenigDetailResultDeserializer());
-        Gson gson = gsonBuilder.create();
+        gson = gsonBuilder.create();
         TankerkoenigDetailResult res = gson.fromJson(jsonData, TankerkoenigDetailResult.class);
         return res;
     }

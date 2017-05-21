@@ -59,8 +59,8 @@ public class TankerkoenigHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Tankerkoenig handler '{}'", getThing().getUID());
         Configuration config = getThing().getConfiguration();
-        this.setLocationID((String) config.get(TankerkoenigBindingConstants.CONFIG_LOCATION_ID));
-        this.setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
+        setLocationID((String) config.get(TankerkoenigBindingConstants.CONFIG_LOCATION_ID));
+        setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
         Bridge b = this.getBridge();
         if (b == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -68,16 +68,17 @@ public class TankerkoenigHandler extends BaseThingHandler {
             return;
         }
         BridgeHandler handler = (BridgeHandler) b.getHandler();
-        this.setApiKey(handler.getApiKey());
-        this.setSetupMode(handler.isSetupMode());
-        this.setUseOpeningTime(handler.isUseOpeningTime());
+        setApiKey(handler.getApiKey());
+        setSetupMode(handler.isSetupMode());
+        setUseOpeningTime(handler.isUseOpeningTime());
         boolean registeredSuccessfully = handler.registerTankstelleThing(getThing());
         if (!registeredSuccessfully) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The limitation of tankstellen things for one tankstellen config (the bridge) is limited to 10");
             return;
         }
-        updateStatus(ThingStatus.ONLINE);
+        // updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -89,7 +90,7 @@ public class TankerkoenigHandler extends BaseThingHandler {
                     }
                 } catch (Throwable t) {
                     logger.error("Caught exception in ScheduledExecutorService of TankerkoenigHandler. StackTrace: {}",
-                            t.getStackTrace().toString());
+                            t);
                 }
 
             }
@@ -99,8 +100,10 @@ public class TankerkoenigHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        this.pollingJob.cancel(true);
-        super.dispose();
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            super.dispose();
+        }
     }
 
     @Override
@@ -126,7 +129,7 @@ public class TankerkoenigHandler extends BaseThingHandler {
         updateState(CHANNEL_DIESEL, diesel);
         updateState(CHANNEL_E10, e10);
         updateState(CHANNEL_E5, e5);
-
+        updateStatus(ThingStatus.ONLINE);
     }
 
     /***
@@ -135,7 +138,7 @@ public class TankerkoenigHandler extends BaseThingHandler {
     public void updateDetailData() {
         logger.debug("Running UpdateTankstellenDetails");
         TankerkoenigDetailService service = new TankerkoenigDetailService();
-        this.setOpeningTimes(service.getTankstellenDetailData(this.getApiKey(), locationID));
+        setOpeningTimes(service.getTankstellenDetailData(this.getApiKey(), locationID));
         logger.debug("UpdateTankstellenDetails openingTimes: {}", this.openingTimes);
     }
 
@@ -179,4 +182,3 @@ public class TankerkoenigHandler extends BaseThingHandler {
         this.openingTimes = openingTimes;
     }
 }
-

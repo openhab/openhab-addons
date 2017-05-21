@@ -10,7 +10,6 @@ package org.openhab.binding.tankerkoenig.handler;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -23,7 +22,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -31,9 +29,9 @@ import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTime;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
-
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigService;
+import org.openhab.binding.tankerkoenig.internal.utility.Holiday;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,13 +52,13 @@ public class BridgeHandler extends BaseBridgeHandler {
     private ArrayList<Thing> tankstellenThingList;
     private HashMap<String, LittleStation> tankstellenList;
 
-    TankerkoenigListResult tankerkoenigListResult;
+    private TankerkoenigListResult tankerkoenigListResult;
 
     private ScheduledFuture<?> pollingJob;
 
     public BridgeHandler(Bridge bridge) {
         super(bridge);
-        this.tankstellenThingList = new ArrayList<Thing>();
+        tankstellenThingList = new ArrayList<Thing>();
         tankstellenList = new HashMap<String, LittleStation>();
     }
 
@@ -72,12 +70,13 @@ public class BridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         Configuration config = getThing().getConfiguration();
-        this.setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
-        this.setRefreshInterval(((BigDecimal) config.get(TankerkoenigBindingConstants.CONFIG_REFRESH)).intValue());
-        this.setSetupMode((boolean) config.get(TankerkoenigBindingConstants.CONFIG_SETUP_MODE));
-        this.setUseOpeningTime((boolean) config.get(TankerkoenigBindingConstants.CONFIG_USE_OPENINGTIME));
+        setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
+        setRefreshInterval(((BigDecimal) config.get(TankerkoenigBindingConstants.CONFIG_REFRESH)).intValue());
+        setSetupMode((boolean) config.get(TankerkoenigBindingConstants.CONFIG_SETUP_MODE));
+        setUseOpeningTime((boolean) config.get(TankerkoenigBindingConstants.CONFIG_USE_OPENINGTIME));
 
-        updateStatus(ThingStatus.ONLINE);
+        // updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         int pollingPeriod = this.getRefreshInterval();
         pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
@@ -91,8 +90,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                         updateTankstellenThings();
                     }
                 } catch (Throwable t) {
-                    logger.error("Caught exception in ScheduledExecutorService of BridgeHandler. StackTrace: {}",
-                            t.getStackTrace().toString());
+                    logger.error("Caught exception in ScheduledExecutorService of BridgeHandler. StackTrace: {}", t);
                 }
             }
         }, 30, pollingPeriod * 60, TimeUnit.SECONDS);
@@ -101,7 +99,9 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        this.pollingJob.cancel(true);
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+        }
     }
 
     /***
@@ -110,19 +110,19 @@ public class BridgeHandler extends BaseBridgeHandler {
      * @return
      */
     public boolean registerTankstelleThing(Thing tankstelle) {
-        if (this.tankstellenThingList.size() == 10) {
+        if (tankstellenThingList.size() >= 10) {
             return false;
         }
         logger.info("Tankstelle {} was registered to config {} ", tankstelle.getUID().toString(),
-                this.getThing().getUID().toString());
-        this.tankstellenThingList.add(tankstelle);
+                getThing().getUID().toString());
+        tankstellenThingList.add(tankstelle);
         return true;
     }
 
     public void unregisterTankstelleThing(Thing tankstelle) {
         logger.info("Tankstelle {} was unregistered from config {} ", tankstelle.getUID().toString(),
-                this.getThing().getUID().toString());
-        this.tankstellenThingList.remove(tankstelle);
+                getThing().getUID().toString());
+        tankstellenThingList.remove(tankstelle);
     }
 
     /***
@@ -145,15 +145,22 @@ public class BridgeHandler extends BaseBridgeHandler {
             }
             TankerkoenigService service = new TankerkoenigService();
             TankerkoenigListResult result = service.getTankstellenListData(this.getApiKey(), locationIDsString);
-            this.setTankerkoenigListResult(result);
+            if (!result.isOk()) {
+                updateStatus(ThingStatus.UNKNOWN);
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
 
-            this.tankstellenList.clear();
+            setTankerkoenigListResult(result);
+
+            tankstellenList.clear();
             for (LittleStation station : result.getPrices().getStations()) {
-                this.tankstellenList.put(station.getID(), station);
+                tankstellenList.put(station.getID(), station);
             }
             logger.debug("UpdateTankstellenData: tankstellenList.size {}", tankstellenList.size());
         } catch (ParseException e) {
-            logger.info("ParseException: {}", e.toString());
+            logger.error("ParseException: {}", e.toString());
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -230,13 +237,13 @@ public class BridgeHandler extends BaseBridgeHandler {
                             String close = o[i].getEnd();
                             int weekday = now.getDayOfWeek();
                             // if today is an official German holiday (Feiertag), weekday is set to Sunday!
-                            if (isHoliday(now)) {
+                            if (Holiday.isHoliday(now)) {
                                 weekday = 7;
                             }
                             logger.debug("Checking day: {}", day);
                             logger.debug("Todays weekday: {}", weekday);
                             // if Daily, further checking not needed!
-                            if (day.contains("t�glich")) {
+                            if (day.contains("täglich")) {
                                 logger.debug("Found a setting for daily opening times.");
                                 foundIt = true;
                             } else {
@@ -328,7 +335,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             }
             return sb.toString();
         } catch (Exception e) {
-            logger.debug("Exception in BridgeHandler: {}", e);
+            logger.error("Exception in BridgeHandler: {}", e);
             return null;
         }
     }
@@ -371,142 +378,5 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     public void setUseOpeningTime(boolean use_OpeningTime) {
         this.use_OpeningTime = use_OpeningTime;
-    }
-
-    public boolean isHoliday(DateTime now) {
-        // Checks if today is a German holiday (Feiertag im ganzen Bundesgebiet!)
-        // Code from Openhab1-Addons Samples-Rules
-        int year = now.getYear();
-        int a = year % 19;
-        int b = year / 100;
-        int c = year % 100;
-        int d = b / 4;
-        int e = b % 4;
-        int f = (b + 8) / 25;
-        int g = (b - f + 1) / 3;
-        int h = (19 * a + b - d - g + 15) % 30;
-        int i = c / 4;
-        int k = c % 4;
-        int l = (32 + 2 * e + 2 * i - h - k) % 7;
-        int m = (a + 11 * h + 22 * l) / 451;
-        int month = (h + l - 7 * m + 114) / 31;
-        int day = ((h + l - 7 * m + 114) % 31) + 1;
-        boolean holiday = false;
-        // String holidayName = null;
-        LocalDate easterSunday = LocalDate.parse(year + "-" + month + "-" + day);
-        LocalDate stAdvent = LocalDate.parse(year + "-12-25")
-                .minusDays(((LocalDate.parse(year + "-12-25").getDayOfWeek()) + 21));
-        int dayOfYear = now.getDayOfYear();
-        // bundesweiter Feiertag
-        if (dayOfYear == LocalDate.parse(year + "-01-01").getDayOfYear()) {
-            // holidayName = "new_years_day"; // Neujahr
-            holiday = true;
-        }
-        // Baden-W�rttemberg, Bayern, Sachsen-Anhalt
-        else if (dayOfYear == LocalDate.parse(year + "-01-06").getDayOfYear()) {
-            // holidayName = "holy_trinity";// Heilige 3 K�nige
-            holiday = false;
-        }
-        // Carnival ;-)
-        else if (dayOfYear == easterSunday.getDayOfYear() - 48) {
-            // holidayName = "carnival_monday"; // Rosenmontag
-            holiday = false;
-        }
-        // bundesweiter Feiertag
-        else if (dayOfYear == easterSunday.getDayOfYear() - 2) {
-            // holidayName = "good_friday"; // Karfreitag
-            holiday = true;
-        }
-        // Brandenburg
-        else if (dayOfYear == easterSunday.getDayOfYear()) {
-            // holidayName = "easter_sunday"; // Ostersonntag
-            holiday = false;
-        }
-        // bundesweiter Feiertag
-        else if (dayOfYear == easterSunday.getDayOfYear() + 1) {
-            // holidayName = "easter_monday"; // Ostermontag
-            holiday = true;
-        }
-        // bundesweiter Feiertag
-        else if (dayOfYear == LocalDate.parse(year + "-05-01").getDayOfYear()) {
-            // holidayName = "1st_may";// Tag der Arbeit
-            holiday = true;
-        }
-        // bundesweiter Feiertag
-        else if (dayOfYear == easterSunday.getDayOfYear() + 39) {
-            // holidayName = "ascension_day"; // Christi Himmelfahrt
-            holiday = true;
-        }
-        // Brandenburg
-        else if (dayOfYear == easterSunday.getDayOfYear() + 49) {
-            // holidayName = "whit_sunday"; // Pfingstsonntag
-            holiday = false;
-        }
-        // bundesweiter Feiertag
-        else if (dayOfYear == easterSunday.getDayOfYear() + 50) {
-            // holidayName = "whit_monday"; // Pfingstmontag
-            holiday = true;
-        }
-        // Baden-W�rttemberg, Bayern, Hessen, NRW, Rheinland-Pfalz, Saarland sowie regional in Sachsen, Th�ringen
-        else if (dayOfYear == easterSunday.getDayOfYear() + 60) {
-            // holidayName = "corpus_christi"; // Frohnleichnahm
-            holiday = false;
-        }
-        // Saarland sowie regional in Bayern
-        else if (dayOfYear == LocalDate.parse(year + "-08-15").getDayOfYear()) {
-            // holidayName = "assumption_day"; // Mari� Himmelfahrt
-            holiday = false;
-        }
-        // bundesweiter Feiertag
-        else if (dayOfYear == LocalDate.parse(year + "-10-03").getDayOfYear()) {
-            // holidayName = "reunification"; // Tag der deutschen Einheit
-            holiday = true;
-        }
-        // Brandenburg, Mecklenburg-Vorpommern, Sachsen, Sachsen-Anhalt, Th�ringen
-        else if (dayOfYear == LocalDate.parse(year + "-10-31").getDayOfYear()) {
-            // holidayName = "reformation_day"; // Reformationstag
-            holiday = false;
-        }
-        // Baden-W�rttemberg, Bayern, NRW, Rheinland-Pfalz, Saarland
-        else if (dayOfYear == LocalDate.parse(year + "-11-01").getDayOfYear()) {
-            // holidayName = "all_saints_day"; // Allerheiligen
-            holiday = false;
-        }
-        // religi�ser Tag
-        else if (dayOfYear == stAdvent.getDayOfYear() - 14) {
-            // holidayName = "remembrance_day"; // Volkstrauertag
-            holiday = false;
-        }
-        // religi�ser Tag
-        else if (dayOfYear == stAdvent.getDayOfYear() - 7) {
-            // holidayName = "sunday_in_commemoration_of_the_dead"; // Totensonntag
-            holiday = false;
-        }
-        // Sachsen
-        else if (dayOfYear == stAdvent.getDayOfYear() - 11) {
-            // holidayName = "day_of_repentance"; // Bu�- und Bettag
-            holiday = false;
-        }
-        // kann auch der 4te Advent sein
-        else if (dayOfYear == LocalDate.parse(year + "-12-24").getDayOfYear()) {
-            // holidayName = "christmas_eve"; // Heiligabend
-            holiday = false;
-        }
-        // bundesweiter Feiertag
-        else if (dayOfYear == LocalDate.parse(year + "-12-25").getDayOfYear()) {
-            // holidayName = "1st_christmas_day"; // 1. Weihnachtstag
-            holiday = true;
-        }
-        // bundesweiter Feiertag
-        else if (dayOfYear == LocalDate.parse(year + "-12-26").getDayOfYear()) {
-            // holidayName = "2nd_christmas_day"; // 2. Weihnachtstag
-            holiday = true;
-        }
-        // Silvester
-        else if (dayOfYear == LocalDate.parse(year + "-12-31").getDayOfYear()) {
-            // holidayName = "new_years_eve"; // Silvester
-            holiday = false;
-        }
-        return holiday;
     }
 }
