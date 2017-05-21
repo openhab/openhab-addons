@@ -77,8 +77,8 @@ public class VeraBridgeConfiguration {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(BRIDGE_CONFIG_vera_SERVER_IP_ADDRESS, this.getVeraIpAddress())
-                .append(BRIDGE_CONFIG_vera_SERVER_PORT, this.getVeraPort())
+        return new ToStringBuilder(this).append(BRIDGE_CONFIG_VERA_SERVER_IP_ADDRESS, this.getVeraIpAddress())
+                .append(BRIDGE_CONFIG_VERA_SERVER_PORT, this.getVeraPort())
                 .append(BRIDGE_CONFIG_POLLING_INTERVAL, this.getPollingInterval()).toString();
     }
 }

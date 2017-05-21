@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.vera2.controller;
 
 import java.io.BufferedReader;
@@ -8,16 +16,21 @@ import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 
-import org.openhab.binding.vera2.controller.Vera.json.Categorie;
-import org.openhab.binding.vera2.controller.Vera.json.Device;
-import org.openhab.binding.vera2.controller.Vera.json.Room;
-import org.openhab.binding.vera2.controller.Vera.json.Scene;
-import org.openhab.binding.vera2.controller.Vera.json.Sdata;
+import org.openhab.binding.vera2.controller.json.Categorie;
+import org.openhab.binding.vera2.controller.json.Device;
+import org.openhab.binding.vera2.controller.json.Room;
+import org.openhab.binding.vera2.controller.json.Scene;
+import org.openhab.binding.vera2.controller.json.Sdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * The {@link Controller} class used to connect to the Vera
+ *
+ * @author Dmitriy Ponomarev
+ */
 public class Controller {
     private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -105,7 +118,6 @@ public class Controller {
             result = buffer.toString();
         } catch (Exception e) {
             log.error("Error while get getJson: {}", request);
-            e.printStackTrace();
             return null;
         }
         return result;
@@ -127,7 +139,6 @@ public class Controller {
             log.info("Received response: {}", response);
         } catch (Exception e) {
             log.error("Error while sending command: {}", request);
-            e.printStackTrace();
             return false;
         }
         return true;

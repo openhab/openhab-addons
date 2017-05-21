@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.vera2.config.VeraBridgeConfiguration;
 import org.openhab.binding.vera2.controller.Controller;
-import org.openhab.binding.vera2.controller.Vera.json.Sdata;
+import org.openhab.binding.vera2.controller.json.Sdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +76,7 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
                     logger.warn("Cant connect to Vera controller");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error occurred when initialize bridge: {}", e.getMessage());
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                             "Error occurred when initialize bridge.");

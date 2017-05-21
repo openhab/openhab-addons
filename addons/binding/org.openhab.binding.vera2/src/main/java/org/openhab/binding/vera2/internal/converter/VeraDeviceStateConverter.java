@@ -17,9 +17,8 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.vera2.controller.Vera.json.Device;
+import org.openhab.binding.vera2.controller.json.Device;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link VeraDeviceStateConverter} is responsible for converting Vera device level to openHAB states
@@ -27,9 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Dmitriy Ponomarev
  */
 public class VeraDeviceStateConverter {
-    private static Logger logger = LoggerFactory.getLogger(VeraDeviceStateConverter.class);
-
-    public static State toState(Device device, Channel channel) {
+    public static State toState(Device device, Channel channel, Logger logger) {
         if (channel.getUID().getId().split("-")[0].equals(BATTERY_CHANNEL)) {
             return getMultilevelState(device.batterylevel);
         }

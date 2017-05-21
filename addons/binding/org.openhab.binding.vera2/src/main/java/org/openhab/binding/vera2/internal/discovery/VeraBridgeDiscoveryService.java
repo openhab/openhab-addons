@@ -66,7 +66,7 @@ public class VeraBridgeDiscoveryService extends AbstractDiscoveryService {
                             String[] addresses = utils.getInfo().getAllAddresses();
 
                             for (String addressInSubnet : addresses) {
-                                scheduler.execute(new veraControllerScan(addressInSubnet));
+                                scheduler.execute(new VeraControllerScan(addressInSubnet));
                             }
                         }
                     }
@@ -86,10 +86,10 @@ public class VeraBridgeDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    public class veraControllerScan implements Runnable {
+    public class VeraControllerScan implements Runnable {
         private String ipAddress;
 
-        public veraControllerScan(String ipAddress) {
+        public VeraControllerScan(String ipAddress) {
             this.ipAddress = ipAddress;
         }
 
@@ -110,7 +110,7 @@ public class VeraBridgeDiscoveryService extends AbstractDiscoveryService {
                     // Attention: if is already present as thing in the ThingRegistry
                     // the configuration for thing will be updated!
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(VeraBindingConstants.BRIDGE_CONFIG_vera_SERVER_IP_ADDRESS, ipAddress)
+                            .withProperty(VeraBindingConstants.BRIDGE_CONFIG_VERA_SERVER_IP_ADDRESS, ipAddress)
                             .withLabel("Vera controller " + ipAddress).build();
                     thingDiscovered(discoveryResult);
                 }

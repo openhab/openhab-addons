@@ -80,8 +80,8 @@ public class VeraBindingConstants {
     public static final String ACTIONS_CHANNEL_OPTION_REFRESH = "REFRESH";
 
     /* Bridge config properties */
-    public static final String BRIDGE_CONFIG_vera_SERVER_IP_ADDRESS = "veraControllerIpAddress";
-    public static final String BRIDGE_CONFIG_vera_SERVER_PORT = "veraControllerPort";
+    public static final String BRIDGE_CONFIG_VERA_SERVER_IP_ADDRESS = "veraControllerIpAddress";
+    public static final String BRIDGE_CONFIG_VERA_SERVER_PORT = "veraControllerPort";
     public static final String BRIDGE_CONFIG_POLLING_INTERVAL = "pollingInterval";
 
     public static final String PROP_ROOM = "room";

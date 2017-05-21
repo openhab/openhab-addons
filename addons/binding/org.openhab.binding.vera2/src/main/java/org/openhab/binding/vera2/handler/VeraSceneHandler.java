@@ -37,7 +37,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.vera2.VeraBindingConstants;
 import org.openhab.binding.vera2.config.VeraSceneConfiguration;
-import org.openhab.binding.vera2.controller.Vera.json.Scene;
+import org.openhab.binding.vera2.controller.json.Scene;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -210,14 +210,8 @@ public class VeraSceneHandler extends BaseThingHandler {
                     // logger.debug("Refresh items that linked with channel: {}", channel.getLabel());
                     try {
                         refreshChannel(channel);
-                    } catch (Throwable t) {
-                        if (t instanceof Exception) {
-                            logger.error("Error occurred when performing polling:{}", t.getMessage());
-                        } else if (t instanceof Error) {
-                            logger.error("Error occurred when performing polling:{}", t.getMessage());
-                        } else {
-                            logger.error("Error occurred when performing polling: Unexpected error");
-                        }
+                    } catch (Exception e) {
+                        logger.error("Error occurred when performing polling: {}", e.getMessage());
                         if (getThing().getStatus() == ThingStatus.ONLINE) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                                     "Error occurred when performing polling.");
