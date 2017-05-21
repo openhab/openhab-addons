@@ -66,34 +66,28 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         config = createHomematicConfig();
         registerDeviceDiscoveryService();
         final HomematicBridgeHandler instance = this;
-        scheduler.execute(new Runnable() {
+        try {
+            String id = getThing().getUID().getId();
+            gateway = HomematicGatewayFactory.createGateway(id, config, instance);
+            gateway.initialize();
 
-            @Override
-            public void run() {
+            discoveryService.startScan(null);
+            discoveryService.waitForScanFinishing();
+            updateStatus(ThingStatus.ONLINE);
+            if (!config.getGatewayInfo().isHomegear()) {
                 try {
-                    String id = getThing().getUID().getId();
-                    gateway = HomematicGatewayFactory.createGateway(id, config, instance);
-                    gateway.initialize();
-
-                    discoveryService.startScan(null);
-                    discoveryService.waitForScanFinishing();
-                    updateStatus(ThingStatus.ONLINE);
-                    if (!config.getGatewayInfo().isHomegear()) {
-                        try {
-                            gateway.loadRssiValues();
-                        } catch (IOException ex) {
-                            logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
-                            logger.error("{}", ex.getMessage(), ex);
-                        }
-                    }
-
+                    gateway.loadRssiValues();
                 } catch (IOException ex) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-                    dispose();
-                    scheduleReinitialize();
+                    logger.warn("Unable to load RSSI values from bridge '{}'", getThing().getUID().getId());
+                    logger.error("{}", ex.getMessage(), ex);
                 }
             }
-        });
+
+        } catch (IOException ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            dispose();
+            scheduleReinitialize();
+        }
 
     }
 
