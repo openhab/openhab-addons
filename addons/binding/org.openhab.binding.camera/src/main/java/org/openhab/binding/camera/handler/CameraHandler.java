@@ -56,7 +56,7 @@ public class CameraHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.INITIALIZING);
+        updateStatus(ThingStatus.UNKNOWN);
         if (logger.isDebugEnabled()) {
             logger.debug("Initialize thing: {}::{}", getThing().getLabel(), getThing().getUID());
         }
@@ -92,7 +92,7 @@ public class CameraHandler extends BaseThingHandler {
                         if (urlSnapshot != null) {
                             try {
                                 final URL url = new URL(urlSnapshot);
-                                updateState(cx.getUID(), new RawType(readImage(url).toByteArray()));
+                                updateState(cx.getUID(), new RawType(readImage(url).toByteArray(), "image/jpeg"));
                                 updateStatus(ThingStatus.ONLINE);
                             } catch (MalformedURLException e) {
                                 logger.warn("could not update value: {}", getThing(), e);
