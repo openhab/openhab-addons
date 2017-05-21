@@ -46,7 +46,7 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory implements Cha
     private List<ChannelType> channelTypes = new CopyOnWriteArrayList<ChannelType>();
     private List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<ChannelGroupType>();
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .newHashSet(LoxoneBindingConstants.THING_TYPE_MINISERVER);
 
     @Override

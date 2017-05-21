@@ -28,21 +28,21 @@ public class LxControlSwitch extends LxControl {
     /**
      * A name by which Miniserver refers to switch controls
      */
-    public final static String TYPE_NAME = "switch";
+    public static final String TYPE_NAME = "switch";
 
     /**
      * Switch has one state that can be on/off
      */
-    private final static String STATE_ACTIVE = "active";
+    private static final String STATE_ACTIVE = "active";
 
     /**
      * Command string used to set control's state to ON
      */
-    private final static String CMD_ON = "On";
+    private static final String CMD_ON = "On";
     /**
      * Command string used to set control's state to OFF
      */
-    private final static String CMD_OFF = "Off";
+    private static final String CMD_OFF = "Off";
 
     /**
      * Create switch control object.
@@ -73,7 +73,7 @@ public class LxControlSwitch extends LxControl {
      * @throws IOException
      *             when something went wrong with communication
      */
-    public void On() throws IOException {
+    public void on() throws IOException {
         socketClient.sendAction(uuid, CMD_ON);
     }
 
@@ -85,7 +85,7 @@ public class LxControlSwitch extends LxControl {
      * @throws IOException
      *             when something went wrong with communication
      */
-    public void Off() throws IOException {
+    public void off() throws IOException {
         socketClient.sendAction(uuid, CMD_OFF);
     }
 

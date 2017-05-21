@@ -24,16 +24,16 @@ public class LxControlInfoOnlyAnalog extends LxControl {
     /**
      * A name by which Miniserver refers to analog virtual state controls
      */
-    public final static String TYPE_NAME = "infoonlyanalog";
+    public static final String TYPE_NAME = "infoonlyanalog";
     /**
      * InfoOnlyAnalog state with current value
      */
-    private final static String STATE_VALUE = "value";
+    private static final String STATE_VALUE = "value";
     /**
      * InfoOnlyAnalog state with error value
      */
     @SuppressWarnings("unused")
-    private final static String STATE_ERROR = "error";
+    private static final String STATE_ERROR = "error";
 
     private String format;
 

@@ -23,11 +23,11 @@ public class LxControlPushbutton extends LxControlSwitch {
     /**
      * A name by which Miniserver refers to pushbutton controls
      */
-    public final static String TYPE_NAME = "pushbutton";
+    public static final String TYPE_NAME = "pushbutton";
     /**
      * Command string used to set control's state to ON and OFF (tap)
      */
-    private final static String CMD_PULSE = "Pulse";
+    private static final String CMD_PULSE = "Pulse";
 
     /**
      * Create pushbutton control object.
@@ -58,7 +58,7 @@ public class LxControlPushbutton extends LxControlSwitch {
      * @throws IOException
      *             when something went wrong with communication
      */
-    public void Pulse() throws IOException {
+    public void pulse() throws IOException {
         socketClient.sendAction(uuid, CMD_PULSE);
     }
 }

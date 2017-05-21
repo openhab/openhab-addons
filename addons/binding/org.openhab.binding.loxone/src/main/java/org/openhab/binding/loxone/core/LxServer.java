@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +62,7 @@ public class LxServer {
 
     // Data structures
     private Set<LxUuid> uuids = new HashSet<LxUuid>();
-    private Map<LxUuid, LxControl> controls = new HashMap<LxUuid, LxControl>();;
+    private Map<LxUuid, LxControl> controls = new HashMap<LxUuid, LxControl>();
     private Map<LxUuid, LxContainer> rooms = new HashMap<LxUuid, LxContainer>();
     private Map<LxUuid, LxCategory> categories = new HashMap<LxUuid, LxCategory>();
     private Map<LxUuid, LxControlState> states = new HashMap<LxUuid, LxControlState>();
@@ -541,27 +542,24 @@ public class LxServer {
             }
         }
         // remove items that do not exist anymore in Miniserver
-        for (LxUuid id : rooms.keySet()) {
-            if (!id.getUpdate()) {
-                rooms.remove(id);
-                uuids.remove(id);
-            }
-        }
-        for (LxUuid id : categories.keySet()) {
-            if (!id.getUpdate()) {
-                categories.remove(id);
-                uuids.remove(id);
-            }
-        }
-        for (LxUuid id : controls.keySet()) {
-            if (!id.getUpdate()) {
-                controls.remove(id);
-                uuids.remove(id);
-            }
-        }
-        for (LxUuid id : states.keySet()) {
-            if (!id.getUpdate()) {
-                states.remove(id);
+        removeUnusedFromMap(rooms);
+        removeUnusedFromMap(categories);
+        removeUnusedFromMap(controls);
+        removeUnusedFromMap(states);
+    }
+
+    /**
+     * Removes all entries from a map, that do not have the 'updated' flag set on UUID key
+     *
+     * @param map
+     *            map to remove entries from
+     */
+    private <T> void removeUnusedFromMap(Map<LxUuid, T> map) {
+        for (Iterator<Map.Entry<LxUuid, T>> it = map.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<LxUuid, T> entry = it.next();
+            if (!entry.getKey().getUpdate()) {
+                uuids.remove(entry.getKey());
+                it.remove();
             }
         }
     }

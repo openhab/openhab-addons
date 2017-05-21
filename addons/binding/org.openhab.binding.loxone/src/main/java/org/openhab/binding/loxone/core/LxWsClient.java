@@ -65,16 +65,16 @@ class LxWsClient {
     private ClientState state = ClientState.IDLE;
     private Logger logger = LoggerFactory.getLogger(LxWsClient.class);
 
-    private static final ScheduledExecutorService scheduler = ThreadPoolManager
+    private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
             .getScheduledPool(LxWsClient.class.getName());
 
-    private final static String SOCKET_URL = "/ws/rfc6455";
-    private final static String CMD_ACTION = "jdev/sps/io/";
-    private final static String CMD_GET_KEY = "jdev/sys/getkey";
-    private final static String CMD_AUTHENTICATE = "authenticate/";
-    private final static String CMD_KEEPALIVE = "keepalive";
-    private final static String CMD_ENABLE_UPDATES = "jdev/sps/enablebinstatusupdate";
-    private final static String CMD_GET_APP_CONFIG = "data/LoxAPP3.json";
+    private static final String SOCKET_URL = "/ws/rfc6455";
+    private static final String CMD_ACTION = "jdev/sps/io/";
+    private static final String CMD_GET_KEY = "jdev/sys/getkey";
+    private static final String CMD_AUTHENTICATE = "authenticate/";
+    private static final String CMD_KEEPALIVE = "keepalive";
+    private static final String CMD_ENABLE_UPDATES = "jdev/sps/enablebinstatusupdate";
+    private static final String CMD_GET_APP_CONFIG = "data/LoxAPP3.json";
 
     /**
      * Internal state of the websocket client.
@@ -396,7 +396,7 @@ class LxWsClient {
                 notifyMaster(EventType.SERVER_OFFLINE, LxServer.OfflineReason.COMMUNICATION_ERROR, null);
                 close("Message send failure on recently connected websocket");
             }
-            keepAlive = scheduler.scheduleAtFixedRate(new Runnable() {
+            keepAlive = SCHEDULER.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
                     try {

@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServerListener {
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MINISERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MINISERVER);
 
     private LxServer server = null;
     private LoxoneHandlerFactory factory;
@@ -106,12 +106,12 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 if (command instanceof OnOffType) {
                     if ((OnOffType) command == OnOffType.ON) {
                         if (control instanceof LxControlPushbutton) {
-                            ((LxControlPushbutton) control).Pulse();
+                            ((LxControlPushbutton) control).pulse();
                         } else {
-                            ((LxControlSwitch) control).On();
+                            ((LxControlSwitch) control).on();
                         }
                     } else {
-                        ((LxControlSwitch) control).Off();
+                        ((LxControlSwitch) control).off();
                     }
                 }
                 return;

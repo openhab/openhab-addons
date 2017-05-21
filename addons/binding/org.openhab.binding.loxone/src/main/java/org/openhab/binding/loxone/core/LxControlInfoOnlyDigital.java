@@ -23,11 +23,11 @@ public class LxControlInfoOnlyDigital extends LxControl {
     /**
      * A name by which Miniserver refers to digital virtual state controls
      */
-    public final static String TYPE_NAME = "infoonlydigital";
+    public static final String TYPE_NAME = "infoonlydigital";
     /**
      * InfoOnlyDigital has one state that can be on/off
      */
-    private final static String STATE_ACTIVE = "active";
+    private static final String STATE_ACTIVE = "active";
 
     private String textOn;
     private String textOff;

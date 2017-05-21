@@ -17,20 +17,20 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class LoxoneBindingConstants {
 
-    public final static String BINDING_ID = "loxone";
+    public static final String BINDING_ID = "loxone";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_MINISERVER = new ThingTypeUID(BINDING_ID, "miniserver");
+    public static final ThingTypeUID THING_TYPE_MINISERVER = new ThingTypeUID(BINDING_ID, "miniserver");
 
     // List of all Channel ids
-    public final static String CHANNEL_SWITCH_COMMAND = "command";
+    public static final String CHANNEL_SWITCH_COMMAND = "command";
 
     // Miniserver properties and parameters
-    public final static String MINISERVER_PARAM_HOST = "host";
-    public final static String MINISERVER_PARAM_PORT = "port";
-    public final static String MINISERVER_PROPERTY_SERIAL = "Serial number";
-    public final static String MINISERVER_PROPERTY_MINISERVER_NAME = "Miniserver name";
-    public final static String MINISERVER_PROPERTY_PROJECT_NAME = "Project name";
-    public final static String MINISERVER_PROPERTY_CLOUD_ADDRESS = "Cloud address";
+    public static final String MINISERVER_PARAM_HOST = "host";
+    public static final String MINISERVER_PARAM_PORT = "port";
+    public static final String MINISERVER_PROPERTY_SERIAL = "Serial number";
+    public static final String MINISERVER_PROPERTY_MINISERVER_NAME = "Miniserver name";
+    public static final String MINISERVER_PROPERTY_PROJECT_NAME = "Project name";
+    public static final String MINISERVER_PROPERTY_CLOUD_ADDRESS = "Cloud address";
 
 }
