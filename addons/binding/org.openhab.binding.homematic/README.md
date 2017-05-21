@@ -59,7 +59,7 @@ There are several settings for a bridge:
 Network address of the Homematic gateway
 
 - **gatewayType**  
-Hint for the binding to identify the gateway type (auto|ccu) (default = auto)
+Hint for the binding to identify the gateway type (auto|ccu|noccu) (default = auto). 
 
 - **callbackHost**  
 Callback network address of the openHAB server, default is auto-discovery

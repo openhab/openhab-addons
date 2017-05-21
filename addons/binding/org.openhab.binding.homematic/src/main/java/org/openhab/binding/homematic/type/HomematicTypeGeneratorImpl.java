@@ -128,20 +128,17 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>();
                     // generate channel
                     for (HmDatapoint dp : channel.getDatapoints().values()) {
-                        if (!isIgnoredDatapoint(dp)) {
-                            if (dp.getParamsetType() == HmParamsetType.VALUES) {
-                                ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                                ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
-                                        Locale.getDefault());
-                                if (channelType == null) {
-                                    channelType = createChannelType(dp, channelTypeUID);
-                                    channelTypeProvider.addChannelType(channelType);
-                                }
-
-                                ChannelDefinition channelDef = new ChannelDefinition(dp.getName(),
-                                        channelType.getUID());
-                                channelDefinitions.add(channelDef);
+                        if (!isIgnoredDatapoint(dp) && dp.getParamsetType() == HmParamsetType.VALUES) {
+                            ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
+                            ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
+                                    Locale.getDefault());
+                            if (channelType == null) {
+                                channelType = createChannelType(dp, channelTypeUID);
+                                channelTypeProvider.addChannelType(channelType);
                             }
+
+                            ChannelDefinition channelDef = new ChannelDefinition(dp.getName(), channelType.getUID());
+                            channelDefinitions.add(channelDef);
                         }
                     }
 
