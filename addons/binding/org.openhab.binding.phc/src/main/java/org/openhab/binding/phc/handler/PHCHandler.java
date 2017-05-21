@@ -54,39 +54,35 @@ public class PHCHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        try {
-            moduleAddress = (String) getConfig().get(PHCBindingConstants.ADDRESS);
+        moduleAddress = (String) getConfig().get(PHCBindingConstants.ADDRESS);
 
-            if (getPHCBridgeHandler() == null) {
-                return;
-            }
-
-            getPHCBridgeHandler()
-                    .addModule(Byte.parseByte(getThing().getThingTypeUID().equals(PHCBindingConstants.THING_TYPE_EM)
-                            ? new StringBuilder(moduleAddress).reverse().toString()
-                            : ("010" + new StringBuilder(moduleAddress).reverse().toString()), 2)); // 010x = 0x4x for
-                                                                                                    // AM and JRM
-
-            if (getThing().getThingTypeUID().equals(PHCBindingConstants.THING_TYPE_JRM)) {
-                upDownTimes[0] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_1))
-                        .shortValue() * 10);
-                upDownTimes[1] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_2))
-                        .shortValue() * 10);
-                upDownTimes[2] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_3))
-                        .shortValue() * 10);
-                upDownTimes[3] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_4))
-                        .shortValue() * 10);
-            }
-
-            if (getBridge().getStatus() == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            }
-
-        } catch (Exception e) {
-            logger.error("Exception while initializing. ", e);
+        if (getPHCBridgeHandler() == null) {
+            return;
         }
+
+        getPHCBridgeHandler()
+                .addModule(Byte.parseByte(getThing().getThingTypeUID().equals(PHCBindingConstants.THING_TYPE_EM)
+                        ? new StringBuilder(moduleAddress).reverse().toString()
+                        : ("010" + new StringBuilder(moduleAddress).reverse().toString()), 2)); // 010x = 0x4x for
+                                                                                                // AM and JRM
+
+        if (getThing().getThingTypeUID().equals(PHCBindingConstants.THING_TYPE_JRM)) {
+            upDownTimes[0] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_1)).shortValue()
+                    * 10);
+            upDownTimes[1] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_2)).shortValue()
+                    * 10);
+            upDownTimes[2] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_3)).shortValue()
+                    * 10);
+            upDownTimes[3] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_4)).shortValue()
+                    * 10);
+        }
+
+        if (getBridge().getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+
     }
 
     public void handleIncoming(String channelId, OnOffType state) {

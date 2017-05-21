@@ -61,7 +61,8 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
 
     private static final int BAUD = 19200;
     private static final int SEND_RETRY_COUNT = 15; // max count to send the same message
-    private static final int SEND_RETRY_TIME = 80; // time to wait for an acknowledge before send the message again
+    private static final int SEND_RETRY_TIME_MILLIS = 80; // time to wait for an acknowledge before send the message
+                                                          // again in milliseconds
 
     private InputStream serialIn;
     private OutputStream serialOut;
@@ -113,14 +114,14 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             }
             updateStatus(ThingStatus.ONLINE);
 
-            scheduler.submit(new Runnable() {
+            new Thread() {
 
                 @Override
                 public void run() {
                     processQueueLoop();
                 }
 
-            });
+            }.start();
 
         } catch (PortInUseException | TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -139,7 +140,7 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                     sb.append(id.getName() + "\n");
                 }
             }
-            logger.error("Serial port '{}' could not be found. Available ports are:\n {}", port, sb);
+            logger.warn("Serial port '{}' could not be found. Available ports are:\n {}", port, sb);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Serial port '" + port + "' could not be found.");
         }
@@ -175,7 +176,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
             // ignore
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
         }
     }
 
@@ -183,12 +183,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
      * Split and process the given buffer to single messages.
      *
      * @param buffer
-     */
-    /**
-     * Split and process the given buffer to single messages.
-     *
-     * @param buffer
-     * @return the whole buffer for logging.
      */
     private void processInputStream(byte[] buffer) {
         List<Byte> result = new ArrayList<Byte>();
@@ -270,13 +264,11 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
                             break;
                     }
 
-                    queue.put(System.currentTimeMillis() + SEND_RETRY_TIME, qo);
+                    queue.put(System.currentTimeMillis() + SEND_RETRY_TIME_MILLIS, qo);
 
                 } else if (qo.getCounter() >= SEND_RETRY_COUNT
                         && !qo.getModuleType().equals(PHCBindingConstants.CHANNELS_JRM)) {
                     // Can´t process the acknowledgement of JRM yet.
-                    // TODO: If no acknowledge from the module received, perhaps set the status of the appropriate thing
-                    // to offline. The communication isn't yet enough reliable.
                     logger.info("No acknowlgdge from the module {} received.", qo.getModuleAddress());
                 }
             }
@@ -624,66 +616,6 @@ public class PHCBridgeHandler extends BaseBridgeHandler implements SerialPortEve
      */
     public void addModule(byte module) {
         modules.add(module);
-    }
-
-    /**
-     * Object to save a whole message.
-     *
-     * @author Jonas Hohaus
-     */
-    class QueueObject {
-        private String moduleType;
-        private byte moduleAddress;
-        private byte channel;
-        private Command command;
-
-        private int counter;
-        private short upDownTime;
-
-        public QueueObject(String moduleType, String moduleAddress, String channel, Command command) {
-            this.moduleType = moduleType;
-            this.moduleAddress = Byte.parseByte(moduleAddress, 2);
-            this.channel = Byte.parseByte(channel);
-            this.command = command;
-        }
-
-        public QueueObject(String moduleType, String moduleAddress, String channel, Command command, int counter,
-                short upDownTime) {
-            this.moduleType = moduleType;
-            this.moduleAddress = Byte.parseByte(moduleAddress, 2);
-            this.channel = Byte.parseByte(channel);
-            this.command = command;
-            this.counter = counter;
-            this.upDownTime = upDownTime;
-        }
-
-        public String getModuleType() {
-            return moduleType;
-        }
-
-        public byte getModuleAddress() {
-            return moduleAddress;
-        }
-
-        public byte getChannel() {
-            return channel;
-        }
-
-        public Command getCommand() {
-            return command;
-        }
-
-        public void increaseCounter() {
-            counter++;
-        }
-
-        public int getCounter() {
-            return counter;
-        }
-
-        public short getUpDownTime() {
-            return upDownTime;
-        }
     }
 
     @Override

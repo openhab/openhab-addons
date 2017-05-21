@@ -10,7 +10,6 @@ This binding allows you to integrate modules(at the Moment AM, EM and JRM) of PH
 
 The serial protocol is mainly extracted, with thanks to the developers from the projects [PHCtoUDP](https://sourceforge.net/projects/phctoudp/) and [OpenHC](https://sourceforge.net/projects/openhc/?source=directory).
 
-
 ## Bridge
 
 The Bridge manages the communication between the things and the modules via a serial port (RS485). It represents the STM.
@@ -21,6 +20,7 @@ At the Moment you can only use one Bridge (like one STM).
 **Serial Port:** Type the serial port of the RS485 adaptor, e.g. COM3 (Windows) or /dev/ttyUSB0 (Linux).
 
 #### Serial Communication
+
 The binding was tested with QinHeng Electronics HL-340 USB-Serial adapter (RS485) and the Digitus DA-70157 (FTDI/FT323RL) on Raspbian Ubilinux (Up Board) and Windows 10:  
 
 | Device/OS                | adaptor       | result       |
@@ -52,6 +52,7 @@ In Linux amongst others the user 'openhab' must be added to the group 'dialout':
 - **JRM module:** This represents the JRM module with 4 channels for Shutters.
 
 ## Discovery
+
 Not implemented yet.
 
 ## Thing Configuration
@@ -75,8 +76,7 @@ Please note, if you define the things manually (not in the UI) that the ThingID 
 | JRM                    | jrm              | 00-03    | Rollershutter    |
 | JRM                    | jrmT             | 00-03    | Number           |
 
-**Channel UID:**
-```phc:<Thing Type>:<ThingID>:<Channel Group>#<Channel>``` e.g. ```phc:AM:01101:am#03```
+**Channel UID:** ```phc:<Thing Type>:<ThingID>:<Channel Group>#<Channel>``` e.g. ```phc:AM:01101:am#03```
 
 - **am:** Outgoing switch channels (relay).
 - **em:** Incoming channels.
