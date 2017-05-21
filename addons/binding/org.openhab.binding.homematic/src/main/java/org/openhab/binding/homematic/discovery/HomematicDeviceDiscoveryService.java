@@ -19,6 +19,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.homematic.handler.HomematicBridgeHandler;
+import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.type.UidUtils;
 import org.slf4j.Logger;
@@ -105,10 +106,10 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
                 @Override
                 public void run() {
                     try {
-                        bridgeHandler.getGateway().loadAllDeviceMetadata();
+                        final HomematicGateway gateway = bridgeHandler.getGateway();
+                        gateway.loadAllDeviceMetadata();
                         bridgeHandler.getTypeGenerator().validateFirmwares();
-                        logger.debug("Finished Homematic device discovery scan on gateway '{}'",
-                                bridgeHandler.getGateway().getId());
+                        logger.debug("Finished Homematic device discovery scan on gateway '{}'", gateway.getId());
                     } catch (Throwable ex) {
                         logger.error("{}", ex.getMessage(), ex);
                     } finally {
