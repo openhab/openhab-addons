@@ -23,6 +23,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -303,14 +304,6 @@ public class HomematicThingHandler extends BaseThingHandler {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
-    }
-
-    /**
      * Returns true, if the channel is linked at least to one item.
      */
     private boolean isLinked(Channel channel) {
@@ -328,15 +321,16 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Returns the Homematic gateway if the bridge is available.
      */
     private HomematicGateway getHomematicGateway() throws BridgeHandlerNotAvailableException {
-        if (getBridge() == null || getBridge().getHandler() == null
-                || ((HomematicBridgeHandler) getBridge().getHandler()).getGateway() == null) {
+        final Bridge bridge = getBridge();
+        if (bridge == null || bridge.getHandler() == null
+                || ((HomematicBridgeHandler) bridge.getHandler()).getGateway() == null) {
             if (thing.getStatus() != ThingStatus.INITIALIZING) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
             }
             throw new BridgeHandlerNotAvailableException("BridgeHandler not yet available!");
         }
 
-        return ((HomematicBridgeHandler) getBridge().getHandler()).getGateway();
+        return ((HomematicBridgeHandler) bridge.getHandler()).getGateway();
     }
 
     /**
@@ -368,10 +362,11 @@ public class HomematicThingHandler extends BaseThingHandler {
                         try {
                             if (newValue != null) {
                                 if (newValue instanceof BigDecimal) {
+                                    final BigDecimal decimal = (BigDecimal) newValue;
                                     if (dp.isIntegerType()) {
-                                        newValue = ((BigDecimal) newValue).intValue();
+                                        newValue = decimal.intValue();
                                     } else if (dp.isFloatType()) {
-                                        newValue = ((BigDecimal) newValue).doubleValue();
+                                        newValue = decimal.doubleValue();
                                     }
                                 }
                                 if (ObjectUtils.notEqual(dp.isEnumType() ? dp.getOptionValue() : dp.getValue(),

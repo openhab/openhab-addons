@@ -22,6 +22,7 @@
 				<options>
 					<option value="auto">Auto</option>
 					<option value="ccu">CCU</option>
+					<option value="noccu">NoCCU</option>
 				</options>
 			</parameter>
 			<parameter name="callbackHost" type="text">
