@@ -4,12 +4,12 @@ Bundle-Name: Tankerkoenig Binding
 Bundle-SymbolicName: org.openhab.binding.tankerkoenig;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
  com.google.common.collect,
  com.google.gson,
- org.apache.commons.io;version="2.2.0",
+ org.apache.commons.io,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
