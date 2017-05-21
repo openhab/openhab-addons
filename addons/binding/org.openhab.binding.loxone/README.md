@@ -36,6 +36,7 @@ The following control types are currently supported. Please consult [API](https:
 * Rollershutter (Blinds, Automatic Blinds, Automatic Blinds Integrated)
 * InfoOnlyDigital (Digital virtual inputs)
 * InfoOnlyAnalog (Analog virtual inputs)
+* LightController (Lighting controller, Hotel lighting controller)
 
 If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/). application.
 

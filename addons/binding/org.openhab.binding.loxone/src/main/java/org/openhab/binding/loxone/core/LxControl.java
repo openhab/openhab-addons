@@ -58,6 +58,14 @@ public abstract class LxControl {
     }
 
     /**
+     * Obtain control's type name (e.g. switch, rollershutter) by which Miniserver recognizes it
+     *
+     * @return
+     *         name of the control type
+     */
+    public abstract String getTypeName();
+
+    /**
      * Gets state object of given name, if exists
      *
      * @param name

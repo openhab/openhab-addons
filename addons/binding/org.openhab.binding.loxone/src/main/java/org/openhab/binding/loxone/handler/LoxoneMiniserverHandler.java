@@ -11,13 +11,17 @@ package org.openhab.binding.loxone.handler;
 import static org.openhab.binding.loxone.LoxoneBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
@@ -36,12 +40,15 @@ import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.config.LoxoneMiniserverConfig;
 import org.openhab.binding.loxone.core.LxCategory;
 import org.openhab.binding.loxone.core.LxControl;
 import org.openhab.binding.loxone.core.LxControlInfoOnlyAnalog;
 import org.openhab.binding.loxone.core.LxControlInfoOnlyDigital;
 import org.openhab.binding.loxone.core.LxControlJalousie;
+import org.openhab.binding.loxone.core.LxControlLightController;
 import org.openhab.binding.loxone.core.LxControlPushbutton;
 import org.openhab.binding.loxone.core.LxControlSwitch;
 import org.openhab.binding.loxone.core.LxServer;
@@ -135,6 +142,26 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 }
                 return;
             }
+
+            if (control instanceof LxControlLightController) {
+                LxControlLightController controller = (LxControlLightController) control;
+                if (command instanceof OnOffType) {
+                    if ((OnOffType) command == OnOffType.ON) {
+                        controller.allOn();
+                    } else {
+                        controller.allOff();
+                    }
+                } else if (command instanceof UpDownType) {
+                    if ((UpDownType) command == UpDownType.UP) {
+                        controller.nextScene();
+                    } else {
+                        controller.previousScene();
+                    }
+                } else if (command instanceof DecimalType) {
+                    controller.setScene(((DecimalType) command).intValue());
+                }
+                return;
+            }
             logger.debug("Incompatible operation on control {}", control.getUuid().toString());
 
         } catch (IOException e) {
@@ -190,6 +217,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             thing.setLocation(server.getLocation());
         }
 
+        factory.removeChannelTypesForThing(thing.getUID());
+
         ArrayList<Channel> channels = new ArrayList<Channel>();
         ThingBuilder builder = editThing();
 
@@ -200,72 +229,13 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         }
 
         for (LxControl control : server.getControls().values()) {
-
-            Channel channel = null;
-            ChannelTypeUID chTypeId = null;
-            ChannelType channelType = null;
-            String uuid = control.getUuid().toString();
-            ChannelUID channelId = new ChannelUID(getThing().getUID(), control.getUuid().toString());
-
-            String name = control.getName();
-            LxCategory cat = control.getCategory();
-
-            String category = null;
-            if (cat != null) {
-                category = cat.getName();
-            }
-
-            if (control instanceof LxControlSwitch) {
-                if (control instanceof LxControlPushbutton) {
-                    chTypeId = new ChannelTypeUID(getThing().getUID() + ":pushbutton:" + uuid);
-                    channelType = new ChannelType(chTypeId, false, "Switch", name,
-                            "Loxone pushbuton control for " + control.getName(), category, null, null, null);
-                    channel = ChannelBuilder.create(channelId, "Switch").withType(chTypeId).withLabel(name)
-                            .withDescription("Pushbutton for " + name).build();
-                } else {
-                    chTypeId = new ChannelTypeUID(getThing().getUID() + ":switch:" + uuid);
-
-                    Set<String> tags = null;
-                    if (cat != null && cat.getType() == LxCategory.CategoryType.LIGHTS) {
-                        tags = Collections.singleton("Lighting");
-                    }
-
-                    channelType = new ChannelType(chTypeId, false, "Switch", control.getName(),
-                            "Loxone switch for " + name, category, tags, null, null);
-                    channel = ChannelBuilder.create(channelId, "Switch").withType(chTypeId).withLabel(name)
-                            .withDescription("Switch for " + name).withDefaultTags(tags).build();
-                }
-            } else if (control instanceof LxControlJalousie) {
-                chTypeId = new ChannelTypeUID(getThing().getUID() + ":rollershutter:" + uuid);
-                channelType = new ChannelType(chTypeId, false, "Rollershutter", name,
-                        "Loxone jalousie control for " + control.getName(), category, null, null, null);
-                channel = ChannelBuilder.create(channelId, "Rollershutter").withType(chTypeId).withLabel(name)
-                        .withDescription("Rollershutter for " + name).build();
-
-            } else if (control instanceof LxControlInfoOnlyDigital) {
-
-                chTypeId = new ChannelTypeUID(getThing().getUID() + ":infoonlydigital:" + uuid);
-                channelType = new ChannelType(chTypeId, false, "String", name, "Digital virtual state of  " + name,
-                        category, null, null, null);
-                channel = ChannelBuilder.create(channelId, "String").withType(chTypeId).withLabel(name)
-                        .withDescription("Digital virtual state of " + name).build();
-
-            } else if (control instanceof LxControlInfoOnlyAnalog) {
-
-                chTypeId = new ChannelTypeUID(getThing().getUID() + ":infoonlyanalog:" + uuid);
-                channelType = new ChannelType(chTypeId, false, "String", name, "Analog virtual state of  " + name,
-                        category, null, null, null);
-                channel = ChannelBuilder.create(channelId, "String").withType(chTypeId).withLabel(name)
-                        .withDescription("Analog virtual state of " + name).build();
-
-            }
-
-            if (channel != null && channelType != null) {
-                factory.addChannelType(channelType);
-                builder.withoutChannel(channelId);
+            Channel channel = createChannelForControl(control);
+            if (channel != null) {
                 channels.add(channel);
+                builder.withoutChannel(channel.getUID());
             }
         }
+
         builder.withChannels(channels);
         updateThing(builder.build());
     }
@@ -321,6 +291,88 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         factory.removeChannelTypesForThing(getThing().getUID());
     }
 
+    /**
+     * Creates a new {@link Channel} for a single Loxone control object. Registers channel type within the factory,
+     * which is the channel type provider.
+     *
+     * @param control
+     *            control object to create a channel for
+     * @return
+     *         created {@link Channel} object
+     */
+    private Channel createChannelForControl(LxControl control) {
+        Channel channel = null;
+        ChannelTypeUID chTypeId = null;
+        ChannelType channelType = null;
+        StateDescription stateDescr = null;
+        String uuid = control.getUuid().toString();
+        ChannelUID channelId = new ChannelUID(getThing().getUID(), control.getUuid().toString());
+
+        String name = control.getName();
+        LxCategory cat = control.getCategory();
+
+        String category = null;
+        if (cat != null) {
+            category = cat.getName();
+        }
+
+        chTypeId = new ChannelTypeUID(getThing().getUID() + ":" + control.getTypeName() + ":" + uuid);
+
+        if (control instanceof LxControlSwitch) {
+            if (control instanceof LxControlPushbutton) {
+                channelType = new ChannelType(chTypeId, false, "Switch", name,
+                        "Loxone pushbuton control for " + control.getName(), category, null, null, null);
+                channel = ChannelBuilder.create(channelId, "Switch").withType(chTypeId).withLabel(name)
+                        .withDescription("Pushbutton for " + name).build();
+            } else {
+                Set<String> tags = null;
+                if (cat != null && cat.getType() == LxCategory.CategoryType.LIGHTS) {
+                    tags = Collections.singleton("Lighting");
+                }
+
+                channelType = new ChannelType(chTypeId, false, "Switch", control.getName(), "Loxone switch for " + name,
+                        category, tags, null, null);
+                channel = ChannelBuilder.create(channelId, "Switch").withType(chTypeId).withLabel(name)
+                        .withDescription("Switch for " + name).withDefaultTags(tags).build();
+            }
+        } else if (control instanceof LxControlJalousie) {
+            channelType = new ChannelType(chTypeId, false, "Rollershutter", name,
+                    "Loxone jalousie control for " + control.getName(), category, null, null, null);
+            channel = ChannelBuilder.create(channelId, "Rollershutter").withType(chTypeId).withLabel(name)
+                    .withDescription("Rollershutter for " + name).build();
+
+        } else if (control instanceof LxControlInfoOnlyDigital) {
+            channelType = new ChannelType(chTypeId, false, "String", name, "Digital virtual state of  " + name,
+                    category, null, null, null);
+            channel = ChannelBuilder.create(channelId, "String").withType(chTypeId).withLabel(name)
+                    .withDescription("Digital virtual state of " + name).build();
+
+        } else if (control instanceof LxControlInfoOnlyAnalog) {
+            channelType = new ChannelType(chTypeId, false, "String", name, "Analog virtual state of  " + name, category,
+                    null, null, null);
+            channel = ChannelBuilder.create(channelId, "String").withType(chTypeId).withLabel(name)
+                    .withDescription("Analog virtual state of " + name).build();
+
+        } else if (control instanceof LxControlLightController) {
+            List<StateOption> options = new ArrayList<StateOption>();
+            for (Map.Entry<String, String> entry : ((LxControlLightController) control).getSceneNames().entrySet()) {
+                options.add(new StateOption(entry.getKey(), entry.getValue()));
+            }
+            stateDescr = new StateDescription(BigDecimal.ZERO,
+                    new BigDecimal(LxControlLightController.NUM_OF_SCENES - 1), BigDecimal.ONE, null, false, options);
+            channelType = new ChannelType(chTypeId, false, "Number", name, "Light controller for " + name, category,
+                    null, stateDescr, null);
+            channel = ChannelBuilder.create(channelId, "Number").withType(chTypeId).withLabel(name)
+                    .withDescription("Lights controller for " + name).build();
+        }
+
+        if (channel != null && channelType != null) {
+            factory.removeChannelType(chTypeId);
+            factory.addChannelType(channelType);
+        }
+        return channel;
+    }
+
     private void updateChannelState(ChannelUID channelUID, LxControl control) {
         if (control instanceof LxControlSwitch) {
             double value = ((LxControlSwitch) control).getState();
@@ -346,6 +398,19 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             String value = ((LxControlInfoOnlyAnalog) control).getFormattedValue();
             if (value != null) {
                 updateState(channelUID, new StringType(value));
+            }
+        } else if (control instanceof LxControlLightController) {
+            LxControlLightController controller = (LxControlLightController) control;
+            int value = controller.getCurrentScene();
+            if (value >= 0 && value < LxControlLightController.NUM_OF_SCENES) {
+                updateState(channelUID, new DecimalType(value));
+            }
+            if (controller.sceneNamesUpdated()) {
+                Channel channel = createChannelForControl(control);
+                ThingBuilder builder = editThing();
+                builder.withoutChannel(channel.getUID());
+                builder.withChannel(channel);
+                updateThing(builder.build());
             }
         }
     }

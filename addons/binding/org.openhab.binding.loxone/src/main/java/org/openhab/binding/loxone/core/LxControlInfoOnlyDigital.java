@@ -52,11 +52,16 @@ public class LxControlInfoOnlyDigital extends LxControl {
      * @param textOff
      *            string describing what it means when control in in OFF state
      */
-    public LxControlInfoOnlyDigital(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
+    LxControlInfoOnlyDigital(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
             Map<String, LxControlState> states, String textOn, String textOff) {
         super(client, uuid, name, room, category, states);
         this.textOn = textOn;
         this.textOff = textOff;
+    }
+
+    @Override
+    public String getTypeName() {
+        return TYPE_NAME;
     }
 
     /**

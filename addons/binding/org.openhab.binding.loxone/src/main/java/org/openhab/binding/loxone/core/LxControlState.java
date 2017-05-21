@@ -27,7 +27,8 @@ import java.util.List;
 class LxControlState {
     private LxUuid uuid;
     private String name;
-    private double value;
+    private double value = -1;
+    private String textValue = null;
     private LxControl control;
     private List<LxControlStateListener> listeners = new ArrayList<LxControlStateListener>();
 
@@ -45,7 +46,6 @@ class LxControlState {
         this.uuid = uuid;
         this.name = name;
         this.control = control;
-        value = 0;
         uuid.setUpdate(true);
     }
 
@@ -54,14 +54,37 @@ class LxControlState {
      *
      * @param value
      *            current state's value to set
+     * @param textValue
+     *            current state's text value to set
      */
-    void setValue(double value) {
+    void setValue(double value, String textValue) {
+        boolean changed = false;
+
+        uuid.setUpdate(true);
+
         if (this.value != value) {
             this.value = value;
+            changed = true;
+        }
+
+        if ((textValue != null && this.textValue != null && !textValue.equals(this.textValue))
+                || (textValue != this.textValue)) {
+            this.textValue = textValue;
+            changed = true;
+        }
+
+        if (changed) {
             for (LxControlStateListener listener : listeners) {
                 listener.onStateChange(this);
             }
         }
+    }
+
+    /**
+     * Sets current text value of the control's state
+     *
+     */
+    void setValue(String value) {
         uuid.setUpdate(true);
     }
 
@@ -73,6 +96,16 @@ class LxControlState {
      */
     double getValue() {
         return value;
+    }
+
+    /**
+     * Gets current value of the control's state
+     *
+     * @return
+     *         current state's value
+     */
+    String getTextValue() {
+        return textValue;
     }
 
     /**

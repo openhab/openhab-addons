@@ -170,9 +170,9 @@ class LxWsClient {
          * @param offset
          *            offset in bytes at which header is expected
          */
-        LxWsBinaryHeader(byte[] buffer, int offset) {
+        LxWsBinaryHeader(byte[] buffer, int offset) throws IndexOutOfBoundsException {
             if (buffer.length - offset != 8) {
-                return;
+                throw new IndexOutOfBoundsException();
             }
             if (buffer[offset] != 0x03) {
                 return;
@@ -426,43 +426,54 @@ class LxWsClient {
                 return;
             }
 
-            // websocket will receive header and data in turns as two separate binary messages
-            if (header == null) {
-                // header expected now
-                header = new LxWsBinaryHeader(data, offset);
-                switch (header.type) {
-                    // following header types precede data in next message
-                    case BINARY_FILE:
-                    case EVENT_TABLE_OF_VALUE_STATES:
-                    case EVENT_TABLE_OF_TEXT_STATES:
-                    case EVENT_TABLE_OF_DAYTIMER_STATES:
-                    case EVENT_TABLE_OF_WEATHER_STATES:
-                        break;
-                    // other header types have no data and next message will be header again
-                    default:
-                        header = null;
-                        break;
+            try {
+                // websocket will receive header and data in turns as two separate binary messages
+                if (header == null) {
+                    // header expected now
+                    header = new LxWsBinaryHeader(data, offset);
+                    switch (header.type) {
+                        // following header types precede data in next message
+                        case BINARY_FILE:
+                        case EVENT_TABLE_OF_VALUE_STATES:
+                        case EVENT_TABLE_OF_TEXT_STATES:
+                        case EVENT_TABLE_OF_DAYTIMER_STATES:
+                        case EVENT_TABLE_OF_WEATHER_STATES:
+                            break;
+                        // other header types have no data and next message will be header again
+                        default:
+                            header = null;
+                            break;
+                    }
+                } else {
+                    // data expected now
+                    switch (header.type) {
+                        case EVENT_TABLE_OF_VALUE_STATES:
+                            while (length > 0) {
+                                LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(true, data, offset);
+                                offset += event.getSize();
+                                length -= event.getSize();
+                                notifyMaster(EventType.STATE_UPDATE, null, event);
+                            }
+                            break;
+                        case EVENT_TABLE_OF_TEXT_STATES:
+                            while (length > 0) {
+                                LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(false, data, offset);
+                                offset += event.getSize();
+                                length -= event.getSize();
+                                notifyMaster(EventType.STATE_UPDATE, null, event);
+                            }
+                            break;
+                        case KEEPALIVE_RESPONSE:
+                        case TEXT_MESSAGE:
+                        default:
+                            break;
+                    }
+                    // header will be next
+                    header = null;
                 }
-            } else {
-                // data expected now
-                switch (header.type) {
-                    case EVENT_TABLE_OF_VALUE_STATES:
-                        while (length > 0) {
-                            LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(data, offset);
-                            offset += event.getSize();
-                            length -= event.getSize();
-                            notifyMaster(EventType.STATE_VALUE_UPDATE, null, event);
-                        }
-                        break;
-                    case KEEPALIVE_RESPONSE:
-                    case TEXT_MESSAGE:
-                    default:
-                        break;
-                }
-                // header will be next
-                header = null;
+            } catch (IndexOutOfBoundsException e) {
+                logger.debug("[{}] malformed binary message received, discarded", debugId);
             }
-
         }
 
         @OnWebSocketMessage

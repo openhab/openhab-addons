@@ -113,7 +113,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      * @param states
      *            jalousie's states and their names
      */
-    public LxControlJalousie(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
+    LxControlJalousie(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
             Map<String, LxControlState> states) {
         super(client, uuid, name, room, category, states);
 
@@ -121,6 +121,11 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
         if (positionState != null) {
             positionState.addListener(this);
         }
+    }
+
+    @Override
+    public String getTypeName() {
+        return TYPE_NAME;
     }
 
     /**

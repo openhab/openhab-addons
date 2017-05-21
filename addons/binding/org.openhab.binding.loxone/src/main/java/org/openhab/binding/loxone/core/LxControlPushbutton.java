@@ -50,6 +50,11 @@ public class LxControlPushbutton extends LxControlSwitch {
         super(client, uuid, name, room, category, states);
     }
 
+    @Override
+    public String getTypeName() {
+        return TYPE_NAME;
+    }
+
     /**
      * Set pushbutton to ON and to OFF (tap it).
      * <p>

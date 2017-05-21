@@ -19,8 +19,10 @@ import java.nio.ByteOrder;
  */
 class LxWsStateUpdateEvent {
     private LxUuid uuid;
-    private double value = 0;
+    private LxUuid iconUuid = null;
+    private double value = -1;
     private String text = null;
+    private int size = 0;
 
     /**
      * Create new state update event from binary message
@@ -30,9 +32,36 @@ class LxWsStateUpdateEvent {
      * @param offset
      *            offset in buffer where event is expected
      */
-    LxWsStateUpdateEvent(byte data[], int offset) {
+    LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offset) throws IndexOutOfBoundsException {
+
+        if (data.length - offset < 24) {
+            throw new IndexOutOfBoundsException();
+        }
+
         uuid = new LxUuid(data, offset);
-        value = ByteBuffer.wrap(data, offset + 16, 8).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+        offset += 16;
+
+        if (isValueEvent) {
+            value = ByteBuffer.wrap(data, offset, 8).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            size = 24;
+            return;
+        }
+
+        if (data.length - offset < 20) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        iconUuid = new LxUuid(data, offset);
+        offset += 16;
+
+        int textLen = ByteBuffer.wrap(data, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
+        offset += 4;
+
+        if (data.length - offset < textLen) {
+            throw new IndexOutOfBoundsException();
+        }
+        text = new String(data, offset, textLen);
+        size = 36 + (textLen % 4 > 0 ? textLen + 4 - (textLen % 4) : textLen);
     }
 
     /**
@@ -83,7 +112,7 @@ class LxWsStateUpdateEvent {
 
     /**
      * Get current text value of this state
-     * 
+     *
      * @return
      *         current text value of this state
      */
@@ -99,7 +128,6 @@ class LxWsStateUpdateEvent {
      *         size of event in binary buffer, in bytes
      */
     int getSize() {
-        // text events not implemented yet, this will change when they are
-        return 24;
+        return size;
     }
 }

@@ -65,6 +65,11 @@ public class LxControlSwitch extends LxControl {
         super(client, uuid, name, room, category, states);
     }
 
+    @Override
+    public String getTypeName() {
+        return TYPE_NAME;
+    }
+
     /**
      * Set switch to ON.
      * <p>

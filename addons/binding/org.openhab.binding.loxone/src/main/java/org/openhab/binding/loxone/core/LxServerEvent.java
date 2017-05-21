@@ -42,10 +42,10 @@ class LxServerEvent {
          */
         RECEIVED_CONFIG,
         /**
-         * Received control's state value update from Miniserver. There is a {@link LxWsStateUpdateEvent} object
+         * Received control's state value or text update from Miniserver. There is a {@link LxWsStateUpdateEvent} object
          * associated.
          */
-        STATE_VALUE_UPDATE,
+        STATE_UPDATE,
         /**
          * Received request to shutdown thread from {@link LxServer} object.
          */
@@ -84,7 +84,7 @@ class LxServerEvent {
 
     /**
      * Get object associated with the event
-     * 
+     *
      * @return
      *         object associated with event
      */

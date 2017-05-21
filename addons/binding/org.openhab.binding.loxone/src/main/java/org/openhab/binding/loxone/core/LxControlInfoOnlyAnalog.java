@@ -55,10 +55,15 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      * @param format
      *            string with format (for String.format) to present current value of the "active" state of this control
      */
-    public LxControlInfoOnlyAnalog(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
+    LxControlInfoOnlyAnalog(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
             Map<String, LxControlState> states, String format) {
         super(client, uuid, name, room, category, states);
         this.format = format;
+    }
+
+    @Override
+    public String getTypeName() {
+        return TYPE_NAME;
     }
 
     /**

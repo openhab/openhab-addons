@@ -392,7 +392,7 @@ public class LxServer {
                     try {
                         LxServerEvent wsMsg = queue.take();
                         EventType event = wsMsg.getEvent();
-                        logger.debug("[{}] Server received event: {}", debugId, event.toString());
+                        logger.trace("[{}] Server received event: {}", debugId, event.toString());
                         switch (event) {
                             case RECEIVED_CONFIG:
                                 LxJsonApp3 config = (LxJsonApp3) wsMsg.getObject();
@@ -405,16 +405,16 @@ public class LxServer {
                                     logger.debug("[{}] Server failed processing received configuration", debugId);
                                 }
                                 break;
-                            case STATE_VALUE_UPDATE:
+                            case STATE_UPDATE:
                                 LxWsStateUpdateEvent update = (LxWsStateUpdateEvent) wsMsg.getObject();
                                 LxControlState state = findState(update.getUuid());
                                 if (state != null) {
-                                    state.setValue(update.getValue());
+                                    state.setValue(update.getValue(), update.getText());
                                     LxControl control = state.getControl();
                                     if (control != null) {
-                                        logger.debug("[{}] State update {} ({}:{}) to value {}", debugId,
+                                        logger.debug("[{}] State update {} ({}:{}) to value {}, text '{}'", debugId,
                                                 update.getUuid().toString(), control.getName(), state.getName(),
-                                                update.getValue());
+                                                update.getValue(), update.getText());
                                         for (LxServerListener listener : listeners) {
                                             listener.onControlStateUpdate(control);
                                         }
@@ -510,7 +510,7 @@ public class LxServer {
             for (Map.Entry<String, String> state : ctrl.states.entrySet()) {
 
                 LxUuid stateId = new LxUuid(state.getValue());
-                String stateName = state.getKey();
+                String stateName = state.getKey().toLowerCase();
                 LxControlState controlState = findState(stateId);
                 if (controlState == null) {
                     stateId = addUuid(stateId);
@@ -765,6 +765,9 @@ public class LxServer {
         } else if (type.equals(LxControlInfoOnlyAnalog.TYPE_NAME)) {
             ctrl = new LxControlInfoOnlyAnalog(socketClient, id, name, room, category, states,
                     jsonControl.details.format);
+        } else if (type.equals(LxControlLightController.TYPE_NAME)) {
+            ctrl = new LxControlLightController(socketClient, id, name, room, category, states,
+                    jsonControl.details.movementScene);
         }
 
         if (ctrl != null) {

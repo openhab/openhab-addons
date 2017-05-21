@@ -130,6 +130,16 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory implements Cha
         channelTypes.remove(type);
     }
 
+    public void removeChannelType(ChannelTypeUID id) {
+        List<ChannelType> removes = new ArrayList<ChannelType>();
+        for (ChannelType c : channelTypes) {
+            if (c.getUID().getAsString().equals(id.getAsString())) {
+                removes.add(c);
+            }
+        }
+        channelTypes.removeAll(removes);
+    }
+
     public void removeChannelTypesForThing(ThingUID uid) {
         List<ChannelType> removes = new ArrayList<ChannelType>();
         for (ChannelType c : channelTypes) {
