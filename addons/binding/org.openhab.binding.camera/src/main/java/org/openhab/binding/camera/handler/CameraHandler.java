@@ -86,7 +86,7 @@ public class CameraHandler extends BaseThingHandler {
                 for (Channel cx : getThing().getChannels()) {
                     if (cx.getAcceptedItemType().equals("Image")) {
                         if (logger.isTraceEnabled()) {
-                            logger.trace("Will update: {}::{}::{}" + getThing().getUID().getId(),
+                            logger.trace("Will update: {}::{}::{}", getThing().getUID().getId(),
                                     cx.getChannelTypeUID().getId(), getThing().getLabel());
                         }
                         if (urlSnapshot != null) {
