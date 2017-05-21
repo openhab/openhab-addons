@@ -64,7 +64,7 @@ public class UidUtils {
      * Generates the ThingUID for the given device in the given bridge.
      */
     public static ThingUID generateThingUID(HmDevice device, Bridge bridge) {
-        final ThingTypeUID thingTypeUID = generateThingTypeUID(device);
+        ThingTypeUID thingTypeUID = generateThingTypeUID(device);
         return new ThingUID(thingTypeUID, bridge.getUID(), device.getAddress());
     }
 
