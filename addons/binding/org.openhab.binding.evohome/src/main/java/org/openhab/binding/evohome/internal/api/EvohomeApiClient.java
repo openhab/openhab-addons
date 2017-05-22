@@ -9,8 +9,12 @@ public interface EvohomeApiClient {
 
     void logout();
 
+    void update();
+
     DataModelResponse[] getData();
 
     ControlSystem[] getControlSystems();
+
+    ControlSystem getControlSystem(int id);
 
 }

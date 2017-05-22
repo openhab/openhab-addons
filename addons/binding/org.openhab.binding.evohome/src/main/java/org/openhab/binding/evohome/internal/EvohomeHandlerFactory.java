@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.discovery.EvohomeDiscoveryService;
-import org.openhab.binding.evohome.handler.EvohomeControlSystemHandler;
+import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 import org.openhab.binding.evohome.handler.EvohomeHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -47,7 +47,7 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(evohomeGatewayHandler);
             return evohomeGatewayHandler;
         } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY)) {
-            return new EvohomeControlSystemHandler(thing);
+            return new EvohomeTemperatureControlSystemHandler(thing);
         } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_RADIATOR_VALVE)) {
             return new EvohomeHandler(thing);
         }

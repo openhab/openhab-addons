@@ -33,8 +33,11 @@ public class EvohomeBindingConstants {
     // List of all Channel ids
     public static final String TEMPERATURE_CHANNEL = "temperature";
     public static final String SET_POINT_CHANNEL   = "setpoint";
-    public static final String SYSTEM_MODE         = "SystemMode";
+    public static final String SYSTEM_MODE_CHANNEL = "SystemMode";
 
+    // List of Discovery properties
+    public static final String LOCATION_NAME         = "LOCATION_NAME";
+    public static final String LOCATION_ID           = "LOCATION_ID";
 
     // List of all addressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(

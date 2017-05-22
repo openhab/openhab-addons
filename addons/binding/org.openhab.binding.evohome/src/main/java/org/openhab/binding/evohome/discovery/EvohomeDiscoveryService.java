@@ -18,6 +18,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
@@ -52,15 +53,19 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Evohome start scan");
         if (evohomeBridgeHandler != null) {
             try {
-                EvohomeApiClient client = evohomeBridgeHandler.getClient();
-                for (ControlSystem gateway : client.getControlSystems()) {
-                    discoverGateway(gateway);
-                }
+                EvohomeApiClient client = evohomeBridgeHandler.getApiClient();
+                // TODO Maybe client.update()
+                if (client != null) {
 
-                DataModelResponse[] dataArray = evohomeBridgeHandler.getData();
-                for (DataModelResponse data : dataArray) {
-                    discoverWeather(data.getWeather(), data.getName(), data.getLocationId());
-                    discoverRadiatorValves(data.getDevices(), data.getName(), data.getLocationId());
+                    for (ControlSystem gateway : client.getControlSystems()) {
+                        discoverGateway(gateway);
+                    }
+
+                    DataModelResponse[] dataArray = client.getData();
+                    for (DataModelResponse data : dataArray) {
+                        discoverWeather(data.getWeather(), data.getName(), data.getLocationId());
+                        discoverRadiatorValves(data.getDevices(), data.getName(), data.getLocationId());
+                    }
                 }
             } catch (Exception e) {
                 logger.warn("{}", e.getMessage(), e);
@@ -69,20 +74,20 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         stopScan();
     }
 
-    private void discoverGateway(ControlSystem gateway) {
-        String name = gateway.getName();
+    private void discoverGateway(ControlSystem controlSystem) {
+        String name = controlSystem.getName();
         ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_DISPLAY.getId(), name);
         Map<String, Object> properties = new HashMap<>();
-        properties.put("LOCATION_NAME", name);
-        properties.put("LOCATION_ID", gateway.getId());
+        properties.put(EvohomeBindingConstants.LOCATION_NAME, name);
+        properties.put(EvohomeBindingConstants.LOCATION_ID, controlSystem.getId());
         addDiscoveredThing(thingUID, properties, name);
     }
 
     private void discoverWeather(Weather weather, String name, String locationId) throws IllegalArgumentException {
         ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_LOCATION.getId(), name);
         Map<String, Object> properties = new HashMap<>();
-        properties.put("LOCATION_NAME", name);
-        properties.put("LOCATION_ID", locationId);
+        properties.put(EvohomeBindingConstants.LOCATION_NAME, name);
+        properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
         addDiscoveredThing(thingUID, properties, name);
     }
 

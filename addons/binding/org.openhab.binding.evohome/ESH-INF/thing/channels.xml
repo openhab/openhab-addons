@@ -12,7 +12,11 @@
         <state pattern="%s">
 	        <options>
                 <option value="Auto">Normal</option>
+                <option value="AutoWithEco">Eco</option>
+                <option value="Away">Away</option>
+                <option value="DayOff">Day Off</option>
                 <option value="HeatingOff">Off</option>
+                <option value="Custom">Custom</option>
             </options>
         </state>
     </channel-type>

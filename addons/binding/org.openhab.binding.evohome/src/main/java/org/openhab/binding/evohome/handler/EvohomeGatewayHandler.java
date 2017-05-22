@@ -8,20 +8,23 @@
  */
 package org.openhab.binding.evohome.handler;
 
+import static org.eclipse.smarthome.core.thing.ThingStatus.*;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
-import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,16 +120,37 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
 
     private void update() {
-        DataModelResponse[] data = getData();
-        // TODO trigger update requests on the client here and delegate them to the Things
+        if (getThing().getThings().isEmpty()) {
+            return;
+        }
+        logger.debug("updateChannels");
+        try {
+            try {
+                apiClient.update();
+            } catch (Exception e) {
+                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                return;
+            }
+
+            // prevent spamming the log file
+            if (!ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ONLINE);
+            }
+
+            for (Thing handler : getThing().getThings()) {
+                ThingHandler thingHandler = handler.getHandler();
+                if (thingHandler instanceof BaseEvohomeHandler) {
+                    BaseEvohomeHandler moduleHandler = (BaseEvohomeHandler) thingHandler;
+                    moduleHandler.update(apiClient);
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("updateChannels acting up", e);
+        }
     }
 
-    public EvohomeApiClient getClient() {
+    public EvohomeApiClient getApiClient() {
         return apiClient;
-    }
-
-    public DataModelResponse[] getData() {
-        return apiClient.getData();
     }
 
     @Override

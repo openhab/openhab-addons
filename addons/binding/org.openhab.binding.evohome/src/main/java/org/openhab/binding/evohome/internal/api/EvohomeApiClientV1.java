@@ -148,4 +148,15 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
         // TODO Auto-generated method stub
         return new ControlSystem[0];
     }
+
+    @Override
+    public ControlSystem getControlSystem(int id) {
+        return null;
+    }
+
+    @Override
+    public void update() {
+        // TODO Auto-generated method stub
+
+    }
 }
