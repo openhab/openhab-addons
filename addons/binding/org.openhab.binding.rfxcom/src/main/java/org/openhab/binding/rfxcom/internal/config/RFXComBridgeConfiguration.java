@@ -31,6 +31,9 @@ public class RFXComBridgeConfiguration {
 
     public String transceiverType;
 
+    // Prevent unknown devices from being added to the inbox
+    public boolean disableDiscovery;
+
     // Won't configure protocols to RFXCOM transceiver
     public boolean ignoreConfig;
 
