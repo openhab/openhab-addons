@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.rfxcom;
 
-import java.io.InvalidClassException;
-
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.DateTimeItem;
@@ -31,6 +29,7 @@ public enum RFXComValueSelector {
     RAW_PAYLOAD(RFXComBindingConstants.CHANNEL_RAW_PAYLOAD, StringItem.class),
     SHUTTER(RFXComBindingConstants.CHANNEL_SHUTTER, RollershutterItem.class),
     COMMAND(RFXComBindingConstants.CHANNEL_COMMAND, SwitchItem.class),
+    COMMAND_ID(RFXComBindingConstants.CHANNEL_COMMAND_ID, NumberItem.class),
     MOOD(RFXComBindingConstants.CHANNEL_MOOD, NumberItem.class),
     SIGNAL_LEVEL(RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL, NumberItem.class),
     DIMMING_LEVEL(RFXComBindingConstants.CHANNEL_DIMMING_LEVEL, DimmerItem.class),
@@ -79,45 +78,13 @@ public enum RFXComValueSelector {
     }
 
     /**
-     * Procedure to validate selector string.
-     *
-     * @param valueSelector
-     *            selector string e.g. Command, Temperature
-     * @return true if item is valid.
-     * @throws IllegalArgumentException
-     *             Not valid value selector.
-     * @throws InvalidClassException
-     *             Not valid class for value selector.
-     */
-    public static boolean validateBinding(String valueSelector, Class<? extends Item> itemClass)
-            throws IllegalArgumentException, InvalidClassException {
-
-        for (RFXComValueSelector c : RFXComValueSelector.values()) {
-            if (c.text.equals(valueSelector)) {
-
-                if (c.getItemClass().equals(itemClass)) {
-                    return true;
-                } else {
-                    throw new InvalidClassException("Not valid class for value selector");
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("Not valid value selector");
-
-    }
-
-    /**
      * Procedure to convert selector string to value selector class.
      *
      * @param valueSelectorText
      *            selector string e.g. RawData, Command, Temperature
      * @return corresponding selector value.
-     * @throws InvalidClassException
-     *             Not valid class for value selector.
      */
     public static RFXComValueSelector getValueSelector(String valueSelectorText) throws IllegalArgumentException {
-
         for (RFXComValueSelector c : RFXComValueSelector.values()) {
             if (c.text.equals(valueSelectorText)) {
                 return c;

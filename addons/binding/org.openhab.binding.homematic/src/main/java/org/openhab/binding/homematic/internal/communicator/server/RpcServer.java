@@ -11,7 +11,7 @@ package org.openhab.binding.homematic.internal.communicator.server;
 import java.io.IOException;
 
 /**
- * Simple RPC server interface to start and stop the server.
+ * Simple RPC server interface.
  *
  * @author Gerhard Riegler - Initial contribution
  */

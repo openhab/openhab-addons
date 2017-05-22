@@ -17,4 +17,6 @@
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
 
+   <reference bind="setAudioHTTPServer" cardinality="1..1" interface="org.eclipse.smarthome.core.audio.AudioHTTPServer" name="AudioHTTPServer" policy="static" unbind="unsetAudioHTTPServer"/>
+
 </scr:component>

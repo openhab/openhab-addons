@@ -22,6 +22,7 @@ import de.fh_zwickau.informatik.sensor.model.devices.Device;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Battery;
 import de.fh_zwickau.informatik.sensor.model.devices.types.Doorlock;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorBinary;
+import de.fh_zwickau.informatik.sensor.model.devices.types.SensorDiscrete;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SensorMultilevel;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchBinary;
 import de.fh_zwickau.informatik.sensor.model.devices.types.SwitchControl;
@@ -65,14 +66,14 @@ public class ZWayDeviceStateConverter {
             }
         } else if (device instanceof SwitchRGBW) {
             return getColorState(device.getMetrics().getColor());
-        } else if (device instanceof SwitchToggle) {
-            // ?
         } else if (device instanceof Thermostat) {
             return getMultilevelState(level);
         } else if (device instanceof SwitchControl) {
             return getBinaryState(level.toLowerCase());
-        } else if (device instanceof ToggleButton) {
-            // TODO
+        } else if (device instanceof ToggleButton || device instanceof SwitchToggle) {
+            return getBinaryState(level.toLowerCase());
+        } else if (device instanceof SensorDiscrete) {
+            return getMultilevelState(level);
         }
 
         return UnDefType.UNDEF;

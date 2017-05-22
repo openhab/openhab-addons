@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * This is a TTS service implementation for using VoiceRSS TTS service.
  *
  * @author Jochen Hiller - Initial contribution and API
+ * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
 public class VoiceRSSTTSService implements TTSService {
 
@@ -124,7 +125,7 @@ public class VoiceRSSTTSService implements TTSService {
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from VoiceRSS service");
             }
-            AudioStream audioStream = new VoiceRSSAudioStream(cacheAudioFile);
+            AudioStream audioStream = new VoiceRSSAudioStream(cacheAudioFile, requestedFormat);
             return audioStream;
         } catch (AudioException ex) {
             throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
@@ -168,7 +169,7 @@ public class VoiceRSSTTSService implements TTSService {
         Boolean bigEndian = null;
         Integer bitDepth = 16;
         Integer bitRate = null;
-        Long frequency = 44000L;
+        Long frequency = 44100L;
 
         if ("MP3".equals(apiFormat)) {
             // we use by default: MP3, 44khz_16bit_mono with bitrate 64 kbps
@@ -181,6 +182,11 @@ public class VoiceRSSTTSService implements TTSService {
 
             return new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, bigEndian, bitDepth, bitRate,
                     frequency);
+        } else if ("AAC".equals(apiFormat)) {
+            // we use by default: AAC, 44khz_16bit_mono
+
+            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, bigEndian, bitDepth, bitRate,
+                    frequency);
         } else {
             throw new IllegalArgumentException("Audio format " + apiFormat + " not yet supported");
         }
@@ -191,6 +197,8 @@ public class VoiceRSSTTSService implements TTSService {
             return "MP3";
         } else if (format.getCodec().equals(AudioFormat.CODEC_VORBIS)) {
             return "OGG";
+        } else if (format.getCodec().equals(AudioFormat.CODEC_AAC)) {
+            return "AAC";
         } else {
             throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
         }

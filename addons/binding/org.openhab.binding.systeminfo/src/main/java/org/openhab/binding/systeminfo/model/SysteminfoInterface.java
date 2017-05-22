@@ -130,6 +130,13 @@ public interface SysteminfoInterface {
      */
     public DecimalType getMemoryAvailablePercent();
 
+    /**
+     * Percents of used memory on the machine
+     *
+     * @return percent of used memory or null, if no information is available
+     */
+    public DecimalType getMemoryUsedPercent();
+
     // Swap memory info
     /**
      * Returns total size of swap memory
@@ -158,6 +165,13 @@ public interface SysteminfoInterface {
      * @return percent of available memory or null, if no there is no swap memory
      */
     public DecimalType getSwapAvailablePercent();
+
+    /**
+     * Percents of used swap memory on the machine
+     *
+     * @return percent of used memory or null, if no there is no swap memory
+     */
+    public DecimalType getSwapUsedPercent();
 
     // Storage info
     /**
@@ -191,10 +205,19 @@ public interface SysteminfoInterface {
      * Gets the percent of available storage on the logical volume
      *
      * @param deviceIndex - the index of the logical volume
-     * @return percent of available storage
+     * @return percent of available storage or null
      * @throws DeviceNotFoundException
      */
     public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
+
+    /**
+     * Gets the percent of used storage on the logical volume
+     *
+     * @param deviceIndex - the index of the logical volume
+     * @return percent of used storage or null
+     * @throws DeviceNotFoundException
+     */
+    public DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the name of the logical storage volume

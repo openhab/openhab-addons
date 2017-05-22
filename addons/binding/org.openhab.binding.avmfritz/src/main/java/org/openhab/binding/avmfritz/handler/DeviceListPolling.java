@@ -40,7 +40,7 @@ public class DeviceListPolling implements Runnable {
     @Override
     public void run() {
         if (handler.getWebInterface() != null) {
-            logger.debug("polling fritzbox {}", handler.getWebInterface().getConfig());
+            logger.debug("polling FRITZ!Box {}", handler.getWebInterface().getConfig());
             FritzAhaUpdateXmlCallback callback = new FritzAhaUpdateXmlCallback(handler.getWebInterface(), this.handler);
             handler.getWebInterface().asyncGet(callback);
         }

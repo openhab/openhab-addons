@@ -30,7 +30,7 @@ import com.google.gson.JsonPrimitive;
  */
 public class KodiConnection implements KodiClientSocketEventListener {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(KodiConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(KodiConnection.class);
 
     private static final int VOLUMESTEP = 10;
 
@@ -62,7 +62,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             socket = new KodiClientSocket(this, wsUri, scheduler);
             socket.open();
         } catch (Throwable t) {
-            LOGGER.error("exception during connect to {}", wsUri.toString(), t);
+            logger.error("exception during connect to {}", wsUri.toString(), t);
         }
     }
 
@@ -281,7 +281,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             }
             listener.updatePVRChannel(channel);
         } catch (Exception e) {
-            LOGGER.error("Event listener invoking error", e);
+            logger.error("Event listener invoking error", e);
         }
 
         if (item.has("fanart")) {
@@ -339,7 +339,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updatePVRChannel("");
             }
         } catch (Exception e) {
-            LOGGER.error("Event listener invoking error", e);
+            logger.error("Event listener invoking error", e);
         }
 
         // keep track of our current state
@@ -362,7 +362,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             } else if (method.startsWith("GUI.OnScreensaver")) {
                 processScreensaverStateChanged(method, params);
             } else {
-                LOGGER.debug("Received unknown method: {}", method);
+                logger.debug("Received unknown method: {}", method);
             }
         }
     }
@@ -400,7 +400,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             }
             updateState(KodiState.Stop);
         } else if ("Player.OnPropertyChanged".equals(method)) {
-            LOGGER.debug("Player.OnPropertyChanged");
+            logger.debug("Player.OnPropertyChanged");
         } else if ("Player.OnSpeedChanged".equals(method)) {
             JsonObject data = json.get("data").getAsJsonObject();
             JsonObject player = data.get("player").getAsJsonObject();
@@ -415,8 +415,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 updateState(KodiState.FastForward);
             }
         } else {
-            LOGGER.warn("Unkown Player Message: {}", method);
+            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
         }
+        listener.updateConnectionState(true);
     }
 
     private void processApplicationStateChanged(String method, JsonObject json) {
@@ -430,22 +431,23 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateVolume(volume);
                 listener.updateMuted(muted);
             } catch (Exception e) {
-                LOGGER.error("Event listener invoking error", e);
+                logger.error("Event listener invoking error", e);
             }
 
             this.volume = volume;
         } else {
-            LOGGER.debug("Unknown event from kodi {}: {}", method, json.toString());
+            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
         }
+        listener.updateConnectionState(true);
     }
 
     private void processSystemStateChanged(String method, JsonObject json) {
-        if ("System.OnQuit".equals(method) || "System.OnSleep".equals(method) || "System.OnRestart".equals(method)) {
-            try {
-                listener.updateConnectionState(false);
-            } catch (Exception e) {
-                LOGGER.error("Event listener invoking error", e);
-            }
+        if ("System.OnQuit".equals(method) || "System.OnRestart".equals(method) || "System.OnSleep".equals(method)) {
+            listener.updateConnectionState(false);
+        } else if ("System.OnWake".equals(method)) {
+            listener.updateConnectionState(true);
+        } else {
+            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
         }
     }
 
@@ -454,14 +456,17 @@ public class KodiConnection implements KodiClientSocketEventListener {
             updateScreenSaverStatus(false);
         } else if ("GUI.OnScreensaverActivated".equals(method)) {
             updateScreenSaverStatus(true);
+        } else {
+            logger.debug("Unknown event from Kodi {}: {}", method, json.toString());
         }
+        listener.updateConnectionState(true);
     }
 
     private void updateScreenSaverStatus(boolean screenSaverActive) {
         try {
             listener.updateScreenSaverState(screenSaverActive);
         } catch (Exception e) {
-            LOGGER.error("Event listener invoking error", e);
+            logger.error("Event listener invoking error", e);
         }
     }
 
@@ -581,12 +586,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public boolean checkConnection() {
         if (!socket.isConnected()) {
-            LOGGER.debug("checkConnection: try to connect to kodi {}", wsUri.toString());
+            logger.debug("checkConnection: try to connect to kodi {}", wsUri.toString());
             try {
                 socket.open();
                 return socket.isConnected();
             } catch (Throwable t) {
-                LOGGER.error("exception during connect to {}", wsUri.toString(), t);
+                logger.error("exception during connect to {}", wsUri.toString(), t);
                 try {
                     socket.close();
                 } catch (Exception e) {

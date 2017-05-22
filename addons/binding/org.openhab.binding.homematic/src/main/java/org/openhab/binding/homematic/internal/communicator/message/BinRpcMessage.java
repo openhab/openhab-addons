@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class BinRpcMessage implements RpcRequest, RpcResponse {
+public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     private final Logger logger = LoggerFactory.getLogger(BinRpcMessage.class);
 
     public enum TYPE {

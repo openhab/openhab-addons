@@ -40,13 +40,22 @@ public interface SocketSession {
     boolean removeListener(SocketSessionListener listener);
 
     /**
-     * Will attempt to connect to the {@link #_host} on port {@link #_port}. If we are current connected, will
-     * {@link #disconnect()} first. Once connected, the {@link #_writer} and {@link #_reader} will be created, the
-     * {@link #_dispatcher} and {@link #_responseReader} will be started.
+     * Will attempt to connect to the {@link #_host} on port {@link #_port}. Simply calls {@link #connect(int)} with
+     * a 2 second timeout
      *
      * @throws java.io.IOException if an exception occurs during the connection attempt
      */
     void connect() throws IOException;
+
+    /**
+     * Will attempt to connect to the {@link #_host} on port {@link #_port}. If we are current connected, will
+     * {@link #disconnect()} first. Once connected, the {@link #_writer} and {@link #_reader} will be created, the
+     * {@link #_dispatcher} and {@link #_responseReader} will be started.
+     *
+     * @param timeout a connection timeout (in milliseconds)
+     * @throws java.io.IOException if an exception occurs during the connection attempt
+     */
+    void connect(int timeout) throws IOException;
 
     /**
      * Disconnects from the {@link #_host} if we are {@link #isConnected()}. The {@link #_writer}, {@link #_reader} and

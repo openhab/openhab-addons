@@ -69,7 +69,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                     for (DeviceModel device : model.getDevicelist()) {
                         handler.addDeviceList(device);
                     }
-                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "FritzBox online");
+                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "FRITZ!Box online");
                 } else {
                     logger.warn("no model in response");
                 }
