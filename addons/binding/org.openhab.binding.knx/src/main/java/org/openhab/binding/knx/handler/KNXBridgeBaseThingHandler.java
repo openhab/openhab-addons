@@ -22,9 +22,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
@@ -73,6 +75,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
 
     private static final int ERROR_INTERVAL_MINUTES = 5;
     private static final int MAX_SEND_ATTEMPTS = 2;
+    private static final int CORE_POOL_SIZE = 5;
 
     private final Logger logger = LoggerFactory.getLogger(KNXBridgeBaseThingHandler.class);
 
@@ -171,9 +174,22 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         unregisterLogAdapter();
     }
 
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        knxScheduler = KNXThreadPoolFactory.getPrioritizedScheduledPool(getThing().getUID().getBindingId(),
+                CORE_POOL_SIZE + getThing().getThings().size() / 10);
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        knxScheduler = KNXThreadPoolFactory.getPrioritizedScheduledPool(getThing().getUID().getBindingId(),
+                CORE_POOL_SIZE + getThing().getThings().size() / 10);
+    }
+
     private void initializeScheduler() {
         if (knxScheduler == null) {
-            knxScheduler = KNXThreadPoolFactory.getPrioritizedScheduledPool(getThing().getUID().getBindingId(), 5);
+            knxScheduler = KNXThreadPoolFactory.getPrioritizedScheduledPool(getThing().getUID().getBindingId(),
+                    CORE_POOL_SIZE);
         }
     }
 
