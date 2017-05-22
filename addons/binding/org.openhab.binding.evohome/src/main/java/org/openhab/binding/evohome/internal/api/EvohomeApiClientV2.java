@@ -159,16 +159,15 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         //TODO move this to after login to save time
         Map<Integer, ControlSystemAndStatus> map = new HashMap<Integer, ControlSystemAndStatus>();
 
-        // Add all statuses to the map
-        if (locationsStatus != null) {
-            for (LocationStatus location : locationsStatus) {
+        // Add metadata to the map
+        if (locations!= null) {
+            for (Location location : locations) {
                 if (location.Gateways != null) {
-                    for (GatewayStatus gateway : location.Gateways) {
+                    for (Gateway gateway : location.Gateways) {
                         if (gateway.TemperatureControlSystems != null) {
-                            for (TemperatureControlSystemStatus system: gateway.TemperatureControlSystems) {
+                            for (TemperatureControlSystem system: gateway.TemperatureControlSystems) {
                                 ControlSystemAndStatus status = new ControlSystemAndStatus();
-                                status.ControlSystemStatus = system;
-
+                                status.ControlSystem = system;
                                 map.put(system.SystemId, status);
                             }
                         }
@@ -177,18 +176,19 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             }
         }
 
-        // Add metadata to the map
-        if (locations!= null) {
-            for (Location location : locations) {
+        // Add all statuses to the map
+        if (locationsStatus != null) {
+            for (LocationStatus location : locationsStatus) {
                 if (location.Gateways != null) {
-                    for (Gateway gateway : location.Gateways) {
+                    for (GatewayStatus gateway : location.Gateways) {
                         if (gateway.TemperatureControlSystems != null) {
-                            for (TemperatureControlSystem system: gateway.TemperatureControlSystems) {
+                            for (TemperatureControlSystemStatus system: gateway.TemperatureControlSystems) {
                                 ControlSystemAndStatus status = map.get(system.SystemId);
                                 if (status != null) {
-                                    status.ControlSystem = system;
+                                    status.ControlSystemStatus = system;
                                     map.put(system.SystemId, status);
                                 }
+
                             }
                         }
                     }

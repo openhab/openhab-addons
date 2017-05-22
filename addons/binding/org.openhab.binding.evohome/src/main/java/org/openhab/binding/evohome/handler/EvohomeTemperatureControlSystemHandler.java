@@ -43,7 +43,7 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
             updateStatus(ThingStatus.OFFLINE);
         } else {
             if (command == RefreshType.REFRESH) {
-                //TODO can probably go if we implement this in the Bri dge
+                //TODO can probably go if we implement this in the Bridge
                 update(client);
             } else  if (channelUID.getId().equals(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL)) {
                 controlSystem.setMode(command.toString());
