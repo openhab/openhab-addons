@@ -45,7 +45,7 @@ public class KNXThreadPoolFactory {
             }
         }
         if (pool instanceof ScheduledExecutorService) {
-            if (coreThreads > 1) {
+            if (coreThreads > 1 && coreThreads != ((ThreadPoolExecutor) pool).getCorePoolSize()) {
                 LoggerFactory.getLogger(KNXThreadPoolFactory.class).debug(
                         "Updated the scheduled thread pool '{}' to a size of {}",
                         new Object[] { poolName, coreThreads });
