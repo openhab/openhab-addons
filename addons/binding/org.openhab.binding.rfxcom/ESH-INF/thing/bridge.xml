@@ -11,6 +11,11 @@
 				<label>Serial Port</label>
 				<description>Serial port where RFXCOM transceiver is connected.</description>
 			</parameter>
+			<parameter name="disableDiscovery" type="boolean" required="true">
+				<label>Disable discovery of unknown devices</label>
+				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox enabling this will stop devices being added to your inbox.</description>
+				<default>false</default>
+			</parameter>
 			<parameter name="ignoreConfig" type="boolean" required="true">
 				<label>Skip transceiver configuration</label>
 				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is
