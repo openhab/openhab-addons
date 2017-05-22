@@ -18,7 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class ApiAccess {
-    private static final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
+    private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private static Authentication authenticationData;
     private static String applicationId;
 

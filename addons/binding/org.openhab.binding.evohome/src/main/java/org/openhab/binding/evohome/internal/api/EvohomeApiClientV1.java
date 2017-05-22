@@ -24,7 +24,7 @@ import com.google.gson.GsonBuilder;
 
 public class EvohomeApiClientV1 implements EvohomeApiClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV1.class);
+    private final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV1.class);
 
     private static final String ROOT = "https://tccna.honeywell.com/WebAPI/api";
 
@@ -54,7 +54,7 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
             httpClient.start();
 
             if (requestContainer == null) {
-                logger.debug("Do request '" + method + "' for url '" + url + "'");
+                logger.debug("Do request '%s' for url '%s'", method, url);
                 Request request = httpClient.newRequest(url).method(method);
                 if (parameters != null) {
                     for (Map.Entry<String, String> param : parameters.entrySet()) {
@@ -71,13 +71,13 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
             } else {
                 Gson gson = new GsonBuilder().create();
                 String json = gson.toJson(requestContainer);
-                logger.debug("Do request '" + method + "' for url '" + url + "' with data '" + json + "'");
+                logger.debug("Do request '%s' for url '%s' with data '%s'", method, url, json);
                 response = httpClient.newRequest(url).method(method)
                         .content(new StringContentProvider(gson.toJson(requestContainer)), "application/json").send();
             }
 
             String reply = response.getContentAsString();
-            logger.debug("Got reply: " + reply);
+            logger.debug("Got reply: %s", reply);
             out = (TOut) new Gson().fromJson(reply, out.getClass());
 
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

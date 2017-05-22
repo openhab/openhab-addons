@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 public class EvohomeApiClientV2 implements EvohomeApiClient {
-    private static final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV2.class);
+    private final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV2.class);
 
     private EvohomeGatewayConfiguration configuration = null;
     private ApiAccess apiAccess = null;
@@ -123,7 +123,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             }
         } catch (Exception e) {
             apiAccess.setAuthentication(null);
-            logger.error("Authorization failed",e);
+            logger.error("Authorization failed", e);
         }
 
         // If the authentication succeeded, gather the basic intel as well

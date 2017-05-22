@@ -15,7 +15,7 @@ public class ControlSystemV2 extends BaseControlSystem {
     private TemperatureControlSystemStatus status;
 
     public ControlSystemV2(ApiAccess apiAccess, TemperatureControlSystem system, TemperatureControlSystemStatus status) {
-        super(status.SystemId, system.ModelType);
+        super(system.SystemId, system.ModelType);
         this.apiAccess = apiAccess;
         this.system    = system;
         this.status    = status;
@@ -34,7 +34,10 @@ public class ControlSystemV2 extends BaseControlSystem {
 
     @Override
     public String getCurrentMode() {
-        return status.Mode.Mode;
+        if (status != null) {
+            return status.Mode.Mode;
+        }
+        return null;
     }
 
     @Override
