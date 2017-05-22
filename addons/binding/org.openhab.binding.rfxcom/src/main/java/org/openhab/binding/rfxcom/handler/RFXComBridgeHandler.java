@@ -437,4 +437,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         return deviceStatusListeners.remove(deviceStatusListener);
     }
 
+    public RFXComBridgeConfiguration getConfiguration() {
+        return configuration;
+    }
 }
