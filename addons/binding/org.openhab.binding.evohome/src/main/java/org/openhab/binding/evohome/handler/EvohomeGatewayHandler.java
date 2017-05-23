@@ -44,7 +44,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Evohome Gateway handler.");
+        logger.info("Initializing Evohome Gateway handler.");
 
         configuration = getConfigAs(EvohomeGatewayConfiguration.class);
         logger.debug("refresh interval {}", configuration.refreshInterval);
