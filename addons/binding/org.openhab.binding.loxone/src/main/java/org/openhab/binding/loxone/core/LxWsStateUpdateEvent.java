@@ -19,6 +19,7 @@ import java.nio.ByteOrder;
  */
 class LxWsStateUpdateEvent {
     private LxUuid uuid;
+    @SuppressWarnings("unused")
     private LxUuid iconUuid = null;
     private double value = -1;
     private String text = null;
@@ -27,6 +28,8 @@ class LxWsStateUpdateEvent {
     /**
      * Create new state update event from binary message
      *
+     * @param isValueEvent
+     *            true if this event updates double value, false if it updates text message
      * @param data
      *            buffer with binary message received from Miniserver
      * @param offset

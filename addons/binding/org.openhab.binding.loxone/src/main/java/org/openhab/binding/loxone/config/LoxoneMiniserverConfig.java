@@ -54,4 +54,12 @@ public class LoxoneMiniserverConfig {
      * Time in seconds between connection close (as a result of some communication error) and next connection attempt
      */
     public int comErrorDelay;
+    /**
+     * Websocket client's max binary message size in kB
+     */
+    public int maxBinMsgSize;
+    /**
+     * Websocket client's max text message size in kB
+     */
+    public int maxTextMsgSize;
 }

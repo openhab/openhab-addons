@@ -189,7 +189,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             // check if server does not need to be created from scratch
             if (server != null && !server.isChanged(ip, cfg.port, cfg.user, cfg.password)) {
                 server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.userErrorDelay,
-                        cfg.comErrorDelay);
+                        cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
             } else {
                 if (server != null) {
                     server.stop();
@@ -197,7 +197,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 server = new LxServer(ip, cfg.port, cfg.user, cfg.password);
                 server.addListener(this);
                 server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.userErrorDelay,
-                        cfg.comErrorDelay);
+                        cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
                 server.start();
             }
         } catch (UnknownHostException e) {
@@ -252,14 +252,17 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
     }
 
     @Override
-    public void onServerGoesOffline(LxServer.OfflineReason reason) {
+    public void onServerGoesOffline(LxServer.OfflineReason reason, String details) {
         switch (reason) {
             case AUTHENTICATION_TIMEOUT:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "User authentication timeout");
                 break;
             case COMMUNICATION_ERROR:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error communicating with Miniserver");
+                String text = "Error communicating with Miniserver";
+                if (details != null) {
+                    text += " (" + details + ")";
+                }
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, text);
                 break;
             case INTERNAL_ERROR:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Internal error");
@@ -280,6 +283,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown reason");
                 break;
         }
+
     }
 
     @Override

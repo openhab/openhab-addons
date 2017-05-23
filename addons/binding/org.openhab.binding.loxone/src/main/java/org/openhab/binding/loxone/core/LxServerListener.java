@@ -42,8 +42,10 @@ public interface LxServerListener {
      *
      * @param reason
      *            reason for going offline
+     * @param details
+     *            details describing the disconnection reason
      */
-    public void onServerGoesOffline(OfflineReason reason);
+    public void onServerGoesOffline(OfflineReason reason, String details);
 
     /**
      * Called by {@link LxServer} thread when a state of a control is updated on the Loxone Miniserver

@@ -82,7 +82,9 @@ class LxControlState {
 
     /**
      * Sets current text value of the control's state
-     *
+     * 
+     * @param value
+     *            new text message value
      */
     void setValue(String value) {
         uuid.setUpdate(true);

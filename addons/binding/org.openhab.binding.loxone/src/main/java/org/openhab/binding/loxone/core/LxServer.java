@@ -193,9 +193,13 @@ public class LxServer {
      * @param comErrorDelay
      *            Time in seconds between connection close (as a result of some communication error) and next connection
      *            attempt
+     * @param maxBinMsgSize
+     *            maximum binary message size of websocket client (in kB)
+     * @param maxTextMsgSize
+     *            maximum text message size of websocket client (in kB)
      */
     public void update(int firstConDelay, int keepAlivePeriod, int connectErrDelay, int userErrorDelay,
-            int comErrorDelay) {
+            int comErrorDelay, int maxBinMsgSize, int maxTextMsgSize) {
         logger.debug("[{}] Server update configuration", debugId);
         if (firstConDelay >= 0) {
             this.firstConDelay = firstConDelay;
@@ -210,7 +214,7 @@ public class LxServer {
             this.comErrorDelay = comErrorDelay;
         }
         if (socketClient != null) {
-            socketClient.update(keepAlivePeriod);
+            socketClient.update(keepAlivePeriod, maxBinMsgSize, maxTextMsgSize);
         }
     }
 
@@ -447,9 +451,13 @@ public class LxServer {
                                     }
                                     socketClient.disconnect();
                                 }
+                                String details = null;
+                                if (wsMsg.getObject() instanceof String) {
+                                    details = (String) wsMsg.getObject();
+                                }
                                 connected = false;
                                 for (LxServerListener listener : listeners) {
-                                    listener.onServerGoesOffline(reason);
+                                    listener.onServerGoesOffline(reason, details);
                                 }
                                 break;
                             case CLIENT_CLOSING:
@@ -551,9 +559,12 @@ public class LxServer {
     /**
      * Removes all entries from a map, that do not have the 'updated' flag set on UUID key
      *
+     * @param <T>
+     *            any type of container used in the map
      * @param map
      *            map to remove entries from
      */
+
     private <T> void removeUnusedFromMap(Map<LxUuid, T> map) {
         for (Iterator<Map.Entry<LxUuid, T>> it = map.entrySet().iterator(); it.hasNext();) {
             Map.Entry<LxUuid, T> entry = it.next();

@@ -27,6 +27,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
+import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -57,6 +58,8 @@ class LxWsClient {
     private final String password;
     private final int debugId;
     private long keepAlivePeriod = 240; // 4 minutes, server timeout is 5 minutes
+    private int maxBinMsgSize = 3 * 1024; // 3 MB
+    private int maxTextMsgSize = 512; // 512 KB
 
     private LxWebSocket socket = null;
     private LxWsBinaryHeader header = null;
@@ -318,10 +321,20 @@ class LxWsClient {
      *
      * @param keepAlivePeriod
      *            new period between keep alive messages, in seconds
+     * @param maxBinMsgSize
+     *            maximum binary message size of websocket client (in kB)
+     * @param maxTextMsgSize
+     *            maximum text message size of websocket client (in kB)
      */
-    void update(int keepAlivePeriod) {
+    void update(int keepAlivePeriod, int maxBinMsgSize, int maxTextMsgSize) {
         if (keepAlivePeriod > 0) {
             this.keepAlivePeriod = keepAlivePeriod;
+        }
+        if (maxBinMsgSize > 0) {
+            this.maxBinMsgSize = maxBinMsgSize;
+        }
+        if (maxTextMsgSize > 0) {
+            this.maxTextMsgSize = maxTextMsgSize;
         }
     }
 
@@ -349,7 +362,7 @@ class LxWsClient {
      * @author Pawel Pieczul - initial commit
      *
      */
-    @WebSocket(maxBinaryMessageSize = 4 * 1024 * 1024, maxTextMessageSize = 64 * 1024)
+    @WebSocket
     public class LxWebSocket {
         Session session;
         private ScheduledFuture<?> keepAlive = null;
@@ -376,20 +389,28 @@ class LxWsClient {
                 } else {
                     reasonCode = LxServer.OfflineReason.COMMUNICATION_ERROR;
                 }
-                notifyMaster(EventType.SERVER_OFFLINE, reasonCode, null);
+                notifyMaster(EventType.SERVER_OFFLINE, reasonCode, reason);
             }
             state = ClientState.IDLE;
         }
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
+
             if (state != ClientState.CONNECTING) {
                 logger.debug("[{}] Unexpected connect received on websocket in state {}", debugId, state.toString());
                 return;
             }
-            logger.debug("[{}] Websocket connected.", debugId);
+
+            WebSocketPolicy policy = session.getPolicy();
+            policy.setMaxBinaryMessageSize(maxBinMsgSize * 1024);
+            policy.setMaxTextMessageSize(maxTextMsgSize * 1024);
+
+            logger.debug("[{}] Websocket connected (maxBinMsgSize={}, maxTextMsgSize={})", debugId,
+                    policy.getMaxBinaryMessageSize(), policy.getMaxTextMessageSize());
             this.session = session;
             state = ClientState.CONNECTED;
+
             try {
                 sendString(CMD_GET_KEY);
             } catch (IOException e) {

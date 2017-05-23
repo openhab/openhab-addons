@@ -30,6 +30,12 @@
                 <advanced>true</advanced>
             </parameter-group>
                 
+            <parameter-group name="sizes">
+                <label>Size settings</label>
+                <description>Various sizing parameters</description>
+                <advanced>true</advanced>
+            </parameter-group>
+
             <parameter name="host" type="text" required="true" groupName="miniserver">
                 <label>Host</label>
                 <context>network_address</context>
@@ -79,7 +85,18 @@
                 <advanced>true</advanced>
                 <default>30</default>                
             </parameter>
-
+            <parameter name="maxBinaryMsgSize" type="integer" min="0" max="102400" required="true" groupName="sizes">
+                <label>Maximum binary message size (kB)</label>
+                <description>Websocket client's maximum binary message size in kB</description>
+                <advanced>true</advanced>
+                <default>3072</default>                
+            </parameter>
+            <parameter name="maxTextMsgSize" type="integer" min="0" max="102400" required="true" groupName="sizes">
+                <label>Maximum text message size (kB)</label>
+                <description>Websocket client's maximum text message size in kB</description>
+                <advanced>true</advanced>
+                <default>512</default>                
+            </parameter>
         </config-description>
         
     </thing-type>
