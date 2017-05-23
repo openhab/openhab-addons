@@ -8,23 +8,13 @@
  */
 package org.openhab.binding.evohome.handler;
 
-import static org.eclipse.smarthome.core.thing.ThingStatus.*;
-
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
-import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
-import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +24,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jasper van Zuijlen - Initial contribution
  */
+
 public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeGatewayHandler.class);
     private EvohomeGatewayConfiguration configuration = null;
-    private EvohomeApiClient apiClient = null;
+    //private EvohomeApiClient apiClient = null;
 
     protected ScheduledFuture<?> refreshTask;
 
@@ -52,7 +43,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
         configuration = getConfigAs(EvohomeGatewayConfiguration.class);
         logger.debug("refresh interval {}", configuration.refreshInterval);
-
+        /*
         if (checkConfig()) {
             disposeApiClient();
             apiClient = new EvohomeApiClientV2(configuration);
@@ -63,15 +54,15 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
-        }
+        }*/
     }
 
     @Override
     public void dispose() {
-        disposeRefreshTask();
-        disposeApiClient();
+//        disposeRefreshTask();
+//        disposeApiClient();
     }
-
+/*
     private void disposeApiClient() {
         if (apiClient != null) {
             apiClient.logout();
@@ -113,7 +104,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         refreshTask = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                update();
+                //update();
             }
         }, 50, configuration.refreshInterval, TimeUnit.MILLISECONDS);
     }
@@ -151,7 +142,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     public EvohomeApiClient getApiClient() {
         return apiClient;
-    }
+    }*/
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

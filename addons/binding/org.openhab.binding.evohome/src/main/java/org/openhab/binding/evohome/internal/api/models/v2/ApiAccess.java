@@ -1,3 +1,4 @@
+/*
 package org.openhab.binding.evohome.internal.api.models.v2;
 
 import java.util.HashMap;
@@ -22,6 +23,18 @@ public class ApiAccess {
     private static Authentication authenticationData;
     private static String applicationId;
 
+    SslContextFactory sslContextFactory = new SslContextFactory();
+    HttpClient httpClient = new HttpClient(sslContextFactory);
+
+    public ApiAccess() {
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            httpClient = null;
+            logger.error("Failed to start httpClient", e);
+        }
+    }
+
     public void setAuthentication(Authentication authentication) {
         ApiAccess.authenticationData = authentication;
     }
@@ -38,9 +51,6 @@ public class ApiAccess {
             TIn                 requestContainer,
             TOut                out) {
         try {
-            SslContextFactory sslContextFactory = new SslContextFactory();
-            HttpClient httpClient = new HttpClient(sslContextFactory);
-            httpClient.start();
             Request request = httpClient.newRequest(url).method(method);
 
             if (headers != null) {
@@ -89,3 +99,4 @@ public class ApiAccess {
         return doRequest(method, url, headers, requestContainer, out);
     }
 }
+*/

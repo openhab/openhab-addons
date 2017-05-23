@@ -1,3 +1,4 @@
+/*
 package org.openhab.binding.evohome.internal.api.models.v1;
 
 import com.google.gson.annotations.SerializedName;
@@ -20,3 +21,4 @@ public class LoginRequest {
         this.applicationId = applicationId;
     }
 }
+*/

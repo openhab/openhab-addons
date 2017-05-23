@@ -8,31 +8,13 @@
  */
 package org.openhab.binding.evohome.discovery;
 
-import static org.openhab.binding.evohome.EvohomeBindingConstants.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.evohome.EvohomeBindingConstants;
-import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
-import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
-import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
-import org.openhab.binding.evohome.internal.api.models.v1.Device;
-import org.openhab.binding.evohome.internal.api.models.v1.Weather;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * The {@link EvohomeDiscoveryService} class is capable of discovering the available data from Evohome
  *
  * @author Neil Renaud - Initial contribution
  */
+
+/*
 public class EvohomeDiscoveryService extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(EvohomeDiscoveryService.class);
     private static final int SEARCH_TIME = 2;
@@ -130,3 +112,4 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         throw new IllegalArgumentException("Unsupported device type discovered: " + thingType);
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package org.openhab.binding.evohome.internal.api.models.v1;
 
 import java.math.BigDecimal;
@@ -27,3 +28,4 @@ public class Thermostat {
         return changeableValues;
     }
 }
+*/

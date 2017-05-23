@@ -1,3 +1,4 @@
+/*
 package org.openhab.binding.evohome.internal.api;
 
 import java.net.URLEncoder;
@@ -13,6 +14,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
+import org.openhab.binding.evohome.internal.api.models.Locations;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v2.ApiAccess;
 import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemAndStatus;
@@ -216,3 +218,4 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     }
 
 }
+*/

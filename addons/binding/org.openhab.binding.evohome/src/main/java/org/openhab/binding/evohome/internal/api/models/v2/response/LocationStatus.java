@@ -1,3 +1,4 @@
+/*
 package org.openhab.binding.evohome.internal.api.models.v2.response;
 
 import java.util.List;
@@ -13,3 +14,4 @@ public class LocationStatus {
     public List<GatewayStatus> Gateways;
 
 }
+*/

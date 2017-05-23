@@ -1,3 +1,4 @@
+/*
 package org.openhab.binding.evohome.handler;
 
 import org.eclipse.smarthome.core.thing.Thing;
@@ -12,3 +13,4 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
 
     public abstract void update(EvohomeApiClient client);
 }
+*/

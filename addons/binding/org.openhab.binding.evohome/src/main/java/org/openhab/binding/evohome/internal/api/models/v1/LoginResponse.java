@@ -1,3 +1,4 @@
+/*
 package org.openhab.binding.evohome.internal.api.models.v1;
 
 public class LoginResponse {
@@ -19,3 +20,4 @@ public class LoginResponse {
         return userInfo;
     }
 }
+*/

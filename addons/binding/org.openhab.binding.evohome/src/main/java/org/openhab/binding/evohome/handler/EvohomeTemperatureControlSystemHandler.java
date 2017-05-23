@@ -1,5 +1,5 @@
 package org.openhab.binding.evohome.handler;
-
+/*
 import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -63,3 +63,4 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
     }
 
 }
+*/

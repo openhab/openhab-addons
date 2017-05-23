@@ -1,3 +1,4 @@
+/*
 package org.openhab.binding.evohome.internal.api.models.v2.response;
 
 import java.util.List;
@@ -12,3 +13,4 @@ public class Location {
     @SerializedName("gateways")
     public List<Gateway> Gateways;
 }
+*/
