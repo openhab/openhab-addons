@@ -1,9 +1,26 @@
-
 package org.openhab.binding.evohome.internal.api;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
+import org.openhab.binding.evohome.internal.api.models.ControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
+import org.openhab.binding.evohome.internal.api.models.v2.ApiAccess;
+import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemAndStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemV2;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
+import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
+import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Locations;
+import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
+import org.openhab.binding.evohome.internal.api.models.v2.response.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,21 +28,21 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV2.class);
 
     private EvohomeGatewayConfiguration configuration = null;
-//    private ApiAccess apiAccess = null;
+    private ApiAccess apiAccess = null;
 
-//    private UserAccount     useraccount;
-//    private Locations       locations;
-//    private LocationsStatus locationsStatus;
+    private UserAccount     useraccount;
+    private Locations       locations;
+    private LocationsStatus locationsStatus;
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
 
-//        apiAccess = new ApiAccess();
+        apiAccess = new ApiAccess();
         if (configuration != null) {
-//            apiAccess.setApplicationId(configuration.applicationId);
+            apiAccess.setApplicationId(configuration.applicationId);
         }
     }
-/*
+
     private UserAccount requestUserAccount() {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
@@ -63,7 +80,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         return locationsStatus;
     }
-*/
+
     @Override
     public boolean login() {
 //        SslContextFactory sslContextFactory = new SslContextFactory();
@@ -104,8 +121,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         // If the authentication succeeded, gather the basic intel as well
         if (success == true) {
-//            useraccount = requestUserAccount();
-//            locations   = requestLocations();
+            useraccount = requestUserAccount();
+            locations   = requestLocations();
         }
 
         return success;
@@ -113,18 +130,18 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public void logout() {
-//        apiAccess.setAuthentication(null);
-//        useraccount     = null;
-//        locations       = null;
-//        locationsStatus = null;
+        apiAccess.setAuthentication(null);
+        useraccount     = null;
+        locations       = null;
+        locationsStatus = null;
     }
 
 
     @Override
     public void update() {
-//        locationsStatus = requestLocationsStatus();
+        locationsStatus = requestLocationsStatus();
     }
-/*
+
     @Override
     public DataModelResponse[] getData() {
         return new DataModelResponse[0];
@@ -190,5 +207,4 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         return null;
     }
-*/
 }

@@ -1,4 +1,3 @@
-/*
 package org.openhab.binding.evohome.internal.api.models.v2.request;
 
 import com.google.gson.annotations.SerializedName;
@@ -28,4 +27,3 @@ public class Mode {
     public boolean Permanent;
 
 }
-*/

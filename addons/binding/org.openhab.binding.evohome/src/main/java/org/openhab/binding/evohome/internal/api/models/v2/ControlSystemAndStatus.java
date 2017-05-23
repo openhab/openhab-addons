@@ -1,4 +1,3 @@
-/*
 package org.openhab.binding.evohome.internal.api.models.v2;
 
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
@@ -8,4 +7,3 @@ public class ControlSystemAndStatus {
     public TemperatureControlSystemStatus ControlSystemStatus;
     public TemperatureControlSystem       ControlSystem;
 }
-*/

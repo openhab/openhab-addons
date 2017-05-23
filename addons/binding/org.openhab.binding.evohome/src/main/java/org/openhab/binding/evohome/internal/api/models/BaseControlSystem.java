@@ -1,4 +1,3 @@
-/*
 package org.openhab.binding.evohome.internal.api.models;
 
 public abstract class BaseControlSystem implements ControlSystem  {
@@ -22,4 +21,3 @@ public abstract class BaseControlSystem implements ControlSystem  {
     }
 
 }
-*/

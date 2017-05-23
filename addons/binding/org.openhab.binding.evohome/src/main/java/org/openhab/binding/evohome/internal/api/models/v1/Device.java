@@ -1,7 +1,4 @@
-/*
 package org.openhab.binding.evohome.internal.api.models.v1;
-
-import org.openhab.binding.evohome.internal.api.models.v1.Thermostat;
 
 public class Device {
 
@@ -27,4 +24,3 @@ public class Device {
     }
 
 }
-*/

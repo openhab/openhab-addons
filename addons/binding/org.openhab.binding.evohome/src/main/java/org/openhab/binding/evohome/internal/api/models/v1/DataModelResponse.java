@@ -1,4 +1,3 @@
-/*
 package org.openhab.binding.evohome.internal.api.models.v1;
 
 import org.openhab.binding.evohome.internal.api.models.v1.Device;
@@ -41,4 +40,3 @@ public class DataModelResponse {
         return builder.toString();
     }
 }
-*/

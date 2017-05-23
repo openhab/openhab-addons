@@ -1,38 +1,30 @@
-/*
 package org.openhab.binding.evohome.internal.api.models.v2;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class ApiAccess {
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private static Authentication authenticationData;
     private static String applicationId;
 
-    SslContextFactory sslContextFactory = new SslContextFactory();
-    HttpClient httpClient = new HttpClient(sslContextFactory);
+//    SslContextFactory sslContextFactory = new SslContextFactory();
+//    HttpClient httpClient = new HttpClient(sslContextFactory);
 
     public ApiAccess() {
+        /*
         try {
             httpClient.start();
         } catch (Exception e) {
             httpClient = null;
             logger.error("Failed to start httpClient", e);
         }
+        */
     }
 
     public void setAuthentication(Authentication authentication) {
@@ -50,6 +42,7 @@ public class ApiAccess {
             Map<String, String> headers,
             TIn                 requestContainer,
             TOut                out) {
+/*
         try {
             Request request = httpClient.newRequest(url).method(method);
 
@@ -69,13 +62,12 @@ public class ApiAccess {
             if (out != null) {
                 out = (TOut) new Gson().fromJson(reply, out.getClass());
             }
-
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.error("Error in handling request", e);
         } catch (Exception e) {
             logger.error("Generic error in handling request", e);
         }
-
+*/
         return out;
     }
 
@@ -99,4 +91,3 @@ public class ApiAccess {
         return doRequest(method, url, headers, requestContainer, out);
     }
 }
-*/

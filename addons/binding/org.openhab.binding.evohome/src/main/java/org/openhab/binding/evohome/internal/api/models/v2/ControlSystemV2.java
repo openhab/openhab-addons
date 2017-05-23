@@ -1,4 +1,3 @@
-/*
 package org.openhab.binding.evohome.internal.api.models.v2;
 
 import java.util.ArrayList;
@@ -49,4 +48,3 @@ public class ControlSystemV2 extends BaseControlSystem {
     }
 
 }
-*/

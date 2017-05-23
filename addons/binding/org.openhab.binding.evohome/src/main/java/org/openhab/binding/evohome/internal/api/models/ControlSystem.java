@@ -1,4 +1,3 @@
-/*
 package org.openhab.binding.evohome.internal.api.models;
 
 public interface ControlSystem {
@@ -8,4 +7,3 @@ public interface ControlSystem {
     public String getCurrentMode();
     public void setMode(String mode);
 }
-*/
