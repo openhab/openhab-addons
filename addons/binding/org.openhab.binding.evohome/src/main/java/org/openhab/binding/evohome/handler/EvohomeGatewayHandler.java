@@ -10,11 +10,16 @@ package org.openhab.binding.evohome.handler;
 
 import java.util.concurrent.ScheduledFuture;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +34,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeGatewayHandler.class);
     private EvohomeGatewayConfiguration configuration = null;
-    //private EvohomeApiClient apiClient = null;
+    private EvohomeApiClient apiClient = null;
 
     protected ScheduledFuture<?> refreshTask;
 
@@ -43,39 +48,39 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
         configuration = getConfigAs(EvohomeGatewayConfiguration.class);
         logger.debug("refresh interval {}", configuration.refreshInterval);
-        /*
+
         if (checkConfig()) {
             disposeApiClient();
             apiClient = new EvohomeApiClientV2(configuration);
             if (apiClient.login()) {
                 //TODO refresh token task?
-                startRefreshTask();
+//                startRefreshTask();
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
-        }*/
+        }
     }
 
     @Override
     public void dispose() {
 //        disposeRefreshTask();
-//        disposeApiClient();
+        disposeApiClient();
     }
-/*
+
     private void disposeApiClient() {
         if (apiClient != null) {
             apiClient.logout();
         }
         apiClient = null;
     }
-
+/*
     private void disposeRefreshTask() {
         if (refreshTask != null) {
             refreshTask.cancel(true);
         }
     }
-
+*/
     private boolean checkConfig() {
         try {
             if (configuration == null) {
@@ -97,7 +102,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
         return false;
     }
-
+/*
     private void startRefreshTask() {
         disposeRefreshTask();
 
@@ -108,8 +113,8 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             }
         }, 50, configuration.refreshInterval, TimeUnit.MILLISECONDS);
     }
-
-
+*/
+/*
     private void update() {
         if (getThing().getThings().isEmpty()) {
             return;

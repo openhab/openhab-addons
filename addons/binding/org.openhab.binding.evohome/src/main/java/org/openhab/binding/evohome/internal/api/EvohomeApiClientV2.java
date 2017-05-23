@@ -1,57 +1,31 @@
-/*
+
 package org.openhab.binding.evohome.internal.api;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
-import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.Locations;
-import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
-import org.openhab.binding.evohome.internal.api.models.v2.ApiAccess;
-import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemAndStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemV2;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
-import org.openhab.binding.evohome.internal.api.models.v2.response.GatewayStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
-import org.openhab.binding.evohome.internal.api.models.v2.response.LocationStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
-import org.openhab.binding.evohome.internal.api.models.v2.response.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 public class EvohomeApiClientV2 implements EvohomeApiClient {
     private final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV2.class);
 
     private EvohomeGatewayConfiguration configuration = null;
-    private ApiAccess apiAccess = null;
+//    private ApiAccess apiAccess = null;
 
-    private UserAccount     useraccount;
-    private Locations       locations;
-    private LocationsStatus locationsStatus;
+//    private UserAccount     useraccount;
+//    private Locations       locations;
+//    private LocationsStatus locationsStatus;
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
 
-        apiAccess = new ApiAccess();
+//        apiAccess = new ApiAccess();
         if (configuration != null) {
-            apiAccess.setApplicationId(configuration.applicationId);
+//            apiAccess.setApplicationId(configuration.applicationId);
         }
     }
-
+/*
     private UserAccount requestUserAccount() {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
@@ -89,21 +63,21 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         return locationsStatus;
     }
-
+*/
     @Override
     public boolean login() {
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        HttpClient httpClient = new HttpClient(sslContextFactory);
+//        SslContextFactory sslContextFactory = new SslContextFactory();
+//        HttpClient httpClient = new HttpClient(sslContextFactory);
 
         boolean success = false;
         try {
-            httpClient.start();
+//            httpClient.start();
 
             // Building the HTTP request discretely here, as it is the only one with a deviant content type
-            Request request = httpClient.newRequest(EvohomeApiConstants.URL_V2_AUTH);
-            request.method(HttpMethod.POST);
-            request.header("Authorization", "Basic YjAxM2FhMjYtOTcyNC00ZGJkLTg4OTctMDQ4YjlhYWRhMjQ5OnRlc3Q=");
-            request.header("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
+//            Request request = httpClient.newRequest(EvohomeApiConstants.URL_V2_AUTH);
+//            request.method(HttpMethod.POST);
+//            request.header("Authorization", "Basic YjAxM2FhMjYtOTcyNC00ZGJkLTg4OTctMDQ4YjlhYWRhMjQ5OnRlc3Q=");
+//            request.header("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 
             String data = "Username=" + URLEncoder.encode(configuration.username, "UTF-8") + "&"
                     + "Password=" + URLEncoder.encode(configuration.password, "UTF-8") + "&"
@@ -115,23 +89,23 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                     + "Content-Type=application%2Fx-www-form-urlencoded%3B+charset%3Dutf-8&"
                     + "Connection=Keep-Alive";
 
-            request.content(new StringContentProvider(data), "application/x-www-form-urlencoded");
+//            request.content(new StringContentProvider(data), "application/x-www-form-urlencoded");
 
-            ContentResponse response = request.send();
-            if (response.getStatus() == 200) {
-                String reply = response.getContentAsString();
-                success = true;
-                apiAccess.setAuthentication(new Gson().fromJson(reply, Authentication.class));
-            }
+//            ContentResponse response = request.send();
+//            if (response.getStatus() == 200) {
+//                String reply = response.getContentAsString();
+//                success = true;
+//                apiAccess.setAuthentication(new Gson().fromJson(reply, Authentication.class));
+//            }
         } catch (Exception e) {
-            apiAccess.setAuthentication(null);
+//            apiAccess.setAuthentication(null);
             logger.error("Authorization failed", e);
         }
 
         // If the authentication succeeded, gather the basic intel as well
         if (success == true) {
-            useraccount = requestUserAccount();
-            locations   = requestLocations();
+//            useraccount = requestUserAccount();
+//            locations   = requestLocations();
         }
 
         return success;
@@ -139,18 +113,18 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public void logout() {
-        apiAccess.setAuthentication(null);
-        useraccount     = null;
-        locations       = null;
-        locationsStatus = null;
+//        apiAccess.setAuthentication(null);
+//        useraccount     = null;
+//        locations       = null;
+//        locationsStatus = null;
     }
 
 
     @Override
     public void update() {
-        locationsStatus = requestLocationsStatus();
+//        locationsStatus = requestLocationsStatus();
     }
-
+/*
     @Override
     public DataModelResponse[] getData() {
         return new DataModelResponse[0];
@@ -216,6 +190,5 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         return null;
     }
-
-}
 */
+}

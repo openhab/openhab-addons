@@ -1,4 +1,3 @@
-/*
 package org.openhab.binding.evohome.internal.api;
 
 public class EvohomeApiConstants {
@@ -17,4 +16,3 @@ public class EvohomeApiConstants {
     public static final String URL_V2_MODE          = "temperatureControlSystem/%s/mode"; // systemId
 
 }
-*/
