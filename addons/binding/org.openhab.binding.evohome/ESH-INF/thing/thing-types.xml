@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evohome"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="display" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="gateway" />
+        </supported-bridge-type-refs>
+        
+        <label>Evohome Display</label>
+        <description>This represents the Evohome control display.</description>
+
+        <channels>
+            <channel id="SystemMode" typeId="systemMode" />
+        </channels>
+    </thing-type>
+
+    <thing-type id="heatingzone" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="gateway" />
+        </supported-bridge-type-refs>
+        
+        <label>Evohome Heating Zone</label>
+        <description>This represents the Evohome Heating Zone.</description>
+
+        <channels>
+            <channel id="Temperature" typeId="temperature" />
+            <channel id="Setpoint" typeId="setpoint" />   
+        </channels>
+    </thing-type>
+
+
+</thing:thing-descriptions>
