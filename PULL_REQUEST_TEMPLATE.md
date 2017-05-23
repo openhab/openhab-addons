@@ -6,12 +6,13 @@ Pay attention to the below notes and the contributing guidelines.
 
 ### Title
 
-Please build the the title of your pull request according to the following schema:
+Please build the title of your pull request according to the following schema:
 
 - If related to one specific addon: the addon shortname in square brackets - e.g. "[exec]", "[netatmo]" or "[tesla]"
 - If the PR is work in progress, add "[WIP]"
-- A short meaningful addition description
-  e.g. "Add support for device XYZ", "Fix wrongly handled exception" or "Initial contribution"
+- A short meaningful description in imperative mood
+  e.g. "Add support for device XYZ" or "Fix wrongly handled exception"
+  new add-on/binding: "Initial contribution"
 
 Examples:
 - "[homematic] Improve communication with weak signal devices"
