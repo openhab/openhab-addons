@@ -7,11 +7,17 @@ Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
+ com.google.gson,
+ com.google.gson.annotations,
  javax.servlet,
  javax.servlet.http,
- org.eclipse.jetty.http;version="8.1.14",
- org.openhab.binding.spotify,
- org.openhab.binding.spotify.handler,
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.client.api,
+ org.eclipse.jetty.client.util,
+ org.eclipse.jetty.http,
+ org.eclipse.jetty.util,
+ org.eclipse.jetty.util.component,
+ org.eclipse.jetty.util.ssl,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.status,
  org.eclipse.smarthome.config.discovery,
@@ -23,6 +29,8 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.joda.time,
+ org.openhab.binding.spotify,
+ org.openhab.binding.spotify.handler,
  org.osgi.framework,
  org.osgi.service.http,
  org.slf4j
@@ -30,7 +38,5 @@ Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.spotify,
  org.openhab.binding.spotify.handler
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.jetty.client;bundle-version="9.2.9",
- org.eclipse.jetty.util;bundle-version="9.2.9",
- com.google.gson
+
 
