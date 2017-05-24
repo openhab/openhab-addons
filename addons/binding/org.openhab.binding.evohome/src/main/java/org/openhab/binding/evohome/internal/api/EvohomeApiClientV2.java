@@ -133,6 +133,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 HttpMethod.POST, EvohomeApiConstants.URL_V2_AUTH,
                 headers, data, "application/x-www-form-urlencoded", authentication);
 
+        apiAccess.setAuthentication(authentication);
+
         } catch (UnsupportedEncodingException e) {
             logger.error("Credential conversion failed", e);
         }

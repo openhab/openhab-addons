@@ -37,7 +37,6 @@ public class ApiAccess {
         ApiAccess.applicationId = applicationId;
     }
 
-
     @SuppressWarnings("unchecked")
     public <TIn, TOut> TOut doRequest(
             HttpMethod          method,
@@ -47,7 +46,7 @@ public class ApiAccess {
             String              contentType,
             TOut                out) {
 
-        logger.info("Requesting: [%s]", url);
+        logger.info("Requesting: [{}]", url);
         try {
             Request request = httpClient.newRequest(url).method(method);
 
