@@ -27,6 +27,7 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_REFRESHTOKEN = "refreshToken";
 
     public static final String CHANNEL_TRACKID = "trackId";
+    public static final String CHANNEL_TRACKURI = "trackUri";
     public static final String CHANNEL_TRACKHREF = "trackHref";
     public static final String CHANNEL_TRACKPLAYER = "trackPlayer";
     public static final String CHANNEL_TRACKSHUFFLE = "trackShuffle";

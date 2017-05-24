@@ -94,16 +94,28 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                     }
 
                 }
+                if (command instanceof StringType) {
+                    String cmd = ((StringType) command).toString();
+                    if (cmd.equalsIgnoreCase("play")) {
+                        player.getSpotifySession().playActiveTrack();
+                        setChannelValue(CHANNEL_TRACKPLAYER, PlayPauseType.PLAY);
+                    } else if (cmd.equalsIgnoreCase("pause")) {
+                        player.getSpotifySession().pauseActiveTrack();
+                        setChannelValue(CHANNEL_TRACKPLAYER, PlayPauseType.PAUSE);
+                    } else if (cmd.equalsIgnoreCase("next")) {
+                        player.getSpotifySession().nextTrack();
+                    } else if (cmd.equalsIgnoreCase("prev") || cmd.equalsIgnoreCase("previous")) {
+                        player.getSpotifySession().previousTrack();
+                    }
+
+                }
                 break;
             case CHANNEL_DEVICESHUFFLE:
                 logger.debug("CHANNEL_DEVICESHUFFLE {}", command.getClass().getName());
 
                 if (command instanceof OnOffType) {
-                    if (command.equals(OnOffType.ON)) {
-                        player.getSpotifySession().setShuffleState(deviceId, "true");
-                    } else if (command.equals(OnOffType.OFF)) {
-                        player.getSpotifySession().setShuffleState(deviceId, "false");
-                    }
+                    player.getSpotifySession().setShuffleState(getDeviceId(),
+                            command.equals(OnOffType.OFF) ? "false" : "true");
                 }
                 break;
             case CHANNEL_DEVICEVOLUME:
@@ -117,48 +129,31 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                     setChannelValue(CHANNEL_DEVICEVOLUME, volume);
                 }
                 break;
-
+            case CHANNEL_TRACKID:
+            case CHANNEL_TRACKURI:
+            case CHANNEL_TRACKHREF:
+                if (command instanceof StringType) {
+                    player.getSpotifySession().playTrack(getDeviceId(), ((StringType) command).toString());
+                }
+                break;
         }
-        if (channelUID.getId().equals(CHANNEL_TRACKID)) {
-            if (command instanceof StringType) {
-                player.getSpotifySession().playTrack(getDeviceId(), ((StringType) command).toString());
-            }
-
-        }
-
-        if (channelUID.getId().equals(CHANNEL_DEVICESHUFFLE)) {
-            if (command instanceof OnOffType) {
-                player.getSpotifySession().setShuffleState(getDeviceId(),
-                        command.equals(OnOffType.OFF) ? "false" : "true");
-            }
-        }
-
     }
 
     @Override
     public void initialize() {
         logger.debug("Initialize SpotifyConnect handler.");
-        // this.spotifyDevice = new SpotifyDevice();
 
         super.initialize();
         Map<String, String> props = this.thing.getProperties();
         deviceId = props.get("id");
         String isRestricted = props.get("is_restricted");
 
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
         if (isRestricted.equals("true")) {
             updateStatus(ThingStatus.OFFLINE);
         } else {
             updateStatus(ThingStatus.ONLINE);
         }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
         logger.debug("Initialize SpotifyConnect handler done.");
     }
 

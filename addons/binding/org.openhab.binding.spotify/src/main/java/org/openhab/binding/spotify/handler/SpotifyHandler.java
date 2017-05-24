@@ -106,18 +106,6 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
                     new Hashtable<String, Object>());
 
             startPolling(pollingInterval);
-
-            /*
-             * {
-             * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-             * "Cannot connect to Spotify Web API - client parameters not set. Update configuration and/or perform the Spotify WebAPI Logon procedure at /connectspotify/"
-             * );
-             *
-             * if (authService != null) {
-             * authService.authenticateSpotifyPlayer(this);
-             * }
-             */
-
         }
 
     }
@@ -138,6 +126,8 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
 
         switch (channel) {
             case CHANNEL_TRACKID:
+            case CHANNEL_TRACKURI:
+            case CHANNEL_TRACKHREF:
                 if (command instanceof StringType) {
                     spotifySession.playTrack(((StringType) command).toString());
                 }
@@ -163,7 +153,7 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
                 }
                 if (command instanceof NextPreviousType) {
                     if (command.equals(NextPreviousType.NEXT)) {
-                        spotifySession.playActiveTrack();
+                        spotifySession.nextTrack();
                     } else if (command.equals(NextPreviousType.PREVIOUS)) {
                         spotifySession.previousTrack();
                     }
