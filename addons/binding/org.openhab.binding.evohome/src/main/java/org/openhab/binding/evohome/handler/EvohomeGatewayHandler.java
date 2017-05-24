@@ -118,8 +118,6 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         if (getThing().getThings().isEmpty()) {
 //            return;
         }
-        logger.info("updateChannels");
-
         apiClient.update();
         /*
         try {

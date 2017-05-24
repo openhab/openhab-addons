@@ -76,7 +76,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
         UserAccount userAccount =  new UserAccount();
-//        userAccount = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, userAccount);
+        userAccount = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, userAccount);
 
         return userAccount;
     }
@@ -88,7 +88,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             url = String.format(url, useraccount.UserId);
 
             locations = new Locations();
-//            locations = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
+            locations = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
         }
 
         return locations;
@@ -160,6 +160,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public void update() {
+        logger.info("update");
+
         locationsStatus = requestLocationsStatus();
     }
 

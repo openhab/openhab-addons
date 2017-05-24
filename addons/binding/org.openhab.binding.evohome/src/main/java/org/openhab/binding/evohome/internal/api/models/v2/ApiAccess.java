@@ -38,7 +38,7 @@ public class ApiAccess {
     }
 
     @SuppressWarnings("unchecked")
-    public <TIn, TOut> TOut doRequest(
+    public <TOut> TOut doRequest(
             HttpMethod          method,
             String              url,
             Map<String, String> headers,
@@ -47,6 +47,7 @@ public class ApiAccess {
             TOut                out) {
 
         logger.info("Requesting: [{}]", url);
+
         try {
             Request request = httpClient.newRequest(url).method(method);
 
@@ -88,6 +89,8 @@ public class ApiAccess {
             TIn                 requestContainer,
             TOut                out) {
 
+        logger.info("JSON request");
+
         String json = null;
         if (requestContainer != null) {
             Gson gson = new GsonBuilder().create();
@@ -103,6 +106,8 @@ public class ApiAccess {
             Map<String, String> headers,
             TIn                 requestContainer,
             TOut                out) {
+
+        logger.info("AUTH request");
 
         if (authenticationData != null) {
             if (headers == null) {
