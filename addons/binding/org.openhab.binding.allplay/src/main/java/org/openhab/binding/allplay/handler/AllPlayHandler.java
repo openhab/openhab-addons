@@ -114,6 +114,10 @@ public class AllPlayHandler extends BaseThingHandler
         logger.debug("Speaker announcement received for speaker {}. Own id is {}", speaker, getDeviceId());
         if (isHandledSpeaker(speaker)) {
             logger.debug("Speaker announcement received for handled speaker {}", speaker);
+            if (this.speaker != null) {
+                // Make sure to disconnect first in case the speaker is re-announced
+                disconnectFromSpeaker(this.speaker);
+            }
             this.speaker = speaker;
             cancelReconnectionJob();
             try {
@@ -177,12 +181,18 @@ public class AllPlayHandler extends BaseThingHandler
         if (speaker != null) {
             logger.debug("Disconnecting from speaker {}", speaker);
             cancelReconnectionJob();
-            speaker.removeSpeakerChangedListener(this);
-            speaker.removeSpeakerConnectionListener(this);
             allPlay.removeSpeakerAnnouncedListener(this);
-            speaker.disconnect();
+            disconnectFromSpeaker(speaker);
         }
         super.dispose();
+    }
+
+    private void disconnectFromSpeaker(Speaker speaker) {
+        speaker.removeSpeakerChangedListener(this);
+        speaker.removeSpeakerConnectionListener(this);
+        if (speaker.isConnected()) {
+            speaker.disconnect();
+        }
     }
 
     @Override
@@ -205,6 +215,9 @@ public class AllPlayHandler extends BaseThingHandler
         switch (channelId) {
             case CONTROL:
                 handleControlCommand(command);
+                break;
+            case INPUT:
+                speaker.input().setInput(command.toString());
                 break;
             case LOOP_MODE:
                 speaker.setLoopMode(LoopMode.parse(command.toString()));
@@ -242,6 +255,9 @@ public class AllPlayHandler extends BaseThingHandler
                 break;
             case CONTROL:
                 updatePlayState(speaker.getPlayState());
+                break;
+            case INPUT:
+                onInputChanged(speaker.input().getActiveInput());
                 break;
             case LOOP_MODE:
                 onLoopModeChanged(speaker.getLoopMode());
@@ -375,6 +391,12 @@ public class AllPlayHandler extends BaseThingHandler
     public void onZoneChanged(String zoneId, int timestamp, Map<String, Integer> slaves) {
         logger.debug("{}: Zone changed to {}", speaker.getName(), zoneId);
         updateState(ZONE_ID, new StringType(zoneId));
+    }
+
+    @Override
+    public void onInputChanged(String input) {
+        logger.debug("{}: Input changed to {}", speaker.getName(), input);
+        updateState(INPUT, new StringType(input));
     }
 
     private void updatePlayState(PlayState playState) {

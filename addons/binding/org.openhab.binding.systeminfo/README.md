@@ -63,11 +63,11 @@ The binding support several channel group. Each channel group, contains one or m
 
 **thing** `computer`
    * **group** `memory`
-         **channel** `available, total, used, available_percent`
+         **channel** `available, total, used, availablePercent, usedPercent`
    * **group** `swap`
-         **channel** `available, total, used, available_percent`
+         **channel** `available, total, used, availablePercent, usedPercent`
    * **group** `storage` (deviceIndex)
-         **channel** `available, total, used, available_percent, name, description, type`
+         **channel** `available, total, used, availablePercent, usedPercent, name, description, type`
    * **group** `drive` (deviceIndex)
          **channel** `name, model, serial`
    * **group** `display` (deviceIndex)
@@ -112,6 +112,7 @@ The binding introduces the following channels:
 | used  | Used size in MB  | Number | High | False |
 | total  | Total size in MB  | Number | Low | False |
 | availablePercent  | Available size in %  | Number | High | False |
+| usedPercent  | Used size in %  | Number | High | False |
 | model  | The model of the device  | String | Low | True |
 | serial  | The serial number of the device  | String | Low | True |
 | description  | Description of the device  | String | Low | True |
@@ -212,18 +213,21 @@ Number Storage_Available             { channel="systeminfo:computer:work:storage
 Number Storage_Used                  { channel="systeminfo:computer:work:storage#used" }
 Number Storage_Total                 { channel="systeminfo:computer:work:storage#total" }
 Number Storage_Available_Percent     { channel="systeminfo:computer:work:storage#availablePercent" }
+Number Storage_Used_Percent          { channel="systeminfo:computer:work:storage#usedPercent" }
 
 /* Memory information*/
 Number Memory_Available              { channel="systeminfo:computer:work:memory#available" }
 Number Memory_Used                   { channel="systeminfo:computer:work:memory#used" }
 Number Memory_Total                  { channel="systeminfo:computer:work:memory#total" }
 Number Memory_Available_Percent      { channel="systeminfo:computer:work:memory#availablePercent" }
+Number Memory_Used_Percent           { channel="systeminfo:computer:work:memory#usedPercent" }
 
 /* Swap memory information*/
 Number Swap_Available                { channel="systeminfo:computer:work:swap#available" }
 Number Swap_Used                     { channel="systeminfo:computer:work:swap#used" }
 Number Swap_Total                    { channel="systeminfo:computer:work:swap#total" }
 Number Swap_Available_Percent        { channel="systeminfo:computer:work:swap#availablePercent" }
+Number Swap_Used_Percent             { channel="systeminfo:computer:work:swap#usedPercent" }
 
 /* Battery information*/
 String Battery_Name                  { channel="systeminfo:computer:work:battery#name" }

@@ -27,6 +27,9 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.HeatSetpointC
 import org.openhab.binding.evohome.internal.api.models.v2.response.ScheduleCapabilities;
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
+import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
+import org.openhab.binding.evohome.internal.api.models.v1.Device;
+import org.openhab.binding.evohome.internal.api.models.v1.Weather;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,13 +60,11 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
             try {
                 EvohomeApiClient client = evohomeBridgeHandler.getApiClient();
                 if (client != null) {
-
 //                    client.update();
                     for (ControlSystem gateway : client.getControlSystems()) {
                         discoverGateway(gateway);
                         discoverHeatingZones(gateway.getId(), gateway.getHeatingZones());
                     }
-
 //                    DataModelResponse[] dataArray = client.getData();
 //                    for (DataModelResponse data : dataArray) {
 //                        discoverWeather(data.getWeather(), data.getName(), data.getLocationId());
@@ -113,6 +114,25 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
         addDiscoveredThing(thingUID, properties, name);
     }
+
+    private void discoverRadiatorValves(Device[] devices, String locationName, String locationId)
+            throws IllegalArgumentException {
+        for (Device device : devices) {
+            ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_RADIATOR_VALVE.getId(),
+                    Integer.toString(device.getDeviceId()));
+            String name = device.getName();
+            logger.debug("found Valve device_name:{} device_id:{} location_name:{} location_id:{}", name,
+                    device.getDeviceId(), locationName, locationId);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(DEVICE_ID, device.getDeviceId());
+            properties.put(DEVICE_NAME, device.getName());
+            properties.put(LOCATION_ID, locationId);
+            properties.put(LOCATION_NAME, locationName);
+            addDiscoveredThing(thingUID, properties, name);
+        }
+    }
+
     private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withBridge(evohomeBridgeHandler.getThing().getUID()).withLabel(displayLabel).build();

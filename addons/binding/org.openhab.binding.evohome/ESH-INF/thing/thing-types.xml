@@ -21,15 +21,11 @@
         <supported-bridge-type-refs>
             <bridge-type-ref id="gateway" />
         </supported-bridge-type-refs>
-        
         <label>Evohome Heating Zone</label>
         <description>This represents the Evohome Heating Zone.</description>
-
         <channels>
             <channel id="Temperature" typeId="temperature" />
             <channel id="Setpoint" typeId="setpoint" />   
         </channels>
     </thing-type>
-
-
 </thing:thing-descriptions>

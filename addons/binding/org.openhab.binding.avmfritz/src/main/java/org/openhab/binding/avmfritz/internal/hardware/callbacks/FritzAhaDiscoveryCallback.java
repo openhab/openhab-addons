@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
  * Callback for discovering SmartHome devices connected to a FRITZ!Box
  *
  * @author Robert Bausdorf
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
+ *         DECT
  *
  */
 public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
@@ -34,12 +36,12 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
 
     /**
      * Constructor
-     *
+     * 
      * @param webIface Webinterface to FRITZ!Box
      * @param service Discovery service to call with result.
      */
     public FritzAhaDiscoveryCallback(FritzahaWebInterface webIface, AvmDiscoveryService service) {
-        super("webservices/homeautoswitch.lua", "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
+        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
         this.service = service;
     }
 

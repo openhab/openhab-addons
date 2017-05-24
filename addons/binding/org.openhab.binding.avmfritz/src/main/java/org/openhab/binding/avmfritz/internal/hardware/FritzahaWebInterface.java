@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware;
 
+import static org.openhab.binding.avmfritz.BindingConstants.*;
+
+import java.math.BigDecimal;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -25,21 +29,27 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.handler.IFritzHandler;
+import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class handles requests to a Fritz!OS web interface for interfacing with
+ * This class handles requests to a FRITZ!OS web interface for interfacing with
  * AVM home automation devices. It manages authentication and wraps commands.
- *
+ * 
  * @author Robert Bausdorf, Christian Brauers
- *
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
+ *         DECT
+ * 
  */
 public class FritzahaWebInterface {
 
     /**
-     * Configuration of the bridge from {@link org.openhab.BoxHandler.fritzaha.handler.FritzAhaBridgeHandler}
+     * Configuration of the bridge from
+     * {@link org.openhab.BoxHandler.fritzaha.handler.FritzAhaBridgeHandler}
      */
     protected AvmFritzConfiguration config;
     /**
@@ -60,7 +70,7 @@ public class FritzahaWebInterface {
     protected IFritzHandler fbHandler;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    // Uses RegEx to handle bad FritzBox XML
+    // Uses RegEx to handle bad FRITZ!Box XML
     /**
      * RegEx Pattern to grab the session ID from a login XML response
      */
@@ -77,7 +87,7 @@ public class FritzahaWebInterface {
             .compile("<Name>HomeAuto</Name>\\s*?<Access>([0-9])</Access>");
 
     /**
-     * This method authenticates with the Fritz!OS Web Interface and updates the
+     * This method authenticates with the FRITZ!OS Web Interface and updates the
      * session ID accordingly
      *
      * @return New session ID
@@ -99,6 +109,8 @@ public class FritzahaWebInterface {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "FRITZ!Box does not respond");
             return null;
+        } else {
+            logger.debug("response complete: {}", loginXml);
         }
         Matcher sidmatch = SID_PATTERN.matcher(loginXml);
         if (!sidmatch.find()) {
@@ -123,12 +135,13 @@ public class FritzahaWebInterface {
         }
         String challenge = challengematch.group(1);
         String response = createResponse(challenge);
+        loginXml = null;
         try {
             loginXml = HttpUtil.executeUrl("GET",
                     getURL("login_sid.lua",
                             (this.config.getUser() != null && !"".equals(this.config.getUser())
                                     ? ("username=" + this.config.getUser() + "&") : "") + "response=" + response),
-                    this.config.getSyncTimeout());
+                    10 * this.config.getSyncTimeout());
         } catch (IOException e) {
             logger.debug("Failed to get loginXML {}", e);
         }
@@ -136,11 +149,13 @@ public class FritzahaWebInterface {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "FRITZ!Box does not respond");
             return null;
+        } else {
+            logger.debug("response complete: {}", loginXml);
         }
         sidmatch = SID_PATTERN.matcher(loginXml);
         if (!sidmatch.find()) {
             this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Resuming FRITZ!Box connection with SID");
+                    "FRITZ!Box does not respond with SID");
             return null;
         }
         sid = sidmatch.group(1);
@@ -153,7 +168,7 @@ public class FritzahaWebInterface {
             }
         }
         this.fbHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "User " + this.config.getUser() + " has no access to FritzBox home automation functions");
+                "User " + this.config.getUser() + " has no access to FRITZ!Box home automation functions");
         return null;
     }
 
@@ -178,8 +193,8 @@ public class FritzahaWebInterface {
      * Creates the proper response to a given challenge based on the password
      * stored
      *
-     * @param challenge
-     *            Challenge string as returned by the Fritz!OS login script
+     * @param challenge Challenge string as returned by the FRITZ!OS login
+     *            script
      * @return Response to the challenge
      */
     protected String createResponse(String challenge) {
@@ -228,8 +243,7 @@ public class FritzahaWebInterface {
     /**
      * Constructs a URL from the stored information and a specified path
      *
-     * @param path
-     *            Path to include in URL
+     * @param path Path to include in URL
      * @return URL
      */
     public String getURL(String path) {
@@ -240,11 +254,9 @@ public class FritzahaWebInterface {
     /**
      * Constructs a URL from the stored information, a specified path and a
      * specified argument string
-     *
-     * @param path
-     *            Path to include in URL
-     * @param args
-     *            String of arguments, in standard HTTP format
+     * 
+     * @param path Path to include in URL
+     * @param args String of arguments, in standard HTTP format
      *            (arg1=value1&arg2=value2&...)
      * @return URL
      */
@@ -263,20 +275,17 @@ public class FritzahaWebInterface {
     /**
      * Sends an HTTP GET request using the asynchronous client
      *
-     * @param Path
-     *            Path of the requested resource
-     * @param Args
-     *            Arguments for the request
-     * @param Callback
-     *            Callback to handle the response with
+     * @param Path Path of the requested resource
+     * @param Args Arguments for the request
+     * @param Callback Callback to handle the response with
      */
     public FritzahaContentExchange asyncGet(String path, String args, FritzAhaCallback callback) {
         if (!isAuthenticated()) {
             authenticate();
         }
         FritzahaContentExchange getExchange = new FritzahaContentExchange(callback);
-        asyncclient.newRequest(this.getURL(path, this.addSID(args))).method(HttpMethod.GET)
-                .onResponseSuccess(getExchange).onResponseFailure(getExchange) // .onComplete(getExchange)
+        asyncclient.newRequest(getURL(path, this.addSID(args))).method(HttpMethod.GET).onResponseSuccess(getExchange)
+                .onResponseFailure(getExchange) // .onComplete(getExchange)
                 .send(getExchange);
         logger.debug("GETting URL {}", getURL(path, addSID(args)));
         return getExchange;
@@ -289,23 +298,29 @@ public class FritzahaWebInterface {
     /**
      * Sends an HTTP POST request using the asynchronous client
      *
-     * @param Path
-     *            Path of the requested resource
-     * @param Args
-     *            Arguments for the request
-     * @param Callback
-     *            Callback to handle the response with
+     * @param Path Path of the requested resource
+     * @param Args Arguments for the request
+     * @param Callback Callback to handle the response with
      */
     public FritzahaContentExchange asyncPost(String path, String args, FritzAhaCallback callback) {
         if (!isAuthenticated()) {
             authenticate();
         }
-
         FritzahaContentExchange postExchange = new FritzahaContentExchange(callback);
-
-        this.asyncclient.newRequest(this.getURL(path)).timeout(this.config.getAsyncTimeout(), TimeUnit.SECONDS)
+        asyncclient.newRequest(getURL(path)).timeout(this.config.getAsyncTimeout(), TimeUnit.SECONDS)
                 .method(HttpMethod.POST).onResponseSuccess(postExchange).onResponseFailure(postExchange) // .onComplete(postExchange)
-                .content(new StringContentProvider(this.addSID(args), "UTF-8")).send(postExchange);
+                .content(new StringContentProvider(addSID(args), "UTF-8")).send(postExchange);
         return postExchange;
+    }
+
+    public FritzahaContentExchange setSwitch(String ain, boolean switchOn) {
+        FritzAhaSetSwitchCallback callback = new FritzAhaSetSwitchCallback(this, ain, switchOn);
+        return asyncGet(callback);
+    }
+
+    public FritzahaContentExchange setSetTemp(String ain, BigDecimal temperature) {
+        FritzAhaSetHeatingTemperatureCallback callback = new FritzAhaSetHeatingTemperatureCallback(this, ain,
+                temperature);
+        return asyncGet(callback);
     }
 }

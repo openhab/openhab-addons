@@ -23,6 +23,13 @@
 		<description>Command channel</description>
 	</channel-type>
 
+	<channel-type id="commandId">
+		<item-type>Number</item-type>
+		<label>Command ID</label>
+		<description>Command channel, ID of the channel</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="false"></state>
+	</channel-type>
+
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>

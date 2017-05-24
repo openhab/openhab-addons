@@ -23,6 +23,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -213,8 +214,14 @@ public class FeedHandler extends BaseThingHandler {
             URL url = new URL(urlString);
 
             URLConnection connection = url.openConnection();
+            connection.setRequestProperty("Accept-Encoding", "gzip");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            BufferedReader in = null;
+            if ("gzip".equals(connection.getContentEncoding())) {
+                in = new BufferedReader(new InputStreamReader(new GZIPInputStream(connection.getInputStream())));
+            } else {
+                in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            }
 
             SyndFeedInput input = new SyndFeedInput();
             feed = input.build(in);

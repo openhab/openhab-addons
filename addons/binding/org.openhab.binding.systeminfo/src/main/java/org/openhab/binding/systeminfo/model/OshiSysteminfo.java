@@ -209,11 +209,30 @@ public class OshiSysteminfo implements SysteminfoInterface {
     @Override
     public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
         OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
-        long freeStorage = fileStore.getUsableSpace();
-        long totalStorage = fileStore.getTotalSpace();
-        double freePercentDecimal = (double) freeStorage / (double) totalStorage;
-        BigDecimal freePercent = getPercentsValue(freePercentDecimal);
-        return new DecimalType(freePercent);
+        long totalSpace = fileStore.getTotalSpace();
+        long freeSpace = fileStore.getUsableSpace();
+        if (totalSpace > 0) {
+            double freePercentDecimal = (double) freeSpace / (double) totalSpace;
+            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
+            return new DecimalType(freePercent);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
+        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
+        long totalSpace = fileStore.getTotalSpace();
+        long freeSpace = fileStore.getUsableSpace();
+        long usedSpace = totalSpace - freeSpace;
+        if (totalSpace > 0) {
+            double usedPercentDecimal = (double) usedSpace / (double) totalSpace;
+            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
+            return new DecimalType(usedPercent);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -324,11 +343,24 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public DecimalType getMemoryAvailablePercent() {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
-        BigDecimal freePercent;
         if (totalMemory > 0) {
             double freePercentDecimal = (double) availableMemory / (double) totalMemory;
-            freePercent = getPercentsValue(freePercentDecimal);
+            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
             return new DecimalType(freePercent);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DecimalType getMemoryUsedPercent() {
+        long availableMemory = memory.getAvailable();
+        long totalMemory = memory.getTotal();
+        long usedMemory = totalMemory - availableMemory;
+        if (totalMemory > 0) {
+            double usedPercentDecimal = (double) usedMemory / (double) totalMemory;
+            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
+            return new DecimalType(usedPercent);
         } else {
             return null;
         }
@@ -383,11 +415,23 @@ public class OshiSysteminfo implements SysteminfoInterface {
         long usedSwap = memory.getSwapUsed();
         long totalSwap = memory.getSwapTotal();
         long freeSwap = totalSwap - usedSwap;
-        BigDecimal freePercent;
         if (totalSwap > 0) {
             double freePercentDecimal = (double) freeSwap / (double) totalSwap;
-            freePercent = getPercentsValue(freePercentDecimal);
+            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
             return new DecimalType(freePercent);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DecimalType getSwapUsedPercent() {
+        long usedSwap = memory.getSwapUsed();
+        long totalSwap = memory.getSwapTotal();
+        if (totalSwap > 0) {
+            double usedPercentDecimal = (double) usedSwap / (double) totalSwap;
+            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
+            return new DecimalType(usedPercent);
         } else {
             return null;
         }
@@ -517,39 +561,59 @@ public class OshiSysteminfo implements SysteminfoInterface {
 
     @Override
     public StringType getProcessName(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        String name = process.getName();
-        return new StringType(name);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            String name = process.getName();
+            return new StringType(name);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        double cpuUsageRaw = (process.getKernelTime() + process.getUserTime()) / process.getUpTime();
-        BigDecimal cpuUsage = getPercentsValue(cpuUsageRaw);
-        return new DecimalType(cpuUsage);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            double cpuUsageRaw = (process.getKernelTime() + process.getUserTime()) / process.getUpTime();
+            BigDecimal cpuUsage = getPercentsValue(cpuUsageRaw);
+            return new DecimalType(cpuUsage);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        long memortInBytes = process.getResidentSetSize();
-        long memoryInMB = getSizeInMB(memortInBytes);
-        return new DecimalType(memoryInMB);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            long memortInBytes = process.getResidentSetSize();
+            long memoryInMB = getSizeInMB(memortInBytes);
+            return new DecimalType(memoryInMB);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public StringType getProcessPath(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        String path = process.getPath();
-        return new StringType(path);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            String path = process.getPath();
+            return new StringType(path);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public DecimalType getProcessThreads(int pid) throws DeviceNotFoundException {
-        OSProcess process = getProcess(pid);
-        int threadCount = process.getThreadCount();
-        return new DecimalType(threadCount);
+        if (pid > 0) {
+            OSProcess process = getProcess(pid);
+            int threadCount = process.getThreadCount();
+            return new DecimalType(threadCount);
+        } else {
+            return null;
+        }
     }
 
 }

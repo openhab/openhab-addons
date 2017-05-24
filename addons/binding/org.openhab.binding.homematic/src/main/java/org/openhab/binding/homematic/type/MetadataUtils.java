@@ -201,7 +201,9 @@ public class MetadataUtils {
             }
             sb.append(key).append(", ");
         }
-        logger.debug("Description not found for: {}", StringUtils.substring(sb.toString(), 0, -2));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Description not found for: {}", StringUtils.substring(sb.toString(), 0, -2));
+        }
         return null;
     }
 
@@ -251,6 +253,9 @@ public class MetadataUtils {
      * Helper method for creating a BigDecimal.
      */
     public static BigDecimal createBigDecimal(Number number) {
+        if (number == null) {
+            return null;
+        }
         try {
             return new BigDecimal(number.toString());
         } catch (Exception ex) {
@@ -275,7 +280,8 @@ public class MetadataUtils {
                 return ITEM_TYPE_SWITCH;
             }
         } else if (dp.isNumberType()) {
-            if (dpName.startsWith(DATAPOINT_NAME_LEVEL) && channelType.equals(CHANNEL_TYPE_BLIND)) {
+            if (dpName.startsWith(DATAPOINT_NAME_LEVEL)
+                    && (channelType.equals(CHANNEL_TYPE_BLIND) || channelType.equals(CHANNEL_TYPE_JALOUSIE))) {
                 return ITEM_TYPE_ROLLERSHUTTER;
             } else if (dpName.startsWith(DATAPOINT_NAME_LEVEL) && !channelType.equals(CHANNEL_TYPE_WINMATIC)
                     && !channelType.equals(CHANNEL_TYPE_AKKU)) {
