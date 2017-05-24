@@ -63,7 +63,10 @@ public class EvohomeHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
             }
-            updateState(getThing().getChannel(EvohomeBindingConstants.TEMPERATURE_CHANNEL).getUID(), new DecimalType(zoneStatus.Temperature.Temperature));
+            updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new DecimalType(zoneStatus.Temperature.Temperature));
+            updateState(EvohomeBindingConstants.SET_POINT_CHANNEL, new DecimalType(zoneStatus.HeatSetpoint.TargetTemperature));
+            updateState(EvohomeBindingConstants.SET_POINT_STATUS_CHANNEL, new StringType(zoneStatus.HeatSetpoint.SetpointMode));
+            SET_POINT_CHANNEL
             updateStatus(ThingStatus.ONLINE);
         }
     }
