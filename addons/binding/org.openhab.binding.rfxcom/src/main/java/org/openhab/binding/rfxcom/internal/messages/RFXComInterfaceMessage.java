@@ -167,10 +167,6 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
     public byte hardwareVersion1;
     public byte hardwareVersion2;
 
-    public RFXComInterfaceMessage() {
-
-    }
-
     public RFXComInterfaceMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
@@ -285,56 +281,12 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public byte[] decodeMessage() {
-
-        byte[] data = new byte[14];
-
-        data[0] = 0x0D;
-        data[1] = RFXComBaseMessage.PacketType.INTERFACE_MESSAGE.toByte();
-        data[2] = subType.toByte();
-        data[3] = seqNbr;
-        data[4] = command.toByte();
-        data[5] = transceiverType.toByte();
-        data[6] = 0;
-
-        data[7] |= enableUndecodedPackets ? 0x80 : 0x00;
-        data[7] |= enableImagintronixOpusPackets ? 0x40 : 0x00;
-        data[7] |= enableByronSXPackets ? 0x20 : 0x00;
-        data[7] |= enableRSLPackets ? 0x10 : 0x00;
-        data[7] |= enableLighting4Packets ? 0x08 : 0x00;
-        data[7] |= enableFineOffsetPackets ? 0x04 : 0x00;
-        data[7] |= enableRubicsonPackets ? 0x02 : 0x00;
-        data[7] |= enableAEPackets ? 0x01 : 0x00;
-
-        data[8] |= enableBlindsT1T2T3T4Packets ? 0x80 : 0x00;
-        data[8] |= enableBlindsT0Packets ? 0x40 : 0x00;
-        data[8] |= enableProGuardPackets ? 0x20 : 0x00;
-        data[8] |= enableFS20Packets ? 0x10 : 0x00;
-        data[8] |= enableLaCrossePackets ? 0x08 : 0x00;
-        data[8] |= enableHidekiUPMPackets ? 0x04 : 0x00;
-        data[8] |= enableADPackets ? 0x02 : 0x00;
-        data[8] |= enableMertikPackets ? 0x01 : 0x00;
-
-        data[9] |= enableVisonicPackets ? 0x80 : 0x00;
-        data[9] |= enableATIPackets ? 0x40 : 0x00;
-        data[9] |= enableOregonPackets ? 0x20 : 0x00;
-        data[9] |= enableMeiantechPackets ? 0x10 : 0x00;
-        data[9] |= enableHomeEasyPackets ? 0x08 : 0x00;
-        data[9] |= enableACPackets ? 0x04 : 0x00;
-        data[9] |= enableARCPackets ? 0x02 : 0x00;
-        data[9] |= enableX10Packets ? 0x01 : 0x00;
-
-        data[10] = hardwareVersion1;
-        data[11] = hardwareVersion2;
-        data[12] = 0;
-        data[13] = 0;
-
-        return data;
+    public byte[] decodeMessage() throws RFXComException {
+        throw new RFXComException("Not supported");
     }
 
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-
         throw new RFXComException("Not supported");
     }
 

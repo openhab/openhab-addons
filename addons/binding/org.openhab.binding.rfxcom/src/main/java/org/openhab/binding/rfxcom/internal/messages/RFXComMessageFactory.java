@@ -14,9 +14,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
+import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType;
 
 public class RFXComMessageFactory {
 
@@ -24,7 +26,7 @@ public class RFXComMessageFactory {
     private static final Map<PacketType, Class<? extends RFXComMessage>> MESSAGE_CLASSES = Collections
             .unmodifiableMap(new HashMap<PacketType, Class<? extends RFXComMessage>>() {
                 {
-                    put(PacketType.INTERFACE_CONTROL, RFXComControlMessage.class);
+                    put(PacketType.INTERFACE_CONTROL, RFXComInterfaceControlMessage.class);
                     put(PacketType.INTERFACE_MESSAGE, RFXComInterfaceMessage.class);
                     put(PacketType.TRANSMITTER_MESSAGE, RFXComTransmitterMessage.class);
                     put(PacketType.UNDECODED_RF_MESSAGE, RFXComUndecodedRFMessage.class);

@@ -34,12 +34,6 @@ public class RFXComBindingConstants {
     public static final String BRIDGE_TYPE_RFXTRX315 = "RFXtrx315";
     public static final String BRIDGE_TYPE_RFXREC433 = "RFXrec433";
 
-    // Transceiver types
-    public static final String TRANSCEIVER_310MHZ = "310MHz";
-    public static final String TRANSCEIVER_315MHZ = "315MHz";
-    public static final String TRANSCEIVER_433_92MHZ = "433.92MHz";
-    public static final String RECEIVER_433_92MHZ = "433.92MHz receiver only";
-
     public static final ThingTypeUID BRIDGE_MANUAL = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_MANUAL_BRIDGE);
     public static final ThingTypeUID BRIDGE_TCP = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_TCP_BRIDGE);
     public static final ThingTypeUID BRIDGE_RFXTRX443 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXTRX433);

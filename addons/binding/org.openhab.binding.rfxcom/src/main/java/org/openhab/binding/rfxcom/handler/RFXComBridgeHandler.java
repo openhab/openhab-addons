@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.rfxcom.RFXComBindingConstants;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.connector.RFXComConnectorInterface;
@@ -36,6 +35,7 @@ import org.openhab.binding.rfxcom.internal.connector.RFXComTcpConnector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
+import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceControlMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Commands;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubType;
@@ -92,6 +92,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         if (connector != null) {
             connector.removeEventListener(eventListener);
             connector.disconnect();
+            connector = null;
         }
 
         if (connectorTask != null && !connectorTask.isCancelled()) {
@@ -171,49 +172,11 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 // controller does not response immediately after reset,
                 // so wait a while
                 Thread.sleep(300);
+
                 connector.addEventListener(eventListener);
 
                 logger.debug("Get status of controller");
                 connector.sendMessage(RFXComMessageFactory.CMD_GET_STATUS);
-                // wait response
-                Thread.sleep(200);
-
-                if (configuration.ignoreConfig) {
-                    logger.debug("Ignoring transceiver configuration");
-                } else {
-
-                    byte[] setMode = new byte[0];
-
-                    try {
-                        setMode = createConfMessage(getThing().getUID().toString(), configuration);
-
-                    } catch (IllegalArgumentException e) {
-
-                        if (configuration.setMode != null && !configuration.setMode.isEmpty()) {
-                            try {
-                                setMode = DatatypeConverter.parseHexBinary(configuration.setMode);
-
-                            } catch (IllegalArgumentException ee) {
-                                logger.warn("setMode hexBinary value length should be 14 bytes (28 characters)");
-                            }
-                        }
-                    } finally {
-                        if (setMode.length == 14) {
-                            logger.debug("Setting RFXCOM mode: {}", DatatypeConverter.printHexBinary(setMode));
-
-                            connector.sendMessage(setMode);
-                            // wait response
-                            Thread.sleep(200);
-                        } else if (setMode.length > 0) {
-                            logger.warn("Illegal RFXCOM transceiver mode configuration");
-                        }
-                    }
-
-                }
-
-                logger.debug("Start receiver");
-                connector.sendMessage(RFXComMessageFactory.CMD_START_RECEIVER);
-                updateStatus(ThingStatus.ONLINE);
             }
         } catch (NoSuchPortException e) {
             logger.error("Connection to RFXCOM transceiver failed", e);
@@ -234,91 +197,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             logger.error("Error occurred when trying to load native library for OS '{}' version '{}', processor '{}'",
                     System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"), e);
         }
-    }
-
-    private byte[] createConfMessage(String bridgeType, RFXComBridgeConfiguration conf) {
-        if (conf != null && bridgeType != null) {
-            RFXComInterfaceMessage msg = new RFXComInterfaceMessage();
-            msg.command = Commands.SET_MODE;
-
-            switch (bridgeType) {
-                case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX315:
-                    if (conf.transceiverType != null) {
-                        switch (conf.transceiverType) {
-                            case RFXComBindingConstants.TRANSCEIVER_310MHZ:
-                                msg.transceiverType = TransceiverType._310MHZ;
-                                break;
-                            case RFXComBindingConstants.TRANSCEIVER_315MHZ:
-                                msg.transceiverType = TransceiverType._315MHZ;
-                                break;
-                            default:
-                                throw new IllegalArgumentException("Illegal transceiver type");
-                        }
-                    }
-                    break;
-
-                case RFXComBindingConstants.BRIDGE_TYPE_RFXREC433:
-                    msg.transceiverType = TransceiverType._433_92MHZ_RECEIVER_ONLY;
-                    break;
-
-                case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX433:
-                    msg.transceiverType = TransceiverType._433_92MHZ_TRANSCEIVER;
-                    break;
-
-                case RFXComBindingConstants.BRIDGE_TYPE_MANUAL_BRIDGE:
-                case RFXComBindingConstants.BRIDGE_TYPE_TCP_BRIDGE:
-                    if (conf.transceiverType != null) {
-                        switch (conf.transceiverType) {
-                            case RFXComBindingConstants.TRANSCEIVER_433_92MHZ:
-                                msg.transceiverType = TransceiverType._433_92MHZ_TRANSCEIVER;
-                                break;
-                            case RFXComBindingConstants.RECEIVER_433_92MHZ:
-                                msg.transceiverType = TransceiverType._433_92MHZ_RECEIVER_ONLY;
-                                break;
-                            case RFXComBindingConstants.TRANSCEIVER_310MHZ:
-                                msg.transceiverType = TransceiverType._310MHZ;
-                                break;
-                            case RFXComBindingConstants.TRANSCEIVER_315MHZ:
-                                msg.transceiverType = TransceiverType._315MHZ;
-                                break;
-                            default:
-                                throw new IllegalArgumentException("Illegal transceiver type");
-                        }
-                    }
-                    break;
-
-                default:
-                    throw new IllegalArgumentException("Illegal transceiver type");
-            }
-
-            msg.enableUndecodedPackets = configuration.enableUndecoded;
-            msg.enableImagintronixOpusPackets = configuration.enableImagintronixOpus;
-            msg.enableByronSXPackets = configuration.enableByronSX;
-            msg.enableRSLPackets = configuration.enableRSL;
-            msg.enableLighting4Packets = configuration.enableLighting4;
-            msg.enableFineOffsetPackets = configuration.enableFineOffsetViking;
-            msg.enableRubicsonPackets = configuration.enableRubicson;
-            msg.enableAEPackets = configuration.enableAEBlyss;
-            msg.enableBlindsT1T2T3T4Packets = configuration.enableBlindsT1T2T3T4;
-            msg.enableBlindsT0Packets = configuration.enableBlindsT0;
-            msg.enableProGuardPackets = configuration.enableProGuard;
-            msg.enableLaCrossePackets = configuration.enableLaCrosse;
-            msg.enableHidekiUPMPackets = configuration.enableHidekiUPM;
-            msg.enableADPackets = configuration.enableADLightwaveRF;
-            msg.enableMertikPackets = configuration.enableMertik;
-            msg.enableVisonicPackets = configuration.enableVisonic;
-            msg.enableATIPackets = configuration.enableATI;
-            msg.enableOregonPackets = configuration.enableOregonScientific;
-            msg.enableMeiantechPackets = configuration.enableMeiantech;
-            msg.enableHomeEasyPackets = configuration.enableHomeEasyEU;
-            msg.enableACPackets = configuration.enableAC;
-            msg.enableARCPackets = configuration.enableARC;
-            msg.enableX10Packets = configuration.enableX10;
-
-            return msg.decodeMessage();
-        }
-
-        throw new IllegalArgumentException("");
     }
 
     public synchronized void sendMessage(RFXComMessage msg) throws RFXComException {
@@ -380,6 +258,42 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                     if (msg.subType == SubType.RESPONSE) {
                         logger.debug("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
                                 msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2, msg.firmwareVersion);
+
+                        if (msg.command == Commands.GET_STATUS) {
+                            if (configuration.ignoreConfig) {
+                                logger.debug("Ignoring transceiver configuration");
+                            } else {
+                                byte[] setMode = null;
+
+                                if (configuration.setMode != null && !configuration.setMode.isEmpty()) {
+                                    try {
+                                        setMode = DatatypeConverter.parseHexBinary(configuration.setMode);
+                                        if (setMode.length != 14) {
+                                            logger.warn("Invalid RFXCOM transceiver mode configuration");
+                                            setMode = null;
+                                        }
+                                    } catch (IllegalArgumentException ee) {
+                                        logger.warn("Failed to parse setMode data", ee);
+                                    }
+                                } else {
+                                    RFXComInterfaceControlMessage modeMsg = new RFXComInterfaceControlMessage(msg.transceiverType, configuration);
+                                    setMode = modeMsg.decodeMessage();
+                                }
+
+                                if (setMode != null) {
+                                    logger.debug("Setting RFXCOM mode using: {}", DatatypeConverter.printHexBinary(setMode));
+                                    connector.sendMessage(setMode);
+                                }
+                            }
+
+                            // No need to wait for a response to any set mode. We start
+                            // regardless of whether it fails and the RFXCOM's buffer
+                            // is big enough to queue up the command.
+                            logger.debug("Start receiver");
+                            connector.sendMessage(RFXComMessageFactory.CMD_START_RECEIVER);
+                        }
+                    } else if (msg.subType == SubType.START_RECEIVER) {
+                        updateStatus(ThingStatus.ONLINE);
                     }
                 } else if (message instanceof RFXComTransmitterMessage) {
                     RFXComTransmitterMessage resp = (RFXComTransmitterMessage) message;
@@ -410,9 +324,9 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             } catch (RFXComException e) {
                 logger.error("Error occurred during packet receiving, data: {}",
                         DatatypeConverter.printHexBinary(packet), e);
+            } catch (IOException e) {
+                errorOccurred("I/O error");
             }
-
-            updateStatus(ThingStatus.ONLINE);
         }
 
         @Override
