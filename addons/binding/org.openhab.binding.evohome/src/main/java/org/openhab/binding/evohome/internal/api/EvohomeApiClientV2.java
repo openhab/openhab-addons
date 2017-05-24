@@ -37,6 +37,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     private EvohomeGatewayConfiguration configuration = null;
     private ApiAccess apiAccess = null;
+    private final HttpClient httpClient;
 
     private UserAccount     useraccount;
     private Locations       locations;
@@ -44,8 +45,11 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        httpClient = new HttpClient(sslContextFactory);
+        httpClient.start();        
 
-        apiAccess = new ApiAccess();
+        apiAccess = new ApiAccess(httpClient);
         if (configuration != null) {
             apiAccess.setApplicationId(configuration.applicationId);
         }
@@ -91,13 +95,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public boolean login() {
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        HttpClient httpClient = new HttpClient(sslContextFactory);
-
         boolean success = false;
         try {
-            httpClient.start();
-
             // Building the HTTP request discretely here, as it is the only one with a deviant content type
             Request request = httpClient.newRequest(EvohomeApiConstants.URL_V2_AUTH);
             request.method(HttpMethod.POST);
