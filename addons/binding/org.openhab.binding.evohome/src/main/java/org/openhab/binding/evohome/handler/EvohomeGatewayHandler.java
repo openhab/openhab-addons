@@ -9,6 +9,7 @@
 package org.openhab.binding.evohome.handler;
 
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -54,7 +55,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             apiClient = new EvohomeApiClientV2(configuration);
             if (apiClient.login()) {
                 //TODO refresh token task?
-//                startRefreshTask();
+                startRefreshTask();
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
@@ -64,7 +65,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-//        disposeRefreshTask();
+        disposeRefreshTask();
         disposeApiClient();
     }
 
@@ -74,13 +75,12 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         }
         apiClient = null;
     }
-/*
     private void disposeRefreshTask() {
         if (refreshTask != null) {
             refreshTask.cancel(true);
         }
     }
-*/
+
     private boolean checkConfig() {
         try {
             if (configuration == null) {
@@ -102,24 +102,24 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
         return false;
     }
-/*
     private void startRefreshTask() {
         disposeRefreshTask();
 
         refreshTask = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                //update();
+                update();
             }
         }, 50, configuration.refreshInterval, TimeUnit.MILLISECONDS);
     }
-*/
-/*
+
+
     private void update() {
         if (getThing().getThings().isEmpty()) {
-            return;
+//            return;
         }
         logger.debug("updateChannels");
+        /*
         try {
             try {
                 apiClient.update();
@@ -142,9 +142,9 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             }
         } catch (Exception e) {
             logger.debug("updateChannels acting up", e);
-        }
+        }*/
     }
-*/
+
     public EvohomeApiClient getApiClient() {
         return apiClient;
     }

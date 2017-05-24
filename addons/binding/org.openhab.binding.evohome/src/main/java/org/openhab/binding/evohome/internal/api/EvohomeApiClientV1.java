@@ -1,4 +1,3 @@
-/*
 package org.openhab.binding.evohome.internal.api;
 
 import java.util.HashMap;
@@ -151,4 +150,4 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
         // TODO Auto-generated method stub
 
     }
-}*/
+}
