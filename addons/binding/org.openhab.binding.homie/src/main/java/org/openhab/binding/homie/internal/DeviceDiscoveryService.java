@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class DeviceDiscoveryService extends AbstractDiscoveryService implements IMqttMessageListener {
 
-    private static Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
 
     private final TopicParser topicParser;
     private MqttConnection mqttconnection;

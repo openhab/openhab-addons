@@ -47,6 +47,14 @@ ESHHomieDevice.prototype.sendprops=function(){
 	mqttspy.publish(basetopic+this.id+"/heater/max","30.0",1,true);
 	mqttspy.publish(basetopic+this.id+"/heater/step","0.5",1,true);
 	mqttspy.publish(basetopic+this.id+"/heater/desc","Heater in livingroom",1,true);
+	
+}
+
+ESHHomieDevice.prototype.sendprops2=function(){
+    mqttspy.publish(basetopic+this.id+"/switch/$type","ESH:PowerOutlet",1,true);
+    mqttspy.publish(basetopic+this.id+"/switch/$properties","value:settable,value,itemtype",1,true);
+    mqttspy.publish(basetopic+this.id+"/switch/itemtype","Switch",1,true);
+    mqttspy.publish(basetopic+this.id+"/switch/value","OFF",1,true);
 }
 
 
@@ -57,6 +65,7 @@ function publish() {
 		device.announce();
 		if(i==1){
 			device.sendprops();
+			device.sendprops2();
 		}
 	}
 

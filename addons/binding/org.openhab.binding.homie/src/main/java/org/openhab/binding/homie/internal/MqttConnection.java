@@ -82,11 +82,11 @@ public class MqttConnection {
     }
 
     public void listenForDeviceIds(IMqttMessageListener messageListener) {
-        logger.debug("Listening for devices on topic " + listenDeviceTopic);
+        logger.debug("Listening for devices on topic {}", listenDeviceTopic);
         try {
             resubscribe(listenDeviceTopic, messageListener);
         } catch (MqttException e) {
-            logger.error("Failed to subscribe to topic " + listenDeviceTopic, e);
+            logger.error("Failed to subscribe to topic {}", listenDeviceTopic, e);
         }
     }
 
@@ -94,7 +94,7 @@ public class MqttConnection {
         try {
             client.unsubscribe(listenDeviceTopic);
         } catch (MqttException e) {
-            logger.error("Failed to unsubscribe from topic " + listenDeviceTopic, e);
+            logger.error("Failed to unsubscribe from topic {}", listenDeviceTopic, e);
         }
 
     }
@@ -109,13 +109,12 @@ public class MqttConnection {
 
         String topic = String.format("%s/%s/%s", basetopic, handler.getThing().getUID().getId(),
                 channel.getProperties().get(CHANNELPROPERTY_TOPICSUFFIX));
-        logger.debug(
-                "(Re-)Subscribing to topic '" + topic + "' to listen for events of channel '" + channel.getUID() + "'");
+        logger.debug("(Re-)Subscribing to topic '{}' to listen for events of channel '{}'", topic, channel.getUID());
         try {
             resubscribe(topic, handler);
-            logger.debug("Subscribed to topic " + topic);
+            logger.debug("Subscribed to topic {}", topic);
         } catch (MqttException e) {
-            logger.error("Error (re)subscribing to channel. topic is " + topic, e);
+            logger.error("Error (re)subscribing to channel. topic is {}", topic, e);
         }
 
     }

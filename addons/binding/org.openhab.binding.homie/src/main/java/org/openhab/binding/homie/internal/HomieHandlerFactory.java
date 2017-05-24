@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
  * @author Michael Kolb - Initial contribution
  */
 public class HomieHandlerFactory extends BaseThingHandlerFactory {
-    private static Logger logger = LoggerFactory.getLogger(HomieHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(HomieHandlerFactory.class);
 
     private final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
             .newArrayList(HOMIE_DEVICE_THING_TYPE);

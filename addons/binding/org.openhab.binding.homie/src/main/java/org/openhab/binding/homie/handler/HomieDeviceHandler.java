@@ -392,15 +392,16 @@ public class HomieDeviceHandler extends BaseThingHandler implements IMqttMessage
 
                 State result = castToState(channel, message);
                 if (result != null) {
-                    logger.debug("Updating channel " + channel.getUID() + " with parsed state " + result
-                            + " which was parsed out of " + message);
+
+                    logger.debug("Updating channel {} with parsed state {} which was parsed out of {}",
+                            channel.getUID(), result, message);
                     updateState(chId, result);
                 }
             }
         }
 
         if (!processedAtLeastOnce) {
-            logger.warn("Topic '" + topicSuffix + "' with message '" + message + "' was not processed");
+            logger.warn("Topic '{}' with message '{}' was not processed", topicSuffix, message);
         }
 
     }
