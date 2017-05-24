@@ -45,6 +45,11 @@
 					<option value="433.92MHz">433.92MHz</option>
 				</options>
 			</parameter>
+			<parameter name="transmitPower" type="integer" min="-18" max="10">
+				<label>Transmit power</label>
+				<description>Transmit power in dBm, between -18dBm and +10dBm.</description>
+				<default>-18</default>
+			</parameter>
 			<parameter name="enableUndecoded" type="boolean">
 				<label>Undecoded messages</label>
 				<description>Enable display of unencoded messages to RFXCOM transceiver.</description>
