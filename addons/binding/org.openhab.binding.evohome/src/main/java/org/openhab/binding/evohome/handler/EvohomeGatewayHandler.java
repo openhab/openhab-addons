@@ -144,10 +144,10 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             logger.debug("updateChannels acting up", e);
         }
     }
-
+*/
     public EvohomeApiClient getApiClient() {
         return apiClient;
-    }*/
+    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

@@ -8,34 +8,46 @@
  */
 package org.openhab.binding.evohome.discovery;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.evohome.EvohomeBindingConstants;
+import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
+import org.openhab.binding.evohome.internal.api.models.ControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
+import org.openhab.binding.evohome.internal.api.models.v1.Device;
+import org.openhab.binding.evohome.internal.api.models.v1.Weather;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The {@link EvohomeDiscoveryService} class is capable of discovering the available data from Evohome
  *
  * @author Neil Renaud - Initial contribution
  */
-
-/*
 public class EvohomeDiscoveryService extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(EvohomeDiscoveryService.class);
     private static final int SEARCH_TIME = 2;
-    private static final String LOCATION_NAME = "Location Name";
-    private static final String LOCATION_ID = "Location Id";
-    private static final String DEVICE_NAME = "Device Name";
-    private static final String DEVICE_ID = "Device Id";
 
-    private EvohomeGatewayHandler evohomeBridgeHandler;
+    private EvohomeGatewayHandler evohomeGatewayHandler;
 
     public EvohomeDiscoveryService(EvohomeGatewayHandler evohomeBridgeHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
-        this.evohomeBridgeHandler = evohomeBridgeHandler;
+        super(EvohomeBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
+        this.evohomeGatewayHandler = evohomeBridgeHandler;
     }
 
     @Override
     public void startScan() {
         logger.debug("Evohome start scan");
-        if (evohomeBridgeHandler != null) {
+        if (evohomeGatewayHandler != null) {
             try {
-                EvohomeApiClient client = evohomeBridgeHandler.getApiClient();
+                EvohomeApiClient client = evohomeGatewayHandler.getApiClient();
                 // TODO Maybe client.update()
                 if (client != null) {
 
@@ -58,15 +70,15 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverGateway(ControlSystem controlSystem) {
         String name = controlSystem.getName();
-        ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_DISPLAY.getId(), name);
+        ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY.getId(), name);
         Map<String, Object> properties = new HashMap<>();
-        properties.put(EvohomeBindingConstants.LOCATION_NAME, name);
-        properties.put(EvohomeBindingConstants.LOCATION_ID, controlSystem.getId());
+        properties.put(EvohomeBindingConstants.DEVICE_NAME, name);
+        properties.put(EvohomeBindingConstants.DEVICE_ID, controlSystem.getId());
         addDiscoveredThing(thingUID, properties, name);
     }
 
     private void discoverWeather(Weather weather, String name, String locationId) throws IllegalArgumentException {
-        ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_LOCATION.getId(), name);
+        ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_LOCATION.getId(), name);
         Map<String, Object> properties = new HashMap<>();
         properties.put(EvohomeBindingConstants.LOCATION_NAME, name);
         properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
@@ -76,24 +88,24 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
     private void discoverRadiatorValves(Device[] devices, String locationName, String locationId)
             throws IllegalArgumentException {
         for (Device device : devices) {
-            ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_RADIATOR_VALVE.getId(),
+            ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_RADIATOR_VALVE.getId(),
                     Integer.toString(device.getDeviceId()));
             String name = device.getName();
             logger.debug("found Valve device_name:{} device_id:{} location_name:{} location_id:{}", name,
                     device.getDeviceId(), locationName, locationId);
 
             Map<String, Object> properties = new HashMap<>();
-            properties.put(DEVICE_ID, device.getDeviceId());
-            properties.put(DEVICE_NAME, device.getName());
-            properties.put(LOCATION_ID, locationId);
-            properties.put(LOCATION_NAME, locationName);
+            properties.put(EvohomeBindingConstants.DEVICE_ID, device.getDeviceId());
+            properties.put(EvohomeBindingConstants.DEVICE_NAME, device.getName());
+            properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
+            properties.put(EvohomeBindingConstants.LOCATION_NAME, locationName);
             addDiscoveredThing(thingUID, properties, name);
         }
     }
 
     private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withBridge(evohomeBridgeHandler.getThing().getUID()).withLabel(displayLabel).build();
+                .withBridge(evohomeGatewayHandler.getThing().getUID()).withLabel(displayLabel).build();
 
         thingDiscovered(discoveryResult);
     }
@@ -104,7 +116,7 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
 
             if (uid.equalsIgnoreCase(thingType)) {
 
-                return new ThingUID(supportedThingTypeUID, evohomeBridgeHandler.getThing().getUID(),
+                return new ThingUID(supportedThingTypeUID, evohomeGatewayHandler.getThing().getUID(),
                         thingId.replaceAll("[^a-zA-Z0-9_]", ""));
             }
         }
@@ -112,4 +124,3 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         throw new IllegalArgumentException("Unsupported device type discovered: " + thingType);
     }
 }
-*/
