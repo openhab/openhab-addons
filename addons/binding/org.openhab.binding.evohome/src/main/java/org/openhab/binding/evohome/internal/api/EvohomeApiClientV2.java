@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
@@ -27,17 +29,24 @@ import org.slf4j.LoggerFactory;
 public class EvohomeApiClientV2 implements EvohomeApiClient {
     private final Logger logger = LoggerFactory.getLogger(EvohomeApiClientV2.class);
 
-    private EvohomeGatewayConfiguration configuration = null;
-    private ApiAccess apiAccess = null;
+    private final SslContextFactory sslContextFactory = new SslContextFactory();
+    private final HttpClient httpClient = new HttpClient(sslContextFactory);
 
-    private UserAccount     useraccount;
-    private Locations       locations;
-    private LocationsStatus locationsStatus;
+    private EvohomeGatewayConfiguration configuration   = null;
+    private ApiAccess                   apiAccess       = null;
+    private UserAccount                 useraccount     = null;
+    private Locations                   locations       = null;
+    private LocationsStatus             locationsStatus = null;
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
-
         logger.info("Creating Evohome API client.");
+
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.error("Could not start http client.", e);
+        }
 
         apiAccess = new ApiAccess();
         if (configuration != null) {
@@ -85,12 +94,9 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public boolean login() {
-//        SslContextFactory sslContextFactory = new SslContextFactory();
-//        HttpClient httpClient = new HttpClient(sslContextFactory);
 
         boolean success = false;
         try {
-//            httpClient.start();
 
             // Building the HTTP request discretely here, as it is the only one with a deviant content type
 //            Request request = httpClient.newRequest(EvohomeApiConstants.URL_V2_AUTH);
@@ -138,9 +144,16 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         useraccount     = null;
         locations       = null;
         locationsStatus = null;
-        //TODO httpclient.stop()
-    }
 
+        if (httpClient.isStarted()) {
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                logger.error("Could not stop http client.", e);
+
+            }
+        }
+    }
 
     @Override
     public void update() {
