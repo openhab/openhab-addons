@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class MqttConnection {
     private static final int PUBLISH_QOS = 2;
     private static final int SUBSCRIBE_QOS = 2;
-    private static Logger logger = LoggerFactory.getLogger(MqttConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(MqttConnection.class);
 
     private final String brokerURL;
     private final String basetopic;
