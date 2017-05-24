@@ -329,7 +329,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 channel = ChannelBuilder.create(channelId, "Switch").withType(chTypeId).withLabel(name)
                         .withDescription("Pushbutton for " + name).build();
             } else {
-                Set<String> tags = null;
+                Set<String> tags = Collections.singleton("");
                 if (cat != null && cat.getType() == LxCategory.CategoryType.LIGHTS) {
                     tags = Collections.singleton("Lighting");
                 }

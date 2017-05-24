@@ -23,6 +23,9 @@ import org.openhab.binding.loxone.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
 /**
  * Loxone Miniserver representaton.
  * <p>
@@ -515,18 +518,27 @@ public class LxServer {
         for (LxJsonApp3.LxJsonControl ctrl : config.controls.values()) {
 
             Map<String, LxControlState> newStates = new HashMap<String, LxControlState>();
-            for (Map.Entry<String, String> state : ctrl.states.entrySet()) {
-
-                LxUuid stateId = new LxUuid(state.getValue());
-                String stateName = state.getKey().toLowerCase();
-                LxControlState controlState = findState(stateId);
-                if (controlState == null) {
-                    stateId = addUuid(stateId);
-                    controlState = new LxControlState(stateId, stateName, null);
-                } else {
-                    controlState.setName(stateName);
+            for (Map.Entry<String, JsonElement> state : ctrl.states.entrySet()) {
+                JsonElement element = state.getValue();
+                if (element instanceof JsonArray) {
+                    // temperature state of intelligent home controller object is the only
+                    // one that has state represented as an array, as this is not implemented
+                    // yet, we will skip this state
+                    continue;
                 }
-                newStates.put(stateName, controlState);
+                String value = element.getAsString();
+                if (value != null) {
+                    LxUuid stateId = new LxUuid(value);
+                    String stateName = state.getKey().toLowerCase();
+                    LxControlState controlState = findState(stateId);
+                    if (controlState == null) {
+                        stateId = addUuid(stateId);
+                        controlState = new LxControlState(stateId, stateName, null);
+                    } else {
+                        controlState.setName(stateName);
+                    }
+                    newStates.put(stateName, controlState);
+                }
             }
 
             LxUuid catUuid = null;

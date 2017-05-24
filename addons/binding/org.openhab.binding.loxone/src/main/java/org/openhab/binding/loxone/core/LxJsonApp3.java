@@ -10,6 +10,8 @@ package org.openhab.binding.loxone.core;
 
 import java.util.Map;
 
+import com.google.gson.JsonElement;
+
 /**
  * A structure of JSON file http://miniserver/data/LoxAPP3.json used for parsing it with Gson library.
  *
@@ -63,6 +65,6 @@ class LxJsonApp3 {
         String room;
         String cat;
         LxJsonDetails details;
-        Map<String, String> states;
+        Map<String, JsonElement> states;
     }
 }
