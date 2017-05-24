@@ -227,9 +227,9 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     public ZoneStatus getHeatingZone(int locationId, int zoneId) {
         LocationsStatus myLocationsStatus = getLocationStatus();
         for(LocationStatus myLocationStatus : myLocationsStatus){
-            if(locationId == myLocationStatus.LocationId){
-                for(GatewayStatus gatewayStatus : myLocationStatus.Gateways){
-                    for(TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.TemperatureControlSystems){
+            for(GatewayStatus gatewayStatus : myLocationStatus.Gateways){
+                for(TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.TemperatureControlSystems){
+                    if(temperatureControlSystem.SystemId == locationId){
                         for(ZoneStatus zone : temperatureControlSystem.Zones){
                             if(zone.ZoneId == zoneId){
                                 return zone;
@@ -238,6 +238,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                     }
                 }
             }
+
         }
         return null;
     }
