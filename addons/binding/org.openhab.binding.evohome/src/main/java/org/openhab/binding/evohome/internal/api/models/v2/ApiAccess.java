@@ -3,6 +3,7 @@ package org.openhab.binding.evohome.internal.api.models.v2;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
 import org.slf4j.Logger;
@@ -10,21 +11,13 @@ import org.slf4j.LoggerFactory;
 
 public class ApiAccess {
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
+    private final HttpClient httpClient;
+
     private static Authentication authenticationData;
     private static String applicationId;
 
-//    SslContextFactory sslContextFactory = new SslContextFactory();
-//    HttpClient httpClient = new HttpClient(sslContextFactory);
-
-    public ApiAccess() {
-        /*
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            httpClient = null;
-            logger.error("Failed to start httpClient", e);
-        }
-        */
+    public ApiAccess(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     public void setAuthentication(Authentication authentication) {

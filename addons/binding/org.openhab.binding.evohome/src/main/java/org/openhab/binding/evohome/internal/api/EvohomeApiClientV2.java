@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
@@ -48,7 +51,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             logger.error("Could not start http client.", e);
         }
 
-        apiAccess = new ApiAccess();
+        apiAccess = new ApiAccess(httpClient);
         if (configuration != null) {
             apiAccess.setApplicationId(configuration.applicationId);
         }
@@ -97,12 +100,11 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         boolean success = false;
         try {
-
             // Building the HTTP request discretely here, as it is the only one with a deviant content type
-//            Request request = httpClient.newRequest(EvohomeApiConstants.URL_V2_AUTH);
-//            request.method(HttpMethod.POST);
-//            request.header("Authorization", "Basic YjAxM2FhMjYtOTcyNC00ZGJkLTg4OTctMDQ4YjlhYWRhMjQ5OnRlc3Q=");
-//            request.header("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
+            Request request = httpClient.newRequest(EvohomeApiConstants.URL_V2_AUTH);
+            request.method(HttpMethod.POST);
+            request.header("Authorization", "Basic YjAxM2FhMjYtOTcyNC00ZGJkLTg4OTctMDQ4YjlhYWRhMjQ5OnRlc3Q=");
+            request.header("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 
             String data = "Username=" + URLEncoder.encode(configuration.username, "UTF-8") + "&"
                     + "Password=" + URLEncoder.encode(configuration.password, "UTF-8") + "&"
@@ -114,16 +116,17 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                     + "Content-Type=application%2Fx-www-form-urlencoded%3B+charset%3Dutf-8&"
                     + "Connection=Keep-Alive";
 
-//            request.content(new StringContentProvider(data), "application/x-www-form-urlencoded");
+            request.content(new StringContentProvider(data), "application/x-www-form-urlencoded");
 
-//            ContentResponse response = request.send();
-//            if (response.getStatus() == 200) {
-//                String reply = response.getContentAsString();
-//                success = true;
-//                apiAccess.setAuthentication(new Gson().fromJson(reply, Authentication.class));
-//            }
+            ContentResponse response = request.send();
+            if (response.getStatus() == 200) {
+                String reply = response.getContentAsString();
+                success = true;
+                //TODO
+                //apiAccess.setAuthentication(new Gson().fromJson(reply, Authentication.class))
+            }
         } catch (Exception e) {
-//            apiAccess.setAuthentication(null);
+            apiAccess.setAuthentication(null);
             logger.error("Authorization failed", e);
         }
 
@@ -133,8 +136,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             locations   = requestLocations();
         }
 
-        //TODO remove this
-        success = true;
         return success;
     }
 
