@@ -58,7 +58,8 @@ public enum RFXComValueSelector {
     VOLTAGE(RFXComBindingConstants.CHANNEL_VOLTAGE, NumberItem.class),
     SET_POINT(RFXComBindingConstants.CHANNEL_SET_POINT, NumberItem.class),
     DATE_TIME(RFXComBindingConstants.CHANNEL_DATE_TIME, DateTimeItem.class),
-    LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY, SwitchItem.class);
+    LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY, SwitchItem.class),
+    CHIME_SOUND(RFXComBindingConstants.CHANNEL_CHIME_SOUND, NumberItem.class);
 
     private final String text;
     private Class<? extends Item> itemClass;
