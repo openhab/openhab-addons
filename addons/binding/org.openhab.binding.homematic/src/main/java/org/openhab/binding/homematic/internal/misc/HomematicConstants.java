@@ -37,6 +37,7 @@ public class HomematicConstants {
     public static final String CHANNEL_TYPE_BLIND = "BLIND";
     public static final String CHANNEL_TYPE_WINMATIC = "WINMATIC";
     public static final String CHANNEL_TYPE_AKKU = "AKKU";
+    public static final String CHANNEL_TYPE_JALOUSIE = "JALOUSIE";
 
     public static final String DATAPOINT_NAME_CONFIG_PENDING = "CONFIG_PENDING";
     public static final String DATAPOINT_NAME_UPDATE_PENDING = "UPDATE_PENDING";
@@ -66,6 +67,8 @@ public class HomematicConstants {
     public static final String DATAPOINT_NAME_RSSI_DEVICE = "RSSI_DEVICE";
     public static final String DATAPOINT_NAME_RSSI_PEER = "RSSI_PEER";
     public static final String DATAPOINT_NAME_AES_KEY = "AES_KEY";
+    public static final String DATAPOINT_NAME_VALUE = "VALUE";
+    public static final String DATAPOINT_NAME_CALIBRATION = "CALIBRATION";
 
     public static final String VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE = "BATTERY_TYPE";
     public static final String VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE_MODE = "DELETE_DEVICE_MODE";

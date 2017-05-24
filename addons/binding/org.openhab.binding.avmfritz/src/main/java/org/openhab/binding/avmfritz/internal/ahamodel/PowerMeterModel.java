@@ -20,7 +20,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author Robert Bausdorf
  *
- *
  */
 @XmlRootElement(name = "powermeter")
 @XmlType(propOrder = { "power", "energy" })

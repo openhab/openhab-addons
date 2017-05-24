@@ -40,7 +40,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
+import gnu.io.RXTXCommDriver;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
@@ -97,15 +99,40 @@ public class OceanicThingHandler extends BaseThingHandler {
 
         if (serialPort == null && port != null && baud != 0) {
 
-            @SuppressWarnings("rawtypes")
-            Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-            while (portList.hasMoreElements()) {
-                CommPortIdentifier id = (CommPortIdentifier) portList.nextElement();
-                if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-                    if (id.getName().equals(port)) {
-                        logger.debug("Serial port '{}' has been found.", port);
-                        portId = id;
-                    }
+            // Cfr. https://github.com/NeuronRobotics/nrjavaserial/issues/96
+            //
+            // On Ubuntu 17.10 nrjavaserial seems to return only HEX 00 characters through the InputStream of the
+            // SerialPort. The solution is to implement a workaround with socat
+            // and pipe the data from the Serial Port to a pseudo tty, which has to be manipulated in a
+            // CommPortIdentifier.PORT_RAW manner.
+            //
+            // For example : /usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0
+            //
+            // The workaround can be implemented using a systemd system manager script, for example:
+            //
+            // [Install]
+            // WantedBy=multi-user.target
+            //
+            // [Service]
+            // #Type=forking
+            // ExecStart=/usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0
+            // #PIDFile=/var/run/socat.pid
+            // User=root
+            // Restart=always
+            // RestartSec=10
+
+            if (portId == null) {
+                try {
+                    RXTXCommDriver rxtxCommDriver = new RXTXCommDriver();
+                    rxtxCommDriver.initialize();
+                    CommPortIdentifier.addPortName(port, CommPortIdentifier.PORT_RAW, rxtxCommDriver);
+                    portId = CommPortIdentifier.getPortIdentifier(port);
+                } catch (NoSuchPortException e) {
+                    logger.error("An exception occurred while setting up serial port '{}' : '{}'", port, e.getMessage(),
+                            e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Could not setup serial port " + serialPort + ": " + e.getMessage());
+                    return;
                 }
             }
 
@@ -131,6 +158,7 @@ public class OceanicThingHandler extends BaseThingHandler {
                 try {
                     serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                             SerialPort.PARITY_NONE);
+                    serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
                 } catch (UnsupportedCommOperationException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Could not configure serial port " + serialPort + ": " + e.getMessage());
@@ -150,7 +178,8 @@ public class OceanicThingHandler extends BaseThingHandler {
                 readerThread.start();
             } else {
                 StringBuilder sb = new StringBuilder();
-                portList = CommPortIdentifier.getPortIdentifiers();
+                @SuppressWarnings("rawtypes")
+                Enumeration portList = CommPortIdentifier.getPortIdentifiers();
                 while (portList.hasMoreElements()) {
                     CommPortIdentifier id = (CommPortIdentifier) portList.nextElement();
                     if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
@@ -176,12 +205,6 @@ public class OceanicThingHandler extends BaseThingHandler {
             pollingJob = null;
         }
 
-        IOUtils.closeQuietly(inputStream);
-        IOUtils.closeQuietly(outputStream);
-        if (serialPort != null) {
-            serialPort.close();
-        }
-
         if (readerThread != null) {
             try {
                 readerThread.interrupt();
@@ -190,6 +213,12 @@ public class OceanicThingHandler extends BaseThingHandler {
                 logger.error("An exception occurred while interrupting the serial port reader thread : {}",
                         e.getMessage(), e);
             }
+        }
+
+        IOUtils.closeQuietly(inputStream);
+        IOUtils.closeQuietly(outputStream);
+        if (serialPort != null) {
+            serialPort.close();
         }
     }
 
@@ -313,6 +342,9 @@ public class OceanicThingHandler extends BaseThingHandler {
         String port = (String) this.getConfig().get(PORT);
 
         try {
+            if (logger.isTraceEnabled()) {
+                logger.trace("writeString : {} ('{}')", msg, msg.getBytes());
+            }
             outputStream.write(msg.getBytes());
             outputStream.flush();
         } catch (IOException e) {
@@ -335,11 +367,17 @@ public class OceanicThingHandler extends BaseThingHandler {
         }
 
         public void reset() {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Resetting the SerialPortReader");
+            }
             index = 0;
         }
 
         @Override
         public void interrupt() {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Interrupting the SerialPortReader");
+            }
             interrupted = true;
             super.interrupt();
             try {
@@ -352,51 +390,65 @@ public class OceanicThingHandler extends BaseThingHandler {
         @Override
         public void run() {
 
+            if (logger.isTraceEnabled()) {
+                logger.trace("Starting the serial port reader");
+            }
+
             byte[] dataBuffer = new byte[bufferSize];
             byte[] tmpData = new byte[bufferSize];
-            boolean foundStart = false;
             String line;
 
             final byte lineFeed = (byte) '\n';
             final byte carriageReturn = (byte) '\r';
             final byte nullChar = (byte) '\0';
 
-            long sleep = 100;
+            long sleep = 10;
             int len = -1;
 
             try {
                 while (interrupted != true) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Reading the inputStream");
+                    }
+
                     if ((len = inputStream.read(tmpData)) > -1) {
-                        foundStart = false;
+                        if (logger.isTraceEnabled()) {
+                            StringBuilder sb = new StringBuilder();
+                            for (int i = 0; i < len; i++) {
+                                sb.append(String.format("%02X", tmpData[i]));
+                                sb.append(" ");
+                            }
+                            logger.trace("Read {} bytes : {}", len, sb.toString());
+                        }
                         for (int i = 0; i < len; i++) {
-                            if (i > 0) {
-                                if (tmpData[i] != lineFeed && tmpData[i] != carriageReturn && tmpData[i] != nullChar) {
-                                    if (tmpData[i - 1] == lineFeed || tmpData[i - 1] == carriageReturn
-                                            || tmpData[i - 1] == nullChar) {
-                                        index = 0;
-                                        foundStart = true;
-                                    }
-                                }
+                            if (logger.isTraceEnabled()) {
+                                logger.trace("Byte {} equals '{}' (hex '{}')", i, new String(new byte[] { tmpData[i] }),
+                                        String.format("%02X", tmpData[i]));
                             }
 
                             if (tmpData[i] != lineFeed && tmpData[i] != carriageReturn && tmpData[i] != nullChar) {
-                                if (i == 0) {
-                                    foundStart = true;
-                                }
                                 dataBuffer[index++] = tmpData[i];
+                                if (logger.isTraceEnabled()) {
+                                    logger.trace("dataBuffer[{}] set to '{}'(hex '{}')", index - 1,
+                                            new String(new byte[] { dataBuffer[index - 1] }),
+                                            String.format("%02X", dataBuffer[index - 1]));
+                                }
                             }
 
                             if (i > 0 && (tmpData[i] == lineFeed || tmpData[i] == carriageReturn
                                     || tmpData[i] == nullChar)) {
                                 if (index > 0) {
-                                    if (foundStart) {
-                                        line = StringUtils.chomp(new String(Arrays.copyOf(dataBuffer, index)));
-                                        line = line.replace(",", ".");
-                                        line = line.trim();
-                                        lastLineReceived = line;
-                                        index = 0;
-                                        break;
+                                    if (logger.isTraceEnabled()) {
+                                        logger.trace("The resulting line is '{}'",
+                                                new String(Arrays.copyOf(dataBuffer, index)));
                                     }
+                                    line = StringUtils.chomp(new String(Arrays.copyOf(dataBuffer, index)));
+                                    line = line.replace(",", ".");
+                                    line = line.trim();
+                                    index = 0;
+
+                                    lastLineReceived = line;
+                                    break;
                                 }
                             }
 

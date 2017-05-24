@@ -14,6 +14,8 @@ package org.openhab.binding.rfxcom.internal.config;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComBridgeConfiguration {
+    public static final String SERIAL_PORT = "serialPort";
+    public static final String BRIDGE_ID = "bridgeId";
 
     // Serial port for manual configuration
     public String serialPort;

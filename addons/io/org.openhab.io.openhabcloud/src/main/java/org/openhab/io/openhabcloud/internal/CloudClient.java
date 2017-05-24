@@ -11,7 +11,9 @@ package org.openhab.io.openhabcloud.internal;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -124,6 +126,11 @@ public class CloudClient {
     private Socket socket;
 
     /*
+     * The protocol of the openHAB-cloud URL.
+     */
+    private String protocol = "https";
+
+    /*
      * This variable holds instance of CloudClientListener which provides callbacks to communicate
      * certain events from the openHAB Cloud back to openHAB
      */
@@ -161,8 +168,12 @@ public class CloudClient {
     public void connect() {
         try {
             socket = IO.socket(baseURL);
+            URL parsed = new URL(baseURL);
+            protocol = parsed.getProtocol();
         } catch (URISyntaxException e) {
             logger.error("Error creating Socket.IO: {}", e.getMessage());
+        } catch (MalformedURLException e) {
+            logger.error("Error parsing baseURL to get protocol, assuming https. Error: {}", e.getMessage());
         }
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override
@@ -330,7 +341,12 @@ public class CloudClient {
             logger.debug("Request method is {}", requestMethod);
             Request request = jettyClient.newRequest(requestUri);
             setRequestHeaders(request, requestHeadersJson);
-            request.header("X-Forwarded-Proto", "https");
+            String proto = protocol;
+            if (data.has("protocol")) {
+                proto = data.getString("protocol");
+            }
+            request.header("X-Forwarded-Proto", proto);
+
             if (requestMethod.equals("GET")) {
                 request.method(HttpMethod.GET);
             } else if (requestMethod.equals("POST")) {

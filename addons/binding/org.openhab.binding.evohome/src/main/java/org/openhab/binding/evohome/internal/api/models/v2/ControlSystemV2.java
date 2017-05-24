@@ -40,7 +40,6 @@ public class ControlSystemV2 extends BaseControlSystem {
         return null;
     }
 
-    @Override
     public TemperatureControlSystem getHeatingZones() {
         return this.system;
     }

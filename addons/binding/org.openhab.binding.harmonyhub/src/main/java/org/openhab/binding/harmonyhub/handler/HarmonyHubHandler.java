@@ -124,6 +124,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     @Override
     public void initialize() {
+        cancelRetry();
         connect();
     }
 
@@ -131,6 +132,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
     public void dispose() {
         listeners.clear();
         buttonExecutor.shutdownNow();
+        cancelRetry();
         disconnectFromHub();
         factory.removeChannelTypesForThing(getThing().getUID());
     }
@@ -226,18 +228,13 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
     }
 
     private void disconnectFromHub() {
-        if (retryJob != null && !retryJob.isDone()) {
-            retryJob.cancel(true);
-        }
-
         if (heartBeatJob != null && !heartBeatJob.isDone()) {
-            heartBeatJob.cancel(true);
+            heartBeatJob.cancel(false);
         }
 
         if (client != null) {
             client.removeListener(this);
             client.disconnect();
-            client = null;
         }
     }
 
@@ -250,6 +247,12 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
             }
         }, RETRY_TIME, TimeUnit.SECONDS);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+    }
+
+    private void cancelRetry() {
+        if (retryJob != null && !retryJob.isDone()) {
+            retryJob.cancel(false);
+        }
     }
 
     private void updateState(Activity activity) {
