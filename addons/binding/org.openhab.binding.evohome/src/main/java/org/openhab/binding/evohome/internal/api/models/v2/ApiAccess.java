@@ -21,6 +21,11 @@ public class ApiAccess {
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private static Authentication authenticationData;
     private static String applicationId;
+    private final HttpClient httpClient;
+    
+    public ApiAccess(HttpClient httpClient){
+        this.httpClient = httpClient;
+    }
 
     public void setAuthentication(Authentication authentication) {
         ApiAccess.authenticationData = authentication;
@@ -38,9 +43,6 @@ public class ApiAccess {
             TIn                 requestContainer,
             TOut                out) {
         try {
-            SslContextFactory sslContextFactory = new SslContextFactory();
-            HttpClient httpClient = new HttpClient(sslContextFactory);
-            httpClient.start();
             Request request = httpClient.newRequest(url).method(method);
 
             if (headers != null) {
