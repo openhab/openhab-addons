@@ -7,8 +7,8 @@ Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: ., lib/httpclient-4.5.2.jar, lib/httpcore-4.4.6.jar, lib/httpmime-4.5.2.jar
 Import-Package: 
- org.openhab.binding.camera,
- org.openhab.binding.camera.handler,
+ org.apache.commons.io;version="2.2.0",
+ org.apache.commons.logging;version="1.1.1",
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
@@ -16,10 +16,9 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.camera,
+ org.openhab.binding.camera.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.camera,
  org.openhab.binding.camera.handler
-Require-Bundle: org.apache.commons.io,
- org.apache.commons.logging;bundle-version="1.1.1",
- org.apache.commons.codec;bundle-version="1.6.0"
