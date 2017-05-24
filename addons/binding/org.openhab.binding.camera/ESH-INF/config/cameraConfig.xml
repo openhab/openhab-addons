@@ -14,6 +14,16 @@
             <description>Url for receiving the camera snapshot</description>
             <default>http://ip/image.jpg</default>
         </parameter>
+        <parameter name="urlUsername" type="text">
+            <label>Username:</label>
+            <description>Username for accessing camera (empty for standard)</description>
+            <default></default>
+        </parameter>
+        <parameter name="urlPassword" type="text">
+            <label>Password:</label>
+            <description>Password for accessing camera (empty for standard)</description>
+            <default></default>
+        </parameter>
         <parameter name="urlVideo" type="text">
             <label>Video Url:</label>
             <description>Url for receiving the camera video. ..TODO..</description>

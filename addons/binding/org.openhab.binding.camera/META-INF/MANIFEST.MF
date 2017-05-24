@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.openhab.binding.camera;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .
+Bundle-ClassPath: ., lib/httpclient-4.5.2.jar, lib/httpcore-4.4.6.jar, lib/httpmime-4.5.2.jar
 Import-Package: 
  org.openhab.binding.camera,
  org.openhab.binding.camera.handler,
@@ -20,3 +20,6 @@ Import-Package:
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.camera,
  org.openhab.binding.camera.handler
+Require-Bundle: org.apache.commons.io,
+ org.apache.commons.logging;bundle-version="1.1.1",
+ org.apache.commons.codec;bundle-version="1.6.0"

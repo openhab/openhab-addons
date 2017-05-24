@@ -11,13 +11,27 @@ import static org.openhab.binding.camera.CameraBindingConstants.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -53,6 +67,8 @@ public class CameraHandler extends BaseThingHandler {
     }
 
     private String urlSnapshot;
+    private String urlUsername = "";
+    private String urlPassword = "";
 
     @Override
     public void initialize() {
@@ -60,10 +76,18 @@ public class CameraHandler extends BaseThingHandler {
         if (logger.isDebugEnabled()) {
             logger.debug("Initialize thing: {}::{}", getThing().getLabel(), getThing().getUID());
         }
-        Object param = getConfig().get("urlSnapshot");
-        urlSnapshot = String.valueOf(param);
+        Object paramUrl = getConfig().get("urlSnapshot");
+        urlSnapshot = String.valueOf(paramUrl);
+        Object paramUsername = getConfig().get("urlUsername");
+        if (paramUsername != null) {
+            urlUsername = String.valueOf(paramUsername);
+        }
+        Object paramPassword = getConfig().get("urlPassword");
+        if (paramPassword != null) {
+            urlPassword = String.valueOf(paramPassword);
+        }
         try {
-            param = getConfig().get("poll");
+            Object param = getConfig().get("poll");
             CONFIGURATION_POLLTIME_S = (int) Double.parseDouble(String.valueOf(param));
         } catch (Exception e1) {
             logger.warn("could not read poll time", e1);
@@ -92,7 +116,8 @@ public class CameraHandler extends BaseThingHandler {
                         if (urlSnapshot != null) {
                             try {
                                 final URL url = new URL(urlSnapshot);
-                                updateState(cx.getUID(), new RawType(readImage(url).toByteArray(), "image/jpeg"));
+                                updateState(cx.getUID(), new RawType(
+                                        readImage(url, urlUsername, urlPassword).toByteArray(), "image/jpeg"));
                                 updateStatus(ThingStatus.ONLINE);
                             } catch (MalformedURLException e) {
                                 logger.warn("could not update value: {}", getThing(), e);
@@ -128,24 +153,35 @@ public class CameraHandler extends BaseThingHandler {
         }, 10, CONFIGURATION_POLLTIME_S, TimeUnit.SECONDS);
     }
 
-    private static ByteArrayOutputStream readImage(URL url) throws IOException {
-        ByteArrayOutputStream bis = new ByteArrayOutputStream();
-        InputStream is = null;
-        try {
-            is = url.openStream();
-            byte[] bytebuff = new byte[4096];
-            int n;
-            while ((n = is.read(bytebuff)) > 0) {
-                bis.write(bytebuff, 0, n);
-            }
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (Exception ignored) {
-            }
+    private static ByteArrayOutputStream readImage(URL url, String username, String password) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        URI uri = url.toURI();
+        org.apache.http.HttpHost targetHost = new org.apache.http.HttpHost(uri.getHost(), uri.getPort());
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpClientContext context = HttpClientContext.create();
+        HttpGet httpget = new HttpGet(uri);
+        if (username != null && username.length() > 0) {
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            credsProvider.setCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()),
+                    new UsernamePasswordCredentials(username, password));
+
+            // Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+            BasicScheme basicAuth = new BasicScheme();
+            authCache.put(targetHost, basicAuth);
+
+            // Add AuthCache to the execution context
+            context.setCredentialsProvider(credsProvider);
+            context.setAuthCache(authCache);
         }
-        return bis;
+        CloseableHttpResponse response = httpclient.execute(httpget, context);
+        try {
+            HttpEntity entity = response.getEntity();
+            IOUtils.copy(entity.getContent(), baos);
+            entity.getContent();
+        } finally {
+            response.close();
+        }
+        return baos;
     }
 }
