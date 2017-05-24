@@ -119,6 +119,8 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 //            return;
         }
         logger.info("updateChannels");
+
+        apiClient.update();
         /*
         try {
             try {

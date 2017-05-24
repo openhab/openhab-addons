@@ -18,9 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
-import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v1.Device;
 import org.openhab.binding.evohome.internal.api.models.v1.Weather;
 import org.slf4j.Logger;
@@ -45,6 +43,8 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
     @Override
     public void startScan() {
         logger.debug("Evohome start scan");
+
+/*
         if (evohomeGatewayHandler != null) {
             try {
                 EvohomeApiClient client = evohomeGatewayHandler.getApiClient();
@@ -65,6 +65,7 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
                 logger.warn("{}", e.getMessage(), e);
             }
         }
+        */
         stopScan();
     }
 
