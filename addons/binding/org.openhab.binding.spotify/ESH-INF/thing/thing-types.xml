@@ -106,6 +106,7 @@
             <channel id="devicePlay" typeId="devicePlay"/>
             <channel id="deviceVolume" typeId="deviceVolume"/>
             <channel id="deviceActive" typeId="deviceActive"/>
+            <channel id="deviceRestricted" typeId="deviceRestricted"/>
             <channel id="deviceShuffle" typeId="deviceShuffle"/>
         </channels>
         
@@ -295,6 +296,12 @@
         <item-type>Switch</item-type>
         <label>Spotify Connect Device Active</label>
         <description>Channel reports active status for device</description>
+        <category>Switch</category>
+    </channel-type>
+    <channel-type id="deviceRestricted">
+        <item-type>Switch</item-type>
+        <label>Spotify Connect Device Restricted</label>
+        <description>Channel reports whether the device is restricted or not - can it be controlled or not?</description>
         <category>Switch</category>
     </channel-type>
 

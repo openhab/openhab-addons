@@ -144,6 +144,10 @@ public class SpotifySession implements Runnable {
                     accessToken = test.accessToken;
                     tokenValidity = test.getExpiresIn();
                     return test;
+                } else if (response.getStatus() == 400) {
+                    logger.error("Response: {} - verify that Spotify Client ID and Client Secret are correct!",
+                            response.getContentAsString());
+
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("Error calling Spotify Web API for authorization - no accessToken!", e);
@@ -217,7 +221,7 @@ public class SpotifySession implements Runnable {
         }
 
         // TODO: Find a more suitable to retrieve token validity if it changes after being scheduled? Scheduling refresh
-        // 10 seconds before expiring.
+        // 10 seconds before expiring. Can this make use of existing thread/threadpools?
         tokenValidity -= 10;
         future = scheduledExecutorService.scheduleWithFixedDelay(this, tokenValidity, tokenValidity, TimeUnit.SECONDS);
 

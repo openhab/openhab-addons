@@ -342,4 +342,5 @@ public class SpotifyAuthServlet extends HttpServlet implements SpotifyAuthServic
             this.clientId = clientId;
         }
     }
+
 }

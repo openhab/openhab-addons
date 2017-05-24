@@ -8,8 +8,7 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
-    name="org.openhab.binding.spotify.internal.SpotifyAuthServlet">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.openhab.binding.spotify.internal.SpotifyAuthServlet">
     <implementation
         class="org.openhab.binding.spotify.internal.SpotifyAuthServlet" />
     <reference interface="org.osgi.service.http.HttpService"

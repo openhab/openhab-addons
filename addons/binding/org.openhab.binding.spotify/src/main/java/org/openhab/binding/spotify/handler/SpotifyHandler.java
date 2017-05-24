@@ -250,145 +250,32 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
 
     }
 
+    /**
+     * This method initiates a new thread for polling the available Spotify Connect devices and update the player
+     * information
+     *
+     * @param intervall the number of seconds between update requests.
+     */
     private void startPolling(int intervall) {
-        //
+        // Cancel the previous thread
         if (future != null) {
             future.cancel(false);
         }
 
+        // TODO: See if the creation of thread here can be replaced with existing threads & thread pools.
         Runnable task = () -> {
             try {
-                logger.debug("Polling Spotify Connect for status");
-                List<SpotifyDeviceHandler> availableDevices = new ArrayList<SpotifyDeviceHandler>();
+                logger.debug("Polling Spotify for status");
+                updateDeviceStatus();
 
-                // No reason to query Spotify for device and player status if we don't have any devices configured.
-                if (knownDevices.size() > 0) {
+                // TODO: Determine if the player info query should be seprated from the device status query.
+                updatePlayerInfo();
 
-                    // TODO: decide on whether to add automatic discovery of devices not configured as things here and
-                    // get rid of discovery implementation.
-                    List<SpotifySession.SpotifyWebAPIDeviceList.Device> spotifyDevices = spotifySession.listDevices();
-                    for (SpotifySession.SpotifyWebAPIDeviceList.Device device : spotifyDevices) {
-                        if (knownDevices.containsKey(device.getId())) {
-
-                            SpotifyDeviceHandler handler = knownDevices.get(device.getId());
-
-                            // Device status is not always available from Spotify Web API so list of available devices
-                            // can
-                            // vary
-                            availableDevices.add(handler);
-
-                            // handler.setChannelValue(CHANNEL_DEVICEID, new StringType(device.getId()));
-                            handler.setChannelValue(CHANNEL_DEVICENAME, new StringType(device.getName()));
-                            handler.setChannelValue(CHANNEL_DEVICETYPE, new StringType(device.getType()));
-                            handler.setChannelValue(CHANNEL_DEVICEVOLUME, new PercentType(device.getVolumePercent()));
-                            handler.setChannelValue(CHANNEL_DEVICEACTIVE,
-                                    device.getIsActive() ? OnOffType.ON : OnOffType.OFF);
-                        }
-                    }
-
-                    Collection<SpotifyDeviceHandler> spotifyDevicesList = knownDevices.values();
-                    for (SpotifyDeviceHandler handler : spotifyDevicesList) {
-                        if (availableDevices.contains(handler)) {
-                            if (handler.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
-                                handler.changeStatus(ThingStatus.ONLINE);
-                                logger.debug("Taking device {} ONLINE.", handler.getThing().getUID());
-                            }
-                        }
-                        if (!availableDevices.contains(handler)) {
-                            if (handler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                                logger.debug("Deactivating device {}", handler.getThing().getUID());
-                                Channel channel = handler.getThing().getChannel(CHANNEL_DEVICEACTIVE);
-                                updateState(channel.getUID(), OnOffType.OFF);
-                                logger.debug("Taking device {} OFFLINE.", handler.getThing().getUID());
-                                handler.changeStatus(ThingStatus.OFFLINE);
-                            }
-                        }
-                    }
-
-                    SpotifyWebAPIPlayerInfo playerInfo = spotifySession.getPlayerInfo();
-
-                    setChannelValue(CHANNEL_TRACKPLAYER,
-                            playerInfo.getIsPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-                    setChannelValue(CHANNEL_TRACKSHUFFLE, playerInfo.getShuffleState() ? OnOffType.ON : OnOffType.OFF);
-                    setChannelValue(CHANNEL_TRACKREPEAT, new StringType(playerInfo.getRepeatState()));
-
-                    Long progress = playerInfo.getProgressMs();
-                    Long duration = playerInfo.getItem().getDurationMs();
-                    setChannelValue(CHANNEL_PLAYED_TRACKPROGRESS, new DecimalType(progress));
-                    setChannelValue(CHANNEL_PLAYED_TRACKDURATION, new DecimalType(duration));
-
-                    try {
-                        SimpleDateFormat fmt = new SimpleDateFormat("m:ss");
-                        String progressFmt = fmt.format(new Date(progress));
-                        String durationFmt = fmt.format(new Date(duration));
-                        setChannelValue(CHANNEL_PLAYED_TRACKPROGRESSFMT, new StringType(progressFmt));
-                        setChannelValue(CHANNEL_PLAYED_TRACKDURATIONFMT, new StringType(durationFmt));
-                    } catch (Exception ex) {
-                        logger.error("Exception while formatting duration and progress", ex);
-                    }
-                    setChannelValue(CHANNEL_PLAYED_TRACKID, new StringType(playerInfo.getItem().getId()));
-                    setChannelValue(CHANNEL_PLAYED_TRACKHREF, new StringType(playerInfo.getItem().getHref()));
-                    setChannelValue(CHANNEL_PLAYED_TRACKURI, new StringType(playerInfo.getItem().getUri()));
-                    setChannelValue(CHANNEL_PLAYED_TRACKNAME, new StringType(playerInfo.getItem().getName()));
-                    setChannelValue(CHANNEL_PLAYED_TRACKTYPE, new StringType(playerInfo.getItem().getType()));
-                    setChannelValue(CHANNEL_PLAYED_TRACKNUMBER,
-                            new StringType(playerInfo.getItem().getTrackNumber().toString()));
-                    setChannelValue(CHANNEL_PLAYED_TRACKDISCNUMBER,
-                            new StringType(playerInfo.getItem().getDiscNumber().toString()));
-                    setChannelValue(CHANNEL_PLAYED_TRACKPOPULARITY,
-                            new DecimalType(playerInfo.getItem().getPopularity()));
-
-                    setChannelValue(CHANNEL_PLAYED_ALBUMID, new StringType(playerInfo.getItem().getAlbum().getId()));
-                    setChannelValue(CHANNEL_PLAYED_ALBUMHREF,
-                            new StringType(playerInfo.getItem().getAlbum().getHref()));
-                    setChannelValue(CHANNEL_PLAYED_ALBUMURI, new StringType(playerInfo.getItem().getAlbum().getUri()));
-                    setChannelValue(CHANNEL_PLAYED_ALBUMNAME,
-                            new StringType(playerInfo.getItem().getAlbum().getName()));
-                    setChannelValue(CHANNEL_PLAYED_ALBUMTYPE,
-                            new StringType(playerInfo.getItem().getAlbum().getType()));
-
-                    if (playerInfo.getItem().getArtists().size() > 0) {
-                        setChannelValue(CHANNEL_PLAYED_ARTISTID,
-                                new StringType(playerInfo.getItem().getArtists().get(0).getId()));
-                        setChannelValue(CHANNEL_PLAYED_ARTISTHREF,
-                                new StringType(playerInfo.getItem().getArtists().get(0).getHref()));
-                        setChannelValue(CHANNEL_PLAYED_ARTISTURI,
-                                new StringType(playerInfo.getItem().getArtists().get(0).getUri()));
-                        setChannelValue(CHANNEL_PLAYED_ARTISTNAME,
-                                new StringType(playerInfo.getItem().getArtists().get(0).getName()));
-                        setChannelValue(CHANNEL_PLAYED_ARTISTTYPE,
-                                new StringType(playerInfo.getItem().getArtists().get(0).getType()));
-                    } else {
-                        setChannelValue(CHANNEL_PLAYED_ARTISTID, new StringType(""));
-                        setChannelValue(CHANNEL_PLAYED_ARTISTHREF, new StringType(""));
-                        setChannelValue(CHANNEL_PLAYED_ARTISTURI, new StringType(""));
-                        setChannelValue(CHANNEL_PLAYED_ARTISTNAME, new StringType("no data"));
-                        setChannelValue(CHANNEL_PLAYED_ARTISTTYPE, new StringType("no data"));
-                    }
-
-                    setChannelValue(CHANNEL_DEVICEID, new StringType(playerInfo.getDevice().getId()));
-                    setChannelValue(CHANNEL_DEVICEACTIVE,
-                            playerInfo.getDevice().getIsActive() ? OnOffType.ON : OnOffType.OFF);
-                    setChannelValue(CHANNEL_DEVICENAME, new StringType(playerInfo.getDevice().getName()));
-                    setChannelValue(CHANNEL_DEVICETYPE, new StringType(playerInfo.getDevice().getType()));
-
-                    if (playerInfo.getDevice().getVolumePercent() != null) {
-                        setChannelValue(CHANNEL_DEVICEVOLUME,
-                                new PercentType(playerInfo.getDevice().getVolumePercent()));
-                    }
-
-                } else {
-                    logger.debug("No known devices to update.");
-                }
-
-            } catch (RuntimeException rex) {
-                logger.error("RuntimeException caught in anonymous scheduled runnable task. This task will now stop.",
-                        rex);
-                throw (rex);
             } catch (Exception ex) {
                 logger.error("Exception caught in anonymous scheduled runnable task. This task will now stop.", ex);
+                // TODO: best practice to ignore the exception in this thread or be nice and let the thread end as it
+                // doesn't work?
                 throw (ex);
-
             }
 
         };
@@ -396,12 +283,151 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
 
     }
 
+    /**
+     * Updates
+     */
+    private void updateDeviceStatus() {
+        List<SpotifyDeviceHandler> availableDevices = new ArrayList<SpotifyDeviceHandler>();
+
+        // No reason to query Spotify for device and player status if we don't have any devices configured.
+        if (knownDevices.size() > 0) {
+            logger.debug("Spotify known devices: {}", knownDevices.size());
+
+            // TODO: decide on whether to add automatic discovery of devices not configured as things here and
+            // get rid of discovery implementation.
+            List<SpotifySession.SpotifyWebAPIDeviceList.Device> spotifyDevices = spotifySession.listDevices();
+            for (SpotifySession.SpotifyWebAPIDeviceList.Device device : spotifyDevices) {
+                if (knownDevices.containsKey(device.getId())) {
+
+                    SpotifyDeviceHandler handler = knownDevices.get(device.getId());
+
+                    logger.debug("Spotify device is a thing: {} {} ({}, {})", handler.getThing().getUID().getAsString(),
+                            device.getName(), device.getType(), device.getId());
+
+                    // Device status is not always available from Spotify Web API so list of available devices
+                    // varies, keep track of the active ones
+                    availableDevices.add(handler);
+
+                    handler.setChannelValue(CHANNEL_DEVICENAME, new StringType(device.getName()));
+                    handler.setChannelValue(CHANNEL_DEVICETYPE, new StringType(device.getType()));
+                    handler.setChannelValue(CHANNEL_DEVICEVOLUME, new PercentType(device.getVolumePercent()));
+                    handler.setChannelValue(CHANNEL_DEVICEACTIVE, device.getIsActive() ? OnOffType.ON : OnOffType.OFF);
+                    handler.setChannelValue(CHANNEL_DEVICERESTRICTED,
+                            device.getIsRestricted() ? OnOffType.ON : OnOffType.OFF);
+
+                } else {
+                    // TODO: add new thing to Inbox ?
+                    logger.debug("Spotify device is not a thing: {} ({}, {})", device.getName(), device.getType(),
+                            device.getId());
+                }
+            }
+
+            // Go through list of all OpenHAB things and update their status
+            Collection<SpotifyDeviceHandler> spotifyDevicesList = knownDevices.values();
+            for (SpotifyDeviceHandler handler : spotifyDevicesList) {
+
+                if (availableDevices.contains(handler)) {
+                    // If device is available, but OFFLINE - take ONLINE
+                    if (handler.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+                        logger.debug("Taking device {} ONLINE.", handler.getThing().getUID());
+                        handler.changeStatus(ThingStatus.ONLINE);
+                    }
+                } else {
+                    // If device is not available, but ONLINE - take OFFLINE
+                    if (handler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+
+                        // Set device active channel to OFF.
+                        Channel channel = handler.getThing().getChannel(CHANNEL_DEVICEACTIVE);
+                        updateState(channel.getUID(), OnOffType.OFF);
+
+                        logger.debug("Taking device {} OFFLINE.", handler.getThing().getUID());
+                        handler.changeStatus(ThingStatus.OFFLINE);
+                    }
+                }
+            }
+        } else {
+            logger.debug("No known devices to update.");
+        }
+    }
+
+    /**
+     *
+     */
+    private void updatePlayerInfo() {
+        SpotifyWebAPIPlayerInfo playerInfo = spotifySession.getPlayerInfo();
+
+        setChannelValue(CHANNEL_TRACKPLAYER, playerInfo.getIsPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+        setChannelValue(CHANNEL_TRACKSHUFFLE, playerInfo.getShuffleState() ? OnOffType.ON : OnOffType.OFF);
+        setChannelValue(CHANNEL_TRACKREPEAT, new StringType(playerInfo.getRepeatState()));
+
+        Long progress = playerInfo.getProgressMs();
+        Long duration = playerInfo.getItem().getDurationMs();
+        setChannelValue(CHANNEL_PLAYED_TRACKPROGRESS, new DecimalType(progress));
+        setChannelValue(CHANNEL_PLAYED_TRACKDURATION, new DecimalType(duration));
+
+        try {
+            SimpleDateFormat fmt = new SimpleDateFormat("m:ss");
+            String progressFmt = fmt.format(new Date(progress));
+            String durationFmt = fmt.format(new Date(duration));
+            setChannelValue(CHANNEL_PLAYED_TRACKPROGRESSFMT, new StringType(progressFmt));
+            setChannelValue(CHANNEL_PLAYED_TRACKDURATIONFMT, new StringType(durationFmt));
+        } catch (Exception ex) {
+            logger.error("Exception while formatting duration and progress", ex);
+        }
+        setChannelValue(CHANNEL_PLAYED_TRACKID, new StringType(playerInfo.getItem().getId()));
+        setChannelValue(CHANNEL_PLAYED_TRACKHREF, new StringType(playerInfo.getItem().getHref()));
+        setChannelValue(CHANNEL_PLAYED_TRACKURI, new StringType(playerInfo.getItem().getUri()));
+        setChannelValue(CHANNEL_PLAYED_TRACKNAME, new StringType(playerInfo.getItem().getName()));
+        setChannelValue(CHANNEL_PLAYED_TRACKTYPE, new StringType(playerInfo.getItem().getType()));
+        setChannelValue(CHANNEL_PLAYED_TRACKNUMBER, new StringType(playerInfo.getItem().getTrackNumber().toString()));
+        setChannelValue(CHANNEL_PLAYED_TRACKDISCNUMBER,
+                new StringType(playerInfo.getItem().getDiscNumber().toString()));
+        setChannelValue(CHANNEL_PLAYED_TRACKPOPULARITY, new DecimalType(playerInfo.getItem().getPopularity()));
+
+        setChannelValue(CHANNEL_PLAYED_ALBUMID, new StringType(playerInfo.getItem().getAlbum().getId()));
+        setChannelValue(CHANNEL_PLAYED_ALBUMHREF, new StringType(playerInfo.getItem().getAlbum().getHref()));
+        setChannelValue(CHANNEL_PLAYED_ALBUMURI, new StringType(playerInfo.getItem().getAlbum().getUri()));
+        setChannelValue(CHANNEL_PLAYED_ALBUMNAME, new StringType(playerInfo.getItem().getAlbum().getName()));
+        setChannelValue(CHANNEL_PLAYED_ALBUMTYPE, new StringType(playerInfo.getItem().getAlbum().getType()));
+
+        // There can be multiple artists, picking the first.
+        // TODO: Is there a way to manage multiple artists through channels? Provide a JSON string data channel for
+        // artists, playlists etc?
+        if (playerInfo.getItem().getArtists().size() > 0) {
+            setChannelValue(CHANNEL_PLAYED_ARTISTID, new StringType(playerInfo.getItem().getArtists().get(0).getId()));
+            setChannelValue(CHANNEL_PLAYED_ARTISTHREF,
+                    new StringType(playerInfo.getItem().getArtists().get(0).getHref()));
+            setChannelValue(CHANNEL_PLAYED_ARTISTURI,
+                    new StringType(playerInfo.getItem().getArtists().get(0).getUri()));
+            setChannelValue(CHANNEL_PLAYED_ARTISTNAME,
+                    new StringType(playerInfo.getItem().getArtists().get(0).getName()));
+            setChannelValue(CHANNEL_PLAYED_ARTISTTYPE,
+                    new StringType(playerInfo.getItem().getArtists().get(0).getType()));
+        } else {
+            setChannelValue(CHANNEL_PLAYED_ARTISTID, new StringType(""));
+            setChannelValue(CHANNEL_PLAYED_ARTISTHREF, new StringType(""));
+            setChannelValue(CHANNEL_PLAYED_ARTISTURI, new StringType(""));
+            setChannelValue(CHANNEL_PLAYED_ARTISTNAME, new StringType("no data"));
+            setChannelValue(CHANNEL_PLAYED_ARTISTTYPE, new StringType("no data"));
+        }
+
+        setChannelValue(CHANNEL_DEVICEID, new StringType(playerInfo.getDevice().getId()));
+        setChannelValue(CHANNEL_DEVICEACTIVE, playerInfo.getDevice().getIsActive() ? OnOffType.ON : OnOffType.OFF);
+        setChannelValue(CHANNEL_DEVICENAME, new StringType(playerInfo.getDevice().getName()));
+        setChannelValue(CHANNEL_DEVICETYPE, new StringType(playerInfo.getDevice().getType()));
+
+        // experienced situations where volume seemed to be undefined...
+        if (playerInfo.getDevice().getVolumePercent() != null) {
+            setChannelValue(CHANNEL_DEVICEVOLUME, new PercentType(playerInfo.getDevice().getVolumePercent()));
+        }
+    }
+
     public void setChannelValue(String CHANNEL, State state) {
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
             Channel channel = getThing().getChannel(CHANNEL);
+
+            logger.trace("Updating status of spotify device {} channel {}.", getThing().getLabel(), channel.getUID());
             updateState(channel.getUID(), state);
-            // logger.debug("Updating status of spotify device {} channel {}.", getThing().getLabel(),
-            // channel.getUID());
         }
     }
 
