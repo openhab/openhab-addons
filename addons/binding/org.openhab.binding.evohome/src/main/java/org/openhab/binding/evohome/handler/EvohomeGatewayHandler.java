@@ -102,6 +102,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
         return false;
     }
+
     private void startRefreshTask() {
         disposeRefreshTask();
 
@@ -113,12 +114,11 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         }, 50, configuration.refreshInterval, TimeUnit.MILLISECONDS);
     }
 
-
     private void update() {
         if (getThing().getThings().isEmpty()) {
 //            return;
         }
-        logger.debug("updateChannels");
+        logger.info("updateChannels");
         /*
         try {
             try {

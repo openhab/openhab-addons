@@ -37,6 +37,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
 
+        logger.info("Creating Evohome API client.");
+
         apiAccess = new ApiAccess();
         if (configuration != null) {
             apiAccess.setApplicationId(configuration.applicationId);
@@ -125,6 +127,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             locations   = requestLocations();
         }
 
+        //TODO remove this
+        success = true;
         return success;
     }
 
@@ -134,6 +138,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         useraccount     = null;
         locations       = null;
         locationsStatus = null;
+        //TODO httpclient.stop()
     }
 
 
