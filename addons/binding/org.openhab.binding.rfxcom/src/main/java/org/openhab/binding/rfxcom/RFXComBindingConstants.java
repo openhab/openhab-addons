@@ -93,6 +93,7 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_SET_POINT = "setpoint";
     public static final String CHANNEL_DATE_TIME = "dateTime";
+    public static final String CHANNEL_CHIME_SOUND = "chimeSound";
 
     // List of all Thing Type UIDs
     private static final ThingTypeUID THING_TYPE_BAROMETRIC = new ThingTypeUID(BINDING_ID, "barometric");

@@ -183,4 +183,10 @@
 		<state min="0" max="360" step="1" readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="chimesound">
+		<item-type>Number</item-type>
+		<label>Chime Sound</label>
+		<description>Chime Sound (not all devices support multiple sounds)</description>
+	</channel-type>
+
 </thing:thing-descriptions>
