@@ -17,6 +17,8 @@ import java.net.URLConnection;
 import org.apache.commons.io.IOUtils;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigListResultDeserializer;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +45,12 @@ public class TankerkoenigService {
         String urlbase = "https://creativecommons.tankerkoenig.de/json/prices.php?";
         String urlcomplete = urlbase + "ids=" + locationIDs + "&apikey=" + apikey;
         try {
+            String userAgent = "OpenHAB, Tankerkoenig-Binding Version ";
+            Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
+            userAgent = userAgent + version.toString();
             URL url = new URL(urlcomplete);
             URLConnection connection = url.openConnection();
+            connection.setRequestProperty("User-Agent", userAgent);
             String response = IOUtils.toString(connection.getInputStream());
             return response;
         } catch (MalformedURLException e) {

@@ -1,7 +1,7 @@
 # Tankerkoenig Binding
 
 This binding uses the tankerkoenig api (https://www.tankerkoenig.de) for collecting gas price data of german gas stations(Tankstellen).
-So special thanks at first to the creators of tankerkoenig providing an easy way getting data from the [MTS-K]  (Markttransparenztstelle für Kraftstoffe).
+So special thanks at first to the creators of tankerkoenig providing an easy way getting data from the [MTS-K]  (Markttransparenzstelle für Kraftstoffe).
 
 ## Preparation
 

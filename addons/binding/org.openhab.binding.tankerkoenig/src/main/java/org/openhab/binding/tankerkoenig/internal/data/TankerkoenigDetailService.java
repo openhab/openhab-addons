@@ -18,6 +18,8 @@ import org.apache.commons.io.IOUtils;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigDetailResult;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigDetailResultDeserializer;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +49,9 @@ public class TankerkoenigDetailService {
         String urlcomplete = urlbase + "id=" + locationID + "&apikey=" + apikey;
         String response = "";
         try {
+            String userAgent = "OpenHAB, Tankerkoenig-Binding Version ";
+            Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
+            userAgent = userAgent + version.toString();
             URL url = new URL(urlcomplete);
             URLConnection connection = url.openConnection();
             logger.debug("UpdateTankstellenDetails URL: {}", urlcomplete);
