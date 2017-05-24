@@ -34,7 +34,7 @@ public class RFXComMessageFactory {
                     put(PacketType.LIGHTING4, RFXComLighting4Message.class);
                     put(PacketType.LIGHTING5, RFXComLighting5Message.class);
                     put(PacketType.LIGHTING6, RFXComLighting6Message.class);
-                    // put(PacketType.CHIME, RFXComChimeMessage.class);
+                    put(PacketType.CHIME, RFXComChimeMessage.class);
                     // put(PacketType.FAN, RFXComFanMessage.class);
                     put(PacketType.CURTAIN1, RFXComCurtain1Message.class);
                     put(PacketType.BLINDS1, RFXComBlinds1Message.class);
