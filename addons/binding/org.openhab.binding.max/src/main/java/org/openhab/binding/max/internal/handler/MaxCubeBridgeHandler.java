@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -418,7 +418,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
         if (deviceStatusListener == null) {
-            throw new NullPointerException("It's not allowed to pass a null deviceStatusListener.");
+            throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
         boolean result = deviceStatusListeners.add(deviceStatusListener);
         if (result) {
@@ -429,7 +429,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
         if (deviceStatusListener == null) {
-            throw new NullPointerException("It's not allowed to pass a null deviceStatusListener.");
+            throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
         boolean result = deviceStatusListeners.remove(deviceStatusListener);
         if (result) {
@@ -455,34 +455,34 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             try {
                 if (socket == null || socket.isClosed()) {
                     this.socketConnect();
+                }
+
+                if (maxRequestsPerConnection > 0 && requestCount >= maxRequestsPerConnection) {
+                    logger.debug("maxRequestsPerConnection reached, reconnecting.");
+                    socket.close();
+                    this.socketConnect();
                 } else {
-                    if (maxRequestsPerConnection > 0 && requestCount >= maxRequestsPerConnection) {
-                        logger.debug("maxRequestsPerConnection reached, reconnecting.");
-                        socket.close();
-                        this.socketConnect();
-                    } else {
 
-                        if (requestCount == 0) {
-                            logger.debug("Connect to MAX! Cube");
-                            readliness("L:");
+                    if (requestCount == 0) {
+                        logger.debug("Connect to MAX! Cube");
+                        readliness("L:");
 
+                    }
+                    if (!(requestCount == 0 && command instanceof L_Command)) {
+
+                        logger.debug("Sending request #{} to MAX! Cube", this.requestCount);
+                        if (writer == null) {
+                            logger.warn("Can't write to MAX! Cube");
+                            this.socketConnect();
                         }
-                        if (!(requestCount == 0 && command instanceof L_Command)) {
 
-                            logger.debug("Sending request #{} to MAX! Cube", this.requestCount);
-                            if (writer == null) {
-                                logger.warn("Can't write to MAX! Cube");
-                                this.socketConnect();
-                            }
-
-                            writer.write(command.getCommandString());
-                            logger.trace("Write string to Max! Cube {}: {}", ipAddress, command.getCommandString());
-                            writer.flush();
-                            if (command.getReturnStrings() != null) {
-                                readliness(command.getReturnStrings());
-                            } else {
-                                socketClose();
-                            }
+                        writer.write(command.getCommandString());
+                        logger.trace("Write string to Max! Cube {}: {}", ipAddress, command.getCommandString());
+                        writer.flush();
+                        if (command.getReturnStrings() != null) {
+                            readliness(command.getReturnStrings());
+                        } else {
+                            socketClose();
                         }
                     }
                 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,12 +24,10 @@ public final class F_Message extends Message {
     private String ntpServer1 = "";
     private String ntpServer2 = "";
 
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
-
     /**
      * The {@link: F_Message} contains information about the Cube NTP Configuration
      *
-     * @param String with raw message
+     * @param raw String with raw message
      */
     public F_Message(String raw) {
         super(raw);

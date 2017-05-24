@@ -4,14 +4,16 @@ Bundle-Name: Onkyo Binding
 Bundle-SymbolicName: org.openhab.binding.onkyo;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: com.google.common.base,
  com.google.common.collect,
+ org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.audio,
+ org.eclipse.smarthome.core.library.items,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
@@ -22,7 +24,9 @@ Import-Package: com.google.common.base,
  org.jupnp.model.types,
  org.osgi.framework,
  org.osgi.service.component,
- org.slf4j
+ org.slf4j,
+ org.openhab.binding.onkyo,
+ org.openhab.binding.onkyo.handler
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.onkyo,
  org.openhab.binding.onkyo.handler

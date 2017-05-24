@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,73 +20,73 @@ public class OpenSprinklerBindingConstants {
     public static final String BINDING_ID = "opensprinkler";
 
     // List of all Thing ids
-    public final static String OPENSPRINKLER = "http";
-    public final static String OPENSPRINKLERPI = "pi";
+    public static final String OPENSPRINKLER = "http";
+    public static final String OPENSPRINKLERPI = "pi";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID OPENSPRINKLER_THING = new ThingTypeUID(BINDING_ID, OPENSPRINKLER);
-    public final static ThingTypeUID OPENSPRINKLERPI_THING = new ThingTypeUID(BINDING_ID, OPENSPRINKLERPI);
+    public static final ThingTypeUID OPENSPRINKLER_THING = new ThingTypeUID(BINDING_ID, OPENSPRINKLER);
+    public static final ThingTypeUID OPENSPRINKLERPI_THING = new ThingTypeUID(BINDING_ID, OPENSPRINKLERPI);
 
-    public final static int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 30;
-    public final static int DEFAULT_REFRESH_RATE = 60;
-    public final static short DISCOVERY_SUBNET_MASK = 24;
-    public final static int DISCOVERY_THREAD_POOL_SIZE = 15;
-    public final static int DISCOVERY_THREAD_POOL_SHUTDOWN_WAIT_TIME_SECONDS = 300;
-    public final static boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
-    public final static int DISCOVERY_DEFAULT_TIMEOUT_RATE = 500;
-    public final static int DISCOVERY_DEFAULT_IP_TIMEOUT_RATE = 750;
+    public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 30;
+    public static final int DEFAULT_REFRESH_RATE = 60;
+    public static final short DISCOVERY_SUBNET_MASK = 24;
+    public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
+    public static final int DISCOVERY_THREAD_POOL_SHUTDOWN_WAIT_TIME_SECONDS = 300;
+    public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
+    public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE = 500;
+    public static final int DISCOVERY_DEFAULT_IP_TIMEOUT_RATE = 750;
 
     // List of all Channel ids
-    public final static String SENSOR_RAIN = "rainsensor";
+    public static final String SENSOR_RAIN = "rainsensor";
 
-    public final static String STATION_01 = "station01";
-    public final static String STATION_02 = "station02";
-    public final static String STATION_03 = "station03";
-    public final static String STATION_04 = "station04";
-    public final static String STATION_05 = "station05";
-    public final static String STATION_06 = "station06";
-    public final static String STATION_07 = "station07";
-    public final static String STATION_08 = "station08";
-    public final static String STATION_09 = "station09";
-    public final static String STATION_10 = "station10";
-    public final static String STATION_11 = "station11";
-    public final static String STATION_12 = "station12";
-    public final static String STATION_13 = "station13";
-    public final static String STATION_14 = "station14";
-    public final static String STATION_15 = "station15";
-    public final static String STATION_16 = "station16";
-    public final static String STATION_17 = "station17";
-    public final static String STATION_18 = "station18";
-    public final static String STATION_19 = "station19";
-    public final static String STATION_20 = "station20";
-    public final static String STATION_21 = "station21";
-    public final static String STATION_22 = "station22";
-    public final static String STATION_23 = "station23";
-    public final static String STATION_24 = "station24";
-    public final static String STATION_25 = "station25";
-    public final static String STATION_26 = "station26";
-    public final static String STATION_27 = "station27";
-    public final static String STATION_28 = "station28";
-    public final static String STATION_29 = "station29";
-    public final static String STATION_30 = "station30";
-    public final static String STATION_31 = "station31";
-    public final static String STATION_32 = "station32";
-    public final static String STATION_33 = "station33";
-    public final static String STATION_34 = "station34";
-    public final static String STATION_35 = "station35";
-    public final static String STATION_36 = "station36";
-    public final static String STATION_37 = "station37";
-    public final static String STATION_38 = "station38";
-    public final static String STATION_39 = "station39";
-    public final static String STATION_40 = "station40";
-    public final static String STATION_41 = "station41";
-    public final static String STATION_42 = "station42";
-    public final static String STATION_43 = "station43";
-    public final static String STATION_44 = "station44";
-    public final static String STATION_45 = "station45";
-    public final static String STATION_46 = "station46";
-    public final static String STATION_47 = "station47";
-    public final static String STATION_48 = "station48";
+    public static final String STATION_01 = "station01";
+    public static final String STATION_02 = "station02";
+    public static final String STATION_03 = "station03";
+    public static final String STATION_04 = "station04";
+    public static final String STATION_05 = "station05";
+    public static final String STATION_06 = "station06";
+    public static final String STATION_07 = "station07";
+    public static final String STATION_08 = "station08";
+    public static final String STATION_09 = "station09";
+    public static final String STATION_10 = "station10";
+    public static final String STATION_11 = "station11";
+    public static final String STATION_12 = "station12";
+    public static final String STATION_13 = "station13";
+    public static final String STATION_14 = "station14";
+    public static final String STATION_15 = "station15";
+    public static final String STATION_16 = "station16";
+    public static final String STATION_17 = "station17";
+    public static final String STATION_18 = "station18";
+    public static final String STATION_19 = "station19";
+    public static final String STATION_20 = "station20";
+    public static final String STATION_21 = "station21";
+    public static final String STATION_22 = "station22";
+    public static final String STATION_23 = "station23";
+    public static final String STATION_24 = "station24";
+    public static final String STATION_25 = "station25";
+    public static final String STATION_26 = "station26";
+    public static final String STATION_27 = "station27";
+    public static final String STATION_28 = "station28";
+    public static final String STATION_29 = "station29";
+    public static final String STATION_30 = "station30";
+    public static final String STATION_31 = "station31";
+    public static final String STATION_32 = "station32";
+    public static final String STATION_33 = "station33";
+    public static final String STATION_34 = "station34";
+    public static final String STATION_35 = "station35";
+    public static final String STATION_36 = "station36";
+    public static final String STATION_37 = "station37";
+    public static final String STATION_38 = "station38";
+    public static final String STATION_39 = "station39";
+    public static final String STATION_40 = "station40";
+    public static final String STATION_41 = "station41";
+    public static final String STATION_42 = "station42";
+    public static final String STATION_43 = "station43";
+    public static final String STATION_44 = "station44";
+    public static final String STATION_45 = "station45";
+    public static final String STATION_46 = "station46";
+    public static final String STATION_47 = "station47";
+    public static final String STATION_48 = "station48";
 
     /**
      * Enumeration of station constants for mapping station channel names to ints and back.
@@ -141,7 +141,8 @@ public class OpenSprinklerBindingConstants {
         STATION45(44, STATION_45),
         STATION46(45, STATION_46),
         STATION47(46, STATION_47),
-        STATION48(47, STATION_48);
+        STATION48(47, STATION_48),
+        SENSORRAIN(-1, SENSOR_RAIN);
 
         private final int number;
         private final String id;

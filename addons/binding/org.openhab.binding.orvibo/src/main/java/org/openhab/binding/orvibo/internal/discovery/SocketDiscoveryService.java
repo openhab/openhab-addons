@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,7 +36,7 @@ import com.github.tavalin.s20.Socket;
 public class SocketDiscoveryService extends AbstractDiscoveryService implements SocketDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(SocketDiscoveryService.class);
-    private final static int SEARCH_TIME = 60;
+    private static final int SEARCH_TIME = 60;
     private S20Client s20Client;
 
     public SocketDiscoveryService() throws SocketException {
@@ -53,7 +53,7 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
             s20Client = S20Client.getInstance();
             super.activate(configProperties);
         } catch (SocketException ex) {
-            logger.error("Error occurred while activating S20 discovery service: " + ex.getMessage(), ex);
+            logger.error("Error occurred while activating S20 discovery service: {}", ex.getMessage(), ex);
         }
     }
 

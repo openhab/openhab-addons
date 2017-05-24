@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,16 +8,25 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.eclipse.smarthome.core.library.items.*;
-import org.eclipse.smarthome.core.library.types.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.smarthome.core.library.items.ContactItem;
+import org.eclipse.smarthome.core.library.items.DateTimeItem;
+import org.eclipse.smarthome.core.library.items.NumberItem;
+import org.eclipse.smarthome.core.library.items.StringItem;
+import org.eclipse.smarthome.core.library.items.SwitchItem;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-
-import java.util.Arrays;
-import java.util.List;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for Security1 message.
@@ -38,9 +47,8 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
         VISONIC_CODESECURE(6),
         VISONIC_POWERCODE_SENSOR_AUX_CONTACT(7),
         MEIANTECH(8),
-        SA30(9),
-
-        UNKNOWN(255);
+        SA30(9), // Also SA33
+        RM174RF(10);
 
         private final int subType;
 
@@ -48,22 +56,18 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
         public byte toByte() {
             return (byte) subType;
         }
 
-        public static SubType fromByte(int input) {
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
             for (SubType c : SubType.values()) {
                 if (c.subType == input) {
                     return c;
                 }
             }
 
-            return SubType.UNKNOWN;
+            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
@@ -95,9 +99,7 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
         ALARM_TAMPER(130),
         ALARM_DELAYED_TAMPER(131),
         MOTION_TAMPER(132),
-        NO_MOTION_TAMPER(133),
-
-        UNKNOWN(255);
+        NO_MOTION_TAMPER(133);
 
         private final int status;
 
@@ -105,22 +107,18 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
             this.status = status;
         }
 
-        Status(byte status) {
-            this.status = status;
-        }
-
         public byte toByte() {
             return (byte) status;
         }
 
-        public static Status fromByte(int input) {
+        public static Status fromByte(int input) throws RFXComUnsupportedValueException {
             for (Status status : Status.values()) {
                 if (status.status == input) {
                     return status;
                 }
             }
 
-            return Status.UNKNOWN;
+            throw new RFXComUnsupportedValueException(Status.class, input);
         }
     }
 
@@ -140,10 +138,6 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
         private final int contact;
 
         Contact(int contact) {
-            this.contact = contact;
-        }
-
-        Contact(byte contact) {
             this.contact = contact;
         }
 
@@ -177,10 +171,6 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
             this.motion = motion;
         }
 
-        Motion(byte motion) {
-            this.motion = motion;
-        }
-
         public byte toByte() {
             return (byte) motion;
         }
@@ -196,26 +186,26 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.STATUS,
             RFXComValueSelector.CONTACT, RFXComValueSelector.MOTION);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.STATUS, RFXComValueSelector.CONTACT);
 
-    public SubType subType = SubType.UNKNOWN;
-    public int sensorId = 0;
-    public Status status = Status.UNKNOWN;
-    public byte batteryLevel = 0;
-    public byte signalLevel = 0;
-    public Contact contact = Contact.UNKNOWN;
-    public Motion motion = Motion.UNKNOWN;
+    public SubType subType;
+    public int sensorId;
+    public Status status;
+    public byte batteryLevel;
+    public byte signalLevel;
+    public Contact contact;
+    public Motion motion;
 
     public RFXComSecurity1Message() {
         packetType = PacketType.SECURITY1;
     }
 
-    public RFXComSecurity1Message(byte[] data) {
+    public RFXComSecurity1Message(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -234,7 +224,7 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
 
         super.encodeMessage(data);
 
@@ -404,21 +394,20 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.homematic.internal.communicator.client;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -25,12 +26,14 @@ import org.openhab.binding.homematic.internal.communicator.parser.GetValueParser
 import org.openhab.binding.homematic.internal.communicator.parser.HomegearLoadDeviceNamesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.ListBidcosInterfacesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.ListDevicesParser;
+import org.openhab.binding.homematic.internal.communicator.parser.RssiInfoParser;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
+import org.openhab.binding.homematic.internal.model.HmRssiInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +42,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public abstract class RpcClient {
-    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
-    protected static final boolean TRACE_ENABLED = logger.isTraceEnabled();
+public abstract class RpcClient<T> {
+    private final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    protected static final int MAX_RPC_RETRY = 1;
 
     protected HomematicConfig config;
 
@@ -57,7 +60,7 @@ public abstract class RpcClient {
     /**
      * Returns a RpcRequest for this client.
      */
-    protected abstract RpcRequest createRpcRequest(String methodName);
+    protected abstract RpcRequest<T> createRpcRequest(String methodName);
 
     /**
      * Returns the callback url for this client.
@@ -67,13 +70,13 @@ public abstract class RpcClient {
     /**
      * Sends the RPC message to the gateway.
      */
-    protected abstract Object[] sendMessage(int port, RpcRequest request) throws IOException;
+    protected abstract Object[] sendMessage(int port, RpcRequest<T> request) throws IOException;
 
     /**
      * Register a callback for the specified interface where the Homematic gateway can send its events.
      */
     public void init(HmInterface hmInterface, String clientId) throws IOException {
-        RpcRequest request = createRpcRequest("init");
+        RpcRequest<T> request = createRpcRequest("init");
         request.addArg(getRpcCallbackUrl());
         request.addArg(clientId);
         sendMessage(config.getRpcPort(hmInterface), request);
@@ -83,7 +86,7 @@ public abstract class RpcClient {
      * Release a callback for the specified interface.
      */
     public void release(HmInterface hmInterface) throws IOException {
-        RpcRequest request = createRpcRequest("init");
+        RpcRequest<T> request = createRpcRequest("init");
         request.addArg(getRpcCallbackUrl());
         sendMessage(config.getRpcPort(hmInterface), request);
     }
@@ -92,7 +95,7 @@ public abstract class RpcClient {
      * Returns all variable metadata and values from a Homegear gateway.
      */
     public void getAllSystemVariables(HmChannel channel) throws IOException {
-        RpcRequest request = createRpcRequest("getAllSystemVariables");
+        RpcRequest<T> request = createRpcRequest("getAllSystemVariables");
         new GetAllSystemVariablesParser(channel).parse(sendMessage(config.getRpcPort(channel), request));
     }
 
@@ -100,7 +103,7 @@ public abstract class RpcClient {
      * Loads all device names from a Homegear gateway.
      */
     public void loadDeviceNames(HmInterface hmInterface, Collection<HmDevice> devices) throws IOException {
-        RpcRequest request = createRpcRequest("getDeviceInfo");
+        RpcRequest<T> request = createRpcRequest("getDeviceInfo");
         new HomegearLoadDeviceNamesParser(devices).parse(sendMessage(config.getRpcPort(hmInterface), request));
     }
 
@@ -108,7 +111,7 @@ public abstract class RpcClient {
      * Returns true, if the interface is available on the gateway.
      */
     public void checkInterface(HmInterface hmInterface) throws IOException {
-        RpcRequest request = createRpcRequest("init");
+        RpcRequest<T> request = createRpcRequest("init");
         request.addArg("http://openhab.validation:1000");
         sendMessage(config.getRpcPort(hmInterface), request);
     }
@@ -117,7 +120,7 @@ public abstract class RpcClient {
      * Validates the connection to the interface by calling the listBidcosInterfaces method.
      */
     public void validateConnection(HmInterface hmInterface) throws IOException {
-        RpcRequest request = createRpcRequest("listBidcosInterfaces");
+        RpcRequest<T> request = createRpcRequest("listBidcosInterfaces");
         sendMessage(config.getRpcPort(hmInterface), request);
     }
 
@@ -125,7 +128,7 @@ public abstract class RpcClient {
      * Returns all script metadata from a Homegear gateway.
      */
     public void getAllScripts(HmChannel channel) throws IOException {
-        RpcRequest request = createRpcRequest("getAllScripts");
+        RpcRequest<T> request = createRpcRequest("getAllScripts");
         new GetAllScriptsParser(channel).parse(sendMessage(config.getRpcPort(channel), request));
     }
 
@@ -133,7 +136,7 @@ public abstract class RpcClient {
      * Returns all device and channel metadata.
      */
     public Collection<HmDevice> listDevices(HmInterface hmInterface) throws IOException {
-        RpcRequest request = createRpcRequest("listDevices");
+        RpcRequest<T> request = createRpcRequest("listDevices");
         return new ListDevicesParser(hmInterface, config).parse(sendMessage(config.getRpcPort(hmInterface), request));
     }
 
@@ -141,7 +144,7 @@ public abstract class RpcClient {
      * Loads all datapoint metadata into the given channel.
      */
     public void addChannelDatapoints(HmChannel channel, HmParamsetType paramsetType) throws IOException {
-        RpcRequest request = createRpcRequest("getParamsetDescription");
+        RpcRequest<T> request = createRpcRequest("getParamsetDescription");
         request.addArg(getRpcAddress(channel.getDevice().getAddress()) + ":" + channel.getNumber());
         request.addArg(paramsetType.toString());
         new GetParamsetDescriptionParser(channel, paramsetType).parse(sendMessage(config.getRpcPort(channel), request));
@@ -151,7 +154,7 @@ public abstract class RpcClient {
      * Sets all datapoint values for the given channel.
      */
     public void setChannelDatapointValues(HmChannel channel, HmParamsetType paramsetType) throws IOException {
-        RpcRequest request = createRpcRequest("getParamset");
+        RpcRequest<T> request = createRpcRequest("getParamset");
         request.addArg(getRpcAddress(channel.getDevice().getAddress()) + ":" + channel.getNumber());
         request.addArg(paramsetType.toString());
         if (channel.getDevice().getHmInterface() == HmInterface.CUXD && paramsetType == HmParamsetType.VALUES) {
@@ -162,8 +165,8 @@ public abstract class RpcClient {
             } catch (UnknownRpcFailureException ex) {
                 if (paramsetType == HmParamsetType.VALUES) {
                     logger.debug(
-                            "RpcResponse unknown RPC failure (-1 Failure), fetching values with another API method for device '{}'",
-                            channel.getDevice().getAddress());
+                            "RpcResponse unknown RPC failure (-1 Failure), fetching values with another API method for device: {}, channel: {}, paramset: {}",
+                            channel.getDevice().getAddress(), channel.getNumber(), paramsetType);
                     setChannelDatapointValues(channel);
                 } else {
                     throw ex;
@@ -179,7 +182,7 @@ public abstract class RpcClient {
     private void setChannelDatapointValues(HmChannel channel) throws IOException {
         for (HmDatapoint dp : channel.getDatapoints().values()) {
             if (dp.isReadable() && !dp.isVirtual() && dp.getParamsetType() == HmParamsetType.VALUES) {
-                RpcRequest request = createRpcRequest("getValue");
+                RpcRequest<T> request = createRpcRequest("getValue");
                 request.addArg(getRpcAddress(channel.getDevice().getAddress()) + ":" + channel.getNumber());
                 request.addArg(dp.getName());
                 new GetValueParser(dp).parse(sendMessage(config.getRpcPort(channel), request));
@@ -191,7 +194,7 @@ public abstract class RpcClient {
      * Tries to identify the gateway and returns the GatewayInfo.
      */
     public HmGatewayInfo getGatewayInfo(String id) throws IOException {
-        RpcRequest request = createRpcRequest("getDeviceDescription");
+        RpcRequest<T> request = createRpcRequest("getDeviceDescription");
         request.addArg("BidCoS-RF");
         GetDeviceDescriptionParser ddParser = new GetDeviceDescriptionParser();
         ddParser.parse(sendMessage(config.getRpcPort(HmInterface.RF), request));
@@ -199,7 +202,7 @@ public abstract class RpcClient {
         boolean isHomegear = StringUtils.equalsIgnoreCase(ddParser.getType(), "Homegear");
 
         request = createRpcRequest("listBidcosInterfaces");
-        ListBidcosInterfacesParser biParser = new ListBidcosInterfacesParser(ddParser.getDeviceInterface(), isHomegear);
+        ListBidcosInterfacesParser biParser = new ListBidcosInterfacesParser();
         biParser.parse(sendMessage(config.getRpcPort(HmInterface.RF), request));
 
         HmGatewayInfo gatewayInfo = new HmGatewayInfo();
@@ -208,8 +211,9 @@ public abstract class RpcClient {
             gatewayInfo.setId(HmGatewayInfo.ID_HOMEGEAR);
             gatewayInfo.setType(ddParser.getType());
             gatewayInfo.setFirmware(ddParser.getFirmware());
-        } else if (StringUtils.startsWithIgnoreCase(biParser.getType(), "CCU")
-                || config.getGatewayType().equalsIgnoreCase(HomematicConfig.GATEWAY_TYPE_CCU)) {
+        } else if ((StringUtils.startsWithIgnoreCase(biParser.getType(), "CCU")
+                || StringUtils.startsWithIgnoreCase(ddParser.getType(), "HM-RCV-50") || config.isCCUType())
+                && !config.isNoCCUType()) {
             gatewayInfo.setId(HmGatewayInfo.ID_CCU);
             String type = StringUtils.isBlank(biParser.getType()) ? "CCU" : biParser.getType();
             gatewayInfo.setType(type);
@@ -230,6 +234,10 @@ public abstract class RpcClient {
 
         if (gatewayInfo.isCCU() || config.hasCuxdPort()) {
             gatewayInfo.setCuxdInterface(hasInterface(HmInterface.CUXD, id));
+        }
+
+        if (gatewayInfo.isCCU() || config.hasGroupPort()) {
+            gatewayInfo.setGroupInterface(hasInterface(HmInterface.GROUP, id));
         }
 
         return gatewayInfo;
@@ -256,7 +264,7 @@ public abstract class RpcClient {
             value = ((Number) value).intValue();
         }
 
-        RpcRequest request;
+        RpcRequest<T> request;
         if (HmParamsetType.VALUES == dp.getParamsetType()) {
             request = createRpcRequest("setValue");
             request.addArg(getRpcAddress(dp.getChannel().getDevice().getAddress()) + ":" + dp.getChannel().getNumber());
@@ -277,7 +285,7 @@ public abstract class RpcClient {
      * Sets the value of a system variable on a Homegear gateway.
      */
     public void setSystemVariable(HmDatapoint dp, Object value) throws IOException {
-        RpcRequest request = createRpcRequest("setSystemVariable");
+        RpcRequest<T> request = createRpcRequest("setSystemVariable");
         request.addArg(dp.getInfo());
         request.addArg(value);
         sendMessage(config.getRpcPort(dp.getChannel()), request);
@@ -287,7 +295,7 @@ public abstract class RpcClient {
      * Executes a script on the Homegear gateway.
      */
     public void executeScript(HmDatapoint dp) throws IOException {
-        RpcRequest request = createRpcRequest("runScript");
+        RpcRequest<T> request = createRpcRequest("runScript");
         request.addArg(dp.getInfo());
         sendMessage(config.getRpcPort(dp.getChannel()), request);
     }
@@ -296,7 +304,7 @@ public abstract class RpcClient {
      * Enables/disables the install mode for given seconds.
      */
     public void setInstallMode(HmInterface hmInterface, boolean enable, int seconds) throws IOException {
-        RpcRequest request = createRpcRequest("setInstallMode");
+        RpcRequest<T> request = createRpcRequest("setInstallMode");
         request.addArg(enable);
         request.addArg(seconds);
         request.addArg(1);
@@ -307,7 +315,7 @@ public abstract class RpcClient {
      * Deletes the device from the gateway.
      */
     public void deleteDevice(HmDevice device, int flags) throws IOException {
-        RpcRequest request = createRpcRequest("deleteDevice");
+        RpcRequest<T> request = createRpcRequest("deleteDevice");
         request.addArg(device.getAddress());
         request.addArg(flags);
         sendMessage(config.getRpcPort(device.getHmInterface()), request);
@@ -321,6 +329,14 @@ public abstract class RpcClient {
             address = "*" + address.substring(2);
         }
         return address;
+    }
+
+    /**
+     * Returns the rssi values for all devices.
+     */
+    public List<HmRssiInfo> loadRssiInfo(HmInterface hmInterface) throws IOException {
+        RpcRequest<T> request = createRpcRequest("rssiInfo");
+        return new RssiInfoParser(config).parse(sendMessage(config.getRpcPort(hmInterface), request));
     }
 
 }

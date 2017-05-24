@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,8 +11,7 @@ package org.openhab.binding.onkyo.handler;
 import static org.openhab.binding.onkyo.OnkyoBindingConstants.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.EventObject;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,21 +22,26 @@ import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
+import org.openhab.binding.onkyo.internal.OnkyoAlbumArt;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
 import org.openhab.binding.onkyo.internal.OnkyoEventListener;
 import org.openhab.binding.onkyo.internal.ServiceType;
+import org.openhab.binding.onkyo.internal.config.OnkyoDeviceConfiguration;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
-import org.openhab.binding.onkyo.internal.eiscp.EiscpCommandRef;
+import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,21 +51,28 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  * @author Marcel Verpaalen - parsing additional commands
+ * @author Pauli Anttila - lot of refactoring
  */
 public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventListener {
 
     private Logger logger = LoggerFactory.getLogger(OnkyoHandler.class);
 
+    private OnkyoDeviceConfiguration configuration;
+
     private OnkyoConnection connection;
-    private ScheduledFuture<?> statusCheckerFuture;
+    private ScheduledFuture<?> resourceUpdaterFuture;
+    @SuppressWarnings("unused")
     private int currentInput = -1;
-    private PercentType volume;
+    private State volumeLevelZone1 = UnDefType.UNDEF;
+    private State volumeLevelZone2 = UnDefType.UNDEF;
+    private State volumeLevelZone3 = UnDefType.UNDEF;
+
+    private OnkyoAlbumArt onkyoAlbumArt = new OnkyoAlbumArt();
 
     private final int NET_USB_ID = 43;
 
     public OnkyoHandler(Thing thing, UpnpIOService upnpIOService, AudioHTTPServer audioHTTPServer, String callbackUrl) {
         super(thing, upnpIOService, audioHTTPServer, callbackUrl);
-
     }
 
     /**
@@ -70,66 +81,51 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     @Override
     public void initialize() {
         logger.debug("Initializing handler for Onkyo Receiver");
-        if (this.getConfig().get(HOST_PARAMETER) != null) {
-            String host = (String) this.getConfig().get(HOST_PARAMETER);
-            Integer port = 60128;
-            Object portObj = this.getConfig().get(TCP_PORT_PARAMETER);
-            if (portObj != null) {
-                if (portObj instanceof Number) {
-                    port = ((Number) portObj).intValue();
-                } else if (portObj instanceof String) {
-                    port = Integer.parseInt(portObj.toString());
+        configuration = getConfigAs(OnkyoDeviceConfiguration.class);
+        logger.info("Using configuration: {}", configuration.toString());
+
+        connection = new OnkyoConnection(configuration.ipAddress, configuration.port);
+        connection.addEventListener(this);
+
+        scheduler.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                logger.debug("Open connection to Onkyo Receiver @{}", connection.getConnectionName());
+                connection.openConnection();
+                if (connection.isConnected()) {
+                    updateStatus(ThingStatus.ONLINE);
                 }
             }
+        });
 
-            long refreshInterval;
-            try {
-                refreshInterval = ((BigDecimal) this.getConfig().get(REFRESH_INTERVAL)).longValue();
-            } catch (Exception e) {
-                refreshInterval = 60;
-                logger.warn("No refresh Interval defined using {}s", refreshInterval);
-            }
-            logger.warn("No refresh Interval defined using {}s", refreshInterval);
+        if (configuration.refreshInterval > 0) {
+            // Start resource refresh updater
+            resourceUpdaterFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
 
-            connection = new OnkyoConnection(host, port);
-            connection.addEventListener(this);
-
-            logger.debug("Connected to Onkyo Receiver @{}", connection.getConnectionName());
-
-            // Start the status checker
-            Runnable statusChecker = new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        logger.debug("Checking status of  Onkyo Receiver @{}", connection.getConnectionName());
+                        logger.debug("Send resource update requests to Onkyo Receiver @{}",
+                                connection.getConnectionName());
                         checkStatus();
                     } catch (LinkageError e) {
-                        logger.warn("Failed to check the status for  Onkyo Receiver @{}. Cause: {}",
+                        logger.warn("Failed to send resource update requests to Onkyo Receiver @{}. Cause: {}",
                                 connection.getConnectionName(), e.getMessage());
                     } catch (Exception ex) {
-                        logger.warn("Exception in update Status Thread Onkyo Receiver @{}. Cause: {}",
+                        logger.warn("Exception in resource refresh Thread Onkyo Receiver @{}. Cause: {}",
                                 connection.getConnectionName(), ex.getMessage());
-
                     }
                 }
-            };
-            if (refreshInterval > 0) {
-                statusCheckerFuture = scheduler.scheduleWithFixedDelay(statusChecker, 1, refreshInterval,
-                        TimeUnit.SECONDS);
-            } else {
-                statusCheckerFuture = scheduler.schedule(statusChecker, 1, TimeUnit.SECONDS);
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot connect to receiver. IP address not set.");
+            }, configuration.refreshInterval, configuration.refreshInterval, TimeUnit.SECONDS);
         }
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        if (statusCheckerFuture != null) {
-            statusCheckerFuture.cancel(true);
+        if (resourceUpdaterFuture != null) {
+            resourceUpdaterFuture.cancel(true);
         }
         if (connection != null) {
             connection.removeEventListener(this);
@@ -141,143 +137,178 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand for channel {}: {}", channelUID.getId(), command.toString());
         switch (channelUID.getId()) {
+
+            /*
+             * ZONE 1
+             */
+
             case CHANNEL_POWER:
-                if (command.equals(OnOffType.ON)) {
-                    sendCommand(EiscpCommandRef.POWER_ON);
-                } else if (command.equals(OnOffType.OFF)) {
-                    sendCommand(EiscpCommandRef.POWER_OFF);
+                if (command instanceof OnOffType) {
+                    sendCommand(EiscpCommand.POWER_SET, command);
                 } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.POWER_QUERY);
+                    sendCommand(EiscpCommand.POWER_QUERY);
                 }
                 break;
             case CHANNEL_MUTE:
-                if (command.equals(OnOffType.ON)) {
-                    sendCommand(EiscpCommandRef.MUTE);
-                } else if (command.equals(OnOffType.OFF)) {
-                    sendCommand(EiscpCommandRef.UNMUTE);
+                if (command instanceof OnOffType) {
+                    sendCommand(EiscpCommand.MUTE_SET, command);
                 } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.MUTE_QUERY);
+                    sendCommand(EiscpCommand.MUTE_QUERY);
                 }
                 break;
             case CHANNEL_VOLUME:
-                handleVolume(command);
+                handleVolumeSet(EiscpCommand.Zone.ZONE1, volumeLevelZone1, command);
                 break;
             case CHANNEL_INPUT:
                 if (command instanceof DecimalType) {
                     selectInput(((DecimalType) command).intValue());
                 } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.SOURCE_QUERY);
+                    sendCommand(EiscpCommand.SOURCE_QUERY);
                 }
                 break;
+            case CHANNEL_LISTENMODE:
+                if (command instanceof DecimalType) {
+                    sendCommand(EiscpCommand.LISTEN_MODE_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.LISTEN_MODE_QUERY);
+                }
+                break;
+
+            /*
+             * ZONE 2
+             */
+
+            case CHANNEL_POWERZONE2:
+                if (command instanceof OnOffType) {
+                    sendCommand(EiscpCommand.ZONE2_POWER_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.ZONE2_POWER_QUERY);
+                }
+                break;
+            case CHANNEL_MUTEZONE2:
+                if (command instanceof OnOffType) {
+                    sendCommand(EiscpCommand.ZONE2_MUTE_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.ZONE2_MUTE_QUERY);
+                }
+                break;
+            case CHANNEL_VOLUMEZONE2:
+                handleVolumeSet(EiscpCommand.Zone.ZONE2, volumeLevelZone2, command);
+                break;
+            case CHANNEL_INPUTZONE2:
+                if (command instanceof DecimalType) {
+                    sendCommand(EiscpCommand.ZONE2_SOURCE_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.ZONE2_SOURCE_QUERY);
+                }
+                break;
+
+            /*
+             * ZONE 3
+             */
+
+            case CHANNEL_POWERZONE3:
+                if (command instanceof OnOffType) {
+                    sendCommand(EiscpCommand.ZONE3_POWER_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.ZONE3_POWER_QUERY);
+                }
+                break;
+            case CHANNEL_MUTEZONE3:
+                if (command instanceof OnOffType) {
+                    sendCommand(EiscpCommand.ZONE3_MUTE_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.ZONE3_MUTE_QUERY);
+                }
+                break;
+            case CHANNEL_VOLUMEZONE3:
+                handleVolumeSet(EiscpCommand.Zone.ZONE3, volumeLevelZone3, command);
+                break;
+            case CHANNEL_INPUTZONE3:
+                if (command instanceof DecimalType) {
+                    sendCommand(EiscpCommand.ZONE3_SOURCE_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.ZONE3_SOURCE_QUERY);
+                }
+                break;
+
+            /*
+             * NET PLAYER
+             */
+
             case CHANNEL_CONTROL:
                 if (command instanceof PlayPauseType) {
                     if (command.equals(PlayPauseType.PLAY)) {
-                        sendCommand(EiscpCommandRef.NETUSB_OP_PLAY);
+                        sendCommand(EiscpCommand.NETUSB_OP_PLAY);
                     } else if (command.equals(PlayPauseType.PAUSE)) {
-                        sendCommand(EiscpCommandRef.NETUSB_OP_PAUSE);
+                        sendCommand(EiscpCommand.NETUSB_OP_PAUSE);
                     }
                 } else if (command instanceof NextPreviousType) {
                     if (command.equals(NextPreviousType.NEXT)) {
-                        sendCommand(EiscpCommandRef.NETUSB_OP_TRACKUP);
+                        sendCommand(EiscpCommand.NETUSB_OP_TRACKUP);
                     } else if (command.equals(NextPreviousType.PREVIOUS)) {
-                        sendCommand(EiscpCommandRef.NETUSB_OP_TRACKDWN);
+                        sendCommand(EiscpCommand.NETUSB_OP_TRACKDWN);
                     }
                 } else if (command instanceof RewindFastforwardType) {
                     if (command.equals(RewindFastforwardType.REWIND)) {
-                        sendCommand(EiscpCommandRef.NETUSB_OP_REW);
+                        sendCommand(EiscpCommand.NETUSB_OP_REW);
                     } else if (command.equals(RewindFastforwardType.FASTFORWARD)) {
-                        sendCommand(EiscpCommandRef.NETUSB_OP_FF);
+                        sendCommand(EiscpCommand.NETUSB_OP_FF);
                     }
                 } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.NETUSB_PLAY_STATUS_QUERY);
+                    sendCommand(EiscpCommand.NETUSB_PLAY_STATUS_QUERY);
                 }
                 break;
             case CHANNEL_PLAY_URI:
                 handlePlayUri(command);
                 break;
             case CHANNEL_ALBUM_ART:
+            case CHANNEL_ALBUM_ART_URL:
                 if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.NETUSB_ALBUM_ART_REQ);
-                }
-                break;
-            case CHANNEL_LISTENMODE:
-                if (command instanceof DecimalType) {
-                    sendCommand(EiscpCommandRef.LISTEN_MODE_SET, command);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.LISTEN_MODE_QUERY);
+                    sendCommand(EiscpCommand.NETUSB_ALBUM_ART_QUERY);
                 }
                 break;
             case CHANNEL_ARTIST:
                 if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.NETUSB_SONG_ARTIST_QUERY);
+                    sendCommand(EiscpCommand.NETUSB_SONG_ARTIST_QUERY);
                 }
                 break;
             case CHANNEL_ALBUM:
                 if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.NETUSB_SONG_ALBUM_QUERY);
+                    sendCommand(EiscpCommand.NETUSB_SONG_ALBUM_QUERY);
                 }
                 break;
             case CHANNEL_TITLE:
                 if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.NETUSB_SONG_TITLE_QUERY);
-                }
-                break;
-            case CHANNEL_NET_MENU_TITLE:
-                if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.NETUSB_TITLE_QUERY);
+                    sendCommand(EiscpCommand.NETUSB_SONG_TITLE_QUERY);
                 }
                 break;
             case CHANNEL_CURRENTPLAYINGTIME:
                 if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.NETUSB_SONG_ELAPSEDTIME_QUERY);
+                    sendCommand(EiscpCommand.NETUSB_SONG_ELAPSEDTIME_QUERY);
                 }
                 break;
-            case CHANNEL_POWERZONE2:
-                if (command.equals(OnOffType.ON)) {
-                    sendCommand(EiscpCommandRef.ZONE2_POWER_ON);
-                } else if (command.equals(OnOffType.OFF)) {
-                    sendCommand(EiscpCommandRef.ZONE2_POWER_SBY);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.ZONE2_POWER_QUERY);
-                }
-                break;
-            case CHANNEL_MUTEZONE2:
-                if (command.equals(OnOffType.ON)) {
-                    sendCommand(EiscpCommandRef.ZONE2_MUTE);
-                } else if (command.equals(OnOffType.OFF)) {
-                    sendCommand(EiscpCommandRef.ZONE2_UNMUTE);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.ZONE2_MUTE_QUERY);
-                }
-                break;
-            case CHANNEL_VOLUMEZONE2:
-                if (command instanceof PercentType) {
-                    sendCommand(EiscpCommandRef.ZONE2_VOLUME_SET, command);
-                } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                    sendCommand(EiscpCommandRef.ZONE2_VOLUME_UP);
-                } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
-                    sendCommand(EiscpCommandRef.ZONE2_VOLUME_DOWN);
-                } else if (command.equals(OnOffType.OFF)) {
-                    sendCommand(EiscpCommandRef.ZONE2_MUTE);
-                } else if (command.equals(OnOffType.ON)) {
-                    sendCommand(EiscpCommandRef.ZONE2_UNMUTE);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.ZONE2_VOLUME_QUERY);
-                }
-                break;
-            case CHANNEL_INPUTZONE2:
-                if (command instanceof DecimalType) {
-                    sendCommand(EiscpCommandRef.ZONE2_SOURCE_SET, command);
-                } else if (command.equals(RefreshType.REFRESH)) {
-                    sendCommand(EiscpCommandRef.ZONE2_SOURCE_QUERY);
-                }
-                break;
+
+            /*
+             * NET MENU
+             */
+
             case CHANNEL_NET_MENU_CONTROL:
                 if (command instanceof StringType) {
                     final String cmdName = command.toString();
                     handleNetMenuCommand(cmdName);
                 }
                 break;
+            case CHANNEL_NET_MENU_TITLE:
+                if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.NETUSB_TITLE_QUERY);
+                }
+                break;
+
+            /*
+             * MISC
+             */
+
             default:
                 logger.debug("Command received for an unknown channel: {}", channelUID.getId());
                 break;
@@ -285,213 +316,200 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     }
 
     @Override
-    public void statusUpdateReceived(EventObject event, String ip, String data) {
+    public void statusUpdateReceived(String ip, EiscpMessage data) {
         logger.debug("Received status update from Onkyo Receiver @{}: data={}", connection.getConnectionName(), data);
 
         updateStatus(ThingStatus.ONLINE);
 
         try {
             EiscpCommand receivedCommand = null;
-            for (EiscpCommand candidate : EiscpCommand.values()) {
-                String deviceCmd = candidate.getCommand();
-                if (data.startsWith(deviceCmd)) {
-                    receivedCommand = candidate;
-                    break;
-                }
-            }
 
-            if (receivedCommand != null) {
-                switch (receivedCommand.getCommandRef()) {
-                    case POWER_OFF:
-                        updateState(CHANNEL_POWER, OnOffType.OFF);
-                        break;
-                    case POWER_ON:
-                        updateState(CHANNEL_POWER, OnOffType.ON);
-                        break;
-                    case MUTE:
-                        updateState(CHANNEL_MUTE, OnOffType.ON);
-                        break;
-                    case UNMUTE:
-                        updateState(CHANNEL_MUTE, OnOffType.OFF);
-                        break;
-                    case VOLUME_SET:
-                        if (!data.substring(3, 5).contentEquals("N/")) {
-                            volume = new PercentType(Integer.parseInt(data.substring(3, 5), 16));
-                            updateState(CHANNEL_VOLUME, volume);
-                        }
-                        break;
-                    case SOURCE_SET:
-                        if (!data.substring(3, 5).contentEquals("N/")) {
-                            int input = Integer.parseInt(data.substring(3, 5), 16);
-                            updateState(CHANNEL_INPUT, new DecimalType(input));
-                            onInputChanged(input);
-                        }
-                        break;
-                    case NETUSB_SONG_ARTIST_QUERY:
-                        updateState(CHANNEL_ARTIST, new StringType(data.substring(3, data.length())));
-                        break;
-                    case NETUSB_SONG_ALBUM_QUERY:
-                        updateState(CHANNEL_ALBUM, new StringType(data.substring(3, data.length())));
-                        break;
-                    case NETUSB_SONG_TITLE_QUERY:
-                        updateState(CHANNEL_TITLE, new StringType(data.substring(3, data.length())));
-                        break;
-                    case NETUSB_SONG_ELAPSEDTIME_QUERY:
-                        updateState(CHANNEL_CURRENTPLAYINGTIME, new StringType(data.substring(3, data.length())));
-                        break;
-                    case NETUSB_PLAY_STATUS_QUERY:
-                        updateNetUsbPlayStatus(data.charAt(3));
-                        break;
-                    case NETUSB_TITLE:
-                        ServiceType service = ServiceType.getType(Integer.parseInt(data.substring(3, 5), 16));
-                        String title = data.substring(25, data.length());
-                        updateState(CHANNEL_NET_MENU_TITLE,
-                                new StringType(service.toString() + ((title.length() > 0) ? ": " + title : "")));
-                        break;
-                    case NETUSB_ALBUM_ART:
-                        if (data.substring(3, 5).contentEquals("2-")) {
-                            //TODO: Replace this with ImageType once available
-                            updateState(CHANNEL_ALBUM_ART, new StringType(data.substring(5, data.length())));
-                        } else {
-                            logger.debug("Not supported album art type: {}", data.substring(3, data.length()));
-                        }
-                        break;
-                    case RECEIVER_INFO:
-                        logger.debug("Info message: \n{}", data.substring(3, data.length()));
-                        break;
-                    case LISTEN_MODE_SET:
-                        String listenModeStr = data.substring(3, 5);
-                        // update only when listen mode is available
-                        if (!listenModeStr.equals("N/")) {
-                            int listenMode = Integer.parseInt(listenModeStr, 16);
-                            updateState(CHANNEL_LISTENMODE, new DecimalType(listenMode));
-                        }
-                        break;
-                    case ZONE2_POWER_SBY:
-                        updateState(CHANNEL_POWERZONE2, OnOffType.OFF);
-                        break;
-                    case ZONE2_POWER_ON:
-                        updateState(CHANNEL_POWERZONE2, OnOffType.ON);
-                        break;
-                    case ZONE2_MUTE:
-                        updateState(CHANNEL_MUTEZONE2, OnOffType.ON);
-                        break;
-                    case ZONE2_UNMUTE:
-                        updateState(CHANNEL_MUTEZONE2, OnOffType.OFF);
-                        break;
-                    case ZONE2_VOLUME_SET:
-                        if (!data.substring(3, 5).contentEquals("N/")) {
-                            updateState(CHANNEL_VOLUMEZONE2,
-                                    new PercentType(Integer.parseInt(data.substring(3, 5), 16)));
-                        }
-                        break;
-                    case ZONE2_SOURCE_SET:
-                        if (!data.substring(3, 5).contentEquals("N/")) {
-                            int inputZone2 = Integer.parseInt(data.substring(3, 5), 16);
-                            updateState(CHANNEL_INPUTZONE2, new DecimalType(inputZone2));
-                        }
-                        break;
-                    case NETUSB_MENU0:
-                        updateState(CHANNEL_NET_MENU0, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU1:
-                        updateState(CHANNEL_NET_MENU1, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU2:
-                        updateState(CHANNEL_NET_MENU2, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU3:
-                        updateState(CHANNEL_NET_MENU3, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU4:
-                        updateState(CHANNEL_NET_MENU4, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU5:
-                        updateState(CHANNEL_NET_MENU5, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU6:
-                        updateState(CHANNEL_NET_MENU6, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU7:
-                        updateState(CHANNEL_NET_MENU7, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU8:
-                        updateState(CHANNEL_NET_MENU8, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU9:
-                        updateState(CHANNEL_NET_MENU9, new StringType(data.substring(6)));
-                        break;
-                    case NETUSB_MENU_POSITION:
-                        String txt = data.substring(4);
-                        int pos = -1;
-                        try {
-                            pos = Integer.parseInt(txt.substring(0, 1));
-                        } catch (NumberFormatException nfe) {
-                            // pos already is -1
-                        }
-
-                        logger.debug("Updating menu {} : {}", txt.charAt(1), pos);
-
-                        if (txt.endsWith("P")) {
-                            resetNetMenu();
-                        }
-
-                        updateState(CHANNEL_NET_MENU_SELECTION, new DecimalType(pos));
-                        break;
-                    default:
-                        logger.debug("Received unhandled status update from Onkyo Receiver @{}: data={}",
-                                connection.getConnectionName(), data);
-
-                }
-            } else {
+            try {
+                receivedCommand = EiscpCommand.getCommandByCommandAndValueStr(data.getCommand(), "");
+            } catch (IllegalArgumentException ex) {
                 logger.debug("Received unknown status update from Onkyo Receiver @{}: data={}",
                         connection.getConnectionName(), data);
+                return;
             }
+
+            logger.debug("Received command {}", receivedCommand);
+
+            switch (receivedCommand) {
+
+                /*
+                 * ZONE 1
+                 */
+                case POWER:
+                    updateState(CHANNEL_POWER, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
+                    break;
+                case MUTE:
+                    updateState(CHANNEL_MUTE, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
+                    break;
+                case VOLUME:
+                    volumeLevelZone1 = handleReceivedVolume(
+                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                    updateState(CHANNEL_VOLUME, volumeLevelZone1);
+                    break;
+                case SOURCE:
+                    updateState(CHANNEL_INPUT, convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
+                    break;
+                case LISTEN_MODE:
+                    updateState(CHANNEL_LISTENMODE,
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
+                    break;
+
+                /*
+                 * ZONE 2
+                 */
+                case ZONE2_POWER:
+                    updateState(CHANNEL_POWERZONE2, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
+                    break;
+                case ZONE2_MUTE:
+                    updateState(CHANNEL_MUTEZONE2, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
+                    break;
+                case ZONE2_VOLUME:
+                    updateState(CHANNEL_VOLUMEZONE2,
+                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                    break;
+                case ZONE2_SOURCE:
+                    updateState(CHANNEL_INPUTZONE2,
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
+                    break;
+
+                /*
+                 * ZONE 3
+                 */
+                case ZONE3_POWER:
+                    updateState(CHANNEL_POWERZONE3, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
+                    break;
+                case ZONE3_MUTE:
+                    updateState(CHANNEL_MUTEZONE3, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
+                    break;
+                case ZONE3_VOLUME:
+                    updateState(CHANNEL_VOLUMEZONE3,
+                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                    break;
+                case ZONE3_SOURCE:
+                    updateState(CHANNEL_INPUTZONE3,
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
+                    break;
+
+                /*
+                 * NET PLAYER
+                 */
+
+                case NETUSB_SONG_ARTIST:
+                    updateState(CHANNEL_ARTIST, convertDeviceValueToOpenHabState(data.getValue(), StringType.class));
+                    break;
+                case NETUSB_SONG_ALBUM:
+                    updateState(CHANNEL_ALBUM, convertDeviceValueToOpenHabState(data.getValue(), StringType.class));
+                    break;
+                case NETUSB_SONG_TITLE:
+                    updateState(CHANNEL_TITLE, convertDeviceValueToOpenHabState(data.getValue(), StringType.class));
+                    break;
+                case NETUSB_SONG_ELAPSEDTIME:
+                    updateState(CHANNEL_CURRENTPLAYINGTIME,
+                            convertDeviceValueToOpenHabState(data.getValue(), StringType.class));
+                    break;
+                case NETUSB_PLAY_STATUS:
+                    updateState(CHANNEL_CONTROL, convertNetUsbPlayStatus(data.getValue()));
+                    break;
+                case NETUSB_ALBUM_ART:
+                    updateAlbumArt(data.getValue());
+                    break;
+                case NETUSB_TITLE:
+                    updateNetTitle(data.getValue());
+                    break;
+                case NETUSB_MENU:
+                    updateNetMenu(data.getValue());
+                    break;
+
+                /*
+                 * MISC
+                 */
+
+                case INFO:
+                    logger.debug("Info message: '{}'", data.getValue());
+                    break;
+
+                default:
+                    logger.debug("Received unhandled status update from Onkyo Receiver @{}: data={}",
+                            connection.getConnectionName(), data);
+
+            }
+
         } catch (Exception ex) {
             logger.error("Exception in statusUpdateReceived for Onkyo Receiver @{}. Cause: {}, data received: {}",
                     connection.getConnectionName(), ex.getMessage(), data);
         }
     }
 
-    private void resetNetMenu() {
-        updateState(CHANNEL_NET_MENU0, new StringType("-"));
-        updateState(CHANNEL_NET_MENU1, new StringType("-"));
-        updateState(CHANNEL_NET_MENU2, new StringType("-"));
-        updateState(CHANNEL_NET_MENU3, new StringType("-"));
-        updateState(CHANNEL_NET_MENU4, new StringType("-"));
-        updateState(CHANNEL_NET_MENU5, new StringType("-"));
-        updateState(CHANNEL_NET_MENU6, new StringType("-"));
-        updateState(CHANNEL_NET_MENU7, new StringType("-"));
-        updateState(CHANNEL_NET_MENU8, new StringType("-"));
-        updateState(CHANNEL_NET_MENU9, new StringType("-"));
+    @Override
+    public void connectionError(String ip) {
+        logger.debug("Connection error occurred to Onkyo Receiver @{}", ip);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+    }
+
+    private State convertDeviceValueToOpenHabState(String data, Class<?> classToConvert) {
+        State state = UnDefType.UNDEF;
+
+        try {
+            int index;
+
+            if (data.contentEquals("N/A")) {
+                state = UnDefType.UNDEF;
+
+            } else if (classToConvert == OnOffType.class) {
+                index = Integer.parseInt(data, 16);
+                state = index == 0 ? OnOffType.OFF : OnOffType.ON;
+
+            } else if (classToConvert == DecimalType.class) {
+                index = Integer.parseInt(data, 16);
+                state = new DecimalType(index);
+
+            } else if (classToConvert == PercentType.class) {
+                index = Integer.parseInt(data, 16);
+                state = new PercentType(index);
+
+            } else if (classToConvert == StringType.class) {
+                state = new StringType(data);
+
+            }
+        } catch (Exception e) {
+            logger.debug("Cannot convert value '{}' to data type {}", data, classToConvert);
+        }
+
+        logger.debug("Converted data '{}' to openHAB state '{}' ({})", data, state, classToConvert);
+        return state;
     }
 
     private void handleNetMenuCommand(String cmdName) {
         if ("Up".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_UP);
+            sendCommand(EiscpCommand.NETUSB_OP_UP);
         } else if ("Down".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_DOWN);
+            sendCommand(EiscpCommand.NETUSB_OP_DOWN);
         } else if ("Select".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_SELECT);
+            sendCommand(EiscpCommand.NETUSB_OP_SELECT);
         } else if ("PageUp".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_LEFT);
+            sendCommand(EiscpCommand.NETUSB_OP_LEFT);
         } else if ("PageDown".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_RIGHT);
+            sendCommand(EiscpCommand.NETUSB_OP_RIGHT);
         } else if ("Back".equals(cmdName)) {
-            sendCommand(EiscpCommandRef.NETUSB_OP_RETURN);
+            sendCommand(EiscpCommand.NETUSB_OP_RETURN);
         } else if (cmdName.matches("Select[0-9]")) {
             int pos = Integer.parseInt(cmdName.substring(6));
-            sendCommand(EiscpCommandRef.NETUSB_MENU_SELECT, new DecimalType(pos));
+            sendCommand(EiscpCommand.NETUSB_MENU_SELECT, new DecimalType(pos));
         } else {
             logger.debug("Received unknown menucommand {}", cmdName);
         }
     }
 
     private void selectInput(int inputId) {
-        sendCommand(EiscpCommandRef.SOURCE_SET, new DecimalType(inputId));
+        sendCommand(EiscpCommand.SOURCE_SET, new DecimalType(inputId));
         currentInput = inputId;
     }
 
+    @SuppressWarnings("unused")
     private void onInputChanged(int newInput) {
         currentInput = newInput;
 
@@ -505,110 +523,295 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         }
     }
 
-    private void updateNetUsbPlayStatus(char c) {
-        switch (c) {
-            case 'P':
-                updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
-                break;
-            case 'p':
-            case 'S':
-                updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
-                break;
-            case 'F':
-                updateState(CHANNEL_CONTROL, RewindFastforwardType.FASTFORWARD);
-                break;
-            case 'R':
-                updateState(CHANNEL_CONTROL, RewindFastforwardType.REWIND);
+    private void updateAlbumArt(String data) {
+        onkyoAlbumArt.addFrame(data);
+
+        if (onkyoAlbumArt.isAlbumCoverReady()) {
+            try {
+                byte[] imgData = onkyoAlbumArt.getAlbumArt();
+                if (imgData != null && imgData.length > 0) {
+                    updateState(CHANNEL_ALBUM_ART, new RawType(imgData));
+                } else {
+                    updateState(CHANNEL_ALBUM_ART, UnDefType.UNDEF);
+                }
+            } catch (IllegalArgumentException e) {
+                updateState(CHANNEL_ALBUM_ART, UnDefType.UNDEF);
+            }
+            onkyoAlbumArt.clearAlbumArt();
+        }
+
+        if (data.startsWith("2-")) {
+            updateState(CHANNEL_ALBUM_ART_URL, new StringType(data.substring(2, data.length())));
+        } else if (data.startsWith("n-")) {
+            updateState(CHANNEL_ALBUM_ART_URL, UnDefType.UNDEF);
+        } else {
+            logger.debug("Not supported album art URL type: {}", data.substring(0, 2));
+            updateState(CHANNEL_ALBUM_ART_URL, UnDefType.UNDEF);
+        }
+
+    }
+
+    private void updateNetTitle(String data) {
+        // first 2 characters is service type
+        int type = Integer.parseInt(data.substring(0, 2), 16);
+        ServiceType service = ServiceType.getType(type);
+
+        String title = "";
+        if (data.length() > 21) {
+            title = data.substring(22, data.length());
+        }
+
+        updateState(CHANNEL_NET_MENU_TITLE,
+                new StringType(service.toString() + ((title.length() > 0) ? ": " + title : "")));
+
+    }
+
+    private void updateNetMenu(String data) {
+        switch (data.charAt(0)) {
+            case 'U':
+                String itemData = data.substring(3, data.length());
+                switch (data.charAt(1)) {
+                    case '0':
+                        updateState(CHANNEL_NET_MENU0, new StringType(itemData));
+                        break;
+                    case '1':
+                        updateState(CHANNEL_NET_MENU1, new StringType(itemData));
+                        break;
+                    case '2':
+                        updateState(CHANNEL_NET_MENU2, new StringType(itemData));
+                        break;
+                    case '3':
+                        updateState(CHANNEL_NET_MENU3, new StringType(itemData));
+                        break;
+                    case '4':
+                        updateState(CHANNEL_NET_MENU4, new StringType(itemData));
+                        break;
+                    case '5':
+                        updateState(CHANNEL_NET_MENU5, new StringType(itemData));
+                        break;
+                    case '6':
+                        updateState(CHANNEL_NET_MENU6, new StringType(itemData));
+                        break;
+                    case '7':
+                        updateState(CHANNEL_NET_MENU7, new StringType(itemData));
+                        break;
+                    case '8':
+                        updateState(CHANNEL_NET_MENU8, new StringType(itemData));
+                        break;
+                    case '9':
+                        updateState(CHANNEL_NET_MENU9, new StringType(itemData));
+                        break;
+                }
                 break;
 
+            case 'C':
+                updateMenuPosition(data);
+                break;
         }
     }
 
-    private void sendCommand(EiscpCommandRef commandRef) {
+    private void updateMenuPosition(String data) {
+        char position = data.charAt(1);
+        int pos = Character.getNumericValue(position);
+
+        logger.debug("Updating menu position to {}", pos);
+
+        if (pos == -1) {
+            updateState(CHANNEL_NET_MENU_SELECTION, UnDefType.UNDEF);
+        } else {
+            updateState(CHANNEL_NET_MENU_SELECTION, new DecimalType(pos));
+        }
+
+        if (data.endsWith("P")) {
+            resetNetMenu();
+        }
+    }
+
+    private void resetNetMenu() {
+        logger.debug("Reset net menu");
+        updateState(CHANNEL_NET_MENU0, new StringType("-"));
+        updateState(CHANNEL_NET_MENU1, new StringType("-"));
+        updateState(CHANNEL_NET_MENU2, new StringType("-"));
+        updateState(CHANNEL_NET_MENU3, new StringType("-"));
+        updateState(CHANNEL_NET_MENU4, new StringType("-"));
+        updateState(CHANNEL_NET_MENU5, new StringType("-"));
+        updateState(CHANNEL_NET_MENU6, new StringType("-"));
+        updateState(CHANNEL_NET_MENU7, new StringType("-"));
+        updateState(CHANNEL_NET_MENU8, new StringType("-"));
+        updateState(CHANNEL_NET_MENU9, new StringType("-"));
+    }
+
+    private State convertNetUsbPlayStatus(String data) {
+        State state = UnDefType.UNDEF;
+        switch (data.charAt(0)) {
+            case 'P':
+                state = PlayPauseType.PLAY;
+                break;
+            case 'p':
+            case 'S':
+                state = PlayPauseType.PAUSE;
+                break;
+            case 'F':
+                state = RewindFastforwardType.FASTFORWARD;
+                break;
+            case 'R':
+                state = RewindFastforwardType.REWIND;
+                break;
+
+        }
+        return state;
+    }
+
+    private void sendCommand(EiscpCommand deviceCommand) {
         if (connection != null) {
-            EiscpCommand deviceCommand = EiscpCommand.getCommandByCommandRef(commandRef.getCommand());
-            connection.send(deviceCommand.getCommand());
+            connection.send(deviceCommand.getCommand(), deviceCommand.getValue());
         } else {
             logger.debug("Connect send command to onkyo receiver since the onkyo binding is not initialized");
         }
     }
 
-    private void sendCommand(EiscpCommandRef commandRef, Command command) {
+    private void sendCommand(EiscpCommand deviceCommand, Command command) {
         if (connection != null) {
-            EiscpCommand deviceCommand = EiscpCommand.getCommandByCommandRef(commandRef.getCommand());
 
-            String cmdTemplate = deviceCommand.getCommand();
-            String deviceCmd = null;
+            final String cmd = deviceCommand.getCommand();
+            String valTemplate = deviceCommand.getValue();
+            String val;
 
             if (command instanceof OnOffType) {
-                deviceCmd = String.format(cmdTemplate, command == OnOffType.ON ? 1 : 0);
+                val = String.format(valTemplate, command == OnOffType.ON ? 1 : 0);
 
             } else if (command instanceof StringType) {
-                deviceCmd = String.format(cmdTemplate, command);
+                val = String.format(valTemplate, command);
 
             } else if (command instanceof DecimalType) {
-                deviceCmd = String.format(cmdTemplate, ((DecimalType) command).intValue());
+                val = String.format(valTemplate, ((DecimalType) command).intValue());
 
             } else if (command instanceof PercentType) {
-                deviceCmd = String.format(cmdTemplate, ((DecimalType) command).intValue());
+                val = String.format(valTemplate, ((DecimalType) command).intValue());
+            } else {
+                val = valTemplate;
             }
 
-            logger.debug("Sending command to onkyo receiver: {}", deviceCmd);
-            connection.send(deviceCmd);
+            logger.debug("Sending command '{}' with value '{}' to Onkyo Receiver @{}", cmd, val,
+                    connection.getConnectionName());
+            connection.send(cmd, val);
         } else {
             logger.debug("Connect send command to onkyo receiver since the onkyo binding is not initialized");
         }
     }
 
     /**
-     * Check the status of the AVR. Return true if the AVR is online, else return false.
+     * Check the status of the AVR.
      *
      * @return
      */
     private void checkStatus() {
-
-        sendCommand(EiscpCommandRef.POWER_QUERY);
-        sendCommand(EiscpCommandRef.VOLUME_QUERY);
-        sendCommand(EiscpCommandRef.SOURCE_QUERY);
-        sendCommand(EiscpCommandRef.MUTE_QUERY);
-        sendCommand(EiscpCommandRef.ZONE2_POWER_QUERY);
-        sendCommand(EiscpCommandRef.ZONE2_VOLUME_QUERY);
-        sendCommand(EiscpCommandRef.ZONE2_SOURCE_QUERY);
-        sendCommand(EiscpCommandRef.ZONE2_MUTE_QUERY);
-        sendCommand(EiscpCommandRef.NETUSB_TITLE_QUERY);
-        sendCommand(EiscpCommandRef.LISTEN_MODE_QUERY);
+        sendCommand(EiscpCommand.POWER_QUERY);
 
         if (connection != null && connection.isConnected()) {
-            updateStatus(ThingStatus.ONLINE);
+
+            sendCommand(EiscpCommand.VOLUME_QUERY);
+            sendCommand(EiscpCommand.SOURCE_QUERY);
+            sendCommand(EiscpCommand.MUTE_QUERY);
+            sendCommand(EiscpCommand.NETUSB_TITLE_QUERY);
+            sendCommand(EiscpCommand.LISTEN_MODE_QUERY);
+
+            if (isChannelAvailable(CHANNEL_POWERZONE2)) {
+                sendCommand(EiscpCommand.ZONE2_POWER_QUERY);
+                sendCommand(EiscpCommand.ZONE2_VOLUME_QUERY);
+                sendCommand(EiscpCommand.ZONE2_SOURCE_QUERY);
+                sendCommand(EiscpCommand.ZONE2_MUTE_QUERY);
+            }
+
+            if (isChannelAvailable(CHANNEL_POWERZONE3)) {
+                sendCommand(EiscpCommand.ZONE3_POWER_QUERY);
+                sendCommand(EiscpCommand.ZONE3_VOLUME_QUERY);
+                sendCommand(EiscpCommand.ZONE3_SOURCE_QUERY);
+                sendCommand(EiscpCommand.ZONE3_MUTE_QUERY);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
     }
 
-    private void handleVolume(final Command command) {
-        if (command instanceof PercentType) {
-            sendCommand(EiscpCommandRef.VOLUME_SET, command);
-        } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
-            sendCommand(EiscpCommandRef.VOLUME_UP);
-        } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
-            sendCommand(EiscpCommandRef.VOLUME_DOWN);
-        } else if (command.equals(OnOffType.OFF)) {
-            sendCommand(EiscpCommandRef.MUTE);
-        } else if (command.equals(OnOffType.ON)) {
-            sendCommand(EiscpCommandRef.UNMUTE);
-        } else if (command.equals(RefreshType.REFRESH)) {
-            sendCommand(EiscpCommandRef.VOLUME_QUERY);
+    private boolean isChannelAvailable(String channel) {
+        List<Channel> channels = getThing().getChannels();
+        if (channels != null) {
+            for (Channel c : channels) {
+                if (c.getUID().getId().equals(channel)) {
+                    return true;
+                }
+            }
         }
+        return false;
+    }
+
+    private void handleVolumeSet(EiscpCommand.Zone zone, final State currentValue, final Command command) {
+        if (command instanceof PercentType) {
+            sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.VOLUME_SET),
+                    downScaleVolume((PercentType) command));
+        } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
+            if (currentValue instanceof PercentType) {
+                if (((DecimalType) currentValue).intValue() < configuration.volumeLimit) {
+                    sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.VOLUME_UP));
+                } else {
+                    logger.info("Volume level is limited to {}, ignore volume up command.", configuration.volumeLimit);
+                }
+            }
+        } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
+            sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.VOLUME_DOWN));
+        } else if (command.equals(OnOffType.OFF)) {
+            sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.MUTE_SET), command);
+        } else if (command.equals(OnOffType.ON)) {
+            sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.MUTE_SET), command);
+        } else if (command.equals(RefreshType.REFRESH)) {
+            sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.VOLUME_QUERY));
+            sendCommand(EiscpCommand.getCommandForZone(zone, EiscpCommand.MUTE_QUERY));
+        }
+    }
+
+    private State handleReceivedVolume(State volume) {
+        if (volume instanceof PercentType) {
+            return upScaleVolume(((PercentType) volume));
+        }
+        return volume;
+    }
+
+    private PercentType upScaleVolume(PercentType volume) {
+        PercentType newVolume = volume;
+
+        if (configuration.volumeLimit < 100) {
+            double scaleCoefficient = 100d / configuration.volumeLimit;
+            newVolume = new PercentType(((Double) (volume.doubleValue() * scaleCoefficient)).intValue());
+            logger.debug("Up scaled volume level '{}' to '{}'", volume, newVolume);
+        }
+
+        return newVolume;
+    }
+
+    private PercentType downScaleVolume(PercentType volume) {
+        PercentType newVolume = volume;
+
+        if (configuration.volumeLimit < 100) {
+            double scaleCoefficient = configuration.volumeLimit / 100d;
+            newVolume = new PercentType(((Double) (volume.doubleValue() * scaleCoefficient)).intValue());
+            logger.debug("Down scaled volume level '{}' to '{}'", volume, newVolume);
+        }
+
+        return newVolume;
     }
 
     @Override
     public PercentType getVolume() throws IOException {
-        return volume;
+        if (volumeLevelZone1 instanceof PercentType) {
+            return (PercentType) volumeLevelZone1;
+        }
+
+        throw new IOException();
     }
 
     @Override
     public void setVolume(PercentType volume) throws IOException {
-        handleVolume(volume);
+        handleVolumeSet(EiscpCommand.Zone.ZONE1, volumeLevelZone1, downScaleVolume(volume));
     }
-
 }

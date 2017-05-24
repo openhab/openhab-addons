@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,77 +33,70 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Bausdorf - Initial contribution
  */
-public class AvmUpnpDiscoveryParticipant implements
-		UpnpDiscoveryParticipant {
-	/**
-	 * Logger
-	 */
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+public class AvmUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
+    /**
+     * Logger
+     */
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	/**
-	 * Provide supported thing type uid's
-	 */
-	@Override
-	public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-		return BindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
-	}
+    /**
+     * Provide supported thing type uid's
+     */
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
+        return BindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
+    }
 
-	/**
-	 * Create a discovery result from UPNP discovery
-	 */
-	@Override
-	public DiscoveryResult createResult(RemoteDevice device) {
-		ThingUID uid = getThingUID(device);
-		if (uid != null) {
-			logger.debug("discovered: " + device.getDisplayString() + " at " 
-					+ device.getIdentity().getDescriptorURL().getHost());
-			Map<String, Object> properties = new HashMap<>();
-			properties.put(IP_ADDRESS, device.getIdentity().getDescriptorURL()
-					.getHost());
-			DiscoveryResult result = DiscoveryResultBuilder
-					.create(uid)
-					.withProperties(properties)
-					.withLabel(device.getDetails().getFriendlyName())
-					.withRepresentationProperty(IP_ADDRESS)
-					.withTTL(
-							Math.max(MIN_MAX_AGE_SECS, device.getIdentity()
-									.getMaxAgeSeconds())).build();
-			return result;
-		}
-		return null;
-	}
+    /**
+     * Create a discovery result from UPNP discovery
+     */
+    @Override
+    public DiscoveryResult createResult(RemoteDevice device) {
+        ThingUID uid = getThingUID(device);
+        if (uid != null) {
+            logger.debug("discovered: {} at {}", device.getDisplayString(),
+                    device.getIdentity().getDescriptorURL().getHost());
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(IP_ADDRESS, device.getIdentity().getDescriptorURL().getHost());
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(IP_ADDRESS)
+                    .withTTL(Math.max(MIN_MAX_AGE_SECS, device.getIdentity().getMaxAgeSeconds())).build();
+            return result;
+        }
+        return null;
+    }
 
-	/**
-	 * Compute a FRITZ!Box thind UID.
-	 */
-	@Override
-	public ThingUID getThingUID(RemoteDevice device) {
-		DeviceDetails details = device.getDetails();
-		if (details != null) {
-			ModelDetails modelDetails = details.getModelDetails();
-			if (modelDetails != null) {
-				String modelName = modelDetails.getModelName();
-				if (modelName != null) {
-					if (modelName.startsWith(BRIDGE_MODEL_NAME)) {
-						logger.debug("discovered on " + device.getIdentity().getDiscoveredOnLocalAddress());
-						return new ThingUID(BRIDGE_THING_TYPE, device
-								.getIdentity().getDescriptorURL().getHost()
-//	It world be better to use udn but in my case FB is discovered twice
-//								.getIdentity().getUdn().getIdentifierString()
-								.replaceAll("[^a-zA-Z0-9_]", "_"));
-					} else if (modelName.startsWith(PL546E_MODEL_NAME)) {
-						logger.debug("discovered on " + device.getIdentity().getDiscoveredOnLocalAddress());
-						return new ThingUID(PL546E_STANDALONE_THING_TYPE, device
-								.getIdentity().getDescriptorURL().getHost()
-//	It world be better to use udn but in my case PL546E is discovered twice
-//								.getIdentity().getUdn().getIdentifierString()
-								.replaceAll("[^a-zA-Z0-9_]", "_"));
-					}
-				}
-			} else {
-				logger.debug("no model details");
-			}
-		}
-		return null;
-	}
+    /**
+     * Compute a FRITZ!Box thind UID.
+     */
+    @Override
+    public ThingUID getThingUID(RemoteDevice device) {
+        DeviceDetails details = device.getDetails();
+        if (details != null) {
+            ModelDetails modelDetails = details.getModelDetails();
+            if (modelDetails != null) {
+                String modelName = modelDetails.getModelName();
+                if (modelName != null) {
+                    if (modelName.startsWith(BRIDGE_MODEL_NAME)) {
+                        logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
+                        return new ThingUID(BRIDGE_THING_TYPE,
+                                device.getIdentity().getDescriptorURL().getHost()
+                                        // It world be better to use udn but in my case FB is discovered twice
+                                        // .getIdentity().getUdn().getIdentifierString()
+                                        .replaceAll("[^a-zA-Z0-9_]", "_"));
+                    } else if (modelName.startsWith(PL546E_MODEL_NAME)) {
+                        logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
+                        return new ThingUID(PL546E_STANDALONE_THING_TYPE,
+                                device.getIdentity().getDescriptorURL().getHost()
+                                        // It world be better to use udn but in my case PL546E is discovered twice
+                                        // .getIdentity().getUdn().getIdentifierString()
+                                        .replaceAll("[^a-zA-Z0-9_]", "_"));
+                    }
+                }
+            } else {
+                logger.debug("no model details");
+            }
+        }
+        return null;
+    }
 }

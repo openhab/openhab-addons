@@ -4,7 +4,7 @@ Bundle-Name: Netatmo Binding
 Bundle-SymbolicName: org.openhab.binding.netatmo;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/retrofit-1.9.0.jar,
  lib/okhttp-2.3.0.jar,
@@ -14,7 +14,7 @@ Bundle-ClassPath: .,
  lib/json-20131018.jar,
  lib/commons-codec-1.8.jar,
  lib/gson-2.3.1.jar,
- lib/netatmo-java-retrofit-1.0.6.jar
+ lib/netatmo-java-retrofit-1.0.7.jar
 Import-Package: 
  com.google.common.collect,
  org.eclipse.smarthome.config.core.validation,
@@ -26,7 +26,9 @@ Import-Package:
  org.osgi.framework,
  org.slf4j,
  javax.net,
- javax.net.ssl
+ javax.net.ssl,
+ org.openhab.binding.netatmo,
+ org.openhab.binding.netatmo.handler
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.netatmo,
  org.openhab.binding.netatmo.handler

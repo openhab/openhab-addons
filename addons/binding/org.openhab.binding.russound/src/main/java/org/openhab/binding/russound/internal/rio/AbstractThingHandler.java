@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,6 +9,7 @@
 package org.openhab.binding.russound.internal.rio;
 
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
@@ -24,11 +25,12 @@ import org.openhab.binding.russound.internal.net.SocketSessionListener;
  *
  * @author Tim Roberts
  */
-public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extends BaseThingHandler {
+public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extends BaseThingHandler
+        implements RioCallbackHandler {
     /**
      * The protocol handler for this base
      */
-    private E _protocolHandler;
+    private E protocolHandler;
 
     /**
      * Creates the handler from the given {@link Thing}
@@ -43,13 +45,13 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
      * Sets a new {@link AbstractRioProtocol} as the current protocol handler. If one already exists, it will be
      * disposed of first.
      *
-     * @param protocolHandler a, possibly null, {@link AbstractRioProtocol}
+     * @param newProtocolHandler a, possibly null, {@link AbstractRioProtocol}
      */
-    protected void setProtocolHandler(E protocolHandler) {
-        if (_protocolHandler != null) {
-            _protocolHandler.dispose();
+    protected void setProtocolHandler(E newProtocolHandler) {
+        if (protocolHandler != null) {
+            protocolHandler.dispose();
         }
-        _protocolHandler = protocolHandler;
+        protocolHandler = newProtocolHandler;
     }
 
     /**
@@ -58,7 +60,18 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
      * @return a {@link AbstractRioProtocol} handler or null if none exists
      */
     protected E getProtocolHandler() {
-        return _protocolHandler;
+        return protocolHandler;
+    }
+
+    /**
+     * Overridden to simply get the protocol handler's {@link RioHandlerCallback}
+     * 
+     * @return the {@link RioHandlerCallback} or null if not found
+     */
+    @Override
+    public RioHandlerCallback getCallback() {
+        final E protocolHandler = getProtocolHandler();
+        return protocolHandler == null ? null : protocolHandler.getCallback();
     }
 
     /**
@@ -89,6 +102,20 @@ public abstract class AbstractThingHandler<E extends AbstractRioProtocol> extend
             disconnect();
         }
         super.bridgeStatusChanged(bridgeStatusInfo);
+    }
+
+    /**
+     * Overrides the base method to remove any state linked to the {@lin ChannelUID} from the
+     * {@link StatefulHandlerCallback}
+     */
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        // Remove any state when unlinking (that way if it is relinked - we get it)
+        final RioHandlerCallback callback = getProtocolHandler().getCallback();
+        if (callback instanceof StatefulHandlerCallback) {
+            ((StatefulHandlerCallback) callback).removeState(channelUID.getId());
+        }
+        super.channelUnlinked(channelUID);
     }
 
     /**

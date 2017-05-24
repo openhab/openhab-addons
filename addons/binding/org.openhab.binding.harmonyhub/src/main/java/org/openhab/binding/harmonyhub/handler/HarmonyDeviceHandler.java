@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -57,7 +57,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(HarmonyDeviceHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
 
     HarmonyHubHandler bridge;
     HarmonyHubHandlerFactory factory;
@@ -94,9 +94,9 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         logger.debug("Pressing button {} on {}", command, id > 0 ? 0 : name);
 
         if (id > 0) {
-            bridge.getClient().pressButton(id, command.toString());
+            bridge.pressButton(id, command.toString());
         } else {
-            bridge.getClient().pressButton(name, command.toString());
+            bridge.pressButton(name, command.toString());
         }
 
         // may need to ask the list if this can be set here?
@@ -145,10 +145,8 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             bridge = (HarmonyHubHandler) getBridge().getHandler();
             updateStatus(ThingStatus.ONLINE);
             updateChannel();
-        } else if (bridgeStatus == ThingStatus.OFFLINE) {
+        } else if (bridgeStatus != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        } else if (bridgeStatus == ThingStatus.UNKNOWN) {
-            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -212,7 +210,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
             updateThing(thingBuilder.build());
         } catch (Exception e) {
-            logger.debug("Could not add button channels to device " + logName, e);
+            logger.debug("Could not add button channels to device {}", logName, e);
         }
     }
 }

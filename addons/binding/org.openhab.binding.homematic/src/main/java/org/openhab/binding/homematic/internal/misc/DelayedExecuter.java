@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class DelayedExecuter {
-    private static final Logger logger = LoggerFactory.getLogger(DelayedExecuter.class);
+    private final Logger logger = LoggerFactory.getLogger(DelayedExecuter.class);
 
     private Map<HmDatapointInfo, Timer> delayedEvents = new HashMap<HmDatapointInfo, Timer>();
 
@@ -52,7 +52,7 @@ public class DelayedExecuter {
                         try {
                             callback.execute();
                         } catch (Exception ex) {
-                            logger.error(ex.getMessage(), ex);
+                            logger.error("{}", ex.getMessage(), ex);
                         }
                     }
                 }, (long) (delay * 1000));

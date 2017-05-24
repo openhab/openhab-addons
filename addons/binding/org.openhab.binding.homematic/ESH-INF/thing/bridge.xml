@@ -22,6 +22,7 @@
 				<options>
 					<option value="auto">Auto</option>
 					<option value="ccu">CCU</option>
+					<option value="noccu">NoCCU</option>
 				</options>
 			</parameter>
 			<parameter name="callbackHost" type="text">
@@ -90,6 +91,12 @@
 				<description>The port number of the CUxD daemon</description>
 				<advanced>true</advanced>
 				<default>8701</default>
+			</parameter>
+			<parameter name="groupPort" type="integer">
+				<label>Group port</label>
+				<description>The port number of the Group daemon</description>
+				<advanced>true</advanced>
+				<default>9292</default>
 			</parameter>
 
 		</config-description>

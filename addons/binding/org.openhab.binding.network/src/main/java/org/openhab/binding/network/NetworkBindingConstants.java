@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,21 +25,21 @@ public class NetworkBindingConstants {
     public static final String BINDING_ID = "network";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids
-    public final static String CHANNEL_ONLINE = "online";
-    public final static String CHANNEL_TIME = "time";
+    public static final String CHANNEL_ONLINE = "online";
+    public static final String CHANNEL_TIME = "time";
 
     // List of all Parameters
-    public final static String PARAMETER_HOSTNAME = "hostname";
-    public final static String PARAMETER_PORT = "port";
-    public final static String PARAMETER_RETRY = "retry";
-    public final static String PARAMETER_DHCPLISTEN = "dhcplisten";
-    public final static String PARAMETER_TIMEOUT = "timeout";
-    public final static String PARAMETER_REFRESH_INTERVAL = "refresh_interval";
-    public final static String PARAMETER_USE_SYSTEM_PING = "use_system_ping";
+    public static final String PARAMETER_HOSTNAME = "hostname";
+    public static final String PARAMETER_PORT = "port";
+    public static final String PARAMETER_RETRY = "retry";
+    public static final String PARAMETER_DHCPLISTEN = "dhcplisten";
+    public static final String PARAMETER_TIMEOUT = "timeout";
+    public static final String PARAMETER_REFRESH_INTERVAL = "refresh_interval";
+    public static final String PARAMETER_USE_SYSTEM_PING = "use_system_ping";
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);
 
 }

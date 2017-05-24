@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class NetatmoModuleHandler<X extends NetatmoModuleConfiguration>
         extends AbstractNetatmoThingHandler<X> {
-    private static Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
+    private Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
     private int batteryMin = 0;
     private int batteryLow = 0;
     private int batteryMax = 1;

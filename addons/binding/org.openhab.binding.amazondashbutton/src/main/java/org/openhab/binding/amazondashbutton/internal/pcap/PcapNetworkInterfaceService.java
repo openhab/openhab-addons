@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,7 +38,7 @@ import com.google.common.collect.Sets.SetView;
  */
 public class PcapNetworkInterfaceService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PcapNetworkInterfaceService.class);
+    private final Logger logger = LoggerFactory.getLogger(PcapNetworkInterfaceService.class);
 
     private static PcapNetworkInterfaceService instance = null;
     private static final String THREADPOOL_NAME = "pcapNetworkInterfaceService";
@@ -150,7 +150,7 @@ public class PcapNetworkInterfaceService {
         try {
             listener.onPcapNetworkInterfaceAdded(pcapNetworkInterface);
         } catch (Exception e) {
-            logger.error("An exception occurred while calling onPcapNetworkInterfaceAdded for " + listener, e);
+            logger.error("An exception occurred while calling onPcapNetworkInterfaceAdded for {}", listener, e);
         }
     }
 
@@ -159,7 +159,7 @@ public class PcapNetworkInterfaceService {
         try {
             listener.onPcapNetworkInterfaceRemoved(pcapNetworkInterface);
         } catch (Exception e) {
-            logger.error("An exception occurred while calling onPcapNetworkInterfaceRemoved for " + listener, e);
+            logger.error("An exception occurred while calling onPcapNetworkInterfaceRemoved for {}", listener, e);
         }
     }
 

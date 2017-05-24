@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,8 +17,6 @@ import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 
-import java.io.InvalidClassException;
-
 /**
  * Represents all valid value selectors which could be processed by RFXCOM
  * devices.
@@ -31,6 +29,7 @@ public enum RFXComValueSelector {
     RAW_PAYLOAD(RFXComBindingConstants.CHANNEL_RAW_PAYLOAD, StringItem.class),
     SHUTTER(RFXComBindingConstants.CHANNEL_SHUTTER, RollershutterItem.class),
     COMMAND(RFXComBindingConstants.CHANNEL_COMMAND, SwitchItem.class),
+    COMMAND_ID(RFXComBindingConstants.CHANNEL_COMMAND_ID, NumberItem.class),
     MOOD(RFXComBindingConstants.CHANNEL_MOOD, NumberItem.class),
     SIGNAL_LEVEL(RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL, NumberItem.class),
     DIMMING_LEVEL(RFXComBindingConstants.CHANNEL_DIMMING_LEVEL, DimmerItem.class),
@@ -59,7 +58,8 @@ public enum RFXComValueSelector {
     VOLTAGE(RFXComBindingConstants.CHANNEL_VOLTAGE, NumberItem.class),
     SET_POINT(RFXComBindingConstants.CHANNEL_SET_POINT, NumberItem.class),
     DATE_TIME(RFXComBindingConstants.CHANNEL_DATE_TIME, DateTimeItem.class),
-    LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY, SwitchItem.class);
+    LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY, SwitchItem.class),
+    CHIME_SOUND(RFXComBindingConstants.CHANNEL_CHIME_SOUND, NumberItem.class);
 
     private final String text;
     private Class<? extends Item> itemClass;
@@ -79,45 +79,13 @@ public enum RFXComValueSelector {
     }
 
     /**
-     * Procedure to validate selector string.
-     *
-     * @param valueSelector
-     *            selector string e.g. Command, Temperature
-     * @return true if item is valid.
-     * @throws IllegalArgumentException
-     *             Not valid value selector.
-     * @throws InvalidClassException
-     *             Not valid class for value selector.
-     */
-    public static boolean validateBinding(String valueSelector, Class<? extends Item> itemClass)
-            throws IllegalArgumentException, InvalidClassException {
-
-        for (RFXComValueSelector c : RFXComValueSelector.values()) {
-            if (c.text.equals(valueSelector)) {
-
-                if (c.getItemClass().equals(itemClass)) {
-                    return true;
-                } else {
-                    throw new InvalidClassException("Not valid class for value selector");
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("Not valid value selector");
-
-    }
-
-    /**
      * Procedure to convert selector string to value selector class.
      *
      * @param valueSelectorText
      *            selector string e.g. RawData, Command, Temperature
      * @return corresponding selector value.
-     * @throws InvalidClassException
-     *             Not valid class for value selector.
      */
     public static RFXComValueSelector getValueSelector(String valueSelectorText) throws IllegalArgumentException {
-
         for (RFXComValueSelector c : RFXComValueSelector.values()) {
             if (c.text.equals(valueSelectorText)) {
                 return c;

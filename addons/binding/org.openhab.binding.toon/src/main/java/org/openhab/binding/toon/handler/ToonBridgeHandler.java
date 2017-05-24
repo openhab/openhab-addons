@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,13 +8,17 @@
  */
 package org.openhab.binding.toon.handler;
 
+import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.*;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -92,13 +96,13 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
             try {
                 state = apiClient.collect();
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
 
             // prevent spamming the log file
-            if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.ONLINE);
+            if (!ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ONLINE);
             }
 
             for (Thing handler : getThing().getThings()) {
@@ -122,19 +126,18 @@ public class ToonBridgeHandler extends BaseBridgeHandler {
 
     private void updateStatus() {
         try {
-            if (configuration == null || configuration.username == null || configuration.username.length() == 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Username not configured");
-                return;
+            if (configuration == null) {
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "Configuration is missing or corrupted");
+            } else if (StringUtils.isEmpty(configuration.username)) {
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "Username not configured");
+            } else if (StringUtils.isEmpty(configuration.password)) {
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "Password not configured");
+            } else {
+                getApiClient().login();
+                updateStatus(ONLINE);
             }
-            if (configuration == null || configuration.password == null || configuration.password.length() == 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not configured");
-                return;
-            }
-
-            getApiClient().login();
-            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(OFFLINE, NONE, e.getMessage());
         }
     }
 

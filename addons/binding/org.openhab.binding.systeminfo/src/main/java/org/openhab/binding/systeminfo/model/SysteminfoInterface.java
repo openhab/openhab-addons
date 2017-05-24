@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -69,21 +69,21 @@ public interface SysteminfoInterface {
     /**
      * Returns the system load average for the last minute.
      *
-     * @return the load as percentage value /0-100/ or negative value (-100), if no information is available
+     * @return the load as percentage value /0-100/ or null, if no information is available
      */
     public DecimalType getCpuLoad1();
 
     /**
      * Returns the system load average for the last 5 minutes.
      *
-     * @return the load as percentage value /0-100/ or negative value (-100), if no information is available
+     * @return the load as percentage value /0-100/ or null, if no information is available
      */
     public DecimalType getCpuLoad5();
 
     /**
      * Returns the system load average for the last 15 minutes.
      *
-     * @return the load as percentage value /0-100/ or negative value (-100), if no information is available
+     * @return the load as percentage value /0-100/ or null, if no information is available
      */
     public DecimalType getCpuLoad15();
 
@@ -126,9 +126,16 @@ public interface SysteminfoInterface {
     /**
      * Percents of available memory on the machine
      *
-     * @return percent of available memory or 0, if no information is available
+     * @return percent of available memory or null, if no information is available
      */
     public DecimalType getMemoryAvailablePercent();
+
+    /**
+     * Percents of used memory on the machine
+     *
+     * @return percent of used memory or null, if no information is available
+     */
+    public DecimalType getMemoryUsedPercent();
 
     // Swap memory info
     /**
@@ -155,9 +162,16 @@ public interface SysteminfoInterface {
     /**
      * Percents of available swap memory on the machine
      *
-     * @return percent of available memory or 0, if no there is no swap memory
+     * @return percent of available memory or null, if no there is no swap memory
      */
     public DecimalType getSwapAvailablePercent();
+
+    /**
+     * Percents of used swap memory on the machine
+     *
+     * @return percent of used memory or null, if no there is no swap memory
+     */
+    public DecimalType getSwapUsedPercent();
 
     // Storage info
     /**
@@ -191,10 +205,19 @@ public interface SysteminfoInterface {
      * Gets the percent of available storage on the logical volume
      *
      * @param deviceIndex - the index of the logical volume
-     * @return percent of available storage
+     * @return percent of available storage or null
      * @throws DeviceNotFoundException
      */
     public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
+
+    /**
+     * Gets the percent of used storage on the logical volume
+     *
+     * @param deviceIndex - the index of the logical volume
+     * @return percent of used storage or null
+     * @throws DeviceNotFoundException
+     */
+    public DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the name of the logical storage volume
@@ -277,20 +300,20 @@ public interface SysteminfoInterface {
     public StringType getNetworkMac(int networkIndex) throws DeviceNotFoundException;
 
     /**
-     * Get number of packages received
+     * Get number of packets received
      *
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    public DecimalType getNetworkPackageReceived(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkPacketsReceived(int networkIndex) throws DeviceNotFoundException;
 
     /**
-     * Get number of packages sent
+     * Get number of packets sent
      *
      * @param networkIndex - the index of the network
      * @throws DeviceNotFoundException
      */
-    public DecimalType getNetworkPackageSent(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException;
 
     /**
      * Get data sent in MB for this network
@@ -321,14 +344,14 @@ public interface SysteminfoInterface {
     /**
      * Get the information from the CPU temperature sensors.
      *
-     * @return Temperature in degrees Celsius if available, 0 otherwise.
+     * @return Temperature in degrees Celsius if available, null otherwise.
      */
     public DecimalType getSensorsCpuTemperature();
 
     /**
      * Get the information for the CPU voltage.
      *
-     * @return Voltage in Volts if available, 0 otherwise.
+     * @return Voltage in Volts if available, null otherwise.
      */
     public DecimalType getSensorsCpuVoltage();
 
@@ -336,7 +359,7 @@ public interface SysteminfoInterface {
      * Get fan speed
      *
      * @param deviceIndex
-     * @return Speed in rpm or 0 if unable to measure fan speed
+     * @return Speed in rpm or null if unable to measure fan speed
      * @throws DeviceNotFoundException
      */
     public DecimalType getSensorsFanSpeed(int deviceIndex) throws DeviceNotFoundException;
@@ -346,7 +369,7 @@ public interface SysteminfoInterface {
      * Get estimated time remaining for the power source.
      *
      * @param deviceIndex
-     * @return minutes remaining charge or 999, if the time is estimated as unlimited
+     * @return minutes remaining charge or null, if the time is estimated as unlimited
      * @throws DeviceNotFoundException
      */
     public DecimalType getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;

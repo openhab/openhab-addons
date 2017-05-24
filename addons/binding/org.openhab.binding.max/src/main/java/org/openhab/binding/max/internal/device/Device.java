@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Device {
 
-    private final static Logger logger = LoggerFactory.getLogger(Device.class);
+    private static final Logger logger = LoggerFactory.getLogger(Device.class);
 
     private String serialNumber = "";
     private String rfAddress = "";
@@ -229,7 +229,7 @@ public abstract class Device {
 
                 break;
             default:
-                logger.debug("Unhandled Device. DataBytes: " + Utils.getHex(raw));
+                logger.debug("Unhandled Device. DataBytes: {}", Utils.getHex(raw));
                 break;
 
         }

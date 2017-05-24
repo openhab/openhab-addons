@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ControllerHandler extends BaseBridgeHandler {
     private static final int SOCKET_TIMEOUT = 2000;
-    private static final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
     private String host;
     private int port;
     private Socket socket;
@@ -126,7 +127,7 @@ public class ControllerHandler extends BaseBridgeHandler {
 
             StringBuilder response = new StringBuilder();
             try {
-                logger.trace(String.format("Sending command '%s'", command));
+                logger.trace("Sending command '{}'", command);
                 OutputStream out = socket.getOutputStream();
                 out.write(command.getBytes());
                 out.write("\r\n".getBytes());
@@ -134,7 +135,7 @@ public class ControllerHandler extends BaseBridgeHandler {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 while (true) {
                     String line = in.readLine();
-                    logger.trace(String.format("Read result '%s'", line));
+                    logger.trace("Read result '{}'", line);
                     if ("OK".equals(line)) {
                         return response.toString();
                     }
@@ -154,7 +155,7 @@ public class ControllerHandler extends BaseBridgeHandler {
                 }
                 throw new CoolMasterClientError(String.format("Command '%s' got error '%s'", command, response));
             } catch (IOException e) {
-                logger.error(e.getLocalizedMessage(), e);
+                logger.error("{}", e.getLocalizedMessage(), e);
                 return null;
             }
         }
@@ -194,7 +195,7 @@ public class ControllerHandler extends BaseBridgeHandler {
                 }
             } catch (IOException e) {
                 disconnect();
-                logger.error(e.getLocalizedMessage(), e);
+                logger.error("{}", e.getLocalizedMessage(), e);
                 throw new CoolMasterClientError(String.format("No response from CoolMasterNet unit %s:%s", host, port));
             }
         }
@@ -207,10 +208,10 @@ public class ControllerHandler extends BaseBridgeHandler {
                 socket.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT);
                 socket.setSoTimeout(SOCKET_TIMEOUT);
             } catch (UnknownHostException e) {
-                logger.error("unknown socket host " + host);
+                logger.error("unknown socket host {}", host);
                 socket = null;
             } catch (SocketException e) {
-                logger.error(e.getLocalizedMessage(), e);
+                logger.error("{}", e.getLocalizedMessage(), e);
                 socket = null;
             }
         }
@@ -221,7 +222,7 @@ public class ControllerHandler extends BaseBridgeHandler {
             try {
                 socket.close();
             } catch (IOException e1) {
-                logger.error(e1.getLocalizedMessage(), e1);
+                logger.error("{}", e1.getLocalizedMessage(), e1);
             }
             socket = null;
         }

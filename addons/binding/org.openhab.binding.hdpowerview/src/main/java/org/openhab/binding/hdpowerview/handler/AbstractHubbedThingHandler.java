@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 abstract class AbstractHubbedThingHandler extends BaseThingHandler {
 
-    protected Logger logger = LoggerFactory.getLogger(AbstractHubbedThingHandler.class);
+    private Logger logger = LoggerFactory.getLogger(AbstractHubbedThingHandler.class);
 
     public AbstractHubbedThingHandler(Thing thing) {
         super(thing);
@@ -31,12 +31,12 @@ abstract class AbstractHubbedThingHandler extends BaseThingHandler {
     protected HDPowerViewHubHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.error("Thing " + getThing().getThingTypeUID().getId() + " must belong to a hub");
+            logger.error("Thing {} must belong to a hub", getThing().getThingTypeUID().getId());
             return null;
         }
         ThingHandler handler = bridge.getHandler();
         if (!(handler instanceof HDPowerViewHubHandler)) {
-            logger.debug("Thing " + getThing().getThingTypeUID().getId() + " belongs to the wrong hub type");
+            logger.debug("Thing {} belongs to the wrong hub type", getThing().getThingTypeUID().getId());
             return null;
         }
         return (HDPowerViewHubHandler) handler;

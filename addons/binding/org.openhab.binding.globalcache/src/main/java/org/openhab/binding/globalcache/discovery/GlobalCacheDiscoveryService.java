@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
@@ -38,14 +37,14 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial contribution
  */
 public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
-    private final static Logger logger = LoggerFactory.getLogger(GlobalCacheDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(GlobalCacheDiscoveryService.class);
 
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> gcDiscoveryJob;
 
     // Discovery parameters
-    public final static boolean BACKGROUND_DISCOVERY_ENABLED = true;
-    public final static int BACKGROUND_DISCOVERY_DELAY = 10;
+    public static final boolean BACKGROUND_DISCOVERY_ENABLED = true;
+    public static final int BACKGROUND_DISCOVERY_DELAY = 10;
 
     private DiscoveryServiceCallback discoveryServiceCallback;
 
@@ -160,20 +159,17 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService implem
                 ThingTypeUID typeUID = gcMulticastListener.getThingTypeUID();
                 if (typeUID != null) {
                     ThingUID uid = new ThingUID(typeUID, gcMulticastListener.getSerialNumber());
-                    if (uid != null) {
-                        // If there's not a thing and it's not in the inbox, create the discovery result
-                        if (discoveryServiceCallback != null
-                                && discoveryServiceCallback.getExistingDiscoveryResult(uid) == null
-                                && discoveryServiceCallback.getExistingThing(uid) == null) {
 
-                            logger.trace("Creating discovery result for: {}, type={}, IP={}", uid,
-                                    gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
+                    // If there's not a thing and it's not in the inbox, create the discovery result
+                    if (discoveryServiceCallback != null
+                            && discoveryServiceCallback.getExistingDiscoveryResult(uid) == null
+                            && discoveryServiceCallback.getExistingThing(uid) == null) {
+                        logger.trace("Creating discovery result for: {}, type={}, IP={}", uid,
+                                gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
 
-                            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                                    .withLabel("GlobalCache " + gcMulticastListener.getModel()).build();
-
-                            thingDiscovered(result);
-                        }
+                        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                                .withLabel(gcMulticastListener.getVendor() + " " + gcMulticastListener.getModel())
+                                .build());
                     }
                 }
             }
