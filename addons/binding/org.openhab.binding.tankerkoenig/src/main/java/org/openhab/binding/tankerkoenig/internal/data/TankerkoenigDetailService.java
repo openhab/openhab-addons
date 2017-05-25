@@ -49,7 +49,7 @@ public class TankerkoenigDetailService {
         String urlcomplete = urlbase + "id=" + locationID + "&apikey=" + apikey;
         String response = "";
         try {
-            String userAgent = "OpenHAB, Tankerkoenig-Binding Version ";
+            String userAgent = "openHAB, Tankerkoenig-Binding Version ";
             Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
             userAgent = userAgent + version.toString();
             URL url = new URL(urlcomplete);

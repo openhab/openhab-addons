@@ -45,7 +45,7 @@ public class TankerkoenigService {
         String urlbase = "https://creativecommons.tankerkoenig.de/json/prices.php?";
         String urlcomplete = urlbase + "ids=" + locationIDs + "&apikey=" + apikey;
         try {
-            String userAgent = "OpenHAB, Tankerkoenig-Binding Version ";
+            String userAgent = "openHAB, Tankerkoenig-Binding Version ";
             Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
             userAgent = userAgent + version.toString();
             URL url = new URL(urlcomplete);
