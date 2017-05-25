@@ -8,16 +8,16 @@
  */
 package org.openhab.binding.timer.internal;
 
-import static org.openhab.binding.timer.TimerBindingConstants.*;
+import static org.openhab.binding.timer.TimerBindingConstants.THING_TYPE_TIME_BASED_TIMER;
 
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.timer.handler.TimerHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.timer.handler.TimerHandler;
 
 /**
  * The {@link TimerHandlerFactory} is responsible for creating things and thing
@@ -27,7 +27,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 public class TimerHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(THING_TYPE_TIME_BASED_TIMER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -38,7 +39,7 @@ public class TimerHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
+        if (thingTypeUID.equals(THING_TYPE_TIME_BASED_TIMER)) {
             return new TimerHandler(thing);
         }
 
