@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="weather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-group-type id="clouds">
+        <label>Clouds</label>
+        <description>The clouds related channels</description>
+        <channels>
+            <channel typeId="cloudCoverPercent" id="cloudCoverPercent" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="cloudCoverPercent">
+        <item-type>Number</item-type>
+        <label>Cloud cover</label>
+        <description>The cloud cover as a percentage right now</description>
+        <state min="0" max="100" />
+    </channel-type>
+</thing:thing-descriptions>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="weather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>Bridge Binding</label>
+		<description>Tracks the specific provider</description>
+
+        <channel-groups>
+            <channel-group typeId="atmosphere" id="atmosphere"></channel-group>
+            <channel-group typeId="clouds" id="clouds"></channel-group>
+            <channel-group typeId="condition" id="condition"></channel-group>
+            <channel-group typeId="precipitation" id="precipitation"></channel-group>
+            <channel-group typeId="temperature" id="temperature"></channel-group>
+            <channel-group typeId="wind" id="wind"></channel-group>
+            <channel-group typeId="station" id="station"></channel-group>
+        </channel-groups>
+        
+		<config-description>
+			<parameter name="providerName" type="text">
+				<label>Provider</label>
+				<description>The weather provider to use</description>
+				<required>true</required>
+				<options>
+					<option value="Wunderground">Wunderground</option>
+					<option value="OpenWeatherMap">Open Weather Map</option>
+					<option value="ForecastIO">ForecastIO</option>
+					<option value="WorldWeatherOnline">World Weather Online</option>
+					<option value="Yahoo">Yahoo</option>
+					<option value="HamWeather">Ham Weather</option>
+					<option value="MetroBlue">Metro Blue</option>
+				</options>
+			</parameter>
+			<parameter name="apikey" type="text">
+				<label>API key</label>
+				<description>API key for the provider</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="apikey2" type="text">
+				<label>API key 2</label>
+				<description>API key 2 (where needed) for the provider</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="latitude" type="decimal">
+				<label>Latitude</label>
+				<description>Latitude to get the weather for</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="longitude" type="decimal">
+				<label>Longitude</label>
+				<description>Longitude to get the weather for</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="units" type="text">
+				<label>Units</label>
+				<description>Units to get the weather in</description>
+				<required>false</required>
+				<default>si</default>
+			</parameter>
+			<parameter name="updateInterval" type="integer">
+				<label>Update Interval</label>
+				<description>The update interval to use in minutes</description>
+				<default>240</default>
+			</parameter>
+			<parameter name="language" type="text">
+				<label>Language</label>
+				<description>Language to get the weather in</description>
+				<required>false</required>
+				<default>en</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="weather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="atmosphere">
+		<label>Atmosphere</label>
+		<description>The atmosphere related channels</description>
+		<channels>
+			<channel typeId="humidity" id="humidity" />
+			<channel typeId="visibility" id="visibility" />
+			<channel typeId="pressure" id="pressure" />
+			<channel typeId="pressureTrend" id="pressureTrend" />
+			<channel typeId="ozone" id="ozone" />
+			<channel typeId="uvIndex" id="uvIndex" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>The humidity right now</description>
+		<state min="0" max="100" />
+	</channel-type>
+
+    <channel-type id="visibility">
+        <item-type>Number</item-type>
+        <label>Visibility</label>
+        <description>The visibility right now</description>
+        <state min="0" max="100" />
+    </channel-type>
+    
+    <channel-type id="pressure">
+        <item-type>Number</item-type>
+        <label>Pressure</label>
+        <description>The pressure right now</description>
+    </channel-type>
+    
+    <channel-type id="pressureTrend">
+        <item-type>String</item-type>
+        <label>Pressure Trend</label>
+        <description>The pressure trend right now</description>
+    </channel-type>
+
+    <channel-type id="ozone">
+        <item-type>String</item-type>
+        <label>Ozone</label>
+        <description>The ozone right now</description>
+    </channel-type>
+    
+    <channel-type id="uvIndex">
+        <item-type>String</item-type>
+        <label>UV Index</label>
+        <description>The UV Index trend right now</description>
+    </channel-type>
+</thing:thing-descriptions>

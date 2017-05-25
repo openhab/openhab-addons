@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="weather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-group-type id="precipitation">
+        <label>Precipitation</label>
+        <description>The precipitation related channels</description>
+        <channels>
+            <channel typeId="rain" id="rain" />
+            <channel typeId="snow" id="snow" />
+            <channel typeId="type" id="type" />
+            <channel typeId="probability" id="probability" />
+            <channel typeId="total" id="total" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="rain">
+        <item-type>Number</item-type>
+        <label>Rain</label>
+        <description>The amount of rain today</description>
+    </channel-type>
+
+    <channel-type id="snow">
+        <item-type>Number</item-type>
+        <label>Snow</label>
+        <description>The amount of snow today</description>
+    </channel-type>
+    
+    <channel-type id="total">
+        <item-type>Number</item-type>
+        <label>Total</label>
+        <description>The total amount of precipitation</description>
+    </channel-type>
+    
+    <channel-type id="type">
+        <item-type>String</item-type>
+        <label>Type</label>
+        <description>Description of the type of precipitation</description>
+    </channel-type>
+
+    <channel-type id="probability">
+        <item-type>Number</item-type>
+        <label>Probability</label>
+        <description>The probability of precipitation</description>
+        <state min="0" max="100" />
+    </channel-type>
+    
+</thing:thing-descriptions>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="weather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-group-type id="condition">
+        <label>Condition</label>
+        <description>The weather condition related channels</description>
+        <channels>
+            <channel typeId="condition" id="condition" />
+            <channel typeId="observationTime" id="observationTime" />
+            <channel typeId="conditionId" id="conditionId" />
+            <channel typeId="icon" id="icon" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="condition">
+        <item-type>String</item-type>
+        <label>Condition</label>
+        <description>The condition as a description</description>
+        <state min="0" max="100" />
+    </channel-type>
+
+    <channel-type id="observationTime">
+        <item-type>Date</item-type>
+        <label>Observation Time</label>
+        <description>The time of the observation</description>
+        <state min="0" max="100" />
+    </channel-type>
+    
+    <channel-type id="conditionId">
+        <item-type>String</item-type>
+        <label>Id</label>
+        <description>The id of the condition</description>
+    </channel-type>
+    
+    <channel-type id="icon">
+        <item-type>String</item-type>
+        <label>Icon</label>
+        <description>The Icon URL to show for this condition</description>
+    </channel-type>
+</thing:thing-descriptions>

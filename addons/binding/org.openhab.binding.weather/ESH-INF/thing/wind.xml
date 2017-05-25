@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="weather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <channel-group-type id="wind">
+        <label>Wind</label>
+        <description>The wind related channels</description>
+        <channels>
+            <channel typeId="speed" id="speed" />
+            <channel typeId="direction" id="direction" />
+            <channel typeId="degree" id="degree" />
+            <channel typeId="gust" id="gust" />
+            <channel typeId="chill" id="chill" />
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="speed">
+        <item-type>Number</item-type>
+        <label>Speed</label>
+        <description>The wind speed</description>
+    </channel-type>
+
+    <channel-type id="direction">
+        <item-type>Number</item-type>
+        <label>Direction</label>
+        <description>The direction of the wind</description>
+    </channel-type>
+    
+    <channel-type id="degree">
+        <item-type>Number</item-type>
+        <label>Degree</label>
+        <description>The degree of the wind</description>
+    </channel-type>
+    
+    <channel-type id="gust">
+        <item-type>Number</item-type>
+        <label>Gust</label>
+        <description>The gust speed of the wind</description>
+    </channel-type>
+
+    <channel-type id="chill">
+        <item-type>Number</item-type>
+        <label>Wind Chill</label>
+        <description>The wind chill factor</description>
+    </channel-type>
+    
+</thing:thing-descriptions>
