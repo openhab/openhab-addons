@@ -5,10 +5,9 @@ Currently only two devices are supported: `0BA7` (LOGO! 7) and `0BA8` (LOGO! 8).
 Different families of LOGO! devices should work also, but was not tested now due to lack of hardware.
 Binding works nicely at least 100ms polling rate, if network connection is stable.
 
-#### Attention:
-Changing of block parameter may kill your LOGO!, so that program flashing via LOGO! SoftComort will be required.
-Furthermore programs within LOGO! SoftComfort and LOGO! itself will differ, so that online simulation will not
-work anymore without program synchronisation.
+## Pitfalls
+- Changing of block parameter while running the binding may kill your LOGO!, so that program flashing via LOGO! SoftComort will be required. Furthermore programs within LOGO! SoftComfort and LOGO! itself will differ, so that online simulation will not work anymore without program synchronisation.
+- Flashing the LOGO! while running the binding may crash the network interface of your LOGO!. Before flashing the LOGO! with LOGO! SoftComfort stop openHAB service. If network interface is crashed, no reader could be created for this device. See troubleshooting section below how to recover.
 
 ## Discovery
 
@@ -213,3 +212,17 @@ Switch   Logo2_Output2  {channel="plclogo:digital:Logo2_Q2:state"}
 Number   Logo2_Position {channel="plclogo:analog:Logo2_VW100:value"}
 DateTime Logo2_RTC      {channel="plclogo:device:Logo2:rtc}
 ```
+
+## Troubleshooting
+
+**Log shows Reader was created but no communication with LOGO! possible**
+
+Check TSAP values: localTSAP and remoteTSAP should not be the same. You have to choose different addresses.
+
+**openHAB is starting without errors but no reader was created for the LOGO!**
+
+If all configuration parameters were checked and fine, it maybe possible that the network interface of the LOGO! is crashed. To recover stop openHAB, cold boot your LOGO! (power off/on) and reflash the program with LOGO! SoftComfort. Then restart openHAB and check logging for a created reader.
+
+**RTC value differs from the value shown in LOGO! (0BA7)**
+
+This is no bug! Since there is no way to read the RTC from a 0BA7, the binding simply returns the local time of openHAB host.
