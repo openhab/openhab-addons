@@ -12,7 +12,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
-import org.openhab.binding.evohome.internal.api.models.v2.ApiAccess;
 import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemAndStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.ControlSystemV2;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
@@ -34,11 +33,12 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     private final SslContextFactory sslContextFactory = new SslContextFactory();
     private final HttpClient httpClient = new HttpClient(sslContextFactory);
 
-    private EvohomeGatewayConfiguration configuration   = null;
-    private ApiAccess                   apiAccess       = null;
-    private UserAccount                 useraccount     = null;
-    private Locations                   locations       = null;
-    private LocationsStatus             locationsStatus = null;
+    private EvohomeGatewayConfiguration          configuration      = null;
+    private ApiAccess                            apiAccess          = null;
+    private UserAccount                          useraccount        = null;
+    private Locations                            locations          = null;
+    private LocationsStatus                      locationsStatus    = null;
+    private Map<Integer, ControlSystemAndStatus> controlSystemCache = null;
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
@@ -145,12 +145,45 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         if (success == true) {
             useraccount = requestUserAccount();
             locations   = requestLocations();
+            controlSystemCache = populateCache();
         } else {
             apiAccess.setAuthentication(null);
             logger.error("Authorization failed");
         }
 
         return success;
+    }
+
+    private Map<Integer, ControlSystemAndStatus> populateCache() throws NullPointerException {
+        Map<Integer, ControlSystemAndStatus> map = new HashMap<Integer, ControlSystemAndStatus>();
+
+        // Add metadata to the map
+        for (Location location : locations) {
+            for (Gateway gateway : location.gateways) {
+                for (TemperatureControlSystem system: gateway.temperatureControlSystems) {
+                    ControlSystemAndStatus status = new ControlSystemAndStatus();
+                    status.controlSystem = system;
+                    map.put(system.systemId, status);
+                }
+            }
+        }
+
+        return map;
+    }
+
+    private void updateCache() throws NullPointerException {
+        // Add all statuses to the map
+        for (LocationStatus location : locationsStatus) {
+            for (GatewayStatus gateway : location.gateways) {
+                for (TemperatureControlSystemStatus system: gateway.temperatureControlSystems) {
+                    ControlSystemAndStatus status = controlSystemCache.get(system.systemId);
+                    if (status != null) {
+                        status.controlSystemStatus = system;
+                        controlSystemCache.put(system.systemId, status);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -160,9 +193,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public void update() {
-        logger.info("update");
-
         locationsStatus = requestLocationsStatus();
+        updateCache();
     }
 
     @Override
@@ -172,48 +204,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public ControlSystem[] getControlSystems() {
-        //TODO move this to after login to save time
-        Map<Integer, ControlSystemAndStatus> map = new HashMap<Integer, ControlSystemAndStatus>();
-
-        // Add metadata to the map
-        if (locations!= null) {
-            for (Location location : locations) {
-                if (location.gateways != null) {
-                    for (Gateway gateway : location.gateways) {
-                        if (gateway.temperatureControlSystems != null) {
-                            for (TemperatureControlSystem system: gateway.temperatureControlSystems) {
-                                ControlSystemAndStatus status = new ControlSystemAndStatus();
-                                status.controlSystem = system;
-                                map.put(system.systemId, status);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Add all statuses to the map
-        if (locationsStatus != null) {
-            for (LocationStatus location : locationsStatus) {
-                if (location.gateways != null) {
-                    for (GatewayStatus gateway : location.gateways) {
-                        if (gateway.temperatureControlSystems != null) {
-                            for (TemperatureControlSystemStatus system: gateway.temperatureControlSystems) {
-                                ControlSystemAndStatus status = map.get(system.systemId);
-                                if (status != null) {
-                                    status.controlSystemStatus = system;
-                                    map.put(system.systemId, status);
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         ArrayList<ControlSystem> result = new ArrayList<ControlSystem>();
-        for (ControlSystemAndStatus item : map.values()) {
+        for (ControlSystemAndStatus item : controlSystemCache.values()) {
             result.add(new ControlSystemV2(apiAccess, item.controlSystem, item.controlSystemStatus));
         }
 
@@ -229,5 +221,11 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         }
 
         return null;
+    }
+
+    @Override
+    public void refresh() {
+        //TODO add check in token expired, use refresh token to update access token
+        login(); // crude workaround
     }
 }

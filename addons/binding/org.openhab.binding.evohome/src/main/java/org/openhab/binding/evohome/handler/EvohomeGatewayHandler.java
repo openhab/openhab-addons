@@ -14,10 +14,13 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
@@ -116,21 +119,21 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     private void update() {
         if (getThing().getThings().isEmpty()) {
-//            return;
+            return;
         }
-        apiClient.update();
-        /*
+
         try {
             try {
+                apiClient.refresh();
                 apiClient.update();
             } catch (Exception e) {
-                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
 
             // prevent spamming the log file
-            if (!ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ONLINE);
+            if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.ONLINE);
             }
 
             for (Thing handler : getThing().getThings()) {
@@ -142,7 +145,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             }
         } catch (Exception e) {
             logger.debug("updateChannels acting up", e);
-        }*/
+        }
     }
 
     public EvohomeApiClient getApiClient() {
@@ -151,17 +154,9 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        //
-        // if (channelUID.getId().equals(CHANNEL_1)) {
-        // int i = 5;
-        //
-        // i++;
-        // // TODO: handle command
-        //
-        // // Note: if communication with thing fails for some reason,
-        // // indicate that by setting the status with detail information
-        // // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // // "Could not control device at IP address x.x.x.x");
-        // }
+
+        if (command == RefreshType.REFRESH) {
+//            update();
+        }
     }
 }

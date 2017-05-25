@@ -1,4 +1,4 @@
-package org.openhab.binding.evohome.internal.api.models.v2;
+package org.openhab.binding.evohome.internal.api;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +62,6 @@ public class ApiAccess {
             }
 
             ContentResponse response = request.send();
-
             if ((response.getStatus() == HttpStatus.OK_200) ||
                 (response.getStatus() == HttpStatus.ACCEPTED_202))
             {
@@ -79,7 +78,6 @@ public class ApiAccess {
 
         return out;
     }
-
 
     @SuppressWarnings("unchecked")
     public <TIn, TOut> TOut doRequest(

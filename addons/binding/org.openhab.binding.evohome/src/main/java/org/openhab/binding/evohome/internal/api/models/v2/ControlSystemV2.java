@@ -3,6 +3,7 @@ package org.openhab.binding.evohome.internal.api.models.v2;
 import java.util.ArrayList;
 
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.evohome.internal.api.ApiAccess;
 import org.openhab.binding.evohome.internal.api.EvohomeApiConstants;
 import org.openhab.binding.evohome.internal.api.models.BaseControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v2.request.Mode;

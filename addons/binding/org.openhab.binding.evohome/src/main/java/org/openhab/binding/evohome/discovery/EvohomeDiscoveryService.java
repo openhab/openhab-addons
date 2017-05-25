@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+  * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v1.Device;
 import org.openhab.binding.evohome.internal.api.models.v1.Weather;
 import org.slf4j.Logger;
@@ -44,15 +46,13 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
     public void startScan() {
         logger.debug("Evohome start scan");
 
-/*
         if (evohomeGatewayHandler != null) {
             try {
                 EvohomeApiClient client = evohomeGatewayHandler.getApiClient();
                 // TODO Maybe client.update()
                 if (client != null) {
-
                     for (ControlSystem gateway : client.getControlSystems()) {
-                        discoverGateway(gateway);
+                        discoverDisplay(gateway);
                     }
 
                     DataModelResponse[] dataArray = client.getData();
@@ -65,11 +65,11 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
                 logger.warn("{}", e.getMessage(), e);
             }
         }
-        */
+
         stopScan();
     }
 
-    private void discoverGateway(ControlSystem controlSystem) {
+    private void discoverDisplay(ControlSystem controlSystem) {
         String name = controlSystem.getName();
         ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY.getId(), name);
         Map<String, Object> properties = new HashMap<>();

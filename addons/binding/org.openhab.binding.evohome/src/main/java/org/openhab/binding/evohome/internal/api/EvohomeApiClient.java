@@ -17,4 +17,6 @@ public interface EvohomeApiClient {
 
     ControlSystem getControlSystem(int id);
 
+    void refresh();
+
 }
