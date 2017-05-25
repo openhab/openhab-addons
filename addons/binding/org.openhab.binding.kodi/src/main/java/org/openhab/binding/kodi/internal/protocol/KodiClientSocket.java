@@ -37,7 +37,7 @@ import com.google.gson.JsonParser;
  */
 public class KodiClientSocket {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(KodiClientSocket.class);
+    private final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
 
     private final ScheduledExecutorService scheduler;
     private static final int REQUEST_TIMEOUT_MS = 60000;
@@ -71,7 +71,7 @@ public class KodiClientSocket {
      */
     public synchronized void open() throws Exception {
         if (isConnected()) {
-            LOGGER.warn("connect: connection is already open");
+            logger.warn("connect: connection is already open");
         }
         if (!client.isStarted()) {
             client.start();
@@ -91,14 +91,14 @@ public class KodiClientSocket {
             try {
                 session.close();
             } catch (Exception e) {
-                LOGGER.error("Exception during closing the websocket {}", e.getMessage(), e);
+                logger.error("Exception during closing the websocket {}", e.getMessage(), e);
             }
             session = null;
         }
         try {
             client.stop();
         } catch (Exception e) {
-            LOGGER.error("Exception during closing the websocket {}", e.getMessage(), e);
+            logger.error("Exception during closing the websocket {}", e.getMessage(), e);
         }
     }
 
@@ -115,7 +115,7 @@ public class KodiClientSocket {
 
         @OnWebSocketConnect
         public void onConnect(Session wssession) {
-            LOGGER.debug("Connected to server");
+            logger.debug("Connected to server");
             session = wssession;
             connected = true;
             if (eventHandler != null) {
@@ -126,7 +126,7 @@ public class KodiClientSocket {
                         try {
                             eventHandler.onConnectionOpened();
                         } catch (Exception e) {
-                            LOGGER.error("Error handling onConnectionOpened() {}", e.getMessage(), e);
+                            logger.error("Error handling onConnectionOpened() {}", e.getMessage(), e);
                         }
 
                     }
@@ -137,17 +137,17 @@ public class KodiClientSocket {
 
         @OnWebSocketMessage
         public void onMessage(String message) {
-            LOGGER.debug("Message received from server: {}", message);
+            logger.debug("Message received from server: {}", message);
             final JsonObject json = parser.parse(message).getAsJsonObject();
             if (json.has("id")) {
-                LOGGER.debug("Response received from server: {}", json);
+                logger.debug("Response received from server: {}", json);
                 int messageId = json.get("id").getAsInt();
                 if (messageId == nextMessageId - 1) {
                     commandResponse = json;
                     commandLatch.countDown();
                 }
             } else {
-                LOGGER.debug("Event received from server: {}", json);
+                logger.debug("Event received from server: {}", json);
                 try {
                     if (eventHandler != null) {
                         scheduler.submit(new Runnable() {
@@ -157,7 +157,7 @@ public class KodiClientSocket {
                                 try {
                                     eventHandler.handleEvent(json);
                                 } catch (Exception e) {
-                                    LOGGER.error("Error handling event {} player state change message: {}", json,
+                                    logger.error("Error handling event {} player state change message: {}", json,
                                             e.getMessage(), e);
                                 }
 
@@ -166,7 +166,7 @@ public class KodiClientSocket {
 
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Error handling player state change message", e);
+                    logger.error("Error handling player state change message", e);
                 }
             }
         }
@@ -175,7 +175,7 @@ public class KodiClientSocket {
         public void onClose(int statusCode, String reason) {
             session = null;
             connected = false;
-            LOGGER.debug("Closing a WebSocket due to {}", reason);
+            logger.debug("Closing a WebSocket due to {}", reason);
             scheduler.submit(new Runnable() {
 
                 @Override
@@ -183,7 +183,7 @@ public class KodiClientSocket {
                     try {
                         eventHandler.onConnectionClosed();
                     } catch (Exception e) {
-                        LOGGER.error("Error handling onConnectionClosed()", e);
+                        logger.error("Error handling onConnectionClosed()", e);
                     }
                 }
             });
@@ -192,7 +192,7 @@ public class KodiClientSocket {
 
     private void sendMessage(String str) throws Exception {
         if (isConnected()) {
-            LOGGER.debug("send message: {}", str);
+            logger.debug("send message: {}", str);
             session.getRemote().sendString(str);
         } else {
             throw new Exception("socket not initialized");
@@ -222,14 +222,14 @@ public class KodiClientSocket {
 
             sendMessage(message);
             if (commandLatch.await(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
-                LOGGER.debug("callMethod returns {}", commandResponse.toString());
+                logger.debug("callMethod returns {}", commandResponse.toString());
                 return commandResponse.get("result");
             } else {
-                LOGGER.error("Timeout during callMethod({}, {})", methodName, params != null ? params.toString() : "");
+                logger.error("Timeout during callMethod({}, {})", methodName, params != null ? params.toString() : "");
                 return null;
             }
         } catch (Exception e) {
-            LOGGER.error("Error during callMethod", e);
+            logger.error("Error during callMethod", e);
             return null;
         }
     }

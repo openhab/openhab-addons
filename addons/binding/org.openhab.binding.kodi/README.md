@@ -68,9 +68,9 @@ The Kodi thing supports the following channels:
 | album                   | String       | Album name of the currently played song |
 | artist                  | String       | Artist name of the currently played song or director of the currently played movie|
 | playuri                 | String       | Plays the file with the provided URI |
-| pvropentv               | String       | Opens the PVR TV channel with the provided name |
-| pvropenradio            | String       | Opens the PVR Radio channel with the provided name |
-| pvrchannel              | String       | Title of the currently played PVR channel |
+| pvr-open-tv             | String       | Opens the PVR TV channel with the provided name |
+| pvr-open-radio          | String       | Opens the PVR Radio channel with the provided name |
+| pvr-channel             | String       | Title of the currently played PVR channel |
 | shownotification        | String       | Shows the provided notification message on the screen |
 | input                   | String       | Allows to control Kodi. Valid values are: `Up`, `Down`, `Left`, `Right`, `Select`, `Back`, `Home`, `ContextMenu`, `Info`, `ShowCodec`, `ShowOSD` |
 | inputtext               | String       | This channel emulates a keyboard input |
@@ -79,14 +79,14 @@ The Kodi thing supports the following channels:
 
 ### Channel Configuration
 
-**group** The PVR channels can be put into user-defined PVR channel groups. There are two default PVR channel groups. One for PVR TV channels and one for PVR radio channels. The default labels are "All channels" (in german systems "Alle Kanäle"). You have to adjust this configuration to use the `pvropentv` and `pvropenradio` channels properly. You can optionally configure an user-defined PVR channel group.
+**group** The PVR channels can be put into user-defined PVR channel groups. There are two default PVR channel groups. One for PVR TV channels and one for PVR radio channels. The default labels are "All channels" (in german systems "Alle Kanäle"). You have to adjust this configuration to use the `pvr-open-tv` and `pvr-open-radio` channels properly. You can optionally configure an user-defined PVR channel group.
 
 A manual setup through a `things/kodi.things` file could look like this:
 
 ```
 kodi:kodi:myKodi [ipAddress="192.168.1.100", port="9090"] {
     Channels:
-        Type pvropentv : pvropentv [
+        Type pvropentv : pvr-open-tv [
             group="All channels"
         ]
 }
@@ -106,9 +106,9 @@ String myKodi_showtitle     "Show title [%s]"       { channel="kodi:kodi:myKodi:
 String myKodi_album         "Album [%s]"            { channel="kodi:kodi:myKodi:album" }
 String myKodi_artist        "Artist [%s]"           { channel="kodi:kodi:myKodi:artist" }
 String myKodi_playuri       "PlayerURI"             { channel="kodi:kodi:myKodi:playuri" }
-String myKodi_pvropentv     "PVR TV channel"        { channel="kodi:kodi:myKodi:pvropentv" }
-String myKodi_pvropenradio  "PVR Radio channel"     { channel="kodi:kodi:myKodi:pvropenradio" }
-String myKodi_pvrchannel    "PVR channel [%s]"      { channel="kodi:kodi:myKodi:pvrchannel" }
+String myKodi_pvropentv     "PVR TV channel"        { channel="kodi:kodi:myKodi:pvr-open-tv" }
+String myKodi_pvropenradio  "PVR Radio channel"     { channel="kodi:kodi:myKodi:pvr-open-radio" }
+String myKodi_pvrchannel    "PVR channel [%s]"      { channel="kodi:kodi:myKodi:pvr-channel" }
 String myKodi_notification  "Notification"          { channel="kodi:kodi:myKodi:shownotification" }
 String myKodi_input         "Input"                 { channel="kodi:kodi:myKodi:input" }
 String myKodi_inputtext     "Inputtext"             { channel="kodi:kodi:myKodi:inputtext" }

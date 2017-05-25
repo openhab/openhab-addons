@@ -11,7 +11,8 @@ package org.openhab.binding.kodi.internal.config;
 /**
  * Channel configuration from openHab.
  *
- * @author Christoph Weitkamp
+ * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * 
  */
 
 public class KodiChannelConfig {
@@ -21,7 +22,7 @@ public class KodiChannelConfig {
         return group;
     }
 
-    public void setGroup(String group) {
+    public void setGroup(final String group) {
         this.group = group;
     }
 }

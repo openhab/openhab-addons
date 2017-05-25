@@ -17,15 +17,16 @@ import org.slf4j.LoggerFactory;
  * The {@link KodiStatusUpdaterRunnable} is responsible for updating the player
  * status while playing.
  *
- * @author Christoph Weitkamp
+ * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ *
  */
 public class KodiStatusUpdaterRunnable implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KodiStatusUpdaterRunnable.class);
+    private final Logger logger = LoggerFactory.getLogger(KodiStatusUpdaterRunnable.class);
 
     private final KodiConnection connection;
 
-    public KodiStatusUpdaterRunnable(KodiConnection connection) {
+    public KodiStatusUpdaterRunnable(final KodiConnection connection) {
         this.connection = connection;
     }
 

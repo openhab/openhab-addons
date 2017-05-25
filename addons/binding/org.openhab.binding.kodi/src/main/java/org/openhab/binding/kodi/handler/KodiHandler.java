@@ -40,10 +40,12 @@ import org.slf4j.LoggerFactory;
  * to one of the channels.
  *
  * @author Paul Frank - Initial contribution
+ * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * 
  */
 public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KodiHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(KodiHandler.class);
 
     private final KodiConnection connection;
 
@@ -83,153 +85,133 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getIdWithoutGroup()) {
-        case CHANNEL_MUTE:
-            if (command.equals(OnOffType.ON)) {
-                connection.setMute(true);
-            } else if (command.equals(OnOffType.OFF)) {
-                connection.setMute(false);
-            } else if (command.equals(RefreshType.REFRESH)) {
-                connection.updateVolume();
-            }
-            break;
-        case CHANNEL_VOLUME:
-            if (command instanceof PercentType) {
-                connection.setVolume(((PercentType) command).intValue());
-            } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                connection.increaseVolume();
-            } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
-                connection.decreaseVolume();
-            } else if (command.equals(OnOffType.OFF)) {
-                connection.setVolume(0);
-            } else if (command.equals(OnOffType.ON)) {
-                connection.setVolume(100);
-            } else if (command.equals(RefreshType.REFRESH)) {
-                connection.updateVolume();
-            }
-            break;
-        case CHANNEL_CONTROL:
-            if (command instanceof PlayPauseType) {
-                if (command.equals(PlayPauseType.PLAY)) {
-                    connection.playerPlayPause();
-                } else if (command.equals(PlayPauseType.PAUSE)) {
-                    connection.playerPlayPause();
+            case CHANNEL_MUTE:
+                if (command.equals(OnOffType.ON)) {
+                    connection.setMute(true);
+                } else if (command.equals(OnOffType.OFF)) {
+                    connection.setMute(false);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    connection.updateVolume();
                 }
-            } else if (command instanceof NextPreviousType) {
-                if (command.equals(NextPreviousType.NEXT)) {
-                    connection.playerNext();
-                } else if (command.equals(NextPreviousType.PREVIOUS)) {
-                    connection.playerPrevious();
+                break;
+            case CHANNEL_VOLUME:
+                if (command instanceof PercentType) {
+                    connection.setVolume(((PercentType) command).intValue());
+                } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                    connection.increaseVolume();
+                } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
+                    connection.decreaseVolume();
+                } else if (command.equals(OnOffType.OFF)) {
+                    connection.setVolume(0);
+                } else if (command.equals(OnOffType.ON)) {
+                    connection.setVolume(100);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    connection.updateVolume();
                 }
-            } else if (command instanceof RewindFastforwardType) {
-                if (command.equals(RewindFastforwardType.REWIND)) {
-                    connection.playerRewind();
-                } else if (command.equals(RewindFastforwardType.FASTFORWARD)) {
-                    connection.playerFastForward();
+                break;
+            case CHANNEL_CONTROL:
+                if (command instanceof PlayPauseType) {
+                    if (command.equals(PlayPauseType.PLAY)) {
+                        connection.playerPlayPause();
+                    } else if (command.equals(PlayPauseType.PAUSE)) {
+                        connection.playerPlayPause();
+                    }
+                } else if (command instanceof NextPreviousType) {
+                    if (command.equals(NextPreviousType.NEXT)) {
+                        connection.playerNext();
+                    } else if (command.equals(NextPreviousType.PREVIOUS)) {
+                        connection.playerPrevious();
+                    }
+                } else if (command instanceof RewindFastforwardType) {
+                    if (command.equals(RewindFastforwardType.REWIND)) {
+                        connection.playerRewind();
+                    } else if (command.equals(RewindFastforwardType.FASTFORWARD)) {
+                        connection.playerFastForward();
+                    }
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    connection.updatePlayerStatus();
                 }
-            } else if (command.equals(RefreshType.REFRESH)) {
-                connection.updatePlayerStatus();
-            }
-            break;
-        case CHANNEL_STOP:
-            if (command.equals(OnOffType.ON)) {
-                connection.playerStop();
-            } else if (command.equals(RefreshType.REFRESH)) {
-                connection.updatePlayerStatus();
-            }
-            break;
-        case CHANNEL_PLAYURI:
-            if (command instanceof StringType) {
-                playURI(command);
-                updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
-            } else if (command.equals(RefreshType.REFRESH)) {
-                updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
-            }
-            break;
-        case CHANNEL_PVROPENTV:
-            if (command instanceof StringType) {
-                KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
-                        .as(KodiChannelConfig.class);
-                playPVR(command, "tv", config);
-                updateState(CHANNEL_PVROPENTV, UnDefType.UNDEF);
-            } else if (command.equals(RefreshType.REFRESH)) {
-                updateState(CHANNEL_PVROPENTV, UnDefType.UNDEF);
-            }
-            break;
-        case CHANNEL_PVROPENRADIO:
-            if (command instanceof StringType) {
-                KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
-                        .as(KodiChannelConfig.class);
-                playPVR(command, "radio", config);
-                updateState(CHANNEL_PVROPENRADIO, UnDefType.UNDEF);
-            } else if (command.equals(RefreshType.REFRESH)) {
-                updateState(CHANNEL_PVROPENRADIO, UnDefType.UNDEF);
-            }
-            break;
-        case CHANNEL_SHOWNOTIFICATION:
-            if (command instanceof StringType) {
-                connection.showNotification(command.toString());
-                updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
-            } else if (command.equals(RefreshType.REFRESH)) {
-                updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
-            }
-            break;
-        case CHANNEL_INPUT:
-            if (command instanceof StringType) {
-                connection.input(command.toString());
-                updateState(CHANNEL_INPUT, UnDefType.UNDEF);
-            } else if (command.equals(RefreshType.REFRESH)) {
-                updateState(CHANNEL_INPUT, UnDefType.UNDEF);
-            }
-            break;
-        case CHANNEL_INPUTTEXT:
-            if (command instanceof StringType) {
-                connection.inputText(command.toString());
-                updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
-            } else if (command.equals(RefreshType.REFRESH)) {
-                updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
-            }
-            break;
-        case CHANNEL_SYSTEMCOMMAND:
-            if (command instanceof StringType) {
-                connection.sendSystemCommand(command.toString());
-                updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
-            } else if (command.equals(RefreshType.REFRESH)) {
-                updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
-            }
-            break;
-        case CHANNEL_ARTIST:
-            if (command.equals(RefreshType.REFRESH)) {
-                connection.updatePlayerStatus();
-            }
-            break;
-        case CHANNEL_ALBUM:
-            if (command.equals(RefreshType.REFRESH)) {
-                connection.updatePlayerStatus();
-            }
-            break;
-        case CHANNEL_TITLE:
-            if (command.equals(RefreshType.REFRESH)) {
-                connection.updatePlayerStatus();
-            }
-            break;
-        case CHANNEL_SHOWTITLE:
-            if (command.equals(RefreshType.REFRESH)) {
-                connection.updatePlayerStatus();
-            }
-            break;
-        case CHANNEL_MEDIATYPE:
-            if (command.equals(RefreshType.REFRESH)) {
-                connection.updatePlayerStatus();
-            }
-            break;
-        case CHANNEL_PVRCHANNEL:
-            if (command.equals(RefreshType.REFRESH)) {
-                connection.updatePlayerStatus();
-            }
-            break;
-        default:
-            LOGGER.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
-            break;
+                break;
+            case CHANNEL_STOP:
+                if (command.equals(OnOffType.ON)) {
+                    connection.playerStop();
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    connection.updatePlayerStatus();
+                }
+                break;
+            case CHANNEL_PLAYURI:
+                if (command instanceof StringType) {
+                    playURI(command);
+                    updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_PLAYURI, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_PVR_OPEN_TV:
+                if (command instanceof StringType) {
+                    KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                            .as(KodiChannelConfig.class);
+                    playPVRChannel(command, "tv", config);
+                    updateState(CHANNEL_PVR_OPEN_TV, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_PVR_OPEN_TV, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_PVR_OPEN_RADIO:
+                if (command instanceof StringType) {
+                    KodiChannelConfig config = getThing().getChannel(channelUID.getId()).getConfiguration()
+                            .as(KodiChannelConfig.class);
+                    playPVRChannel(command, "radio", config);
+                    updateState(CHANNEL_PVR_OPEN_RADIO, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_PVR_OPEN_RADIO, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_SHOWNOTIFICATION:
+                if (command instanceof StringType) {
+                    connection.showNotification(command.toString());
+                    updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_SHOWNOTIFICATION, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_INPUT:
+                if (command instanceof StringType) {
+                    connection.input(command.toString());
+                    updateState(CHANNEL_INPUT, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_INPUT, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_INPUTTEXT:
+                if (command instanceof StringType) {
+                    connection.inputText(command.toString());
+                    updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_INPUTTEXT, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_SYSTEMCOMMAND:
+                if (command instanceof StringType) {
+                    connection.sendSystemCommand(command.toString());
+                    updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_ARTIST:
+            case CHANNEL_ALBUM:
+            case CHANNEL_TITLE:
+            case CHANNEL_SHOWTITLE:
+            case CHANNEL_MEDIATYPE:
+            case CHANNEL_PVR_CHANNEL:
+                if (command.equals(RefreshType.REFRESH)) {
+                    connection.updatePlayerStatus();
+                }
+                break;
+            default:
+                logger.debug("Received unknown channel {}", channelUID.getIdWithoutGroup());
+                break;
         }
 
     }
@@ -238,17 +220,17 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         connection.playURI(command.toString());
     }
 
-    public void playPVR(Command command, String channeltype, KodiChannelConfig config) {
-        int channelgroupid = connection.getChannelGroupID(channeltype, config.getGroup());
-        if (channelgroupid <= 0) {
-            LOGGER.warn("Received unknown PVR channel group {}. Using default.", config.getGroup());
-            channelgroupid = (channeltype == "tv") ? 1 : 2;
+    public void playPVRChannel(final Command command, final String channelType, final KodiChannelConfig config) {
+        int channelGroupID = connection.getChannelGroupID(channelType, config.getGroup());
+        if (channelGroupID <= 0) {
+            logger.warn("Received unknown PVR channel group {}. Using default.", config.getGroup());
+            channelGroupID = (channelType == "tv") ? 1 : 2;
         }
-        int channelid = connection.getChannelID(channelgroupid, command.toString());
-        if (channelid > 0) {
-            connection.playPVR(channelid);
+        int channelID = connection.getChannelID(channelGroupID, command.toString());
+        if (channelID > 0) {
+            connection.playPVRChannel(channelID);
         } else {
-            LOGGER.error("Received unknown PVR channel {}", command.toString());
+            logger.error("Received unknown PVR channel {}", command.toString());
         }
     }
 
@@ -283,7 +265,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                                 updateStatus(ThingStatus.OFFLINE);
                             }
                         } catch (Exception ex) {
-                            LOGGER.warn("Exception in check connection to @{}. Cause: {}",
+                            logger.warn("Exception in check connection to @{}. Cause: {}",
                                     connection.getConnectionName(), ex.getMessage());
 
                         }
@@ -297,7 +279,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
             }
         } catch (Exception e) {
-            LOGGER.debug("error during opening connection: {}", e.getMessage());
+            logger.debug("error during opening connection: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -310,7 +292,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
             } catch (Exception e) {
-                LOGGER.error("error during reading version: {}", e.getMessage());
+                logger.error("error during reading version: {}", e.getMessage());
             }
         } else {
             updateStatus(ThingStatus.OFFLINE);
@@ -330,27 +312,27 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updatePlayerState(KodiState state) {
         switch (state) {
-        case Play:
-            updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
-            updateState(CHANNEL_STOP, OnOffType.OFF);
-            break;
-        case Pause:
-            updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
-            updateState(CHANNEL_STOP, OnOffType.OFF);
-            break;
-        case Stop:
-        case End:
-            updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
-            updateState(CHANNEL_STOP, OnOffType.ON);
-            break;
-        case FastForward:
-            updateState(CHANNEL_CONTROL, RewindFastforwardType.FASTFORWARD);
-            updateState(CHANNEL_STOP, OnOffType.OFF);
-            break;
-        case Rewind:
-            updateState(CHANNEL_CONTROL, RewindFastforwardType.REWIND);
-            updateState(CHANNEL_STOP, OnOffType.OFF);
-            break;
+            case Play:
+                updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
+                break;
+            case Pause:
+                updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
+                break;
+            case Stop:
+            case End:
+                updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+                updateState(CHANNEL_STOP, OnOffType.ON);
+                break;
+            case FastForward:
+                updateState(CHANNEL_CONTROL, RewindFastforwardType.FASTFORWARD);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
+                break;
+            case Rewind:
+                updateState(CHANNEL_CONTROL, RewindFastforwardType.REWIND);
+                updateState(CHANNEL_STOP, OnOffType.OFF);
+                break;
         }
     }
 
@@ -389,8 +371,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
-    public void updatePVRChannel(String channel) {
-        updateState(CHANNEL_PVRCHANNEL, new StringType(channel));
+    public void updatePVRChannel(final String channel) {
+        updateState(CHANNEL_PVR_CHANNEL, new StringType(channel));
     }
 
 }
