@@ -85,7 +85,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         Locations locations = null;
         if (useraccount != null) {
             String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_LOCATIONS;
-            url = String.format(url, useraccount.UserId);
+            url = String.format(url, useraccount.userId);
 
             locations = new Locations();
             locations = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
@@ -100,7 +100,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         if (locations != null) {
             for(Location location : locations) {
                 String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_STATUS;
-                url = String.format(url, location.LocationInfo.LocationId);
+                url = String.format(url, location.locationInfo.locationId);
                 LocationStatus status = new LocationStatus();
                 status = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, status);
                 locationsStatus.add(status);
@@ -178,13 +178,13 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         // Add metadata to the map
         if (locations!= null) {
             for (Location location : locations) {
-                if (location.Gateways != null) {
-                    for (Gateway gateway : location.Gateways) {
-                        if (gateway.TemperatureControlSystems != null) {
-                            for (TemperatureControlSystem system: gateway.TemperatureControlSystems) {
+                if (location.gateways != null) {
+                    for (Gateway gateway : location.gateways) {
+                        if (gateway.temperatureControlSystems != null) {
+                            for (TemperatureControlSystem system: gateway.temperatureControlSystems) {
                                 ControlSystemAndStatus status = new ControlSystemAndStatus();
-                                status.ControlSystem = system;
-                                map.put(system.SystemId, status);
+                                status.controlSystem = system;
+                                map.put(system.systemId, status);
                             }
                         }
                     }
@@ -195,14 +195,14 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         // Add all statuses to the map
         if (locationsStatus != null) {
             for (LocationStatus location : locationsStatus) {
-                if (location.Gateways != null) {
-                    for (GatewayStatus gateway : location.Gateways) {
-                        if (gateway.TemperatureControlSystems != null) {
-                            for (TemperatureControlSystemStatus system: gateway.TemperatureControlSystems) {
-                                ControlSystemAndStatus status = map.get(system.SystemId);
+                if (location.gateways != null) {
+                    for (GatewayStatus gateway : location.gateways) {
+                        if (gateway.temperatureControlSystems != null) {
+                            for (TemperatureControlSystemStatus system: gateway.temperatureControlSystems) {
+                                ControlSystemAndStatus status = map.get(system.systemId);
                                 if (status != null) {
-                                    status.ControlSystemStatus = system;
-                                    map.put(system.SystemId, status);
+                                    status.controlSystemStatus = system;
+                                    map.put(system.systemId, status);
                                 }
 
                             }
@@ -214,7 +214,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         ArrayList<ControlSystem> result = new ArrayList<ControlSystem>();
         for (ControlSystemAndStatus item : map.values()) {
-            result.add(new ControlSystemV2(apiAccess, item.ControlSystem, item.ControlSystemStatus));
+            result.add(new ControlSystemV2(apiAccess, item.controlSystem, item.controlSystemStatus));
         }
 
         return result.toArray(new ControlSystem[result.size()]);

@@ -114,7 +114,7 @@ public class ApiAccess {
                 headers = new HashMap<String,String>();
             }
 
-            headers.put("Authorization", "bearer " + authenticationData.AccessToken);
+            headers.put("Authorization", "bearer " + authenticationData.accessToken);
             headers.put("applicationId", applicationId);
             headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
         }

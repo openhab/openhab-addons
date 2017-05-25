@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 public class HeatSetpointStatus {
 
     @SerializedName("TargetTemperature")
-    public double TargetTemperature;
+    public double targetTemperature;
 
     @SerializedName("setpointMode")
-    public String SetpointMode;
+    public String setpointMode;
 
 }

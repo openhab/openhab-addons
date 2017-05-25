@@ -5,21 +5,21 @@ import com.google.gson.annotations.SerializedName;
 public class Zone {
 
     @SerializedName("zoneId")
-    public int ZoneId;
+    public int zoneId;
 
     @SerializedName("modelType")
-    public String ModelType;
+    public String modelType;
 
     @SerializedName("name")
-    public String Name;
+    public String name;
 
     @SerializedName("zoneType")
-    public String ZoneType;
+    public String zoneType;
 
     @SerializedName("heatSetpointCapabilities")
-    public HeatSetpointCapabilities HeatSetpointCapabilities;
+    public HeatSetpointCapabilities heatSetpointCapabilities;
 
     @SerializedName("scheduleCapabilities")
-    public ScheduleCapabilities ScheduleCapabilities;
+    public ScheduleCapabilities scheduleCapabilities;
 
 }

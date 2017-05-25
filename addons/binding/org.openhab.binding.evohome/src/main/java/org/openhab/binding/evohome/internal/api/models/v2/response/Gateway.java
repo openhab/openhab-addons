@@ -6,9 +6,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class Gateway {
     @SerializedName("gatewayInfo")
-    public GatewayInfo GatewayInfo;
+    public GatewayInfo gatewayInfo;
 
     @SerializedName("temperatureControlSystems")
-    public List<TemperatureControlSystem> TemperatureControlSystems;
+    public List<TemperatureControlSystem> temperatureControlSystems;
 
 }

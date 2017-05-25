@@ -5,25 +5,25 @@ import com.google.gson.annotations.SerializedName;
 public class Mode {
 
     public Mode(String mode) {
-        SystemMode = mode;
-        TimeUntil = null;
-        Permanent = true;
+        systemMode = mode;
+        timeUntil  = null;
+        permanent  = true;
     }
 
     public Mode(String mode, String time) {
-        SystemMode = mode;
-        TimeUntil = null;
-        Permanent = false;
+        systemMode = mode;
+        timeUntil  = null;
+        permanent  = false;
         // TODO {"SystemMode":mode,"TimeUntil":"%sT00:00:00Z" % until.strftime('%Y-%m-%d'),"Permanent":False}
     }
 
     @SerializedName("SystemMode")
-    public String SystemMode;
+    public String systemMode;
 
     @SerializedName("TimeUntil")
-    public String TimeUntil;
+    public String timeUntil;
 
     @SerializedName("Permanent")
-    public boolean Permanent;
+    public boolean permanent;
 
 }

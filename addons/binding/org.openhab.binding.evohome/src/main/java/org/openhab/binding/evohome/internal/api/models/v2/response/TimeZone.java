@@ -4,18 +4,18 @@ import com.google.gson.annotations.SerializedName;
 
 public class TimeZone {
     @SerializedName("timeZoneId")
-    public String TimeZoneId;
+    public String timeZoneId;
 
     @SerializedName("displayName")
-    public String DisplayName;
+    public String displayName;
 
     @SerializedName("offsetMinutes")
-    public int OffsetMinutes;
+    public int offsetMinutes;
 
     @SerializedName("currentOffsetMinutes")
-    public int CurrentOffsetMinutes;
+    public int currentOffsetMinutes;
 
     @SerializedName("supportsDaylightSaving")
-    public boolean SupportsDaylightSaving;
+    public boolean supportsDaylightSaving;
 
 }

@@ -5,30 +5,30 @@ import com.google.gson.annotations.SerializedName;
 public class UserAccount {
 
     @SerializedName("userId")
-    public int UserId;
+    public int userId;
 
     @SerializedName("username")
-    public String UserName;
+    public String userName;
 
     @SerializedName("firstname")
-    public String FirstName;
+    public String firstName;
 
     @SerializedName("lastname")
-    public String LastName;
+    public String lastName;
 
     @SerializedName("streetAddress")
-    public String StreetAddress;
+    public String streetAddress;
 
     @SerializedName("city")
-    public String City;
+    public String city;
 
     @SerializedName("postcode")
-    public String PostCode;
+    public String postCode;
 
     @SerializedName("country")
-    public String Country;
+    public String country;
 
     @SerializedName("language")
-    public String Language;
+    public String language;
 
 }

@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 public class TemperatureStatus {
 
     @SerializedName("temperature")
-    public double Temperature;
+    public double temperature;
 
     @SerializedName("isAvailable")
-    public boolean IsAvailable;
+    public boolean isAvailable;
 
 }

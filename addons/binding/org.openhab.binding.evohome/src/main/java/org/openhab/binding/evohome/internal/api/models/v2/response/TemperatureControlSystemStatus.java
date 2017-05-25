@@ -7,13 +7,13 @@ import com.google.gson.annotations.SerializedName;
 public class TemperatureControlSystemStatus {
 
     @SerializedName("systemId")
-    public int SystemId;
+    public int systemId;
 
     @SerializedName("systemModeStatus")
-    public SystemModeStatus Mode;
+    public SystemModeStatus mode;
 
     @SerializedName("zones")
-    public List<ZoneStatus> Zones;
+    public List<ZoneStatus> zones;
 
     //"activeFaults": [],
 
