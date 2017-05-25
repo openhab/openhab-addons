@@ -112,6 +112,22 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public boolean login() {
+       boolean success = authenticate();
+
+        // If the authentication succeeded, gather the basic intel as well
+        if (success == true) {
+            useraccount = requestUserAccount();
+            locations   = requestLocations();
+            controlSystemCache = populateCache();
+        } else {
+            apiAccess.setAuthentication(null);
+            logger.error("Authorization failed");
+        }
+
+        return success;
+    }
+
+    private boolean authenticate() {
         Authentication authentication = new Authentication();
 
         try {
@@ -139,19 +155,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             logger.error("Credential conversion failed", e);
         }
 
-        boolean success = (authentication != null);
-
-        // If the authentication succeeded, gather the basic intel as well
-        if (success == true) {
-            useraccount = requestUserAccount();
-            locations   = requestLocations();
-            controlSystemCache = populateCache();
-        } else {
-            apiAccess.setAuthentication(null);
-            logger.error("Authorization failed");
-        }
-
-        return success;
+        return (authentication != null);
     }
 
     private Map<Integer, ControlSystemAndStatus> populateCache() throws NullPointerException {
@@ -225,7 +229,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public void refresh() {
-        //TODO add check in token expired, use refresh token to update access token
-        login(); // crude workaround
+        //TODO add check on token expired, use refresh token to update access token
+        authenticate(); // crude workaround
     }
 }
