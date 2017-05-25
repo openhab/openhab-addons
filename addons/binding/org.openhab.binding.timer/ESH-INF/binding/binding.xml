@@ -5,7 +5,10 @@
 				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Timer Binding</name>
-	<description>This is the binding for Timer.</description>
+	<description>
+	   The timer binding allows you to add timers to Openhab that can be used with rules to make time based actions happen.
+	   They have the advantage over rules as they can be enabled/disabled from the UI as well as change the times they fire.
+	</description>
 	<author>Neil Renaud</author>
 
 </binding:binding>

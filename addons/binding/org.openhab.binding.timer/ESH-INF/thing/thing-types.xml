@@ -5,20 +5,127 @@
 						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<label>Timer Binding Thing</label>
-		<description>Sample thing for Timer Binding</description>
-
+	<thing-type id="timeBasedTimer">
+		<label>Time Based Timer</label>
+		<description>This is a time based timer that will turn on/off at a certain time of the day</description>
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+            <channel id="enabled" typeId="enabled"/>
+            <channel id="description" typeId="description"/>
+			<channel id="on_time_hours" typeId="on_time_hours"/>
+            <channel id="on_time_minutes" typeId="on_time_minutes"/>
+            <channel id="on_time_seconds" typeId="on_time_seconds"/>
+            <channel id="off_time_hours" typeId="off_time_hours"/>
+            <channel id="off_time_minutes" typeId="off_time_minutes"/>
+            <channel id="off_time_seconds" typeId="off_time_seconds"/>
+            <channel id="run_on_mon" typeId="run_on_mon"/>
+            <channel id="run_on_tue" typeId="run_on_tue"/>
+            <channel id="run_on_wed" typeId="run_on_wed"/>
+            <channel id="run_on_thu" typeId="run_on_thu"/>
+            <channel id="run_on_fri" typeId="run_on_fri"/>
+            <channel id="run_on_sat" typeId="run_on_sat"/>
+            <channel id="run_on_sun" typeId="run_on_sun"/>
+            <channel id="status" typeId="status"/>
 		</channels>
 	</thing-type>
+	
+    <channel-type id="enabled">
+        <item-type>Switch</item-type>
+        <label>Enabled</label>
+        <description>Whether this timer is enabled.</description>
+    </channel-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>timerItem</item-type>
-		<label>Timer Binding Channel</label>
-		<description>Sample channel for Timer Binding</description>
+    <channel-type id="status">
+        <item-type>Switch</item-type>
+        <label>Status</label>
+        <description>Whether this timer is currently on or off. This is what you should hook your rule into.</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="description">
+        <item-type>String</item-type>
+        <label>Description</label>
+        <description>A text description of this timers settings.</description>
+        <state readOnly="true" />
+    </channel-type>
+
+
+	<channel-type id="on_time_hours">
+		<item-type>Number</item-type>
+		<label>On hour</label>
+		<description>The hour this timer will turn on</description>
+		<state min="0" max="23" step="1" readOnly="false" />
 	</channel-type>
+	
+    <channel-type id="on_time_minutes">
+        <item-type>Number</item-type>
+        <label>On Minutes</label>
+        <description>The minutes this timer will turn on</description>
+        <state min="0" max="59" step="1" readOnly="false" />
+    </channel-type>	
 
+    <channel-type id="on_time_seconds">
+        <item-type>Number</item-type>
+        <label>On Seconds</label>
+        <description>The minutes this timer will turn on</description>
+        <state min="0" max="59" step="1" readOnly="false" />
+    </channel-type> 
+    
+    <channel-type id="off_time_hours">
+        <item-type>Number</item-type>
+        <label>Off hour</label>
+        <description>The hour this timer will turn off</description>
+        <state min="0" max="23" step="1" readOnly="false" pattern="%s"/>
+    </channel-type>
+    
+    <channel-type id="off_time_minutes">
+        <item-type>Number</item-type>
+        <label>Off Minutes</label>
+        <description>The minutes this timer will turn off</description>
+        <state min="0" max="59" step="1" readOnly="false" pattern="%s"/>
+    </channel-type> 
+
+    <channel-type id="off_time_seconds">
+        <item-type>Number</item-type>
+        <label>Off Seconds</label>
+        <description>The minutes this timer will turn off</description>
+        <state min="0" max="59" step="1" readOnly="false" pattern="%s"/>
+    </channel-type>  
+    
+    <channel-type id="run_on_mon">
+        <item-type>Switch</item-type>
+        <label>Run on Monday?</label>
+        <description>Whether this timer runs on Mondays.</description>
+    </channel-type>
+
+    <channel-type id="run_on_tue">
+        <item-type>Switch</item-type>
+        <label>Run on Tuesday?</label>
+        <description>Whether this timer runs on Tuesdays.</description>
+    </channel-type>
+       
+    <channel-type id="run_on_wed">
+        <item-type>Switch</item-type>
+        <label>Run on Wednesday?</label>
+        <description>Whether this timer runs on Wednesdays.</description>
+    </channel-type>
+    <channel-type id="run_on_thu">
+        <item-type>Switch</item-type>
+        <label>Run on Thursday?</label>
+        <description>Whether this timer runs on Thursdays.</description>
+    </channel-type>
+            <channel-type id="run_on_fri">
+        <item-type>Switch</item-type>
+        <label>Run on Friday?</label>
+        <description>Whether this timer runs on Fridays.</description>
+    </channel-type>
+    <channel-type id="run_on_sat">
+        <item-type>Switch</item-type>
+        <label>Run on Saturdays?</label>
+        <description>Whether this timer runs on Saturdays.</description>
+    </channel-type>
+            <channel-type id="run_on_sun">
+        <item-type>Switch</item-type>
+        <label>Run on Sunday?</label>
+        <description>Whether this timer runs on Sundays.</description>
+    </channel-type>
 </thing:thing-descriptions>

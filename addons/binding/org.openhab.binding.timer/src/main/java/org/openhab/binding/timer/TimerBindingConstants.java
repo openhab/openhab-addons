@@ -21,9 +21,24 @@ public class TimerBindingConstants {
     private static final String BINDING_ID = "timer";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_TIME_BASED_TIMER = new ThingTypeUID(BINDING_ID, "timeBasedTimer");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String CHANNEL_ENABLED = "enabled";
+    public static final String CHANNEL_DESCRIPTION = "description";
+    public static final String CHANNEL_ON_TIME_HOURS = "on_time_hours";
+    public static final String CHANNEL_ON_TIME_MINUTES = "on_time_minutes";
+    public static final String CHANNEL_ON_TIME_SECONDS = "on_time_seconds";
+    public static final String CHANNEL_OFF_TIME_HOURS = "off_time_hours";
+    public static final String CHANNEL_OFF_TIME_MINUTES = "off_time_minutes";
+    public static final String CHANNEL_OFF_TIME_SECONDS = "off_time_seconds";
+    public static final String CHANNEL_RUN_ON_MON = "run_on_mon";
+    public static final String CHANNEL_RUN_ON_TUE = "run_on_tue";
+    public static final String CHANNEL_RUN_ON_WED = "run_on_wed";
+    public static final String CHANNEL_RUN_ON_THU = "run_on_thu";
+    public static final String CHANNEL_RUN_ON_FRI = "run_on_fri";
+    public static final String CHANNEL_RUN_ON_SAT = "run_on_sat";
+    public static final String CHANNEL_RUN_ON_SUN = "run_on_sun";
+    public static final String CHANNEL_STATUS = "status";
 
 }
