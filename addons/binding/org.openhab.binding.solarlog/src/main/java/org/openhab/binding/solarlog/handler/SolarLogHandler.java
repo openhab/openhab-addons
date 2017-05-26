@@ -11,9 +11,7 @@ package org.openhab.binding.solarlog.handler;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -29,7 +27,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.solarlog.SolarLogBindingConstants;
 import org.openhab.binding.solarlog.internal.HttpUtils;
-import org.openhab.binding.solarlog.internal.SolarLogChannelConfig;
+import org.openhab.binding.solarlog.internal.SolarLogChannel;
 import org.openhab.binding.solarlog.internal.SolarLogSourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,47 +45,10 @@ import com.google.gson.JsonObject;
 public class SolarLogHandler extends BaseThingHandler {
 
     private SolarLogSourceConfig config;
-    private List<SolarLogChannelConfig> channelConfigs;
     private Logger logger = LoggerFactory.getLogger(SolarLogHandler.class);
 
     public SolarLogHandler(Thing thing) {
         super(thing);
-        channelConfigs = new ArrayList<>();
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_LASTUPDATETIME,
-                SolarLogBindingConstants.CHANNEL_LASTUPDATETIME, SolarLogBindingConstants.CHANNEL_TYPE_LASTUPDATETIME));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_PAC,
-                SolarLogBindingConstants.CHANNEL_PAC, SolarLogBindingConstants.CHANNEL_TYPE_PAC));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_PDC,
-                SolarLogBindingConstants.CHANNEL_PDC, SolarLogBindingConstants.CHANNEL_TYPE_PDC));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_UAC,
-                SolarLogBindingConstants.CHANNEL_UAC, SolarLogBindingConstants.CHANNEL_TYPE_UAC));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_UDC,
-                SolarLogBindingConstants.CHANNEL_UDC, SolarLogBindingConstants.CHANNEL_TYPE_UDC));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDDAY,
-                SolarLogBindingConstants.CHANNEL_YIELDDAY, SolarLogBindingConstants.CHANNEL_TYPE_YIELDDAY));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDYESTERDAY,
-                SolarLogBindingConstants.CHANNEL_YIELDYESTERDAY, SolarLogBindingConstants.CHANNEL_TYPE_YIELDYESTERDAY));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDMONTH,
-                SolarLogBindingConstants.CHANNEL_YIELDMONTH, SolarLogBindingConstants.CHANNEL_TYPE_YIELDMONTH));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDYEAR,
-                SolarLogBindingConstants.CHANNEL_YIELDYEAR, SolarLogBindingConstants.CHANNEL_TYPE_YIELDYEAR));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_YIELDTOTAL,
-                SolarLogBindingConstants.CHANNEL_YIELDTOTAL, SolarLogBindingConstants.CHANNEL_TYPE_YIELDTOTAL));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSPAC,
-                SolarLogBindingConstants.CHANNEL_CONSPAC, SolarLogBindingConstants.CHANNEL_TYPE_CONSPAC));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDDAY,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDDAY, SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDDAY));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDYESTERDAY,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDYESTERDAY,
-                SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDYESTERDAY));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDMONTH,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDMONTH, SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDMONTH));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDYEAR,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDYEAR, SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDYEAR));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_CONSYIELDTOTAL,
-                SolarLogBindingConstants.CHANNEL_CONSYIELDTOTAL, SolarLogBindingConstants.CHANNEL_TYPE_CONSYIELDTOTAL));
-        channelConfigs.add(new SolarLogChannelConfig(SolarLogBindingConstants.CHANNEL_ID_TOTALPOWER,
-                SolarLogBindingConstants.CHANNEL_TOTALPOWER, SolarLogBindingConstants.CHANNEL_TYPE_TOTALPOWER));
     }
 
     @Override
@@ -125,7 +86,7 @@ public class SolarLogHandler extends BaseThingHandler {
             if (solarLogData.has(SolarLogBindingConstants.SOLARLOG_JSON_PROPERTIES)) {
                 solarLogData = solarLogData.getAsJsonObject(SolarLogBindingConstants.SOLARLOG_JSON_PROPERTIES);
 
-                for (SolarLogChannelConfig channelConfig : channelConfigs) {
+                for (SolarLogChannel channelConfig : SolarLogChannel.values()) {
                     if (solarLogData.has(channelConfig.getIndex())) {
                         String value = solarLogData.get(channelConfig.getIndex()).getAsString();
                         Channel channel = getThing().getChannel(channelConfig.getId());
