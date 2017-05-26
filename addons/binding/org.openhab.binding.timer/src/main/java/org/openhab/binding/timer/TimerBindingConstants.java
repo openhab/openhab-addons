@@ -22,6 +22,12 @@ public class TimerBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_DAILY_TIMER = new ThingTypeUID(BINDING_ID, "dailyTimer");
+    public static final ThingTypeUID THING_TYPE_PERIODIC_TIMER = new ThingTypeUID(BINDING_ID, "periodicTimer");
+    public static final ThingTypeUID THING_TYPE_ONE_TIME_BY_DATE_TIMER = new ThingTypeUID(BINDING_ID,
+            "oneTimeByDateTimer");
+    public static final ThingTypeUID THING_TYPE_ONE_TIME_BY_DELAY_TIMER = new ThingTypeUID(BINDING_ID,
+            "oneTimeByDelayTimer");
+    public static final ThingTypeUID THING_TYPE_MONTHLY_TIMER = new ThingTypeUID(BINDING_ID, "monthlyTimer");
 
     // List of all Channel ids
     public static final String CHANNEL_ENABLED = "enabled";

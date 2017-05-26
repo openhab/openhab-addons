@@ -25,7 +25,6 @@
 		    <channel id="run_on_fri" typeId="run_on_fri"/>
 		    <channel id="run_on_sat" typeId="run_on_sat"/>
 	        <channel id="run_on_sun" typeId="run_on_sun"/>
-            <channel id="status" typeId="status"/>
 		</channels>
 	</thing-type>
 	
