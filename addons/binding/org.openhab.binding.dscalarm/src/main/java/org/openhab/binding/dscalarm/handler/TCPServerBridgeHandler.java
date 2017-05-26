@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -153,7 +153,7 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             message = tcpInput.readLine();
             logger.debug("read(): Message Received: {}", message);
         } catch (IOException ioException) {
-            logger.error("read(): IO Exception: ", ioException.getMessage());
+            logger.error("read(): IO Exception: {}", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
             logger.error("read(): Exception: {} ", exception.getMessage(), exception);
@@ -185,9 +185,9 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             setConnected(false);
             logger.debug("closeConnection(): Closed TCP Connection!");
         } catch (IOException ioException) {
-            logger.error("closeConnection(): Unable to close connection - {}" + ioException.getMessage());
+            logger.error("closeConnection(): Unable to close connection - {}", ioException.getMessage());
         } catch (Exception exception) {
-            logger.error("closeConnection(): Error closing connection - {}" + exception.getMessage());
+            logger.error("closeConnection(): Error closing connection - {}", exception.getMessage());
         }
     }
 

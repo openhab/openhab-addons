@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -192,7 +192,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             while (true) {
                 LutronCommand command = this.sendQueue.take();
 
-                this.logger.debug("Sending command " + command.toString());
+                this.logger.debug("Sending command {}", command);
 
                 try {
                     this.session.writeLine(command.toString());
@@ -292,7 +292,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 continue;
             }
 
-            this.logger.debug("Received message " + line);
+            this.logger.debug("Received message {}", line);
 
             // System is alive, cancel reconnect task.
             if (this.keepAliveReconnect != null) {
@@ -301,7 +301,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
             Matcher matcher = STATUS_REGEX.matcher(line);
 
-            if (matcher.matches()) {
+            if (matcher.find()) {
                 LutronCommandType type = LutronCommandType.valueOf(matcher.group(1));
 
                 if (type == LutronCommandType.SYSTEM) {
@@ -324,10 +324,10 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                         this.logger.error("Error processing update", e);
                     }
                 } else {
-                    this.logger.info("No thing configured for integration ID " + integrationId);
+                    this.logger.info("No thing configured for integration ID {}", integrationId);
                 }
             } else {
-                this.logger.info("Ignoring message " + line);
+                this.logger.info("Ignoring message {}", line);
             }
         }
     }

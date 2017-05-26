@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,7 +36,7 @@ import rx.subjects.BehaviorSubject;
  */
 public class MinecraftSocketHandler implements WebSocketEventHandler {
 
-    private Logger logger = LoggerFactory.getLogger(MinecraftServerHandler.class);
+    private Logger logger = LoggerFactory.getLogger(MinecraftSocketHandler.class);
 
     private BehaviorSubject<ServerData> serverRx = BehaviorSubject.create();
     private BehaviorSubject<List<SignData>> signsRx = BehaviorSubject.<List<SignData>>create();
@@ -51,7 +51,7 @@ public class MinecraftSocketHandler implements WebSocketEventHandler {
 
     @Override
     public void onError(WebSocketException e) {
-        logger.error("Server error " + e.getMessage() + " : " + e.getCause());
+        logger.error("Server error {}", e.getMessage(), e);
 
     }
 
@@ -62,7 +62,7 @@ public class MinecraftSocketHandler implements WebSocketEventHandler {
 
     @Override
     public void onLogMessage(String s) {
-        logger.info("Log message: " + s);
+        logger.info("Log message: {}", s);
     }
 
     @Override
@@ -77,7 +77,8 @@ public class MinecraftSocketHandler implements WebSocketEventHandler {
                 serverRx.onNext(serverData);
             } else if (OHMessage.MESSAGE_TYPE_PLAYERS == messageType) {
                 List<PlayerData> playerData = gson.fromJson(ohMessage.getMessage(),
-                        new TypeToken<ArrayList<PlayerData>>() {}.getType());
+                        new TypeToken<ArrayList<PlayerData>>() {
+                        }.getType());
                 playersRx.onNext(playerData);
             } else if (OHMessage.MESSAGE_TYPE_SIGNS == messageType) {
                 List<SignData> signsData = gson.fromJson(ohMessage.getMessage(), new TypeToken<ArrayList<SignData>>() {

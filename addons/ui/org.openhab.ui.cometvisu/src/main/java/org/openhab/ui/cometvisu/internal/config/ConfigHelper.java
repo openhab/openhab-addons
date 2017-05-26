@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -111,8 +111,8 @@ public class ConfigHelper {
         this.app = app;
         this.sitemapName = sitemapName;
 
-        logger.info("icon mapping enabled: " + Config.iconConfig.get(Config.COMETVISU_ICON_ENABLE_MAPPING_PROPERTY)
-                + ", " + Config.iconMappings.size() + " known mappings");
+        logger.info("icon mapping enabled: {}, {} known mappings",
+                Config.iconConfig.get(Config.COMETVISU_ICON_ENABLE_MAPPING_PROPERTY), Config.iconMappings.size());
 
         // this.initIconMapping();
         this.initBasicMappings();
@@ -367,7 +367,7 @@ public class ConfigHelper {
                 return address;
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
         return null;
     }
@@ -415,13 +415,13 @@ public class ConfigHelper {
                 return label;
             }
         } catch (NoSuchMethodException | SecurityException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (IllegalAccessException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (InvocationTargetException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
         return null;
     }
@@ -454,13 +454,13 @@ public class ConfigHelper {
                 setter.invoke(element, mapping.getName());
                 return mapping;
             } catch (NoSuchMethodException | SecurityException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             } catch (IllegalAccessException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             } catch (IllegalArgumentException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             } catch (InvocationTargetException e) {
-                logger.error(e.getMessage());
+                logger.error("{}", e.getMessage());
             }
         }
         return null;
@@ -631,11 +631,11 @@ public class ConfigHelper {
         } catch (NoSuchMethodException | SecurityException e) {
             // do nothing, normal behaviour for item that have no mappingdefined
         } catch (IllegalAccessException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (InvocationTargetException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
         return mapping;
     }
@@ -958,13 +958,13 @@ public class ConfigHelper {
                 method.invoke(elem, format);
             }
         } catch (NoSuchMethodException | SecurityException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (IllegalAccessException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         } catch (InvocationTargetException e) {
-            logger.error(e.getMessage());
+            logger.error("{}", e.getMessage());
         }
 
     }

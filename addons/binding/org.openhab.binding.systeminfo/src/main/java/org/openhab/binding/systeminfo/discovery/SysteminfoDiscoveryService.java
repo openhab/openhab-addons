@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,15 +31,15 @@ import org.slf4j.LoggerFactory;
  * @author Svilen Valkanov
  */
 public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
-    private static final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
 
-    private final static int DISCOVERY_TIME_SECONDS = 30;
-    private final static String DEFAULT_THING_ID = "unknown";
-    private final static String DEFAULT_THING_LABEL = "Local computer";
-    private final static String THING_UID_VALID_CHARS = "A-Za-z0-9_-";
-    private final static String HOST_NAME_SEPERATOR = "_";
+    private static final int DISCOVERY_TIME_SECONDS = 30;
+    private static final String DEFAULT_THING_ID = "unknown";
+    private static final String DEFAULT_THING_LABEL = "Local computer";
+    private static final String THING_UID_VALID_CHARS = "A-Za-z0-9_-";
+    private static final String HOST_NAME_SEPERATOR = "_";
 
     public SysteminfoDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);

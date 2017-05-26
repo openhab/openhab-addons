@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="wifiled"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>WiFi LED Binding</name>
+	<description>Binding for WiFi LED devices. These are known as Magic Home RGBW LED, UFO LED, LED NET controller etc.</description>
+	<author>Osman Basha, Stefan Endrullis</author>
+
+</binding:binding>

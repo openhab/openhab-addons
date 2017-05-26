@@ -129,17 +129,17 @@
  -->		</channels>
 
 		<config-description>
-			<parameter name="username" type="text" required="true">
+			<parameter name="username" type="text" required="false">
 				<label>Username</label>
 				<description>Username for the Tesla Remote Service, e.g email address</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
+			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password for the Tesla Remote Service</description>
 			</parameter>
 			<parameter name="vin" type="text" required="true">
-				<label>Vehcile Identification Number</label>
+				<label>Vehicle Identification Number</label>
 				<description>VIN of the vehicle associated with this Thing</description>
 			</parameter>
 		</config-description>
@@ -260,7 +260,7 @@
 		<state pattern="%d km|miles" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargerate" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Charge Rate</label>
 		<description>Not documented / To be defined (-1 if not charging)</description>
 		<state readOnly="true"></state>
@@ -738,7 +738,7 @@
 	<channel-type id="speed">
 		<item-type>Number</item-type>
 		<label>Speed</label>
-		<description>Vehcile speed, in km/hr or miles/hr</description>
+		<description>Vehicle speed, in km/hr or miles/hr</description>
 		<state pattern="%d km|miles/h" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="state" advanced="true">
@@ -815,14 +815,14 @@
 	</channel-type>
 <!-- 	<channel-type id="vin">
 		<item-type>String</item-type>
-		<label>Vehcile Identification Number</label>
+		<label>Vehicle Identification Number</label>
 		<description>The VIN of the vehicle. This uniquely identifies the vehicle</description>
 		<state readOnly="true"></state>
 	</channel-type> -->
 	<channel-type id="wakeup" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Wake Up</label>
-		<description>Wake up the vehcile from a (deep) sleep</description>
+		<description>Wake up the vehicle from a (deep) sleep</description>
 	</channel-type>
 <!-- 	<channel-type id="wheeltype" advanced="true">
 		<item-type>String</item-type>

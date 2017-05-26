@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.rfxcom.internal.messages;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.NumberItem;
@@ -16,12 +19,9 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-
-import java.util.Arrays;
-import java.util.List;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for lighting6 message. See Blyss.
@@ -32,9 +32,7 @@ import java.util.List;
 public class RFXComLighting6Message extends RFXComBaseMessage {
 
     public enum SubType {
-        BLYSS(0),
-
-        UNKNOWN(255);
+        BLYSS(0);
 
         private final int subType;
 
@@ -42,22 +40,18 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
             this.subType = subType;
         }
 
-        SubType(byte subType) {
-            this.subType = subType;
-        }
-
         public byte toByte() {
             return (byte) subType;
         }
 
-        public static SubType fromByte(int input) {
+        public static SubType fromByte(int input) throws RFXComUnsupportedValueException {
             for (SubType c : SubType.values()) {
                 if (c.subType == input) {
                     return c;
                 }
             }
 
-            return SubType.UNKNOWN;
+            throw new RFXComUnsupportedValueException(SubType.class, input);
         }
     }
 
@@ -65,9 +59,7 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
         ON(0),
         OFF(1),
         GROUP_ON(2),
-        GROUP_OFF(3),
-
-        UNKNOWN(255);
+        GROUP_OFF(3);
 
         private final int command;
 
@@ -75,43 +67,39 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
             this.command = command;
         }
 
-        Commands(byte command) {
-            this.command = command;
-        }
-
         public byte toByte() {
             return (byte) command;
         }
 
-        public static Commands fromByte(int input) {
+        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
             for (Commands c : Commands.values()) {
                 if (c.command == input) {
                     return c;
                 }
             }
 
-            return Commands.UNKNOWN;
+            throw new RFXComUnsupportedValueException(Commands.class, input);
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.COMMAND, RFXComValueSelector.CONTACT);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.COMMAND);
 
-    public SubType subType = SubType.UNKNOWN;
-    public int sensorId = 0;
-    public char groupCode = 'A';
-    public byte unitCode = 0;
-    public Commands command = Commands.UNKNOWN;
-    public byte signalLevel = 0;
+    public SubType subType;
+    public int sensorId;
+    public char groupCode;
+    public byte unitCode;
+    public Commands command;
+    public byte signalLevel;
 
     public RFXComLighting6Message() {
         packetType = PacketType.LIGHTING6;
     }
 
-    public RFXComLighting6Message(byte[] data) {
+    public RFXComLighting6Message(byte[] data) throws RFXComException {
 
         encodeMessage(data);
     }
@@ -130,11 +118,11 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
+    public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
-        sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF) << 0;
+        sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
         groupCode = (char) data[6];
         unitCode = data[7];
         command = Commands.fromByte(data[8]);
@@ -173,7 +161,7 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        State state;
 
         if (valueSelector.getItemClass() == NumberItem.class) {
 
@@ -284,22 +272,21 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
             }
         }
 
-        // try to find sub type by number
         try {
-            return SubType.values()[Integer.parseInt(subType)];
-        } catch (Exception e) {
-            throw new RFXComException("Unknown sub type " + subType);
+            return SubType.fromByte(Integer.parseInt(subType));
+        } catch (NumberFormatException e) {
+            throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 
 }

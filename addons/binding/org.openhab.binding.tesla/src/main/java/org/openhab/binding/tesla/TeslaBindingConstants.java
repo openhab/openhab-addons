@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -51,7 +51,7 @@ public class TeslaBindingConstants {
     public static final String TESLA_COMMAND_AUTO_COND_STOP = "auto_conditioning_stop";
     public static final String TESLA_COMMAND_SUN_ROOF = "sun_roof_control";
 
-    // Tesla REST API vehcile states
+    // Tesla REST API vehicle states
     public static final String TESLA_DRIVE_STATE = "drive_state";
     public static final String TESLA_CHARGE_STATE = "charge_state";
     public static final String TESLA_CLIMATE_STATE = "climate_state";
@@ -62,7 +62,7 @@ public class TeslaBindingConstants {
     public static final String BINDING_ID = "tesla";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_MODELS = new ThingTypeUID(BINDING_ID, "models");
+    public static final ThingTypeUID THING_TYPE_MODELS = new ThingTypeUID(BINDING_ID, "models");
 
     public enum EventKeys {
         timestamp,

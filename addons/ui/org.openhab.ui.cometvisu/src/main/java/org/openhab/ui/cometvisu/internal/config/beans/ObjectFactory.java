@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,48 +39,48 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _LabelIcon_QNAME = new QName("", "icon");
-    private final static QName _NavbarPage_QNAME = new QName("", "page");
-    private final static QName _NavbarGroup_QNAME = new QName("", "group");
-    private final static QName _NavbarLine_QNAME = new QName("", "line");
-    private final static QName _NavbarBreak_QNAME = new QName("", "break");
-    private final static QName _NavbarText_QNAME = new QName("", "text");
-    private final static QName _NavbarSwitch_QNAME = new QName("", "switch");
-    private final static QName _NavbarToggle_QNAME = new QName("", "toggle");
-    private final static QName _NavbarTrigger_QNAME = new QName("", "trigger");
-    private final static QName _NavbarRefresh_QNAME = new QName("", "refresh");
-    private final static QName _NavbarPushbutton_QNAME = new QName("", "pushbutton");
-    private final static QName _NavbarUrltrigger_QNAME = new QName("", "urltrigger");
-    private final static QName _NavbarMultitrigger_QNAME = new QName("", "multitrigger");
-    private final static QName _NavbarInfotrigger_QNAME = new QName("", "infotrigger");
-    private final static QName _NavbarDesigntoggle_QNAME = new QName("", "designtoggle");
-    private final static QName _NavbarSlide_QNAME = new QName("", "slide");
-    private final static QName _NavbarReload_QNAME = new QName("", "reload");
-    private final static QName _NavbarInclude_QNAME = new QName("", "include");
-    private final static QName _NavbarInfo_QNAME = new QName("", "info");
-    private final static QName _NavbarShade_QNAME = new QName("", "shade");
-    private final static QName _NavbarImage_QNAME = new QName("", "image");
-    private final static QName _NavbarImagetrigger_QNAME = new QName("", "imagetrigger");
-    private final static QName _NavbarAudio_QNAME = new QName("", "audio");
-    private final static QName _NavbarVideo_QNAME = new QName("", "video");
-    private final static QName _NavbarWeb_QNAME = new QName("", "web");
-    private final static QName _NavbarRgb_QNAME = new QName("", "rgb");
-    private final static QName _NavbarPagejump_QNAME = new QName("", "pagejump");
-    private final static QName _NavbarWgpluginInfo_QNAME = new QName("", "wgplugin_info");
-    private final static QName _NavbarClock_QNAME = new QName("", "clock");
-    private final static QName _NavbarColorchooser_QNAME = new QName("", "colorchooser");
-    private final static QName _NavbarDiagramInfo_QNAME = new QName("", "diagram_info");
-    private final static QName _NavbarDiagram_QNAME = new QName("", "diagram");
-    private final static QName _NavbarRss_QNAME = new QName("", "rss");
-    private final static QName _NavbarRsslog_QNAME = new QName("", "rsslog");
-    private final static QName _NavbarStrftime_QNAME = new QName("", "strftime");
-    private final static QName _NavbarSvg_QNAME = new QName("", "svg");
-    private final static QName _NavbarUpnpcontroller_QNAME = new QName("", "upnpcontroller");
-    private final static QName _NavbarTimeout_QNAME = new QName("", "timeout");
-    private final static QName _NavbarGauge_QNAME = new QName("", "gauge");
-    private final static QName _NavbarCalendarlist_QNAME = new QName("", "calendarlist");
-    private final static QName _NavbarInfoaction_QNAME = new QName("", "infoaction");
-    private final static QName _PageNavbar_QNAME = new QName("", "navbar");
+    private static final QName _LabelIcon_QNAME = new QName("", "icon");
+    private static final QName _NavbarPage_QNAME = new QName("", "page");
+    private static final QName _NavbarGroup_QNAME = new QName("", "group");
+    private static final QName _NavbarLine_QNAME = new QName("", "line");
+    private static final QName _NavbarBreak_QNAME = new QName("", "break");
+    private static final QName _NavbarText_QNAME = new QName("", "text");
+    private static final QName _NavbarSwitch_QNAME = new QName("", "switch");
+    private static final QName _NavbarToggle_QNAME = new QName("", "toggle");
+    private static final QName _NavbarTrigger_QNAME = new QName("", "trigger");
+    private static final QName _NavbarRefresh_QNAME = new QName("", "refresh");
+    private static final QName _NavbarPushbutton_QNAME = new QName("", "pushbutton");
+    private static final QName _NavbarUrltrigger_QNAME = new QName("", "urltrigger");
+    private static final QName _NavbarMultitrigger_QNAME = new QName("", "multitrigger");
+    private static final QName _NavbarInfotrigger_QNAME = new QName("", "infotrigger");
+    private static final QName _NavbarDesigntoggle_QNAME = new QName("", "designtoggle");
+    private static final QName _NavbarSlide_QNAME = new QName("", "slide");
+    private static final QName _NavbarReload_QNAME = new QName("", "reload");
+    private static final QName _NavbarInclude_QNAME = new QName("", "include");
+    private static final QName _NavbarInfo_QNAME = new QName("", "info");
+    private static final QName _NavbarShade_QNAME = new QName("", "shade");
+    private static final QName _NavbarImage_QNAME = new QName("", "image");
+    private static final QName _NavbarImagetrigger_QNAME = new QName("", "imagetrigger");
+    private static final QName _NavbarAudio_QNAME = new QName("", "audio");
+    private static final QName _NavbarVideo_QNAME = new QName("", "video");
+    private static final QName _NavbarWeb_QNAME = new QName("", "web");
+    private static final QName _NavbarRgb_QNAME = new QName("", "rgb");
+    private static final QName _NavbarPagejump_QNAME = new QName("", "pagejump");
+    private static final QName _NavbarWgpluginInfo_QNAME = new QName("", "wgplugin_info");
+    private static final QName _NavbarClock_QNAME = new QName("", "clock");
+    private static final QName _NavbarColorchooser_QNAME = new QName("", "colorchooser");
+    private static final QName _NavbarDiagramInfo_QNAME = new QName("", "diagram_info");
+    private static final QName _NavbarDiagram_QNAME = new QName("", "diagram");
+    private static final QName _NavbarRss_QNAME = new QName("", "rss");
+    private static final QName _NavbarRsslog_QNAME = new QName("", "rsslog");
+    private static final QName _NavbarStrftime_QNAME = new QName("", "strftime");
+    private static final QName _NavbarSvg_QNAME = new QName("", "svg");
+    private static final QName _NavbarUpnpcontroller_QNAME = new QName("", "upnpcontroller");
+    private static final QName _NavbarTimeout_QNAME = new QName("", "timeout");
+    private static final QName _NavbarGauge_QNAME = new QName("", "gauge");
+    private static final QName _NavbarCalendarlist_QNAME = new QName("", "calendarlist");
+    private static final QName _NavbarInfoaction_QNAME = new QName("", "infoaction");
+    private static final QName _PageNavbar_QNAME = new QName("", "navbar");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.openhab.ui.cometvisu.internal.config.beans

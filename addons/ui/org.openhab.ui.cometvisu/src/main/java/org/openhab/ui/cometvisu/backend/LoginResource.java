@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_LOGIN_ALIAS)
 public class LoginResource implements RESTResource {
-    private static final Logger logger = LoggerFactory.getLogger(LoginResource.class);
-
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     public Response getLogin(@Context UriInfo uriInfo, @Context HttpHeaders headers, @QueryParam("u") String user,

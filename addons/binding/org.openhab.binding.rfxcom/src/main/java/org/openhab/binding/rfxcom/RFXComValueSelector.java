@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,10 +8,9 @@
  */
 package org.openhab.binding.rfxcom;
 
-import java.io.InvalidClassException;
-
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ContactItem;
+import org.eclipse.smarthome.core.library.items.DateTimeItem;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.items.RollershutterItem;
@@ -26,8 +25,11 @@ import org.eclipse.smarthome.core.library.items.SwitchItem;
  */
 public enum RFXComValueSelector {
 
+    RAW_MESSAGE(RFXComBindingConstants.CHANNEL_RAW_MESSAGE, StringItem.class),
+    RAW_PAYLOAD(RFXComBindingConstants.CHANNEL_RAW_PAYLOAD, StringItem.class),
     SHUTTER(RFXComBindingConstants.CHANNEL_SHUTTER, RollershutterItem.class),
     COMMAND(RFXComBindingConstants.CHANNEL_COMMAND, SwitchItem.class),
+    COMMAND_ID(RFXComBindingConstants.CHANNEL_COMMAND_ID, NumberItem.class),
     MOOD(RFXComBindingConstants.CHANNEL_MOOD, NumberItem.class),
     SIGNAL_LEVEL(RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL, NumberItem.class),
     DIMMING_LEVEL(RFXComBindingConstants.CHANNEL_DIMMING_LEVEL, DimmerItem.class),
@@ -47,12 +49,17 @@ public enum RFXComValueSelector {
     TOTAL_USAGE(RFXComBindingConstants.CHANNEL_TOTAL_USAGE, NumberItem.class),
     INSTANT_AMPS(RFXComBindingConstants.CHANNEL_INSTANT_AMPS, NumberItem.class),
     TOTAL_AMP_HOUR(RFXComBindingConstants.CHANNEL_TOTAL_AMP_HOUR, NumberItem.class),
+    CHANNEL1_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL1_AMPS, NumberItem.class),
+    CHANNEL2_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL2_AMPS, NumberItem.class),
+    CHANNEL3_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL3_AMPS, NumberItem.class),
     STATUS(RFXComBindingConstants.CHANNEL_STATUS, StringItem.class),
     MOTION(RFXComBindingConstants.CHANNEL_MOTION, SwitchItem.class),
     CONTACT(RFXComBindingConstants.CHANNEL_CONTACT, ContactItem.class),
     VOLTAGE(RFXComBindingConstants.CHANNEL_VOLTAGE, NumberItem.class),
     SET_POINT(RFXComBindingConstants.CHANNEL_SET_POINT, NumberItem.class),
-    LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY, SwitchItem.class);
+    DATE_TIME(RFXComBindingConstants.CHANNEL_DATE_TIME, DateTimeItem.class),
+    LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY, SwitchItem.class),
+    CHIME_SOUND(RFXComBindingConstants.CHANNEL_CHIME_SOUND, NumberItem.class);
 
     private final String text;
     private Class<? extends Item> itemClass;
@@ -72,45 +79,13 @@ public enum RFXComValueSelector {
     }
 
     /**
-     * Procedure to validate selector string.
-     *
-     * @param valueSelector
-     *            selector string e.g. Command, Temperature
-     * @return true if item is valid.
-     * @throws IllegalArgumentException
-     *             Not valid value selector.
-     * @throws InvalidClassException
-     *             Not valid class for value selector.
-     */
-    public static boolean validateBinding(String valueSelector, Class<? extends Item> itemClass)
-            throws IllegalArgumentException, InvalidClassException {
-
-        for (RFXComValueSelector c : RFXComValueSelector.values()) {
-            if (c.text.equals(valueSelector)) {
-
-                if (c.getItemClass().equals(itemClass)) {
-                    return true;
-                } else {
-                    throw new InvalidClassException("Not valid class for value selector");
-                }
-            }
-        }
-
-        throw new IllegalArgumentException("Not valid value selector");
-
-    }
-
-    /**
      * Procedure to convert selector string to value selector class.
      *
      * @param valueSelectorText
      *            selector string e.g. RawData, Command, Temperature
      * @return corresponding selector value.
-     * @throws InvalidClassException
-     *             Not valid class for value selector.
      */
     public static RFXComValueSelector getValueSelector(String valueSelectorText) throws IllegalArgumentException {
-
         for (RFXComValueSelector c : RFXComValueSelector.values()) {
             if (c.text.equals(valueSelectorText)) {
                 return c;

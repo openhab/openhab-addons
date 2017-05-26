@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -52,7 +52,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
     private ScheduledFuture<?> scanTask;
 
     public LutronDeviceDiscoveryService(IPBridgeHandler bridgeHandler) throws IllegalArgumentException {
-        super(LutronHandlerFactory.DEVICE_TYPES_UIDS, 10);
+        super(LutronHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
 
         this.bridgeHandler = bridgeHandler;
     }

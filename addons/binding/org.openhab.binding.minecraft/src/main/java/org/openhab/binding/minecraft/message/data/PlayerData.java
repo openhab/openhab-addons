@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,6 +23,7 @@ public class PlayerData {
     protected double health;
     protected float walkSpeed;
     protected LocationData location;
+    protected String gameMode;
 
     /**
      * Get the display name of player.
@@ -79,9 +80,9 @@ public class PlayerData {
     }
 
     /**
-     * Get the walkspeed of player
+     * Get the walk speed of player.
      *
-     * @return walkspeed of player.
+     * @return walk speed of player
      */
     public float getWalkSpeed() {
         return walkSpeed;
@@ -94,6 +95,15 @@ public class PlayerData {
      */
     public LocationData getLocation() {
         return location;
+    }
+
+    /**
+     * Get the players game mode.
+     *
+     * @return game mode
+     */
+    public String getGameMode() {
+        return gameMode;
     }
 
     @Override
