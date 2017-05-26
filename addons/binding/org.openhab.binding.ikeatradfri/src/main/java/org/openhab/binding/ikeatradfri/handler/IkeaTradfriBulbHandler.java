@@ -108,13 +108,18 @@ public class IkeaTradfriBulbHandler extends BaseThingHandler implements IkeaTrad
         }
 
         PercentType getColorTemperature() {
-            double x = settings.get(TRADFRI_COLOR_X).getAsInt() / 1.0, value = 0.0;
-            if (x > X.get(1)) {
-                value = (x - X.get(0)) / (X.get(1) - X.get(0)) / 2.0;
+            JsonElement colorX = settings.get(TRADFRI_COLOR_X);
+            if (colorX != null) {
+                double x = settings.get(TRADFRI_COLOR_X).getAsInt() / 1.0, value = 0.0;
+                if (x > X.get(1)) {
+                    value = (x - X.get(0)) / (X.get(1) - X.get(0)) / 2.0;
+                } else {
+                    value = (x - X.get(1)) / (X.get(2) - X.get(1)) / 2.0 + 0.5;
+                }
+                return new PercentType((int) Math.round(value * 100.0));
             } else {
-                value = (x - X.get(1)) / (X.get(2) - X.get(1)) / 2.0 + 0.5;
+                return null;
             }
-            return new PercentType((int) Math.round(value * 100.0));
         }
 
         LightProperties setOnOffState(boolean on) {

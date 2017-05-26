@@ -144,16 +144,16 @@ public class IkeaTradfriGatewayHandler extends BaseBridgeHandler implements Ikea
                         logger.debug("COAP GET Successful for: {}", url);
                         future.complete(data);
                     } else {
-                        logger.warn("COAP GET Error: {} for {}", response.getCode().toString(), url);
-                        future.completeExceptionally(null);
+                        logger.debug("COAP GET Error: {} for {}", response.getCode().toString(), url);
+                        future.completeExceptionally(new RuntimeException("Response " + response.getCode().toString()));
                     }
                     removeAsyncClient(client);
                 }
 
                 @Override
                 public void onError() {
-                    logger.warn("COAP GET Error");
-                    future.completeExceptionally(null);
+                    logger.debug("COAP GET Error");
+                    future.completeExceptionally(new RuntimeException("COAP GET resulted in an error."));
                     removeAsyncClient(client);
                 }
             };
