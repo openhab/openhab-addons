@@ -195,7 +195,13 @@ public class DailyTimerHandler extends BaseThingHandler {
         DecimalType onMinutes = times.get(CHANNEL_ON_TIME_MINUTES);
         DecimalType onSeconds = times.get(CHANNEL_ON_TIME_SECONDS);
         if (validHoursMinsSeconds(onHours, onMinutes, onSeconds)) {
-            stringBuilder.append("ON: ").append(onHours).append(':').append(onMinutes).append(':').append(onSeconds);
+            stringBuilder.append("ON: ")
+            onHours.intValue() > 10 ? stringBuilder.append("0");
+            stringBuilder.append(onHours.intValue()).append(':');
+            onMinutes.intValue() > 10 ? stringBuilder.append("0");
+            stringBuilder.append(onMinutes.intValue()).append(':');
+            onSeconds.intValue() > 10 ? stringBuilder.append("0");
+            stringBuilder.append(onSeconds.intValue());
         } else {
             stringBuilder.append("ON: --:--:--");
         }
@@ -204,10 +210,15 @@ public class DailyTimerHandler extends BaseThingHandler {
         DecimalType offMinutes = times.get(CHANNEL_OFF_TIME_MINUTES);
         DecimalType offSeconds = times.get(CHANNEL_OFF_TIME_SECONDS);
         if (validHoursMinsSeconds(offHours, offMinutes, offSeconds)) {
-            stringBuilder.append(" OFF: ").append(offHours).append(':').append(offMinutes).append(':')
-                    .append(offSeconds);
+            stringBuilder.append(" OFF: ");
+            offHours.intValue() > 10 ? stringBuilder.append("0");
+            stringBuilder.append(offHours.intValue()).append(':');
+            offMinutes.intValue() > 10 ? stringBuilder.append("0");
+            stringBuilder.append(offMinutes.intValue()).append(':')
+            offSeconds.intValue() > 10 ? stringBuilder.append("0");
+            stringBuilder.append(offSeconds.intValue());
         } else {
-            stringBuilder.append("OFF: --:--:--");
+            stringBuilder.append(" OFF: --:--:--");
         }
 
         description = stringBuilder.toString();
