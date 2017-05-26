@@ -103,6 +103,7 @@ public class HS110Handler extends ConfigStatusThingHandler {
     public void dispose() {
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
+            refreshJob = null;
         }
     }
 

@@ -118,7 +118,7 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
                             packet.setLength(buffer.length);
 
                         } catch (SocketTimeoutException e) {
-                            logger.info("Discovering ...");
+                            logger.debug("Discovering poller timeout...");
 
                         } catch (IOException e) {
                             logger.error("Error during discovery", e);
