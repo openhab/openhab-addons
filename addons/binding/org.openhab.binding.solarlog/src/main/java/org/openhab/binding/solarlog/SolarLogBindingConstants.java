@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,66 +21,66 @@ public class SolarLogBindingConstants {
     public static final String BINDING_ID = "solarlog";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_SOLARLOG = new ThingTypeUID(BINDING_ID, "solarlog_js");
+    public static final ThingTypeUID THING_SOLARLOG = new ThingTypeUID(BINDING_ID, "datalogger");
 
     // List of all Channel ids
-    public final static String CHANNEL_ID_LASTUPDATETIME = "lastupdate";
-    public final static String CHANNEL_ID_PAC = "pac";
-    public final static String CHANNEL_ID_PDC = "pdc";
-    public final static String CHANNEL_ID_UAC = "uac";
-    public final static String CHANNEL_ID_UDC = "udc";
-    public final static String CHANNEL_ID_YIELDDAY = "yieldday";
-    public final static String CHANNEL_ID_YIELDYESTERDAY = "yieldyesterday";
-    public final static String CHANNEL_ID_YIELDMONTH = "yieldmonth";
-    public final static String CHANNEL_ID_YIELDYEAR = "yieldyear";
-    public final static String CHANNEL_ID_YIELDTOTAL = "yieldtotal";
-    public final static String CHANNEL_ID_CONSPAC = "conspac";
-    public final static String CHANNEL_ID_CONSYIELDDAY = "consyieldday";
-    public final static String CHANNEL_ID_CONSYIELDYESTERDAY = "consyieldyesterday";
-    public final static String CHANNEL_ID_CONSYIELDMONTH = "consyieldmonth";
-    public final static String CHANNEL_ID_CONSYIELDYEAR = "consyieldyear";
-    public final static String CHANNEL_ID_CONSYIELDTOTAL = "consyieldtotal";
-    public final static String CHANNEL_ID_TOTALPOWER = "totalpower";
+    public static final String CHANNEL_ID_LASTUPDATETIME = "lastupdate";
+    public static final String CHANNEL_ID_PAC = "pac";
+    public static final String CHANNEL_ID_PDC = "pdc";
+    public static final String CHANNEL_ID_UAC = "uac";
+    public static final String CHANNEL_ID_UDC = "udc";
+    public static final String CHANNEL_ID_YIELDDAY = "yieldday";
+    public static final String CHANNEL_ID_YIELDYESTERDAY = "yieldyesterday";
+    public static final String CHANNEL_ID_YIELDMONTH = "yieldmonth";
+    public static final String CHANNEL_ID_YIELDYEAR = "yieldyear";
+    public static final String CHANNEL_ID_YIELDTOTAL = "yieldtotal";
+    public static final String CHANNEL_ID_CONSPAC = "conspac";
+    public static final String CHANNEL_ID_CONSYIELDDAY = "consyieldday";
+    public static final String CHANNEL_ID_CONSYIELDYESTERDAY = "consyieldyesterday";
+    public static final String CHANNEL_ID_CONSYIELDMONTH = "consyieldmonth";
+    public static final String CHANNEL_ID_CONSYIELDYEAR = "consyieldyear";
+    public static final String CHANNEL_ID_CONSYIELDTOTAL = "consyieldtotal";
+    public static final String CHANNEL_ID_TOTALPOWER = "totalpower";
 
     // List of all JSON Id's for channels
-    public final static String CHANNEL_LASTUPDATETIME = "100";
-    public final static String CHANNEL_PAC = "101";
-    public final static String CHANNEL_PDC = "102";
-    public final static String CHANNEL_UAC = "103";
-    public final static String CHANNEL_UDC = "104";
-    public final static String CHANNEL_YIELDDAY = "105";
-    public final static String CHANNEL_YIELDYESTERDAY = "106";
-    public final static String CHANNEL_YIELDMONTH = "107";
-    public final static String CHANNEL_YIELDYEAR = "108";
-    public final static String CHANNEL_YIELDTOTAL = "109";
-    public final static String CHANNEL_CONSPAC = "110";
-    public final static String CHANNEL_CONSYIELDDAY = "111";
-    public final static String CHANNEL_CONSYIELDYESTERDAY = "112";
-    public final static String CHANNEL_CONSYIELDMONTH = "113";
-    public final static String CHANNEL_CONSYIELDYEAR = "114";
-    public final static String CHANNEL_CONSYIELDTOTAL = "115";
-    public final static String CHANNEL_TOTALPOWER = "116";
+    public static final String CHANNEL_LASTUPDATETIME = "100";
+    public static final String CHANNEL_PAC = "101";
+    public static final String CHANNEL_PDC = "102";
+    public static final String CHANNEL_UAC = "103";
+    public static final String CHANNEL_UDC = "104";
+    public static final String CHANNEL_YIELDDAY = "105";
+    public static final String CHANNEL_YIELDYESTERDAY = "106";
+    public static final String CHANNEL_YIELDMONTH = "107";
+    public static final String CHANNEL_YIELDYEAR = "108";
+    public static final String CHANNEL_YIELDTOTAL = "109";
+    public static final String CHANNEL_CONSPAC = "110";
+    public static final String CHANNEL_CONSYIELDDAY = "111";
+    public static final String CHANNEL_CONSYIELDYESTERDAY = "112";
+    public static final String CHANNEL_CONSYIELDMONTH = "113";
+    public static final String CHANNEL_CONSYIELDYEAR = "114";
+    public static final String CHANNEL_CONSYIELDTOTAL = "115";
+    public static final String CHANNEL_TOTALPOWER = "116";
 
     // CHannel Type (DateTime or Number
-    public final static String CHANNEL_TYPE_LASTUPDATETIME = "DateTime";
-    public final static String CHANNEL_TYPE_PAC = "Number";
-    public final static String CHANNEL_TYPE_PDC = "Number";
-    public final static String CHANNEL_TYPE_UAC = "Number";
-    public final static String CHANNEL_TYPE_UDC = "Number";
-    public final static String CHANNEL_TYPE_YIELDDAY = "Number";
-    public final static String CHANNEL_TYPE_YIELDYESTERDAY = "Number";
-    public final static String CHANNEL_TYPE_YIELDMONTH = "Number";
-    public final static String CHANNEL_TYPE_YIELDYEAR = "Number";
-    public final static String CHANNEL_TYPE_YIELDTOTAL = "Number";
-    public final static String CHANNEL_TYPE_CONSPAC = "Number";
-    public final static String CHANNEL_TYPE_CONSYIELDDAY = "Number";
-    public final static String CHANNEL_TYPE_CONSYIELDYESTERDAY = "Number";
-    public final static String CHANNEL_TYPE_CONSYIELDMONTH = "Number";
-    public final static String CHANNEL_TYPE_CONSYIELDYEAR = "Number";
-    public final static String CHANNEL_TYPE_CONSYIELDTOTAL = "Number";
-    public final static String CHANNEL_TYPE_TOTALPOWER = "Number";
+    public static final String CHANNEL_TYPE_LASTUPDATETIME = "DateTime";
+    public static final String CHANNEL_TYPE_PAC = "Number";
+    public static final String CHANNEL_TYPE_PDC = "Number";
+    public static final String CHANNEL_TYPE_UAC = "Number";
+    public static final String CHANNEL_TYPE_UDC = "Number";
+    public static final String CHANNEL_TYPE_YIELDDAY = "Number";
+    public static final String CHANNEL_TYPE_YIELDYESTERDAY = "Number";
+    public static final String CHANNEL_TYPE_YIELDMONTH = "Number";
+    public static final String CHANNEL_TYPE_YIELDYEAR = "Number";
+    public static final String CHANNEL_TYPE_YIELDTOTAL = "Number";
+    public static final String CHANNEL_TYPE_CONSPAC = "Number";
+    public static final String CHANNEL_TYPE_CONSYIELDDAY = "Number";
+    public static final String CHANNEL_TYPE_CONSYIELDYESTERDAY = "Number";
+    public static final String CHANNEL_TYPE_CONSYIELDMONTH = "Number";
+    public static final String CHANNEL_TYPE_CONSYIELDYEAR = "Number";
+    public static final String CHANNEL_TYPE_CONSYIELDTOTAL = "Number";
+    public static final String CHANNEL_TYPE_TOTALPOWER = "Number";
 
     // Some basic constants (JSON ID)
-    public final static String SOLARLOG_JSON_ROOT = "801";
-    public final static String SOLARLOG_JSON_PROPERTIES = "170";
+    public static final String SOLARLOG_JSON_ROOT = "801";
+    public static final String SOLARLOG_JSON_PROPERTIES = "170";
 }

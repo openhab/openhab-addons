@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -28,6 +29,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.solarlog.SolarLogBindingConstants;
 import org.openhab.binding.solarlog.internal.HttpUtils;
+import org.openhab.binding.solarlog.internal.SolarLogChannelConfig;
 import org.openhab.binding.solarlog.internal.SolarLogSourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,12 +106,12 @@ public class SolarLogHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } catch (Exception e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            e.getClass().getName() + ":" + e.getMessage());
-                    logger.debug("Error refreshing source " + getThing().getUID(), e);
+                            "Communication error with the device");
+                    logger.debug("Error refreshing source {}", getThing().getUID(), e);
                 }
             }
 
-        }, 0, config.refreshInterval, TimeUnit.SECONDS);
+        }, 0, config.refreshInterval < 15 ? 15 : config.refreshInterval, TimeUnit.SECONDS); // Minimum interval is 15 s
     }
 
     private void refresh() throws Exception {
@@ -124,14 +126,14 @@ public class SolarLogHandler extends BaseThingHandler {
                 solarLogData = solarLogData.getAsJsonObject(SolarLogBindingConstants.SOLARLOG_JSON_PROPERTIES);
 
                 for (SolarLogChannelConfig channelConfig : channelConfigs) {
-                    if (solarLogData.has(channelConfig.index)) {
-                        String value = solarLogData.get(channelConfig.index).getAsString();
-                        Channel channel = getThing().getChannel(channelConfig.id);
-                        State state = getState(value, channelConfig.type);
+                    if (solarLogData.has(channelConfig.getIndex())) {
+                        String value = solarLogData.get(channelConfig.getIndex()).getAsString();
+                        Channel channel = getThing().getChannel(channelConfig.getId());
+                        State state = getState(value, channelConfig.getType());
 
                         updateState(channel.getUID(), state);
                     } else {
-                        logger.debug("Error refreshing source " + getThing().getUID(), channelConfig.id);
+                        logger.debug("Error refreshing source {}", getThing().getUID(), channelConfig.getId());
                     }
                 }
             }
@@ -142,7 +144,7 @@ public class SolarLogHandler extends BaseThingHandler {
     private State getState(String value, String type) {
         if (type == "Number") {
             try {
-                logger.trace("Parsing number " + value);
+                logger.trace("Parsing number {}", value);
                 return new DecimalType(new BigDecimal(value));
             } catch (NumberFormatException e) {
                 logger.trace("Parsing number failed. Returning string");
@@ -161,12 +163,12 @@ public class SolarLogHandler extends BaseThingHandler {
                     logger.trace("Parsing date successful. Returning date. {}", new DateTimeType(strDate));
                     return new DateTimeType(strDate);
                 } catch (ParseException fpe) {
-                    logger.trace("Parsing date failed. Returning string. {}", fpe);
+                    logger.trace("Parsing date failed. Returning string.", fpe);
                     return new StringType(value);
                 }
 
             } catch (IllegalArgumentException e) {
-                logger.trace("Parsing date failed. Returning string: {}", e);
+                logger.trace("Parsing date failed. Returning string", e);
                 return new StringType(value);
             }
         }
