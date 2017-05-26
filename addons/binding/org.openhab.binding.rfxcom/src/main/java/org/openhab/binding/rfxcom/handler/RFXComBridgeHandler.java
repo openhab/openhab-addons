@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +45,7 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Trans
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessageFactory;
 import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage;
+import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,12 +68,48 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
     private List<DeviceMessageListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
-    private static byte seqNbr = 0;
-    private static RFXComTransmitterMessage responseMessage = null;
-    private Object notifierObject = new Object();
     private RFXComBridgeConfiguration configuration = null;
     private ScheduledFuture<?> connectorTask;
     private Set<ThingUID> knownDevices = new HashSet<>();
+
+    private class TransmitQueue {
+        private Queue<RFXComBaseMessage> queue = new LinkedBlockingQueue<RFXComBaseMessage>();
+
+        public synchronized void enqueue(RFXComBaseMessage msg) throws IOException {
+            boolean wasEmpty = queue.isEmpty();
+            if (queue.offer(msg)) {
+                if (wasEmpty) {
+                    send();
+                }
+            } else {
+                logger.error("Transmit queue overflow. Lost message: {}", msg);
+            }
+        }
+
+        public synchronized void sendNext() throws IOException {
+            queue.poll();
+            send();
+        }
+
+        public synchronized void send() throws IOException {
+            while (!queue.isEmpty()) {
+                RFXComBaseMessage msg = queue.peek();
+
+                try {
+                    logger.debug("Transmitting message '{}'", msg);
+                    byte[] data = msg.decodeMessage();
+                    connector.sendMessage(data);
+                    break;
+                } catch (RFXComException rfxe) {
+                    logger.error("Error during send of {}", msg, rfxe);
+                    queue.poll();
+                }
+            }
+        }
+    }
+
+    private TransmitQueue transmitQueue = new TransmitQueue();
+
 
     public RFXComBridgeHandler(Bridge br) {
         super(br);
@@ -122,26 +161,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 }
             }, 0, 60, TimeUnit.SECONDS);
         }
-    }
-
-    private static synchronized byte getSeqNumber() {
-        return seqNbr;
-    }
-
-    private static synchronized byte getNextSeqNumber() {
-        if (++seqNbr == 0) {
-            seqNbr = 1;
-        }
-
-        return seqNbr;
-    }
-
-    private static synchronized RFXComTransmitterMessage getResponseMessage() {
-        return responseMessage;
-    }
-
-    private static synchronized void setResponseMessage(RFXComTransmitterMessage respMessage) {
-        responseMessage = respMessage;
     }
 
     private synchronized void connect() {
@@ -199,48 +218,12 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public synchronized void sendMessage(RFXComMessage msg) throws RFXComException {
-
-        ((RFXComBaseMessage) msg).seqNbr = getNextSeqNumber();
-        byte[] data = msg.decodeMessage();
-
-        logger.debug("Transmitting message '{}'", msg);
-        logger.trace("Transmitting data: {}", DatatypeConverter.printHexBinary(data));
-
-        setResponseMessage(null);
-
+    public void sendMessage(RFXComMessage msg) throws RFXComException {
         try {
-            connector.sendMessage(data);
+            RFXComBaseMessage baseMsg = (RFXComBaseMessage) msg;
+            transmitQueue.enqueue(baseMsg);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            throw new RFXComException("Send failed, reason: " + e.getMessage(), e);
-        }
-
-        try {
-
-            RFXComTransmitterMessage resp;
-            synchronized (notifierObject) {
-                notifierObject.wait(TIMEOUT);
-                resp = getResponseMessage();
-            }
-
-            if (resp != null) {
-                switch (resp.response) {
-                    case ACK:
-                    case ACK_DELAYED:
-                        logger.debug("Command successfully transmitted, '{}' received", resp.response);
-                        break;
-
-                    case NAK:
-                    case NAK_INVALID_AC_ADDRESS:
-                }
-            } else {
-                logger.warn("No response received from transceiver");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-
-        } catch (InterruptedException ie) {
-            logger.error("No acknowledge received from RFXCOM controller, timeout {}ms ", TIMEOUT);
+            logger.error("I/O Error", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
@@ -293,22 +276,17 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                             connector.sendMessage(RFXComMessageFactory.CMD_START_RECEIVER);
                         }
                     } else if (msg.subType == SubType.START_RECEIVER) {
+                        logger.debug("Start TX of any queued messages");
+                        transmitQueue.send();
+
                         updateStatus(ThingStatus.ONLINE);
                     }
                 } else if (message instanceof RFXComTransmitterMessage) {
                     RFXComTransmitterMessage resp = (RFXComTransmitterMessage) message;
 
-                    byte seqNbr = getSeqNumber();
-                    if (resp.seqNbr == seqNbr) {
-                        logger.debug("Transmitter response received: {}", message.toString());
-                        setResponseMessage(resp);
-                        synchronized (notifierObject) {
-                            notifierObject.notify();
-                        }
-                    } else {
-                        logger.warn("Sequence number '{}' does not match, expecting number '{}'", resp.seqNbr, seqNbr);
-                    }
+                    logger.debug("Transmitter response received: {}", resp);
 
+                    transmitQueue.sendNext();
                 } else {
 
                     for (DeviceMessageListener deviceStatusListener : deviceStatusListeners) {
