@@ -43,6 +43,10 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
 
     private Logger logger = LoggerFactory.getLogger(HS110DiscoveryService.class);
 
+    private static final int DISCOVERY_TIMEOUT_SECONDS = 5;
+    private static final int RECEIVE_JOB_TIMEOUT = 200;
+    private static final int UDP_PACKET_TIMEOUT = RECEIVE_JOB_TIMEOUT - 50;
+
     ///// Network
     private byte[] discoverbuffer = Util.encryptBytes(HS110.Command.SYSINFO.value);
     private final DatagramPacket discoverPacket;
@@ -50,15 +54,13 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
     private DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
     private final InetAddress broadcast;
+    private DatagramSocket datagramSocket;
 
     private Future<?> scanFuture;
-    private static final int DISCOVER_TIMEOUT_SECONDS = 5;
-    private static final int RECEIVE_JOB_TIMEOUT = 200;
-    private static final int UDP_PACKET_TIMEOUT = RECEIVE_JOB_TIMEOUT - 50;
 
     public HS110DiscoveryService() throws UnknownHostException {
 
-        super(HS110BindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);
+        super(HS110BindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS, false);
         byte[] addr = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
         broadcast = InetAddress.getByAddress(addr);
         discoverPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcast, 9999);
@@ -75,16 +77,16 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopScan() {
-        logger.debug("Stop Scan for {}",
-                this.getSupportedThingTypes().stream().map(uid -> uid.toString()).collect(Collectors.joining(" ")));
+        if (logger.isDebugEnabled()) { // Prevent stream call if debug is not enabled
+            logger.debug("Stop Scan for {}",
+                    this.getSupportedThingTypes().stream().map(uid -> uid.toString()).collect(Collectors.joining(" ")));
+        }
 
         if (scanFuture != null) {
             scanFuture.cancel(true);
         }
         super.stopScan();
     }
-
-    private DatagramSocket datagramSocket;
 
     private void discoverThings() {
         if (scanFuture == null) {
@@ -100,7 +102,7 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
 
                 datagramSocket.setSoTimeout(UDP_PACKET_TIMEOUT);
 
-                scanFuture = scheduler.scheduleAtFixedRate(new Runnable() {
+                scanFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -115,13 +117,13 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
                             packet.setLength(buffer.length);
 
                         } catch (SocketTimeoutException e) {
-                            logger.info("No response received in time");
+                            logger.info("Discovering ...");
 
                         } catch (IOException e) {
                             logger.error("Error during discovery", e);
                         }
                     }
-                }, 0, RECEIVE_JOB_TIMEOUT, TimeUnit.MICROSECONDS);
+                }, 0, 100, TimeUnit.MICROSECONDS);
 
             } catch (IOException e) {
                 logger.error("Error starting discovery", e);
