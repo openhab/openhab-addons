@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.lutron.internal.hw;
 
-import java.math.BigDecimal;
-
 /**
  * Configuration settings for a {@link org.openhab.binding.lutron.handler.HWDimmerHandler}.
  *
@@ -17,10 +15,11 @@ import java.math.BigDecimal;
  */
 public class HwDimmerConfig {
     private static final int DEFAULT_FADE = 1;
+    private static final int DEFAULT_LEVEL = 100;
 
     private String address;
-    private BigDecimal fadeInTime = new BigDecimal(DEFAULT_FADE);
-    private BigDecimal fadeOutTime = new BigDecimal(DEFAULT_FADE);
+    private Integer fadeTime = new Integer(DEFAULT_FADE);
+    private Integer defaultLevel = new Integer(DEFAULT_LEVEL);
 
     public String getAddress() {
         return this.address;
@@ -30,19 +29,19 @@ public class HwDimmerConfig {
         this.address = address;
     }
 
-    public BigDecimal getFadeInTime() {
-        return this.fadeInTime;
+    public Integer getFadeTime() {
+        return this.fadeTime;
     }
 
-    public void setFadeInTime(BigDecimal fadeInTime) {
-        this.fadeInTime = fadeInTime;
+    public void setFadeTime(Integer fadeTime) {
+        this.fadeTime = fadeTime;
     }
 
-    public BigDecimal getFadeOutTime() {
-        return this.fadeOutTime;
+    public Integer getDefaultLevel() {
+        return defaultLevel;
     }
 
-    public void setFadeOutTime(BigDecimal fadeOutTime) {
-        this.fadeOutTime = fadeOutTime;
+    public void setDefaultLevel(Integer defaultLevel) {
+        this.defaultLevel = defaultLevel;
     }
 }

@@ -42,15 +42,18 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
             THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD);
 
+    // Used by the HwDiscoveryService
+    public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_HWDIMMER);
+
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
-            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE, THING_TYPE_HWSERIALBRIDGE,
-            THING_TYPE_HWDIMMER);
+            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE, THING_TYPE_HWSERIALBRIDGE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
-                || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
+                || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID)
+                || HW_DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
