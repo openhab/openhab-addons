@@ -67,10 +67,10 @@ public class DLinkMotionSensorHandler extends BaseThingHandler implements DLinkM
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid pin code");
                 break;
             case INTERNAL_ERROR:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "System error");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "System error");
                 break;
             case UNSUPPORTED_FIRMWARE:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Unsupported firmware");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unsupported firmware");
                 break;
             default:
                 break;
@@ -79,7 +79,9 @@ public class DLinkMotionSensorHandler extends BaseThingHandler implements DLinkM
 
     @Override
     public void dispose() {
-        motionSensor.dispose();
+        if (motionSensor != null) {
+            motionSensor.dispose();
+        }
         super.dispose();
     }
 }
