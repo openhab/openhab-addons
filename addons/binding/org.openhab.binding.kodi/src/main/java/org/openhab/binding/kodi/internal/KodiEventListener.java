@@ -51,4 +51,8 @@ public interface KodiEventListener extends EventListener {
     void updateMediaType(String mediaType);
 
     void updatePVRChannel(final String channel);
+
+    void updateThumbnail(String thumbnail);
+
+    void updateFanart(String fanart);
 }

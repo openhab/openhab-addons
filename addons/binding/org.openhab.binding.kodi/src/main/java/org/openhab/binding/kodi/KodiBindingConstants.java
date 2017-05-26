@@ -31,8 +31,8 @@ public class KodiBindingConstants {
 
     // List of thing parameters names
     public static final String HOST_PARAMETER = "ipAddress";
-    public static final String PORT_PARAMETER = "port";
-    public static final String REFRESH_PARAMETER = "refreshInterval";
+    public static final String WS_PORT_PARAMETER = "port";
+    public static final String HTTP_PORT_PARAMETER = "httpPort";
 
     // List of all Channel ids
     public static final String CHANNEL_MUTE = "mute";
@@ -54,6 +54,8 @@ public class KodiBindingConstants {
     public static final String CHANNEL_ALBUM = "album";
     public static final String CHANNEL_MEDIATYPE = "mediatype";
     public static final String CHANNEL_PVR_CHANNEL = "pvr-channel";
+    public static final String CHANNEL_THUMBNAIL = "thumbnail";
+    public static final String CHANNEL_FANART = "fanart";
 
     // Module Properties
     public static final String PROPERTY_VERSION = "version";
