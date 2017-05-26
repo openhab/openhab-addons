@@ -51,9 +51,13 @@ public class TimerHandler extends BaseThingHandler {
     private boolean runsOnFri = false;
     private boolean runsOnSat = false;
     private boolean runsOnSun = false;
+    private boolean[] runsOn = new boolean[] { true, false, false, false, false, false, false, false };
 
-    private OnCallable onCallable = null;
-    private OffCallable offCallable = null;
+    private final OnCallable onCallable = new OnCallable();
+    private final OffCallable offCallable = new OffCallable();
+
+    private ScheduledFuture<Boolean> onSchedule = null;
+    private ScheduledFuture<Boolean> offSchedule = null;
 
     public TimerHandler(Thing thing) {
         super(thing);
@@ -61,37 +65,46 @@ public class TimerHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        boolean onScheduleChanged = false;
+        boolean offScheduleChanged = false;
+        boolean descriptionChanged = false;
         if (channelUID.getId().equals(CHANNEL_ON_TIME_HOURS)) {
             if (command instanceof RefreshType) {
-                updateState(CHANNEL_OFF_TIME_HOURS, new DecimalType(onTimeHours));
+                updateState(CHANNEL_ON_TIME_HOURS, new DecimalType(onTimeHours));
             }
             if (command instanceof DecimalType) {
                 onTimeHours = ((DecimalType) command).intValue();
+                onScheduleChanged = true;
             }
         }
         if (channelUID.getId().equals(CHANNEL_ON_TIME_MINUTES)) {
             if (command instanceof DecimalType) {
                 onTimeMinutes = ((DecimalType) command).intValue();
+                onScheduleChanged = true;
             }
         }
         if (channelUID.getId().equals(CHANNEL_ON_TIME_SECONDS)) {
             if (command instanceof DecimalType) {
                 onTimeSeconds = ((DecimalType) command).intValue();
+                onScheduleChanged = true;
             }
         }
         if (channelUID.getId().equals(CHANNEL_OFF_TIME_HOURS)) {
             if (command instanceof DecimalType) {
                 offTimeHours = ((DecimalType) command).intValue();
+                offScheduleChanged = true;
             }
         }
         if (channelUID.getId().equals(CHANNEL_OFF_TIME_MINUTES)) {
             if (command instanceof DecimalType) {
                 offTimeMinutes = ((DecimalType) command).intValue();
+                offScheduleChanged = true;
             }
         }
         if (channelUID.getId().equals(CHANNEL_OFF_TIME_SECONDS)) {
             if (command instanceof DecimalType) {
                 offTimeSeconds = ((DecimalType) command).intValue();
+                offScheduleChanged = true;
             }
         }
         if (channelUID.getId().equals(CHANNEL_ENABLED)) {
@@ -134,8 +147,8 @@ public class TimerHandler extends BaseThingHandler {
                 runsOnSun = ((OnOffType) command).equals(OnOffType.ON);
             }
         }
-        onCallable = scheduleOn(onTimeHours, onTimeMinutes, onTimeSeconds, new OnCallable());
-        offCallable = scheduleOff(offTimeHours, offTimeMinutes, offTimeSeconds, new OffCallable());
+        updateOnSchedule(onTimeHours, onTimeMinutes, onTimeSeconds);
+        updateOffSchedule(offTimeHours, offTimeMinutes, offTimeSeconds);
         String description = getDescription();
         updateState(CHANNEL_DESCRIPTION, new StringType(description));
     }
@@ -164,18 +177,20 @@ public class TimerHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    private ScheduledFuture<Boolean> scheduleOn(int hours, int minutes, int seconds, Callable<Boolean> callable) {
-        ScheduledFuture<Boolean> job = scheduler.schedule(callable, delayFromNow(hours, minutes, seconds),
-                TimeUnit.MILLISECONDS);
-        return job;
-
+    private void updateOnSchedule(int hours, int minutes, int seconds) {
+        if (onSchedule != null) {
+            // Cancel current job.
+            onSchedule.cancel(false);
+        }
+        onSchedule = scheduler.schedule(onCallable, delayFromNow(hours, minutes, seconds), TimeUnit.MILLISECONDS);
     }
 
-    private ScheduledFuture<Boolean> scheduleOff(int hours, int minutes, int seconds, Callable<Boolean> callable) {
-        ScheduledFuture<Boolean> job = scheduler.schedule(callable, delayFromNow(hours, minutes, seconds),
-                TimeUnit.MILLISECONDS);
-        return job;
-
+    private void updateOffSchedule(int hours, int minutes, int seconds) {
+        if (offSchedule != null) {
+            // Cancel current job.
+            offSchedule.cancel(false);
+        }
+        offSchedule = scheduler.schedule(offCallable, delayFromNow(hours, minutes, seconds), TimeUnit.MILLISECONDS);
     }
 
     private long delayFromNow(int hours, int minutes, int seconds) {
@@ -210,6 +225,7 @@ public class TimerHandler extends BaseThingHandler {
         public Boolean call() throws Exception {
             if (enabled && runsToday()) {
                 updateState(CHANNEL_STATUS, OnOffType.ON);
+                updateOnSchedule(onTimeHours, onTimeMinutes, onTimeSeconds);
             }
             return true;
         }
@@ -220,7 +236,7 @@ public class TimerHandler extends BaseThingHandler {
         public Boolean call() throws Exception {
             if (enabled && runsToday()) {
                 updateState(CHANNEL_STATUS, OnOffType.OFF);
-                offCallable = scheduleOff(offTimeHours, offTimeMinutes, offTimeSeconds, offCallable);
+                updateOffSchedule(offTimeHours, offTimeMinutes, offTimeSeconds);
             }
             return true;
         }
