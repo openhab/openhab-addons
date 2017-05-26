@@ -199,10 +199,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    private void requestPlayerUpdate(int activePlayer) {
-        requestPlayerUpdate(activePlayer, true);
-    }
-
     private void updateFanartUrl(String imagePath) {
         if (imagePath == null || imagePath.isEmpty()) {
             return;
@@ -224,7 +220,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
          */
     }
 
-    private void requestPlayerUpdate(int activePlayer, boolean updateMediaType) {
+    private void requestPlayerUpdate(int activePlayer) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
                 "showtitle", "streamdetails" };
 
@@ -251,10 +247,15 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
 
         String mediaType = item.get("type").getAsString();
+        if ("channel".equals(mediaType) && item.has("channeltype")) {
+            String channelType = item.get("channeltype").getAsString();
+            if ("radio".equals(channelType)) {
+                mediaType = "radio";
+            }
+        }
 
         String artist = "";
-        if (mediaType.equals("movie")) {
-
+        if ("movie".equals(mediaType)) {
             artist = convertFromArray(item.get("director").getAsJsonArray());
         } else {
             if (item.has("artist")) {
@@ -267,9 +268,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             listener.updateTitle(title);
             listener.updateShowTitle(showTitle);
             listener.updateArtist(artist);
-            if (updateMediaType) {
-                listener.updateMediaType(mediaType);
-            }
+            listener.updateMediaType(mediaType);
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
         }
@@ -361,12 +360,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
             updateState(KodiState.Play);
 
-            if (data.has("item")) {
-                JsonObject item = data.get("item").getAsJsonObject();
-                String mediaType = item.get("type").getAsString();
-                listener.updateMediaType(mediaType);
-            }
-            requestPlayerUpdate(playerId, false);
+            requestPlayerUpdate(playerId);
         } else if ("Player.OnPause".equals(method)) {
             updateState(KodiState.Pause);
         } else if ("Player.OnStop".equals(method)) {
