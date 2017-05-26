@@ -115,7 +115,7 @@ public class SolarLogHandler extends BaseThingHandler {
 
         if (type == "DateTime") {
             try {
-                logger.trace("Parsing date " + value);
+                logger.trace("Parsing date {}", value);
                 try {
                     Date date = new SimpleDateFormat("dd.MM.yy HH:mm:ss").parse(value);
                     SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");// dd/MM/yyyy
