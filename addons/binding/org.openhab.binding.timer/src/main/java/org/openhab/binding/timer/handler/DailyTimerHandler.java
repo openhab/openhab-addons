@@ -40,7 +40,7 @@ public class DailyTimerHandler extends BaseThingHandler {
 
     private static final int ENABLED = 0;
     // Sleep time before rescheduling timer - this is to ensure we don't accidently fire twice
-    private static final int SLEEP_TIME = 1000;
+    private static final int SLEEP_TIME = 10000;
 
     private final Logger logger = LoggerFactory.getLogger(DailyTimerHandler.class);
 
@@ -86,6 +86,9 @@ public class DailyTimerHandler extends BaseThingHandler {
 
     private void handleTimeRefresh(ChannelUID channelUID) {
         DecimalType state = times.get(channelUID.getId());
+        if (state == null) {
+            state = new DecimalType(1);
+        }
         updateState(channelUID.getId(), state);
     }
 
@@ -225,6 +228,7 @@ public class DailyTimerHandler extends BaseThingHandler {
 
     private void cancel(ScheduledFuture<Boolean> job) {
         if (job != null) {
+            logger.info("Cancelling current job [{}]", getThing());
             // Cancel current job.
             job.cancel(false);
             job = null;
@@ -237,8 +241,10 @@ public class DailyTimerHandler extends BaseThingHandler {
         DecimalType seconds = times.get(CHANNEL_ON_TIME_SECONDS);
         if (validHoursMinsSeconds(hours, minutes, seconds)) {
             onSchedule = cancelAndReschedule(hours, minutes, seconds, onSchedule, onCallable);
+            logger.info("Scheduled ON job for h[{}] m[{}] s[{}]", hours, minutes, seconds);
         } else {
             cancel(onSchedule);
+            logger.debug("Not rescheduling ON as time is in valid h[{}] m[{}] s[{}]", hours, minutes, seconds);
         }
     }
 
@@ -248,8 +254,10 @@ public class DailyTimerHandler extends BaseThingHandler {
         DecimalType seconds = times.get(CHANNEL_OFF_TIME_SECONDS);
         if (validHoursMinsSeconds(hours, minutes, seconds)) {
             offSchedule = cancelAndReschedule(hours, minutes, seconds, offSchedule, offCallable);
+            logger.info("Scheduled OFF job for h[{}] m[{}] s[{}]", hours, minutes, seconds);
         } else {
             cancel(offSchedule);
+            logger.debug("Not rescheduling OFF as time is in valid h[{}] m[{}] s[{}]", hours, minutes, seconds);
         }
     }
 
@@ -271,8 +279,9 @@ public class DailyTimerHandler extends BaseThingHandler {
         }
 
         long toSchedule = cal.getTimeInMillis();
-
-        return System.currentTimeMillis() - toSchedule;
+        long delay = toSchedule - System.currentTimeMillis();
+        logger.debug("Scheduling in {} ms", delay);
+        return delay;
     }
 
     private boolean runsToday() {
@@ -285,9 +294,11 @@ public class DailyTimerHandler extends BaseThingHandler {
         public Boolean call() throws Exception {
             if (runsOn[ENABLED] && runsToday()) {
                 updateState(CHANNEL_STATUS, OnOffType.ON);
-                Thread.sleep(SLEEP_TIME);
-                updateOnSchedule();
+            } else {
+                logger.debug("Timer[{}] Not turning ON as it is disabled [{}]", getThing(), runsOn);
             }
+            Thread.sleep(SLEEP_TIME);
+            updateOnSchedule();
             return true;
         }
     }
@@ -297,9 +308,11 @@ public class DailyTimerHandler extends BaseThingHandler {
         public Boolean call() throws Exception {
             if (runsOn[ENABLED] && runsToday()) {
                 updateState(CHANNEL_STATUS, OnOffType.OFF);
-                Thread.sleep(SLEEP_TIME);
-                updateOffSchedule();
+            } else {
+                logger.debug("Timer[{}] Not turning OFF as it is disabled [{}]", getThing(), runsOn);
             }
+            Thread.sleep(SLEEP_TIME);
+            updateOffSchedule();
             return true;
         }
     }
