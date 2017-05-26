@@ -9,26 +9,28 @@
 		<label>Daily Timer</label>
 		<description>This is a time based timer that will turn on/off at a certain time of the day</description>
 		<channels>
+            <channel id="status" typeId="status"/>
 			<channel id="enabled" typeId="enabled"/>
-            		<channel id="description" typeId="description"/>
-	    		<channel id="on_time_hours" typeId="on_time_hours"/>
-            		<channel id="on_time_minutes" typeId="on_time_minutes"/>
-            		<channel id="on_time_seconds" typeId="on_time_seconds"/>
-		        <channel id="off_time_hours" typeId="off_time_hours"/>
-		        <channel id="off_time_minutes" typeId="off_time_minutes"/>
-		        <channel id="off_time_seconds" typeId="off_time_seconds"/>
-		        <channel id="run_on_mon" typeId="run_on_mon"/>
-		        <channel id="run_on_tue" typeId="run_on_tue"/>
-		        <channel id="run_on_wed" typeId="run_on_wed"/>
-	        	<channel id="run_on_thu" typeId="run_on_thu"/>
-		        <channel id="run_on_fri" typeId="run_on_fri"/>
-		        <channel id="run_on_sat" typeId="run_on_sat"/>
-	        	<channel id="run_on_sun" typeId="run_on_sun"/>
-            		<channel id="status" typeId="status"/>
+            <channel id="description" typeId="description"/>
+	    	<channel id="on_time_hours" typeId="on_time_hours"/>
+            <channel id="on_time_minutes" typeId="on_time_minutes"/>
+            <channel id="on_time_seconds" typeId="on_time_seconds"/>
+		    <channel id="off_time_hours" typeId="off_time_hours"/>
+		    <channel id="off_time_minutes" typeId="off_time_minutes"/>
+		    <channel id="off_time_seconds" typeId="off_time_seconds"/>
+		    <channel id="run_on_mon" typeId="run_on_mon"/>
+		    <channel id="run_on_tue" typeId="run_on_tue"/>
+		    <channel id="run_on_wed" typeId="run_on_wed"/>
+	        <channel id="run_on_thu" typeId="run_on_thu"/>
+		    <channel id="run_on_fri" typeId="run_on_fri"/>
+		    <channel id="run_on_sat" typeId="run_on_sat"/>
+	        <channel id="run_on_sun" typeId="run_on_sun"/>
+            <channel id="status" typeId="status"/>
 		</channels>
 	</thing-type>
 	
 	<!-- Future Timers -->
+	<!--  
 	<thing-type id="periodicTimer">
 		<label>Periodic Timer</label>
 		<description>A timer that will fire periodically (e.g. every 2 hours) </description>
@@ -40,7 +42,7 @@
 	</thing-type>		
 
 	<thing-type id="oneTimeByDateTimer">
-		<label>Periodic Timer</label>
+		<label>Timer By Date/Time</label>
 		<description>A timer that will fire once on a given date/time</description>
 		<channels>
 			<channel id="enabled" typeId="enabled"/>
@@ -50,7 +52,7 @@
 	</thing-type>		
 
 	<thing-type id="oneTimeByDelayTimer">
-		<label>Periodic Timer</label>
+		<label>Timer After Delay</label>
 		<description>A timer that will fire once with a given delay e.g. in 2 hours</description>
 		<channels>
 			<channel id="enabled" typeId="enabled"/>
@@ -60,7 +62,7 @@
 	</thing-type>	
 	
 	<thing-type id="monthlyTimer">
-		<label>Periodic Timer</label>
+		<label>Monthly Timer</label>
 		<description>A timer that will fire monthly e.g. On the first of every month</description>
 		<channels>
 			<channel id="enabled" typeId="enabled"/>
@@ -68,6 +70,7 @@
             		<channel id="status" typeId="status"/>
 		</channels>
 	</thing-type>	
+    -->
 	
     <!-- Channel Types -->
     <channel-type id="enabled">
@@ -95,21 +98,21 @@
 		<item-type>Number</item-type>
 		<label>On hour</label>
 		<description>The hour this timer will turn on</description>
-		<state min="0" max="23" step="1" readOnly="false" />
+		<state min="0" max="23" step="1" readOnly="false" pattern="%s" />
 	</channel-type>
 	
     <channel-type id="on_time_minutes">
         <item-type>Number</item-type>
         <label>On Minutes</label>
         <description>The minutes this timer will turn on</description>
-        <state min="0" max="59" step="1" readOnly="false" />
+        <state min="0" max="59" step="1" readOnly="false" pattern="%s" />
     </channel-type>	
 
     <channel-type id="on_time_seconds">
         <item-type>Number</item-type>
         <label>On Seconds</label>
         <description>The minutes this timer will turn on</description>
-        <state min="0" max="59" step="1" readOnly="false" />
+        <state min="0" max="59" step="1" readOnly="false" pattern="%s" />
     </channel-type> 
     
     <channel-type id="off_time_hours">
@@ -152,22 +155,22 @@
     </channel-type>
     <channel-type id="run_on_thu">
         <item-type>Switch</item-type>
-        <label>Run on Thursday?</label>
+        <label>Thur?</label>
         <description>Whether this timer runs on Thursdays.</description>
     </channel-type>
             <channel-type id="run_on_fri">
         <item-type>Switch</item-type>
-        <label>Run on Friday?</label>
+        <label>Fri?</label>
         <description>Whether this timer runs on Fridays.</description>
     </channel-type>
     <channel-type id="run_on_sat">
         <item-type>Switch</item-type>
-        <label>Run on Saturdays?</label>
+        <label>Sat?</label>
         <description>Whether this timer runs on Saturdays.</description>
     </channel-type>
             <channel-type id="run_on_sun">
         <item-type>Switch</item-type>
-        <label>Run on Sunday?</label>
+        <label>Sun?</label>
         <description>Whether this timer runs on Sundays.</description>
     </channel-type>
 </thing:thing-descriptions>
