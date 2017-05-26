@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.audio.AudioStream;
+import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -69,15 +70,19 @@ public class KodiAudioSink implements AudioSink {
             // it is an external URL, the speaker can access it itself and play it.
             URLAudioStream urlAudioStream = (URLAudioStream) audioStream;
             url = urlAudioStream.getURL();
-        } else {
+        } else if (audioStream instanceof FixedLengthAudioStream) {
+            FixedLengthAudioStream fixedLengthAudioStream = (FixedLengthAudioStream) audioStream;
             if (callbackUrl != null) {
-                // we serve it on our own HTTP server
-                String relativeUrl = audioHTTPServer.serve(audioStream);
+                // we serve it on our own HTTP server for 30 seconds as Kodi requests the stream several times
+                String relativeUrl = audioHTTPServer.serve(fixedLengthAudioStream, 30);
                 url = callbackUrl + relativeUrl;
             } else {
                 logger.warn("We do not have any callback url, so kodi cannot play the audio stream!");
                 return;
             }
+        } else {
+            logger.warn("Unsupported audio stream format!");
+            return;
         }
         handler.playURI(new StringType(url));
 
