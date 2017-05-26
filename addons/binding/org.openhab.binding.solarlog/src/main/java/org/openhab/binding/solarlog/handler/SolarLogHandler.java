@@ -90,7 +90,7 @@ public class SolarLogHandler extends BaseThingHandler {
                     if (solarLogData.has(channelConfig.getIndex())) {
                         String value = solarLogData.get(channelConfig.getIndex()).getAsString();
                         Channel channel = getThing().getChannel(channelConfig.getId());
-                        State state = getState(value, channelConfig.getType());
+                        State state = getState(value, channelConfig);
 
                         updateState(channel.getUID(), state);
                     } else {
@@ -102,38 +102,36 @@ public class SolarLogHandler extends BaseThingHandler {
 
     }
 
-    private State getState(String value, String type) {
-        if (type == "Number") {
-            try {
-                logger.trace("Parsing number {}", value);
-                return new DecimalType(new BigDecimal(value));
-            } catch (NumberFormatException e) {
-                logger.trace("Parsing number failed. Returning string");
-                return new StringType(value);
-            }
-        }
-
-        if (type == "DateTime") {
-            try {
-                logger.trace("Parsing date {}", value);
+    private State getState(String value, SolarLogChannel type) {
+        switch (type) {
+            // Only DateTime channel
+            case CHANNEL_LASTUPDATETIME:
                 try {
-                    Date date = new SimpleDateFormat("dd.MM.yy HH:mm:ss").parse(value);
-                    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");// dd/MM/yyyy
-                    String strDate = sdfDate.format(date);
+                    logger.trace("Parsing date {}", value);
+                    try {
+                        Date date = new SimpleDateFormat("dd.MM.yy HH:mm:ss").parse(value);
+                        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");// dd/MM/yyyy
+                        String strDate = sdfDate.format(date);
 
-                    logger.trace("Parsing date successful. Returning date. {}", new DateTimeType(strDate));
-                    return new DateTimeType(strDate);
-                } catch (ParseException fpe) {
-                    logger.trace("Parsing date failed. Returning string.", fpe);
+                        logger.trace("Parsing date successful. Returning date. {}", new DateTimeType(strDate));
+                        return new DateTimeType(strDate);
+                    } catch (ParseException fpe) {
+                        logger.trace("Parsing date failed. Returning string.", fpe);
+                        return new StringType(value);
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.trace("Parsing date failed. Returning string", e);
                     return new StringType(value);
                 }
-
-            } catch (IllegalArgumentException e) {
-                logger.trace("Parsing date failed. Returning string", e);
-                return new StringType(value);
-            }
+                // All other channels should be numbers
+            default:
+                try {
+                    logger.trace("Parsing number {}", value);
+                    return new DecimalType(new BigDecimal(value));
+                } catch (NumberFormatException e) {
+                    logger.trace("Parsing number failed. Returning string");
+                    return new StringType(value);
+                }
         }
-        return new StringType(value);
-
     }
 }
