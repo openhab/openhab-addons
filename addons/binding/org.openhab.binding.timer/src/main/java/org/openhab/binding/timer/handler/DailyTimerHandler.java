@@ -181,7 +181,6 @@ public class DailyTimerHandler extends BaseThingHandler {
 
     private void updateDescription() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(runsOn[ENABLED] ? "1" : "0").append(':');
         stringBuilder.append(runsOn[MONDAY] ? "M" : ".");
         stringBuilder.append(runsOn[TUESDAY] ? "T" : ".");
         stringBuilder.append(runsOn[WEDNESDAY] ? "W" : ".");
@@ -196,15 +195,15 @@ public class DailyTimerHandler extends BaseThingHandler {
         DecimalType onSeconds = times.get(CHANNEL_ON_TIME_SECONDS);
         if (validHoursMinsSeconds(onHours, onMinutes, onSeconds)) {
             stringBuilder.append("ON: ");
-            if (onHours.intValue() > 10) {
+            if (onHours.intValue() < 10) {
                 stringBuilder.append("0");
             }
             stringBuilder.append(onHours.intValue()).append(':');
-            if (onMinutes.intValue() > 10) {
+            if (onMinutes.intValue() < 10) {
                 stringBuilder.append("0");
             }
             stringBuilder.append(onMinutes.intValue()).append(':');
-            if (onSeconds.intValue() > 10) {
+            if (onSeconds.intValue() < 10) {
                 stringBuilder.append("0");
             }
             stringBuilder.append(onSeconds.intValue());
@@ -221,11 +220,11 @@ public class DailyTimerHandler extends BaseThingHandler {
                 stringBuilder.append("0");
             }
             stringBuilder.append(offHours.intValue()).append(':');
-            if (offMinutes.intValue() > 10) {
+            if (offMinutes.intValue() < 10) {
                 stringBuilder.append("0");
             }
             stringBuilder.append(offMinutes.intValue()).append(':');
-            if (offSeconds.intValue() > 10) {
+            if (offSeconds.intValue() < 10) {
                 stringBuilder.append("0");
             }
             stringBuilder.append(offSeconds.intValue());
