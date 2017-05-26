@@ -21,7 +21,7 @@ public class TimerBindingConstants {
     private static final String BINDING_ID = "timer";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_TIME_BASED_TIMER = new ThingTypeUID(BINDING_ID, "timeBasedTimer");
+    public static final ThingTypeUID THING_TYPE_DAILY_TIMER = new ThingTypeUID(BINDING_ID, "dailyTimer");
 
     // List of all Channel ids
     public static final String CHANNEL_ENABLED = "enabled";
