@@ -63,7 +63,8 @@ public class HS110 {
 
             InetAddress ip = InetAddress.getByName(this.ip);
             return ip.isReachable(500);
-        } catch (IOException ex) {
+        } catch (IOException ignore) {
+            // ignore this failing and return false
         }
         return false;
     }
@@ -80,9 +81,9 @@ public class HS110 {
         return false;
     }
 
-    /* SysInfo relatet parsing */
+    /* SysInfo related parsing */
 
-    public static JsonObject parseSysinfoObject(String data) {
+    private static JsonObject parseSysinfoObject(String data) {
         JsonObject dataObject = new JsonParser().parse(data).getAsJsonObject();
         JsonObject systemObject = dataObject.getAsJsonObject("system");
         JsonObject sysInfo = systemObject.getAsJsonObject("get_sysinfo");
@@ -128,21 +129,19 @@ public class HS110 {
     public String sendCommand(Command command) throws IOException, ConnectException {
 
         logger.debug("Executing command {}", command.value);
+        try (Socket socket = new Socket(ip, HS100_PORT)) {
 
-        Socket socket = new Socket(ip, HS100_PORT);
-        OutputStream outputStream = socket.getOutputStream();
-        outputStream.write(encryptWithHeader(command.value));
+            try (OutputStream outputStream = socket.getOutputStream()) {
+                outputStream.write(encryptWithHeader(command.value));
 
-        InputStream inputStream = socket.getInputStream();
-        String data = decrypt(inputStream, false);
+                try (InputStream inputStream = socket.getInputStream()) {
+                    String data = decrypt(inputStream, false);
+                    logger.trace("Received answer {}", data);
 
-        outputStream.close();
-        inputStream.close();
-        socket.close();
-
-        logger.trace("Received answer {}", data);
-
-        return data;
+                    return data;
+                }
+            }
+        }
     }
 
 }

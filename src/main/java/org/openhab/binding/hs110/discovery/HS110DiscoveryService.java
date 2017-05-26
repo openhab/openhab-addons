@@ -132,9 +132,7 @@ public class HS110DiscoveryService extends AbstractDiscoveryService {
                 scanFuture = null;
                 removeOlderResults(getTimestampOfLastScan());
             }
-        } else
-
-        {
+        } else {
             logger.debug("HS110 device discovery scan in progress");
         }
     }
