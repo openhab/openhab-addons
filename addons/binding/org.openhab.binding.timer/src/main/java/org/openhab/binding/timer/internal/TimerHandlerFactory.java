@@ -29,8 +29,8 @@ import org.openhab.binding.timer.handler.PeriodicTimerHandler;
  */
 public class TimerHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new LinkedHashSet<ThingTypeUID>(
-            Arrays.asList(new ThingTypeUID[] { THING_TYPE_MONTHLY_TIMER, THING_TYPE_ONE_TIME_BY_DATE_TIMER,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new LinkedHashSet<ThingTypeUID>(Arrays.asList(
+            new ThingTypeUID[] { THING_TYPE_DAILY_TIMER, THING_TYPE_MONTHLY_TIMER, THING_TYPE_ONE_TIME_BY_DATE_TIMER,
                     THING_TYPE_ONE_TIME_BY_DELAY_TIMER, THING_TYPE_PERIODIC_TIMER }));
 
     @Override
