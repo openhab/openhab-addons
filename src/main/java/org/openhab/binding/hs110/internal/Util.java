@@ -18,6 +18,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link Util} en- and decrypts data to be sent over the network.
  *
+ * Contains Source from
+ * agent4788 https://gist.github.com/agent4788/81beb25cdcdbf7e9371361ca87d3b04a
+ * Insxnity https://github.com/Insxnity/hs-100
+ *
  */
 public class Util {
     private static Logger logger = LoggerFactory.getLogger(Util.class);

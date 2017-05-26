@@ -44,7 +44,7 @@ public class HS110 {
         SYSINFO("{\"system\":{\"get_sysinfo\":null}}"),
         ENERGY("{\"emeter\":{\"get_realtime\":null}}");
 
-        public String value;
+        public final String value;
 
         Command(String value) {
             this.value = value;
