@@ -9,6 +9,7 @@
 package org.openhab.binding.lutron.internal;
 
 import static org.openhab.binding.lutron.LutronBindingConstants.*;
+import static org.openhab.binding.lutron.internal.hw.HwConstants.*;
 
 import java.util.Set;
 
@@ -22,9 +23,10 @@ import org.openhab.binding.lutron.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.handler.KeypadHandler;
 import org.openhab.binding.lutron.handler.OccupancySensorHandler;
 import org.openhab.binding.lutron.handler.SwitchHandler;
-import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
+import org.openhab.binding.lutron.internal.hw.HwDimmerHandler;
+import org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -42,7 +44,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
-            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE);
+            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE, THING_TYPE_HWSERIALBRIDGE,
+            THING_TYPE_HWDIMMER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -67,8 +70,10 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new KeypadHandler(thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
             return new PrgBridgeHandler((Bridge) thing);
-        } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {
-            return new GrafikEyeHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HWSERIALBRIDGE)) {
+            return new HwSerialBridgeHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HWDIMMER)) {
+            return new HwDimmerHandler(thing);
         }
 
         return null;

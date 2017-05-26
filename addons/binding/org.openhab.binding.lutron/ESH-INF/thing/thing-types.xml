@@ -411,6 +411,56 @@
     </thing-type>
 
 
+	<bridge-type id="hwserialbridge">
+		<label>Lutron HomeWorks RS232 Bridge</label>
+		<description>RS232 access point to Lutron HomeWorks lighting control system</description>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<context>network_address</context>
+				<label>IT-100 Bridge Serial Port</label>
+				<description>The serial port name for the DSC IT-100. Valid values
+                    are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+			</parameter>
+
+			<parameter name="baudRate" type="integer" required="false">
+				<label>Baud Rate</label>
+				<description>The baud rate of the DSC IT-100. Valid values are 9600
+                    (default), 19200, 38400, 57600, and 115200.</description>
+				<default>9600</default>
+			</parameter>
+
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="hwdimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hwserialbridge" />
+		</supported-bridge-type-refs>
+
+		<label>HomeWorks Dimmer</label>
+		<description>Controls dimmable loads</description>
+
+		<channels>
+			<channel id="lightlevel" typeId="lightDimmer" />
+		</channels>
+
+		<config-description>
+			<parameter name="addrewss" type="text" required="true">
+				<label>Address</label>
+				<description>Address of dimmer in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="fadeInTime" type="decimal">
+				<label>Fade In Time</label>
+				<description>Fade time in seconds when turning on the light</description>
+			</parameter>
+			<parameter name="fadeOutTime" type="decimal">
+				<label>Fade Out Time</label>
+				<description>Fade time in seconds when turning off the light</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
     <channel-type id="lightDimmer">
         <item-type>Dimmer</item-type>
         <label>Light Level</label>
