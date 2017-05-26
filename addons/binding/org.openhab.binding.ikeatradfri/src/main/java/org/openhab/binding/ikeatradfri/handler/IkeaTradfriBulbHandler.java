@@ -128,7 +128,12 @@ public class IkeaTradfriBulbHandler extends BaseThingHandler implements IkeaTrad
         }
 
         boolean getOnOffState() {
-            return settings.get(TRADFRI_ONOFF).getAsInt() == 1;
+            JsonElement onOff = settings.get(TRADFRI_ONOFF);
+            if (onOff != null) {
+                return settings.get(TRADFRI_ONOFF).getAsInt() == 1;
+            } else {
+                return false;
+            }
         }
 
         String getJsonString() {
@@ -154,6 +159,8 @@ public class IkeaTradfriBulbHandler extends BaseThingHandler implements IkeaTrad
         if (!props.getOnOffState()) {
             updateState(CHANNEL_BRIGHTNESS, PercentType.ZERO);
             logger.debug("Updating channel brightness: {}", 0);
+            // if we are off, we do not want to set any value for the brightness
+            return;
         }
 
         PercentType dimmer = props.getBrightness();

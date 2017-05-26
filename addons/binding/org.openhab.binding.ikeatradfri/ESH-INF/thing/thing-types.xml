@@ -15,8 +15,9 @@
                 <description>Hostname of the IKEA Trådfri gateway</description>
             </parameter>
             <parameter name="token" type="text" required="true">
-                <label>Security token</label>
-                <description>Security token printed on the label underneath the gateway.</description>
+                <context>password</context>
+                <label>Security Code</label>
+                <description>Security Code printed on the label underneath the gateway.</description>
             </parameter>
         </config-description>
     </bridge-type>

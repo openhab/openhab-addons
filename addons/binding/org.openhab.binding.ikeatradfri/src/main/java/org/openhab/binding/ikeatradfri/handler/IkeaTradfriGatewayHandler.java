@@ -82,34 +82,18 @@ public class IkeaTradfriGatewayHandler extends BaseBridgeHandler implements Ikea
     }
 
     @Override
-    public void dispose() {
-        for (ThingUID id : observeRelationMap.keySet()) {
-            observeRelationMap.get(id).proactiveCancel();
-        }
-        observeRelationMap.clear();
-
-        for (CoapClient client : asyncClients) {
-            client.shutdown();
-        }
-        asyncClients.clear();
-
-        endPoint.destroy();
-        dtlsConnector.destroy();
-    }
-
-    @Override
     public void initialize() {
         IkeaTradfriGatewayConfiguration configuration = getConfigAs(IkeaTradfriGatewayConfiguration.class);
         if (configuration != null) {
             logger.debug("Initializing with host: {} token: {}", configuration.host, configuration.token);
             if (configuration.host.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "IKEA Tradfri Gateway host is not set in the thing configuration");
+                        "Host is not set in the configuration");
                 return;
             }
-            if (configuration.token.isEmpty()) {
+            if (configuration.token == null || configuration.token.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "IKEA Tradfri Gateway access token is not set in the thing configuration");
+                        "Security code must be set in the configuration!");
                 return;
             }
 
@@ -124,6 +108,28 @@ public class IkeaTradfriGatewayHandler extends BaseBridgeHandler implements Ikea
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "IKEA Tradfri Gateway configuration is null");
             return;
+        }
+    }
+
+    @Override
+    public void dispose() {
+        for (ThingUID id : observeRelationMap.keySet()) {
+            observeRelationMap.get(id).proactiveCancel();
+        }
+        observeRelationMap.clear();
+
+        for (CoapClient client : asyncClients) {
+            client.shutdown();
+        }
+        asyncClients.clear();
+
+        if (endPoint != null) {
+            endPoint.destroy();
+            endPoint = null;
+        }
+        if (dtlsConnector != null) {
+            dtlsConnector.destroy();
+            dtlsConnector = null;
         }
     }
 
