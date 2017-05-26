@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link SolarLogHandler} is responsible for handling commands, which are
@@ -65,10 +67,14 @@ public class SolarLogHandler extends BaseThingHandler {
                 try {
                     refresh();
                     updateStatus(ThingStatus.ONLINE);
-                } catch (Exception e) {
+                    // Very rudimentary Exception differentiation
+                } catch (HttpResponseException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Communication error with the device");
-                    logger.debug("Error refreshing source {}", getThing().getUID(), e);
+                            "Communication error with the device. Please retry later.");
+                } catch (JsonSyntaxException je) {
+                    logger.debug("Invalid JSON when refreshing source {}.", getThing().getUID(), je);
+                } catch (Exception e) {
+                    logger.debug("Error refreshing source {}.", getThing().getUID(), e);
                 }
             }
 
