@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,7 +44,7 @@ public class HS110 {
         SYSINFO("{\"system\":{\"get_sysinfo\":null}}"),
         ENERGY("{\"emeter\":{\"get_realtime\":null}}");
 
-        public String value;
+        public final String value;
 
         Command(String value) {
             this.value = value;
@@ -62,7 +63,8 @@ public class HS110 {
 
             InetAddress ip = InetAddress.getByName(this.ip);
             return ip.isReachable(500);
-        } catch (IOException ex) {
+        } catch (IOException ignore) {
+            // ignore this failing and return false
         }
         return false;
     }
@@ -79,9 +81,9 @@ public class HS110 {
         return false;
     }
 
-    /* SysInfo relatet parsing */
+    /* SysInfo related parsing */
 
-    public static JsonObject parseSysinfoObject(String data) {
+    private static JsonObject parseSysinfoObject(String data) {
         JsonObject dataObject = new JsonParser().parse(data).getAsJsonObject();
         JsonObject systemObject = dataObject.getAsJsonObject("system");
         JsonObject sysInfo = systemObject.getAsJsonObject("get_sysinfo");
@@ -127,21 +129,19 @@ public class HS110 {
     public String sendCommand(Command command) throws IOException, ConnectException {
 
         logger.debug("Executing command {}", command.value);
+        try (Socket socket = new Socket(ip, HS100_PORT)) {
 
-        Socket socket = new Socket(ip, HS100_PORT);
-        OutputStream outputStream = socket.getOutputStream();
-        outputStream.write(encryptWithHeader(command.value));
+            try (OutputStream outputStream = socket.getOutputStream()) {
+                outputStream.write(encryptWithHeader(command.value));
 
-        InputStream inputStream = socket.getInputStream();
-        String data = decrypt(inputStream, false);
+                try (InputStream inputStream = socket.getInputStream()) {
+                    String data = decrypt(inputStream, false);
+                    logger.trace("Received answer {}", data);
 
-        outputStream.close();
-        inputStream.close();
-        socket.close();
-
-        logger.trace("Received answer {}", data);
-
-        return data;
+                    return data;
+                }
+            }
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,7 +48,7 @@ public class HS110Handler extends ConfigStatusThingHandler {
 
     private HS110 plug;
     private static final int REFRESH_DEFAULT = 5;
-    private BigDecimal refresh;
+    private Integer refresh;
     private ScheduledFuture<?> refreshJob;
 
     private String sysinfoData;
@@ -100,7 +101,10 @@ public class HS110Handler extends ConfigStatusThingHandler {
 
     @Override
     public void dispose() {
-        refreshJob.cancel(true);
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+            refreshJob = null;
+        }
     }
 
     @Override
@@ -112,9 +116,9 @@ public class HS110Handler extends ConfigStatusThingHandler {
         plug = new HS110(ip);
 
         if (config.containsKey(CONFIG_REFRESH)) {
-            refresh = (BigDecimal) config.get(CONFIG_REFRESH);
+            refresh = ((Number) config.get(CONFIG_REFRESH)).intValue();
         } else {
-            refresh = new BigDecimal(REFRESH_DEFAULT);
+            refresh = REFRESH_DEFAULT;
         }
 
         startAutomaticRefresh();
@@ -137,12 +141,13 @@ public class HS110Handler extends ConfigStatusThingHandler {
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_SYSINFO), getSysinfo());
                     }
                 } catch (Exception e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                     logger.debug("Exception occurred during execution", e);
                 }
             }
         };
 
-        refreshJob = scheduler.scheduleAtFixedRate(runnable, 0, refresh.intValue(), TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refresh, TimeUnit.SECONDS);
     }
 
     private synchronized boolean updateData() {
@@ -175,9 +180,11 @@ public class HS110Handler extends ConfigStatusThingHandler {
             if (!ip.isReachable(500)) {
                 configStatus.add(
                         ConfigStatusMessage.Builder.error("offline").withMessageKeySuffix("ip unreachable").build());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
             }
         } catch (IOException e) {
             logger.debug("Communication error ocurred reaching the device ", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         }
 
         return configStatus;

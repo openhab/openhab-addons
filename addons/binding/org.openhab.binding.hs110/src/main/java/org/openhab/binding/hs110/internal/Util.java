@@ -1,5 +1,6 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +17,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Util} en- and decrypts data to be sent over the network.
+ *
+ * Contains Source from
+ * agent4788 https://gist.github.com/agent4788/81beb25cdcdbf7e9371361ca87d3b04a
+ * Insxnity https://github.com/Insxnity/hs-100
  *
  */
 public class Util {
