@@ -195,12 +195,18 @@ public class DailyTimerHandler extends BaseThingHandler {
         DecimalType onMinutes = times.get(CHANNEL_ON_TIME_MINUTES);
         DecimalType onSeconds = times.get(CHANNEL_ON_TIME_SECONDS);
         if (validHoursMinsSeconds(onHours, onMinutes, onSeconds)) {
-            stringBuilder.append("ON: ")
-            onHours.intValue() > 10 ? stringBuilder.append("0");
+            stringBuilder.append("ON: ");
+            if (onHours.intValue() > 10) {
+                stringBuilder.append("0");
+            }
             stringBuilder.append(onHours.intValue()).append(':');
-            onMinutes.intValue() > 10 ? stringBuilder.append("0");
+            if (onMinutes.intValue() > 10) {
+                stringBuilder.append("0");
+            }
             stringBuilder.append(onMinutes.intValue()).append(':');
-            onSeconds.intValue() > 10 ? stringBuilder.append("0");
+            if (onSeconds.intValue() > 10) {
+                stringBuilder.append("0");
+            }
             stringBuilder.append(onSeconds.intValue());
         } else {
             stringBuilder.append("ON: --:--:--");
@@ -211,11 +217,17 @@ public class DailyTimerHandler extends BaseThingHandler {
         DecimalType offSeconds = times.get(CHANNEL_OFF_TIME_SECONDS);
         if (validHoursMinsSeconds(offHours, offMinutes, offSeconds)) {
             stringBuilder.append(" OFF: ");
-            offHours.intValue() > 10 ? stringBuilder.append("0");
+            if (offHours.intValue() < 10) {
+                stringBuilder.append("0");
+            }
             stringBuilder.append(offHours.intValue()).append(':');
-            offMinutes.intValue() > 10 ? stringBuilder.append("0");
-            stringBuilder.append(offMinutes.intValue()).append(':')
-            offSeconds.intValue() > 10 ? stringBuilder.append("0");
+            if (offMinutes.intValue() > 10) {
+                stringBuilder.append("0");
+            }
+            stringBuilder.append(offMinutes.intValue()).append(':');
+            if (offSeconds.intValue() > 10) {
+                stringBuilder.append("0");
+            }
             stringBuilder.append(offSeconds.intValue());
         } else {
             stringBuilder.append(" OFF: --:--:--");
@@ -326,5 +338,12 @@ public class DailyTimerHandler extends BaseThingHandler {
             updateOffSchedule();
             return true;
         }
+    }
+
+    @Override
+    public void handleRemoval() {
+        super.handleRemoval();
+        cancel(onSchedule);
+        cancel(offSchedule);
     }
 }

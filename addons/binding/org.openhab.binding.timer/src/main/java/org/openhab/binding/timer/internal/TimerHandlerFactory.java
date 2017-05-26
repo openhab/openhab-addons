@@ -8,9 +8,10 @@
  */
 package org.openhab.binding.timer.internal;
 
-import static org.openhab.binding.timer.TimerBindingConstants.THING_TYPE_DAILY_TIMER;
+import static org.openhab.binding.timer.TimerBindingConstants.*;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
@@ -18,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.timer.handler.DailyTimerHandler;
+import org.openhab.binding.timer.handler.PeriodicTimerHandler;
 
 /**
  * The {@link TimerHandlerFactory} is responsible for creating things and thing
@@ -27,7 +29,9 @@ import org.openhab.binding.timer.handler.DailyTimerHandler;
  */
 public class TimerHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DAILY_TIMER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new LinkedHashSet<ThingTypeUID>(
+            Arrays.asList(new ThingTypeUID[] { THING_TYPE_MONTHLY_TIMER, THING_TYPE_ONE_TIME_BY_DATE_TIMER,
+                    THING_TYPE_ONE_TIME_BY_DELAY_TIMER, THING_TYPE_PERIODIC_TIMER }));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -40,6 +44,8 @@ public class TimerHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_DAILY_TIMER)) {
             return new DailyTimerHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_PERIODIC_TIMER)) {
+            return new PeriodicTimerHandler(thing);
         }
 
         return null;
