@@ -83,15 +83,16 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
             updateListenerManagement();
             updateStatus(ThingStatus.ONLINE);
         } catch (UnauthorizedException e) {
-            logger.error("SleepIQ cloud authentication failed", e);
+            logger.debug("SleepIQ cloud authentication failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid SleepIQ credentials");
         } catch (LoginException e) {
-            logger.error("SleepIQ cloud login failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "SleepIQ cloud login failed");
-        } catch (Exception e) {
-            logger.error("Unexpected error while communicating with SleepIQ cloud", e);
+            logger.debug("SleepIQ cloud login failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to connect to SleepIQ cloud");
+                    "SleepIQ cloud login failed: " + e.getMessage());
+        } catch (Exception e) {
+            logger.debug("Unexpected error while communicating with SleepIQ cloud", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unable to connect to SleepIQ cloud: " + e.getMessage());
         }
     }
 
@@ -109,10 +110,10 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
                 .withPassword(bindingConfig.password).withLogging(logger.isDebugEnabled());
         cloud = SleepIQ.create(cloudConfig);
 
-        logger.info("Authenticating to SleepIQ cloud service");
+        logger.debug("Authenticating at the SleepIQ cloud service");
         cloud.login();
 
-        logger.info("Authentication successful");
+        logger.info("Successfully authenticated at the SleepIQ cloud service");
     }
 
     @Override
