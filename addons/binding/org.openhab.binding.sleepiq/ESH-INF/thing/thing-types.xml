@@ -31,12 +31,6 @@
                 <required>true</required>
                 <default>60</default>
             </parameter>
-            <parameter name="logging" type="boolean">
-                <label>Logging flag</label>
-                <description>Enables or disables logging in the SleepIQ API</description>
-                <required>false</required>
-                <default>false</default>
-            </parameter>
         </config-description>
     </bridge-type>
     

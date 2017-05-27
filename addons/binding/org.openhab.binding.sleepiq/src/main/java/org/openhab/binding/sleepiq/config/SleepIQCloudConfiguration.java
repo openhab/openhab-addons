@@ -18,10 +18,8 @@ public class SleepIQCloudConfiguration {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String POLLING_INTERVAL = "pollingInterval";
-    public static final String LOGGING = "logging";
 
     public String username;
     public String password;
     public int pollingInterval;
-    public boolean logging;
 }

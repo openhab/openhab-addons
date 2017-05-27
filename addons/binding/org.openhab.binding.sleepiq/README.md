@@ -22,14 +22,15 @@ The binding requires no special configuration.
 
 ### Bridge (Thing ID: "cloud")
 
-The bridge requires a username and password. Optionally, you can also specifying logging and a polling interval.
+The bridge requires a username and a password. Optionally, you can also specify a polling interval.
+
+To enable verbose logging of HTTP requests and responses regarding the cloud service, enable DEBUG level logging on ```SleepIQCloudHandler```.
 
 | Configuration Parameter | Type    | Description                                            | Default |
 |-------------------------|---------|--------------------------------------------------------|---------|
 | username                | text    | Username of a registered SleepIQ account owner         |         |
 | password                | text    | Password of a registered SleepIQ account owner         |         |
 | pollingInterval         | integer | Seconds between fetching values from the cloud service | 60      |
-| logging                 | boolean | Enables or disables logging in the SleepIQ API         | false   |
 
 ### Dual-Chamber Bed (Thing ID: "dualBed")
 

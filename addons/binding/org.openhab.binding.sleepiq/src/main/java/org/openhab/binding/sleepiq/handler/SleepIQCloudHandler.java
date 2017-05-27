@@ -111,7 +111,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
         logger.debug("Creating SleepIQ client");
         Configuration cloudConfig = new Configuration().withUsername(bindingConfig.username)
-                .withPassword(bindingConfig.password).withLogging(bindingConfig.logging);
+                .withPassword(bindingConfig.password).withLogging(logger.isDebugEnabled());
         cloud = SleepIQ.create(cloudConfig);
 
         logger.info("Authenticating to SleepIQ cloud service");
