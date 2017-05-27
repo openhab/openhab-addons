@@ -15,7 +15,7 @@
 			<channel id="stop" typeId="stop" />
 			<channel id="playuri" typeId="playuri" />
 			<channel id="pvr-open-tv" typeId="pvr-open-tv" />
-			<channel id="pvr-open-radio" typeId="pv-ropen-radio" />
+			<channel id="pvr-open-radio" typeId="pvr-open-radio" />
 			<channel id="pvr-channel" typeId="pvr-channel" />
 			<channel id="shownotification" typeId="shownotification" />
 			<channel id="input" typeId="input" />
