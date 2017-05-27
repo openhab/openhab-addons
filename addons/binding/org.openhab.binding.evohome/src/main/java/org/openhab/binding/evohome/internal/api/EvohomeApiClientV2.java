@@ -26,6 +26,7 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStat
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.UserAccount;
+import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     private EvohomeGatewayConfiguration configuration = null;
     private ApiAccess apiAccess = null;
+    private final HttpClient httpClient;
 
     private UserAccount     useraccount;
     private Locations       locations;
@@ -43,8 +45,11 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     public EvohomeApiClientV2(EvohomeGatewayConfiguration configuration) {
         this.configuration = configuration;
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        httpClient = new HttpClient(sslContextFactory);
+        httpClient.start();        
 
-        apiAccess = new ApiAccess();
+        apiAccess = new ApiAccess(httpClient);
         if (configuration != null) {
             apiAccess.setApplicationId(configuration.applicationId);
         }
@@ -90,13 +95,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public boolean login() {
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        HttpClient httpClient = new HttpClient(sslContextFactory);
-
         boolean success = false;
         try {
-            httpClient.start();
-
             // Building the HTTP request discretely here, as it is the only one with a deviant content type
             Request request = httpClient.newRequest(EvohomeApiConstants.URL_V2_AUTH);
             request.method(HttpMethod.POST);
@@ -156,6 +156,9 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
     @Override
     public ControlSystem[] getControlSystems() {
+        if(locationsStatus == null){
+            update();
+        }
         //TODO move this to after login to save time
         Map<Integer, ControlSystemAndStatus> map = new HashMap<Integer, ControlSystemAndStatus>();
 
@@ -213,6 +216,37 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the specified Heating Zone or null if one can't be found
+     * @return
+     */
+    @Override
+    public ZoneStatus getHeatingZone(int locationId, int zoneId) {
+        LocationsStatus myLocationsStatus = getLocationStatus();
+        for(LocationStatus myLocationStatus : myLocationsStatus){
+            for(GatewayStatus gatewayStatus : myLocationStatus.Gateways){
+                for(TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.TemperatureControlSystems){
+                    if(temperatureControlSystem.SystemId == locationId){
+                        for(ZoneStatus zone : temperatureControlSystem.Zones){
+                            if(zone.ZoneId == zoneId){
+                                return zone;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        return null;
+    }
+
+    private LocationsStatus getLocationStatus(){
+        if(locationsStatus == null){
+            update();
+        }
+        return locationsStatus;
     }
 
 }

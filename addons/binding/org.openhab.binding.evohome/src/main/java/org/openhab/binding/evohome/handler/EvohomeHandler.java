@@ -8,11 +8,17 @@
  */
 package org.openhab.binding.evohome.handler;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.evohome.EvohomeBindingConstants;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
+import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +55,26 @@ public class EvohomeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        if(getBridge() != null && getBridge().getHandler() != null){
+            EvohomeApiClient apiClient = ((EvohomeGatewayHandler) getBridge().getHandler()).getApiClient();
+            int zoneId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.ZONE_ID));
+            int locationId = Integer.valueOf(getThing().getProperties().get(EvohomeBindingConstants.LOCATION_ID));
+            ZoneStatus zoneStatus = apiClient.getHeatingZone(locationId, zoneId);
+            if(zoneStatus == null){
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                return;
+            }
+            if(!zoneStatus.Temperature.IsAvailable){
+                //TODO change to other error type
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                return;
+            }
+
+            updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new DecimalType(zoneStatus.Temperature.Temperature));
+            updateState(EvohomeBindingConstants.SET_POINT_CHANNEL, new DecimalType(zoneStatus.HeatSetpoint.TargetTemperature));
+            updateState(EvohomeBindingConstants.SET_POINT_STATUS_CHANNEL, new StringType(zoneStatus.HeatSetpoint.SetpointMode));
+            updateStatus(ThingStatus.ONLINE);
+        }
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
         updateStatus(ThingStatus.ONLINE);

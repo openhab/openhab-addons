@@ -40,6 +40,10 @@ public class ControlSystemV2 extends BaseControlSystem {
         return null;
     }
 
+    public TemperatureControlSystem getHeatingZones() {
+        return this.system;
+    }
+
     @Override
     public void setMode(String mode) {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_MODE;
