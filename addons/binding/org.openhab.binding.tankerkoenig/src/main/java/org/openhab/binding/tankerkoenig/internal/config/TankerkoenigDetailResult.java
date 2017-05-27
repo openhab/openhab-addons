@@ -46,4 +46,10 @@ public class TankerkoenigDetailResult {
     public void setOpeningtimes(OpeningTime[] openingtimes) {
         this.openingtimes = openingtimes;
     }
+
+    public static TankerkoenigDetailResult emptyResult() {
+        TankerkoenigDetailResult emptyResult = new TankerkoenigDetailResult();
+        emptyResult.setOk(false);
+        return emptyResult;
+    }
 }

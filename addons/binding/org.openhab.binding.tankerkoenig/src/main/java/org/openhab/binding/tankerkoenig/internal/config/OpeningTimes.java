@@ -22,12 +22,12 @@ public class OpeningTimes {
 
     private Boolean wholeDay;
     private OpeningTime[] openingTimes;
-    private String ID;
+    private String id;
 
-    public OpeningTimes(String ID, Boolean wholeDay, OpeningTime[] lopeningTimes) {
+    public OpeningTimes(String id, Boolean wholeDay, OpeningTime[] lopeningTimes) {
         this.wholeDay = wholeDay;
         this.openingTimes = lopeningTimes;
-        this.ID = ID;
+        this.id = id;
     }
 
     public Boolean getWholeDay() {
@@ -46,12 +46,12 @@ public class OpeningTimes {
         this.openingTimes = openingTimes;
     }
 
-    public String getID() {
-        return ID;
+    public String getid() {
+        return id;
     }
 
-    public void setID(String iD) {
-        ID = iD;
+    public void setid(String id) {
+        this.id = id;
     }
 
 }

@@ -34,20 +34,26 @@ import com.google.gson.GsonBuilder;
  */
 public class TankerkoenigDetailService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Gson gson;
+    private static final GsonBuilder GSON_BUILDER = new GsonBuilder()
+            .registerTypeAdapter(TankerkoenigDetailResult.class, new CustomTankerkoenigDetailResultDeserializer());;
+    private static final Gson GSON = GSON_BUILDER.create();
 
     public OpeningTimes getTankstellenDetailData(String apikey, String locationID) {
         TankerkoenigDetailResult detailresult = this.getTankerkoenigDetailResult(apikey, locationID);
-        OpeningTimes openingtimes = new OpeningTimes(locationID, detailresult.iswholeDay(),
-                detailresult.getOpeningtimes());
-        logger.debug("Found opening times for stationID: {}", locationID);
-        return openingtimes;
+        if (detailresult.isOk()) {
+            OpeningTimes openingtimes = new OpeningTimes(locationID, detailresult.iswholeDay(),
+                    detailresult.getOpeningtimes());
+            logger.debug("Found opening times for stationID: {}", locationID);
+            return openingtimes;
+        } else {
+            // no valid response for detail data
+            return null;
+        }
     }
 
     private String getResponseDetailString(String apikey, String locationID) throws IOException {
         String urlbase = "https://creativecommons.tankerkoenig.de/json/detail.php?";
         String urlcomplete = urlbase + "id=" + locationID + "&apikey=" + apikey;
-        String response = "";
         try {
             String userAgent = "openHAB, Tankerkoenig-Binding Version ";
             Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
@@ -55,9 +61,9 @@ public class TankerkoenigDetailService {
             URL url = new URL(urlcomplete);
             URLConnection connection = url.openConnection();
             logger.debug("UpdateTankstellenDetails URL: {}", urlcomplete);
-            response = IOUtils.toString(connection.getInputStream());
-            return response;
+            return IOUtils.toString(connection.getInputStream());
         } catch (MalformedURLException e) {
+            logger.error("Error in getResponseDetailString: {}", e.toString());
             return null;
         }
     }
@@ -67,15 +73,11 @@ public class TankerkoenigDetailService {
         String jsonData = "";
         try {
             jsonData = getResponseDetailString(apikey, locationID);
+            logger.debug("UpdateTankstellenDetails jsonData : {}", jsonData);
+            return GSON.fromJson(jsonData, TankerkoenigDetailResult.class);
         } catch (IOException e) {
             logger.debug("UpdateTankstellenDetails IOException: {}", e);
+            return TankerkoenigDetailResult.emptyResult();
         }
-        logger.debug("UpdateTankstellenDetails jsonData : {}", jsonData);
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(TankerkoenigDetailResult.class,
-                new CustomTankerkoenigDetailResultDeserializer());
-        gson = gsonBuilder.create();
-        TankerkoenigDetailResult res = gson.fromJson(jsonData, TankerkoenigDetailResult.class);
-        return res;
     }
 }

@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -47,10 +49,10 @@ public class BridgeHandler extends BaseBridgeHandler {
     private String apiKey;
     private int refreshInterval;
     private boolean setupMode;
-    private boolean use_OpeningTime;
+    private boolean useOpeningTime;
 
-    private ArrayList<Thing> tankstellenThingList;
-    private HashMap<String, LittleStation> tankstellenList;
+    private List<Thing> tankstellenThingList;
+    private Map<String, LittleStation> tankstellenList;
 
     private TankerkoenigListResult tankerkoenigListResult;
 
@@ -69,13 +71,13 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        logger.debug("Initialize Bridge");
         Configuration config = getThing().getConfiguration();
         setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
         setRefreshInterval(((BigDecimal) config.get(TankerkoenigBindingConstants.CONFIG_REFRESH)).intValue());
         setSetupMode((boolean) config.get(TankerkoenigBindingConstants.CONFIG_SETUP_MODE));
         setUseOpeningTime((boolean) config.get(TankerkoenigBindingConstants.CONFIG_USE_OPENINGTIME));
 
-        // updateStatus(ThingStatus.ONLINE);
         updateStatus(ThingStatus.UNKNOWN);
 
         int pollingPeriod = this.getRefreshInterval();
@@ -89,8 +91,9 @@ public class BridgeHandler extends BaseBridgeHandler {
                         updateTankstellenData();
                         updateTankstellenThings();
                     }
-                } catch (Throwable t) {
-                    logger.error("Caught exception in ScheduledExecutorService of BridgeHandler. StackTrace: {}", t);
+                } catch (RuntimeException r) {
+                    logger.error("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: {}",
+                            r);
                 }
             }
         }, 30, pollingPeriod * 60, TimeUnit.SECONDS);
@@ -132,32 +135,31 @@ public class BridgeHandler extends BaseBridgeHandler {
         // Get data
         try {
             String locationIDsString = "";
-            if (use_OpeningTime) {
+            if (useOpeningTime) {
                 logger.debug("Opening times are used");
                 locationIDsString = generateOpenLocationIDsString();
             } else {
                 logger.debug("No opening times are used");
                 locationIDsString = generateLocationIDsString();
             }
-            if (locationIDsString.length() < 1) {
+            if (locationIDsString.isEmpty()) {
                 logger.info("No tankstellen id's found. Nothing to update");
                 return;
             }
             TankerkoenigService service = new TankerkoenigService();
             TankerkoenigListResult result = service.getTankstellenListData(this.getApiKey(), locationIDsString);
             if (!result.isOk()) {
+                // if the result is not OK, no updates are done and the status of the Bridge goes to unknown!
                 updateStatus(ThingStatus.UNKNOWN);
             } else {
                 updateStatus(ThingStatus.ONLINE);
+                setTankerkoenigListResult(result);
+                tankstellenList.clear();
+                for (LittleStation station : result.getPrices().getStations()) {
+                    tankstellenList.put(station.getID(), station);
+                }
+                logger.debug("UpdateTankstellenData: tankstellenList.size {}", tankstellenList.size());
             }
-
-            setTankerkoenigListResult(result);
-
-            tankstellenList.clear();
-            for (LittleStation station : result.getPrices().getStations()) {
-                tankstellenList.put(station.getID(), station);
-            }
-            logger.debug("UpdateTankstellenData: tankstellenList.size {}", tankstellenList.size());
         } catch (ParseException e) {
             logger.error("ParseException: {}", e.toString());
             updateStatus(ThingStatus.UNKNOWN);
@@ -189,10 +191,11 @@ public class BridgeHandler extends BaseBridgeHandler {
         StringBuilder sb = new StringBuilder();
         for (Thing thing : tankstellenThingList) {
             TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
-            if (sb.toString().equals("")) {
+            if (sb.toString().isEmpty()) {
                 sb.append(tkh.getLocationID());
             } else {
-                sb.append("," + tkh.getLocationID());
+                sb.append(",");
+                sb.append(tkh.getLocationID());
             }
         }
 
@@ -208,136 +211,128 @@ public class BridgeHandler extends BaseBridgeHandler {
      * @throws ParseException
      */
     private String generateOpenLocationIDsString() throws ParseException {
-        try {
-            StringBuilder sb = new StringBuilder();
-            DateTime now = new LocalDate().toDateTimeAtCurrentTime();
-            for (Thing thing : tankstellenThingList) {
-                String start = "00:00";
-                String ende = "00:00";
-                TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
-                Boolean foundIt = false;
-                OpeningTimes oTimes = tkh.getOpeningTimes();
-                // oTimes could be NULL, assume wholeDay open in this case!
-                if (oTimes != null) {
-                    if (oTimes.getWholeDay()) {
-                        // WholeDay open, use this ID!
-                        foundIt = true;
-                        logger.debug("Found a setting for WholeDay.");
-                        // "start" and "ende" are set manually!
-                        start = "00:00";
-                        ende = "23:59";
-                    } else {
-                        OpeningTime[] o = oTimes.getOpeningTimes();
-                        logger.debug("o.length: {}", o.length);
-                        int i = 0;
-                        do {
-                            logger.debug("Checking opening time i: {}", i);
-                            String day = o[i].getText();
-                            String open = o[i].getStart();
-                            String close = o[i].getEnd();
-                            int weekday = now.getDayOfWeek();
-                            // if today is an official German holiday (Feiertag), weekday is set to Sunday!
-                            if (Holiday.isHoliday(now)) {
-                                weekday = 7;
-                            }
-                            logger.debug("Checking day: {}", day);
-                            logger.debug("Todays weekday: {}", weekday);
-                            // if Daily, further checking not needed!
-                            if (day.contains("täglich")) {
-                                logger.debug("Found a setting for daily opening times.");
-                                foundIt = true;
-                            } else {
-                                switch (weekday) {
-                                    case 1:
-                                        if ((day.contains("Werktags")) || (day.contains("Mo"))) {
-                                            logger.debug("Found a setting which is valid for today (Monday).");
-                                            foundIt = true;
-                                        }
-                                        break;
-                                    case 2:
-                                        if ((day.contains("Werktags")) || (day.contains("Di"))
-                                                || (day.contains("Mo-Fr"))) {
-                                            logger.debug("Found a setting which is valid for today (Tuesday).");
-                                            foundIt = true;
-                                        }
-                                        break;
-                                    case 3:
-                                        if ((day.contains("Werktags")) || (day.contains("Mi"))
-                                                || (day.contains("Mo-Fr"))) {
-                                            logger.debug("Found a setting which is valid for today (Wednesday).");
-                                            foundIt = true;
-                                        }
-                                        break;
-                                    case 4:
-                                        if ((day.contains("Werktags")) || (day.contains("Do"))
-                                                || (day.contains("Mo-Fr"))) {
-                                            logger.debug("Found a setting which is valid for today (Thursday).");
-                                            foundIt = true;
-                                        }
-                                        break;
-                                    case 5:
-                                        if ((day.contains("Werktags")) || (day.contains("Fr"))) {
-                                            logger.debug("Found a setting which is valid for today (Fryday).");
-                                            foundIt = true;
-                                        }
-                                        break;
-                                    case 6:
-                                        if ((day.contains("Wochendende")) || (day.contains("Sa"))) {
-                                            logger.debug("Found a setting which is valid for today (Saturday).");
-                                            foundIt = true;
-                                        }
-                                        break;
-                                    case 7:
-                                        if ((day.contains("Wochenende")) || (day.contains("So"))) {
-                                            logger.debug("Found a setting which is valid for today (Sunday).");
-                                            foundIt = true;
-                                        }
-                                        break;
-                                }
-                                if (foundIt) {
-                                    start = open;
-                                    ende = close;
-                                    i = o.length;
-                                }
-                            }
-                            i = i + 1;
-                        } while (i < o.length);
-                    }
-                } else {
-                    // no OpeningTimes found, assuming WholeDay open!
+        StringBuilder sb = new StringBuilder();
+        DateTime now = new LocalDate().toDateTimeAtCurrentTime();
+        for (Thing thing : tankstellenThingList) {
+            String start = "00:00";
+            String ende = "00:00";
+            TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
+            Boolean foundIt = false;
+            OpeningTimes oTimes = tkh.getOpeningTimes();
+            // oTimes could be NULL, assume wholeDay open in this case!
+            if (oTimes != null) {
+                if (oTimes.getWholeDay()) {
+                    // WholeDay open, use this ID!
                     foundIt = true;
-                    logger.debug("No OpeningTimes are found, assuming WholeDay.");
+                    logger.debug("Found a setting for WholeDay.");
                     // "start" and "ende" are set manually!
                     start = "00:00";
                     ende = "23:59";
-                }
-                LocalTime tempopening = LocalTime.parse(start);
-                LocalTime tempclosing = LocalTime.parse(ende);
-                DateTime opening = tempopening.toDateTimeToday();
-                DateTime closing = tempclosing.toDateTimeToday();
-                if (opening.isEqual(closing)) {
-                    closing = opening.plusDays(1);
                 } else {
-                    // Tankerkoenig.de does update the status "open" every 4 minutes
-                    // due to this the status "open" could be sent up to 4 minutes after the published opening time
-                    // therefore the first update is called 4 minutes after opening time!
-                    opening = opening.plusMinutes(4);
+                    OpeningTime[] o = oTimes.getOpeningTimes();
+                    logger.debug("o.length: {}", o.length);
+                    int i = 0;
+                    do {
+                        logger.debug("Checking opening time i: {}", i);
+                        String day = o[i].getText();
+                        String open = o[i].getStart();
+                        String close = o[i].getEnd();
+                        int weekday = now.getDayOfWeek();
+                        // if today is an official German holiday (Feiertag), weekday is set to Sunday!
+                        if (Holiday.isHoliday(now)) {
+                            weekday = 7;
+                        }
+                        logger.debug("Checking day: {}", day);
+                        logger.debug("Todays weekday: {}", weekday);
+                        // if Daily, further checking not needed!
+                        if (day.contains("täglich")) {
+                            logger.debug("Found a setting for daily opening times.");
+                            foundIt = true;
+                        } else {
+                            switch (weekday) {
+                                case 1:
+                                    if ((day.contains("Werktags")) || (day.contains("Mo"))) {
+                                        logger.debug("Found a setting which is valid for today (Monday).");
+                                        foundIt = true;
+                                    }
+                                    break;
+                                case 2:
+                                    if ((day.contains("Werktags")) || (day.contains("Di")) || (day.contains("Mo-Fr"))) {
+                                        logger.debug("Found a setting which is valid for today (Tuesday).");
+                                        foundIt = true;
+                                    }
+                                    break;
+                                case 3:
+                                    if ((day.contains("Werktags")) || (day.contains("Mi")) || (day.contains("Mo-Fr"))) {
+                                        logger.debug("Found a setting which is valid for today (Wednesday).");
+                                        foundIt = true;
+                                    }
+                                    break;
+                                case 4:
+                                    if ((day.contains("Werktags")) || (day.contains("Do")) || (day.contains("Mo-Fr"))) {
+                                        logger.debug("Found a setting which is valid for today (Thursday).");
+                                        foundIt = true;
+                                    }
+                                    break;
+                                case 5:
+                                    if ((day.contains("Werktags")) || (day.contains("Fr"))) {
+                                        logger.debug("Found a setting which is valid for today (Fryday).");
+                                        foundIt = true;
+                                    }
+                                    break;
+                                case 6:
+                                    if ((day.contains("Wochendende")) || (day.contains("Sa"))) {
+                                        logger.debug("Found a setting which is valid for today (Saturday).");
+                                        foundIt = true;
+                                    }
+                                    break;
+                                case 7:
+                                    if ((day.contains("Wochenende")) || (day.contains("So"))) {
+                                        logger.debug("Found a setting which is valid for today (Sunday).");
+                                        foundIt = true;
+                                    }
+                                    break;
+                            }
+                            if (foundIt) {
+                                start = open;
+                                ende = close;
+                                break;
+                            }
+                        }
+                        i = i + 1;
+                    } while (i < o.length);
                 }
-                if ((now.isAfter(opening) & (now.isBefore(closing)))) {
-                    // logger.debug("Opening: {}, Closing: {}, now: {}", opening, closing, now);
-                    logger.debug("Now is within opening times for today.");
-                    if (sb.toString().equals("")) {
-                        sb.append(tkh.getLocationID());
-                    } else {
-                        sb.append("," + tkh.getLocationID());
-                    }
+            } else {
+                // no OpeningTimes found, assuming WholeDay open!
+                foundIt = true;
+                logger.debug("No OpeningTimes are found, assuming WholeDay.");
+                // "start" and "ende" are set manually!
+                start = "00:00";
+                ende = "23:59";
+            }
+            LocalTime tempopening = LocalTime.parse(start);
+            LocalTime tempclosing = LocalTime.parse(ende);
+            DateTime opening = tempopening.toDateTimeToday();
+            DateTime closing = tempclosing.toDateTimeToday();
+            if (opening.isEqual(closing)) {
+                closing = opening.plusDays(1);
+            } else {
+                // Tankerkoenig.de does update the status "open" every 4 minutes
+                // due to this the status "open" could be sent up to 4 minutes after the published opening time
+                // therefore the first update is called 4 minutes after opening time!
+                opening = opening.plusMinutes(4);
+            }
+            if ((now.isAfter(opening) & (now.isBefore(closing)))) {
+                // logger.debug("Opening: {}, Closing: {}, now: {}", opening, closing, now);
+                logger.debug("Now is within opening times for today.");
+                if (sb.toString().equals("")) {
+                    sb.append(tkh.getLocationID());
+                } else {
+                    sb.append("," + tkh.getLocationID());
                 }
             }
-            return sb.toString();
-        } catch (Exception e) {
-            logger.error("Exception in BridgeHandler: {}", e);
-            return null;
         }
+        return sb.toString();
     }
 
     public String getApiKey() {
@@ -373,10 +368,10 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     public boolean isUseOpeningTime() {
-        return use_OpeningTime;
+        return useOpeningTime;
     }
 
-    public void setUseOpeningTime(boolean use_OpeningTime) {
-        this.use_OpeningTime = use_OpeningTime;
+    public void setUseOpeningTime(boolean useOpeningTime) {
+        this.useOpeningTime = useOpeningTime;
     }
 }

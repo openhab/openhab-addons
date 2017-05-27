@@ -77,7 +77,6 @@ public class TankerkoenigHandler extends BaseThingHandler {
                     "The limitation of tankstellen things for one tankstellen config (the bridge) is limited to 10");
             return;
         }
-        // updateStatus(ThingStatus.ONLINE);
         updateStatus(ThingStatus.UNKNOWN);
 
         pollingJob = scheduler.scheduleWithFixedDelay(new Runnable() {
@@ -88,13 +87,14 @@ public class TankerkoenigHandler extends BaseThingHandler {
                         logger.debug("Try to refresh detail data");
                         updateDetailData();
                     }
-                } catch (Throwable t) {
-                    logger.error("Caught exception in ScheduledExecutorService of TankerkoenigHandler. StackTrace: {}",
-                            t);
+                } catch (RuntimeException r) {
+                    logger.error(
+                            "Caught exception in ScheduledExecutorService of TankerkoenigHandler. RuntimeExcetion: {}",
+                            r);
                 }
 
             }
-        }, 15, 24 * 60 * 60, TimeUnit.SECONDS);
+        }, 15, 86400, TimeUnit.SECONDS);// 24*60*60 = 86400, a whole day in seconds!
         logger.debug("Refresh job scheduled to run every 24 houres for '{}'", getThing().getUID());
     }
 

@@ -11,6 +11,7 @@ package org.openhab.binding.tankerkoenig.internal.serializer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -46,7 +47,7 @@ public class CustomTankerkoenigListResultDeserializer implements JsonDeserialize
         Gson gson = new Gson();
         Prices p = new Prices();
         result.setPrices(p);
-        ArrayList<LittleStation> list = new ArrayList<>();
+        List<LittleStation> list = new ArrayList<>();
         for (Entry<String, JsonElement> entry : objects) {
             JsonElement jsonElement = entry.getValue();
             LittleStation station = gson.fromJson(jsonElement, LittleStation.class);

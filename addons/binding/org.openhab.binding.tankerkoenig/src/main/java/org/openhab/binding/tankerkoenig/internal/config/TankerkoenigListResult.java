@@ -37,4 +37,9 @@ public class TankerkoenigListResult {
         this.prices = prices;
     }
 
+    public static TankerkoenigListResult emptyResult() {
+        TankerkoenigListResult emptyResult = new TankerkoenigListResult();
+        emptyResult.setOk(false);
+        return emptyResult;
+    }
 }

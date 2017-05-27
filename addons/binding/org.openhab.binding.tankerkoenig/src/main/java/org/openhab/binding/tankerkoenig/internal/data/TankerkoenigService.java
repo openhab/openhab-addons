@@ -33,11 +33,12 @@ import com.google.gson.GsonBuilder;
  */
 public class TankerkoenigService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Gson gson;
+    private static final GsonBuilder GSON_BUILDER = new GsonBuilder().registerTypeAdapter(TankerkoenigListResult.class,
+            new CustomTankerkoenigListResultDeserializer());;
+    private static final Gson GSON = GSON_BUILDER.create();
 
     public TankerkoenigListResult getTankstellenListData(String apikey, String locationIDs) {
-        TankerkoenigListResult result = this.getTankerkoenigListResult(apikey, locationIDs);
-        return result;
+        return this.getTankerkoenigListResult(apikey, locationIDs);
     }
 
     private String getResponseString(String apikey, String locationIDs) throws IOException {
@@ -51,9 +52,9 @@ public class TankerkoenigService {
             URL url = new URL(urlcomplete);
             URLConnection connection = url.openConnection();
             connection.setRequestProperty("User-Agent", userAgent);
-            String response = IOUtils.toString(connection.getInputStream());
-            return response;
+            return IOUtils.toString(connection.getInputStream());
         } catch (MalformedURLException e) {
+            logger.error("Error in getResponseString: {}", e.toString());
             return null;
         }
     }
@@ -62,13 +63,10 @@ public class TankerkoenigService {
         String jsonData = "";
         try {
             jsonData = getResponseString(apikey, locationIDs);
+            return GSON.fromJson(jsonData, TankerkoenigListResult.class);
         } catch (IOException e) {
-            logger.error("Error in getTankerkoenigListResult: {}", e.toString());
+            logger.error("Error in getTankerkoenigListResult: {}", e);
+            return TankerkoenigListResult.emptyResult();
         }
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(TankerkoenigListResult.class, new CustomTankerkoenigListResultDeserializer());
-        gson = gsonBuilder.create();
-        TankerkoenigListResult res = gson.fromJson(jsonData, TankerkoenigListResult.class);
-        return res;
     }
 }

@@ -9,7 +9,7 @@
 
 package org.openhab.binding.tankerkoenig.internal.config;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The {@link Prices} class is the representing java model for the station specific json result of the tankerkoenig.de
@@ -21,13 +21,13 @@ import java.util.ArrayList;
 
 public class Prices {
 
-    private ArrayList<LittleStation> stations;
+    private List<LittleStation> stations;
 
-    public ArrayList<LittleStation> getStations() {
+    public List<LittleStation> getStations() {
         return stations;
     }
 
-    public void setStations(ArrayList<LittleStation> stations) {
+    public void setStations(List<LittleStation> stations) {
         this.stations = stations;
     }
 }
