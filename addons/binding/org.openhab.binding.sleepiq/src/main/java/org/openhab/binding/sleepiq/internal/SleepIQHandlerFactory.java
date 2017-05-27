@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.sleepiq.discovery.SleepIQBedDiscoveryParticipant;
+import org.openhab.binding.sleepiq.discovery.SleepIQBedDiscoveryService;
 import org.openhab.binding.sleepiq.handler.SleepIQCloudHandler;
 import org.openhab.binding.sleepiq.handler.SleepIQDualBedHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -85,7 +85,7 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
      */
     private synchronized void registerBedDiscoveryService(final SleepIQCloudHandler cloudHandler) {
         logger.debug("Registering bed discovery service");
-        SleepIQBedDiscoveryParticipant discoveryService = new SleepIQBedDiscoveryParticipant(cloudHandler);
+        SleepIQBedDiscoveryService discoveryService = new SleepIQBedDiscoveryService(cloudHandler);
         discoveryServiceReg.put(cloudHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }

@@ -24,15 +24,15 @@ import org.slf4j.LoggerFactory;
 import org.syphr.sleepiq.api.model.Bed;
 
 /**
- * The {@link SleepIQBedDiscoveryParticipant} is responsible for processing the
+ * The {@link SleepIQBedDiscoveryService} is responsible for processing the
  * results of devices found through the SleepIQ cloud service.
  *
  * @author Gregory Moyer - Initial contribution
  */
-public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
+public class SleepIQBedDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT = 60;
 
-    private final Logger logger = LoggerFactory.getLogger(SleepIQBedDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(SleepIQBedDiscoveryService.class);
 
     private final SleepIQCloudHandler cloudHandler;
 
@@ -41,7 +41,7 @@ public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
      *
      * @param cloudHandler the cloud service handler (bridge)
      */
-    public SleepIQBedDiscoveryParticipant(final SleepIQCloudHandler cloudHandler) {
+    public SleepIQBedDiscoveryService(final SleepIQCloudHandler cloudHandler) {
         super(SleepIQDualBedHandler.SUPPORTED_THING_TYPE_UIDS, TIMEOUT, true);
         this.cloudHandler = cloudHandler;
     }
