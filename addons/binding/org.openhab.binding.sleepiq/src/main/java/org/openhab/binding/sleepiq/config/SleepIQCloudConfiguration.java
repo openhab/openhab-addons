@@ -14,7 +14,6 @@ package org.openhab.binding.sleepiq.config;
  * @author Gregory Moyer - Initial contribution
  */
 public class SleepIQCloudConfiguration {
-
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String POLLING_INTERVAL = "pollingInterval";

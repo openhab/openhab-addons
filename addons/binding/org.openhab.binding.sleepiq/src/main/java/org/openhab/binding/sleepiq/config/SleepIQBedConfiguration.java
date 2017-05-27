@@ -14,7 +14,6 @@ package org.openhab.binding.sleepiq.config;
  * @author Gregory Moyer - Initial contribution
  */
 public class SleepIQBedConfiguration {
-
     public static final String BED_ID = "bedId";
 
     public String bedId;

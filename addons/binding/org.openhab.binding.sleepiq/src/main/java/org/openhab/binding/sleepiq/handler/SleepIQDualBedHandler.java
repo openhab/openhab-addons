@@ -39,7 +39,6 @@ import org.syphr.sleepiq.api.model.BedStatus;
  * @author Gregory Moyer - Initial contribution
  */
 public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatusListener {
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.singleton(THING_TYPE_DUAL_BED);
 
     private final Logger logger = LoggerFactory.getLogger(SleepIQDualBedHandler.class);
@@ -52,7 +51,6 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
 
     @Override
     public void initialize() {
-
         logger.debug("Verifying SleepIQ cloud/bridge configuration");
 
         Bridge bridge = getBridge();
@@ -88,7 +86,6 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
 
     @Override
     public void dispose() {
-
         logger.debug("Disposing bed handler for bed {}", bedId);
 
         Bridge bridge = getBridge();
@@ -104,7 +101,6 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
 
     @Override
     public void onBedStateChanged(final SleepIQ cloud, final BedStatus status) {
-
         if (!status.getBedId().equals(bedId)) {
             return;
         }

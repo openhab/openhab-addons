@@ -53,7 +53,6 @@ import com.google.common.base.Objects;
  * @author Gregory Moyer - Initial contribution
  */
 public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.singleton(THING_TYPE_CLOUD);
 
     private final Logger logger = LoggerFactory.getLogger(SleepIQCloudHandler.class);
@@ -63,7 +62,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     private ScheduledFuture<?> pollingJob;
 
     private Runnable pollingRunnable = new Runnable() {
-
         @Override
         public void run() {
             publishBedStatusUpdates();
@@ -78,14 +76,12 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public void initialize() {
-
         try {
             createCloudConnection();
 
             logger.debug("Setting SleepIQ cloud online");
             updateListenerManagement();
             updateStatus(ThingStatus.ONLINE);
-
         } catch (UnauthorizedException e) {
             logger.error("SleepIQ cloud authentication failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid SleepIQ credentials");
@@ -105,7 +101,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @throws LoginException if there is an error while authenticating to the service
      */
     private void createCloudConnection() throws LoginException {
-
         logger.debug("Reading SleepIQ cloud binding configuration");
         SleepIQCloudConfiguration bindingConfig = getConfigAs(SleepIQCloudConfiguration.class);
 
@@ -122,7 +117,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public synchronized void dispose() {
-
         logger.debug("Disposing SleepIQ cloud handler");
 
         if (pollingJob != null && !pollingJob.isCancelled()) {
@@ -136,7 +130,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * listeners to notify.
      */
     private synchronized void updateListenerManagement() {
-
         if (!bedStatusListeners.isEmpty() && (pollingJob == null || pollingJob.isCancelled())) {
             int pollingInterval = getConfigAs(SleepIQCloudConfiguration.class).pollingInterval;
             pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, pollingInterval, pollingInterval,
@@ -151,10 +144,8 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * Retrieve the latest status on all beds and update all registered listeners.
      */
     private void publishBedStatusUpdates() {
-
         FamilyStatus status = cloud.getFamilyStatus();
         for (BedStatus bedStatus : status.getBeds()) {
-
             bedStatusListeners.stream().forEach(l -> l.onBedStateChanged(cloud, bedStatus));
         }
     }
@@ -165,7 +156,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @param listener the listener to register
      */
     public void registerBedStatusListener(final BedStatusListener listener) {
-
         if (listener == null) {
             return;
         }
@@ -183,7 +173,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      *         otherwise
      */
     public boolean unregisterBedStatusListener(final BedStatusListener listener) {
-
         boolean result = bedStatusListeners.remove(listener);
         if (result) {
             updateListenerManagement();
@@ -199,7 +188,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
-
         Collection<ConfigStatusMessage> configStatusMessages = new ArrayList<>();
 
         SleepIQCloudConfiguration config = getConfigAs(SleepIQCloudConfiguration.class);
@@ -225,7 +213,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @return the list of beds (never <code>null</code>)
      */
     public List<Bed> getBeds() {
-
         return cloud.getBeds();
     }
 
@@ -236,9 +223,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @return the identified {@link Bed} or <code>null</code> if no such bed exists
      */
     public Bed getBed(final String bedId) {
-
         for (Bed bed : getBeds()) {
-
             if (bedId.equals(bed.getBedId())) {
                 return bed;
             }
@@ -256,7 +241,6 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * @return the given map (or a new map if no map was given) with updated/set properties from the supplied bed
      */
     public Map<String, String> updateProperties(final Bed bed, Map<String, String> properties) {
-
         if (bed != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, bed.getModel());
             properties.put(SleepIQBindingConstants.PROPERTY_BASE, bed.getBase());

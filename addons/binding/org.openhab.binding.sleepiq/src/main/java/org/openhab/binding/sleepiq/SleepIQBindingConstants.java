@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Gregory Moyer - Initial contribution
  */
 public class SleepIQBindingConstants {
-
     public static final String BINDING_ID = "sleepiq";
 
     // List of all Thing Type UIDs

@@ -17,7 +17,6 @@ import org.syphr.sleepiq.api.model.BedStatus;
  * @author Gregory Moyer - Initial contribution
  */
 public interface BedStatusListener {
-
     /**
      * This method will be called whenever a new bed status is received by the cloud handler.
      *

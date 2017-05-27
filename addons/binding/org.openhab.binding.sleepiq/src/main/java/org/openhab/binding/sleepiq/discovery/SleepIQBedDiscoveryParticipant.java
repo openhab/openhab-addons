@@ -30,7 +30,6 @@ import org.syphr.sleepiq.api.model.Bed;
  * @author Gregory Moyer - Initial contribution
  */
 public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
-
     private static final int TIMEOUT = 60;
 
     private final Logger logger = LoggerFactory.getLogger(SleepIQBedDiscoveryParticipant.class);
@@ -43,7 +42,6 @@ public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
      * @param cloudHandler the cloud service handler (bridge)
      */
     public SleepIQBedDiscoveryParticipant(final SleepIQCloudHandler cloudHandler) {
-
         super(SleepIQDualBedHandler.SUPPORTED_THING_TYPE_UIDS, TIMEOUT, true);
         this.cloudHandler = cloudHandler;
     }
@@ -56,11 +54,9 @@ public class SleepIQBedDiscoveryParticipant extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-
         logger.debug("Starting scan for new beds");
 
         for (Bed bed : cloudHandler.getBeds()) {
-
             // only dual chamber beds are supported currently
             if (!bed.isDualSleep()) {
                 logger.info("Found a bed that is not dual chamber - currently unsupported");
