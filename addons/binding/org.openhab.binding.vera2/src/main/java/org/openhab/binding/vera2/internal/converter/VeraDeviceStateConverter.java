@@ -52,7 +52,7 @@ public class VeraDeviceStateConverter {
             case 4: // Security Sensor
                 switch (subcategory) {
                     case 1:
-                        return getDoorlockState(device.tripped.equals("1") ? "0" : "1");
+                        return getDoorlockState("1".equals(device.tripped) ? "0" : "1");
                     default:
                         return getBinaryState(device.tripped);
                 }
@@ -155,9 +155,9 @@ public class VeraDeviceStateConverter {
 
     private static State getBinaryState(String status) {
         if (status != null) {
-            if (status.equals("1")) {
+            if ("1".equals(status)) {
                 return OnOffType.ON;
-            } else if (status.equals("0")) {
+            } else if ("0".equals(status)) {
                 return OnOffType.OFF;
             }
         }
@@ -166,9 +166,9 @@ public class VeraDeviceStateConverter {
 
     private static State getDoorlockState(String status) {
         if (status != null) {
-            if (status.equals("1")) {
+            if ("1".equals(status)) {
                 return OpenClosedType.CLOSED;
-            } else if (status.equals("0")) {
+            } else if ("0".equals(status)) {
                 return OpenClosedType.OPEN;
             }
         }

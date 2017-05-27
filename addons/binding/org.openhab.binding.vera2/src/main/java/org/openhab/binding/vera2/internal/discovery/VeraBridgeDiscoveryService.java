@@ -23,6 +23,8 @@ import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
+import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.vera2.VeraBindingConstants;
 import org.slf4j.Logger;
@@ -33,11 +35,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dmitriy Ponomarev
  */
-public class VeraBridgeDiscoveryService extends AbstractDiscoveryService {
+public class VeraBridgeDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final int SEARCH_TIME = 240;
+
+    private DiscoveryServiceCallback callback;
 
     public VeraBridgeDiscoveryService() {
         super(VeraBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
@@ -107,12 +111,15 @@ public class VeraBridgeDiscoveryService extends AbstractDiscoveryService {
                     ThingUID thingUID = new ThingUID(VeraBindingConstants.THING_TYPE_BRIDGE,
                             ipAddress.replaceAll("\\.", "_"));
 
-                    // Attention: if is already present as thing in the ThingRegistry
-                    // the configuration for thing will be updated!
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(VeraBindingConstants.BRIDGE_CONFIG_VERA_SERVER_IP_ADDRESS, ipAddress)
-                            .withLabel("Vera controller " + ipAddress).build();
-                    thingDiscovered(discoveryResult);
+                    if (callback != null && callback.getExistingDiscoveryResult(thingUID) == null
+                            && callback.getExistingThing(thingUID) == null) {
+                        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                                .withProperty(VeraBindingConstants.BRIDGE_CONFIG_VERA_SERVER_IP_ADDRESS, ipAddress)
+                                .withLabel("Vera controller " + ipAddress).build();
+                        thingDiscovered(discoveryResult);
+                    } else {
+                        logger.debug("Thing or inbox entry already exists for UID={}, IP={}", thingUID, ipAddress);
+                    }
                 }
             } catch (Exception e) {
                 logger.warn("Discovery resulted in an unexpected exception", e);
@@ -138,5 +145,10 @@ public class VeraBridgeDiscoveryService extends AbstractDiscoveryService {
         public boolean isValidIPV4(final String s) {
             return ipV4Pattern.matcher(s).matches();
         }
+    }
+
+    @Override
+    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
+        callback = discoveryServiceCallback;
     }
 }

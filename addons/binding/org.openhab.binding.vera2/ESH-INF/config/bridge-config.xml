@@ -15,7 +15,7 @@
 		    <context>network-address</context>
 		    <label>IP address</label>
 		    <description>The IP address or hostname of the Vera controller.</description>
-		    <default>localhost</default>
+		    <default>192.168.1.10</default>
 		</parameter>
 
 		<parameter name="veraControllerPort" groupName="veraController" type="integer" required="false" min="0" max="65335">

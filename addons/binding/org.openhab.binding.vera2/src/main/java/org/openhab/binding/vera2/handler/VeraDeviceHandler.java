@@ -78,8 +78,8 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     try {
                         logger.debug("Add channels");
                         Device device = veraBridgeHandler.getController().getDevice(mConfig.getDeviceId());
-                        if (device != null && !device.category.equals("0")) {
-                            logger.debug("Finded {} device", device.name);
+                        if (device != null && !"0".equals(device.category)) {
+                            logger.debug("Found {} device", device.name);
                             addDeviceAsChannel(device);
                             // TODO addCommandClassThermostatModeAsChannel(modes, mConfig.getDeviceId());
                         }
@@ -235,7 +235,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
         Map<String, String> properties = getThing().getProperties();
         // Load location from properties
         String location = properties.get(VeraBindingConstants.PROP_ROOM);
-        if (location != null && !location.equals("") && getThing().getLocation() == null) {
+        if (location != null && !location.isEmpty() && getThing().getLocation() == null) {
             logger.debug("Set location to {}", location);
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withLocation(location);
@@ -541,7 +541,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
             }
 
             // If at least one rule could mapped to a channel
-            if (!id.equals("")) {
+            if (!id.isEmpty()) {
                 addChannel(id, acceptedItemType, device.name, properties);
 
                 logger.debug("Channel for device added with channel id: {}, accepted item type: {} and title: {}", id,
@@ -564,7 +564,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
         // Check if a channel for this device exist.
         List<Channel> channels = getThing().getChannels();
         for (Channel channel : channels) {
-            if (channel.getUID().getId().equals(channelId)) {
+            if (channelId.equals(channel.getUID().getId())) {
                 channelExists = true;
             }
         }

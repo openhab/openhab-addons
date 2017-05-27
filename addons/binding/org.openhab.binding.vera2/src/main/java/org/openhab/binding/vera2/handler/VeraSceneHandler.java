@@ -75,7 +75,7 @@ public class VeraSceneHandler extends BaseThingHandler {
                         logger.debug("Add channels");
                         Scene scene = veraBridgeHandler.getController().getScene(mConfig.getSceneId());
                         if (scene != null) {
-                            logger.debug("Finded {} scene", scene.name);
+                            logger.debug("Found {} scene", scene.name);
                             addSceneAsChannel(scene);
                         }
                     } catch (Exception e) {
@@ -230,7 +230,7 @@ public class VeraSceneHandler extends BaseThingHandler {
         Map<String, String> properties = getThing().getProperties();
         // Load location from properties
         String location = properties.get(VeraBindingConstants.PROP_ROOM);
-        if (location != null && !location.equals("") && getThing().getLocation() == null) {
+        if (location != null && !location.isEmpty() && getThing().getLocation() == null) {
             logger.debug("Set location to {}", location);
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withLocation(location);
@@ -360,7 +360,7 @@ public class VeraSceneHandler extends BaseThingHandler {
         // Check if a channel for this scene exist.
         List<Channel> channels = getThing().getChannels();
         for (Channel channel : channels) {
-            if (channel.getUID().getId().equals(channelId)) {
+            if (channelId.equals(channel.getUID().getId())) {
                 channelExists = true;
             }
         }

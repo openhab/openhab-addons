@@ -145,23 +145,9 @@ public class Controller {
     }
 
     private String replaceTrash(String name) {
-        name = name.replaceAll("1", "");
-        name = name.replaceAll("2", "");
-        name = name.replaceAll("3", "");
-        name = name.replaceAll("4", "");
-        name = name.replaceAll("5", "");
-        name = name.replaceAll("6", "");
-        name = name.replaceAll("7", "");
-        name = name.replaceAll("8", "");
-        name = name.replaceAll("9", "");
-        name = name.replaceAll("0", "");
-        name = name.replaceAll(":", "");
-        name = name.replaceAll("/", "");
-        name = name.replaceAll("-", "");
-        name = name.replaceAll("/", "");
-        name = name.replaceAll("  ", " ");
-        name = name.trim();
-        return name;
+        String sanitizedName = name.replaceAll("[0-9:/-]", "");
+        sanitizedName = name.replaceAll("  ", " ");
+        return sanitizedName.trim();
     }
 
     private String getUrl() {
@@ -169,8 +155,8 @@ public class Controller {
     }
 
     private void setStatus(Device d, String status, String service) {
-        sendCommand("http://" + veraHost + ":" + veraPort + "/data_request?id=action&DeviceNum=" + d.id + "&serviceId="
-                + service + "&action=SetTarget&newTargetValue=" + status, null);
+        sendCommand(getUrl() + "?id=action&DeviceNum=" + d.id + "&serviceId=" + service
+                + "&action=SetTarget&newTargetValue=" + status, null);
     }
 
     public Sdata updateSdata() {
@@ -185,7 +171,7 @@ public class Controller {
 
     public void turnDeviceOn(Device d) {
         d.status = "1";
-        if (d.category.equals("7")) {
+        if ("7".equals(d.category)) {
             setStatus(d, "1", "urn:micasaverde-com:serviceId:DoorLock1");
         } else {
             setStatus(d, "1", "urn:upnp-org:serviceId:SwitchPower1");
@@ -194,7 +180,7 @@ public class Controller {
 
     public void turnDeviceOff(Device d) {
         d.status = "0";
-        if (d.category.equals("7")) {
+        if ("7".equals(d.category)) {
             setStatus(d, "0", "urn:micasaverde-com:serviceId:DoorLock1");
         } else {
             setStatus(d, "0", "urn:upnp-org:serviceId:SwitchPower1");
@@ -219,7 +205,7 @@ public class Controller {
 
     public Device getDevice(String deviceId) {
         for (Device d : sdata.devices) {
-            if (d.id.equals(deviceId)) {
+            if (deviceId.equals(d.id)) {
                 return d;
             }
         }
@@ -228,7 +214,7 @@ public class Controller {
 
     public Scene getScene(String sceneId) {
         for (Scene s : sdata.scenes) {
-            if (s.id.equals(sceneId)) {
+            if (sceneId.equals(s.id)) {
                 return s;
             }
         }

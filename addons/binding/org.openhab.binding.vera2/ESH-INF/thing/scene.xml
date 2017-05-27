@@ -10,9 +10,7 @@
 
         <label>Vera Scene</label>
         <description>
-            <![CDATA[
             A Vera scene represents one scene with the one channel.
-            ]]>
         </description>
         <config-description>
             <parameter name="sceneId" type="text" required="true">

@@ -311,6 +311,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.toon/${project.version}</bundle>
     </feature>
 
+	<feature name="openhab-binding-vera2" description="Vera Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.vera2/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-vitotronic" description="Vitotronic Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.vitotronic/${project.version}</bundle>

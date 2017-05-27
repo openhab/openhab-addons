@@ -10,9 +10,7 @@
 
         <label>Vera Device</label>
         <description>
-            <![CDATA[
             A Vera device represents one sensor or actor with the one or more channels.
-            ]]>
         </description>
         <config-description>
             <parameter name="deviceId" type="text" required="true">

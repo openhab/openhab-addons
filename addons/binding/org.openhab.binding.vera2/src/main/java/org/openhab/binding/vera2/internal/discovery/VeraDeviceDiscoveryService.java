@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
+import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.vera2.controller.json.Device;
@@ -30,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dmitriy Ponomarev
  */
-public class VeraDeviceDiscoveryService extends AbstractDiscoveryService {
+public class VeraDeviceDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -41,6 +43,8 @@ public class VeraDeviceDiscoveryService extends AbstractDiscoveryService {
     private VeraBridgeHandler mBridgeHandler;
     private VeraDeviceScan mVeraDeviceScanningRunnable;
     private ScheduledFuture<?> mVeraDeviceScanningJob;
+
+    private DiscoveryServiceCallback callback;
 
     public VeraDeviceDiscoveryService(VeraBridgeHandler bridgeHandler) {
         super(SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
@@ -62,26 +66,36 @@ public class VeraDeviceDiscoveryService extends AbstractDiscoveryService {
 
         List<Device> deviceList = mBridgeHandler.getData().devices;
         for (Device device : deviceList) {
-            if (device.category.equals("0")) {
+            if ("0".equals(device.category)) {
                 continue;
             }
             ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, mBridgeHandler.getThing().getUID(), device.id);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(device.uName)
-                    .withBridge(bridgeUID).withProperty(DEVICE_CONFIG_ID, device.id)
-                    .withProperty(PROP_ROOM, device.room).withProperty(DEVICE_PROP_CATEGORY, device.category)
-                    .withProperty(DEVICE_PROP_SUBCATEGORY, device.subcategory).build();
-            thingDiscovered(discoveryResult);
-            logger.debug("Vera device found: {}, {}", device.id, device.name);
+            if (callback != null && callback.getExistingDiscoveryResult(thingUID) == null
+                    && callback.getExistingThing(thingUID) == null) {
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(device.uName)
+                        .withBridge(bridgeUID).withProperty(DEVICE_CONFIG_ID, device.id)
+                        .withProperty(PROP_ROOM, device.room).withProperty(DEVICE_PROP_CATEGORY, device.category)
+                        .withProperty(DEVICE_PROP_SUBCATEGORY, device.subcategory).build();
+                thingDiscovered(discoveryResult);
+                logger.debug("Vera device found: {}, {}", device.id, device.name);
+            } else {
+                logger.debug("Device already exists: UID={}, id={}, name={}", thingUID, device.id, device.name);
+            }
         }
 
         List<Scene> sceneList = mBridgeHandler.getData().scenes;
         for (Scene scene : sceneList) {
             ThingUID thingUID = new ThingUID(THING_TYPE_SCENE, mBridgeHandler.getThing().getUID(), scene.id);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(scene.name)
-                    .withBridge(bridgeUID).withProperty(SCENE_CONFIG_ID, scene.id).withProperty(PROP_ROOM, scene.room)
-                    .build();
-            thingDiscovered(discoveryResult);
-            logger.debug("Vera scene found: {}, {}", scene.id, scene.name);
+            if (callback != null && callback.getExistingDiscoveryResult(thingUID) == null
+                    && callback.getExistingThing(thingUID) == null) {
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(scene.name)
+                        .withBridge(bridgeUID).withProperty(SCENE_CONFIG_ID, scene.id)
+                        .withProperty(PROP_ROOM, scene.room).build();
+                thingDiscovered(discoveryResult);
+                logger.debug("Vera scene found: {}, {}", scene.id, scene.name);
+            } else {
+                logger.debug("Scene already exists: UID={}, id={}, name={}", thingUID, scene.id, scene.name);
+            }
         }
     }
 
@@ -120,5 +134,10 @@ public class VeraDeviceDiscoveryService extends AbstractDiscoveryService {
         public void run() {
             scan();
         }
+    }
+
+    @Override
+    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
+        callback = discoveryServiceCallback;
     }
 }

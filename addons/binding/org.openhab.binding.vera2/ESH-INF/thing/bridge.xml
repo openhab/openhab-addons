@@ -6,9 +6,7 @@
 	<bridge-type id="veraController">
 		<label>Vera Controller</label>
 		<description>
-            <![CDATA[
             The Vera Controller
-            ]]>
         </description>
 		
         <channels>

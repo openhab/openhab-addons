@@ -73,7 +73,7 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
                         }
                     }
                 } else {
-                    logger.warn("Cant connect to Vera controller");
+                    logger.warn("Can't connect to Vera controller");
                 }
             } catch (Exception e) {
                 logger.error("Error occurred when initialize bridge: {}", e.getMessage());
