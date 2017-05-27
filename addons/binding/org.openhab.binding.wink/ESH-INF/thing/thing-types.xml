@@ -40,12 +40,33 @@
                 <required>true</required></parameter>
             <parameter name="device_config_string" type="text" required="true"></parameter></config-description>
     </thing-type>
+	<thing-type id="binary_switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="wink_hub_2" />
+        </supported-bridge-type-refs>
+        <label>On/Off switch</label>
+        <description>Std On/Off Switch</description>
+		<channels>
+			<channel id="switchstate" typeId="lightSwitch" />
+		</channels>
+        <config-description>
+            <parameter name="device_id" type="text">
+                <required>true</required></parameter>
+            <parameter name="device_config_string" type="text" required="true"></parameter></config-description>
+    </thing-type>
     <channel-type id="lightDimmer">
         <item-type>Dimmer</item-type>
         <label>Light Level</label>
         <description>Increase/decrease the light level</description>
         <category>DimmableLight</category>
         <state min="0" max="100" pattern="%d %%"/>
+    </channel-type>
+	<channel-type id="lightSwitch">
+        <item-type>Switch</item-type>
+        <label>Switch State</label>
+        <description>The switch channel allows to switch the light on and off.
+        </description>
+        <category>Light</category>
     </channel-type>
 
 </thing:thing-descriptions>
