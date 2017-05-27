@@ -22,9 +22,11 @@ public class WinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_WINK_HUB_2 = new ThingTypeUID(BINDING_ID, "wink_hub_2");
     public final static ThingTypeUID THING_TYPE_LIGHT_BULB = new ThingTypeUID(BINDING_ID, "light_bulb");
     public final static ThingTypeUID THING_TYPE_REMOTE = new ThingTypeUID(BINDING_ID, "remote");
+	public final static ThingTypeUID THING_TYPE_BINARY_SWITCH = new ThingTypeUID(BINDING_ID, "binary_switch");
 
     // List of all Channel ids for a light bulb
     public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
+	public final static String CHANNEL_SWITCHSTATE = "switchstate";
 
     // REST URI constants
     public static final String WINK_URI = "https://api.wink.com/";
