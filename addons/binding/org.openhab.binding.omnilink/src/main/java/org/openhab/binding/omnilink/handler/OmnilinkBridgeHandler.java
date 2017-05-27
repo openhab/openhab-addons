@@ -441,6 +441,27 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }, listeningExecutor);
     }
 
+    public ListenableFuture<ZoneStatus> getZoneStatus(final int address) {
+
+        ListenableFuture<ObjectStatus> omniCall = listeningExecutor.submit(new Callable<ObjectStatus>() {
+
+            @Override
+            public ObjectStatus call() throws Exception {
+                if (omniConnection == null) {
+                    Thread.sleep(100);
+                }
+                return omniConnection.reqObjectStatus(Message.OBJ_TYPE_ZONE, address, address);
+            }
+        });
+        return Futures.transform(omniCall, new Function<ObjectStatus, ZoneStatus>() {
+
+            @Override
+            public ZoneStatus apply(ObjectStatus t) {
+                return (ZoneStatus) t.getStatuses()[0];
+            }
+        }, listeningExecutor);
+    }
+
     public ListenableFuture<AreaStatus> getAreaStatus(final int address) {
 
         ListenableFuture<ObjectStatus> omniCall = listeningExecutor.submit(new Callable<ObjectStatus>() {
