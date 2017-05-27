@@ -31,6 +31,12 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_FLAGSWITCH = "switch";
     public final static String CHANNEL_BUTTON_PRESS = "press";
     public final static String CHANNEL_SYSTEMDATE = "sysdate";
+
+    public final static String CHANNEL_ROOM_SWITCH = "switch";
+    public final static String CHANNEL_ROOM_SCENEA = "scenea";
+    public final static String CHANNEL_ROOM_SCENEB = "sceneb";
+    public final static String CHANNEL_ROOM_SCENEC = "scenec";
+    public final static String CHANNEL_ROOM_SCENED = "scened";
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "omnilinkBridge");
     public final static ThingTypeUID THING_TYPE_AREA = new ThingTypeUID(BINDING_ID, "area");

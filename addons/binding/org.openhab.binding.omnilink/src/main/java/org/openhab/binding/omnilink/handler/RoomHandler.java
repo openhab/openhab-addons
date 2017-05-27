@@ -20,7 +20,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
+        logger.debug("handleCommand, channel id: {}, command: {}", channelUID, command);
     }
 
     @Override

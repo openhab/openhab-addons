@@ -36,11 +36,11 @@
         <description>Grouping of Units</description>
 
         <channels>
-            <channel id="status" typeId="lightlevel" />
-            <channel id="scenea" typeId="scene_toggle" />
-            <channel id="sceneb" typeId="scene_toggle" />
-            <channel id="scenec" typeId="scene_toggle" />
-            <channel id="scened" typeId="scene_toggle" />
+            <channel id="status" typeId="switch" />
+            <channel id="scenea" typeId="scene_togglea" />
+            <channel id="sceneb" typeId="scene_toggleb" />
+            <channel id="scenec" typeId="scene_togglec" />
+            <channel id="scened" typeId="scene_toggled" />
         </channels>
 
         <config-description>
@@ -178,7 +178,13 @@
         <category>DimmableLight</category>
         <state min="0" max="100" pattern="%d %%" />
     </channel-type>
-    
+    <channel-type id="switch">
+        <item-type>Switch</item-type>
+        <label>Load Switch</label>
+        <description>Toggle Load</description>
+        <category>Switch</category>
+        <state pattern="%s" ></state>
+    </channel-type>
     <channel-type id="ContactSensor">
         <item-type>Switch</item-type>
         <label>Contact State</label>
@@ -186,12 +192,33 @@
         <category>Contact</category>
         <state pattern="%s" readOnly="true"></state>
     </channel-type>
-    <channel-type id="scene_toggle">
+    <channel-type id="scene_togglea">
         <item-type>Switch</item-type>
-        <label>Contact State</label>
-        <description>Contact state information</description>
-        <category>Contact</category>
-        <state pattern="%s" readOnly="true"></state>
+        <label>Scene A</label>
+        <description>Scene Toggle</description>
+        <category>Toggle</category>
+        <state pattern="%s"></state>
+    </channel-type>
+    <channel-type id="scene_toggleb">
+        <item-type>Switch</item-type>
+        <label>Scene B</label>
+        <description>Scene Toggle</description>
+        <category>Toggle</category>
+        <state pattern="%s"></state>
+    </channel-type>
+    <channel-type id="scene_togglec">
+        <item-type>Switch</item-type>
+        <label>Scene C</label>
+        <description>Scene Toggle</description>
+        <category>Toggle</category>
+        <state pattern="%s"></state>
+    </channel-type>
+    <channel-type id="scene_toggled">
+        <item-type>Switch</item-type>
+        <label>Scene D</label>
+        <description>Scene Toggle</description>
+        <category>Toggle</category>
+        <state pattern="%s"></state>
     </channel-type>
     <channel-type id="area_alarm">
         <item-type>String</item-type>
