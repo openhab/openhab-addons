@@ -208,14 +208,12 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
         if (StringUtils.isEmpty(username)) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(USERNAME)
-                    .withMessageKeySuffix(SleepIQConfigStatusMessage.USERNAME_MISSING.getMessageKey())
-                    .withArguments(USERNAME).build());
+                    .withMessageKeySuffix(SleepIQConfigStatusMessage.USERNAME_MISSING).withArguments(USERNAME).build());
         }
 
         if (StringUtils.isEmpty(password)) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(PASSWORD)
-                    .withMessageKeySuffix(SleepIQConfigStatusMessage.PASSWORD_MISSING.getMessageKey())
-                    .withArguments(PASSWORD).build());
+                    .withMessageKeySuffix(SleepIQConfigStatusMessage.PASSWORD_MISSING).withArguments(PASSWORD).build());
         }
 
         return configStatusMessages;

@@ -14,18 +14,7 @@ package org.openhab.binding.sleepiq.internal;
  * @author Gregory Moyer - Initial contribution
  *
  */
-public enum SleepIQConfigStatusMessage {
-
-    USERNAME_MISSING("missing-username-configuration"),
-    PASSWORD_MISSING("missing-password-configuration");
-
-    private String messageKey;
-
-    private SleepIQConfigStatusMessage(final String messageKey) {
-        this.messageKey = messageKey;
-    }
-
-    public String getMessageKey() {
-        return messageKey;
-    }
+public interface SleepIQConfigStatusMessage {
+    public static final String USERNAME_MISSING = "missing-username-configuration";
+    public static final String PASSWORD_MISSING = "missing-password-configuration";
 }
