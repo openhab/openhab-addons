@@ -91,6 +91,7 @@
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.timer</module>
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tplinksmarthome.test</module>
@@ -101,6 +102,6 @@
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
-    <module>org.openhab.binding.timer</module>
   </modules>
+
 </project>
