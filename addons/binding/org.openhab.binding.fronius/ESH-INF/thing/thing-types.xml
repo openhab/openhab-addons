@@ -14,12 +14,16 @@
 			<channel id="inverterdatachanneldayenergy" typeId="day_energy"/>
 			<channel id="inverterdatachanneltotal" typeId="total_energy"/>
 			<channel id="inverterdatachannelyear" typeId="year_energy"/>
-			
 			<channel id="inverterdatachannelfac" typeId="fac"/>
 			<channel id="inverterdatachanneliac" typeId="iac"/>
 			<channel id="inverterdatachannelidc" typeId="idc"/>
             <channel id="inverterdatachanneluac" typeId="uac"/>
-            <channel id="inverterdatachanneludc" typeId="udc"/>			
+            <channel id="inverterdatachanneludc" typeId="udc"/>	
+            
+ 		    <channel id="powerflowchannelpgrid" typeId="pGrid"/> 
+ 		    <channel id="powerflowchannelpload" typeId="pLoad"/> 
+ 		    <channel id="powerflowchannelpakku" typeId="pAkku"/>  
+ 		     
 		</channels>
 		
         <config-description>
@@ -97,4 +101,23 @@
         <description>DC voltage</description>
         <state pattern="%.1f V" readOnly="true"></state>
     </channel-type>    
+    
+    <channel-type id="pGrid">
+        <item-type>Number</item-type>
+        <label>Grid Power</label>
+        <description>Grid Power ( + from grid, - to grid )</description>
+        <state pattern="%.2f W" readOnly="true"></state>
+    </channel-type>    
+    <channel-type id="pLoad">
+        <item-type>Number</item-type>
+        <label>Load Power</label>
+        <description>Load Power ( + generator, - consumer )</description>
+        <state pattern="%.2f W" readOnly="true"></state>
+    </channel-type>   
+    <channel-type id="pAkku">
+        <item-type>Number</item-type>
+        <label>Battery Power</label>
+        <description>Battery Power ( + charge, - discharge )</description>
+        <state pattern="%.2f W" readOnly="true"></state>
+    </channel-type>       
 </thing:thing-descriptions>

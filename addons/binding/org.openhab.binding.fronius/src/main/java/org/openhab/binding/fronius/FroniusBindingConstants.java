@@ -33,5 +33,8 @@ public class FroniusBindingConstants {
     public static final String InverterDataChannelIdc = "inverterdatachannelidc";
     public static final String InverterDataChannelUac = "inverterdatachanneluac";
     public static final String InverterDataChannelUdc = "inverterdatachanneludc";
+    public static final String PowerFlowpGrid = "powerflowchannelpgrid";
+    public static final String PowerFlowpLoad = "powerflowchannelpload";
+    public static final String PowerFlowpAkku = "powerflowchannelpakku";
 
 }

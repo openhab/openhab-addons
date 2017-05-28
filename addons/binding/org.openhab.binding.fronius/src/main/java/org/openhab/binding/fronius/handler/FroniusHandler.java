@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.fronius.FroniusBindingConstants;
 import org.openhab.binding.fronius.FroniusConfiguration;
 import org.openhab.binding.fronius.api.InverterRealtimeResponse;
+import org.openhab.binding.fronius.api.PowerFlowRealtimeResponse;
 import org.openhab.binding.fronius.api.ValueUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,12 +54,13 @@ public class FroniusHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(FroniusHandler.class);
 
     private static final String InverterRealtimeDataUrl = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
-
+    private static final String PowerFlowRealtimeData = "http://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
     private static final int DEFAULT_REFRESH_PERIOD = 5;
 
     private ScheduledFuture<?> refreshJob;
 
-    private InverterRealtimeResponse aqiResponse;
+    private InverterRealtimeResponse inverterRealtimeResponse;
+    private PowerFlowRealtimeResponse powerFlowResponse;
 
     private Gson gson;
 
@@ -71,7 +73,7 @@ public class FroniusHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
 
         if (command instanceof RefreshType) {
-            updateChannel(channelUID.getId(), aqiResponse);
+            updateChannel(channelUID.getId());
         } else {
             logger.debug("The Air Quality binding is read-only and can not handle command {}", command);
         }
@@ -111,10 +113,10 @@ public class FroniusHandler extends BaseThingHandler {
                 public void run() {
                     try {
                         // Request
-                        aqiResponse = updateData();
+                        updateData();
                         // Update all channels
                         for (Channel channel : getThing().getChannels()) {
-                            updateChannel(channel.getUID().getId(), aqiResponse);
+                            updateChannel(channel.getUID().getId());
                         }
                     } catch (Exception e) {
                         logger.error("Exception occurred during execution: {}", e.getMessage(), e);
@@ -143,11 +145,11 @@ public class FroniusHandler extends BaseThingHandler {
      *
      * @param channelId the id identifying the channel to be updated
      */
-    private void updateChannel(String channelId, InverterRealtimeResponse aqiResponse) {
+    private void updateChannel(String channelId) {
         if (isLinked(channelId)) {
             Object value;
             try {
-                value = getValue(channelId, aqiResponse);
+                value = getValue(channelId);
             } catch (Exception e) {
                 logger.debug("Station doesn't provide {} measurement", channelId.toUpperCase());
                 return;
@@ -164,6 +166,8 @@ public class FroniusHandler extends BaseThingHandler {
                 state = new DecimalType(BigDecimal.valueOf(((Integer) value).longValue()));
             } else if (value instanceof String) {
                 state = new StringType(value.toString());
+            } else if (value instanceof Double) {
+                state = new DecimalType((double) value);
             } else if (value instanceof ValueUnit) {
                 state = new DecimalType(((ValueUnit) value).getValue());
 
@@ -183,16 +187,16 @@ public class FroniusHandler extends BaseThingHandler {
 
     /**
      * Update the channel from the last data retrieved
-     * 
+     *
      * @param channelId the id identifying the channel to be updated
      * @param data
      * @return
      * @throws Exception
      */
-    public static Object getValue(String channelId, InverterRealtimeResponse data) throws Exception {
+    public Object getValue(String channelId) throws Exception {
         String[] fields = StringUtils.split(channelId, "#");
 
-        if (data == null) {
+        if (inverterRealtimeResponse == null) {
             return null;
         }
 
@@ -200,23 +204,35 @@ public class FroniusHandler extends BaseThingHandler {
 
         switch (fieldName) {
             case FroniusBindingConstants.InverterDataChannelDayEnergy:
-                return data.getBody().getData().getDayEnergy();
+                return inverterRealtimeResponse.getBody().getData().getDayEnergy();
             case FroniusBindingConstants.InverterDataChannelPac:
-                return data.getBody().getData().getPac();
+                return inverterRealtimeResponse.getBody().getData().getPac();
             case FroniusBindingConstants.InverterDataChannelTotal:
-                return data.getBody().getData().getTotalEnergy();
+                return inverterRealtimeResponse.getBody().getData().getTotalEnergy();
             case FroniusBindingConstants.InverterDataChannelYear:
-                return data.getBody().getData().getYearEnergy();
+                return inverterRealtimeResponse.getBody().getData().getYearEnergy();
             case FroniusBindingConstants.InverterDataChannelFac:
-                return data.getBody().getData().getFac();
+                return inverterRealtimeResponse.getBody().getData().getFac();
             case FroniusBindingConstants.InverterDataChannelIac:
-                return data.getBody().getData().getIac();
+                return inverterRealtimeResponse.getBody().getData().getIac();
             case FroniusBindingConstants.InverterDataChannelIdc:
-                return data.getBody().getData().getIdc();
+                return inverterRealtimeResponse.getBody().getData().getIdc();
             case FroniusBindingConstants.InverterDataChannelUac:
-                return data.getBody().getData().getUac();
+                return inverterRealtimeResponse.getBody().getData().getUac();
             case FroniusBindingConstants.InverterDataChannelUdc:
-                return data.getBody().getData().getUdc();
+                return inverterRealtimeResponse.getBody().getData().getUdc();
+        }
+
+        if (powerFlowResponse == null) {
+            return null;
+        }
+        switch (fieldName) {
+            case FroniusBindingConstants.PowerFlowpGrid:
+                return powerFlowResponse.getBody().getData().getSite().getPgrid();
+            case FroniusBindingConstants.PowerFlowpLoad:
+                return powerFlowResponse.getBody().getData().getSite().getPload();
+            case FroniusBindingConstants.PowerFlowpAkku:
+                return powerFlowResponse.getBody().getData().getSite().getPakku();
         }
 
         return null;
@@ -225,15 +241,66 @@ public class FroniusHandler extends BaseThingHandler {
     /**
      * Get new data
      *
-     * @return {InverterRealtimeResponse}
      */
-    private InverterRealtimeResponse updateData() {
+    private void updateData() {
         FroniusConfiguration config = getConfigAs(FroniusConfiguration.class);
-        return getRealtimeData(config.ip, config.deviceId);
+        inverterRealtimeResponse = getRealtimeData(config.ip, config.deviceId);
+        powerFlowResponse = getPowerFlowRealtime(config.ip);
     }
 
     /**
-     * Make the request
+     * Make the PowerFlowRealtimeDataRequest
+     *
+     * @param ip
+     * @return {PowerFlowRealtimeResponse}
+     */
+    private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) {
+        PowerFlowRealtimeResponse result = null;
+        boolean resultOk = false;
+        String errorMsg = null;
+
+        try {
+
+            String location = PowerFlowRealtimeData.replace("%IP%", StringUtils.trimToEmpty(ip));
+            logger.debug("URL = {}", location);
+            URL url = new URL(location);
+            URLConnection connection = url.openConnection();
+
+            try {
+                String response = IOUtils.toString(connection.getInputStream());
+                logger.debug("aqiResponse = {}", response);
+                result = gson.fromJson(response, PowerFlowRealtimeResponse.class);
+            } finally {
+                IOUtils.closeQuietly(connection.getInputStream());
+            }
+
+            if (result == null) {
+                errorMsg = "no data returned";
+            } else if (result.getBody() != null) {
+                resultOk = true;
+            } else {
+                errorMsg = "missing data sub-object";
+            }
+
+            if (!resultOk) {
+                logger.warn("Error in fronius response: {}", errorMsg);
+            }
+
+        } catch (MalformedURLException e) {
+            errorMsg = e.getMessage();
+            logger.warn("Constructed url is not valid: {}", errorMsg);
+        } catch (JsonSyntaxException e) {
+            errorMsg = "Configuration is incorrect";
+            logger.warn("Error running fronius request: {}", errorMsg);
+        } catch (IOException | IllegalStateException e) {
+            errorMsg = e.getMessage();
+        }
+
+        return resultOk ? result : null;
+    }
+
+    /**
+     * Make the InverterRealtimeDataRequest
      *
      * @param ip
      * @return {InverterRealtimeResponse}
