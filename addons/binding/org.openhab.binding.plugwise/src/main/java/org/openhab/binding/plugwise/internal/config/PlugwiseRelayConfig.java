@@ -11,6 +11,8 @@ package org.openhab.binding.plugwise.internal.config;
 import static com.google.common.base.CaseFormat.*;
 import static org.openhab.binding.plugwise.internal.config.PlugwiseRelayConfig.PowerStateChanging.COMMAND_SWITCHING;
 
+import java.time.Duration;
+
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 
 /**
@@ -46,8 +48,8 @@ public class PlugwiseRelayConfig {
         return suppliesPower;
     }
 
-    public int getMeasurementInterval() {
-        return measurementInterval;
+    public Duration getMeasurementInterval() {
+        return Duration.ofMinutes(measurementInterval);
     }
 
     public boolean isTemporarilyNotInNetwork() {

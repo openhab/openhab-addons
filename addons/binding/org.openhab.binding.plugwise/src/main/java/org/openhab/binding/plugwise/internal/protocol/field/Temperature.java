@@ -16,8 +16,11 @@ package org.openhab.binding.plugwise.internal.protocol.field;
 public class Temperature {
 
     private static final String EMPTY_VALUE = "FFFF";
+    private static final double MAX_HEX_VALUE = 65536;
+    private static final double MULTIPLIER = 175.72;
+    private static final double OFFSET = 46.85;
 
-    private double value;
+    private final double value;
 
     public Temperature(double value) {
         this.value = value;
@@ -27,7 +30,7 @@ public class Temperature {
         if (EMPTY_VALUE.equals(hexValue)) {
             value = Double.MIN_VALUE;
         } else {
-            value = 175.72 * (Integer.parseInt(hexValue, 16) / 65536.0) - 46.85;
+            value = MULTIPLIER * (Integer.parseInt(hexValue, 16) / MAX_HEX_VALUE) - OFFSET;
         }
     }
 
@@ -36,7 +39,7 @@ public class Temperature {
     }
 
     public String toHex() {
-        return String.format("%04X", Math.round((value + 46.85) / 175.72 * 65536.0));
+        return String.format("%04X", Math.round((value + OFFSET) / MULTIPLIER * MAX_HEX_VALUE));
     }
 
     @Override

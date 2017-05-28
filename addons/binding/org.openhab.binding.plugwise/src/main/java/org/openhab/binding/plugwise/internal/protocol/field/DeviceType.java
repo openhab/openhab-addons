@@ -24,10 +24,9 @@ public enum DeviceType {
     SWITCH("Switch", false, true),
     UNKNOWN("Unknown", false, false);
 
-    private String string;
-    private boolean relayDevice;
-
-    private boolean sleepingEndDevice;
+    private final String string;
+    private final boolean relayDevice;
+    private final boolean sleepingEndDevice;
 
     DeviceType(String string, boolean relayDevice, boolean sleepingEndDevice) {
         this.string = string;

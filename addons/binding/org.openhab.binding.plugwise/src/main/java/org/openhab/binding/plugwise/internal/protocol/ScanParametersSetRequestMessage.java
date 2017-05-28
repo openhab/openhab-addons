@@ -10,6 +10,8 @@ package org.openhab.binding.plugwise.internal.protocol;
 
 import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.SCAN_PARAMETERS_SET_REQUEST;
 
+import java.time.Duration;
+
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.binding.plugwise.internal.protocol.field.Sensitivity;
 
@@ -22,10 +24,10 @@ public class ScanParametersSetRequestMessage extends Message {
 
     private Sensitivity sensitivity;
     private boolean daylightOverride;
-    private int switchOffDelay;
+    private Duration switchOffDelay;
 
     public ScanParametersSetRequestMessage(MACAddress macAddress, Sensitivity sensitivity, boolean daylightOverride,
-            int switchOffDelay) {
+            Duration switchOffDelay) {
         super(SCAN_PARAMETERS_SET_REQUEST, macAddress);
         this.sensitivity = sensitivity;
         this.daylightOverride = daylightOverride;
@@ -36,7 +38,7 @@ public class ScanParametersSetRequestMessage extends Message {
     protected String payloadToHexString() {
         String sensitivityHex = String.format("%02X", sensitivity.toInt());
         String daylightOverrideHex = (daylightOverride ? "01" : "00");
-        String switchOffDelayHex = String.format("%02X", switchOffDelay);
+        String switchOffDelayHex = String.format("%02X", switchOffDelay.toMinutes());
         return sensitivityHex + daylightOverrideHex + switchOffDelayHex;
     }
 

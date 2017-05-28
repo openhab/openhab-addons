@@ -10,6 +10,8 @@ package org.openhab.binding.plugwise.handler;
 
 import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
 
+import java.time.Duration;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -60,7 +62,7 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
     }
 
     @Override
-    protected int getWakeupDuration() {
+    protected Duration getWakeupDuration() {
         return configuration.getWakeupDuration();
     }
 
@@ -77,17 +79,18 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
                 logger.debug("Received NACK for boundaries parameters set of {} ({})", deviceType, macAddress);
                 break;
             case SENSE_INTERVAL_SET_ACK:
-                logger.debug("Received ACK for measurement interval set of {} ({}) ", deviceType, macAddress);
+                logger.debug("Received ACK for measurement interval set of {} ({})", deviceType, macAddress);
                 updateMeasurementInterval = false;
                 break;
             case SENSE_INTERVAL_SET_NACK:
-                logger.debug("Received NACK for measurement interval set of {} ({}) ", deviceType, macAddress);
+                logger.debug("Received NACK for measurement interval set of {} ({})", deviceType, macAddress);
                 break;
             case SLEEP_SET_ACK:
-                logger.debug("Received ACK for sleep set of {} ({}) ", deviceType, macAddress);
+                logger.debug("Received ACK for sleep set of {} ({})", deviceType, macAddress);
                 updateSleepParameters = false;
                 break;
             default:
+                logger.trace("Received unhandled {} message from {} ({})", message.getType(), deviceType, macAddress);
                 break;
         }
 
@@ -180,7 +183,7 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
         }
 
         updateMeasurementInterval = fullUpdate || (oldConfiguration != null
-                && oldConfiguration.getMeasurementInterval() != newConfiguration.getMeasurementInterval());
+                && !oldConfiguration.getMeasurementInterval().equals(newConfiguration.getMeasurementInterval()));
         if (updateMeasurementInterval) {
             logger.debug("Updating {} ({}) measurement interval when online", deviceType, macAddress);
         }

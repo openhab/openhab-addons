@@ -19,7 +19,7 @@ public enum Sensitivity {
     MEDIUM(0x1E),
     OFF(0xFF);
 
-    private int value;
+    private final int value;
 
     Sensitivity(int value) {
         this.value = value;

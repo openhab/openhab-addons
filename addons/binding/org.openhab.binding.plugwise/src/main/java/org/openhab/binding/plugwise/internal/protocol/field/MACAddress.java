@@ -15,7 +15,7 @@ package org.openhab.binding.plugwise.internal.protocol.field;
  */
 public class MACAddress {
 
-    private String macAddress;
+    private final String macAddress;
 
     public MACAddress(String macAddress) {
         this.macAddress = macAddress.toUpperCase();

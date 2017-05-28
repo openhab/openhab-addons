@@ -11,6 +11,7 @@ package org.openhab.binding.plugwise.handler;
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -79,6 +80,9 @@ import com.google.common.collect.Lists;
  */
 public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
+    private static final int INVALID_WATT_THRESHOLD = 10000;
+    private static final int POWER_STATE_RETRIES = 3;
+
     private class PendingPowerStateChange {
         final OnOffType onOff;
         int retries;
@@ -88,11 +92,9 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
         }
     }
 
-    private static final int POWER_STATE_RETRIES = 3;
-
     private final PlugwiseDeviceTask clockUpdateTask = new PlugwiseDeviceTask("Clock update", scheduler) {
         @Override
-        public int getConfiguredInterval() {
+        public Duration getConfiguredInterval() {
             return getChannelUpdateInterval(CHANNEL_CLOCK);
         }
 
@@ -110,7 +112,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
     private final PlugwiseDeviceTask currentPowerUpdateTask = new PlugwiseDeviceTask("Current power update",
             scheduler) {
         @Override
-        public int getConfiguredInterval() {
+        public Duration getConfiguredInterval() {
             return getChannelUpdateInterval(CHANNEL_POWER);
         }
 
@@ -130,7 +132,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
     private final PlugwiseDeviceTask energyUpdateTask = new PlugwiseDeviceTask("Energy update", scheduler) {
         @Override
-        public int getConfiguredInterval() {
+        public Duration getConfiguredInterval() {
             return getChannelUpdateInterval(CHANNEL_ENERGY);
         }
 
@@ -149,8 +151,9 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
     private final PlugwiseDeviceTask informationUpdateTask = new PlugwiseDeviceTask("Information update", scheduler) {
         @Override
-        public int getConfiguredInterval() {
-            return Math.min(getChannelUpdateInterval(CHANNEL_STATE), getChannelUpdateInterval(CHANNEL_ENERGY));
+        public Duration getConfiguredInterval() {
+            return PlugwiseUtils.minComparable(getChannelUpdateInterval(CHANNEL_STATE),
+                    getChannelUpdateInterval(CHANNEL_ENERGY));
         }
 
         @Override
@@ -167,7 +170,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
     private final PlugwiseDeviceTask realTimeClockUpdateTask = new PlugwiseDeviceTask("Real-time clock update",
             scheduler) {
         @Override
-        public int getConfiguredInterval() {
+        public Duration getConfiguredInterval() {
             return getChannelUpdateInterval(CHANNEL_REAL_TIME_CLOCK);
         }
 
@@ -185,8 +188,8 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
     private final PlugwiseDeviceTask setClockTask = new PlugwiseDeviceTask("Set clock", scheduler) {
         @Override
-        public int getConfiguredInterval() {
-            return 24 * 60 * 60; // Once every 24 hours;
+        public Duration getConfiguredInterval() {
+            return Duration.ofDays(1);
         }
 
         @Override
@@ -268,21 +271,21 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
         ExtensionCode extensionCode = message.getExtensionCode();
         switch (extensionCode) {
             case CLOCK_SET_ACK:
-                logger.debug("Received ACK for clock set of {} ({}) ", deviceType, macAddress);
+                logger.debug("Received ACK for clock set of {} ({})", deviceType, macAddress);
                 break;
             case ON_ACK:
-                logger.debug("Received ACK for switching on {} ({}) ", deviceType, macAddress);
+                logger.debug("Received ACK for switching on {} ({})", deviceType, macAddress);
                 updateState(CHANNEL_STATE, OnOffType.ON);
                 break;
             case ON_OFF_NACK:
-                logger.debug("Received NACK for switching on/off {} ({}) ", deviceType, macAddress);
+                logger.debug("Received NACK for switching on/off {} ({})", deviceType, macAddress);
                 break;
             case OFF_ACK:
-                logger.debug("Received ACK for switching off {} ({}) ", deviceType, macAddress);
+                logger.debug("Received ACK for switching off {} ({})", deviceType, macAddress);
                 updateState(CHANNEL_STATE, OnOffType.OFF);
                 break;
             case POWER_LOG_INTERVAL_SET_ACK:
-                logger.debug("Received ACK for power log interval set of {} ({}) ", deviceType, macAddress);
+                logger.debug("Received ACK for power log interval set of {} ({})", deviceType, macAddress);
                 updateMeasurementInterval = false;
                 break;
             default:
@@ -324,29 +327,17 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling command '{}' for {} ({}) channel '{}'", command, deviceType, macAddress,
                 channelUID.getId());
-        try {
-            switch (channelUID.getId()) {
-                case CHANNEL_STATE:
-                    if (command instanceof OnOffType) {
-                        if (configuration.getPowerStateChanging() == PowerStateChanging.COMMAND_SWITCHING) {
-                            OnOffType onOff = (OnOffType) command;
-                            pendingPowerStateChange = new PendingPowerStateChange(onOff);
-                            handleOnOffCommand(onOff);
-                        } else {
-                            OnOffType onOff = configuration.getPowerStateChanging() == PowerStateChanging.ALWAYS_ON
-                                    ? OnOffType.ON : OnOffType.OFF;
-                            logger.debug("Ignoring {} ({}) power state change (always {})", deviceType, macAddress,
-                                    onOff);
-                            updateState(CHANNEL_STATE, onOff);
-                        }
-                    }
-                    break;
-                default:
-                    break;
+        if (CHANNEL_STATE.equals(channelUID.getId()) && (command instanceof OnOffType)) {
+            if (configuration.getPowerStateChanging() == PowerStateChanging.COMMAND_SWITCHING) {
+                OnOffType onOff = (OnOffType) command;
+                pendingPowerStateChange = new PendingPowerStateChange(onOff);
+                handleOnOffCommand(onOff);
+            } else {
+                OnOffType onOff = configuration.getPowerStateChanging() == PowerStateChanging.ALWAYS_ON ? OnOffType.ON
+                        : OnOffType.OFF;
+                logger.debug("Ignoring {} ({}) power state change (always {})", deviceType, macAddress, onOff);
+                updateState(CHANNEL_STATE, onOff);
             }
-        } catch (Exception e) {
-            logger.warn("Error while handling command '{}' for {} ({}) channel '{}': {}", command, deviceType,
-                    macAddress, channelUID.getId(), e.getMessage(), e);
         }
     }
 
@@ -409,12 +400,12 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
         if (mostRecentEnergy != null) {
             // When the current time is '11:44:55.888' and the measurement interval 1 hour, then the end of the most
             // recent energy measurement interval is at '11:00:00.000'
-            LocalDateTime oneIntervalAgo = LocalDateTime.now().minusMinutes(configuration.getMeasurementInterval());
+            LocalDateTime oneIntervalAgo = LocalDateTime.now().minus(configuration.getMeasurementInterval());
 
             boolean isLastInterval = mostRecentEnergy.getEnd().isAfter(oneIntervalAgo);
             if (isLastInterval) {
                 energy = mostRecentEnergy;
-                energy.setInterval(configuration.getMeasurementInterval() * 60);
+                energy.setInterval(configuration.getMeasurementInterval());
                 logger.trace("Updating {} ({}) energy with: {}", deviceType, macAddress, mostRecentEnergy);
                 updateState(CHANNEL_ENERGY, new DecimalType(correctSign(energy.tokWh(calibration))));
                 updateState(CHANNEL_ENERGY_STAMP, PlugwiseUtils.newDateTimeType(energy.getStart()));
@@ -430,7 +421,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
         Energy one = message.getOneSecond();
         double watt = one.toWatt(calibration);
-        if (watt > 10000) {
+        if (watt > INVALID_WATT_THRESHOLD) {
             logger.debug("{} ({}) is in a kind of error state, skipping power information response", deviceType,
                     macAddress);
             return;
@@ -472,6 +463,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
                 handleRealTimeClockGetResponse((RealTimeClockGetResponseMessage) message);
                 break;
             default:
+                logger.trace("Received unhandled {} message from {} ({})", message.getType(), deviceType, macAddress);
                 break;
         }
     }
@@ -509,8 +501,10 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
 
         if (updateMeasurementInterval) {
             logger.debug("Sending command to update {} ({}) power log measurement interval", deviceType, macAddress);
-            int consumptionInterval = configuration.isSuppliesPower() ? 0 : configuration.getMeasurementInterval();
-            int productionInterval = configuration.isSuppliesPower() ? configuration.getMeasurementInterval() : 0;
+            Duration consumptionInterval = configuration.isSuppliesPower() ? Duration.ZERO
+                    : configuration.getMeasurementInterval();
+            Duration productionInterval = configuration.isSuppliesPower() ? configuration.getMeasurementInterval()
+                    : Duration.ZERO;
             sendCommandMessage(
                     new PowerLogIntervalSetRequestMessage(macAddress, consumptionInterval, productionInterval));
         }
@@ -525,7 +519,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
         }
 
         updateMeasurementInterval = fullUpdate || (oldConfiguration != null
-                && (oldConfiguration.getMeasurementInterval() != newConfiguration.getMeasurementInterval()));
+                && (!oldConfiguration.getMeasurementInterval().equals(newConfiguration.getMeasurementInterval())));
         if (updateMeasurementInterval) {
             logger.debug("Updating {} ({}) power log interval when online", deviceType, macAddress);
         }

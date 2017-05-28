@@ -19,9 +19,9 @@ public enum BoundaryType {
     TEMPERATURE(1),
     NONE(2);
 
-    private int identifier;
+    private final int identifier;
 
-    private BoundaryType(int identifier) {
+    BoundaryType(int identifier) {
         this.identifier = identifier;
     }
 

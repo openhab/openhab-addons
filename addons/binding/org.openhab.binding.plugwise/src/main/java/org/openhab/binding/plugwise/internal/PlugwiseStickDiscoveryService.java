@@ -29,7 +29,6 @@ import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.plugwise.PlugwiseBindingConstants;
-import org.openhab.binding.plugwise.internal.PlugwiseCommunicationHandler.MessagePriority;
 import org.openhab.binding.plugwise.internal.config.PlugwiseStickConfig;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.protocol.InformationRequestMessage;
@@ -65,7 +64,6 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     private ScheduledFuture<?> discoveryJob;
 
     private PlugwiseCommunicationHandler communicationHandler = new PlugwiseCommunicationHandler();
-    private PlugwiseStickConfig stickConfig = new PlugwiseStickConfig();
 
     private boolean discovering;
     private ReentrantLock discoveryLock = new ReentrantLock();
@@ -91,15 +89,11 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         String mac = macAddress.toString();
         ThingUID thingUID = new ThingUID(THING_TYPE_STICK, mac);
 
-        DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID);
-        builder = builder.withLabel("Plugwise " + STICK.toString());
-        builder = builder.withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS, mac);
-        builder = builder.withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_SERIAL_PORT,
-                stickConfig.getSerialPort());
-        builder = builder.withProperties(new HashMap<>(properties));
-        builder = builder.withRepresentationProperty(mac);
-
-        return builder.build();
+        return DiscoveryResultBuilder.create(thingUID).withLabel("Plugwise " + STICK.toString())
+                .withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS, mac)
+                .withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_SERIAL_PORT,
+                        communicationHandler.getConfiguration().getSerialPort())
+                .withProperties(new HashMap<>(properties)).withRepresentationProperty(mac).build();
     }
 
     @Override
@@ -126,6 +120,7 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     private void discoverStick(String serialPort) {
         logger.debug("Discovering Stick on serial port: {}", serialPort);
 
+        PlugwiseStickConfig stickConfig = new PlugwiseStickConfig();
         stickConfig.setSerialPort(serialPort);
         communicationHandler.setConfiguration(stickConfig);
 
@@ -201,6 +196,7 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
                 handleNetworkStatusResponseMessage((NetworkStatusResponseMessage) message);
                 break;
             default:
+                logger.trace("Received unhandled {} message from {}", message.getType(), message.getMACAddress());
                 break;
         }
     }
@@ -220,7 +216,7 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
 
     private void sendMessage(Message message) {
         try {
-            communicationHandler.sendMessage(message, MessagePriority.UPDATE_AND_DISCOVERY);
+            communicationHandler.sendMessage(message, PlugwiseMessagePriority.UPDATE_AND_DISCOVERY);
         } catch (IOException e) {
             try {
                 discoveryLock.lock();

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.plugwise.internal;
 
+import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +33,7 @@ public abstract class PlugwiseDeviceTask {
     private final ScheduledExecutorService scheduler;
 
     private DeviceType deviceType;
-    private int interval;
+    private Duration interval;
     private MACAddress macAddress;
 
     private ScheduledFuture<?> future;
@@ -57,9 +58,9 @@ public abstract class PlugwiseDeviceTask {
         this.scheduler = scheduler;
     }
 
-    public abstract int getConfiguredInterval();
+    public abstract Duration getConfiguredInterval();
 
-    public int getInterval() {
+    public Duration getInterval() {
         return interval;
     }
 
@@ -80,13 +81,11 @@ public abstract class PlugwiseDeviceTask {
             lock.lock();
             if (!isScheduled()) {
                 interval = getConfiguredInterval();
-                future = scheduler.scheduleWithFixedDelay(scheduledRunnable, 0, interval, TimeUnit.SECONDS);
+                future = scheduler.scheduleWithFixedDelay(scheduledRunnable, 0, interval.getSeconds(),
+                        TimeUnit.SECONDS);
                 logger.debug("Scheduled '{}' Plugwise task for {} ({}) with {} seconds interval", name, deviceType,
-                        macAddress, interval);
+                        macAddress, interval.getSeconds());
             }
-        } catch (Exception e) {
-            logger.warn("Error occurred while starting '{}' Plugwise task for {} ({})", name, deviceType, macAddress,
-                    e);
         } finally {
             lock.unlock();
         }
@@ -100,8 +99,6 @@ public abstract class PlugwiseDeviceTask {
                 future = null;
                 logger.debug("Stopped '{}' Plugwise task for {} ({})", name, deviceType, macAddress);
             }
-        } catch (Exception e) {
-            logger.warn("Error occurred while stopping '{}' Plugwise task", name, e);
         } finally {
             lock.unlock();
         }

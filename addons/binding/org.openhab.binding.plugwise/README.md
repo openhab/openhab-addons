@@ -11,16 +11,15 @@ Currently only "V2" of the Plugwise protocol is supported. It is adviced that us
 
 The binding supports the following Plugwise devices:
 
-
-| Device Type | Description | Thing Type |
-|-------------|-------------|------------|
-| [Circle](https://www.plugwise.com/products/appliances-and-lighting/energy-meters-and-switches/circle) | A power outlet plug that provides energy measurement and switching control of appliances | circle |
-| [Circle+](https://www.plugwise.com/products/appliances-and-lighting/energy-meters-and-switches/circle) | A special Circle that coordinates the ZigBee network and acts as network gateway | circleplus |
-| [Scan](https://www.plugwise.com/products/appliances-and-lighting/presence-and-light-sensor/scan) | A wireless motion (PIR) and light sensor | scan |
-| [Sense](https://www.plugwise.com/products/indoor-climate/humidity-and-temperature-sensor/sense) | A wireless temperature and humidity sensor | sense |
-| [Stealth](https://www.plugwise.com/products/appliances-and-lighting/energy-meters-and-switches/stealth) | A Circle with a more compact form factor that can be built-in | stealth |
-| [Stick](https://www.plugwise.com/home-start) | A ZigBee USB controller that openHAB uses to communicate with the Circle+ | stick |
-| [Switch](https://www.plugwise.com/products/appliances-and-lighting/energy-meters-and-switches/switch) | A wireless wall switch | switch |
+| Device Type                                                                                             | Description                                                                              | Thing Type |
+|---------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|------------|
+| [Circle](https://www.plugwise.com/products/appliances-and-lighting/energy-meters-and-switches/circle)   | A power outlet plug that provides energy measurement and switching control of appliances | circle     |
+| [Circle+](https://www.plugwise.com/products/appliances-and-lighting/energy-meters-and-switches/circle)  | A special Circle that coordinates the ZigBee network and acts as network gateway         | circleplus |
+| [Scan](https://www.plugwise.com/products/appliances-and-lighting/presence-and-light-sensor/scan)        | A wireless motion (PIR) and light sensor                                                 | scan       |
+| [Sense](https://www.plugwise.com/products/indoor-climate/humidity-and-temperature-sensor/sense)         | A wireless temperature and humidity sensor                                               | sense      |
+| [Stealth](https://www.plugwise.com/products/appliances-and-lighting/energy-meters-and-switches/stealth) | A Circle with a more compact form factor that can be built-in                            | stealth    |
+| [Stick](https://www.plugwise.com/home-start)                                                            | A ZigBee USB controller that openHAB uses to communicate with the Circle+                | stick      |
+| [Switch](https://www.plugwise.com/products/appliances-and-lighting/energy-meters-and-switches/switch)   | A wireless wall switch                                                                   | switch     |
 
 
 ## Discovery
@@ -38,75 +37,75 @@ Similarly the MAC addresses of the Scan, Sense and Switch can also be obtained f
 
 ### Stick
 
-| Configuration Parameter | Required | Default      | Description |
-|-------------------------|----------|--------------|-------------|
+| Configuration Parameter | Required | Default      | Description                                                                       |
+|-------------------------|----------|--------------|-----------------------------------------------------------------------------------|
 | serialPort              | X        | /dev/ttyUSB0 | The serial port of the Stick, e.g. "/dev/ttyUSB0" for Linux or "COM1" for Windows |
-| messageWaitTime         |          | 150          | The time to wait between messages sent on the ZigBee network (in ms) |
+| messageWaitTime         |          | 150          | The time to wait between messages sent on the ZigBee network (in ms)              |
 
 
 To determine the serial port in Linux, insert the Stick, then execute the `dmesg` command. The last few lines of the output will contain the USB port of the Stick (e.g. `/dev/ttyUSB0`). In Windows the Device Manager lists it in the `Ports (COM & LPT)` section. On some Linux distributions (e.g. Raspbian) an OS restart may be required before the Stick is properly configured. To access the serial port of the Stick on Linux, the user running openHAB needs to be part of the 'dialout' group. E.g. for the user 'openhab' issue the following command: `sudo adduser openhab dialout`.
 
 ### Circle(+), Stealth
 
-| Configuration Parameter | Required | Default          | Description |
-|-------------------------|----------|------------------|-------------|
-| macAddress              | X        |                  | The full device MAC address e.g. "000D6F0000A1B2C3" |
+| Configuration Parameter | Required | Default          | Description                                                                                                            |
+|-------------------------|----------|------------------|------------------------------------------------------------------------------------------------------------------------|
+| macAddress              | X        |                  | The full device MAC address e.g. "000D6F0000A1B2C3"                                                                    |
 | powerStateChanging      |          | commandSwitching | Controls if the power state can be changed with commands or is always on/off (commandSwitching, alwaysOn or alwaysOff) |
-| suppliesPower           |          | false            | Enables power production measurements (true or false) |
-| measurementInterval     |          | 60               | The energy measurement interval (in minutes) (5 to 60) |
-| temporarilyNotInNetwork |          | false            | Stops searching for an unplugged device on the ZigBee network traffic (true or false) |
+| suppliesPower           |          | false            | Enables power production measurements (true or false)                                                                  |
+| measurementInterval     |          | 60               | The energy measurement interval (in minutes) (5 to 60)                                                                 |
+| temporarilyNotInNetwork |          | false            | Stops searching for an unplugged device on the ZigBee network traffic (true or false)                                  |
 
 ### Scan
 
-| Configuration Parameter | Required | Default | Description |
-|-------------------------|----------|---------|-------------|
-| macAddress              | X        |         | The full device MAC address e.g. "000D6F0000A1B2C3" |
-| sensitivity             |          | medium  | The sensitivity of movement detection (off, medium or high) |
+| Configuration Parameter | Required | Default | Description                                                                                                      |
+|-------------------------|----------|---------|------------------------------------------------------------------------------------------------------------------|
+| macAddress              | X        |         | The full device MAC address e.g. "000D6F0000A1B2C3"                                                              |
+| sensitivity             |          | medium  | The sensitivity of movement detection (off, medium or high)                                                      |
 | switchOffDelay          |          | 5       | The delay the Scan waits before sending an off command when motion is no longer detected (in minutes) (1 to 240) |
-| daylightOverride        |          | false   | Disables movement detection when there is daylight (true or false) |
-| wakeupInterval          |          | 1440    | The interval in which the Scan wakes up at least once (in minutes) (5 to 1440) |
-| wakeupDuration          |          | 10      | The number of seconds the Scan stays awake after it woke up (10 to 120) |
+| daylightOverride        |          | false   | Disables movement detection when there is daylight (true or false)                                               |
+| wakeupInterval          |          | 1440    | The interval in which the Scan wakes up at least once (in minutes) (5 to 1440)                                   |
+| wakeupDuration          |          | 10      | The number of seconds the Scan stays awake after it woke up (10 to 120)                                          |
 
 ### Sense
 
-| Configuration Parameter | Required | Default | Description |
-|-------------------------|----------|---------|-------------|
-| macAddress              | X        |         | The full device MAC address e.g. "000D6F0000A1B2C3" |
-| measurementInterval     |          | 15      | The interval in which the Sense measures the temperature and humidity (in minutes) (5 to 60) |
-| boundaryType            |          | none    | The boundary type that is used for switching (none, temperature or humidity) |
+| Configuration Parameter | Required | Default         | Description                                                                                                                |
+|-------------------------|----------|-----------------|----------------------------------------------------------------------------------------------------------------------------|
+| macAddress              | X        |                 | The full device MAC address e.g. "000D6F0000A1B2C3"                                                                        |
+| measurementInterval     |          | 15              | The interval in which the Sense measures the temperature and humidity (in minutes) (5 to 60)                               |
+| boundaryType            |          | none            | The boundary type that is used for switching (none, temperature or humidity)                                               |
 | boundaryAction          |          | offBelowOnAbove | The boundary switch action when the value is below/above the boundary minimum/maximum (offBelowOnAbove or onBelowOffAbove) |
-| temperatureBoundaryMin  |          | 15      | The minimum boundary for the temperature boundary action (0 to 60) |
-| temperatureBoundaryMax  |          | 25      | The maximum boundary for the temperature boundary action (0 to 60) |
-| humidityBoundaryMin     |          | 45      | The minimum boundary for the humidity boundary action (5 to 95) |
-| humidityBoundaryMax     |          | 65      | The maximum boundary for the humidity boundary action (5 to 95) |
-| wakeupInterval          |          | 1440    | The interval in which the Sense wakes up at least once (in minutes) (5 to 1440) |
-| wakeupDuration          |          | 10      | The number of seconds the Sense stays awake after it woke up (10 to 120) |
+| temperatureBoundaryMin  |          | 15              | The minimum boundary for the temperature boundary action (0 to 60)                                                         |
+| temperatureBoundaryMax  |          | 25              | The maximum boundary for the temperature boundary action (0 to 60)                                                         |
+| humidityBoundaryMin     |          | 45              | The minimum boundary for the humidity boundary action (5 to 95)                                                            |
+| humidityBoundaryMax     |          | 65              | The maximum boundary for the humidity boundary action (5 to 95)                                                            |
+| wakeupInterval          |          | 1440            | The interval in which the Sense wakes up at least once (in minutes) (5 to 1440)                                            |
+| wakeupDuration          |          | 10              | The number of seconds the Sense stays awake after it woke up (10 to 120)                                                   |
 
 ### Switch
 
-| Configuration Parameter | Required | Default | Description |
-|-------------------------|----------|---------|-------------|
-| macAddress              | X        |         | The full device MAC address e.g. "000D6F0000A1B2C3" |
+| Configuration Parameter | Required | Default | Description                                                                      |
+|-------------------------|----------|---------|----------------------------------------------------------------------------------|
+| macAddress              | X        |         | The full device MAC address e.g. "000D6F0000A1B2C3"                              |
 | wakeupInterval          |          | 1440    | The interval in which the Switch wakes up at least once (in minutes) (5 to 1440) |
-| wakeupDuration          |          | 10      | The number of seconds the Switch stays awake after it woke up (10 to 120) |
+| wakeupDuration          |          | 10      | The number of seconds the Switch stays awake after it woke up (10 to 120)        |
 
 
 ## Channels
 
-| Channel Type ID  | Item Type | Description | Thing Types  |
-|------------------|-----------|-------------|--------------|
-| clock            | String    | Time as indicated by the internal clock of the device | circle, circleplus, stealth |
-| energy           | Number    | Energy consumption/production (kWh) during the last measurement interval | circle, circleplus, stealth |
-| energystamp      | DateTime  | Timestamp of the start of the last energy measurement interval | circle, circleplus, stealth |
-| humidity         | Number    | Current relative humidity (%) | sense |
+| Channel Type ID  | Item Type | Description                                                                                                                                                                                                        | Thing Types                                      |
+|------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------|
+| clock            | String    | Time as indicated by the internal clock of the device                                                                                                                                                              | circle, circleplus, stealth                      |
+| energy           | Number    | Energy consumption/production (kWh) during the last measurement interval                                                                                                                                           | circle, circleplus, stealth                      |
+| energystamp      | DateTime  | Timestamp of the start of the last energy measurement interval                                                                                                                                                     | circle, circleplus, stealth                      |
+| humidity         | Number    | Current relative humidity (%)                                                                                                                                                                                      | sense                                            |
 | lastseen         | DateTime  | Timestamp of the last received message. Because there is no battery level indication this is a helpful value to determine if a battery powered device is still operating properly even when no state changes occur | circle, circleplus, scan, sense, stealth, switch |
-| leftbuttonstate  | Switch    | Current state of the left button | switch |
-| power            | Number    | Current power consumption (Watt), measured over 1 second interval | circle, circleplus, stealth |
-| realtimeclock    | DateTime  | Time as indicated by the internal clock of the Circle+ | circleplus |
-| rightbuttonstate | Switch    | Current state of the right button | switch |
-| state            | Switch    | Switches the power state on/off | circle, circleplus, stealth |
-| temperature      | Number    | Current temperature (°C) | sense |
-| triggered        | Switch    | Most recent switch action initiated by the device. When daylight override is disabled on a Scan this corresponds one to one with motion detection | scan, sense |
+| leftbuttonstate  | Switch    | Current state of the left button                                                                                                                                                                                   | switch                                           |
+| power            | Number    | Current power consumption (Watt), measured over 1 second interval                                                                                                                                                  | circle, circleplus, stealth                      |
+| realtimeclock    | DateTime  | Time as indicated by the internal clock of the Circle+                                                                                                                                                             | circleplus                                       |
+| rightbuttonstate | Switch    | Current state of the right button                                                                                                                                                                                  | switch                                           |
+| state            | Switch    | Switches the power state on/off                                                                                                                                                                                    | circle, circleplus, stealth                      |
+| temperature      | Number    | Current temperature (°C)                                                                                                                                                                                           | sense                                            |
+| triggered        | Switch    | Most recent switch action initiated by the device. When daylight override is disabled on a Scan this corresponds one to one with motion detection                                                                  | scan, sense                                      |
 
 
 ## Full Example

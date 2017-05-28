@@ -18,10 +18,10 @@ public enum BoundaryAction {
     OFF_BELOW_ON_ABOVE(0, 1),
     ON_BELOW_OFF_ABOVE(1, 0);
 
-    private int lowerAction;
-    private int upperAction;
+    private final int lowerAction;
+    private final int upperAction;
 
-    private BoundaryAction(int lowerAction, int upperAction) {
+    BoundaryAction(int lowerAction, int upperAction) {
         this.lowerAction = lowerAction;
         this.upperAction = upperAction;
     }

@@ -10,6 +10,8 @@ package org.openhab.binding.plugwise.internal.protocol;
 
 import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.POWER_LOG_INTERVAL_SET_REQUEST;
 
+import java.time.Duration;
+
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 
 /**
@@ -20,10 +22,11 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  */
 public class PowerLogIntervalSetRequestMessage extends Message {
 
-    private int consumptionInterval;
-    private int productionInterval;
+    private Duration consumptionInterval;
+    private Duration productionInterval;
 
-    public PowerLogIntervalSetRequestMessage(MACAddress macAddress, int consumptionInterval, int productionInterval) {
+    public PowerLogIntervalSetRequestMessage(MACAddress macAddress, Duration consumptionInterval,
+            Duration productionInterval) {
         super(POWER_LOG_INTERVAL_SET_REQUEST, macAddress);
         this.consumptionInterval = consumptionInterval;
         this.productionInterval = productionInterval;
@@ -31,8 +34,8 @@ public class PowerLogIntervalSetRequestMessage extends Message {
 
     @Override
     protected String payloadToHexString() {
-        String consumptionIntervalHex = String.format("%04X", consumptionInterval);
-        String productionIntervalHex = String.format("%04X", productionInterval);
+        String consumptionIntervalHex = String.format("%04X", consumptionInterval.toMinutes());
+        String productionIntervalHex = String.format("%04X", productionInterval.toMinutes());
         return consumptionIntervalHex + productionIntervalHex;
     }
 

@@ -12,6 +12,7 @@ import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.openhab.binding.plugwise.internal.protocol.field.DeviceType.STICK;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -23,9 +24,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.plugwise.internal.PlugwiseCommunicationHandler;
-import org.openhab.binding.plugwise.internal.PlugwiseCommunicationHandler.MessagePriority;
 import org.openhab.binding.plugwise.internal.PlugwiseDeviceTask;
 import org.openhab.binding.plugwise.internal.PlugwiseInitializationException;
+import org.openhab.binding.plugwise.internal.PlugwiseMessagePriority;
 import org.openhab.binding.plugwise.internal.PlugwiseUtils;
 import org.openhab.binding.plugwise.internal.config.PlugwiseStickConfig;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
@@ -58,8 +59,8 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
 
     private final PlugwiseDeviceTask onlineStateUpdateTask = new PlugwiseDeviceTask("Online state update", scheduler) {
         @Override
-        public int getConfiguredInterval() {
-            return 20;
+        public Duration getConfiguredInterval() {
+            return Duration.ofSeconds(20);
         }
 
         @Override
@@ -160,6 +161,7 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
                 handleNetworkStatusResponse((NetworkStatusResponseMessage) message);
                 break;
             default:
+                logger.trace("Received unhandled {} message from {}", message.getType(), message.getMACAddress());
                 break;
         }
     }
@@ -193,10 +195,10 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
     }
 
     private void sendMessage(Message message) {
-        sendMessage(message, MessagePriority.UPDATE_AND_DISCOVERY);
+        sendMessage(message, PlugwiseMessagePriority.UPDATE_AND_DISCOVERY);
     }
 
-    public void sendMessage(Message message, MessagePriority priority) {
+    public void sendMessage(Message message, PlugwiseMessagePriority priority) {
         try {
             communicationHandler.sendMessage(message, priority);
         } catch (IOException e) {
@@ -217,12 +219,17 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail detail, String comment) {
+        ThingStatus oldStatus = thing.getStatus();
         super.updateStatus(status, detail, comment);
-        logger.debug("Updating listeners with status {}", status);
-        for (PlugwiseStickStatusListener listener : statusListeners) {
-            listener.stickStatusChanged(status);
+        ThingStatus newStatus = thing.getStatus();
+
+        if (!oldStatus.equals(newStatus)) {
+            logger.debug("Updating listeners with status {}", status);
+            for (PlugwiseStickStatusListener listener : statusListeners) {
+                listener.stickStatusChanged(status);
+            }
+            updateTask(onlineStateUpdateTask);
         }
-        updateTask(onlineStateUpdateTask);
     }
 
     protected void updateTask(PlugwiseDeviceTask task) {

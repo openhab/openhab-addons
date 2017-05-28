@@ -10,6 +10,8 @@ package org.openhab.binding.plugwise.handler;
 
 import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
 
+import java.time.Duration;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.plugwise.internal.config.PlugwiseScanConfig;
@@ -57,7 +59,7 @@ public class PlugwiseScanHandler extends AbstractSleepingEndDeviceHandler {
     }
 
     @Override
-    protected int getWakeupDuration() {
+    protected Duration getWakeupDuration() {
         return configuration.getWakeupDuration();
     }
 
@@ -74,17 +76,18 @@ public class PlugwiseScanHandler extends AbstractSleepingEndDeviceHandler {
                 updateConfiguration(configuration);
                 break;
             case SCAN_PARAMETERS_SET_ACK:
-                logger.debug("Received ACK for parameters set of {} ({}) ", deviceType, macAddress);
+                logger.debug("Received ACK for parameters set of {} ({})", deviceType, macAddress);
                 updateScanParameters = false;
                 break;
             case SCAN_PARAMETERS_SET_NACK:
-                logger.debug("Received NACK for parameters set of {} ({}) ", deviceType, macAddress);
+                logger.debug("Received NACK for parameters set of {} ({})", deviceType, macAddress);
                 break;
             case SLEEP_SET_ACK:
-                logger.debug("Received ACK for sleep set of {} ({}) ", deviceType, macAddress);
+                logger.debug("Received ACK for sleep set of {} ({})", deviceType, macAddress);
                 updateSleepParameters = false;
                 break;
             default:
+                logger.trace("Received unhandled {} message from {} ({})", message.getType(), deviceType, macAddress);
                 break;
         }
 

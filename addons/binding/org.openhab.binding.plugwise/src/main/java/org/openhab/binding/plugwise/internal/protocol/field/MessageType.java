@@ -63,14 +63,14 @@ public enum MessageType {
         }
     }
 
-    public static MessageType forValue(int value) {
-        return TYPES_BY_VALUE.get(value);
+    private final int identifier;
+
+    MessageType(int value) {
+        identifier = value;
     }
 
-    private int identifier;
-
-    private MessageType(int value) {
-        identifier = value;
+    public static MessageType forValue(int value) {
+        return TYPES_BY_VALUE.get(value);
     }
 
     public int toInt() {

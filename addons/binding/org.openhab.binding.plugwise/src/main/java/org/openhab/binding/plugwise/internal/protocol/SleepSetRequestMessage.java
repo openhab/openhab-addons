@@ -10,6 +10,8 @@ package org.openhab.binding.plugwise.internal.protocol;
 
 import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.SLEEP_SET_REQUEST;
 
+import java.time.Duration;
+
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 
 /**
@@ -19,29 +21,30 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  */
 public class SleepSetRequestMessage extends Message {
 
-    private static final int DEFAULT_SLEEP_DURATION = 5;
+    private static final Duration DEFAULT_SLEEP_DURATION = Duration.ofSeconds(5);
 
-    private int wakeupDuration;
-    private int sleepDuration;
-    private int wakeupInterval;
+    private Duration wakeupDuration;
+    private Duration sleepDuration;
+    private Duration wakeupInterval;
     private int unknown;
 
-    public SleepSetRequestMessage(MACAddress macAddress, int wakeupDuration, int sleepDuration, int wakeupInterval) {
+    public SleepSetRequestMessage(MACAddress macAddress, Duration wakeupDuration, Duration sleepDuration,
+            Duration wakeupInterval) {
         super(SLEEP_SET_REQUEST, macAddress);
         this.wakeupDuration = wakeupDuration;
         this.sleepDuration = sleepDuration;
         this.wakeupInterval = wakeupInterval;
     }
 
-    public SleepSetRequestMessage(MACAddress macAddress, int wakeupDuration, int wakeupInterval) {
+    public SleepSetRequestMessage(MACAddress macAddress, Duration wakeupDuration, Duration wakeupInterval) {
         this(macAddress, wakeupDuration, DEFAULT_SLEEP_DURATION, wakeupInterval);
     }
 
     @Override
     protected String payloadToHexString() {
-        String wakeupDurationHex = String.format("%02X", wakeupDuration);
-        String sleepDurationHex = String.format("%04X", sleepDuration);
-        String wakeupIntervalHex = String.format("%04X", wakeupInterval);
+        String wakeupDurationHex = String.format("%02X", wakeupDuration.getSeconds());
+        String sleepDurationHex = String.format("%04X", sleepDuration.getSeconds());
+        String wakeupIntervalHex = String.format("%04X", wakeupInterval.toMinutes());
         String unknownHex = String.format("%06X", unknown);
         return wakeupDurationHex + sleepDurationHex + wakeupIntervalHex + unknownHex;
     }

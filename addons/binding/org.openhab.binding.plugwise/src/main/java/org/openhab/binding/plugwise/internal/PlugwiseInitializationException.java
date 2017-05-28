@@ -22,10 +22,6 @@ public class PlugwiseInitializationException extends Exception {
         super(msg);
     }
 
-    public PlugwiseInitializationException(Throwable cause) {
-        super(cause);
-    }
-
     public PlugwiseInitializationException(String msg, Throwable cause) {
         super(msg, cause);
     }

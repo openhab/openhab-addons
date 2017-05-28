@@ -10,11 +10,14 @@ package org.openhab.binding.plugwise.handler;
 
 import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
 
+import java.time.Duration;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.plugwise.internal.config.PlugwiseSwitchConfig;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
+import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage.ExtensionCode;
 import org.openhab.binding.plugwise.internal.protocol.BroadcastGroupSwitchResponseMessage;
 import org.openhab.binding.plugwise.internal.protocol.SleepSetRequestMessage;
 import org.openhab.binding.plugwise.internal.protocol.field.DeviceType;
@@ -54,7 +57,7 @@ public class PlugwiseSwitchHandler extends AbstractSleepingEndDeviceHandler {
     }
 
     @Override
-    protected int getWakeupDuration() {
+    protected Duration getWakeupDuration() {
         return configuration.getWakeupDuration();
     }
 
@@ -62,13 +65,9 @@ public class PlugwiseSwitchHandler extends AbstractSleepingEndDeviceHandler {
     protected void handleAcknowledgement(AcknowledgementMessage message) {
         boolean oldConfigurationPending = isConfigurationPending();
 
-        switch (message.getExtensionCode()) {
-            case SLEEP_SET_ACK:
-                logger.debug("Received ACK for sleep set of {} ({}) ", deviceType, macAddress);
-                updateSleepParameters = false;
-                break;
-            default:
-                break;
+        if (message.getExtensionCode() == ExtensionCode.SLEEP_SET_ACK) {
+            logger.debug("Received ACK for sleep set of {} ({})", deviceType, macAddress);
+            updateSleepParameters = false;
         }
 
         boolean newConfigurationPending = isConfigurationPending();

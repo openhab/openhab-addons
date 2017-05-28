@@ -10,6 +10,8 @@ package org.openhab.binding.plugwise.internal.protocol;
 
 import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.SENSE_REPORT_INTERVAL_SET_REQUEST;
 
+import java.time.Duration;
+
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 
 /**
@@ -20,16 +22,16 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  */
 public class SenseReportIntervalSetRequest extends Message {
 
-    private int reportInterval;
+    private Duration reportInterval;
 
-    public SenseReportIntervalSetRequest(MACAddress macAddress, int reportInterval) {
+    public SenseReportIntervalSetRequest(MACAddress macAddress, Duration reportInterval) {
         super(SENSE_REPORT_INTERVAL_SET_REQUEST, macAddress);
         this.reportInterval = reportInterval;
     }
 
     @Override
     protected String payloadToHexString() {
-        return String.format("%02X", reportInterval);
+        return String.format("%02X", reportInterval.toMinutes());
     }
 
 }

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.plugwise.internal.config;
 
+import java.time.Duration;
+
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 
 /**
@@ -26,12 +28,12 @@ public class PlugwiseSwitchConfig {
         return new MACAddress(macAddress);
     }
 
-    public int getWakeupInterval() {
-        return wakeupInterval;
+    public Duration getWakeupInterval() {
+        return Duration.ofMinutes(wakeupInterval);
     }
 
-    public int getWakeupDuration() {
-        return wakeupDuration;
+    public Duration getWakeupDuration() {
+        return Duration.ofSeconds(wakeupDuration);
     }
 
     public boolean isUpdateConfiguration() {

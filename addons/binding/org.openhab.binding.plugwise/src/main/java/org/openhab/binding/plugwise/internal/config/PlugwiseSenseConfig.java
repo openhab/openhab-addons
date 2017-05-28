@@ -12,6 +12,8 @@ import static com.google.common.base.CaseFormat.*;
 import static org.openhab.binding.plugwise.internal.protocol.field.BoundaryAction.OFF_BELOW_ON_ABOVE;
 import static org.openhab.binding.plugwise.internal.protocol.field.BoundaryType.NONE;
 
+import java.time.Duration;
+
 import org.openhab.binding.plugwise.internal.protocol.field.BoundaryAction;
 import org.openhab.binding.plugwise.internal.protocol.field.BoundaryType;
 import org.openhab.binding.plugwise.internal.protocol.field.Humidity;
@@ -41,8 +43,8 @@ public class PlugwiseSenseConfig {
         return new MACAddress(macAddress);
     }
 
-    public int getMeasurementInterval() {
-        return measurementInterval;
+    public Duration getMeasurementInterval() {
+        return Duration.ofMinutes(measurementInterval);
     }
 
     public BoundaryType getBoundaryType() {
@@ -69,12 +71,12 @@ public class PlugwiseSenseConfig {
         return new Humidity(humidityBoundaryMax);
     }
 
-    public int getWakeupInterval() {
-        return wakeupInterval;
+    public Duration getWakeupInterval() {
+        return Duration.ofMinutes(wakeupInterval);
     }
 
-    public int getWakeupDuration() {
-        return wakeupDuration;
+    public Duration getWakeupDuration() {
+        return Duration.ofSeconds(wakeupDuration);
     }
 
     public boolean isUpdateConfiguration() {

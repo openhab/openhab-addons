@@ -11,6 +11,8 @@ package org.openhab.binding.plugwise.internal.config;
 import static com.google.common.base.CaseFormat.*;
 import static org.openhab.binding.plugwise.internal.protocol.field.Sensitivity.MEDIUM;
 
+import java.time.Duration;
+
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.binding.plugwise.internal.protocol.field.Sensitivity;
 
@@ -38,20 +40,20 @@ public class PlugwiseScanConfig {
         return Sensitivity.valueOf(LOWER_CAMEL.to(UPPER_UNDERSCORE, sensitivity));
     }
 
-    public int getSwitchOffDelay() {
-        return switchOffDelay;
+    public Duration getSwitchOffDelay() {
+        return Duration.ofMinutes(switchOffDelay);
     }
 
     public boolean isDaylightOverride() {
         return daylightOverride;
     }
 
-    public int getWakeupInterval() {
-        return wakeupInterval;
+    public Duration getWakeupInterval() {
+        return Duration.ofMinutes(wakeupInterval);
     }
 
-    public int getWakeupDuration() {
-        return wakeupDuration;
+    public Duration getWakeupDuration() {
+        return Duration.ofSeconds(wakeupDuration);
     }
 
     public boolean isRecalibrate() {

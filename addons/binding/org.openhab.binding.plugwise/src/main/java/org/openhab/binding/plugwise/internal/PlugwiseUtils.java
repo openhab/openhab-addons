@@ -71,8 +71,23 @@ public final class PlugwiseUtils {
         }
     }
 
+    public static <T extends Comparable<T>> T minComparable(T first, T second) {
+        return first.compareTo(second) <= 0 ? first : second;
+    }
+
     public static DateTimeType newDateTimeType(LocalDateTime localDateTime) {
         return new DateTimeType(GregorianCalendar.from(localDateTime.atZone(ZoneId.systemDefault())));
+    }
+
+    public static void stopBackgroundThread(Thread thread) {
+        if (thread != null) {
+            thread.interrupt();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                Thread.interrupted();
+            }
+        }
     }
 
     public static boolean updateProperties(Map<String, String> properties, InformationResponseMessage message) {

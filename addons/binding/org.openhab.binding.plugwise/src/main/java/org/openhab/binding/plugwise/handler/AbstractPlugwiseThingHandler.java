@@ -27,8 +27,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.plugwise.PlugwiseBindingConstants;
-import org.openhab.binding.plugwise.internal.PlugwiseCommunicationHandler.MessagePriority;
 import org.openhab.binding.plugwise.internal.PlugwiseDeviceTask;
+import org.openhab.binding.plugwise.internal.PlugwiseMessagePriority;
 import org.openhab.binding.plugwise.internal.PlugwiseUtils;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.protocol.InformationRequestMessage;
@@ -47,13 +47,13 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler implements PlugwiseMessageListener {
 
-    private static final int DEFAULT_UPDATE_INTERVAL = 60;
-    private static final int MESSAGE_TIMEOUT = 15;
+    private static final Duration DEFAULT_UPDATE_INTERVAL = Duration.ofMinutes(1);
+    private static final Duration MESSAGE_TIMEOUT = Duration.ofSeconds(15);
     private static final int MAX_UNANSWERED_PINGS = 2;
 
     private final PlugwiseDeviceTask onlineStateUpdateTask = new PlugwiseDeviceTask("Online state update", scheduler) {
         @Override
-        public int getConfiguredInterval() {
+        public Duration getConfiguredInterval() {
             return MESSAGE_TIMEOUT;
         }
 
@@ -75,7 +75,7 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
         }
     };
 
-    private final Logger logger = LoggerFactory.getLogger(AbstractSleepingEndDeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractPlugwiseThingHandler.class);
 
     private PlugwiseStickHandler stickHandler;
     private LocalDateTime lastSeen = LocalDateTime.MIN;
@@ -103,10 +103,14 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
         onlineStateUpdateTask.stop();
     }
 
-    protected int getChannelUpdateInterval(String channelId) {
+    protected Duration durationSinceLastSeen() {
+        return Duration.between(lastSeen, LocalDateTime.now());
+    }
+
+    protected Duration getChannelUpdateInterval(String channelId) {
         Configuration configuration = thing.getChannel(channelId).getConfiguration();
         BigDecimal interval = (BigDecimal) configuration.get(PlugwiseBindingConstants.CONFIG_PROPERTY_UPDATE_INTERVAL);
-        return interval != null ? interval.intValue() : DEFAULT_UPDATE_INTERVAL;
+        return interval != null ? Duration.ofSeconds(interval.intValue()) : DEFAULT_UPDATE_INTERVAL;
     }
 
     protected DeviceType getDeviceType() {
@@ -160,15 +164,11 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
         }
     }
 
-    protected long secondsSinceLastSeen() {
-        return Duration.between(lastSeen, LocalDateTime.now()).getSeconds();
-    }
-
     protected abstract boolean shouldOnlineTaskBeScheduled();
 
     protected void sendCommandMessage(Message message) {
         if (stickHandler != null) {
-            stickHandler.sendMessage(message, MessagePriority.COMMAND);
+            stickHandler.sendMessage(message, PlugwiseMessagePriority.COMMAND);
         }
     }
 
@@ -181,13 +181,13 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
 
     protected void sendFastUpdateMessage(Message message) {
         if (stickHandler != null) {
-            stickHandler.sendMessage(message, MessagePriority.FAST_UPDATE);
+            stickHandler.sendMessage(message, PlugwiseMessagePriority.FAST_UPDATE);
         }
     }
 
     protected void sendMessage(Message message) {
         if (stickHandler != null) {
-            stickHandler.sendMessage(message, MessagePriority.UPDATE_AND_DISCOVERY);
+            stickHandler.sendMessage(message, PlugwiseMessagePriority.UPDATE_AND_DISCOVERY);
         }
     }
 
@@ -231,7 +231,8 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
 
     protected void updateOnlineState() {
         ThingStatus status = thing.getStatus();
-        if (status == ONLINE && unansweredPings < MAX_UNANSWERED_PINGS && secondsSinceLastSeen() > MESSAGE_TIMEOUT) {
+        if (status == ONLINE && unansweredPings < MAX_UNANSWERED_PINGS
+                && MESSAGE_TIMEOUT.minus(durationSinceLastSeen()).isNegative()) {
             ping();
             unansweredPings++;
         } else if (status == ONLINE && unansweredPings >= MAX_UNANSWERED_PINGS) {

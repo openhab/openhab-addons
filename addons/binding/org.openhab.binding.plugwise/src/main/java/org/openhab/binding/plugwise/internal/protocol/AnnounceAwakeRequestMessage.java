@@ -10,8 +10,7 @@ package org.openhab.binding.plugwise.internal.protocol;
 
 import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.ANNOUNCE_AWAKE_REQUEST;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,19 +40,11 @@ public class AnnounceAwakeRequestMessage extends Message {
         /** A human pressed the button on a SED to wake it up */
         WAKEUP_BUTTON(5);
 
-        private static final Map<Integer, AwakeReason> REASONS_BY_VALUE = new HashMap<>();
-
-        static {
-            for (AwakeReason type : AwakeReason.values()) {
-                REASONS_BY_VALUE.put(type.id, type);
-            }
-        }
-
         public static AwakeReason forValue(int value) {
-            return REASONS_BY_VALUE.get(value);
+            return Arrays.stream(values()).filter(awakeReason -> awakeReason.id == value).findFirst().get();
         }
 
-        private int id;
+        private final int id;
 
         AwakeReason(int id) {
             this.id = id;

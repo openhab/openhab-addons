@@ -16,10 +16,10 @@ package org.openhab.binding.plugwise.internal.protocol.field;
  */
 public class PowerCalibration {
 
-    private double gainA;
-    private double gainB;
-    private double offsetTotal;
-    private double offsetNoise;
+    private final double gainA;
+    private final double gainB;
+    private final double offsetTotal;
+    private final double offsetNoise;
 
     public PowerCalibration(double gainA, double gainB, double offsetNoise, double offsetTotal) {
         this.gainA = gainA;

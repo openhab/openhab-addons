@@ -11,6 +11,8 @@ package org.openhab.binding.plugwise.handler;
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.openhab.binding.plugwise.PlugwiseBindingConstants.CHANNEL_TRIGGERED;
 
+import java.time.Duration;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
@@ -19,6 +21,8 @@ import org.openhab.binding.plugwise.internal.protocol.AnnounceAwakeRequestMessag
 import org.openhab.binding.plugwise.internal.protocol.BroadcastGroupSwitchResponseMessage;
 import org.openhab.binding.plugwise.internal.protocol.InformationResponseMessage;
 import org.openhab.binding.plugwise.internal.protocol.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AbstractPlugwiseThingHandler} handles common Plugwise sleeping end device (SED) channel updates and
@@ -30,11 +34,13 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
 
     private static final int SED_PROPERTIES_COUNT = 3;
 
+    private final Logger logger = LoggerFactory.getLogger(AbstractSleepingEndDeviceHandler.class);
+
     public AbstractSleepingEndDeviceHandler(Thing thing) {
         super(thing);
     }
 
-    protected abstract int getWakeupDuration();
+    protected abstract Duration getWakeupDuration();
 
     protected void handleAcknowledgement(AcknowledgementMessage message) {
         updateStatusOnDetailChange();
@@ -79,6 +85,8 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
                 handleInformationResponse((InformationResponseMessage) message);
                 break;
             default:
+                logger.trace("Received unhandled {} message from {} ({})", message.getType(), getDeviceType(),
+                        getMACAddress());
                 break;
         }
     }
@@ -90,7 +98,7 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
 
     @Override
     protected void updateOnlineState() {
-        if (thing.getStatus() == ONLINE && secondsSinceLastSeen() > getWakeupDuration()) {
+        if (thing.getStatus() == ONLINE && getWakeupDuration().minus(durationSinceLastSeen()).isNegative()) {
             updateStatus(OFFLINE, getThingStatusDetail());
         }
     }

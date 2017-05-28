@@ -11,6 +11,7 @@ package org.openhab.binding.plugwise.internal.protocol;
 import static java.time.ZoneOffset.UTC;
 import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.POWER_INFORMATION_RESPONSE;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,12 +29,13 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 public class PowerInformationResponseMessage extends Message {
 
     private static final Pattern PAYLOAD_PATTERN = Pattern.compile("(\\w{16})(\\w{4})(\\w{4})(\\w{8})(\\w{8})(\\w{4})");
+    private static final double NANOSECONDS_CORRECTION_DIVISOR = 0.000046875; // 46875 divided by nanos per second
 
     private Energy oneSecond;
     private Energy eightSecond;
     private Energy oneHourConsumed;
     private Energy oneHourProduced;
-    private double secondsCorrection;
+    private long nanosCorrection;
 
     public PowerInformationResponseMessage(int sequenceNumber, String payload) {
         super(POWER_INFORMATION_RESPONSE, sequenceNumber, payload);
@@ -61,11 +63,13 @@ public class PowerInformationResponseMessage extends Message {
         if (matcher.matches()) {
             ZonedDateTime utcNow = ZonedDateTime.now(UTC);
             macAddress = new MACAddress(matcher.group(1));
-            secondsCorrection = Integer.parseInt(matcher.group(6), 16) / 46875.0;
-            oneSecond = new Energy(utcNow, Integer.parseInt(matcher.group(2), 16), 1 + secondsCorrection);
-            eightSecond = new Energy(utcNow, Integer.parseInt(matcher.group(3), 16), 8 + secondsCorrection);
-            oneHourConsumed = new Energy(utcNow, Long.parseLong(matcher.group(4), 16), 3600);
-            oneHourProduced = new Energy(utcNow, Long.parseLong(matcher.group(5), 16), 3600);
+            nanosCorrection = Math.round(Integer.parseInt(matcher.group(6), 16) / NANOSECONDS_CORRECTION_DIVISOR);
+            oneSecond = new Energy(utcNow, Integer.parseInt(matcher.group(2), 16),
+                    Duration.ofSeconds(1, nanosCorrection));
+            eightSecond = new Energy(utcNow, Integer.parseInt(matcher.group(3), 16),
+                    Duration.ofSeconds(8, nanosCorrection));
+            oneHourConsumed = new Energy(utcNow, Long.parseLong(matcher.group(4), 16), Duration.ofHours(1));
+            oneHourProduced = new Energy(utcNow, Long.parseLong(matcher.group(5), 16), Duration.ofHours(1));
         } else {
             throw new PlugwisePayloadMismatchException(POWER_INFORMATION_RESPONSE, PAYLOAD_PATTERN, payload);
         }

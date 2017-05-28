@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.plugwise.PlugwiseBindingConstants;
 import org.openhab.binding.plugwise.handler.PlugwiseStickHandler;
-import org.openhab.binding.plugwise.internal.PlugwiseCommunicationHandler.MessagePriority;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseStickStatusListener;
 import org.openhab.binding.plugwise.internal.protocol.AnnounceAwakeRequestMessage;
@@ -56,14 +55,14 @@ import com.google.common.collect.Sets;
 public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         implements ExtendedDiscoveryService, PlugwiseMessageListener, PlugwiseStickStatusListener {
 
-    private class CurrentRoleCall {
+    private static class CurrentRoleCall {
         private boolean isRoleCalling;
         private int currentNodeID;
         private int attempts;
         private long lastRequestMillis;
     }
 
-    private class DiscoveredNode {
+    private static class DiscoveredNode {
 
         private MACAddress macAddress;
         private DeviceType deviceType = DeviceType.UNKNOWN;
@@ -126,14 +125,10 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         String mac = node.macAddress.toString();
         ThingUID thingUID = new ThingUID(PlugwiseUtils.getThingTypeUID(node.deviceType), mac);
 
-        DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID);
-        builder = builder.withBridge(stickHandler.getThing().getUID());
-        builder = builder.withLabel("Plugwise " + node.deviceType.toString());
-        builder = builder.withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS, mac);
-        builder = builder.withProperties(new HashMap<>(node.properties));
-        builder = builder.withRepresentationProperty(mac);
-
-        return builder.build();
+        return DiscoveryResultBuilder.create(thingUID).withBridge(stickHandler.getThing().getUID())
+                .withLabel("Plugwise " + node.deviceType.toString())
+                .withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS, mac)
+                .withProperties(new HashMap<>(node.properties)).withRepresentationProperty(mac).build();
     }
 
     @Override
@@ -215,6 +210,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
                 handleRoleCallResponse((RoleCallResponseMessage) message);
                 break;
             default:
+                logger.trace("Received unhandled {} message from {}", message.getType(), message.getMACAddress());
                 break;
         }
     }
@@ -278,7 +274,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private void sendMessage(Message message) {
-        stickHandler.sendMessage(message, MessagePriority.UPDATE_AND_DISCOVERY);
+        stickHandler.sendMessage(message, PlugwiseMessagePriority.UPDATE_AND_DISCOVERY);
     }
 
     @Override

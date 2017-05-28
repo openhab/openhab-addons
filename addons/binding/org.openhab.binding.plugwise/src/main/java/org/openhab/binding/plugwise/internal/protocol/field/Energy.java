@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 /**
  * A simple class to represent energy usage, converting between Plugwise data representations.
@@ -21,20 +22,21 @@ import java.time.ZonedDateTime;
  */
 public class Energy {
 
+    private static final int WATTS_PER_KILOWATT = 1000;
     private static final double PULSES_PER_KW_SECOND = 468.9385193;
-    private static final double PULSES_PER_W_SECOND = (PULSES_PER_KW_SECOND / 1000);
+    private static final double PULSES_PER_W_SECOND = PULSES_PER_KW_SECOND / WATTS_PER_KILOWATT;
 
     private ZonedDateTime utcStart; // using UTC resolves wrong local start/end timestamps when DST changes occur
     private ZonedDateTime utcEnd;
     private long pulses;
-    private double interval; // seconds
+    private Duration interval;
 
     public Energy(ZonedDateTime utcEnd, long pulses) {
         this.utcEnd = utcEnd;
         this.pulses = pulses;
     }
 
-    public Energy(ZonedDateTime utcEnd, long pulses, double interval) {
+    public Energy(ZonedDateTime utcEnd, long pulses, Duration interval) {
         this.utcEnd = utcEnd;
         this.pulses = pulses;
         this.interval = interval;
@@ -59,7 +61,7 @@ public class Energy {
         return utcEnd.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    public double getInterval() {
+    public Duration getInterval() {
         return interval;
     }
 
@@ -71,13 +73,20 @@ public class Energy {
         return utcStart.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    public void setInterval(double interval) {
+    private double intervalSeconds() {
+        double seconds = interval.getSeconds();
+        seconds += interval.getNano() / ChronoUnit.SECONDS.getDuration().toNanos();
+        return seconds;
+    }
+
+    public void setInterval(Duration interval) {
         this.interval = interval;
         updateStart(interval);
     }
 
     public double tokWh(PowerCalibration calibration) {
-        return toWatt(calibration) * interval / (3600 * 1000);
+        return toWatt(calibration) * intervalSeconds()
+                / (ChronoUnit.HOURS.getDuration().getSeconds() * WATTS_PER_KILOWATT);
     }
 
     @Override
@@ -87,12 +96,12 @@ public class Energy {
     }
 
     public double toWatt(PowerCalibration calibration) {
-        double averagePulses = pulses / interval;
+        double averagePulses = pulses / intervalSeconds();
         return correctPulses(averagePulses, calibration) / PULSES_PER_W_SECOND;
     }
 
-    private void updateStart(double interval) {
-        utcStart = utcEnd.minus(Duration.ofMillis(Math.round(interval * 1000)));
+    private void updateStart(Duration interval) {
+        utcStart = utcEnd.minus(interval);
     }
 
 }

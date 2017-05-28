@@ -16,8 +16,11 @@ package org.openhab.binding.plugwise.internal.protocol.field;
 public class Humidity {
 
     private static final String EMPTY_VALUE = "FFFF";
+    private static final double MAX_HEX_VALUE = 65536;
+    private static final double MULTIPLIER = 125;
+    private static final double OFFSET = 6;
 
-    private double value;
+    private final double value;
 
     public Humidity(double value) {
         this.value = value;
@@ -27,7 +30,7 @@ public class Humidity {
         if (EMPTY_VALUE.equals(hexValue)) {
             value = Double.MIN_VALUE;
         } else {
-            value = 125.0 * (Integer.parseInt(hexValue, 16) / 65536.0) - 6.0;
+            value = MULTIPLIER * (Integer.parseInt(hexValue, 16) / MAX_HEX_VALUE) - OFFSET;
         }
     }
 
@@ -36,7 +39,7 @@ public class Humidity {
     }
 
     public String toHex() {
-        return String.format("%04X", Math.round((value + 6.0) / 125.0 * 65536.0));
+        return String.format("%04X", Math.round((value + OFFSET) / MULTIPLIER * MAX_HEX_VALUE));
     }
 
     @Override
