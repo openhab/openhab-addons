@@ -36,7 +36,7 @@
         <description>Grouping of Units</description>
 
         <channels>
-            <channel id="status" typeId="switch" />
+            <channel id="status" typeId="scene_switch" />
             <channel id="scenea" typeId="scene_togglea" />
             <channel id="sceneb" typeId="scene_toggleb" />
             <channel id="scenec" typeId="scene_togglec" />
@@ -191,6 +191,13 @@
         <description>Contact state information</description>
         <category>Contact</category>
         <state pattern="%s" readOnly="true"></state>
+    </channel-type>
+    <channel-type id="scene_switch">
+        <item-type>Switch</item-type>
+        <label>On/Off</label>
+        <description>Send On/Off to Room</description>
+        <category>Switch</category>
+        <state pattern="%s" ></state>
     </channel-type>
     <channel-type id="scene_togglea">
         <item-type>Switch</item-type>
