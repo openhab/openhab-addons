@@ -102,7 +102,7 @@ public class FroniusHandler extends BaseThingHandler {
     }
 
     /**
-     * Start the job refreshing the fronius data
+     * Start the job refreshing the data
      */
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
@@ -110,10 +110,9 @@ public class FroniusHandler extends BaseThingHandler {
                 @Override
                 public void run() {
                     try {
-                        // Request new air quality data to the aqicn.org service
+                        // Request
                         aqiResponse = updateData();
-
-                        // Update all channels from the updated AQI data
+                        // Update all channels
                         for (Channel channel : getThing().getChannels()) {
                             updateChannel(channel.getUID().getId(), aqiResponse);
                         }
@@ -182,6 +181,14 @@ public class FroniusHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Update the channel from the last data retrieved
+     * 
+     * @param channelId the id identifying the channel to be updated
+     * @param data
+     * @return
+     * @throws Exception
+     */
     public static Object getValue(String channelId, InverterRealtimeResponse data) throws Exception {
         String[] fields = StringUtils.split(channelId, "#");
 
