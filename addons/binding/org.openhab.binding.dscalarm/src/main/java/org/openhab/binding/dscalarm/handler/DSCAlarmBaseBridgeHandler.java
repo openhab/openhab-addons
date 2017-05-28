@@ -607,17 +607,12 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         logger.debug("sendDSCAlarmCommand(): Attempting to send DSC Alarm Command: command - {} - data: {}", command,
                 data);
 
-        try {
-            DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(command);
+        DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(command);
 
-            if (dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API) && dscAlarmCode.equals(DSCAlarmCode.KeySequence)) {
-                return sendKeySequence(data);
-            } else {
-                return sendCommand(dscAlarmCode, data);
-            }
-        } catch (Exception e) {
-            logger.error("sendDSCAlarmCommand(): Failed to Send DSC Alarm Command! - {}", e);
-            return false;
+        if (dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API) && dscAlarmCode.equals(DSCAlarmCode.KeySequence)) {
+            return sendKeySequence(data);
+        } else {
+            return sendCommand(dscAlarmCode, data);
         }
     }
 

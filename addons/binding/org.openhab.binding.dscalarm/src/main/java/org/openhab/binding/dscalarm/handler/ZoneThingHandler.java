@@ -108,24 +108,17 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
             return;
         }
 
-        if (dscAlarmBridgeHandler != null) {
+        if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()
+                && channelUID.getId() == ZONE_BYPASS_MODE) {
 
-            if (dscAlarmBridgeHandler.isConnected()) {
-                switch (channelUID.getId()) {
-                    case ZONE_BYPASS_MODE:
-                        if (command == OnOffType.OFF) {
-                            String data = String.valueOf(getPartitionNumber()) + "*1"
-                                    + String.format("%02d", getZoneNumber()) + "#";
-                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
-                        } else if (command == OnOffType.ON) {
-                            String data = String.valueOf(getPartitionNumber()) + "*1"
-                                    + String.format("%02d", getZoneNumber()) + "#";
-                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            if (command == OnOffType.OFF) {
+                String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber())
+                        + "#";
+                dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
+            } else if (command == OnOffType.ON) {
+                String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber())
+                        + "#";
+                dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
             }
         }
     }

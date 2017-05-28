@@ -105,35 +105,33 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
             return;
         }
 
-        if (dscAlarmBridgeHandler != null) {
+        if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()) {
 
-            if (dscAlarmBridgeHandler.isConnected()) {
-                switch (channelUID.getId()) {
-                    case PARTITION_ARM_MODE:
-                        int partitionNumber = getPartitionNumber();
-                        if (command.toString().equals("0")) {
-                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionDisarmControl,
-                                    String.valueOf(partitionNumber));
-                        } else if (command.toString().equals("1")) {
-                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlAway,
-                                    String.valueOf(partitionNumber));
-                        } else if (command.toString().equals("2")) {
-                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlStay,
-                                    String.valueOf(partitionNumber));
-                        } else if (command.toString().equals("3")) {
-                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
-                                    String.valueOf(partitionNumber));
-                        } else if (command.toString().equals("4")) {
-                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
-                                    String.valueOf(partitionNumber));
-                        } else if (command.toString().equals("5")) {
-                            dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlWithUserCode,
-                                    String.valueOf(partitionNumber));
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            switch (channelUID.getId()) {
+                case PARTITION_ARM_MODE:
+                    int partitionNumber = getPartitionNumber();
+                    if (command.toString().equals("0")) {
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionDisarmControl,
+                                String.valueOf(partitionNumber));
+                    } else if (command.toString().equals("1")) {
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlAway,
+                                String.valueOf(partitionNumber));
+                    } else if (command.toString().equals("2")) {
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlStay,
+                                String.valueOf(partitionNumber));
+                    } else if (command.toString().equals("3")) {
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
+                                String.valueOf(partitionNumber));
+                    } else if (command.toString().equals("4")) {
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlZeroEntryDelay,
+                                String.valueOf(partitionNumber));
+                    } else if (command.toString().equals("5")) {
+                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.PartitionArmControlWithUserCode,
+                                String.valueOf(partitionNumber));
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }

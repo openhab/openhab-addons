@@ -16,8 +16,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
@@ -88,19 +86,6 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
                     logger.debug("updateChannel(): Keypad Channel not updated - {}.", channelUID);
                     break;
             }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-
-        logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
-
-        if (command instanceof RefreshType) {
-            return;
         }
     }
 
