@@ -122,38 +122,23 @@ public class Controller {
         return "http://" + veraHost + ":" + veraPort + "/data_request";
     }
 
-    private void setStatus(Device d, String status, String service) {
+    private void setStatus(Device d, String status) {
+        String service = "urn:upnp-org:serviceId:SwitchPower1";
+        if ("7".equals(d.getCategory())) {
+            service = "urn:micasaverde-com:serviceId:DoorLock1";
+        }
         sendCommand(getUrl() + "?id=action&DeviceNum=" + d.getId() + "&serviceId=" + service
                 + "&action=SetTarget&newTargetValue=" + status);
     }
 
-    public void updateSdata() {
-        try {
-            String result = request(getUrl() + "?id=sdata&output_format=json");
-            Sdata data = gson.fromJson(result, Sdata.class);
-            denormalizeSdata(data);
-            sdata = data;
-        } catch (IOException e) {
-            logger.warn("Failed to update sdata: {}", e.getMessage());
-        }
-    }
-
     public void turnDeviceOn(Device d) {
         d.setStatus("1");
-        if ("7".equals(d.getCategory())) {
-            setStatus(d, "1", "urn:micasaverde-com:serviceId:DoorLock1");
-        } else {
-            setStatus(d, "1", "urn:upnp-org:serviceId:SwitchPower1");
-        }
+        setStatus(d, "1");
     }
 
     public void turnDeviceOff(Device d) {
         d.setStatus("0");
-        if ("7".equals(d.getCategory())) {
-            setStatus(d, "0", "urn:micasaverde-com:serviceId:DoorLock1");
-        } else {
-            setStatus(d, "0", "urn:upnp-org:serviceId:SwitchPower1");
-        }
+        setStatus(d, "0");
     }
 
     public void setDimLevel(Device d, String level) {
@@ -165,6 +150,17 @@ public class Controller {
     public void runScene(String id) {
         sendCommand(getUrl() + "?id=action&SceneNum=" + id
                 + "&serviceId=urn:micasaverde-com:serviceId:HomeAutomationGateway1&action=RunScene");
+    }
+
+    public void updateSdata() {
+        try {
+            String result = request(getUrl() + "?id=sdata&output_format=json");
+            Sdata data = gson.fromJson(result, Sdata.class);
+            denormalizeSdata(data);
+            sdata = data;
+        } catch (IOException e) {
+            logger.warn("Failed to update sdata: {}", e.getMessage());
+        }
     }
 
     public boolean isConnected() {

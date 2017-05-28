@@ -14,11 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.vera2.config.VeraBridgeConfiguration;
 import org.openhab.binding.vera2.controller.Controller;
@@ -47,29 +45,17 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
 
             try {
                 if (controller.isConnected()) {
-                    logger.info("Vera controller successfully authenticated");
+                    logger.debug("Vera controller successfully authenticated");
                     updateStatus(ThingStatus.ONLINE);
 
                     // Initialize bridge polling
                     if (pollingJob == null || pollingJob.isCancelled()) {
                         logger.debug("Starting polling job at intervall {}", mConfig.getPollingInterval());
-                        pollingJob = scheduler.scheduleAtFixedRate(bridgePolling, 10, mConfig.getPollingInterval(),
+                        pollingJob = scheduler.scheduleWithFixedDelay(bridgePolling, 10, mConfig.getPollingInterval(),
                                 TimeUnit.SECONDS);
                     } else {
                         // Called when thing or bridge updated ...
                         logger.debug("Polling is allready active");
-                    }
-
-                    // Initializing all containing device things
-                    logger.debug("Initializing all configured devices ...");
-                    for (Thing thing : getThing().getThings()) {
-                        ThingHandler handler = thing.getHandler();
-                        if (handler != null) {
-                            logger.debug("Initializing device: {}", thing.getLabel());
-                            handler.initialize();
-                        } else {
-                            logger.warn("Initializing device failed (DeviceHandler is null): {}", thing.getLabel());
-                        }
                     }
                 } else {
                     logger.warn("Can't connect to Vera controller");
@@ -84,30 +70,6 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    /**
-     * Disposer clean up openHAB Connector configuration
-     */
-    private class Remover implements Runnable {
-
-        @Override
-        public void run() {
-            // Removing all containing device things
-            logger.debug("Removing all configured devices ...");
-            for (Thing thing : getThing().getThings()) {
-                ThingHandler handler = thing.getHandler();
-                if (handler != null) {
-                    logger.debug("Removing device: {}", thing.getLabel());
-                    handler.handleRemoval();
-                } else {
-                    logger.warn("Removing device failed (DeviceHandler is null): {}", thing.getLabel());
-                }
-            }
-
-            // status update will finally remove the thing
-            updateStatus(ThingStatus.REMOVED);
-        }
-    };
-
     public VeraBridgeHandler(Bridge bridge) {
         super(bridge);
         bridgePolling = new BridgePolling();
@@ -115,7 +77,7 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.info("Initializing Vera controller ...");
+        logger.debug("Initializing Vera controller ...");
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
@@ -158,12 +120,6 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
             }
         }
     };
-
-    @Override
-    public void handleRemoval() {
-        logger.debug("Handle removal Vera controller ...");
-        scheduler.execute(new Remover());
-    }
 
     protected VeraBridgeConfiguration getVeraBridgeConfiguration() {
         return mConfig;

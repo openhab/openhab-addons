@@ -90,7 +90,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     if (pollingJob == null || pollingJob.isCancelled()) {
                         logger.debug("Starting polling job at intervall {}",
                                 veraBridgeHandler.getVeraBridgeConfiguration().getPollingInterval());
-                        pollingJob = scheduler.scheduleAtFixedRate(devicePolling, 10,
+                        pollingJob = scheduler.scheduleWithFixedDelay(devicePolling, 10,
                                 veraBridgeHandler.getVeraBridgeConfiguration().getPollingInterval(), TimeUnit.SECONDS);
                     } else {
                         // Called when thing or bridge updated ...
