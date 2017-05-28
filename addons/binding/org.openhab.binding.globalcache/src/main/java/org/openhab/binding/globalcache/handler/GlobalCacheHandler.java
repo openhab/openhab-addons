@@ -560,7 +560,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private void writeSerialToDevice(RequestMessage requestMessage) throws IOException {
             DataOutputStream out = connectionManager.getSerialOut(requestMessage.getCommandType());
             if (out == null) {
-                logger.error("Can't send serial command; output stream is null!");
+                logger.warn("Can't send serial command; output stream is null!");
                 return;
             }
 
@@ -582,11 +582,11 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
 
         private DeviceConnection commandConnection;
-        private DeviceConnection serial1Connection;
-        private DeviceConnection serial2Connection;
+        private DeviceConnection serialPort1Connection;
+        private DeviceConnection serialPort2Connection;
 
-        private SerialReader serialReader1;
-        private SerialReader serialReader2;
+        private SerialReader serialReaderPort1;
+        private SerialReader serialReaderPort2;
 
         private boolean deviceIsConnected;
 
@@ -614,12 +614,12 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         public ConnectionManager() {
             commandConnection = new DeviceConnection(COMMAND_NAME, COMMAND_PORT);
-            serial1Connection = new DeviceConnection(SERIAL1_NAME, SERIAL1_PORT);
-            serial2Connection = new DeviceConnection(SERIAL2_NAME, SERIAL2_PORT);
+            serialPort1Connection = new DeviceConnection(SERIAL1_NAME, SERIAL1_PORT);
+            serialPort2Connection = new DeviceConnection(SERIAL2_NAME, SERIAL2_PORT);
 
             commandConnection.setIP(getIPAddress());
-            serial1Connection.setIP(getIPAddress());
-            serial2Connection.setIP(getIPAddress());
+            serialPort1Connection.setIP(getIPAddress());
+            serialPort2Connection.setIP(getIPAddress());
 
             deviceIsConnected = false;
         }
@@ -651,9 +651,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 }
             } else {
                 // Open the command connection and either 1 or 2 serial connections
-                if (commandConnect(commandConnection) && serialConnect(serial1Connection)) {
+                if (commandConnect(commandConnection) && serialConnect(serialPort1Connection)) {
                     if (deviceSupportsSerial2()) {
-                        if (serialConnect(serial2Connection)) {
+                        if (serialConnect(serialPort2Connection)) {
                             markThingOnline();
                             deviceIsConnected = true;
                             startSerialReaders();
@@ -728,11 +728,11 @@ public class GlobalCacheHandler extends BaseThingHandler {
             commandDisconnect(commandConnection);
 
             if (deviceSupportsSerial1()) {
-                serialDisconnect(serial1Connection);
+                serialDisconnect(serialPort1Connection);
             }
 
             if (deviceSupportsSerial2()) {
-                serialDisconnect(serial2Connection);
+                serialDisconnect(serialPort2Connection);
             }
 
             markThingOffline();
@@ -792,9 +792,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 return null;
             }
             if (commandType == CommandType.SERIAL1) {
-                return serial1Connection.getSerialIn();
+                return serialPort1Connection.getSerialIn();
             } else {
-                return serial2Connection.getSerialIn();
+                return serialPort2Connection.getSerialIn();
             }
         }
 
@@ -803,9 +803,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 return null;
             }
             if (commandType == CommandType.SERIAL1) {
-                return serial1Connection.getSerialOut();
+                return serialPort1Connection.getSerialOut();
             } else {
-                return serial2Connection.getSerialOut();
+                return serialPort2Connection.getSerialOut();
             }
         }
 
@@ -863,34 +863,36 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         private void startSerialReaders() {
             if (deviceSupportsSerial1()) {
-                serialReader1 = startSerialReader(CommandType.SERIAL1, ENABLE_TWO_WAY_1, EOM_DELIMITER_1);
+                serialReaderPort1 = startSerialReader(CommandType.SERIAL1, CONFIG_ENABLE_TWO_WAY_PORT_1,
+                        CONFIG_END_OF_MESSAGE_DELIMITER_PORT_1);
             }
             if (deviceSupportsSerial2()) {
-                serialReader2 = startSerialReader(CommandType.SERIAL2, ENABLE_TWO_WAY_2, EOM_DELIMITER_2);
+                serialReaderPort2 = startSerialReader(CommandType.SERIAL2, CONFIG_ENABLE_TWO_WAY_PORT_2,
+                        CONFIG_END_OF_MESSAGE_DELIMITER_PORT_2);
             }
         }
 
         private SerialReader startSerialReader(CommandType serialDevice, String enableTwoWayConfig,
-                String eomDelimiterConfig) {
+                String endOfMessageDelimiterConfig) {
             Boolean enableTwoWay = (Boolean) thing.getConfiguration().get(enableTwoWayConfig);
             logger.debug("Enable two-way is {} for thing {} {}", enableTwoWay, thingID(), serialDevice);
 
-            if (enableTwoWay != null && enableTwoWay.equals(Boolean.TRUE)) {
+            if (Boolean.TRUE.equals(enableTwoWay)) {
                 // Get the end of message delimiter from the config, URL decode it, and convert it to a byte array
-                String eomString = (String) thing.getConfiguration().get(eomDelimiterConfig);
-                if (StringUtils.isNotEmpty(eomString)) {
-                    logger.debug("End of message is {} for thing {} {}", eomString, thingID(), serialDevice);
-                    byte[] eom;
+                String endOfMessageString = (String) thing.getConfiguration().get(endOfMessageDelimiterConfig);
+                if (StringUtils.isNotEmpty(endOfMessageString)) {
+                    logger.debug("End of message is {} for thing {} {}", endOfMessageString, thingID(), serialDevice);
+                    byte[] endOfMessage;
                     try {
-                        eom = URLDecoder.decode(eomString, CHARSET).getBytes(CHARSET);
+                        endOfMessage = URLDecoder.decode(endOfMessageString, CHARSET).getBytes(CHARSET);
                     } catch (UnsupportedEncodingException e) {
-                        logger.info("Unable to decode end of message delimiter {} for thing {} {}", eomString,
+                        logger.info("Unable to decode end of message delimiter {} for thing {} {}", endOfMessageString,
                                 thingID(), serialDevice, e);
                         return null;
                     }
 
                     // Start the serial reader using the above end-of-message delimiter
-                    SerialReader serialReader = new SerialReader(serialDevice, getSerialIn(serialDevice), eom);
+                    SerialReader serialReader = new SerialReader(serialDevice, getSerialIn(serialDevice), endOfMessage);
                     serialReader.start();
                     return serialReader;
                 } else {
@@ -901,11 +903,13 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         private void stopSerialReaders() {
-            if (deviceSupportsSerial1() && serialReader1 != null) {
-                serialReader1.stop();
+            if (deviceSupportsSerial1() && serialReaderPort1 != null) {
+                serialReaderPort1.stop();
+                serialReaderPort1 = null;
             }
-            if (deviceSupportsSerial2() && serialReader2 != null) {
-                serialReader2.stop();
+            if (deviceSupportsSerial2() && serialReaderPort2 != null) {
+                serialReaderPort2.stop();
+                serialReaderPort2 = null;
             }
         }
     }
@@ -925,7 +929,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private ScheduledFuture<?> serialReaderJob;
         private boolean terminateSerialReader;
 
-        private byte[] eom;
+        private byte[] endOfMessage;
 
         private Runnable serialReaderRunnable = new Runnable() {
             @Override
@@ -934,13 +938,13 @@ public class GlobalCacheHandler extends BaseThingHandler {
             }
         };
 
-        SerialReader(CommandType serialPort, BufferedInputStream serialIn, byte[] eom) {
+        SerialReader(CommandType serialPort, BufferedInputStream serialIn, byte[] endOfMessage) {
             if (serialIn == null) {
                 throw new IllegalArgumentException("Serial input stream is not set");
             }
             this.serialPort = serialPort;
             this.serialIn = serialIn;
-            this.eom = eom;
+            this.endOfMessage = endOfMessage;
             serialReaderJob = null;
             terminateSerialReader = false;
         }
@@ -963,7 +967,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
             while (!terminateSerialReader) {
                 byte[] buffer;
                 try {
-                    buffer = readUntilEndOfMessage(eom);
+                    buffer = readUntilEndOfMessage(endOfMessage);
                     if (buffer == null) {
                         logger.debug("Received end-of-stream from {} on {}", getIP(), serialPort);
                         continue;
@@ -971,9 +975,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
                     logger.debug("Rcv data from {} at {}:{}: {}", thingID(), getIP(), serialPort,
                             getAsHexString(buffer));
                     updateFeedbackChannel(buffer);
-
-                    Thread.sleep(100);
-
                 } catch (UnsupportedEncodingException e) {
                     logger.info("Unsupported encoding exception: {}", e.getMessage(), e);
                     continue;

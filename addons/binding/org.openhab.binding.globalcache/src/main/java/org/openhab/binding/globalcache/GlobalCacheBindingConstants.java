@@ -24,7 +24,7 @@ public class GlobalCacheBindingConstants {
 
     public static final String BINDING_ID = "globalcache";
 
-    // Maximum number of GC devices supported by the binding
+    // Maximum number of threads supported by a handler
     public static final int MAX_GC_THREADS = 10;
 
     /*
@@ -64,10 +64,10 @@ public class GlobalCacheBindingConstants {
     public static final String ACTIVE_CABLE_RELAY = "FLEX_RELAY";
 
     // Serial readers
-    public static final String ENABLE_TWO_WAY_1 = "enableTwoWay1";
-    public static final String EOM_DELIMITER_1 = "eomDelimiter1";
-    public static final String ENABLE_TWO_WAY_2 = "enableTwoWay2";
-    public static final String EOM_DELIMITER_2 = "eomDelimiter2";
+    public static final String CONFIG_ENABLE_TWO_WAY_PORT_1 = "enableTwoWay1";
+    public static final String CONFIG_END_OF_MESSAGE_DELIMITER_PORT_1 = "eomDelimiter1";
+    public static final String CONFIG_ENABLE_TWO_WAY_PORT_2 = "enableTwoWay2";
+    public static final String CONFIG_END_OF_MESSAGE_DELIMITER_PORT_2 = "eomDelimiter2";
 
     // Indicates TCP connection over which the command will be sent
     public enum CommandType {
