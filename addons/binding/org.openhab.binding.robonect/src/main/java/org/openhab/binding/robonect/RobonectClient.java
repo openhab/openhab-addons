@@ -2,6 +2,8 @@ package org.openhab.binding.robonect;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
@@ -189,7 +191,10 @@ public class RobonectClient {
                 logger.debug("send HTTP GET to: {} ", command.toCommandURL(baseUrl));
             }
             response = httpClient.GET(command.toCommandURL(baseUrl));
-        } catch (Exception e) {
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            logger.error("InterruptedException while trying to send command.", ie);           
+        } catch (ExecutionException | TimeoutException e) {
             throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(baseUrl), e);
         }
         String responseString = response.getContentAsString();
