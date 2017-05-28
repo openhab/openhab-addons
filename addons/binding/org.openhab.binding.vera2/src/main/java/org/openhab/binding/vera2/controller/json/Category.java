@@ -13,15 +13,12 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @author Dmitriy Ponomarev
  */
-public class Room {
+public class Category {
     @SerializedName("name")
     private String name;
 
     @SerializedName("id")
     private String id;
-
-    @SerializedName("section")
-    private String section;
 
     public String getName() {
         return name;

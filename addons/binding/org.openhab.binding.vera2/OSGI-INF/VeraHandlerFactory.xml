@@ -9,12 +9,13 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.vera2.internal.VeraHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true"
+	name="org.openhab.binding.vera2.internal.VeraHandlerFactory">
 
-   <implementation class="org.openhab.binding.vera2.internal.VeraHandlerFactory"/>
+	<implementation class="org.openhab.binding.vera2.internal.VeraHandlerFactory" />
 
-   <service>
-      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
-   </service>
+	<service>
+		<provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory" />
+	</service>
 
 </scr:component>

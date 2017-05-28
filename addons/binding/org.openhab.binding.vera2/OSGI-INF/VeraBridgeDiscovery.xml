@@ -9,12 +9,13 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.vera2.internal.discovery.VeraBridgeDiscoveryService">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true"
+	name="org.openhab.binding.vera2.internal.discovery.VeraBridgeDiscoveryService">
 
-   <implementation class="org.openhab.binding.vera2.internal.discovery.VeraBridgeDiscoveryService"/>
+	<implementation class="org.openhab.binding.vera2.internal.discovery.VeraBridgeDiscoveryService" />
 
-   <service>
-      <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
-   </service>
+	<service>
+		<provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService" />
+	</service>
 
 </scr:component>

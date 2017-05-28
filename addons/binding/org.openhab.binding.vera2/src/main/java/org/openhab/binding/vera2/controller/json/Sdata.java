@@ -10,27 +10,82 @@ package org.openhab.binding.vera2.controller.json;
 
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * @author Dmitriy Ponomarev
  */
 public class Sdata {
-    public String full;
-    public String version;
-    public String model;
-    public String zwave_heal;
-    public String temperature;
-    public String serial_number;
-    public String fwd1;
-    public String fwd2;
-    public String ir;
-    public String irtx;
-    public String loadtime;
-    public String dataversion;
-    public String state;
-    public String comment;
-    public List<Section> sections;
-    public List<Room> rooms;
-    public List<Scene> scenes;
-    public List<Device> devices;
-    public List<Categorie> categories;
+    @SerializedName("full")
+    private String full;
+
+    @SerializedName("version")
+    private String version;
+
+    @SerializedName("model")
+    private String model;
+
+    @SerializedName("zwave_heal")
+    private String zwave_heal;
+
+    @SerializedName("temperature")
+    private String temperature;
+
+    @SerializedName("serial_number")
+    private String serial_number;
+
+    @SerializedName("fwd1")
+    private String fwd1;
+
+    @SerializedName("fwd2")
+    private String fwd2;
+
+    @SerializedName("ir")
+    private String ir;
+
+    @SerializedName("irtx")
+    private String irtx;
+
+    @SerializedName("loadtime")
+    private String loadtime;
+
+    @SerializedName("dataversion")
+    private String dataversion;
+
+    @SerializedName("state")
+    private String state;
+
+    @SerializedName("comment")
+    private String comment;
+
+    @SerializedName("sections")
+    private List<Section> sections;
+
+    @SerializedName("rooms")
+    private List<Room> rooms;
+
+    @SerializedName("scenes")
+    private List<Scene> scenes;
+
+    @SerializedName("devices")
+    private List<Device> devices;
+
+    @SerializedName("categories")
+    private List<Category> categories;
+
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public List<Scene> getScenes() {
+        return scenes;
+    }
+
+    public List<Device> getDevices() {
+        return devices;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
 }

@@ -85,7 +85,6 @@ public class VeraBindingConstants {
     public static final String BRIDGE_CONFIG_POLLING_INTERVAL = "pollingInterval";
 
     public static final String PROP_ROOM = "room";
-    public static final String PROP_LAST_UPDATE = "lastUpdate";
 
     public static final String DEVICE_CONFIG_ID = "deviceId";
     public static final String DEVICE_PROP_CATEGORY = "category";

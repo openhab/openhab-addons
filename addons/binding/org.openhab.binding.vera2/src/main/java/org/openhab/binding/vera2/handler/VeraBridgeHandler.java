@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -38,8 +37,8 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
     private BridgePolling bridgePolling;
     private ScheduledFuture<?> pollingJob;
 
-    private VeraBridgeConfiguration mConfig = null;
-    private Controller controller = null;
+    private VeraBridgeConfiguration mConfig;
+    private Controller controller;
 
     private class Initializer implements Runnable {
         @Override
@@ -118,12 +117,9 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.info("Initializing Vera controller ...");
 
-        // Set thing status to a valid status
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
-        // Configuration - thing status update with a error message
-        mConfig = loadAndCheckConfiguration();
-
+        mConfig = getConfigAs(VeraBridgeConfiguration.class);
         if (mConfig != null) {
             controller = new Controller(mConfig.getVeraIpAddress(), "" + mConfig.getVeraPort());
             scheduler.execute(new Initializer());
@@ -143,14 +139,15 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         logger.debug("Handle Vera configuration update ...");
+        initialize();
         super.handleConfigurationUpdate(configurationParameters);
     }
 
     private class BridgePolling implements Runnable {
         @Override
         public void run() {
-            // logger.debug("Starting polling for bridge: {}", getThing().getLabel());
-            if (getController().updateSdata() != null) {
+            getController().updateSdata();
+            if (getController().getSdata() != null) {
                 if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
                     updateStatus(ThingStatus.ONLINE);
                     logger.debug("Connection to bridge {} restored.", getThing().getLabel());
@@ -170,20 +167,6 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
 
     protected VeraBridgeConfiguration getVeraBridgeConfiguration() {
         return mConfig;
-    }
-
-    private VeraBridgeConfiguration loadAndCheckConfiguration() {
-        VeraBridgeConfiguration config = getConfigAs(VeraBridgeConfiguration.class);
-        if (StringUtils.trimToNull(config.getVeraIpAddress()) == null) {
-            config.setVeraIpAddress("192.168.1.10"); // default value
-        }
-        if (config.getVeraPort() == null) {
-            config.setVeraPort(3480);
-        }
-        if (config.getPollingInterval() == null) {
-            config.setPollingInterval(60);
-        }
-        return config;
     }
 
     public Controller getController() {

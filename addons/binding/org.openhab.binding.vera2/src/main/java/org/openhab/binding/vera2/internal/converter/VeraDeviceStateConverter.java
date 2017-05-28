@@ -28,113 +28,99 @@ import org.slf4j.Logger;
 public class VeraDeviceStateConverter {
     public static State toState(Device device, Channel channel, Logger logger) {
         if (channel.getUID().getId().split("-")[0].equals(BATTERY_CHANNEL)) {
-            return getMultilevelState(device.batterylevel);
+            return getMultilevelState(device.getBatterylevel());
         }
 
-        int category = Integer.parseInt(device.category);
-        int subcategory = Integer.parseInt(device.subcategory);
-        switch (category) {
-            case 0:
-            case 1: // Interface
+        int subcategory = Integer.parseInt(device.getSubcategory());
+        switch (device.getCategoryType()) {
+            case Controller:
+            case Interface:
                 break;
-            case 2: // Dimmable Light
+            case DimmableLight:
                 switch (subcategory) {
                     case 1:
                     case 2:
                     case 3:
-                        return getPercentState(device.level);
+                        return getPercentState(device.getLevel());
                     case 4:
-                        return getPercentState(device.level);// TODO getColorState(device.light);
+                        return getPercentState(device.getLevel());// TODO getColorState(device.light);
                 }
                 break;
-            case 3: // Switch
-                return getBinaryState(device.status);
-            case 4: // Security Sensor
+            case Switch:
+                return getBinaryState(device.getStatus());
+            case SecuritySensor:
                 switch (subcategory) {
                     case 1:
-                        return getDoorlockState("1".equals(device.tripped) ? "0" : "1");
+                        return getDoorlockState("1".equals(device.getTripped()) ? "0" : "1");
                     default:
-                        return getBinaryState(device.tripped);
+                        return getBinaryState(device.getTripped());
                 }
-            case 5: // TODO HVAC
-                logger.warn("TODO: HVAC: {}, {}, {}, {}", device.id, device.name, device.category, device.categoryName);
+            case HVAC: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 6: // TODO Camera
-                logger.warn("TODO: Camera: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case Camera: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 7: // Door Lock
-                return getBinaryState(device.locked);
-            case 8: // Window Covering
-                return getPercentState(device.level);
-            case 9: // TODO Remote Control
-                logger.warn("TODO: Remote Control: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case DoorLock:
+                return getBinaryState(device.getLocked());
+            case WindowCovering:
+                return getPercentState(device.getLevel());
+            case RemoteControl: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 10: // TODO IR Transmitter
-                logger.warn("TODO: IR Transmitter: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case IRTransmitter: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 11: // TODO Generic I/O
-                logger.warn("TODO: Generic I/O: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case GenericIO: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 12: // Generic Sensor
-                return getMultilevelState(device.level);
-            case 13: // TODO Serial Port
-                logger.warn("TODO: Serial Port I/O: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case GenericSensor:
+                return getMultilevelState(device.getLevel());
+            case SerialPort: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 14: // Scene Controller
-                return getBinaryState(device.status);
-            case 15: // TODO A/V
-                logger.warn("TODO: A/V: {}, {}, {}, {}", device.id, device.name, device.category, device.categoryName);
+            case SceneController:
+                return getBinaryState(device.getStatus());
+            case AV: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 16: // Humidity Sensor
-                return getMultilevelState(device.humidity);
-            case 17: // Temperature Sensor
-                return getMultilevelState(device.temperature);
-            case 18: // Light Sensor
-                return getMultilevelState(device.light);
-            case 19: // TODO Z-Wave Interface
-                logger.warn("TODO: Z-Wave Interface: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case HumiditySensor:
+                return getMultilevelState(device.getHumidity());
+            case TemperatureSensor:
+                return getMultilevelState(device.getTemperature());
+            case LightSensor:
+                return getMultilevelState(device.getLight());
+            case ZWaveInterface: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 20: // TODO Insteon Interface
-                logger.warn("TODO: Insteon Interface: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case InsteonInterface: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 21: // Power Meter
-                return getMultilevelState(device.level);
-            case 22: // TODO Alarm Panel
-                logger.warn("TODO: Alarm Panel: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case PowerMeter:
+                return getMultilevelState(device.getLevel());
+            case AlarmPanel: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 23: // TODO Alarm Partition
-                logger.warn("TODO: Alarm Partition: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case AlarmPartition: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 24: // TODO Siren
-                logger.warn("TODO: Siren: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case Siren: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 25: // TODO Weather
-                logger.warn("TODO: Weather: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case Weather: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 26: // TODO Philips Controller
-                logger.warn("TODO: Philips Controller: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case PhilipsController: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 27: // TODO Appliance
-                logger.warn("TODO: Appliance: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case Appliance: // TODO
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case 28: // UV Sensor
-                return getMultilevelState(device.level);
-            default:
-                logger.warn("Unknown device type: {}, {}, {}, {}", device.id, device.name, device.category,
-                        device.categoryName);
+            case UVSensor:
+                return getMultilevelState(device.getLevel());
+            case Unknown:
+                logger.warn("Unknown device type: {}, {}", device, device.getCategory());
+                break;
         }
         return UnDefType.UNDEF;
     }

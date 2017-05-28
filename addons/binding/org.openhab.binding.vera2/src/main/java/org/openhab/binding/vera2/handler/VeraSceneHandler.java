@@ -10,9 +10,6 @@ package org.openhab.binding.vera2.handler;
 
 import static org.openhab.binding.vera2.VeraBindingConstants.*;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +31,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.vera2.VeraBindingConstants;
 import org.openhab.binding.vera2.config.VeraSceneConfiguration;
 import org.openhab.binding.vera2.controller.json.Scene;
@@ -52,7 +48,7 @@ public class VeraSceneHandler extends BaseThingHandler {
 
     private ScenePolling scenePolling;
     private ScheduledFuture<?> pollingJob;
-    private VeraSceneConfiguration mConfig = null;
+    private VeraSceneConfiguration mConfig;
 
     public VeraSceneHandler(Thing thing) {
         super(thing);
@@ -75,7 +71,7 @@ public class VeraSceneHandler extends BaseThingHandler {
                         logger.debug("Add channels");
                         Scene scene = veraBridgeHandler.getController().getScene(mConfig.getSceneId());
                         if (scene != null) {
-                            logger.debug("Found {} scene", scene.name);
+                            logger.debug("Found {} scene", scene.getName());
                             addSceneAsChannel(scene);
                         }
                     } catch (Exception e) {
@@ -108,26 +104,6 @@ public class VeraSceneHandler extends BaseThingHandler {
                 }
             }
         }
-    };
-
-    /**
-     * Remove all linked items from openHAB connector observer list
-     */
-    private class Disposer implements Runnable {
-        @Override
-        public void run() {
-            // Vera bridge have to be ONLINE because configuration is needed
-            VeraBridgeHandler veraBridgeHandler = getVeraBridgeHandler();
-            if (veraBridgeHandler == null || !veraBridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                logger.debug("Vera bridge handler not found or not ONLINE.");
-                // status update will remove finally
-                updateStatus(ThingStatus.REMOVED);
-                return;
-            }
-            // status update will remove finally
-            updateStatus(ThingStatus.REMOVED);
-        }
-
     };
 
     protected synchronized VeraBridgeHandler getVeraBridgeHandler() {
@@ -182,12 +158,6 @@ public class VeraSceneHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleRemoval() {
-        logger.debug("Handle removal Vera scene ...");
-        scheduler.execute(new Disposer());
-    }
-
-    @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         // Only called if status ONLINE or OFFLINE
         logger.debug("Vera bridge status changed: {}", bridgeStatusInfo);
@@ -203,26 +173,14 @@ public class VeraSceneHandler extends BaseThingHandler {
     private class ScenePolling implements Runnable {
         @Override
         public void run() {
-            // logger.debug("Starting polling for scene: {}", getThing().getLabel());
             for (Channel channel : getThing().getChannels()) {
-                // logger.debug("Checking link state of channel: {}", channel.getLabel());
                 if (isLinked(channel.getUID().getId())) {
-                    // logger.debug("Refresh items that linked with channel: {}", channel.getLabel());
-                    try {
-                        refreshChannel(channel);
-                    } catch (Exception e) {
-                        logger.error("Error occurred when performing polling: {}", e.getMessage());
-                        if (getThing().getStatus() == ThingStatus.ONLINE) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                    "Error occurred when performing polling.");
-                        }
-                    }
+                    refreshChannel(channel);
                 } else {
                     logger.debug("Polling for scene: {} not possible (channel {} not linked", thing.getLabel(),
                             channel.getLabel());
                 }
             }
-            refreshLastUpdate();
         }
     };
 
@@ -237,12 +195,6 @@ public class VeraSceneHandler extends BaseThingHandler {
             thingBuilder.withLabel(thing.getLabel());
             updateThing(thingBuilder.build());
         }
-    }
-
-    protected void refreshLastUpdate() {
-        // logger.debug("Refresh last update for scene");
-        DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
-        updateProperty(PROP_LAST_UPDATE, formatter.format(Calendar.getInstance().getTime()));
     }
 
     protected void refreshAllChannels() {
@@ -299,14 +251,6 @@ public class VeraSceneHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        // Refresh update time
-        logger.debug("Handle update for channel: {} with new state: {}", channelUID.getId(), newState.toString());
-
-        refreshLastUpdate();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, final Command command) {
         logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
 
@@ -344,10 +288,10 @@ public class VeraSceneHandler extends BaseThingHandler {
 
     protected synchronized void addSceneAsChannel(Scene scene) {
         if (scene != null) {
-            logger.debug("Add scene as channel: {}", scene.name);
+            logger.debug("Add scene as channel: {}", scene.getName());
 
             HashMap<String, String> properties = new HashMap<>();
-            properties.put(SCENE_CONFIG_ID, scene.id);
+            properties.put(SCENE_CONFIG_ID, scene.getId());
 
             addChannel("sceneButton", "Switch", "Run scene", properties);
         }

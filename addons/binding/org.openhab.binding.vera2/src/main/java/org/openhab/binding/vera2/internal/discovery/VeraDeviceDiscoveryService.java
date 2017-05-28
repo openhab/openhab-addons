@@ -21,6 +21,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.vera2.controller.CategoryType;
 import org.openhab.binding.vera2.controller.json.Device;
 import org.openhab.binding.vera2.controller.json.Scene;
 import org.openhab.binding.vera2.handler.VeraBridgeHandler;
@@ -64,37 +65,40 @@ public class VeraDeviceDiscoveryService extends AbstractDiscoveryService impleme
 
         final ThingUID bridgeUID = mBridgeHandler.getThing().getUID();
 
-        List<Device> deviceList = mBridgeHandler.getData().devices;
+        List<Device> deviceList = mBridgeHandler.getData().getDevices();
         for (Device device : deviceList) {
-            if ("0".equals(device.category)) {
+            if (device.getCategoryType().equals(CategoryType.Controller)
+                    || device.getCategoryType().equals(CategoryType.Interface)) {
                 continue;
             }
-            ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, mBridgeHandler.getThing().getUID(), device.id);
+            ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, mBridgeHandler.getThing().getUID(), device.getId());
             if (callback != null && callback.getExistingDiscoveryResult(thingUID) == null
                     && callback.getExistingThing(thingUID) == null) {
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(device.uName)
-                        .withBridge(bridgeUID).withProperty(DEVICE_CONFIG_ID, device.id)
-                        .withProperty(PROP_ROOM, device.room).withProperty(DEVICE_PROP_CATEGORY, device.category)
-                        .withProperty(DEVICE_PROP_SUBCATEGORY, device.subcategory).build();
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(device.getName())
+                        .withBridge(bridgeUID).withProperty(DEVICE_CONFIG_ID, device.getId())
+                        .withProperty(PROP_ROOM, device.getRoomName())
+                        .withProperty(DEVICE_PROP_CATEGORY, device.getCategory())
+                        .withProperty(DEVICE_PROP_SUBCATEGORY, device.getSubcategory()).build();
                 thingDiscovered(discoveryResult);
-                logger.debug("Vera device found: {}, {}", device.id, device.name);
+                logger.debug("Vera device found: {}, {}", device.getId(), device.getName());
             } else {
-                logger.debug("Device already exists: UID={}, id={}, name={}", thingUID, device.id, device.name);
+                logger.debug("Device already exists: UID={}, id={}, name={}", thingUID, device.getId(),
+                        device.getName());
             }
         }
 
-        List<Scene> sceneList = mBridgeHandler.getData().scenes;
+        List<Scene> sceneList = mBridgeHandler.getData().getScenes();
         for (Scene scene : sceneList) {
-            ThingUID thingUID = new ThingUID(THING_TYPE_SCENE, mBridgeHandler.getThing().getUID(), scene.id);
+            ThingUID thingUID = new ThingUID(THING_TYPE_SCENE, mBridgeHandler.getThing().getUID(), scene.getId());
             if (callback != null && callback.getExistingDiscoveryResult(thingUID) == null
                     && callback.getExistingThing(thingUID) == null) {
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(scene.name)
-                        .withBridge(bridgeUID).withProperty(SCENE_CONFIG_ID, scene.id)
-                        .withProperty(PROP_ROOM, scene.room).build();
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(scene.getName())
+                        .withBridge(bridgeUID).withProperty(SCENE_CONFIG_ID, scene.getId())
+                        .withProperty(PROP_ROOM, scene.getRoomName()).build();
                 thingDiscovered(discoveryResult);
-                logger.debug("Vera scene found: {}, {}", scene.id, scene.name);
+                logger.debug("Vera scene found: {}, {}", scene.getId(), scene.getName());
             } else {
-                logger.debug("Scene already exists: UID={}, id={}, name={}", thingUID, scene.id, scene.name);
+                logger.debug("Scene already exists: UID={}, id={}, name={}", thingUID, scene.getId(), scene.getName());
             }
         }
     }

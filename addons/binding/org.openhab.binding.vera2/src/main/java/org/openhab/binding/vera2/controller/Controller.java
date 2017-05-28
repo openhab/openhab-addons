@@ -9,14 +9,13 @@
 package org.openhab.binding.vera2.controller;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.ListIterator;
 import java.util.Map;
 
-import org.openhab.binding.vera2.controller.json.Categorie;
 import org.openhab.binding.vera2.controller.json.Device;
 import org.openhab.binding.vera2.controller.json.Room;
 import org.openhab.binding.vera2.controller.json.Scene;
@@ -32,15 +31,18 @@ import com.google.gson.Gson;
  * @author Dmitriy Ponomarev
  */
 public class Controller {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private String veraHost;
-    private String veraPort;
+    private final String veraHost;
+    private final String veraPort;
+    private final Gson gson;
+
     private Sdata sdata;
 
     public Controller(String veraHost, String veraPort) {
         this.veraHost = veraHost;
         this.veraPort = veraPort;
+        this.gson = new Gson();
 
         updateSdata();
     }
@@ -52,93 +54,59 @@ public class Controller {
         return sdata;
     }
 
-    private void denormalizeSdata(Sdata theSdata) {
+    private void denormalizeSdata(Sdata data) {
         Map<String, Room> roomMap = new HashMap<>();
-        for (Room i : theSdata.rooms) {
-            roomMap.put(i.id, i);
+        for (Room r : data.getRooms()) {
+            roomMap.put(r.getId(), r);
         }
-        Map<String, Categorie> categoryMap = new HashMap<>();
-        for (Categorie i : theSdata.categories) {
-            categoryMap.put(i.id, i);
-        }
-        Categorie controllerCat = new Categorie();
-        controllerCat.name = "Controller";
-        controllerCat.id = "0";
-        categoryMap.put(controllerCat.id, controllerCat);
-        ListIterator<Device> theIterator = theSdata.devices.listIterator();
-        Device d;
-        while (theIterator.hasNext()) {
-            d = theIterator.next();
-            d.uName = replaceTrash(d.name);
-            if (d.room != null && roomMap.get(d.room) != null) {
-                d.room = roomMap.get(d.room).name;
+        for (Device d : data.getDevices()) {
+            d.setName(replaceTrash(d.getName()));
+            if (d.getRoom() != null && roomMap.get(d.getRoom()) != null) {
+                d.setRoomName(roomMap.get(d.getRoom()).getName());
             } else {
-                d.room = "no room";
+                d.setRoomName("no room");
             }
-            if (d.category != null && categoryMap.get(d.category) != null) {
-                d.categoryName = categoryMap.get(d.category).name;
-            } else {
-                d.categoryName = "<unknown>";
+            try {
+                d.setCategoryType(CategoryType.values()[Integer.parseInt(d.getCategory())]);
+            } catch (IndexOutOfBoundsException e) {
+                logger.warn("Unknown category type: {}", d.getCategory());
             }
         }
-        ListIterator<Scene> theSecneIter = theSdata.scenes.listIterator();
-        Scene theScene;
-        while (theSecneIter.hasNext()) {
-            theScene = theSecneIter.next();
-            if (theScene.room != null && roomMap.get(theScene.room) != null) {
-                theScene.room = roomMap.get(theScene.room).name;
+        for (Scene s : data.getScenes()) {
+            if (s.getRoom() != null && roomMap.get(s.getRoom()) != null) {
+                s.setRoomName(roomMap.get(s.getRoom()).getName());
             } else {
-                theScene.room = "no room";
+                s.setRoomName("no room");
             }
         }
     }
 
-    private String request(String request, String auth) {
-        URL url;
-        HttpURLConnection connection;
+    private String request(String request) throws IOException {
         String result;
-        try {
-            // log.info("Sending command: " + request);
-            url = new URL(request);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            if (auth != null) {
-                connection.setRequestProperty("Authorization", "Basic " + auth);
-            }
-            connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
-            connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
-            connection.connect();
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder buffer = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                buffer.append(line).append("\n");
-            }
-            br.close();
-            result = buffer.toString();
-        } catch (Exception e) {
-            log.error("Error while get getJson: {}", request);
-            return null;
+        URL url = new URL(request);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+        connection.connect();
+        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder buffer = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            buffer.append(line).append("\n");
         }
+        br.close();
+        result = buffer.toString();
         return result;
     }
 
-    private boolean sendCommand(String request, String auth) {
-        URL url;
-        HttpURLConnection connection;
-        String response = null;
+    private boolean sendCommand(String request) {
         try {
-            // log.info("Sending command: " + request);
-            url = new URL(request);
-            connection = (HttpURLConnection) url.openConnection();
+            URL url = new URL(request);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            if (auth != null) {
-                connection.setRequestProperty("Authorization", "Basic " + auth);
-            }
-            response = connection.getResponseMessage();
-            log.info("Received response: {}", response);
-        } catch (Exception e) {
-            log.error("Error while sending command: {}", request);
+            connection.getResponseMessage();
+        } catch (IOException e) {
+            logger.warn("Error while get getJson: {}, {}", request, e);
             return false;
         }
         return true;
@@ -146,7 +114,7 @@ public class Controller {
 
     private String replaceTrash(String name) {
         String sanitizedName = name.replaceAll("[0-9:/-]", "");
-        sanitizedName = name.replaceAll("  ", " ");
+        sanitizedName = name.replaceAll("\\s+", " ");
         return sanitizedName.trim();
     }
 
@@ -155,23 +123,24 @@ public class Controller {
     }
 
     private void setStatus(Device d, String status, String service) {
-        sendCommand(getUrl() + "?id=action&DeviceNum=" + d.id + "&serviceId=" + service
-                + "&action=SetTarget&newTargetValue=" + status, null);
+        sendCommand(getUrl() + "?id=action&DeviceNum=" + d.getId() + "&serviceId=" + service
+                + "&action=SetTarget&newTargetValue=" + status);
     }
 
-    public Sdata updateSdata() {
-        String result = request(getUrl() + "?id=sdata&output_format=json", null);
-        Sdata theSdata = result == null ? null : new Gson().fromJson(result, Sdata.class);
-        if (theSdata != null) {
-            denormalizeSdata(theSdata);
+    public void updateSdata() {
+        try {
+            String result = request(getUrl() + "?id=sdata&output_format=json");
+            Sdata data = gson.fromJson(result, Sdata.class);
+            denormalizeSdata(data);
+            sdata = data;
+        } catch (IOException e) {
+            logger.warn("Failed to update sdata: {}", e.getMessage());
         }
-        sdata = theSdata;
-        return theSdata;
     }
 
     public void turnDeviceOn(Device d) {
-        d.status = "1";
-        if ("7".equals(d.category)) {
+        d.setStatus("1");
+        if ("7".equals(d.getCategory())) {
             setStatus(d, "1", "urn:micasaverde-com:serviceId:DoorLock1");
         } else {
             setStatus(d, "1", "urn:upnp-org:serviceId:SwitchPower1");
@@ -179,8 +148,8 @@ public class Controller {
     }
 
     public void turnDeviceOff(Device d) {
-        d.status = "0";
-        if ("7".equals(d.category)) {
+        d.setStatus("0");
+        if ("7".equals(d.getCategory())) {
             setStatus(d, "0", "urn:micasaverde-com:serviceId:DoorLock1");
         } else {
             setStatus(d, "0", "urn:upnp-org:serviceId:SwitchPower1");
@@ -188,15 +157,14 @@ public class Controller {
     }
 
     public void setDimLevel(Device d, String level) {
-        d.level = level;
-        sendCommand(getUrl() + "?id=action&DeviceNum=" + d.id
-                + "&serviceId=urn:upnp-org:serviceId:Dimming1&action=SetLoadLevelTarget&newLoadlevelTarget=" + level,
-                null);
+        d.setLevel(level);
+        sendCommand(getUrl() + "?id=action&DeviceNum=" + d.getId()
+                + "&serviceId=urn:upnp-org:serviceId:Dimming1&action=SetLoadLevelTarget&newLoadlevelTarget=" + level);
     }
 
     public void runScene(String id) {
         sendCommand(getUrl() + "?id=action&SceneNum=" + id
-                + "&serviceId=urn:micasaverde-com:serviceId:HomeAutomationGateway1&action=RunScene", null);
+                + "&serviceId=urn:micasaverde-com:serviceId:HomeAutomationGateway1&action=RunScene");
     }
 
     public boolean isConnected() {
@@ -204,8 +172,8 @@ public class Controller {
     }
 
     public Device getDevice(String deviceId) {
-        for (Device d : sdata.devices) {
-            if (deviceId.equals(d.id)) {
+        for (Device d : sdata.getDevices()) {
+            if (deviceId.equals(d.getId())) {
                 return d;
             }
         }
@@ -213,8 +181,8 @@ public class Controller {
     }
 
     public Scene getScene(String sceneId) {
-        for (Scene s : sdata.scenes) {
-            if (sceneId.equals(s.id)) {
+        for (Scene s : sdata.getScenes()) {
+            if (sceneId.equals(s.getId())) {
                 return s;
             }
         }

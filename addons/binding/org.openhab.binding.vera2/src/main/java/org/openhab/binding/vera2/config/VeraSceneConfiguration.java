@@ -10,7 +10,7 @@ package org.openhab.binding.vera2.config;
 
 import static org.openhab.binding.vera2.VeraBindingConstants.SCENE_CONFIG_ID;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * The {@link VeraSceneConfiguration} class defines the model for a scene configuration.
