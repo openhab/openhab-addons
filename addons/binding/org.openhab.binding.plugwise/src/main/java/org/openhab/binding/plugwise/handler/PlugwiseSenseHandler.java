@@ -47,7 +47,9 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
     private DeviceType deviceType = DeviceType.SENSE;
     private MACAddress macAddress;
 
-    // Configuration update commands to send when the Sense is online
+    // Flags that keep track of the pending Sense configuration updates. When the corresponding Thing configuration
+    // parameters change a flag is set to true. When the Sense goes online the respective command is sent to update the
+    // device configuration. When the Sense acknowledges a command the respective flag is again set to false.
     private boolean updateBoundaryParameters;
     private boolean updateMeasurementInterval;
     private boolean updateSleepParameters;

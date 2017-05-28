@@ -217,7 +217,9 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
     private int recentLogAddress = -1;
     private PendingPowerStateChange pendingPowerStateChange;
 
-    // Configuration update command to send when the device is online
+    // Flag that keeps track of the pending "measurement interval" device configuration update. When the corresponding
+    // Thing configuration parameter changes it is set to true. When the Circle/Stealth goes online a command is sent to
+    // update the device configuration. When the Circle/Stealth acknowledges the command the flag is again set to false.
     private boolean updateMeasurementInterval;
 
     public PlugwiseRelayDeviceHandler(Thing thing) {

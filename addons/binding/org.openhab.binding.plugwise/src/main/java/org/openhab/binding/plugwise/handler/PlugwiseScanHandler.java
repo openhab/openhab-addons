@@ -44,7 +44,9 @@ public class PlugwiseScanHandler extends AbstractSleepingEndDeviceHandler {
     private DeviceType deviceType = DeviceType.SCAN;
     private MACAddress macAddress;
 
-    // Configuration update commands to send when the Scan is online
+    // Flags that keep track of the pending Scan configuration updates. When the corresponding Thing configuration
+    // parameters change a flag is set to true. When the Scan goes online the respective command is sent to update the
+    // device configuration. When the Scan acknowledges a command the respective flag is again set to false.
     private boolean updateScanParameters;
     private boolean updateSleepParameters;
     private boolean recalibrate;

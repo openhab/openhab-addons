@@ -38,13 +38,15 @@ import org.slf4j.LoggerFactory;
  */
 public class PlugwiseSwitchHandler extends AbstractSleepingEndDeviceHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(PlugwiseSenseHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(PlugwiseSwitchHandler.class);
 
     private PlugwiseSwitchConfig configuration;
     private DeviceType deviceType = DeviceType.SWITCH;
     private MACAddress macAddress;
 
-    // Configuration update command to send when the Switch is online
+    // Flag that keeps track of the pending "sleep parameters" Switch configuration update. When the corresponding
+    // Thing configuration parameters change it is set to true. When the Switch goes online a command is sent to
+    // update the device configuration. When the Switch acknowledges the command the flag is again set to false.
     private boolean updateSleepParameters;
 
     public PlugwiseSwitchHandler(Thing thing) {
