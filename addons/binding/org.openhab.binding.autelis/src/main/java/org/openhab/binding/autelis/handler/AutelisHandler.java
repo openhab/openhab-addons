@@ -112,6 +112,11 @@ public class AutelisHandler extends BaseThingHandler {
     private HttpClient client = new HttpClient();
 
     /**
+     * Authentication for login
+     */
+    String basicAuthentication;
+
+    /**
      * Regex expression to match XML responses from the Autelis, this is used to
      * combine similar XML docs into a single document, {@link XPath} is still
      * used for XML querying
@@ -261,7 +266,7 @@ public class AutelisHandler extends BaseThingHandler {
             }
 
             baseURL = "http://" + host + ":" + port;
-
+            basicAuthentication = "Basic " + B64Code.encode(username + ":" + password, StringUtil.__ISO_8859_1);
             properlyConfigured = true;
 
             logger.debug("Autelius binding configured with base url {} and refresh period of {}", baseURL, refresh);
@@ -378,13 +383,6 @@ public class AutelisHandler extends BaseThingHandler {
         startHttpClient(client);
 
         Request request = client.newRequest(url).timeout(TIMEOUT, TimeUnit.MILLISECONDS);
-
-        AutelisConfiguration configuration = getConfig().as(AutelisConfiguration.class);
-        String user = configuration.user;
-        String password = configuration.password;
-
-        String basicAuthentication = "Basic " + B64Code.encode(user + ":" + password, StringUtil.__ISO_8859_1);
-
         request.header(HttpHeader.AUTHORIZATION, basicAuthentication);
 
         try {
