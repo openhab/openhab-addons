@@ -79,6 +79,7 @@
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
+    <module>org.openhab.binding.fronius</module>
   </modules>
 
 </project>
