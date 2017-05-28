@@ -40,10 +40,10 @@ Be sure not to use the same values for localTSAP and remoteTSAP, if configure mo
 Binding supports two types of things: digital and analog.
 
 ### Digital Things
-The configuration pattern for digital things is as follow
+The configuration pattern for digital things is:
 
 ```
-Thing plclogo:digital:<ThingId> [ block="<name>", force=<true/false> ]
+Thing digital <ThingId> "Label" @ "Location" [ block="<name>", force=<true/false> ]
 ```
 
 | Parameter | Type    | Required   | Default   | Description                                                  |
@@ -62,11 +62,13 @@ Follow block names are allowed for digital things:
 | Network output |                     | `NQ[1-64]`        |
 | Memory         | `VB[0-850].[0-7]`   | `VB[0-850].[0-7]` |
 
+Please, consider `openHAB` and/or `Eclipse SmartHome` documentation for details.
+
 ### Analog Things
 The configuration pattern for analog things is as follow
 
 ```
-Thing plclogo:analog:<ThingId> [ block="<name>", threshold=<number>, force=<true/false>, type="<number/date/time>" ]
+Thing analog <ThingId>  "Label" @ "Location" [ block="<name>", threshold=<number>, force=<true/false>, type="<number/date/time>" ]
 ```
 
 | Parameter | Type    | Required   | Default   | Description                                                   |
@@ -93,6 +95,8 @@ Follow block names are allowed for analog things:
 | Memory (DWORD) | `VD[0-847]`   | `VD[0-847]` |
 | Memory (WORD)  | `VW[0-849]`   | `VW[0-849]` |
 
+Please, consider `openHAB` and/or `Eclipse SmartHome` documentation for details.
+
 ## Channels
 ### Bridge
 Each device have currently one channel `rtc`:
@@ -110,7 +114,7 @@ one second, `rtc` channel will be tried to update with the same rate.
 Each digital thing have currently one channel `state`:
 
 ```
-channel="plclogo:digital:<ThingId>:state"
+channel="plclogo:digital:<DeviceId>:<ThingId>:state"
 ```
 
 Dependend on configured block type, channel supports one of two different item types: `Contact`
@@ -121,7 +125,7 @@ be used. For other blocks simply use `Switch`, since they are bidirectional.
 Each analog thing have currently one channel `value`:
 
 ```
-channel="plclogo:digital:<ThingId>:value"
+channel="plclogo:digital:<DeviceId>:<ThingId>:value"
 ```
 
 This channel supports `Number` or `DateTime` items dependend on thing configuration.
@@ -141,9 +145,9 @@ Bridge plclogo:device:Logo [ address="192.168.0.1", family="0BA8", localTSAP="0x
   Thing digital NI2   [ block="NI2" ]
   Thing digital Q1    [ block="Q1" ]
   Thing digital Q2    [ block="Q2" ]
-  Thing analog  VW100  [ block="VW100", threshold=1, force=true ]
-  Thing analog  VW102  [ block="VW102", type="time" ]
-  Thing analog  VW104  [ block="VW104", type="time" ]
+  Thing analog  VW100 [ block="VW100", threshold=1, force=true ]
+  Thing analog  VW102 [ block="VW102", type="time" ]
+  Thing analog  VW104 [ block="VW104", type="time" ]
 }
 ```
 
@@ -152,15 +156,15 @@ logo.items:
 ```
 // NI1 is mapped to VB0.0 address in LOGO!Soft Comfort 
 // NI2 is mapped to VB0.1 address in LOGO!Soft Comfort 
-Switch   LogoUp                             {channel="plclogo:digital:VB0_0:state"}
-Switch   LogoDown                           {channel="plclogo:digital:VB0_1:state"}
-Contact  LogoIsUp                           {channel="plclogo:digital:NI1:state"}
-Contact  LogoIsDown                         {channel="plclogo:digital:NI2:state"}
-Switch   Output1                            {channel="plclogo:digital:Q1:state"}
-Switch   Output2                            {channel="plclogo:digital:Q2:state"}
-Number   Position                           {channel="plclogo:analog:VW100:value"}
-DateTime Sunrise    "Sunrise [%1$tH:%1$tM]" {channel="plclogo:analog:VW102:value"}
-DateTime Sunset     "Sunset [%1$tH:%1$tM]"  {channel="plclogo:analog:VW104:value"}
+Switch   LogoUp                             {channel="plclogo:digital:Logo:VB0_0:state"}
+Switch   LogoDown                           {channel="plclogo:digital:Logo:VB0_1:state"}
+Contact  LogoIsUp                           {channel="plclogo:digital:Logo:NI1:state"}
+Contact  LogoIsDown                         {channel="plclogo:digital:Logo:NI2:state"}
+Switch   Output1                            {channel="plclogo:digital:Logo:Q1:state"}
+Switch   Output2                            {channel="plclogo:digital:Logo:Q2:state"}
+Number   Position                           {channel="plclogo:analog:Logo:VW100:value"}
+DateTime Sunrise    "Sunrise [%1$tH:%1$tM]" {channel="plclogo:analog:Logo:VW102:value"}
+DateTime Sunset     "Sunset [%1$tH:%1$tM]"  {channel="plclogo:analog:Logo:VW104:value"}
 DateTime RTC                                {channel="plclogo:device:Logo:rtc}
 ```
 
@@ -171,57 +175,63 @@ logo.things:
 ```
 Bridge plclogo:device:Logo1 [ address="192.168.0.1", family="0BA8", localTSAP="0x3000", remoteTSAP="0x2000", refresh=100 ]
 {
-  Thing digital Logo1_VB0_0 [ block="VB0.0" ]
-  Thing digital Logo1_VB0_1 [ block="VB0.1" ]
-  Thing digital Logo1_NI1   [ block="NI1" ]
-  Thing digital Logo1_NI2   [ block="NI2" ]
-  Thing digital Logo1_Q1    [ block="Q1" ]
-  Thing digital Logo1_Q2    [ block="Q2" ]
-  Thing analog  Logo1_VW100 [ block="VW100", threshold=1 ]
+  Thing digital VB0_0 [ block="VB0.0" ]
+  Thing digital VB0_1 [ block="VB0.1" ]
+  Thing digital NI1   [ block="NI1" ]
+  Thing digital NI2   [ block="NI2" ]
+  Thing digital Q1    [ block="Q1" ]
+  Thing digital Q2    [ block="Q2" ]
+  Thing analog  VW100 [ block="VW100", threshold=1 ]
 }
 Bridge plclogo:device:Logo2 [ address="192.168.0.2", family="0BA8", localTSAP="0x3100", remoteTSAP="0x2000", refresh=100 ]
 {
-  Thing digital Logo2_VB0_0 [ block="VB0.0" ]
-  Thing digital Logo2_VB0_1 [ block="VB0.1" ]
-  Thing digital Logo2_NI1   [ block="NI1" ]
-  Thing digital Logo2_NI2   [ block="NI2" ]
-  Thing digital Logo2_Q1    [ block="Q1" ]
-  Thing digital Logo2_Q2    [ block="Q2" ]
-  Thing analog  Logo2_VW100 [ block="VW100", threshold=1 ]
+  Thing digital VB0_0 [ block="VB0.0" ]
+  Thing digital VB0_1 [ block="VB0.1" ]
+  Thing digital NI1   [ block="NI1" ]
+  Thing digital NI2   [ block="NI2" ]
+  Thing digital Q1    [ block="Q1" ]
+  Thing digital Q2    [ block="Q2" ]
+  Thing analog  VW100 [ block="VW100", threshold=1 ]
 }
 ```
 
 logo.items:
 
 ```
-Switch   Logo1_Up       {channel="plclogo:digital:Logo1_VB0_0:state"}
-Switch   Logo1_Down     {channel="plclogo:digital:Logo1_VB0_1:state"}
-Contact  Logo1_IsUp     {channel="plclogo:digital:Logo1_NI1:state"}
-Contact  Logo1_IsDown   {channel="plclogo:digital:Logo1_NI2:state"}
-Switch   Logo1_Output1  {channel="plclogo:digital:Logo1_Q1:state"}
-Switch   Logo1_Output2  {channel="plclogo:digital:Logo1_Q2:state"}
-Number   Logo1_Position {channel="plclogo:analog:Logo1_VW100:value"}
+Switch   Logo1_Up       {channel="plclogo:digital:Logo1:VB0_0:state"}
+Switch   Logo1_Down     {channel="plclogo:digital:Logo1:VB0_1:state"}
+Contact  Logo1_IsUp     {channel="plclogo:digital:Logo1:NI1:state"}
+Contact  Logo1_IsDown   {channel="plclogo:digital:Logo1:NI2:state"}
+Switch   Logo1_Output1  {channel="plclogo:digital:Logo1:Q1:state"}
+Switch   Logo1_Output2  {channel="plclogo:digital:Logo1:Q2:state"}
+Number   Logo1_Position {channel="plclogo:analog:Logo1:VW100:value"}
 DateTime Logo1_RTC      {channel="plclogo:device:Logo1:rtc}
 
-Switch   Logo2_Up       {channel="plclogo:digital:Logo2_VB0_0:state"}
-Switch   Logo2_Down     {channel="plclogo:digital:Logo2_VB0_1:state"}
-Contact  Logo2_IsUp     {channel="plclogo:digital:Logo2_NI1:state"}
-Contact  Logo2_IsDown   {channel="plclogo:digital:Logo2_NI2:state"}
-Switch   Logo2_Output1  {channel="plclogo:digital:Logo2_Q1:state"}
-Switch   Logo2_Output2  {channel="plclogo:digital:Logo2_Q2:state"}
-Number   Logo2_Position {channel="plclogo:analog:Logo2_VW100:value"}
+Switch   Logo2_Up       {channel="plclogo:digital:Logo2:VB0_0:state"}
+Switch   Logo2_Down     {channel="plclogo:digital:Logo2:VB0_1:state"}
+Contact  Logo2_IsUp     {channel="plclogo:digital:Logo2:NI1:state"}
+Contact  Logo2_IsDown   {channel="plclogo:digital:Logo2:NI2:state"}
+Switch   Logo2_Output1  {channel="plclogo:digital:Logo2:Q1:state"}
+Switch   Logo2_Output2  {channel="plclogo:digital:Logo2:Q2:state"}
+Number   Logo2_Position {channel="plclogo:analog:Logo2:VW100:value"}
 DateTime Logo2_RTC      {channel="plclogo:device:Logo2:rtc}
 ```
 
 ## Troubleshooting
 
-**Log shows Reader was created but no communication with LOGO! possible**
+**LOGO! bridge will not go online**
+
+Be sure to have only one bridge for each LOGO! device.
+
+**Log shows reader was created but no communication with LOGO! possible**
 
 Check TSAP values: localTSAP and remoteTSAP should not be the same. You have to choose different addresses.
 
 **openHAB is starting without errors but no reader was created for the LOGO!**
 
-If all configuration parameters were checked and fine, it maybe possible that the network interface of the LOGO! is crashed. To recover stop openHAB, cold boot your LOGO! (power off/on) and reflash the program with LOGO! SoftComfort. Then restart openHAB and check logging for a created reader.
+If all configuration parameters were checked and fine, it maybe possible that the network interface of the LOGO! is crashed.
+To recover stop openHAB, cold boot your LOGO! (power off/on) and reflash the program with LOGO! SoftComfort. Then restart
+openHAB and check logging for a created reader.
 
 **RTC value differs from the value shown in LOGO! (0BA7)**
 
