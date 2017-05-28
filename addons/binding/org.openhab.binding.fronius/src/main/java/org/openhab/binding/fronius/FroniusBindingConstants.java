@@ -26,5 +26,12 @@ public class FroniusBindingConstants {
     // List of all Channel ids
     public static final String InverterDataChannelDayEnergy = "inverterdatachanneldayenergy";
     public static final String InverterDataChannelPac = "inverterdatachannelpac";
+    public static final String InverterDataChannelTotal = "inverterdatachanneltotal";
+    public static final String InverterDataChannelYear = "inverterdatachannelyear";
+    public static final String InverterDataChannelFac = "inverterdatachannelfac";
+    public static final String InverterDataChannelIac = "inverterdatachanneliac";
+    public static final String InverterDataChannelIdc = "inverterdatachannelidc";
+    public static final String InverterDataChannelUac = "inverterdatachanneluac";
+    public static final String InverterDataChannelUdc = "inverterdatachanneludc";
 
 }

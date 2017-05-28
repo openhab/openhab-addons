@@ -10,8 +10,16 @@
 		<description>Fronius Symo Binding</description>
 
 		<channels>
-			<channel id="inverterdatachanneldayenergy" typeId="day_energy"/>
 			<channel id="inverterdatachannelpac" typeId="pac"/>
+			<channel id="inverterdatachanneldayenergy" typeId="day_energy"/>
+			<channel id="inverterdatachanneltotal" typeId="total_energy"/>
+			<channel id="inverterdatachannelyear" typeId="year_energy"/>
+			
+			<channel id="inverterdatachannelfac" typeId="fac"/>
+			<channel id="inverterdatachanneliac" typeId="iac"/>
+			<channel id="inverterdatachannelidc" typeId="idc"/>
+            <channel id="inverterdatachanneluac" typeId="uac"/>
+            <channel id="inverterdatachanneludc" typeId="udc"/>			
 		</channels>
 		
         <config-description>
@@ -36,13 +44,57 @@
 		<item-type>Number</item-type>
 		<label>Day Energy</label>
 		<description>Energy generated on current day</description>
-		<state readOnly="true"></state>
+        <state pattern="%.2f Wh" readOnly="true"></state>
 	</channel-type>
     <channel-type id="pac">
         <item-type>Number</item-type>
         <label>AC powery</label>
         <description>AC power</description>
-        <state readOnly="true"></state>
+        <state pattern="%f W" readOnly="true"></state>
     </channel-type>	
+    <channel-type id="total_energy">
+        <item-type>Number</item-type>
+        <label>Total Energy</label>
+        <description>Energy generated overall</description>
+        <state pattern="%.2f Wh" readOnly="true"></state>
+    </channel-type>
+    <channel-type id="year_energy">
+        <item-type>Number</item-type>
+        <label>Year Energy</label>
+        <description>Energy generated in current year</description>
+        <state pattern="%.2f Wh" readOnly="true"></state>
+    </channel-type>     
 
+    <channel-type id="fac">
+        <item-type>Number</item-type>
+        <label>FAC</label>
+        <description>AC frequency</description>
+        <state pattern="%.2f Hz" readOnly="true"></state>
+    </channel-type> 
+
+    <channel-type id="iac">
+        <item-type>Number</item-type>
+        <label>IAC</label>
+        <description>AC current</description>
+        <state pattern="%.2f A" readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="idc">
+        <item-type>Number</item-type>
+        <label>IDC</label>
+        <description>DC current</description>
+        <state pattern="%.2f A" readOnly="true"></state>
+    </channel-type>    
+    <channel-type id="uac">
+        <item-type>Number</item-type>
+        <label>UAC</label>
+        <description>AC voltage</description>
+        <state pattern="%.1f V" readOnly="true"></state>
+    </channel-type>     
+    <channel-type id="udc">
+        <item-type>Number</item-type>
+        <label>UDC</label>
+        <description>DC voltage</description>
+        <state pattern="%.1f V" readOnly="true"></state>
+    </channel-type>    
 </thing:thing-descriptions>

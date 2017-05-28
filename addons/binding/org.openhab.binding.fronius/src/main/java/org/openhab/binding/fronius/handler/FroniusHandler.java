@@ -52,7 +52,7 @@ public class FroniusHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusHandler.class);
 
-    private static final String InverterRealtimeDataUrl = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CumulationInverterData";
+    private static final String InverterRealtimeDataUrl = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
 
     private static final int DEFAULT_REFRESH_PERIOD = 5;
 
@@ -69,6 +69,7 @@ public class FroniusHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+
         if (command instanceof RefreshType) {
             updateChannel(channelUID.getId(), aqiResponse);
         } else {
@@ -195,6 +196,20 @@ public class FroniusHandler extends BaseThingHandler {
                 return data.getBody().getData().getDayEnergy();
             case FroniusBindingConstants.InverterDataChannelPac:
                 return data.getBody().getData().getPac();
+            case FroniusBindingConstants.InverterDataChannelTotal:
+                return data.getBody().getData().getTotalEnergy();
+            case FroniusBindingConstants.InverterDataChannelYear:
+                return data.getBody().getData().getYearEnergy();
+            case FroniusBindingConstants.InverterDataChannelFac:
+                return data.getBody().getData().getFac();
+            case FroniusBindingConstants.InverterDataChannelIac:
+                return data.getBody().getData().getIac();
+            case FroniusBindingConstants.InverterDataChannelIdc:
+                return data.getBody().getData().getIdc();
+            case FroniusBindingConstants.InverterDataChannelUac:
+                return data.getBody().getData().getUac();
+            case FroniusBindingConstants.InverterDataChannelUdc:
+                return data.getBody().getData().getUdc();
         }
 
         return null;
