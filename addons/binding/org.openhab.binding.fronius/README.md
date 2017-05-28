@@ -42,7 +42,9 @@ The thing has a few configuration parameters:
 | idc | Number | DC current |
 | uac | Number | AC voltage |
 | udc | Number | DC voltage |
-
+| pGrid | Number | Power + from grid, - to grid |
+| pLoad | Number | Power + generator, - consumer |
+| pAkku | Number | Power + charge, - discharge |
 
 
 
