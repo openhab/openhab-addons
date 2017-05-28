@@ -35,7 +35,8 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(AutelisDiscoveryParticipant.class);
 
     private static String MANUFACTURER = "autelis";
-    private static String MODEL = "pc100pi";
+    private static String MODEL_PENTAIR = "pc100p";
+    private static String MODEL_JANDY = "pc100j";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -74,11 +75,16 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
             if (device.getDetails().getManufacturerDetails().getManufacturer() != null
                     && device.getDetails().getModelDetails().getModelNumber() != null) {
                 if (device.getDetails().getManufacturerDetails().getManufacturer().toLowerCase()
-                        .startsWith(MANUFACTURER)
-                        && device.getDetails().getModelDetails().getModelNumber().toLowerCase().equals(MODEL)) {
+                        .startsWith(MANUFACTURER)) {
                     logger.debug("Autelis Pool Control Found at {}", device.getDetails().getBaseURL());
-                    return new ThingUID(AutelisBindingConstants.POOLCONTROL_THING_TYPE_UID,
-                            device.getIdentity().getUdn().getIdentifierString().replaceAll(":", "").toUpperCase());
+                    String id = device.getIdentity().getUdn().getIdentifierString().replaceAll(":", "").toUpperCase();
+                    if (device.getDetails().getModelDetails().getModelNumber().toLowerCase()
+                            .startsWith(MODEL_PENTAIR)) {
+                        return new ThingUID(AutelisBindingConstants.PENTAIR_THING_TYPE_UID, id);
+                    }
+                    if (device.getDetails().getModelDetails().getModelNumber().toLowerCase().startsWith(MODEL_JANDY)) {
+                        return new ThingUID(AutelisBindingConstants.JANDY_THING_TYPE_UID, id);
+                    }
                 }
             }
         }

@@ -26,6 +26,9 @@ public class AutelisBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID POOLCONTROL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "poolcontrol");
+    public static final ThingTypeUID PENTAIR_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "pentair");
+    public static final ThingTypeUID JANDY_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "jandy");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(POOLCONTROL_THING_TYPE_UID);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(POOLCONTROL_THING_TYPE_UID,
+            PENTAIR_THING_TYPE_UID, JANDY_THING_TYPE_UID);
 }
