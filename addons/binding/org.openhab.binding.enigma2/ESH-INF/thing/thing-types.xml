@@ -31,7 +31,7 @@
             </parameter>
             <parameter name="refreshInterval" type="integer" required="true">
                 <label>Refresh interval</label>
-                <description>Time for autoupdate (default=5000)</description>
+                <description>Time for autoupdate in seconds(default=5s)</description>
             </parameter>
             <parameter name="user" type="text" required="false">
                 <label>User Name</label>

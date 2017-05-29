@@ -9,6 +9,7 @@
 package org.openhab.binding.enigma2.internal.discovery;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -53,9 +54,8 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
             Map<String, Object> properties = new HashMap<>(4);
             String label = info.getName();
 
-            Number defaultRefreshinterval = 5000;
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_HOST, getIPAddress(info));
-            properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH, defaultRefreshinterval);
+            properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH, new BigDecimal(5));
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
         }
         return result;

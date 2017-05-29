@@ -10,6 +10,7 @@ package org.openhab.binding.enigma2.handler;
 
 import static org.openhab.binding.enigma2.Enigma2BindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +56,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         refresher = new Enigma2Refresher();
         refresher.addListener(this);
 
-        scheduler.scheduleWithFixedDelay(refresher, 60000, getRefreshInterval().longValue(), TimeUnit.MILLISECONDS);
+        scheduler.scheduleWithFixedDelay(refresher, 60, getRefreshInterval(), TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -212,8 +213,18 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         return (String) thing.getConfiguration().get(DEVICE_PARAMETER_HOST);
     }
 
-    public Number getRefreshInterval() {
-        return (Number) thing.getConfiguration().get(DEVICE_PARAMETER_REFRESH);
+    public long getRefreshInterval() {
+        Object o = thing.getConfiguration().get(DEVICE_PARAMETER_REFRESH);
+        BigDecimal refreshInterval = null;
+        if (o instanceof BigDecimal) {
+            refreshInterval = (BigDecimal) thing.getConfiguration().get(DEVICE_PARAMETER_REFRESH);
+        } else if (o instanceof Long) {
+            refreshInterval = new BigDecimal((Long) thing.getConfiguration().get(DEVICE_PARAMETER_REFRESH));
+        } else {
+            logger.debug("Cannot set refresh parameter. Default is used");
+            refreshInterval = new BigDecimal(5);
+        }
+        return refreshInterval.longValue();
     }
 
     public void setOffline() {
