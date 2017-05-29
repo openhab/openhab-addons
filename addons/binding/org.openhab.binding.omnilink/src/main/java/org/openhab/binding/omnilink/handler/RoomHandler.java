@@ -6,6 +6,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,11 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
         logger.debug("handleCommand, channel id: {}, command: {}", channelUID, command);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         int roomNum = Integer.parseInt(channelParts[2]);
+
+        if (RefreshType.REFRESH.equals(command)) {
+            logger.debug("Must implement refresh: {} ", channelUID);
+            return;
+        }
         if (channelParts[3].startsWith("scene") && OnOffType.ON.equals(command)) {
 
             int param1 = 0;
@@ -64,6 +70,34 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
             getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, roomNum);
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_OFF.equals(channelParts[3]) && OnOffType.ON.equals(command)) {
             getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_OFF.getNumber(), 0, roomNum);
+        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_STATE.equals(channelParts[3])) {
+            int cmd = -1;
+            int param2 = -1;
+            if (command instanceof DecimalType) {
+                int cmdValue = ((DecimalType) command).intValue();
+                switch (cmdValue) {
+                    case 0:
+                        cmd = OmniLinkCmd.CMD_UNIT_OFF.getNumber();
+                        param2 = roomNum;
+                        break;
+                    case 1:
+                        cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
+                        param2 = roomNum;
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                        // little magic with link #. 0 and 1 are off, on. So A ends up being 2, but omnilink expects
+                        // offset of 0. Thats why subtracting the 2
+                        param2 = ((roomNum * 6) - 3) + cmdValue - 2;
+                        break;
+
+                }
+                if (cmd > -1 && param2 > -1) {
+                    getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, param2);
+                }
+            }
         }
         // cmd = OmniLinkCmd.CMD_UNIT_UPB_LINK_ON.getNumber();
 
@@ -75,7 +109,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
         logger.debug("need to handle status update{}", unitStatus);
         updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH,
                 unitStatus.getStatus() == UNIT_ON ? OnOffType.ON : OnOffType.OFF);
-        updateState(OmnilinkBindingConstants.CHANNEL_ROOM_STATUS, new DecimalType(unitStatus.getStatus()));
+        updateState(OmnilinkBindingConstants.CHANNEL_ROOM_STATE, new DecimalType(unitStatus.getStatus()));
 
     }
 

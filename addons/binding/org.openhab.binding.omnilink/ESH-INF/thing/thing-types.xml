@@ -43,7 +43,7 @@
             <channel id="sceneb" typeId="scene_toggleb" />
             <channel id="scenec" typeId="scene_togglec" />
             <channel id="scened" typeId="scene_toggled" />
-            <channel id="status" typeId="room_status" />
+            <channel id="state" typeId="room_state" />
         </channels>
 
         <config-description>
@@ -189,11 +189,11 @@
         <state pattern="%s" ></state>
     </channel-type>
     <channel-type id="ContactSensor">
-        <item-type>Switch</item-type>
+        <item-type>Contact</item-type>
         <label>Contact State</label>
         <description>Contact state information</description>
         <category>Contact</category>
-        <state pattern="%s" readOnly="true"></state>
+        <state pattern="%s"></state>
     </channel-type>
     <channel-type id="scene_switch">
         <item-type>Switch</item-type>
@@ -244,11 +244,11 @@
         <category>Toggle</category>
         <state pattern="%s"></state>
     </channel-type>
-    <channel-type id="room_status" >
+    <channel-type id="room_state" >
         <item-type>Number</item-type>
-        <label>Status</label>
+        <label>State</label>
         <description>Status of room (0 off, 1 on, 2 scene a, 3 scene b, etc)</description>
-        <state min="0" max="6" readOnly="true"/>
+        <state min="0" max="5" />
     </channel-type>
     <channel-type id="area_alarm">
         <item-type>String</item-type>
