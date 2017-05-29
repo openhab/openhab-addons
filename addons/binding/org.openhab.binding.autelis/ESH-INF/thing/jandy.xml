@@ -275,79 +275,229 @@
         </state>
     </channel-type>
     <channel-type id="equipment-aux1">
-        <item-type>Switch</item-type>
+        <item-type>Number</item-type>
         <label>Auxiliary 1</label>
-        <description>The current state of auxiliary 1 (Spa or Lo-Temp)</description>
+        <description>The current state of auxiliary 1</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux2">
-        <item-type>Switch</item-type>
+        <item-type>Number</item-type>
         <label>Auxiliary 2</label>
         <description>The current state of auxiliary 2</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux3">
-        <item-type>Switch</item-type>
+        <item-type>Number</item-type>
         <label>Auxiliary 3</label>
         <description>The current state of auxiliary 3</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux4">
-        <item-type>Switch</item-type>
+        <item-type>Number</item-type>
         <label>Auxiliary 4</label>
         <description>The current state of auxiliary 4</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux5">
-        <item-type>Switch</item-type>
+        <item-type>Number</item-type>
         <label>Auxiliary 5</label>
         <description>The current state of auxiliary 5</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux6">
-        <item-type>Switch</item-type>
+        <item-type>Number</item-type>
         <label>Auxiliary 6</label>
         <description>The current state of auxiliary 6 (Pool or Hi-Temp)</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux7">
-        <item-type>Switch</item-type>
+        <item-type>Number</item-type>
         <label>Auxiliary 7</label>
         <description>The current state of auxiliary 7</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux8">
-        <item-type>Switch</item-type>
+        <item-type>Number</item-type>
         <label>Auxiliary 8</label>
         <description>The current state of auxiliary 8</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux9">
-        <item-type>Switch</item-type>
+        <item-type>Number</item-type>
         <label>Auxiliary 9</label>
         <description>The current state of auxiliary 9</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux10">
         <item-type>Number</item-type>
         <label>Auxiliary 10</label>
         <description>The current state of auxiliary 10</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux11">
         <item-type>Number</item-type>
         <label>Auxiliary 11</label>
         <description>The current state of auxiliary 11</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux12">
         <item-type>Number</item-type>
         <label>Auxiliary 12</label>
         <description>The current state of auxiliary 12</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux13">
         <item-type>Number</item-type>
         <label>Auxiliary 13</label>
         <description>The current state of auxiliary 13</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux14">
         <item-type>Number</item-type>
         <label>Auxiliary 14</label>
         <description>The current state of auxiliary 14</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     <channel-type id="equipment-aux15">
         <item-type>Number</item-type>
         <label>Auxiliary 10</label>
         <description>The current state of auxiliary 10</description>
+        <state readOnly="true" pattern="%d">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="25">25% (Only if Aux is Dimmer)</option>
+                <option value="50">50% (Only if Aux is Dimmer)</option>
+                <option value="75">75% (Only if Aux is Dimmer)</option>
+                <option value="100">100% (Only if Aux is Dimmer)</option>
+            </options>
+        </state>
     </channel-type>
     
     <!--  Temperature Channels -->
