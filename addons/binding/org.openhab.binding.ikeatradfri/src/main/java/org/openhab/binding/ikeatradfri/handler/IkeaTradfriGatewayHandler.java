@@ -187,7 +187,7 @@ public class IkeaTradfriGatewayHandler extends BaseBridgeHandler implements Ikea
                         future.complete(response.getResponseText());
                     } else {
                         logger.debug("COAP PUT Error: {} for {}", response.getCode().toString(), url);
-                        future.completeExceptionally(null);
+                        future.completeExceptionally(new RuntimeException("COAP PUT resulted in an error."));
                     }
                     removeAsyncClient(client);
                 }
@@ -195,7 +195,7 @@ public class IkeaTradfriGatewayHandler extends BaseBridgeHandler implements Ikea
                 @Override
                 public void onError() {
                     logger.debug("COAP PUT Error");
-                    future.completeExceptionally(null);
+                    future.completeExceptionally(new RuntimeException("COAP PUT resulted in an error."));
                     removeAsyncClient(client);
                 }
             };
@@ -204,7 +204,7 @@ public class IkeaTradfriGatewayHandler extends BaseBridgeHandler implements Ikea
             return future;
         } catch (URISyntaxException e) {
             logger.warn("COAP URI exception: {}", e.getMessage());
-            future.completeExceptionally(null);
+            future.completeExceptionally(e);
         }
         return future;
     }
