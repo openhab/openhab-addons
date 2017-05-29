@@ -4,9 +4,9 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="kecontactp20">
-		<label>KeContact P20 EV Charging Station</label>
-		<description>This Thing supports the KeContact P20 EV Charging station</description>
+	<thing-type id="kecontact">
+		<label>KeContact EV Charging Station</label>
+		<description>This Thing supports the KeContact EV Charging station</description>
 
 		<channels>
 			<channel id="state" typeId="state" />
