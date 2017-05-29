@@ -48,6 +48,7 @@ public class DSCAlarmBindingConstants {
 
     // List of all Channel IDs
     public static final String BRIDGE_RESET = "bridge_reset";
+    public static final String SEND_COMMAND = "send_command";
 
     public static final String PANEL_MESSAGE = "panel_message";
     public static final String PANEL_COMMAND = "panel_command";
