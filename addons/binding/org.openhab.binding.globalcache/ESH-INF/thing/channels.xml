@@ -26,6 +26,15 @@
 					<property name="connector">1</property>
 				</properties>
 			</channel>
+
+			<channel id="c1-receive" typeId="channel-type-sl-receive">
+				<label>Connector 1 (receive)</label>
+				<description>Data received on serial port</description>
+				<properties>
+					<property name="module">1</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -45,6 +54,15 @@
 			<channel id="c1-direct" typeId="channel-type-sl-direct">
 				<label>Connector 1 (direct)</label>
 				<description>Direct commands to serial port</description>
+				<properties>
+					<property name="module">2</property>
+					<property name="connector">1</property>
+				</properties>
+			</channel>
+
+			<channel id="c1-receive" typeId="channel-type-sl-receive">
+				<label>Connector 1 (receive)</label>
+				<description>Data received on serial port</description>
 				<properties>
 					<property name="module">2</property>
 					<property name="connector">1</property>
