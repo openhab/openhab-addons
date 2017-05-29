@@ -228,10 +228,20 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_POWERSTATE;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2instandby");
-            State returnState = content.contains("true") ? OnOffType.OFF : OnOffType.ON;
-            return returnState;
+            State returnState = null;
+            if (content.toLowerCase().equals("true")) {
+                returnState = OnOffType.ON;
+            }
+            if (content.toLowerCase().equals("false")) {
+                returnState = OnOffType.OFF;
+            }
+            if (returnState instanceof OnOffType) {
+                return returnState;
+            } else {
+                return UnDefType.NULL;
+            }
         } catch (IOException e) {
-            return UnDefType.UNDEF;
+            return UnDefType.NULL;
         }
     }
 
@@ -245,10 +255,18 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_VOLUME;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2current");
-            State returnState = new PercentType(content);
-            return returnState;
+            int value;
+            try {
+                value = Integer.parseInt(content);
+            } catch (NumberFormatException e) {
+                return UnDefType.NULL;
+            }
+            if (value < 0 && value > 100) {
+                return UnDefType.NULL;
+            }
+            return new PercentType(value);
         } catch (IOException e) {
-            return UnDefType.UNDEF;
+            return UnDefType.NULL;
         }
     }
 
@@ -263,10 +281,9 @@ public class Enigma2CommandExecutor {
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2servicename");
             content = Enigma2Util.cleanString(content);
-            State returnState = new StringType(content);
-            return returnState;
+            return new StringType(content);
         } catch (IOException e) {
-            return UnDefType.UNDEF;
+            return UnDefType.NULL;
         }
     }
 
@@ -287,9 +304,13 @@ public class Enigma2CommandExecutor {
             if ((content.toLowerCase().contains("no") || content.toLowerCase().contains("nein"))) {
                 returnState = OnOffType.OFF;
             }
-            return returnState;
+            if (returnState instanceof OnOffType) {
+                return returnState;
+            } else {
+                return UnDefType.NULL;
+            }
         } catch (IOException e) {
-            return UnDefType.UNDEF;
+            return UnDefType.NULL;
         }
     }
 
@@ -303,10 +324,20 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_VOLUME;
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2ismuted");
-            State returnState = content.toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF;
-            return returnState;
+            State returnState = null;
+            if (content.toLowerCase().equals("true")) {
+                returnState = OnOffType.ON;
+            }
+            if (content.toLowerCase().equals("false")) {
+                returnState = OnOffType.OFF;
+            }
+            if (returnState instanceof OnOffType) {
+                return returnState;
+            } else {
+                return UnDefType.NULL;
+            }
         } catch (IOException e) {
-            return UnDefType.UNDEF;
+            return UnDefType.NULL;
         }
     }
 
@@ -320,13 +351,17 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2eventtitle");
-            State returnState = new StringType("-");
+            State returnState = null;
             if (content != null) {
                 returnState = new StringType(content);
             }
-            return returnState;
+            if (returnState != null) {
+                return returnState;
+            } else {
+                return UnDefType.NULL;
+            }
         } catch (IOException e) {
-            return UnDefType.UNDEF;
+            return UnDefType.NULL;
         }
     }
 
@@ -340,13 +375,17 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2eventdescription");
-            State returnState = new StringType("-");
+            State returnState = null;
             if (content != null) {
                 returnState = new StringType(content);
             }
-            return returnState;
+            if (returnState != null) {
+                return returnState;
+            } else {
+                return UnDefType.NULL;
+            }
         } catch (IOException e) {
-            return UnDefType.UNDEF;
+            return UnDefType.NULL;
         }
     }
 
@@ -360,13 +399,17 @@ public class Enigma2CommandExecutor {
             String url = deviceURL + SUFFIX_EPG + getChannelServiceReference();
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2eventdescriptionextended");
-            State returnState = new StringType("-");
+            State returnState = null;
             if (content != null) {
                 returnState = new StringType(content);
             }
-            return returnState;
+            if (returnState != null) {
+                return returnState;
+            } else {
+                return UnDefType.NULL;
+            }
         } catch (IOException e) {
-            return UnDefType.UNDEF;
+            return UnDefType.NULL;
         }
     }
 
