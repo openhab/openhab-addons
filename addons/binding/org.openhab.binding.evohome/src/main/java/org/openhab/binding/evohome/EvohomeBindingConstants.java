@@ -29,7 +29,6 @@ public class EvohomeBindingConstants {
     public static final ThingTypeUID THING_TYPE_EVOHOME_DISPLAY        = new ThingTypeUID(BINDING_ID, "display");
     public static final ThingTypeUID THING_TYPE_EVOHOME_LOCATION       = new ThingTypeUID(BINDING_ID, "location");
     public static final ThingTypeUID THING_TYPE_EVOHOME_HEATING_ZONE   = new ThingTypeUID(BINDING_ID, "heatingzone");
-    public static final ThingTypeUID THING_TYPE_EVOHOME_RADIATOR_VALVE = new ThingTypeUID(BINDING_ID, "radiatorValve");
 
     // List of all Channel ids
     public static final String TEMPERATURE_CHANNEL = "temperature";
@@ -51,6 +50,5 @@ public class EvohomeBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
             THING_TYPE_EVOHOME_GATEWAY,
             THING_TYPE_EVOHOME_DISPLAY,
-            THING_TYPE_EVOHOME_HEATING_ZONE,
-            THING_TYPE_EVOHOME_RADIATOR_VALVE);
+            THING_TYPE_EVOHOME_HEATING_ZONE);
 }

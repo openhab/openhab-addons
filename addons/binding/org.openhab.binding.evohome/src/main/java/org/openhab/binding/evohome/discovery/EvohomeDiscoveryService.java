@@ -20,7 +20,6 @@ import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
-import org.openhab.binding.evohome.internal.api.models.v1.Device;
 import org.openhab.binding.evohome.internal.api.models.v1.Weather;
 import org.openhab.binding.evohome.internal.api.models.v2.response.HeatSetpointCapabilities;
 import org.openhab.binding.evohome.internal.api.models.v2.response.ScheduleCapabilities;
@@ -88,8 +87,6 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
             properties.put(EvohomeBindingConstants.ZONE_MODEL_TYPE, modelType);
             addDiscoveredThing(thingUID, properties, zoneName);
         }
-        // TODO Auto-generated method stub
-
     }
 
     private void discoverDisplay(ControlSystem controlSystem) {
@@ -108,7 +105,7 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
         addDiscoveredThing(thingUID, properties, name);
     }
-
+/*
     private void discoverRadiatorValves(Device[] devices, String locationName, String locationId)
             throws IllegalArgumentException {
         for (Device device : devices) {
@@ -125,7 +122,7 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
             properties.put(EvohomeBindingConstants.LOCATION_NAME, locationName);
             addDiscoveredThing(thingUID, properties, name);
         }
-    }
+    }*/
 
     private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
