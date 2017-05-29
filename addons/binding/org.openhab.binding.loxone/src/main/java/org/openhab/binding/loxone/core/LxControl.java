@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class LxControl {
     private String name;
+    private String typeName;
     private LxContainer room;
     private LxCategory category;
     private Map<String, LxControlState> states = null;
@@ -49,11 +50,14 @@ public abstract class LxControl {
      *            Category that this control belongs to
      * @param states
      *            A map of control's possible states with state UUID as a key
+     * @param typeName
+     *            name of type on the Miniserver
      */
     LxControl(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
-            Map<String, LxControlState> states) {
+            Map<String, LxControlState> states, String typeName) {
         socketClient = client;
         this.uuid = uuid;
+        this.typeName = typeName;
         update(name, room, category, states);
     }
 
@@ -63,7 +67,9 @@ public abstract class LxControl {
      * @return
      *         name of the control type
      */
-    public abstract String getTypeName();
+    public String getTypeName() {
+        return typeName;
+    }
 
     /**
      * Gets state object of given name, if exists

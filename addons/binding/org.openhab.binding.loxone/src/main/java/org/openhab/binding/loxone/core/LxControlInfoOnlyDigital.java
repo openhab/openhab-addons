@@ -23,7 +23,7 @@ public class LxControlInfoOnlyDigital extends LxControl {
     /**
      * A name by which Miniserver refers to digital virtual state controls
      */
-    public static final String TYPE_NAME = "infoonlydigital";
+    private static final String TYPE_NAME = "infoonlydigital";
     /**
      * InfoOnlyDigital has one state that can be on/off
      */
@@ -54,14 +54,21 @@ public class LxControlInfoOnlyDigital extends LxControl {
      */
     LxControlInfoOnlyDigital(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
             Map<String, LxControlState> states, String textOn, String textOff) {
-        super(client, uuid, name, room, category, states);
+        super(client, uuid, name, room, category, states, TYPE_NAME);
         this.textOn = textOn;
         this.textOff = textOff;
     }
 
-    @Override
-    public String getTypeName() {
-        return TYPE_NAME;
+    /**
+     * Check if control accepts provided type name from the Miniserver
+     *
+     * @param type
+     *            name of the type received from Miniserver
+     * @return
+     *         true if this control is suitable for this type
+     */
+    public static boolean accepts(String type) {
+        return type.toLowerCase().equals(TYPE_NAME);
     }
 
     /**

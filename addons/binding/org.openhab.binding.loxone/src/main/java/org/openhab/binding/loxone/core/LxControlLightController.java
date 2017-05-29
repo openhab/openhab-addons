@@ -29,7 +29,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
     /**
      * A name by which Miniserver refers to light controller controls
      */
-    public static final String TYPE_NAME = "lightcontroller";
+    private static final String TYPE_NAME = "lightcontroller";
 
     /**
      * Current active scene number (0-9)
@@ -80,7 +80,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     LxControlLightController(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
             Map<String, LxControlState> states, int movementScene) {
-        super(client, uuid, name, room, category, states);
+        super(client, uuid, name, room, category, states, TYPE_NAME);
 
         LxControlState sceneListState = getState(STATE_SCENE_LIST);
         if (sceneListState != null) {
@@ -89,9 +89,16 @@ public class LxControlLightController extends LxControl implements LxControlStat
 
     }
 
-    @Override
-    public String getTypeName() {
-        return TYPE_NAME;
+    /**
+     * Check if control accepts provided type name from the Miniserver
+     *
+     * @param type
+     *            name of the type received from Miniserver
+     * @return
+     *         true if this control is suitable for this type
+     */
+    public static boolean accepts(String type) {
+        return type.toLowerCase().equals(TYPE_NAME);
     }
 
     /**
@@ -174,7 +181,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
 
     /**
      * Check if scene names were updated since last check.
-     * 
+     *
      * @return
      *         true if there are new scene names
      */

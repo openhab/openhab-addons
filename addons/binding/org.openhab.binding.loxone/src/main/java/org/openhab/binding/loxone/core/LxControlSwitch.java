@@ -28,7 +28,7 @@ public class LxControlSwitch extends LxControl {
     /**
      * A name by which Miniserver refers to switch controls
      */
-    public static final String TYPE_NAME = "switch";
+    private static final String TYPE_NAME = "switch";
 
     /**
      * Switch has one state that can be on/off
@@ -62,12 +62,42 @@ public class LxControlSwitch extends LxControl {
      */
     LxControlSwitch(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
             Map<String, LxControlState> states) {
-        super(client, uuid, name, room, category, states);
+        super(client, uuid, name, room, category, states, TYPE_NAME);
     }
 
-    @Override
-    public String getTypeName() {
-        return TYPE_NAME;
+    /**
+     * Create switch control object.
+     *
+     * @param client
+     *            communication client used to send commands to the Miniserver
+     * @param uuid
+     *            switch's UUID
+     * @param name
+     *            switch's name
+     * @param room
+     *            room to which switch belongs
+     * @param category
+     *            category to which switch belongs
+     * @param states
+     *            switch's states and their names (expecting one object with "active" name)
+     * @param typeName
+     *            type name of the switch (for child classes)
+     */
+    LxControlSwitch(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
+            Map<String, LxControlState> states, String typeName) {
+        super(client, uuid, name, room, category, states, typeName);
+    }
+
+    /**
+     * Check if control accepts provided type name from the Miniserver
+     *
+     * @param type
+     *            name of the type received from Miniserver
+     * @return
+     *         true if this control is suitable for this type
+     */
+    public static boolean accepts(String type) {
+        return type.toLowerCase().equals(TYPE_NAME);
     }
 
     /**

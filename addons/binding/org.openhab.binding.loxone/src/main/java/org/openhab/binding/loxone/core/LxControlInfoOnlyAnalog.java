@@ -24,7 +24,7 @@ public class LxControlInfoOnlyAnalog extends LxControl {
     /**
      * A name by which Miniserver refers to analog virtual state controls
      */
-    public static final String TYPE_NAME = "infoonlyanalog";
+    private static final String TYPE_NAME = "infoonlyanalog";
     /**
      * InfoOnlyAnalog state with current value
      */
@@ -57,13 +57,20 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      */
     LxControlInfoOnlyAnalog(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
             Map<String, LxControlState> states, String format) {
-        super(client, uuid, name, room, category, states);
+        super(client, uuid, name, room, category, states, TYPE_NAME);
         this.format = format;
     }
 
-    @Override
-    public String getTypeName() {
-        return TYPE_NAME;
+    /**
+     * Check if control accepts provided type name from the Miniserver
+     *
+     * @param type
+     *            name of the type received from Miniserver
+     * @return
+     *         true if this control is suitable for this type
+     */
+    public static boolean accepts(String type) {
+        return type.toLowerCase().equals(TYPE_NAME);
     }
 
     /**

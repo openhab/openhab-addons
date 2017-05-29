@@ -47,12 +47,19 @@ public class LxControlPushbutton extends LxControlSwitch {
      */
     LxControlPushbutton(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
             Map<String, LxControlState> states) {
-        super(client, uuid, name, room, category, states);
+        super(client, uuid, name, room, category, states, TYPE_NAME);
     }
 
-    @Override
-    public String getTypeName() {
-        return TYPE_NAME;
+    /**
+     * Check if control accepts provided type name from the Miniserver
+     *
+     * @param type
+     *            name of the type received from Miniserver
+     * @return
+     *         true if this control is suitable for this type
+     */
+    public static boolean accepts(String type) {
+        return type.toLowerCase().equals(TYPE_NAME);
     }
 
     /**

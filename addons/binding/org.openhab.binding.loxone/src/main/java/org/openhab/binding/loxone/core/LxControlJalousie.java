@@ -28,7 +28,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
     /**
      * A name by which Miniserver refers to jalousie controls
      */
-    public static final String TYPE_NAME = "jalousie";
+    private static final String TYPE_NAME = "jalousie";
 
     /**
      * Jalousie is moving up
@@ -115,7 +115,7 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      */
     LxControlJalousie(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
             Map<String, LxControlState> states) {
-        super(client, uuid, name, room, category, states);
+        super(client, uuid, name, room, category, states, TYPE_NAME);
 
         LxControlState positionState = getState(STATE_POSITION);
         if (positionState != null) {
@@ -123,9 +123,16 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
         }
     }
 
-    @Override
-    public String getTypeName() {
-        return TYPE_NAME;
+    /**
+     * Check if control accepts provided type name from the Miniserver
+     *
+     * @param type
+     *            name of the type received from Miniserver
+     * @return
+     *         true if this control is suitable for this type
+     */
+    public static boolean accepts(String type) {
+        return type.toLowerCase().equals(TYPE_NAME);
     }
 
     /**

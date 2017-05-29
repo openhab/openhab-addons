@@ -518,26 +518,28 @@ public class LxServer {
         for (LxJsonApp3.LxJsonControl ctrl : config.controls.values()) {
 
             Map<String, LxControlState> newStates = new HashMap<String, LxControlState>();
-            for (Map.Entry<String, JsonElement> state : ctrl.states.entrySet()) {
-                JsonElement element = state.getValue();
-                if (element instanceof JsonArray) {
-                    // temperature state of intelligent home controller object is the only
-                    // one that has state represented as an array, as this is not implemented
-                    // yet, we will skip this state
-                    continue;
-                }
-                String value = element.getAsString();
-                if (value != null) {
-                    LxUuid stateId = new LxUuid(value);
-                    String stateName = state.getKey().toLowerCase();
-                    LxControlState controlState = findState(stateId);
-                    if (controlState == null) {
-                        stateId = addUuid(stateId);
-                        controlState = new LxControlState(stateId, stateName, null);
-                    } else {
-                        controlState.setName(stateName);
+            if (ctrl.states != null) {
+                for (Map.Entry<String, JsonElement> state : ctrl.states.entrySet()) {
+                    JsonElement element = state.getValue();
+                    if (element instanceof JsonArray) {
+                        // temperature state of intelligent home controller object is the only
+                        // one that has state represented as an array, as this is not implemented
+                        // yet, we will skip this state
+                        continue;
                     }
-                    newStates.put(stateName, controlState);
+                    String value = element.getAsString();
+                    if (value != null) {
+                        LxUuid stateId = new LxUuid(value);
+                        String stateName = state.getKey().toLowerCase();
+                        LxControlState controlState = findState(stateId);
+                        if (controlState == null) {
+                            stateId = addUuid(stateId);
+                            controlState = new LxControlState(stateId, stateName, null);
+                        } else {
+                            controlState.setName(stateName);
+                        }
+                        newStates.put(stateName, controlState);
+                    }
                 }
             }
 
@@ -772,23 +774,24 @@ public class LxServer {
         type = type.toLowerCase();
 
         LxControl ctrl = null;
-        if (type.equals(LxControlSwitch.TYPE_NAME)) {
+        if (LxControlSwitch.accepts(type)) {
             ctrl = new LxControlSwitch(socketClient, id, name, room, category, states);
 
-        } else if (type.equals(LxControlPushbutton.TYPE_NAME)) {
+        } else if (LxControlPushbutton.accepts(type)) {
             ctrl = new LxControlPushbutton(socketClient, id, name, room, category, states);
 
-        } else if (type.equals(LxControlJalousie.TYPE_NAME)) {
+        } else if (LxControlJalousie.accepts(type)) {
             ctrl = new LxControlJalousie(socketClient, id, name, room, category, states);
 
-        } else if (type.equals(LxControlInfoOnlyDigital.TYPE_NAME)) {
+        } else if (LxControlInfoOnlyDigital.accepts(type)) {
             ctrl = new LxControlInfoOnlyDigital(socketClient, id, name, room, category, states,
                     jsonControl.details.text.on, jsonControl.details.text.off);
 
-        } else if (type.equals(LxControlInfoOnlyAnalog.TYPE_NAME)) {
+        } else if (LxControlInfoOnlyAnalog.accepts(type)) {
             ctrl = new LxControlInfoOnlyAnalog(socketClient, id, name, room, category, states,
                     jsonControl.details.format);
-        } else if (type.equals(LxControlLightController.TYPE_NAME)) {
+
+        } else if (LxControlLightController.accepts(type)) {
             ctrl = new LxControlLightController(socketClient, id, name, room, category, states,
                     jsonControl.details.movementScene);
         }
