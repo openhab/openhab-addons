@@ -70,7 +70,7 @@ public class KeContactHandler extends BaseThingHandler {
     public static final String IP_ADDRESS = "ipAddress";
     public static final String POLLING_REFRESH_INTERVAL = "refreshInterval";
     public static final int LISTENING_INTERVAL = 100;
-    public static final int REPORT_INTERVAL = 2000;
+    public static final int REPORT_INTERVAL = 3000;
     public static final int PING_TIME_OUT = 3000;
     public static final int BUFFER_SIZE = 1024;
     public static final int REMOTE_PORT_NUMBER = 7090;
@@ -556,7 +556,7 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT),
                                 new DecimalType(state));
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT_RANGE),
-                                new PercentType((state - 6000) * 100 / (maxSystemCurrent - 6000)));
+                                new PercentType(Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000))));
                         break;
                     }
                     case "Curr FS": {
@@ -676,11 +676,7 @@ public class KeContactHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            // Refresh all channels by scheduling a single run of the polling runnable
-            scheduler.schedule(pollingRunnable, 0, TimeUnit.SECONDS);
-        } else {
-
+        if (!(command instanceof RefreshType)) {
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
                     if (command instanceof DecimalType) {
