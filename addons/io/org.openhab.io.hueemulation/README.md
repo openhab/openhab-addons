@@ -10,7 +10,7 @@ Hue Emulation exposes openHAB items as Hue devices to other Hue HTTP API compati
 * Pairing (security) can be enabled/disabled in real time using the configuration service (under services in the PaperUI for example)  
 
 ## Configuration:
-
+in "userdata/config/org/openhab/hueemulation.config"
 Pairing can be turned on and off:
 
 ```
