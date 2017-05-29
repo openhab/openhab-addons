@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.dscalarm.handler;
 
+import static org.openhab.binding.dscalarm.DSCAlarmBindingConstants.PANEL_MESSAGE;
+
 import java.util.EventObject;
 import java.util.List;
 
@@ -23,6 +25,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.dscalarm.config.DSCAlarmPanelConfiguration;
 import org.openhab.binding.dscalarm.config.DSCAlarmPartitionConfiguration;
 import org.openhab.binding.dscalarm.config.DSCAlarmZoneConfiguration;
+import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
+import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
+import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageInfoType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -363,4 +368,25 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
     public void setThingHandlerInitialized(boolean refreshed) {
         this.thingHandlerInitialized = refreshed;
     }
+
+    /**
+     * Method to set the panel message.
+     *
+     * @param dscAlarmMessage
+     */
+    public void setPanelMessage(DSCAlarmMessage dscAlarmMessage) {
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), PANEL_MESSAGE);
+        String message = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DESCRIPTION);
+        DSCAlarmCode dscAlarmCode = DSCAlarmCode
+                .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+
+        if ((dscAlarmCode == DSCAlarmCode.CommandAcknowledge || dscAlarmCode == DSCAlarmCode.TimeDateBroadcast)
+                && getSuppressAcknowledgementMsgs()) {
+            return;
+        } else {
+            updateChannel(channelUID, 0, message);
+            logger.debug("setPanelMessage(): Panel Message Set to - {}", message);
+        }
+    }
+
 }
