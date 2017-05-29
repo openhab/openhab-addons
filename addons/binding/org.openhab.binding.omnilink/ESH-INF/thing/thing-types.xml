@@ -264,7 +264,7 @@
     </channel-type>
     <channel-type id="flagswitch">
         <item-type>Switch</item-type>
-        <label>Flag Switch State</label>
+        <label>On/Off</label>
         <description>Flag Switch information</description>
         <category>Switch</category>
         <state pattern="%s" readOnly="true"></state>
@@ -279,7 +279,7 @@
     
     <channel-type id="sysDate">
         <item-type>DateTime</item-type>
-        <label>Omnilink System Time</label>
+        <label>System Time</label>
         <description>The date/time of omnilink last time received system status</description>
         <!-- <state readOnly="true"  />
         pattern="%1$tF %1$tR" -->
