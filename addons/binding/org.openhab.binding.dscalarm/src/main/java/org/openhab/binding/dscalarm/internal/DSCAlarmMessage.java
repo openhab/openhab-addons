@@ -22,7 +22,7 @@ public class DSCAlarmMessage {
 
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmMessage.class);
 
-    private static final EnumMap<DSCAlarmCode, MessageParameters> dscAlarmMessageParameters = new EnumMap<>(
+    private static final EnumMap<DSCAlarmCode, MessageParameters> DSCALARM_MESSAGE_PARAMETERS = new EnumMap<>(
             DSCAlarmCode.class);
 
     public enum DSCAlarmMessageType {
@@ -103,7 +103,7 @@ public class DSCAlarmMessage {
                 name = dscAlarmCode.getName();
                 description = dscAlarmCode.getDescription();
 
-                MessageParameters messageParms = dscAlarmMessageParameters.get(dscAlarmCode);
+                MessageParameters messageParms = DSCALARM_MESSAGE_PARAMETERS.get(dscAlarmCode);
 
                 if (messageParms != null) {
                     boolean hasPartition = messageParms.hasPartition();
@@ -405,201 +405,201 @@ public class DSCAlarmMessage {
     }
 
     static {
-        dscAlarmMessageParameters.put(DSCAlarmCode.CommandAcknowledge,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.CommandAcknowledge,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.CommandError,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.CommandError,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.SystemError,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.SystemError,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.LoginResponse,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.LoginResponse,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.KeypadLEDState,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.KeypadLEDState,
                 new MessageParameters(DSCAlarmMessageType.KEYPAD_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.KeypadLEDFlashState,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.KeypadLEDFlashState,
                 new MessageParameters(DSCAlarmMessageType.KEYPAD_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.TimeDateBroadcast,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TimeDateBroadcast,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.RingDetected,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.RingDetected,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.IndoorTemperatureBroadcast,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.IndoorTemperatureBroadcast,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.OutdoorTemperatureBroadcast,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.OutdoorTemperatureBroadcast,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ThermostatSetPoints,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ThermostatSetPoints,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.BroadcastLabels,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.BroadcastLabels,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.BaudRateSet,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.BaudRateSet,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
 
-        dscAlarmMessageParameters.put(DSCAlarmCode.ZoneAlarm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ZoneAlarm,
                 new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, true, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ZoneAlarmRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ZoneAlarmRestore,
                 new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, true, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ZoneTamper,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ZoneTamper,
                 new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, true, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ZoneTamperRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ZoneTamperRestore,
                 new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, true, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ZoneFault,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ZoneFault,
                 new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ZoneFaultRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ZoneFaultRestore,
                 new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ZoneOpen,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ZoneOpen,
                 new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ZoneRestored,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ZoneRestored,
                 new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.EnvisalinkZoneTimerDump,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.EnvisalinkZoneTimerDump,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.DuressAlarm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.DuressAlarm,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.FireKeyAlarm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.FireKeyAlarm,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.FireKeyRestored,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.FireKeyRestored,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.AuxiliaryKeyAlarm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.AuxiliaryKeyAlarm,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.AuxiliaryKeyRestored,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.AuxiliaryKeyRestored,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PanicKeyAlarm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PanicKeyAlarm,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PanicKeyRestored,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PanicKeyRestored,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.AuxiliaryInputAlarm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.AuxiliaryInputAlarm,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.AuxiliaryInputAlarmRestored,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.AuxiliaryInputAlarmRestored,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PartitionReady,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PartitionReady,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PartitionNotReady,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PartitionNotReady,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PartitionArmed,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PartitionArmed,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PartitionReadyForceArming,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PartitionReadyForceArming,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PartitionInAlarm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PartitionInAlarm,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PartitionDisarmed,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PartitionDisarmed,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ExitDelayInProgress,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ExitDelayInProgress,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.EntryDelayInProgress,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.EntryDelayInProgress,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.KeypadLockout,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.KeypadLockout,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PartitionFailedToArm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PartitionFailedToArm,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PGMOutputInProgress,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PGMOutputInProgress,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ChimeEnabled,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ChimeEnabled,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ChimeDisabled,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ChimeDisabled,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.InvalidAccessCode,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.InvalidAccessCode,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.FunctionNotAvailable,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.FunctionNotAvailable,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.FailureToArm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.FailureToArm,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PartitionBusy,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PartitionBusy,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.SystemArmingInProgress,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.SystemArmingInProgress,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.SystemInInstallerMode,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.SystemInInstallerMode,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
 
-        dscAlarmMessageParameters.put(DSCAlarmCode.UserClosing,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.UserClosing,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.SpecialClosing,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.SpecialClosing,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PartialClosing,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PartialClosing,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.UserOpening,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.UserOpening,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.SpecialOpening,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.SpecialOpening,
                 new MessageParameters(DSCAlarmMessageType.PARTITION_EVENT, true, false));
 
-        dscAlarmMessageParameters.put(DSCAlarmCode.PanelBatteryTrouble,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PanelBatteryTrouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PanelBatteryTroubleRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PanelBatteryTroubleRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PanelACTrouble,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PanelACTrouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.PanelACRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.PanelACRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.SystemBellTrouble,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.SystemBellTrouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.SystemBellTroubleRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.SystemBellTroubleRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.TLMLine1Trouble,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TLMLine1Trouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.TLMLine1TroubleRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TLMLine1TroubleRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.TLMLine2Trouble,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TLMLine2Trouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.TLMLine2TroubleRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TLMLine2TroubleRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.FTCTrouble,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.FTCTrouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.BufferNearFull,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.BufferNearFull,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.GeneralDeviceLowBattery,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.GeneralDeviceLowBattery,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.GeneralDeviceLowBatteryRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.GeneralDeviceLowBatteryRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.WirelessKeyLowBatteryTrouble,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.WirelessKeyLowBatteryTrouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.WirelessKeyLowBatteryTroubleRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.WirelessKeyLowBatteryTroubleRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.HandheldKeypadLowBatteryTrouble,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.HandheldKeypadLowBatteryTrouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.HandheldKeypadLowBatteryTroubleRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.HandheldKeypadLowBatteryTroubleRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, true));
-        dscAlarmMessageParameters.put(DSCAlarmCode.GeneralSystemTamper,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.GeneralSystemTamper,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.GeneralSystemTamperRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.GeneralSystemTamperRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.HomeAutomationTrouble,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.HomeAutomationTrouble,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.HomeAutomationTroubleRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.HomeAutomationTroubleRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.TroubleLEDOn,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TroubleLEDOn,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.TroubleLEDOff,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TroubleLEDOff,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, true, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.FireTroubleAlarm,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.FireTroubleAlarm,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.FireTroubleAlarmRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.FireTroubleAlarmRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.VerboseTroubleStatus,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.VerboseTroubleStatus,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.KeybusFault,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.KeybusFault,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.KeybusFaultRestore,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.KeybusFaultRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
 
-        dscAlarmMessageParameters.put(DSCAlarmCode.CodeRequired,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.CodeRequired,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.LCDUpdate,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.LCDUpdate,
                 new MessageParameters(DSCAlarmMessageType.KEYPAD_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.LCDCursor,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.LCDCursor,
                 new MessageParameters(DSCAlarmMessageType.KEYPAD_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.LEDStatus,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.LEDStatus,
                 new MessageParameters(DSCAlarmMessageType.KEYPAD_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.BeepStatus,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.BeepStatus,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.ToneStatus,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.ToneStatus,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.BuzzerStatus,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.BuzzerStatus,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.DoorChimeStatus,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.DoorChimeStatus,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.SoftwareVersion,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.SoftwareVersion,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.CommandOutputPressed,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.CommandOutputPressed,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.MasterCodeRequired,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.MasterCodeRequired,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
-        dscAlarmMessageParameters.put(DSCAlarmCode.InstallersCodeRequired,
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.InstallersCodeRequired,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
     }
 }

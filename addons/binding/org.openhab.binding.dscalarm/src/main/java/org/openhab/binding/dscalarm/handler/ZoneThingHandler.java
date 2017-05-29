@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
@@ -100,26 +101,24 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (dscAlarmBridgeHandler == null) {
-            logger.warn("DSC Alarm bridge handler not available. Cannot handle command without bridge.");
+
+        logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
+
+        if (command instanceof RefreshType) {
             return;
         }
 
-        if (dscAlarmBridgeHandler.isConnected()) {
-            switch (channelUID.getId()) {
-                case ZONE_BYPASS_MODE:
-                    if (command == OnOffType.OFF) {
-                        String data = String.valueOf(getPartitionNumber()) + "*1"
-                                + String.format("%02d", getZoneNumber()) + "#";
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
-                    } else if (command == OnOffType.ON) {
-                        String data = String.valueOf(getPartitionNumber()) + "*1"
-                                + String.format("%02d", getZoneNumber()) + "#";
-                        dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
-                    }
-                    break;
-                default:
-                    break;
+        if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()
+                && channelUID.getId() == ZONE_BYPASS_MODE) {
+
+            if (command == OnOffType.OFF) {
+                String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber())
+                        + "#";
+                dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
+            } else if (command == OnOffType.ON) {
+                String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber())
+                        + "#";
+                dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
             }
         }
     }
