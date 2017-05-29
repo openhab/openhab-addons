@@ -74,7 +74,10 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     }
 
     private <TIn, TOut> TOut doAuthenticatedRequest(HttpMethod method, String url,TIn requestContainer, TOut out) {
-        //TODO check authentication -> refresh access token, fallback re-authenticate
+        //TODO check authentication or expired -> refresh access token, fallback re-authenticate
+
+        authenticate(); // crude workaround
+
         return apiAccess.doAuthenticatedRequest(method, url, null, requestContainer, out);
     }
 
@@ -83,7 +86,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
         UserAccount userAccount =  new UserAccount();
-        userAccount = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, userAccount);
+        userAccount = doAuthenticatedRequest(HttpMethod.GET, url, null, userAccount);
 
         return userAccount;
     }
@@ -95,7 +98,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
             url = String.format(url, useraccount.userId);
 
             locations = new Locations();
-            locations = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, locations);
+            locations = doAuthenticatedRequest(HttpMethod.GET, url, null, locations);
         }
 
         return locations;
@@ -109,7 +112,7 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
                 String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_STATUS;
                 url = String.format(url, location.locationInfo.locationId);
                 LocationStatus status = new LocationStatus();
-                status = apiAccess.doAuthenticatedRequest(HttpMethod.GET, url, null, null, status);
+                status = doAuthenticatedRequest(HttpMethod.GET, url, null, status);
                 locationsStatus.add(status);
             }
         }
@@ -234,12 +237,6 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         return null;
     }
 
-    @Override
-    public void refresh() {
-        //TODO add check on token expired, use refresh token to update access token
-        authenticate(); // crude workaround
-    }
-
     /**
      * Returns the specified Heating Zone or null if one can't be found
      * @return
@@ -248,11 +245,11 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
     public ZoneStatus getHeatingZone(int locationId, int zoneId) {
         LocationsStatus myLocationsStatus = getLocationStatus();
         for(LocationStatus myLocationStatus : myLocationsStatus){
-            for(GatewayStatus gatewayStatus : myLocationStatus.Gateways){
-                for(TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.TemperatureControlSystems){
-                    if(temperatureControlSystem.SystemId == locationId){
-                        for(ZoneStatus zone : temperatureControlSystem.Zones){
-                            if(zone.ZoneId == zoneId){
+            for(GatewayStatus gatewayStatus : myLocationStatus.gateways){
+                for(TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.temperatureControlSystems){
+                    if(temperatureControlSystem.systemId == locationId){
+                        for(ZoneStatus zone : temperatureControlSystem.zones){
+                            if(zone.zoneId == zoneId){
                                 return zone;
                             }
                         }

@@ -20,14 +20,12 @@ import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v1.Device;
 import org.openhab.binding.evohome.internal.api.models.v1.Weather;
 import org.openhab.binding.evohome.internal.api.models.v2.response.HeatSetpointCapabilities;
 import org.openhab.binding.evohome.internal.api.models.v2.response.ScheduleCapabilities;
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
-import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
-import org.openhab.binding.evohome.internal.api.models.v1.Device;
-import org.openhab.binding.evohome.internal.api.models.v1.Weather;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,14 +72,14 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void discoverHeatingZones(int locationId, TemperatureControlSystem heatingZones) {
-        for(Zone zone : heatingZones.Zones){
-            String zoneName = zone.Name;
-            long zoneId = zone.ZoneId;
-            String modelType = zone.ModelType;
-            String zoneType = zone.ZoneType;
-            HeatSetpointCapabilities heatSetpointCapabilities = zone.HeatSetpointCapabilities;
-            ScheduleCapabilities scheduleCapabilities = zone.ScheduleCapabilities;
-            ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_HEATING_ZONE.getId(), zoneName);
+        for(Zone zone : heatingZones.zones){
+            String zoneName = zone.name;
+            long zoneId = zone.zoneId;
+            String modelType = zone.modelType;
+            String zoneType = zone.zoneType;
+            HeatSetpointCapabilities heatSetpointCapabilities = zone.heatSetpointCapabilities;
+            ScheduleCapabilities scheduleCapabilities = zone.scheduleCapabilities;
+            ThingUID thingUID = findThingUID(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE.getId(), zoneName);
             Map<String, Object> properties = new HashMap<>();
             properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
             properties.put(EvohomeBindingConstants.ZONE_ID, zoneId);

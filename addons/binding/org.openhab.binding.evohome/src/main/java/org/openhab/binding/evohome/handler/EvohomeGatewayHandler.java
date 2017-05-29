@@ -57,13 +57,19 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
             disposeApiClient();
             apiClient = new EvohomeApiClientV2(configuration);
 
-            startRefreshTask();
-            updateStatus(ThingStatus.OFFLINE);
+            // Initialization can take a while, so kick if off on a separate thread
+            scheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    if (apiClient.login()) {
+                        startRefreshTask();
+                        updateStatus(ThingStatus.ONLINE);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE);
+                    }
+                }
+            }, 0, TimeUnit.SECONDS);
 
-
-            if (apiClient.login()) {
-                updateStatus(ThingStatus.ONLINE);
-            }
         }
     }
 
@@ -125,7 +131,6 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
         try {
             try {
-                apiClient.refresh();
                 apiClient.update();
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

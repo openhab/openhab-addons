@@ -45,7 +45,7 @@ public class EvohomeBindingConstants {
     public static final String ZONE_ID         = "ZONE_ID";
     public static final String ZONE_NAME       = "ZONE_NAME";
     public static final String ZONE_TYPE       = "ZONE_TYPE";
-    public static final String ZONE_MODEL_TYPE = "ZONE_MODEL_TYPE";s
+    public static final String ZONE_MODEL_TYPE = "ZONE_MODEL_TYPE";
 
     // List of all addressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(

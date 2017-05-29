@@ -20,6 +20,4 @@ public interface EvohomeApiClient {
 
     ZoneStatus getHeatingZone(int locationId, int zoneId);
 
-    void refresh();
-
 }

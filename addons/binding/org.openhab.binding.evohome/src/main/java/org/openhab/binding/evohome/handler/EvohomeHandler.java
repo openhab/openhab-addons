@@ -64,15 +64,15 @@ public class EvohomeHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
             }
-            if(!zoneStatus.Temperature.IsAvailable){
+            if(!zoneStatus.temperature.isAvailable){
                 //TODO change to other error type
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
             }
 
-            updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new DecimalType(zoneStatus.Temperature.Temperature));
-            updateState(EvohomeBindingConstants.SET_POINT_CHANNEL, new DecimalType(zoneStatus.HeatSetpoint.TargetTemperature));
-            updateState(EvohomeBindingConstants.SET_POINT_STATUS_CHANNEL, new StringType(zoneStatus.HeatSetpoint.SetpointMode));
+            updateState(EvohomeBindingConstants.SYSTEM_MODE_CHANNEL, new DecimalType(zoneStatus.temperature.temperature));
+            updateState(EvohomeBindingConstants.SET_POINT_CHANNEL, new DecimalType(zoneStatus.heatSetpoint.targetTemperature));
+            updateState(EvohomeBindingConstants.SET_POINT_STATUS_CHANNEL, new StringType(zoneStatus.heatSetpoint.setpointMode));
             updateStatus(ThingStatus.ONLINE);
         }
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
