@@ -107,8 +107,8 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     @Override
     public void handleUnitStatus(UnitStatus unitStatus) {
         logger.debug("need to handle status update{}", unitStatus);
-        updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH,
-                unitStatus.getStatus() == UNIT_ON ? OnOffType.ON : OnOffType.OFF);
+        // updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH,
+        // unitStatus.getStatus() == UNIT_ON ? OnOffType.ON : OnOffType.OFF);
         updateState(OmnilinkBindingConstants.CHANNEL_ROOM_STATE, new DecimalType(unitStatus.getStatus()));
 
     }
