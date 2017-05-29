@@ -20,6 +20,11 @@ import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.models.ControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v1.Weather;
+import org.openhab.binding.evohome.internal.api.models.v2.response.HeatSetpointCapabilities;
+import org.openhab.binding.evohome.internal.api.models.v2.response.ScheduleCapabilities;
+import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
+import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v1.Device;
 import org.openhab.binding.evohome.internal.api.models.v1.Weather;
@@ -50,15 +55,15 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
             try {
                 EvohomeApiClient client = evohomeGatewayHandler.getApiClient();
                 if (client != null) {
-                    for (ControlSystem gateway : client.getControlSystems()) {
-                        discoverDisplay(gateway);
-                    }
 
-                    DataModelResponse[] dataArray = client.getData();
-                    for (DataModelResponse data : dataArray) {
-                        discoverWeather(data.getWeather(), data.getName(), data.getLocationId());
-                        discoverRadiatorValves(data.getDevices(), data.getName(), data.getLocationId());
+                    for (ControlSystem controlSystem : client.getControlSystems()) {
+                        discoverDisplay(controlSystem);
+                        discoverHeatingZones(controlSystem.getId(), controlSystem.getHeatingZones());
                     }
+//                    DataModelResponse[] dataArray = client.getData();
+//                    for (DataModelResponse data : dataArray) {
+//                        discoverWeather(data.getWeather(), data.getName(), data.getLocationId());
+//                    }
                 }
             } catch (Exception e) {
                 logger.warn("{}", e.getMessage(), e);
@@ -66,6 +71,27 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         }
 
         stopScan();
+    }
+
+    private void discoverHeatingZones(int locationId, TemperatureControlSystem heatingZones) {
+        for(Zone zone : heatingZones.Zones){
+            String zoneName = zone.Name;
+            long zoneId = zone.ZoneId;
+            String modelType = zone.ModelType;
+            String zoneType = zone.ZoneType;
+            HeatSetpointCapabilities heatSetpointCapabilities = zone.HeatSetpointCapabilities;
+            ScheduleCapabilities scheduleCapabilities = zone.ScheduleCapabilities;
+            ThingUID thingUID = findThingUID(THING_TYPE_EVOHOME_HEATING_ZONE.getId(), zoneName);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(EvohomeBindingConstants.LOCATION_ID, locationId);
+            properties.put(EvohomeBindingConstants.ZONE_ID, zoneId);
+            properties.put(EvohomeBindingConstants.ZONE_NAME, zoneName);
+            properties.put(EvohomeBindingConstants.ZONE_TYPE, zoneType);
+            properties.put(EvohomeBindingConstants.ZONE_MODEL_TYPE, modelType);
+            addDiscoveredThing(thingUID, properties, zoneName);
+        }
+        // TODO Auto-generated method stub
+
     }
 
     private void discoverDisplay(ControlSystem controlSystem) {

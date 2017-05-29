@@ -19,6 +19,13 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.evohome.EvohomeBindingConstants;
 import org.openhab.binding.evohome.discovery.EvohomeDiscoveryService;
+<<<<<<< HEAD
+=======
+import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
+import org.openhab.binding.evohome.handler.EvohomeHandler;
+import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
+import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
+>>>>>>> master
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
 import org.osgi.framework.ServiceRegistration;

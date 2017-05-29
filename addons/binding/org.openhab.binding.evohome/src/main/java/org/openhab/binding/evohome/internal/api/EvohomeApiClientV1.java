@@ -16,6 +16,7 @@ import org.openhab.binding.evohome.internal.api.models.ControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v1.DataModelResponse;
 import org.openhab.binding.evohome.internal.api.models.v1.LoginRequest;
 import org.openhab.binding.evohome.internal.api.models.v1.LoginResponse;
+import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,9 +147,14 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
     }
 
     @Override
+    public ZoneStatus getHeatingZone(int locationId, int zoneId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public void update() {
         // TODO Auto-generated method stub
-
     }
 
     @Override

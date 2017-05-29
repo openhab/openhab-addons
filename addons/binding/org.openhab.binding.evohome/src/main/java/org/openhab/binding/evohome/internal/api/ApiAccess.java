@@ -24,6 +24,11 @@ public class ApiAccess {
 
     private static Authentication authenticationData;
     private static String applicationId;
+    private final HttpClient httpClient;
+    
+    public ApiAccess(HttpClient httpClient){
+        this.httpClient = httpClient;
+    }
 
     public ApiAccess(HttpClient httpClient) {
         this.httpClient = httpClient;

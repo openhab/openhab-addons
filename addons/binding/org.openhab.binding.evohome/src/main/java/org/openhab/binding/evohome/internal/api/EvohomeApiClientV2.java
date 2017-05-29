@@ -24,6 +24,7 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.LocationsStat
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.UserAccount;
+import org.openhab.binding.evohome.internal.api.models.v2.response.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -232,4 +233,36 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         //TODO add check on token expired, use refresh token to update access token
         authenticate(); // crude workaround
     }
+
+    /**
+     * Returns the specified Heating Zone or null if one can't be found
+     * @return
+     */
+    @Override
+    public ZoneStatus getHeatingZone(int locationId, int zoneId) {
+        LocationsStatus myLocationsStatus = getLocationStatus();
+        for(LocationStatus myLocationStatus : myLocationsStatus){
+            for(GatewayStatus gatewayStatus : myLocationStatus.Gateways){
+                for(TemperatureControlSystemStatus temperatureControlSystem : gatewayStatus.TemperatureControlSystems){
+                    if(temperatureControlSystem.SystemId == locationId){
+                        for(ZoneStatus zone : temperatureControlSystem.Zones){
+                            if(zone.ZoneId == zoneId){
+                                return zone;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        return null;
+    }
+
+    private LocationsStatus getLocationStatus(){
+        if(locationsStatus == null){
+            update();
+        }
+        return locationsStatus;
+    }
+
 }
