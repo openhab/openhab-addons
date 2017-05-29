@@ -23,12 +23,14 @@ The Autelis binding requires the host, port, username and password
 In the thing file, this looks e.g. like
 
 ```
-Thing autelis:pentair:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]```
+Thing autelis:pentair:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]
+```
 
 or
 
 ```
-Thing autelis:jandy:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]```
+Thing autelis:jandy:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]
+```
 
 ## Channels
 ### Pentair
