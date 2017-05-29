@@ -1,5 +1,6 @@
 package org.openhab.binding.omnilink.handler;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -57,8 +58,13 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
                 cmd = OmniLinkCmd.CMD_UNIT_OFF.getNumber();
             }
             getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, roomNum);
+        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_ON.equals(channelParts[3]) && OnOffType.ON.equals(command)) {
+            int cmd;
+            cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
+            getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, roomNum);
+        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_OFF.equals(channelParts[3]) && OnOffType.ON.equals(command)) {
+            getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_OFF.getNumber(), 0, roomNum);
         }
-
         // cmd = OmniLinkCmd.CMD_UNIT_UPB_LINK_ON.getNumber();
 
         // getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_UPB_LINK_ON, param1, param2);
@@ -69,6 +75,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
         logger.debug("need to handle status update{}", unitStatus);
         updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH,
                 unitStatus.getStatus() == UNIT_ON ? OnOffType.ON : OnOffType.OFF);
+        updateState(OmnilinkBindingConstants.CHANNEL_ROOM_STATUS, new DecimalType(unitStatus.getStatus()));
 
     }
 

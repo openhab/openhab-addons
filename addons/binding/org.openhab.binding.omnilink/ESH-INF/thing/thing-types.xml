@@ -204,15 +204,15 @@
     </channel-type>
     <channel-type id="scene_on">
         <item-type>Switch</item-type>
-        <label>On/Off</label>
-        <description>Send On/Off to Room</description>
+        <label>On Scene</label>
+        <description>Turn on On Scene</description>
         <category>Switch</category>
         <state pattern="%s" ></state>
     </channel-type>
     <channel-type id="scene_off">
         <item-type>Switch</item-type>
-        <label>On/Off</label>
-        <description>Send On/Off to Room</description>
+        <label>Off Scene</label>
+        <description>Turn on Off Scene</description>
         <category>Switch</category>
         <state pattern="%s" ></state>
     </channel-type>
@@ -243,6 +243,12 @@
         <description>Scene Toggle</description>
         <category>Toggle</category>
         <state pattern="%s"></state>
+    </channel-type>
+    <channel-type id="room_status" >
+        <item-type>Number</item-type>
+        <label>Status</label>
+        <description>Status of room (0 off, 1 on, 2 scene a, 3 scene b, etc)</description>
+        <state min="0" max="6" readOnly="true"/>
     </channel-type>
     <channel-type id="area_alarm">
         <item-type>String</item-type>
