@@ -36,11 +36,14 @@
         <description>Grouping of Units</description>
 
         <channels>
-            <channel id="status" typeId="scene_switch" />
+            <channel id="switch" typeId="scene_switch" />
+            <channel id="on" typeId="scene_on" />
+            <channel id="off" typeId="scene_off" />
             <channel id="scenea" typeId="scene_togglea" />
             <channel id="sceneb" typeId="scene_toggleb" />
             <channel id="scenec" typeId="scene_togglec" />
             <channel id="scened" typeId="scene_toggled" />
+            <channel id="status" typeId="room_status" />
         </channels>
 
         <config-description>
@@ -193,6 +196,20 @@
         <state pattern="%s" readOnly="true"></state>
     </channel-type>
     <channel-type id="scene_switch">
+        <item-type>Switch</item-type>
+        <label>On/Off</label>
+        <description>Send On/Off to Room</description>
+        <category>Switch</category>
+        <state pattern="%s" ></state>
+    </channel-type>
+    <channel-type id="scene_on">
+        <item-type>Switch</item-type>
+        <label>On/Off</label>
+        <description>Send On/Off to Room</description>
+        <category>Switch</category>
+        <state pattern="%s" ></state>
+    </channel-type>
+    <channel-type id="scene_off">
         <item-type>Switch</item-type>
         <label>On/Off</label>
         <description>Send On/Off to Room</description>

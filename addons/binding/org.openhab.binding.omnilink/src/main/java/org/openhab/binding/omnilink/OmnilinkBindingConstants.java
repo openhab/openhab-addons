@@ -23,7 +23,6 @@ public class OmnilinkBindingConstants {
     // List of all Channel ids
     public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
     public final static String CHANNEL_CONTACTSENSOR = "status";
-    public final static String CHANNEL_ROOM_STATUS = "status";
 
     public final static String CHANNEL_AREAMODE = "mode";
     public final static String CHANNEL_AREAALARM = "alarm";
@@ -33,10 +32,13 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_SYSTEMDATE = "sysdate";
 
     public final static String CHANNEL_ROOM_SWITCH = "switch";
+    public final static String CHANNEL_ROOM_ON = "on";
+    public final static String CHANNEL_ROOM_OFF = "off";
     public final static String CHANNEL_ROOM_SCENEA = "scenea";
     public final static String CHANNEL_ROOM_SCENEB = "sceneb";
     public final static String CHANNEL_ROOM_SCENEC = "scenec";
     public final static String CHANNEL_ROOM_SCENED = "scened";
+    public final static String CHANNEL_ROOM_STATUS = "status";
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "omnilinkBridge");
     public final static ThingTypeUID THING_TYPE_AREA = new ThingTypeUID(BINDING_ID, "area");
