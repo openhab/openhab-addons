@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
@@ -97,12 +98,15 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (dscAlarmBridgeHandler == null) {
-            logger.warn("DSC Alarm bridge handler not available. Cannot handle command without bridge.");
+
+        logger.debug("handleCommand(): Command Received - {} {}.", channelUID, command);
+
+        if (command instanceof RefreshType) {
             return;
         }
 
-        if (dscAlarmBridgeHandler.isConnected()) {
+        if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()) {
+
             switch (channelUID.getId()) {
                 case PARTITION_ARM_MODE:
                     int partitionNumber = getPartitionNumber();
