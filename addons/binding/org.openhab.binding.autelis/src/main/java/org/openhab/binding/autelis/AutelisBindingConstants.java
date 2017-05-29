@@ -24,7 +24,7 @@ public class AutelisBindingConstants {
 
     public static final String BINDING_ID = "autelis";
 
-    // List of all Thing Type UIDs
+    // poolcontrol is here for backwards compatibility before we had separate things for jandy and pentair
     public static final ThingTypeUID POOLCONTROL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "poolcontrol");
     public static final ThingTypeUID PENTAIR_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "pentair");
     public static final ThingTypeUID JANDY_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "jandy");
