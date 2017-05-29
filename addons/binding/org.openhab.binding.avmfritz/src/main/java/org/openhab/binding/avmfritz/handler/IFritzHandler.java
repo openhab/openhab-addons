@@ -37,8 +37,7 @@ public interface IFritzHandler {
      * Called from {@link FritzAhaUpdateXmlCallback} to provide new values for
      * things.
      *
-     * @param model
-     *            Device model with updated data.
+     * @param model Device model with updated data.
      */
     public void addDeviceList(DeviceModel model);
 
