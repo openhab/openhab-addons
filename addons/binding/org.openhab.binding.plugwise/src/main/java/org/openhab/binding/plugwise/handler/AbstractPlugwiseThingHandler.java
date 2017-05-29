@@ -69,7 +69,6 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
 
         @Override
         public void start() {
-            onlineStateUpdateTask.update(getDeviceType(), getMACAddress());
             unansweredPings = 0;
             super.start();
         }
