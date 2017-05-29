@@ -91,14 +91,14 @@ public class KodiClientSocket {
             try {
                 session.close();
             } catch (Exception e) {
-                logger.error("Exception during closing the websocket {}", e.getMessage(), e);
+                logger.debug("Exception during closing the websocket: {}", e.getMessage(), e);
             }
             session = null;
         }
         try {
             client.stop();
         } catch (Exception e) {
-            logger.error("Exception during closing the websocket {}", e.getMessage(), e);
+            logger.debug("Exception during closing the websocket: {}", e.getMessage(), e);
         }
     }
 
@@ -119,19 +119,13 @@ public class KodiClientSocket {
             session = wssession;
             connected = true;
             if (eventHandler != null) {
-                scheduler.submit(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            eventHandler.onConnectionOpened();
-                        } catch (Exception e) {
-                            logger.error("Error handling onConnectionOpened() {}", e.getMessage(), e);
-                        }
-
+                scheduler.submit(() -> {
+                    try {
+                        eventHandler.onConnectionOpened();
+                    } catch (Exception e) {
+                        logger.debug("Error handling onConnectionOpened(): {}", e.getMessage(), e);
                     }
                 });
-
             }
         }
 
@@ -148,45 +142,33 @@ public class KodiClientSocket {
                 }
             } else {
                 logger.debug("Event received from server: {}", json);
-                try {
-                    if (eventHandler != null) {
-                        scheduler.submit(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                try {
-                                    eventHandler.handleEvent(json);
-                                } catch (Exception e) {
-                                    logger.error("Error handling event {} player state change message: {}", json,
-                                            e.getMessage(), e);
-                                }
-
-                            }
-                        });
-
-                    }
-                } catch (Exception e) {
-                    logger.error("Error handling player state change message", e);
+                if (eventHandler != null) {
+                    scheduler.submit(() -> {
+                        try {
+                            eventHandler.handleEvent(json);
+                        } catch (Exception e) {
+                            logger.debug("Error handling event {} player state change message: {}", json,
+                                    e.getMessage(), e);
+                        }
+                    });
                 }
             }
         }
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
+            logger.debug("Closing a WebSocket due to {}", reason);
             session = null;
             connected = false;
-            logger.debug("Closing a WebSocket due to {}", reason);
-            scheduler.submit(new Runnable() {
-
-                @Override
-                public void run() {
+            if (eventHandler != null) {
+                scheduler.submit(() -> {
                     try {
                         eventHandler.onConnectionClosed();
                     } catch (Exception e) {
-                        logger.error("Error handling onConnectionClosed()", e);
+                        logger.debug("Error handling onConnectionClosed(): {}", e.getMessage(), e);
                     }
-                }
-            });
+                });
+            }
         }
     }
 

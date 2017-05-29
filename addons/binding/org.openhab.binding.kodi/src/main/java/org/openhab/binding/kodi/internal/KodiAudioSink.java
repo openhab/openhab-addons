@@ -90,6 +90,7 @@ public class KodiAudioSink implements AudioSink {
             throw new UnsupportedAudioStreamException("Kodi can only handle URLAudioStream or FixedLengthAudioStreams.",
                     null);
         }
+        logger.trace("Using callback url: '{}'", url);
         handler.playURI(new StringType(url));
     }
 

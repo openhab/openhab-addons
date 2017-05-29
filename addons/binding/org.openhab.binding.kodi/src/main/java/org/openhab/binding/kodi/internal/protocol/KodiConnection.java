@@ -472,6 +472,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public synchronized void close() {
+        if (socket.isConnected()) {
+            socket.close();
+        }
         socket = null;
     }
 
