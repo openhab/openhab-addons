@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  * @author Thomas Traunbauer - Initial contribution
  */
 public class Enigma2CommandExecutor {
-    // Source found on
+    // Documented at
     // https://dream.reichholf.net/wiki/Enigma2:WebInterface#RemoteControl
 
     private Logger logger = LoggerFactory.getLogger(Enigma2CommandExecutor.class);
@@ -70,9 +70,14 @@ public class Enigma2CommandExecutor {
     public void setPowerState(OnOffType command) {
         String url = deviceURL + SUFFIX_TOGGLE_POWERSTATE;
         try {
-            OnOffType currentState = (OnOffType) getPowerState();
-            OnOffType newState = command;
-            if (currentState != newState) {
+            State currentState = getPowerState();
+            if (currentState instanceof OnOffType) {
+                OnOffType currentState2 = (OnOffType) getPowerState();
+                OnOffType newState = command;
+                if (currentState2 != newState) {
+                    Enigma2Util.executeUrl(url);
+                }
+            } else if (currentState instanceof UnDefType) {
                 Enigma2Util.executeUrl(url);
             }
         } catch (IOException e) {
@@ -229,11 +234,11 @@ public class Enigma2CommandExecutor {
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2instandby");
             State returnState = null;
-            if (content.toLowerCase().equals("true")) {
-                returnState = OnOffType.ON;
-            }
-            if (content.toLowerCase().equals("false")) {
+            if (content.toLowerCase().contains("true")) {
                 returnState = OnOffType.OFF;
+            }
+            if (content.toLowerCase().contains("false")) {
+                returnState = OnOffType.ON;
             }
             if (returnState instanceof OnOffType) {
                 return returnState;
@@ -325,10 +330,10 @@ public class Enigma2CommandExecutor {
             String content = Enigma2Util.executeUrl(url);
             content = Enigma2Util.getContentOfFirstElement(content, "e2ismuted");
             State returnState = null;
-            if (content.toLowerCase().equals("true")) {
+            if (content.toLowerCase().contains("true")) {
                 returnState = OnOffType.ON;
             }
-            if (content.toLowerCase().equals("false")) {
+            if (content.toLowerCase().contains("false")) {
                 returnState = OnOffType.OFF;
             }
             if (returnState instanceof OnOffType) {

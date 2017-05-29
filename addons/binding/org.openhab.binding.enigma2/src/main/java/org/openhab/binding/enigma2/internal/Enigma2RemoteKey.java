@@ -14,7 +14,7 @@ package org.openhab.binding.enigma2.internal;
  * @author Thomas Traunbauer - Initial contribution
  */
 public enum Enigma2RemoteKey {
-    // Source found on
+    // Documented at
     // https://dream.reichholf.net/wiki/Webinterface_Befehle#Tasten_der_Fernsteuerung:_.2Fcgi-bin.2Frc.3F.3Ckey.3E:.3Cduration.3E:.3Creptime.3E.2C.3Ckey....3E
     // but tests showed, that
     // MENU is 139 instead of 141

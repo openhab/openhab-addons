@@ -53,7 +53,7 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
             Map<String, Object> properties = new HashMap<>(4);
             String label = info.getName();
 
-            Long defaultRefreshinterval = (long) 5000;
+            Number defaultRefreshinterval = 5000;
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_HOST, getIPAddress(info));
             properties.put(Enigma2BindingConstants.DEVICE_PARAMETER_REFRESH, defaultRefreshinterval);
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();

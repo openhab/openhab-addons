@@ -55,7 +55,7 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         refresher = new Enigma2Refresher();
         refresher.addListener(this);
 
-        scheduler.scheduleWithFixedDelay(refresher, 60000, getRefreshInterval(), TimeUnit.MILLISECONDS);
+        scheduler.scheduleWithFixedDelay(refresher, 60000, getRefreshInterval().longValue(), TimeUnit.MILLISECONDS);
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -212,8 +212,8 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
         return (String) thing.getConfiguration().get(DEVICE_PARAMETER_HOST);
     }
 
-    public long getRefreshInterval() {
-        return (Long) thing.getConfiguration().get(DEVICE_PARAMETER_REFRESH);
+    public Number getRefreshInterval() {
+        return (Number) thing.getConfiguration().get(DEVICE_PARAMETER_REFRESH);
     }
 
     public void setOffline() {
@@ -240,15 +240,11 @@ public class Enigma2Handler extends BaseThingHandler implements Enigma2CommandEx
             listOfListener.add(listener);
         }
 
-        public void callListener() {
+        @Override
+        public void run() {
             for (Enigma2CommandExecutorListener curListener : listOfListener) {
                 curListener.getUpdate();
             }
-        }
-
-        @Override
-        public void run() {
-            callListener();
         }
     }
 }

@@ -49,8 +49,6 @@ sitemap enigma2 label="Enigma2 Test Items"
 }
 ```
 
-If you need support or have new ideas please use the [openHAB cummunity](https://community.openhab.org/t/enigma2-binding/20178) to post the requests.
-
 #### Known issues and Workarounds
 
 ##### Discovery

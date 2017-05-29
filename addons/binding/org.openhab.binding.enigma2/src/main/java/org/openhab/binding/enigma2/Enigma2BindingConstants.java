@@ -46,9 +46,8 @@ public class Enigma2BindingConstants {
     public static final String CHANNEL_NOW_PLAYING_DESCRIPTION = "nowPlayingDescription";
     public static final String CHANNEL_NOW_PLAYING_DESCRIPTION_EXTENDED = "nowPlayingDescriptionExtended";
 
-    public static final String DEVICE_PARAMETER_HOST = "DEVICE_HOST";
-
-    public static final String DEVICE_PARAMETER_USER = "USER";
-    public static final String DEVICE_PARAMETER_PASSWORD = "PASSWORD";
-    public static final String DEVICE_PARAMETER_REFRESH = "REFRESH";
+    public static final String DEVICE_PARAMETER_HOST = "hostName";
+    public static final String DEVICE_PARAMETER_USER = "user";
+    public static final String DEVICE_PARAMETER_PASSWORD = "password";
+    public static final String DEVICE_PARAMETER_REFRESH = "refreshInterval";
 }

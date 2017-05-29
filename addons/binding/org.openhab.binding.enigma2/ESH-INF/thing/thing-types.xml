@@ -25,19 +25,19 @@
             <channel id="nowPlayingDescriptionExtended" typeId="nowPlayingDescriptionExtended" />
         </channels>
         <config-description>
-            <parameter name="DEVICE_HOST" type="text" required="true">
+            <parameter name="hostName" type="text" required="true">
                 <label>Host Address</label>
                 <description>The Host / IP Address used for communication to this device.</description>
             </parameter>
-            <parameter name="REFRESH" type="integer" required="true">
+            <parameter name="refreshInterval" type="integer" required="true">
                 <label>Refresh interval</label>
                 <description>Time for autoupdate (default=5000)</description>
             </parameter>
-            <parameter name="USER" type="text" required="false">
+            <parameter name="user" type="text" required="false">
                 <label>User Name</label>
                 <description>The Username of the Webinterface.</description>
             </parameter>
-            <parameter name="PASSWORD" type="text" required="false">
+            <parameter name="password" type="text" required="false">
                 <label>Password</label>
                 <description>The Password of the Webinterface.</description>
             </parameter>
