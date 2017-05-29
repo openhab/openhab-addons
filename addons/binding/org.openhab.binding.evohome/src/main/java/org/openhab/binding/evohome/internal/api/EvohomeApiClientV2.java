@@ -73,6 +73,12 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
         }
     }
 
+    private <TIn, TOut> TOut doAuthenticatedRequest(HttpMethod method, String url,TIn requestContainer, TOut out) {
+        //TODO check authentication -> refresh access token, fallback re-authenticate
+        return apiAccess.doAuthenticatedRequest(method, url, null, requestContainer, out);
+    }
+
+
     private UserAccount requestUserAccount() {
         String url = EvohomeApiConstants.URL_V2_BASE + EvohomeApiConstants.URL_V2_ACCOUNT;
 
@@ -117,8 +123,8 @@ public class EvohomeApiClientV2 implements EvohomeApiClient {
 
         // If the authentication succeeded, gather the basic intel as well
         if (success == true) {
-            useraccount = requestUserAccount();
-            locations   = requestLocations();
+            useraccount        = requestUserAccount();
+            locations          = requestLocations();
             controlSystemCache = populateCache();
         } else {
             apiAccess.setAuthentication(null);

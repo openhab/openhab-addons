@@ -22,6 +22,7 @@ public class ApiAccess {
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private final HttpClient httpClient;
 
+    // TODO remove static?
     private static Authentication authenticationData;
     private static String applicationId;
     private final HttpClient httpClient;
