@@ -24,9 +24,6 @@ public class GlobalCacheBindingConstants {
 
     public static final String BINDING_ID = "globalcache";
 
-    // Maximum number of threads supported by a handler
-    public static final int MAX_GC_THREADS = 10;
-
     /*
      * GlobalCache thing definitions
      */

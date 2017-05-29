@@ -25,7 +25,6 @@ import java.net.SocketException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -34,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.net.NetUtil;
@@ -69,9 +69,12 @@ import org.slf4j.LoggerFactory;
 public class GlobalCacheHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(GlobalCacheHandler.class);
 
+    private static final String GLOBALCACHE_THREAD_POOL = "globalCacheHandler";
+
     private InetAddress ifAddress;
     private CommandProcessor commandProcessor;
-    private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(MAX_GC_THREADS);
+    private ScheduledExecutorService scheduledExecutorService = ThreadPoolManager
+            .getScheduledPool(GLOBALCACHE_THREAD_POOL + "-" + thingID());
     private ScheduledFuture<?> scheduledFuture;
 
     private LinkedBlockingQueue<RequestMessage> sendQueue = null;
@@ -272,7 +275,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 code = convertHexToGC(code);
                 logger.debug("Converted hex code is: {}", code);
             } catch (HexCodeConversionException e) {
-                logger.info("Failed to convert hex code to GC format");
+                logger.info("Failed to convert hex code to globalcache format: {}", e.getMessage());
                 return null;
             }
         }
@@ -642,32 +645,35 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 return;
             }
 
-            // If device doesn't have a serial module, just open the command connection
-            if (!deviceSupportsSerialPort1()) {
-                if (commandConnect(commandConnection)) {
-                    markThingOnline();
-                    deviceIsConnected = true;
+            // Get a connection to the command port
+            if (!commandConnect(commandConnection)) {
+                return;
+            }
+
+            // Get a connection to serial port 1
+            if (deviceSupportsSerialPort1()) {
+                if (!serialConnect(serialPort1Connection)) {
+                    commandDisconnect(commandConnection);
                     return;
                 }
-            } else {
-                // Open the command connection and either 1 or 2 serial connections
-                if (commandConnect(commandConnection) && serialConnect(serialPort1Connection)) {
-                    if (deviceSupportsSerialPort2()) {
-                        if (serialConnect(serialPort2Connection)) {
-                            markThingOnline();
-                            deviceIsConnected = true;
-                            startSerialPortReaders();
-                            return;
-                        }
-                    } else {
-                        markThingOnline();
-                        deviceIsConnected = true;
-                        startSerialPortReaders();
-                        return;
-                    }
+            }
+
+            // Get a connection to serial port 2
+            if (deviceSupportsSerialPort2()) {
+                if (!serialConnect(serialPort2Connection)) {
+                    commandDisconnect(commandConnection);
+                    serialDisconnect(serialPort1Connection);
+                    return;
                 }
             }
-            disconnect();
+
+            /*
+             * All connections opened successfully, so we can mark the thing online
+             * and start the serial port readers
+             */
+            markThingOnline();
+            deviceIsConnected = true;
+            startSerialPortReaders();
         }
 
         private boolean commandConnect(DeviceConnection conn) {
@@ -683,7 +689,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 logger.debug("Error getting streams to {} port for thing {} at {}, exception={}", conn.getName(),
                         thingID(), conn.getIP(), e.getMessage());
                 markThingOfflineWithError(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                commandDisconnect(conn);
+                closeSocket(conn);
                 return false;
             }
             logger.info("Got a connection to {} port for thing {} at {}", conn.getName(), thingID(), conn.getIP());
@@ -692,7 +698,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         private boolean serialConnect(DeviceConnection conn) {
-            logger.debug("Connecting to {} port for thing {} at IP {}", conn.getName(), thingID(), conn.getIP());
+            logger.debug("Connecting to {} port for thing {} at {}", conn.getName(), thingID(), conn.getIP());
             if (!openSocket(conn)) {
                 return false;
             }
@@ -701,7 +707,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 conn.setSerialIn(new BufferedInputStream(conn.getSocket().getInputStream()));
                 conn.setSerialOut(new DataOutputStream(conn.getSocket().getOutputStream()));
             } catch (IOException e) {
-                serialDisconnect(conn);
+                logger.debug("Failed to get streams on {} port for thing {} at {}", conn.getName(), thingID(),
+                        conn.getIP());
+                closeSocket(conn);
                 return false;
             }
             logger.info("Got a connection to {} port for thing {} at {}", conn.getName(), thingID(), conn.getIP());
@@ -714,30 +722,45 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 conn.setSocket(new Socket());
                 conn.getSocket().bind(new InetSocketAddress(ifAddress, 0));
                 conn.getSocket().connect(new InetSocketAddress(conn.getIP(), conn.getPort()), SOCKET_CONNECT_TIMEOUT);
-                return true;
             } catch (IOException e) {
-                serialDisconnect(conn);
+                logger.debug("Failed to get socket on {} port for thing {} at {}", conn.getName(), thingID(),
+                        conn.getIP());
                 return false;
+            }
+            return true;
+        }
+
+        private void closeSocket(DeviceConnection conn) {
+            if (conn.getSocket() != null) {
+                try {
+                    conn.getSocket().close();
+                } catch (IOException e) {
+                    logger.debug("Failed to close socket on {} port for thing {} at {}", conn.getName(), thingID(),
+                            conn.getIP());
+                }
             }
         }
 
+        /*
+         * Disconnect from the command and serial port(s) on the device. Only disconnect the serial port
+         * connections if the devices have serial ports.
+         */
         protected void disconnect() {
             if (!isConnected()) {
                 return;
             }
             commandDisconnect(commandConnection);
 
+            stopSerialPortReaders();
             if (deviceSupportsSerialPort1()) {
                 serialDisconnect(serialPort1Connection);
             }
-
             if (deviceSupportsSerialPort2()) {
                 serialDisconnect(serialPort2Connection);
             }
 
             markThingOffline();
             deviceIsConnected = false;
-            stopSerialPortReaders();
         }
 
         private void commandDisconnect(DeviceConnection conn) {
@@ -905,10 +928,14 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         private void stopSerialPortReaders() {
             if (deviceSupportsSerialPort1() && serialReaderPort1 != null) {
+                logger.debug("Stopping serial port 1 reader for thing {} at IP {}", thingID(),
+                        commandConnection.getIP());
                 serialReaderPort1.stop();
                 serialReaderPort1 = null;
             }
             if (deviceSupportsSerialPort2() && serialReaderPort2 != null) {
+                logger.debug("Stopping serial port 2 reader for thing {} at IP {}", thingID(),
+                        commandConnection.getIP());
                 serialReaderPort2.stop();
                 serialReaderPort2 = null;
             }
