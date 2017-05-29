@@ -49,7 +49,6 @@ public class EvohomeDiscoveryService extends AbstractDiscoveryService {
         if (evohomeGatewayHandler != null) {
             try {
                 EvohomeApiClient client = evohomeGatewayHandler.getApiClient();
-                // TODO Maybe client.update()
                 if (client != null) {
                     for (ControlSystem gateway : client.getControlSystems()) {
                         discoverDisplay(gateway);

@@ -38,15 +38,10 @@ public class ApiAccess {
     }
 
     @SuppressWarnings("unchecked")
-    public <TOut> TOut doRequest(
-            HttpMethod          method,
-            String              url,
-            Map<String, String> headers,
-            String              requestData,
-            String              contentType,
-            TOut                out) {
+    public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
+            String contentType, TOut out) {
 
-        logger.info("Requesting: [{}]", url);
+        logger.debug("Requesting: [{}]", url);
 
         try {
             Request request = httpClient.newRequest(url).method(method);
@@ -62,9 +57,11 @@ public class ApiAccess {
             }
 
             ContentResponse response = request.send();
-            if ((response.getStatus() == HttpStatus.OK_200) ||
-                (response.getStatus() == HttpStatus.ACCEPTED_202))
-            {
+
+            logger.debug("Response: {}\n{}\n{}", response.toString(), response.getHeaders().toString(),
+                    response.getContentAsString());
+
+            if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {
                 String reply = response.getContentAsString();
                 if (out != null) {
                     out = (TOut) new Gson().fromJson(reply, out.getClass());
@@ -80,14 +77,10 @@ public class ApiAccess {
     }
 
     @SuppressWarnings("unchecked")
-    public <TIn, TOut> TOut doRequest(
-            HttpMethod          method,
-            String              url,
-            Map<String, String> headers,
-            TIn                 requestContainer,
-            TOut                out) {
+    public <TIn, TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, TIn requestContainer,
+            TOut out) {
 
-        logger.info("JSON request");
+        logger.debug("JSON request");
 
         String json = null;
         if (requestContainer != null) {
@@ -98,18 +91,14 @@ public class ApiAccess {
         return doRequest(method, url, headers, json, "application/json", out);
     }
 
-    public <TIn, TOut> TOut doAuthenticatedRequest(
-            HttpMethod          method,
-            String              url,
-            Map<String, String> headers,
-            TIn                 requestContainer,
-            TOut                out) {
+    public <TIn, TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Map<String, String> headers,
+            TIn requestContainer, TOut out) {
 
-        logger.info("AUTH request");
+        logger.debug("AUTH request");
 
         if (authenticationData != null) {
             if (headers == null) {
-                headers = new HashMap<String,String>();
+                headers = new HashMap<String, String>();
             }
 
             headers.put("Authorization", "bearer " + authenticationData.accessToken);

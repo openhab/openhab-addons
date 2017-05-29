@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 public class Gateway {
+
     @SerializedName("gatewayInfo")
     public GatewayInfo gatewayInfo;
 
