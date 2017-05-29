@@ -84,8 +84,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     try {
                         date = sdfReceived.parse(description);
                     } catch (ParseException e) {
-                        logger.error(
-                                "updateChannel(): Parse Exception occurred while trying to parse date string: {}. ",
+                        logger.warn("updateChannel(): Parse Exception occurred while trying to parse date string: {}. ",
                                 e.getMessage());
                     }
 
