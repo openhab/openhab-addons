@@ -47,8 +47,9 @@ The following configuration options are available for the Kodi binding:
 
 ### Thing Configuration
 
-The Kodi thing requires the IP address of the device hosting your Kodi media center instance and the TCP port to access it on (default: `9090`).
-These parameters will be found by the auto-discovery feature.
+The Kodi thing requires the IP address of the device hosting your Kodi media center instance, the TCP port to access it (default: `9090`) and the HTTP port
+to build URLs for thumbnails and fanart (default: `8080`).
+The IP address will be found by the auto-discovery feature.
 
 A manual setup through a `things/kodi.things` file could look like this:
 

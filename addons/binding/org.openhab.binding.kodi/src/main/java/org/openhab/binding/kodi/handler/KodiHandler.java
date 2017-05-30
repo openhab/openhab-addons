@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
- * 
+ *
  */
 public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
@@ -345,42 +346,53 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateTitle(String title) {
-        updateState(CHANNEL_TITLE, new StringType(title));
+        updateState(CHANNEL_TITLE, createState(title));
     }
 
     @Override
     public void updateShowTitle(String title) {
-        updateState(CHANNEL_SHOWTITLE, new StringType(title));
+        updateState(CHANNEL_SHOWTITLE, createState(title));
     }
 
     @Override
     public void updateAlbum(String album) {
-        updateState(CHANNEL_ALBUM, new StringType(album));
+        updateState(CHANNEL_ALBUM, createState(album));
     }
 
     @Override
     public void updateArtist(String artist) {
-        updateState(CHANNEL_ARTIST, new StringType(artist));
+        updateState(CHANNEL_ARTIST, createState(artist));
     }
 
     @Override
     public void updateMediaType(String mediaType) {
-        updateState(CHANNEL_MEDIATYPE, new StringType(mediaType));
+        updateState(CHANNEL_MEDIATYPE, createState(mediaType));
     }
 
     @Override
     public void updatePVRChannel(final String channel) {
-        updateState(CHANNEL_PVR_CHANNEL, new StringType(channel));
+        updateState(CHANNEL_PVR_CHANNEL, createState(channel));
     }
 
     @Override
     public void updateThumbnail(String thumbnail) {
-        updateState(CHANNEL_THUMBNAIL, new StringType(thumbnail));
+        updateState(CHANNEL_THUMBNAIL, createState(thumbnail));
     }
 
     @Override
     public void updateFanart(String fanart) {
-        updateState(CHANNEL_FANART, new StringType(fanart));
+        updateState(CHANNEL_FANART, createState(fanart));
+    }
+
+    /**
+     * Wrap the given String in a new {@link StringType} or returns {@link UnDefType#UNDEF} if the String is empty.
+     */
+    private State createState(String string) {
+        if (string == null || string.isEmpty()) {
+            return UnDefType.UNDEF;
+        } else {
+            return new StringType(string);
+        }
     }
 
 }
