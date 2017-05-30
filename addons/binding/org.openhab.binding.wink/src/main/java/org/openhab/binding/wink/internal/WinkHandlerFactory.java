@@ -53,7 +53,7 @@ public class WinkHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        logger.info("Checking if the factory supports " + thingTypeUID.toString());
+        logger.info("Checking if the factory supports {}", thingTypeUID.toString());
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
                 || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
