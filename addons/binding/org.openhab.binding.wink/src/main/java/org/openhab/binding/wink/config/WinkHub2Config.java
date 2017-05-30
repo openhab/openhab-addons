@@ -19,3 +19,4 @@ public class WinkHub2Config {
     public String access_token;
     public String refresh_token;
 }
+
