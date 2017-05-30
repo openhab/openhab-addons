@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evohome"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Evohome Gateway Bridge -->
+    <bridge-type id="gateway">
+        <label>Evohome Account</label>
+        <description>
+            The Evohome account is used to connect to your Total Connect Comfort (TCC)
+            using your TCC username and password.  
+        </description>
+
+        <config-description>
+            <parameter-group name="auth">
+                <context>communication</context>
+                <label>Authentication</label>
+                <description></description>
+            </parameter-group>
+
+            <parameter name="username" type="text" required="true" 
+                groupName="auth">
+                <label>Username</label>
+                <description>Your TCC Username</description>
+                <default></default>
+            </parameter>
+            
+            <parameter name="password" type="text" required="true"
+                groupName="auth">
+                <label>Password</label>
+                <description>Your TCC Password</description>
+                <default></default>
+            </parameter>        
+            
+            <parameter name="refreshInterval" type="integer" required="false">
+                <label>Refresh Interval</label>
+                <description>The refresh interval to poll TCC (in ms).</description>
+                <default>15000</default>
+                <advanced>true</advanced>
+            </parameter>            
+             
+            <parameter name="applicationId" type="text" required="true">
+                <label>Application Id</label>
+                <description>The application id to use (probably don't change).</description>
+                <default>b013aa26-9724-4dbd-8897-048b9aada249</default>
+                <advanced>true</advanced>
+            </parameter>    
+        </config-description>
+    </bridge-type>
+
+</thing:thing-descriptions>
