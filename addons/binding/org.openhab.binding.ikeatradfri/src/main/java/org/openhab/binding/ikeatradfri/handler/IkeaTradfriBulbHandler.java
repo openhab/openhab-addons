@@ -11,7 +11,10 @@ import static org.openhab.binding.ikeatradfri.IkeaTradfriBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -38,6 +41,8 @@ import com.google.gson.JsonSyntaxException;
  * @author Daniel Sundberg - Initial contribution
  */
 public class IkeaTradfriBulbHandler extends BaseThingHandler implements IkeaTradfriObserveListener {
+
+    private static final int DELTA = 10;
 
     private class LightProperties {
         JsonObject root;
@@ -220,6 +225,9 @@ public class IkeaTradfriBulbHandler extends BaseThingHandler implements IkeaTrad
                     setBrightness((PercentType) command);
                 } else if (command instanceof OnOffType) {
                     setState(((OnOffType) command) == OnOffType.ON ? true : false);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    handleIncreaseDecrease(prevProperties, command, channelUID, prev -> prev.getBrightness(),
+                            newValue -> setBrightness(newValue));
                 } else {
                     logger.debug("Can't handle command {} on channel {}", command, channelUID);
                 }
@@ -227,12 +235,29 @@ public class IkeaTradfriBulbHandler extends BaseThingHandler implements IkeaTrad
             case CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof PercentType) {
                     setColorTemperature((PercentType) command);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    handleIncreaseDecrease(prevProperties, command, channelUID, prev -> prev.getColorTemperature(),
+                            newValue -> setColorTemperature(newValue));
                 } else {
                     logger.debug("Can't handle command {} on channel {}", command, channelUID);
                 }
                 break;
             default:
                 logger.error("Unkown channel {}", channelUID);
+        }
+    }
+
+    private void handleIncreaseDecrease(LightProperties prevProperties, Command command, ChannelUID channelUID,
+            Function<LightProperties, PercentType> getOldValue, Consumer<PercentType> setNewValue) {
+        if (prevProperties != null && getOldValue.apply(prevProperties) != null) {
+            int old = getOldValue.apply(prevProperties).intValue();
+            if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                setNewValue.accept(new PercentType(Math.min(old + DELTA, PercentType.HUNDRED.intValue())));
+            } else {
+                setNewValue.accept(new PercentType(Math.max(old - DELTA, PercentType.ZERO.intValue())));
+            }
+        } else {
+            logger.debug("Can't handle inc/dec without knowing the previous state of {}", channelUID);
         }
     }
 
