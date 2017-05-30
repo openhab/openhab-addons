@@ -321,7 +321,6 @@ public class IkeaTradfriGatewayHandler extends BaseBridgeHandler implements Ikea
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         logger.debug("Child handler disposed: {}", childThing.getThingTypeUID().toString());
         stopObserve(childThing.getUID());
-        deviceDiscoverHelper(childThing.getUID().getId());
     }
 
     public boolean registerDeviceListener(IkeaTradfriDiscoverListener dataListener) {
