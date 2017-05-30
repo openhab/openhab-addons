@@ -10,6 +10,7 @@ package org.openhab.binding.avmfritz.handler;
 
 import static org.openhab.binding.avmfritz.BindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -20,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -52,10 +55,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
-    /**
-     * Logger
-     */
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Logger logger = LoggerFactory.getLogger(BoxHandler.class);
+
     /**
      * the refresh interval which is used to poll values from the fritzaha.
      * server (optional, defaults to 15 s)
@@ -127,19 +129,8 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      * {@inheritDoc}
      */
     @Override
-    public void addDeviceList(DeviceModel device) {
-        try {
-            logger.debug("set device model: {}", device);
-            this.deviceList.put(device.getIdentifier(), device);
-            ThingUID thingUID = this.getThingUID(device);
-            Thing thing = this.getThingByUID(thingUID);
-            if (thing != null) {
-                logger.debug("update thing {} with device model: {}", thingUID, device);
-                this.updateThingFromDevice(thing, device);
-            }
-        } catch (Exception e) {
-            logger.error("{}", e.getLocalizedMessage(), e);
-        }
+    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+        super.updateStatus(status, statusDetail, description);
     }
 
     /**
@@ -151,6 +142,25 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addDeviceList(DeviceModel device) {
+        try {
+            logger.debug("set device model: {}", device);
+            deviceList.put(device.getIdentifier(), device);
+            ThingUID thingUID = getThingUID(device);
+            Thing thing = getThingByUID(thingUID);
+            if (thing != null) {
+                logger.debug("update thing {} with device model: {}", thingUID, device);
+                updateThingFromDevice(thing, device);
+            }
+        } catch (Exception e) {
+            logger.error("{}", e.getLocalizedMessage(), e);
+        }
+    }
+
+    /**
      * Updates things from device model.
      *
      * @param thing Thing to be updated.
@@ -158,11 +168,10 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
      */
     private void updateThingFromDevice(Thing thing, DeviceModel device) {
         if (thing == null || device == null) {
-            throw new IllegalArgumentException("thing or device null, cannot perform update");
+            throw new IllegalArgumentException("thing or device is null, cannot perform update");
         }
         if (device.getPresent() == 1) {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
-            logger.debug("about to update thing {} from device {}", thing.getUID(), device);
             if (device.isTempSensor() && device.getTemperature() != null) {
                 Channel channelTemp = thing.getChannel(CHANNEL_TEMP);
                 updateState(channelTemp.getUID(), new DecimalType(device.getTemperature().getCelsius()));
@@ -174,6 +183,21 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                 updateState(channelPower.getUID(), new DecimalType(device.getPowermeter().getPower()));
             }
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
+                Channel channelMode = thing.getChannel(CHANNEL_MODE);
+                if (channelMode != null) {
+                    updateState(channelMode.getUID(), new StringType(device.getSwitch().getMode()));
+                } else {
+                    logger.warn("Channel {} in thing {} does not exist, please recreate the thing", CHANNEL_MODE,
+                            thing.getUID());
+                }
+                Channel channelLocked = thing.getChannel(CHANNEL_LOCKED);
+                if (channelLocked != null) {
+                    updateState(channelLocked.getUID(), device.getSwitch().getLock().equals(BigDecimal.ONE)
+                            ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                } else {
+                    logger.warn("Channel {} in thing {} does not exist, please recreate the thing", CHANNEL_LOCKED,
+                            thing.getUID());
+                }
                 Channel channelSwitch = thing.getChannel(CHANNEL_SWITCH);
                 if (device.getSwitch().getState() == null) {
                     updateState(channelSwitch.getUID(), UnDefType.UNDEF);
@@ -187,14 +211,40 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                 }
             }
             if (device.isHeatingThermostat() && device.getHkr() != null) {
+                Channel channelMode = thing.getChannel(CHANNEL_MODE);
+                if (channelMode != null) {
+                    updateState(channelMode.getUID(), new StringType(device.getHkr().getMode()));
+                } else {
+                    logger.warn("Channel {} in thing {} does not exist, please recreate the thing", CHANNEL_MODE,
+                            thing.getUID());
+                }
+                Channel channelLocked = thing.getChannel(CHANNEL_LOCKED);
+                if (channelLocked != null) {
+                    updateState(channelLocked.getUID(), device.getHkr().getLock().equals(BigDecimal.ONE)
+                            ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                } else {
+                    logger.warn("Channel {} in thing {} does not exist, please recreate the thing", CHANNEL_LOCKED,
+                            thing.getUID());
+                }
                 Channel channelActualTemp = thing.getChannel(CHANNEL_ACTUALTEMP);
-                updateState(channelActualTemp.getUID(), new DecimalType(device.getHkr().getTist()));
+                updateState(channelActualTemp.getUID(),
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
+                BigDecimal settemp = HeatingModel.toCelsius(device.getHkr().getTsoll());
+                if (HeatingModel.inCelsiusRange(settemp)) {
+                    thing.getConfiguration().put(THING_SETTEMP, settemp);
+                }
                 Channel channelSetTemp = thing.getChannel(CHANNEL_SETTEMP);
-                updateState(channelSetTemp.getUID(), new DecimalType(device.getHkr().getTsoll()));
+                updateState(channelSetTemp.getUID(), new DecimalType(settemp));
+                BigDecimal ecotemp = HeatingModel.toCelsius(device.getHkr().getAbsenk());
+                thing.getConfiguration().put(THING_ECOTEMP, ecotemp);
                 Channel channelEcoTemp = thing.getChannel(CHANNEL_ECOTEMP);
-                updateState(channelEcoTemp.getUID(), new DecimalType(device.getHkr().getAbsenk()));
+                updateState(channelEcoTemp.getUID(), new DecimalType(ecotemp));
+                BigDecimal comforttemp = HeatingModel.toCelsius(device.getHkr().getKomfort());
+                thing.getConfiguration().put(THING_COMFORTTEMP, comforttemp);
                 Channel channelComfortTemp = thing.getChannel(CHANNEL_COMFORTTEMP);
-                updateState(channelComfortTemp.getUID(), new DecimalType(device.getHkr().getKomfort()));
+                updateState(channelComfortTemp.getUID(), new DecimalType(comforttemp));
+                Channel channelRadiatorMode = thing.getChannel(CHANNEL_RADIATOR_MODE);
+                updateState(channelRadiatorMode.getUID(), new StringType(device.getHkr().getRadiatorMode()));
                 if (device.getHkr().getNextchange() != null) {
                     Channel channelNextChange = thing.getChannel(CHANNEL_NEXTCHANGE);
                     if (device.getHkr().getNextchange().getEndperiod() == 0) {
@@ -206,7 +256,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                     }
                     Channel channelNextTemp = thing.getChannel(CHANNEL_NEXTTEMP);
                     updateState(channelNextTemp.getUID(),
-                            new DecimalType(device.getHkr().getNextchange().getTchange()));
+                            new DecimalType(HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange())));
                 }
                 Channel channelBattery = thing.getChannel(CHANNEL_BATTERY);
                 if (device.getHkr().getBatterylow() == null) {
@@ -221,7 +271,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
                 }
             }
         } else {
-            thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, null));
+            thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present"));
         }
     }
 
@@ -278,18 +328,5 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             }
             return;
         }
-    }
-
-    /**
-     * Called from {@link FritzahaWebInterface#authenticate()} to update the
-     * bridge status because updateStatus is protected.
-     *
-     * @param status Bridge status
-     * @param statusDetail Bridge status detail
-     * @param description Bridge status description
-     */
-    @Override
-    public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description) {
-        super.updateStatus(status, statusDetail, description);
     }
 }

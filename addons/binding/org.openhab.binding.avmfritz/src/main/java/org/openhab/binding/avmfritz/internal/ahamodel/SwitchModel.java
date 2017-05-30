@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel;
 
+import static org.openhab.binding.avmfritz.BindingConstants.*;
+
 import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -18,7 +20,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * See {@link DevicelistModel}.
  *
- * @author Robert Bausdorf
+ * @author Robert Bausdorf - Initial contribution
+ * @author Christoph Weitkamp - Added new channels `locked`, `mode` and `radiator_mode`
  *
  */
 @XmlRootElement(name = "switch")
@@ -40,7 +43,11 @@ public class SwitchModel {
     }
 
     public String getMode() {
-        return mode;
+        if (mode.equals("auto")) {
+            return MODE_AUTO;
+        } else {
+            return MODE_MANUAL;
+        }
     }
 
     public void setMode(String mode) {
@@ -57,7 +64,7 @@ public class SwitchModel {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("state", this.getState()).append("mode", this.getMode())
-                .append("lock", this.getLock()).toString();
+        return new ToStringBuilder(this).append("state", getState()).append("mode", getMode()).append("lock", getLock())
+                .toString();
     }
 }

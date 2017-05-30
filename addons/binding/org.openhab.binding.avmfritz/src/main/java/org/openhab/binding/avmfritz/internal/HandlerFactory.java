@@ -101,3 +101,4 @@ public class HandlerFactory extends BaseThingHandlerFactory {
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 }
+
