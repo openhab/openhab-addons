@@ -26,6 +26,7 @@
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.coolmasternet</module>
+    <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
