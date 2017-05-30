@@ -31,6 +31,7 @@ import org.openhab.binding.sleepiq.config.SleepIQBedConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.sleepiq.api.SleepIQ;
+import org.syphr.sleepiq.api.model.Bed;
 import org.syphr.sleepiq.api.model.BedSideStatus;
 import org.syphr.sleepiq.api.model.BedStatus;
 
@@ -95,7 +96,13 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
         logger.debug("Updating SleepIQ bed properties for bed {}", bedId);
 
         SleepIQCloudHandler cloudHandler = (SleepIQCloudHandler) getBridge().getHandler();
-        updateProperties(cloudHandler.updateProperties(cloudHandler.getBed(bedId), editProperties()));
+        Bed bed = cloudHandler.getBed(bedId);
+        if (bed == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bed found with ID " + bedId);
+            return;
+        }
+
+        updateProperties(cloudHandler.updateProperties(bed, editProperties()));
     }
 
     @Override
