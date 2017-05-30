@@ -20,9 +20,11 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -57,14 +59,16 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SleepIQCloudHandler.class);
 
-    private List<BedStatusListener> bedStatusListeners = new CopyOnWriteArrayList<>();
+    private final List<BedStatusListener> bedStatusListeners = new CopyOnWriteArrayList<>();
+
+    private ExpiringCache<FamilyStatus> statusCache;
 
     private ScheduledFuture<?> pollingJob;
 
     private Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
-            publishBedStatusUpdates();
+            refreshBedStatus();
         }
     };
 
@@ -77,6 +81,15 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     @Override
     public void initialize() {
         try {
+            logger.debug("Configuring bed status cache");
+            statusCache = new ExpiringCache<>(TimeUnit.SECONDS.toMillis(getPollingInterval() / 2),
+                    new Supplier<FamilyStatus>() {
+                        @Override
+                        public FamilyStatus get() {
+                            return cloud.getFamilyStatus();
+                        }
+                    });
+
             createCloudConnection();
 
             logger.debug("Setting SleepIQ cloud online");
@@ -132,7 +145,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      */
     private synchronized void updateListenerManagement() {
         if (!bedStatusListeners.isEmpty() && (pollingJob == null || pollingJob.isCancelled())) {
-            int pollingInterval = getConfigAs(SleepIQCloudConfiguration.class).pollingInterval;
+            int pollingInterval = getPollingInterval();
             pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, pollingInterval, pollingInterval,
                     TimeUnit.SECONDS);
         } else if (bedStatusListeners.isEmpty() && pollingJob != null && !pollingJob.isCancelled()) {
@@ -142,11 +155,20 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     }
 
     /**
+     * Retrieve the polling interval for updating bed status.
+     *
+     * @return the polling interval in seconds
+     */
+    private int getPollingInterval() {
+        return getConfigAs(SleepIQCloudConfiguration.class).pollingInterval;
+    }
+
+    /**
      * Retrieve the latest status on all beds and update all registered listeners.
      */
-    private void publishBedStatusUpdates() {
+    public void refreshBedStatus() {
         try {
-            FamilyStatus status = cloud.getFamilyStatus();
+            FamilyStatus status = statusCache.getValue();
             updateStatus(ThingStatus.ONLINE);
 
             for (BedStatus bedStatus : status.getBeds()) {
@@ -170,7 +192,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         }
 
         bedStatusListeners.add(listener);
-        publishBedStatusUpdates();
+        refreshBedStatus();
         updateListenerManagement();
     }
 
@@ -192,7 +214,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
-        // all channels are read-only
+        // cloud handler has no channels
     }
 
     @Override

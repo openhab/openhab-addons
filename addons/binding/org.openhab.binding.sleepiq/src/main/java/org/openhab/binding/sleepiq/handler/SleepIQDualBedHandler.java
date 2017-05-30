@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.sleepiq.config.SleepIQBedConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,5 +149,10 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         // all channels are read-only
+
+        if (command == RefreshType.REFRESH) {
+            SleepIQCloudHandler cloudHandler = (SleepIQCloudHandler) getBridge().getHandler();
+            cloudHandler.refreshBedStatus();
+        }
     }
 }
