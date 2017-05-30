@@ -248,7 +248,7 @@
         <item-type>Number</item-type>
         <label>State</label>
         <description>Status of room (0 off, 1 on, 2 scene a, 3 scene b, etc)</description>
-        <state min="0" max="5" />
+        <!--  <state min="0" max="5" />-->
     </channel-type>
     <channel-type id="area_alarm">
         <item-type>String</item-type>
