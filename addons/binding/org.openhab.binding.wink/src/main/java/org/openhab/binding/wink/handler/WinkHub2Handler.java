@@ -129,7 +129,7 @@ public class WinkHub2Handler extends BaseBridgeHandler {
         public void run() {
             try {
                 String result = invokeAndParse(this.target, this.payLoad);
-                logger.trace("Hub replied with: " + result);
+                logger.trace("Hub replied with: {}", result);
                 JsonParser parser = new JsonParser();
                 JsonObject resultJson = parser.parse(result).getAsJsonObject();
 
@@ -148,9 +148,9 @@ public class WinkHub2Handler extends BaseBridgeHandler {
         if (this.config != null) {
             Response response;
 
-            logger.trace("Requesting the hub for: " + target.toString());
+            logger.trace("Requesting the hub for: {}", target.toString());
             if (payLoad != null) {
-                logger.trace("Request payload: " + payLoad.toString());
+                logger.trace("Request payload: {}", payLoad.toString());
                 response = target.request(MediaType.APPLICATION_JSON_TYPE)
                         .header("Authorization", "Bearer " + this.config.access_token).put(Entity.json(payLoad));
             } else {

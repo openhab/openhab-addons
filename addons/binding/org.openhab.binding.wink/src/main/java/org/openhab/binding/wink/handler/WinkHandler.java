@@ -67,18 +67,26 @@ public abstract class WinkHandler extends BaseThingHandler {
     public WinkHandler(Thing thing) {
         super(thing);
         String config = (String) getThing().getConfiguration().get(WINK_DEVICE_CONFIG);
+<<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
         String id = (String) getThing().getConfiguration().get(WINK_DEVICE_ID);
         this.deviceConfig = new WinkDeviceConfig(id);
         parseConfig(config);
 =======
         logger.trace("Initializing a thing with the following config: " + config);
+=======
+        logger.trace("Initializing a thing with the following config: {}", config);
+>>>>>>> Fixes
         String id = (String) getThing().getConfiguration().get(WINK_DEVICE_ID);
-        logger.trace("Thing ID: " + id);
+        logger.trace("Thing ID: {}", id);
         this.deviceConfig = new WinkDeviceConfig(id);
         parseConfig(config);
+<<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
         logger.info("Initializing a Wink device: \n" + deviceConfig.asString());
 >>>>>>> Project skeleton.
+=======
+        logger.info("Initializing a Wink device: \n{}", deviceConfig.asString());
+>>>>>>> Fixes
         registerToPubNub();
     }
 
@@ -99,10 +107,14 @@ public abstract class WinkHandler extends BaseThingHandler {
      * @param jsonConfigString the string containing the configuration of this thing as returned by the hub (in JSON).
      */
     protected void parseConfig(String jsonConfigString) {
+<<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
         logger.trace("Parsing a thing's config: " + jsonConfigString);
 >>>>>>> Project skeleton.
+=======
+        logger.trace("Parsing a thing's config: {}", jsonConfigString);
+>>>>>>> Fixes
         JsonParser parser = new JsonParser();
         deviceConfig.readConfigFromJson(parser.parse(jsonConfigString).getAsJsonObject());
     }
@@ -179,10 +191,14 @@ public abstract class WinkHandler extends BaseThingHandler {
 
         @Override
         public void parseRequestResult(JsonObject jsonResult) {
+<<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
             logger.trace("Parsing a ReadDeviceState request result: " + jsonResult);
 >>>>>>> Project skeleton.
+=======
+            logger.trace("Parsing a ReadDeviceState request result: {}", jsonResult);
+>>>>>>> Fixes
             // The response from the server is a JSON object containing the device information and state.
             handler.updateDeviceStateCallback(jsonResult.get("data").getAsJsonObject());
         }
@@ -192,14 +208,18 @@ public abstract class WinkHandler extends BaseThingHandler {
      * Query the {@link WinkHub2Handler} for this device's state.
      */
     protected void ReadDeviceState() {
+<<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
         logger.trace("Querying the device state for: \n" + deviceConfig.asString());
 >>>>>>> Project skeleton.
+=======
+        logger.trace("Querying the device state for: \n{}", deviceConfig.asString());
+>>>>>>> Fixes
         try {
             getHubHandler().sendRequestToServer(getDeviceRequestPath(), new ReadDeviceStateCallback(this));
         } catch (IOException e) {
-            logger.error("Error while querying the hub for " + getDeviceRequestPath(), e);
+            logger.error("Error while querying the hub for {}", getDeviceRequestPath(), e);
         }
     }
 
@@ -221,25 +241,33 @@ public abstract class WinkHandler extends BaseThingHandler {
 
         @Override
         public void parseRequestResult(JsonObject jsonResult) {
+<<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
             logger.trace("Parsing a SendCommandCallback request result: " + jsonResult);
 >>>>>>> Project skeleton.
+=======
+            logger.trace("Parsing a SendCommandCallback request result: {}", jsonResult);
+>>>>>>> Fixes
             handler.sendCommandCallback(jsonResult);
         }
     }
 
     public void sendCommand(String payLoad) {
+<<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
         logger.trace("Sending a command with the following payload: " + payLoad +
                      "\nto device: \n" + deviceConfig.asString());
 >>>>>>> Project skeleton.
+=======
+        logger.trace("Sending a command with the following payload: {}\nto device: \n", payLoad, deviceConfig.asString());
+>>>>>>> Fixes
         try {
             getHubHandler().sendRequestToServer(getDeviceRequestPath() + "/desired_state",
                     new SendCommandCallback(this), payLoad);
         } catch (IOException e) {
-            logger.error("Error while querying the hub for " + getDeviceRequestPath(), e);
+            logger.error("Error while querying the hub for {}", getDeviceRequestPath(), e);
         }
     }
 
@@ -248,10 +276,14 @@ public abstract class WinkHandler extends BaseThingHandler {
     /////////////////////////////////////////////////
 
     protected void registerToPubNub() {
+<<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
         logger.debug("Doing the PubNub registration for :\n" + deviceConfig.asString());
 >>>>>>> Project skeleton.
+=======
+        logger.debug("Doing the PubNub registration for :\n{}", deviceConfig.asString());
+>>>>>>> Fixes
         PNConfiguration pnConfiguration = new PNConfiguration();
         pnConfiguration.setSubscribeKey(this.deviceConfig.getPubnubSubscribeKey());
 
@@ -259,10 +291,14 @@ public abstract class WinkHandler extends BaseThingHandler {
         this.pubnub.addListener(new SubscribeCallback() {
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
+<<<<<<< 6896c1b5ebdafba80adb18a65e335753cd3668db
 <<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
 =======
                 logger.trace("Received a reply from PubNub: " + message.getMessage().getAsString());
 >>>>>>> Project skeleton.
+=======
+                logger.trace("Received a reply from PubNub: {}", message.getMessage().getAsString());
+>>>>>>> Fixes
                 JsonParser parser = new JsonParser();
                 JsonObject jsonMessage = parser.parse(message.getMessage().getAsString()).getAsJsonObject();
                 pubNubMessageCallback(jsonMessage);
@@ -278,7 +314,7 @@ public abstract class WinkHandler extends BaseThingHandler {
 =======
             public void status(PubNub arg0, PNStatus status) {
               if (status.isError()) {
-                logger.error("PubNub communication error: " + status.getStatusCode());
+                logger.error("PubNub communication error: {}", status.getStatusCode());
               } else {
                 logger.trace("PubNub status: no error.");
               }
