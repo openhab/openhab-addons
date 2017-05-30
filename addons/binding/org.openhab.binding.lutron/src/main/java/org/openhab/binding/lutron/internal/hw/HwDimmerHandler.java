@@ -11,11 +11,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HwDimmerHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(HwDimmerHandler.class);
+    // private Logger logger = LoggerFactory.getLogger(HwDimmerHandler.class);
 
     String address;
     Integer fadeTime = 1;

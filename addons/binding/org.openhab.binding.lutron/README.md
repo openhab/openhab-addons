@@ -113,14 +113,18 @@ This binding supports active and passive discovery.  It will detect dimmers as t
 
 The bridge requires the port location (e.g., /dev/ttyUSB1 or COM1) and the baud rate.  The default baud rate for HomeWorks processors is set to 9600.  
 
-``lutron:hwserialbridge:home [serialPort="/dev/ttyUSB1", baudRate="9600]``
+```
+lutron:hwserialbridge:home [serialPort="/dev/ttyUSB1", baudRate="9600]
+```
 
 Dimmers have one required parameter ``address`` that specifies the device address (e.g., [01:01:03:02:04]) and two optional parameters: ``fadeTime`` which sets the time it takes to set the light level when changed, and ``defaultLevel`` which sets the level to use for the dimmer when turning it on (with a switch rather than a slider).
 
-``lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel="1"] 
+``
+lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel="1"] 
+```
 
 ## Channels
-The HomeWorks dimmer has only a single channel representing the light level of the dimmer.
+
 
 # Lutron Grafik Eye 3x/4x binding via GRX-PRG or GRX-CI-PRG
 

@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.TooManyListenersException;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -37,7 +36,6 @@ import gnu.io.UnsupportedCommOperationException;
 public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
     private Logger logger = LoggerFactory.getLogger(HwSerialBridgeHandler.class);
 
-    private boolean connected = false;
     private String serialPortName = "";
     private int baudRate;
 
@@ -68,76 +66,51 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             logger.debug("   Serial Port: {},", serialPortName);
             logger.debug("   Baud:        {},", baudRate);
 
-            updateStatus(ThingStatus.OFFLINE);
-            openConnection();
+            scheduler.execute(() -> openConnection());
         }
     }
 
     private void openConnection() {
         try {
-            logger.debug("openConnection(): Connecting to Lutron HomeWorks");
+            logger.info("Connecting to Lutron HomeWorks Processor using {}.", serialPortName);
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
             serialPort = portIdentifier.open(this.getClass().getName(), 2000);
+
+            logger.debug("Connection established using {}.  Configuring IO parameters. ", serialPortName);
+
             int db = SerialPort.DATABITS_8, sb = SerialPort.STOPBITS_1, p = SerialPort.PARITY_NONE;
             serialPort.setSerialPortParams(baudRate, db, sb, p);
             serialPort.enableReceiveThreshold(1);
             serialPort.disableReceiveTimeout();
             serialOutput = new OutputStreamWriter(serialPort.getOutputStream(), "US-ASCII");
             serialInput = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
-            setSerialEventHandler(this);
-            setConnected(true);
 
+            serialPort.addEventListener(this);
+            serialPort.notifyOnDataAvailable(true);
+
+            logger.debug("Sending monitoring commands.");
             sendCommand("PROMPTOFF");
-            sendCommand("KPMOFF");
+            sendCommand("KBMOFF");
             sendCommand("KLMOFF");
             sendCommand("GSMOFF");
             sendCommand("DLMON"); // Turn on dimmer monitoring
 
+            logger.info("Setting status of {} to ONLINE", this.getThing().getBridgeUID().getAsString());
             updateStatus(ThingStatus.ONLINE);
         } catch (NoSuchPortException e) {
-            logger.error("openConnection(): No Such Port Exception: {}", e.getMessage());
-            setConnected(false);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid port: " + serialPortName);
         } catch (PortInUseException portInUseException) {
-            logger.error("openConnection(): Port in Use Exception: {}", portInUseException.getMessage());
-            setConnected(false);
-        } catch (UnsupportedCommOperationException e) {
-            logger.error("openConnection(): Unsupported Comm Operation Exception: {}", e.getMessage());
-            setConnected(false);
-        } catch (UnsupportedEncodingException e) {
-            logger.error("openConnection(): Unsupported Encoding Exception: {}", e.getMessage());
-            setConnected(false);
-        } catch (IOException ioException) {
-            logger.error("openConnection(): IO Exception: {}", ioException.getMessage());
-            setConnected(false);
-        }
-    }
-
-    /**
-     * Set the serial event handler.
-     *
-     * @param serialPortEventListenser
-     */
-    private void setSerialEventHandler(SerialPortEventListener serialPortEventListenser) {
-        try {
-            // Add the serial port event listener
-            serialPort.addEventListener(serialPortEventListenser);
-            serialPort.notifyOnDataAvailable(true);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + serialPortName);
+        } catch (UnsupportedCommOperationException | IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
         } catch (TooManyListenersException e) {
-            logger.error("setSerialEventHandler(): Too Many Listeners Exception: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error configuring serial port.");
         }
-    }
-
-    public boolean isConnected() {
-        return this.connected;
-    }
-
-    public void setConnected(boolean connected) {
-        this.connected = connected;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
+        logger.error("Unexpected command for {}: {} - {}", getThing().getBridgeUID().getAsString(), channelUID, command);
     }
 
     private void handleIncomingMessage(String line) {
@@ -145,7 +118,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             return;
         }
 
-        logger.info("Incoming message: " + line);
+        logger.info("{} received message from HomeWorks processor: {}", getThing().getBridgeUID().getAsString(), line);
         String[] data = line.replaceAll("\\s", "").toUpperCase().split(",");
         if ("DL".equals(data[0])) {
             try {
@@ -192,31 +165,31 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
                     }
                     handleIncomingMessage(messageLine);
                 }
-            } catch (Exception ioException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "IO Exception: " + ioException.getMessage());
-                logger.error("write(): {}", ioException.getMessage());
+            } catch (Exception e) {
+                logger.error("Error reading from serial port.", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading from port");
             }
         }
     }
 
     public void sendCommand(String command) {
         try {
-            logger.info("About to send command: " + command);
+            logger.info("HomeWorks bridge {} sending command: {}", getThing().getBridgeUID().getAsString(), command);
             serialOutput.write(command.toString() + "\r");
             serialOutput.flush();
-        } catch (IOException ioException) {
-            logger.error("write(): {}", ioException.getMessage());
-            setConnected(false);
-        } catch (Exception exception) {
-            logger.error("write(): Unable to write to serial port: {} ", exception.getMessage(), exception);
-            setConnected(false);
+        } catch (IOException e) {
+            logger.error("Error writing to serial port.", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error writing to port");
         }
     }
 
     @Override
     public void dispose() {
-        serialPort.close();
+        logger.info("HomeWorks bridge {} being disposed.", getThing().getBridgeUID().getAsString());
+        if (serialPort != null) {
+            serialPort.close();
+        }
+
         serialPort = null;
         serialInput = null;
         serialOutput = null;
@@ -225,6 +198,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             this.discReg.unregister();
             this.discReg = null;
         }
+        logger.debug("Finished disposing bridge {}.", getThing().getBridgeUID().getAsString());
     }
 
 }

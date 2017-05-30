@@ -9,7 +9,6 @@
 package org.openhab.binding.lutron.internal;
 
 import static org.openhab.binding.lutron.LutronBindingConstants.*;
-import static org.openhab.binding.lutron.internal.hw.HwConstants.*;
 
 import java.util.Set;
 
@@ -25,8 +24,11 @@ import org.openhab.binding.lutron.handler.OccupancySensorHandler;
 import org.openhab.binding.lutron.handler.SwitchHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
+import org.openhab.binding.lutron.internal.hw.HwConstants;
 import org.openhab.binding.lutron.internal.hw.HwDimmerHandler;
 import org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -37,17 +39,20 @@ import com.google.common.collect.ImmutableSet;
  * @author Allan Tong - Initial contribution
  */
 public class LutronHandlerFactory extends BaseThingHandlerFactory {
+    private Logger logger = LoggerFactory.getLogger(LutronHandlerFactory.class);
 
     // Used by LutronDeviceDiscoveryService to discover these types
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
             THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD);
 
     // Used by the HwDiscoveryService
-    public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_HWDIMMER);
+    public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet
+            .of(HwConstants.THING_TYPE_HWDIMMER);
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
-            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE, THING_TYPE_HWSERIALBRIDGE);
+            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE,
+            HwConstants.THING_TYPE_HWSERIALBRIDGE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -61,6 +66,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
+        logger.debug("Creating handler for {}", thingTypeUID.getAsString());
+
         if (thingTypeUID.equals(THING_TYPE_IPBRIDGE)) {
             return new IPBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
@@ -73,9 +80,9 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new KeypadHandler(thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
             return new PrgBridgeHandler((Bridge) thing);
-        } else if (thingTypeUID.equals(THING_TYPE_HWSERIALBRIDGE)) {
+        } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWSERIALBRIDGE)) {
             return new HwSerialBridgeHandler((Bridge) thing);
-        } else if (thingTypeUID.equals(THING_TYPE_HWDIMMER)) {
+        } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWDIMMER)) {
             return new HwDimmerHandler(thing);
         }
 

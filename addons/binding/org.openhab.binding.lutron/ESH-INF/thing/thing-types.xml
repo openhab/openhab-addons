@@ -417,8 +417,8 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>network_address</context>
-				<label>IT-100 Bridge Serial Port</label>
-				<description>The serial port name for the DSC IT-100. Valid values
+				<label>HomeWorks Bridge Serial Port</label>
+				<description>The serial port name for the HomeWorks processor. Valid values
                     are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
 			</parameter>
 
