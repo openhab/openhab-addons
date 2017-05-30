@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
@@ -60,28 +61,41 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
             return;
         }
 
-        if (ThingStatus.ONLINE != bridge.getStatus()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
-
         ThingHandler handler = bridge.getHandler();
         if (!(handler instanceof SleepIQCloudHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect bridge thing found");
             return;
         }
 
-        SleepIQCloudHandler cloudHandler = (SleepIQCloudHandler) handler;
-
         logger.debug("Reading SleepIQ bed binding configuration");
         bedId = getConfigAs(SleepIQBedConfiguration.class).bedId;
 
-        logger.debug("Updating SleepIQ bed properties for bed {}", bedId);
-        updateProperties(cloudHandler.updateProperties(cloudHandler.getBed(bedId), editProperties()));
-        updateStatus(ThingStatus.ONLINE);
-
         logger.debug("Registering SleepIQ bed status listener");
+        SleepIQCloudHandler cloudHandler = (SleepIQCloudHandler) handler;
         cloudHandler.registerBedStatusListener(this);
+
+        if (ThingStatus.ONLINE != bridge.getStatus()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            updateProperties();
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            updateProperties();
+        }
+    }
+
+    private void updateProperties() {
+        logger.debug("Updating SleepIQ bed properties for bed {}", bedId);
+
+        SleepIQCloudHandler cloudHandler = (SleepIQCloudHandler) getBridge().getHandler();
+        updateProperties(cloudHandler.updateProperties(cloudHandler.getBed(bedId), editProperties()));
     }
 
     @Override

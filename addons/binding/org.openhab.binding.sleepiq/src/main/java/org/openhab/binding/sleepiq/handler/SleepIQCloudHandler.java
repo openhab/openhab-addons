@@ -145,9 +145,17 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
      * Retrieve the latest status on all beds and update all registered listeners.
      */
     private void publishBedStatusUpdates() {
-        FamilyStatus status = cloud.getFamilyStatus();
-        for (BedStatus bedStatus : status.getBeds()) {
-            bedStatusListeners.stream().forEach(l -> l.onBedStateChanged(cloud, bedStatus));
+        try {
+            FamilyStatus status = cloud.getFamilyStatus();
+            updateStatus(ThingStatus.ONLINE);
+
+            for (BedStatus bedStatus : status.getBeds()) {
+                bedStatusListeners.stream().forEach(l -> l.onBedStateChanged(cloud, bedStatus));
+            }
+        } catch (Exception e) {
+            logger.debug("Unexpected error while communicating with SleepIQ cloud", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unable to connect to SleepIQ cloud: " + e.getMessage());
         }
     }
 
