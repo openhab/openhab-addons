@@ -81,8 +81,7 @@ public class KodiAudioSink implements AudioSink {
                 return;
             }
         } else {
-            logger.warn("Unsupported audio stream format!");
-            return;
+            throw new UnsupportedAudioFormatException("Kodi can only handle FixedLengthAudioStreams.", null);
         }
         handler.playURI(new StringType(url));
 
