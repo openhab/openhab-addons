@@ -11,8 +11,8 @@ package org.openhab.binding.rfxcom.handler;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
@@ -41,11 +41,9 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceControlMessag
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Commands;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubType;
-import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessageFactory;
 import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage;
-import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +107,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     }
 
     private TransmitQueue transmitQueue = new TransmitQueue();
-
 
     public RFXComBridgeHandler(Bridge br) {
         super(br);
@@ -224,7 +221,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             transmitQueue.enqueue(baseMsg);
         } catch (IOException e) {
             logger.error("I/O Error", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -259,12 +256,14 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                                         logger.warn("Failed to parse setMode data", ee);
                                     }
                                 } else {
-                                    RFXComInterfaceControlMessage modeMsg = new RFXComInterfaceControlMessage(msg.transceiverType, configuration);
+                                    RFXComInterfaceControlMessage modeMsg = new RFXComInterfaceControlMessage(
+                                            msg.transceiverType, configuration);
                                     setMode = modeMsg.decodeMessage();
                                 }
 
                                 if (setMode != null) {
-                                    logger.debug("Setting RFXCOM mode using: {}", DatatypeConverter.printHexBinary(setMode));
+                                    logger.debug("Setting RFXCOM mode using: {}",
+                                            DatatypeConverter.printHexBinary(setMode));
                                     connector.sendMessage(setMode);
                                 }
                             }
