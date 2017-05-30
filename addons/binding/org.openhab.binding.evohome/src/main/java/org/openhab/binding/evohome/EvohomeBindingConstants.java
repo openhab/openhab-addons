@@ -29,7 +29,6 @@ public class EvohomeBindingConstants {
     public static final ThingTypeUID THING_TYPE_EVOHOME_DISPLAY        = new ThingTypeUID(BINDING_ID, "display");
     public static final ThingTypeUID THING_TYPE_EVOHOME_LOCATION       = new ThingTypeUID(BINDING_ID, "location");
     public static final ThingTypeUID THING_TYPE_EVOHOME_HEATING_ZONE   = new ThingTypeUID(BINDING_ID, "heatingzone");
-    public static final ThingTypeUID THING_TYPE_EVOHOME_RADIATOR_VALVE = new ThingTypeUID(BINDING_ID, "radiatorValve");
 
     // List of all Channel ids
     public static final String TEMPERATURE_CHANNEL = "temperature";
@@ -38,17 +37,18 @@ public class EvohomeBindingConstants {
     public static final String SYSTEM_MODE_CHANNEL = "SystemMode";
 
     // List of Discovery properties
-    public static final String LOCATION_NAME         = "LOCATION_NAME";
-    public static final String LOCATION_ID           = "LOCATION_ID";
-    public static final String ZONE_ID               = "ZONE_ID";
-    public static final String ZONE_NAME             = "ZONE_NAME";
-    public static final String ZONE_TYPE             = "ZONE_TYPE";
-    public static final String ZONE_MODEL_TYPE       = "ZONE_MODEL_TYPE";
+    public static final String LOCATION_NAME   = "LOCATION_NAME";
+    public static final String LOCATION_ID     = "LOCATION_ID";
+    public static final String DEVICE_NAME     = "DEVICE_NAME";
+    public static final String DEVICE_ID       = "DEVICE_ID";
+    public static final String ZONE_ID         = "ZONE_ID";
+    public static final String ZONE_NAME       = "ZONE_NAME";
+    public static final String ZONE_TYPE       = "ZONE_TYPE";
+    public static final String ZONE_MODEL_TYPE = "ZONE_MODEL_TYPE";
 
     // List of all addressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
             THING_TYPE_EVOHOME_GATEWAY,
             THING_TYPE_EVOHOME_DISPLAY,
-            THING_TYPE_EVOHOME_HEATING_ZONE,
-            THING_TYPE_EVOHOME_RADIATOR_VALVE);
+            THING_TYPE_EVOHOME_HEATING_ZONE);
 }

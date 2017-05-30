@@ -15,7 +15,6 @@ Import-Package:
  org.eclipse.jetty.client.api,
  org.eclipse.jetty.client.util,
  org.eclipse.jetty.http,
- org.eclipse.jetty.util,
  org.eclipse.jetty.util.component,
  org.eclipse.jetty.util.ssl,
  org.eclipse.smarthome.config.core,

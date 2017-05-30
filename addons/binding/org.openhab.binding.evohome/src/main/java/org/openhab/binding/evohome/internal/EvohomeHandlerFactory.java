@@ -1,4 +1,5 @@
 /**
+
  * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
@@ -21,17 +22,8 @@ import org.openhab.binding.evohome.discovery.EvohomeDiscoveryService;
 import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
 import org.openhab.binding.evohome.handler.EvohomeHandler;
 import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
-import org.openhab.binding.evohome.handler.EvohomeTemperatureControlSystemHandler;
-import org.openhab.binding.evohome.handler.EvohomeGatewayHandler;
-import org.openhab.binding.evohome.handler.EvohomeHandler;
 import org.osgi.framework.ServiceRegistration;
 
-/**
- * The {@link EvohomeHandlerFactory} is responsible for creating things and thing
- * handlers.
- *
- * @author Jasper van Zuijlen  + Neil Renaud
- */
 public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
 
     private ServiceRegistration<?> discoveryServiceReg;
@@ -50,11 +42,11 @@ public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(evohomeGatewayHandler);
             return evohomeGatewayHandler;
         } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_DISPLAY)) {
-            return new EvohomeTemperatureControlSystemHandler(thing);
-        } else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_RADIATOR_VALVE)) {
+           return new EvohomeTemperatureControlSystemHandler(thing);
+        }  else if (thingTypeUID.equals(EvohomeBindingConstants.THING_TYPE_EVOHOME_HEATING_ZONE)) {
             return new EvohomeHandler(thing);
         }
-
+        
         return null;
     }
 

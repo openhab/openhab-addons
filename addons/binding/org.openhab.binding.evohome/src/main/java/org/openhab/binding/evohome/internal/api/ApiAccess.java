@@ -1,4 +1,4 @@
-package org.openhab.binding.evohome.internal.api.models.v2;
+package org.openhab.binding.evohome.internal.api;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,10 +6,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +20,12 @@ import com.google.gson.GsonBuilder;
 
 public class ApiAccess {
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
+    private final HttpClient httpClient;
+
+    // TODO remove static?
     private static Authentication authenticationData;
     private static String applicationId;
-    private final HttpClient httpClient;
-    
+
     public ApiAccess(HttpClient httpClient){
         this.httpClient = httpClient;
     }
@@ -36,12 +39,11 @@ public class ApiAccess {
     }
 
     @SuppressWarnings("unchecked")
-    public <TIn, TOut> TOut doRequest(
-            HttpMethod          method,
-            String              url,
-            Map<String, String> headers,
-            TIn                 requestContainer,
-            TOut                out) {
+    public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
+            String contentType, TOut out) {
+
+        logger.debug("Requesting: [{}]", url);
+
         try {
             Request request = httpClient.newRequest(url).method(method);
 
@@ -51,17 +53,21 @@ public class ApiAccess {
                 }
             }
 
-            if (requestContainer != null) {
-                Gson gson = new GsonBuilder().create();
-                String json = gson.toJson(requestContainer);
-                request.method(method).content(new StringContentProvider(json), "application/json");
+            if (requestData != null) {
+                request.content(new StringContentProvider(requestData), contentType);
             }
 
-            String reply = request.send().getContentAsString();
-            if (out != null) {
-                out = (TOut) new Gson().fromJson(reply, out.getClass());
-            }
+            ContentResponse response = request.send();
 
+            logger.debug("Response: {}\n{}\n{}", response.toString(), response.getHeaders().toString(),
+                    response.getContentAsString());
+
+            if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {
+                String reply = response.getContentAsString();
+                if (out != null) {
+                    out = (TOut) new Gson().fromJson(reply, out.getClass());
+                }
+            }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.error("Error in handling request", e);
         } catch (Exception e) {
@@ -71,19 +77,32 @@ public class ApiAccess {
         return out;
     }
 
-    public <TIn, TOut> TOut doAuthenticatedRequest(
-            HttpMethod          method,
-            String              url,
-            Map<String, String> headers,
-            TIn                 requestContainer,
-            TOut                out) {
+    @SuppressWarnings("unchecked")
+    public <TIn, TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, TIn requestContainer,
+            TOut out) {
+
+        logger.debug("JSON request");
+
+        String json = null;
+        if (requestContainer != null) {
+            Gson gson = new GsonBuilder().create();
+            json = gson.toJson(requestContainer);
+        }
+
+        return doRequest(method, url, headers, json, "application/json", out);
+    }
+
+    public <TIn, TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Map<String, String> headers,
+            TIn requestContainer, TOut out) {
+
+        logger.debug("AUTH request");
 
         if (authenticationData != null) {
             if (headers == null) {
-                headers = new HashMap<String,String>();
+                headers = new HashMap<String, String>();
             }
 
-            headers.put("Authorization", "bearer " + authenticationData.AccessToken);
+            headers.put("Authorization", "bearer " + authenticationData.accessToken);
             headers.put("applicationId", applicationId);
             headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
         }

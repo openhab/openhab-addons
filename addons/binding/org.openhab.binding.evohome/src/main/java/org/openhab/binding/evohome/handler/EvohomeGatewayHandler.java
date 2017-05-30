@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.evohome.handler;
 
-import static org.eclipse.smarthome.core.thing.ThingStatus.*;
-
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.evohome.configuration.EvohomeGatewayConfiguration;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientV2;
@@ -34,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jasper van Zuijlen - Initial contribution
  */
+
 public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeGatewayHandler.class);
@@ -48,7 +48,7 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Evohome Gateway handler.");
+        logger.info("Initializing Evohome Gateway handler.");
 
         configuration = getConfigAs(EvohomeGatewayConfiguration.class);
         logger.debug("refresh interval {}", configuration.refreshInterval);
@@ -56,13 +56,20 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         if (checkConfig()) {
             disposeApiClient();
             apiClient = new EvohomeApiClientV2(configuration);
-            if (apiClient.login()) {
-                //TODO refresh token task?
-                startRefreshTask();
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+
+            // Initialization can take a while, so kick if off on a separate thread
+            scheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    if (apiClient.login()) {
+                        startRefreshTask();
+                        updateStatus(ThingStatus.ONLINE);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE);
+                    }
+                }
+            }, 0, TimeUnit.SECONDS);
+
         }
     }
 
@@ -78,7 +85,6 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         }
         apiClient = null;
     }
-
     private void disposeRefreshTask() {
         if (refreshTask != null) {
             refreshTask.cancel(true);
@@ -118,23 +124,22 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
         }, 50, configuration.refreshInterval, TimeUnit.MILLISECONDS);
     }
 
-
     private void update() {
         if (getThing().getThings().isEmpty()) {
             return;
         }
-        logger.debug("updateChannels");
+
         try {
             try {
                 apiClient.update();
             } catch (Exception e) {
-                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
 
             // prevent spamming the log file
-            if (!ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ONLINE);
+            if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.ONLINE);
             }
 
             for (Thing handler : getThing().getThings()) {
@@ -155,17 +160,9 @@ public class EvohomeGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        //
-        // if (channelUID.getId().equals(CHANNEL_1)) {
-        // int i = 5;
-        //
-        // i++;
-        // // TODO: handle command
-        //
-        // // Note: if communication with thing fails for some reason,
-        // // indicate that by setting the status with detail information
-        // // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // // "Could not control device at IP address x.x.x.x");
-        // }
+
+        if (command == RefreshType.REFRESH) {
+//            update();
+        }
     }
 }

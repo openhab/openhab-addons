@@ -1,7 +1,5 @@
 package org.openhab.binding.evohome.internal.api.models.v1;
 
-import org.openhab.binding.evohome.internal.api.models.v1.HeatSetPoint;
-
 public class ChangeableValues {
 
     private String mode;

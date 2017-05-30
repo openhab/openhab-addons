@@ -7,8 +7,8 @@ import com.google.gson.annotations.SerializedName;
 public class Location {
 
     @SerializedName("locationInfo")
-    public LocationInfo LocationInfo;
+    public LocationInfo locationInfo;
 
     @SerializedName("gateways")
-    public List<Gateway> Gateways;
+    public List<Gateway> gateways;
 }

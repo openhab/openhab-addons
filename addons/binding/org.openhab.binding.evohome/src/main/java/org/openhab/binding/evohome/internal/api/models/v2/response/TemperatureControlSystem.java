@@ -7,15 +7,15 @@ import com.google.gson.annotations.SerializedName;
 public class TemperatureControlSystem {
 
     @SerializedName("systemId")
-    public int SystemId;
+    public int systemId;
 
     @SerializedName("modelType")
-    public String ModelType;
+    public String modelType;
 
     @SerializedName("zones")
-    public List<Zone> Zones;
+    public List<Zone> zones;
 
     @SerializedName("allowedSystemModes")
-    public List<Mode> AllowedSystemModes;
+    public List<Mode> allowedSystemModes;
 
 }

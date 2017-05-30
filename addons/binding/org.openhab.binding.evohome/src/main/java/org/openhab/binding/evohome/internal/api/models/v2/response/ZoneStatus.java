@@ -5,16 +5,16 @@ import com.google.gson.annotations.SerializedName;
 public class ZoneStatus {
 
     @SerializedName("zoneId")
-    public int ZoneId;
+    public int zoneId;
 
     @SerializedName("name")
-    public String Name;
+    public String name;
 
     @SerializedName("temperatureStatus")
-    public TemperatureStatus Temperature;
+    public TemperatureStatus temperature;
 
     @SerializedName("heatSetpointStatus")
-    public HeatSetpointStatus HeatSetpoint;
+    public HeatSetpointStatus heatSetpoint;
 
   //"activeFaults": [],
 

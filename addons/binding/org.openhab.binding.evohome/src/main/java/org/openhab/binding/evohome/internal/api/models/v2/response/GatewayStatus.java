@@ -7,10 +7,10 @@ import com.google.gson.annotations.SerializedName;
 public class GatewayStatus {
 
     @SerializedName("gatewayId")
-    public int GatewayId;
+    public int gatewayId;
 
     @SerializedName("temperatureControlSystems")
-    public List<TemperatureControlSystemStatus> TemperatureControlSystems;
+    public List<TemperatureControlSystemStatus> temperatureControlSystems;
 
     //"activeFaults": [],
 

@@ -3,16 +3,17 @@ package org.openhab.binding.evohome.internal.api.models.v2.response;
 import com.google.gson.annotations.SerializedName;
 
 public class LocationOwner {
+
     @SerializedName("userId")
-    public int UserId;
+    public int userId;
 
     @SerializedName("username")
-    public String Username;
+    public String username;
 
     @SerializedName("firstname")
-    public String FirstName;
+    public String firstName;
 
     @SerializedName("lastname")
-    public String LastName;
+    public String lastName;
 
 }

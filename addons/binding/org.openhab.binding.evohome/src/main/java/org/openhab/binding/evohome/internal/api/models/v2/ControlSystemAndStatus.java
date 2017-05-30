@@ -4,6 +4,6 @@ import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureCo
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystemStatus;
 
 public class ControlSystemAndStatus {
-    public TemperatureControlSystemStatus ControlSystemStatus;
-    public TemperatureControlSystem       ControlSystem;
+    public TemperatureControlSystemStatus controlSystemStatus;
+    public TemperatureControlSystem       controlSystem;
 }

@@ -1,5 +1,4 @@
 package org.openhab.binding.evohome.handler;
-
 import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -20,8 +19,8 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
         super(thing);
 
         Map<String, String> props = thing.getProperties();
-        controlSystemId   = Integer.parseInt(props.get(EvohomeBindingConstants.LOCATION_ID));
-        controlSystemName = props.get(EvohomeBindingConstants.LOCATION_NAME);
+        controlSystemId   = Integer.parseInt(props.get(EvohomeBindingConstants.DEVICE_ID));
+        controlSystemName = props.get(EvohomeBindingConstants.DEVICE_NAME);
     }
 
     @Override

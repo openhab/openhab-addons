@@ -3,34 +3,35 @@ package org.openhab.binding.evohome.internal.api.models.v2.response;
 import com.google.gson.annotations.SerializedName;
 
 public class LocationInfo {
+
     @SerializedName("locationId")
-    public int LocationId;
+    public int locationId;
 
     @SerializedName("name")
-    public String Name;
+    public String name;
 
     @SerializedName("streetAddress")
-    public String StreetAddress;
+    public String streetAddress;
 
     @SerializedName("city")
-    public String City;
+    public String city;
 
     @SerializedName("country")
-    public String Country;
+    public String country;
 
     @SerializedName("postcode")
-    public String Postcode;
+    public String postcode;
 
     @SerializedName("locationType")
-    public String LocationType;
+    public String locationType;
 
     @SerializedName("useDaylightSaveSwitching")
-    public boolean UseDaylightSaveSwitching;
+    public boolean useDaylightSaveSwitching;
 
     @SerializedName("timeZone")
-    public TimeZone TimeZone;
+    public TimeZone timeZone;
 
     @SerializedName("locationOwner")
-    public LocationOwner LocationOwner;
+    public LocationOwner locationOwner;
 
 }

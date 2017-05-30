@@ -90,9 +90,6 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
         return out;
     }
 
-    /* (non-Javadoc)
-     * @see org.openhab.binding.evohome.internal.api.EvohomeApiClient#login()
-     */
     @Override
     public boolean login() {
         logger.debug("Calling Evohome login");
@@ -104,17 +101,11 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
         return userInfo != null;
     }
 
-    /* (non-Javadoc)
-     * @see org.openhab.binding.evohome.internal.api.EvohomeApiClient#logout()
-     */
     @Override
     public void logout() {
         userInfo = null;
     }
 
-    /* (non-Javadoc)
-     * @see org.openhab.binding.evohome.internal.api.EvohomeApiClient#getData()
-     */
     @Override
     public DataModelResponse[] getData() {
         logger.debug("Calling Evohome getData()");
@@ -164,6 +155,6 @@ public class EvohomeApiClientV1 implements EvohomeApiClient {
     @Override
     public void update() {
         // TODO Auto-generated method stub
-
     }
+
 }

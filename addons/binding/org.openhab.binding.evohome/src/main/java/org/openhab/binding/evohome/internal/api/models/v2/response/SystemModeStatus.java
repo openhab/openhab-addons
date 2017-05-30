@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 public class SystemModeStatus {
 
     @SerializedName("mode")
-    public String Mode;
+    public String mode;
 
     @SerializedName("isPermanent")
-    public boolean IsPermanent;
+    public boolean isPermanent;
 
 }

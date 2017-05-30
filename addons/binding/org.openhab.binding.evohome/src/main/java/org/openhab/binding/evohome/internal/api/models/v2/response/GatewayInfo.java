@@ -5,14 +5,14 @@ import com.google.gson.annotations.SerializedName;
 public class GatewayInfo {
 
     @SerializedName("gatewayId")
-    public int GatewayId;
+    public int gatewayId;
 
     @SerializedName("mac")
-    public String MacAddress;
+    public String macAddress;
 
     @SerializedName("crc")
-    public String Crc;
+    public String crc;
 
     @SerializedName("isWiFi")
-    public boolean IsWiFi;
+    public boolean isWifi;
 }
