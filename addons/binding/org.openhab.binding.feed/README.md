@@ -32,16 +32,16 @@ No binding configuration required.
 
 The binding supports following channels
 
-| Channel Type ID | Item Type    | Description  | 
-|------------------|------------------------|--------------|----------------- |------------- |
-| latest-title | String       | Contains the title of the last feed entry. |
-| latest-description | String       | Contains the description of last feed entry. |
-| latest-date | DateTime       | Contains the published date of the last feed entry. |
-| author | String       | The name of the feed author, if author is present |
-| title | String       | The title of the feed |
-| description | String       | Description of the feed |
-| last-update | DateTime       | The last update date of the feed |
-| number-of-entries | Number       | Number of entries in the feed |
+| Channel Type ID    | Item Type | Description                                         |
+|--------------------|-----------|-----------------------------------------------------|
+| latest-title       | String    | Contains the title of the last feed entry.          |
+| latest-description | String    | Contains the description of last feed entry.        |
+| latest-date        | DateTime  | Contains the published date of the last feed entry. |
+| author             | String    | The name of the feed author, if author is present   |
+| title              | String    | The title of the feed                               |
+| description        | String    | Description of the feed                             |
+| last-update        | DateTime  | The last update date of the feed                    |
+| number-of-entries  | Number    | Number of entries in the feed                       |
 
 ## Full Example
 
