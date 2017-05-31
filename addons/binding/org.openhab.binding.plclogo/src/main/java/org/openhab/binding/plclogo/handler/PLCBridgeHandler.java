@@ -281,7 +281,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void initialize() {
+    public void initialize() {
         logger.debug("Initialize LOGO! bridge handler.");
 
         final Thing thing = getThing();
@@ -306,7 +306,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             final String host = config.getAddress();
             if (readerJob == null) {
                 final Integer interval = config.getRefreshRate();
-                logger.info("Creating new reader job for {} with interval {} ms.", host, interval.toString());
+                logger.info("Creating new reader job for {} with interval {} ms.", host, interval);
                 readerJob = scheduler.scheduleWithFixedDelay(dataReader, 100, interval, TimeUnit.MILLISECONDS);
             }
             if (rtcJob == null) {
@@ -326,7 +326,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void dispose() {
+    public void dispose() {
         logger.debug("Dispose LOGO! bridge handler.");
         super.dispose();
 

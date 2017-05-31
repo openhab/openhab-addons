@@ -11,6 +11,7 @@ package org.openhab.binding.plclogo.handler;
 import static org.openhab.binding.plclogo.PLCLogoBindingConstants.LOGO_MEMORY_BLOCK;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -60,18 +61,21 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initialize LOGO! common block handler.");
 
+        final Bridge bridge = getBridge();
+        Objects.requireNonNull(bridge, "PLCBlockHandler: Bridge may not be null.");
+
         String message = "";
         boolean success = false;
-        if ((getBridge() != null) && (getBlockName() != null)) {
+        if (getBlockName() != null) {
             final Map<?, Integer> block = LOGO_MEMORY_BLOCK.get(getLogoFamily());
             if ((0 <= getAddress()) && (getAddress() <= block.get("SIZE"))) {
                 success = true;
                 super.initialize();
             } else {
-                message = "Can not initialize LOGO! block. Please check blocks.";
+                message = "Can not initialize LOGO! block " + getBlockName() + ".";
             }
         } else {
-            message = "Can not initialize LOGO! block. Please check bridge/blocks.";
+            message = "Can not initialize LOGO! block. Please check blocks.";
         }
 
         if (!success) {
@@ -145,11 +149,12 @@ public abstract class PLCBlockHandler extends BaseThingHandler {
      */
     public String getLogoFamily() {
         final Bridge bridge = getBridge();
-        if (bridge != null) {
-            final PLCBridgeHandler handler = (PLCBridgeHandler) bridge.getHandler();
-            return handler.getLogoFamily();
-        }
-        return null;
+        Objects.requireNonNull(bridge, "PLCBlockHandler: Bridge may not be null.");
+
+        final PLCBridgeHandler handler = (PLCBridgeHandler) bridge.getHandler();
+        Objects.requireNonNull(handler, "PLCBlockHandler: Handler may not be null.");
+
+        return handler.getLogoFamily();
     }
 
     /**

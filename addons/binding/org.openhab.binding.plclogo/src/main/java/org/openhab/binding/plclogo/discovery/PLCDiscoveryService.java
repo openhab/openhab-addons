@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.plclogo.discovery;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.PLCLogoBindingConstants.THING_TYPE_DEVICE;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -47,6 +47,9 @@ import org.slf4j.LoggerFactory;
 public class PLCDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(PLCDiscoveryService.class);
+
+    // Bridge config properties
+    private static final String LOGO_HOST = "address";
 
     private static final int DISCOVERY_TIMEOUT = 30;
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_DEVICE);

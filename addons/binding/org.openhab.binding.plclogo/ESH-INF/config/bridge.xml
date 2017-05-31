@@ -33,7 +33,7 @@
 		</parameter>
 		<parameter name="refresh" type="integer" min="100" step="50">
 			<label>Refresh interval</label>
-			<description>Milliseconds between reread of data from PLC.</description>
+			<description>Milliseconds between reread data from PLC.</description>
 			<required>true</required>
 			<default>100</default>
 		</parameter>

@@ -64,7 +64,7 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
      * {@inheritDoc}
      */
     @Override
-    public synchronized void initialize() {
+    public void initialize() {
         final Thing thing = getThing();
         Objects.requireNonNull(thing, "PLCAnalogBlockHandler: Thing may not be null.");
 
@@ -74,44 +74,50 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
         synchronized (config) {
             config = getConfigAs(PLCLogoAnalogConfiguration.class);
         }
-        logger.debug("Initialize LOGO! {} analog handler.", config.getBlockName());
 
         final String name = config.getBlockName();
-        if (config.isBlockValid() && (bridge != null)) {
-            ThingBuilder tBuilder = editThing();
+        logger.debug("Initialize LOGO! {} analog handler.", name);
 
-            String text = config.isInputBlock() ? INPUT_CHANNEL : OUTPUT_CHANNEL;
-            text = text.substring(0, 1).toUpperCase() + text.substring(1);
-            tBuilder = tBuilder.withLabel(bridge.getLabel() + ": " + text + " " + name);
+        scheduler.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (config.isBlockValid()) {
+                    ThingBuilder tBuilder = editThing();
 
-            final Channel channel = thing.getChannel(ANALOG_CHANNEL_ID);
-            if (channel != null) {
-                tBuilder.withoutChannel(channel.getUID());
+                    String text = config.isInputBlock() ? INPUT_CHANNEL : OUTPUT_CHANNEL;
+                    text = text.substring(0, 1).toUpperCase() + text.substring(1);
+                    tBuilder = tBuilder.withLabel(bridge.getLabel() + ": " + text + " " + name);
+
+                    final Channel channel = thing.getChannel(ANALOG_CHANNEL_ID);
+                    if (channel != null) {
+                        tBuilder.withoutChannel(channel.getUID());
+                    }
+
+                    final String type = config.getItemType();
+                    final ChannelUID uid = new ChannelUID(thing.getUID(), ANALOG_CHANNEL_ID);
+                    ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
+                    cBuilder = cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
+                    cBuilder = cBuilder.withLabel(name);
+                    cBuilder = cBuilder.withDescription("Analog " + text);
+                    tBuilder = tBuilder.withChannel(cBuilder.build());
+
+                    oldValue = Long.MAX_VALUE;
+                    updateThing(tBuilder.build());
+                    PLCAnalogBlockHandler.super.initialize();
+                } else {
+                    final String message = "Can not initialize LOGO! block " + name + ".";
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+                    logger.error("Can not initialize thing {} for LOGO! block {}.", thing.getUID(), name);
+                }
             }
-
-            final String type = config.getItemType();
-            final ChannelUID uid = new ChannelUID(thing.getUID(), ANALOG_CHANNEL_ID);
-            ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
-            cBuilder = cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
-            cBuilder = cBuilder.withLabel(name);
-            cBuilder = cBuilder.withDescription("Analog " + text);
-            tBuilder = tBuilder.withChannel(cBuilder.build());
-
-            oldValue = Long.MAX_VALUE;
-            updateThing(tBuilder.build());
-            super.initialize();
-        } else {
-            final String message = "Can not initialize LOGO! block. Please check blocks.";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
-            logger.error("Can not initialize thing {} for LOGO! block {}.", thing.getUID(), name);
-        }
+        });
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void dispose() {
+    public void dispose() {
         logger.debug("Dispose LOGO! {} analog handler.", config.getBlockName());
         super.dispose();
 
@@ -123,6 +129,12 @@ public class PLCAnalogBlockHandler extends PLCBlockHandler {
      */
     @Override
     public void setData(final byte[] data) {
+        final Thing thing = getThing();
+        Objects.requireNonNull(thing, "PLCAnalogBlockHandler: Thing may not be null.");
+        if (ThingStatus.ONLINE != thing.getStatus()) {
+            return;
+        }
+
         if ((data.length == 2) || (data.length == 4)) {
             final Channel channel = thing.getChannel(ANALOG_CHANNEL_ID);
             final long value = data.length == 2 ? S7.GetShortAt(data, 0) : S7.GetDWordAt(data, 0);

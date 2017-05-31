@@ -23,6 +23,8 @@ public class PLCLogoClient extends S7Client {
 
     private final Logger logger = LoggerFactory.getLogger(PLCLogoClient.class);
 
+    private String address;
+
     private static final int MAX_RETRY_NUMBER = 10;
 
     /**
@@ -54,6 +56,19 @@ public class PLCLogoClient extends S7Client {
     }
 
     /**
+     * Set connection parameters
+     *
+     * @param Address IP address of PLC
+     * @param LocalTSAP Local TSAP for the connection
+     * @param RemoteTSAP Remote TSAP for the connection
+     */
+    @Override
+    public void SetConnectionParams(String Address, int LocalTSAP, int RemoteTSAP) {
+        address = Address;
+        super.SetConnectionParams(Address, LocalTSAP, RemoteTSAP);
+    }
+
+    /**
      * Disconnects a client from a PLC
      */
     @Override
@@ -75,7 +90,7 @@ public class PLCLogoClient extends S7Client {
     @Override
     public synchronized int ReadArea(int Area, int DBNumber, int Start, int Amount, int WordLength, byte[] Data) {
         if (LastError != 0) {
-            logger.debug("Reconnect during read: {}.", ErrorText(LastError));
+            logger.debug("Reconnect during read from {}: {}", address, ErrorText(LastError));
             Disconnect();
         }
         if (!Connected) {
@@ -98,12 +113,12 @@ public class PLCLogoClient extends S7Client {
             }
 
             if (retry == MAX_RETRY_NUMBER) {
-                logger.debug("Giving up to read after {} retries.", MAX_RETRY_NUMBER);
+                logger.warn("Giving up reading from {} after {} retries.", address, MAX_RETRY_NUMBER);
                 break;
             }
 
             if (result != 0) {
-                logger.debug("Reconnect during read: {}.", ErrorText(result));
+                logger.warn("Reconnect during read from {}: {}", address, ErrorText(result));
                 retry = retry + 1;
                 Disconnect();
                 Connect();
@@ -141,7 +156,7 @@ public class PLCLogoClient extends S7Client {
     @Override
     public synchronized int WriteArea(int Area, int DBNumber, int Start, int Amount, int WordLength, byte[] Data) {
         if (LastError != 0) {
-            logger.debug("Reconnect during write: {}.", ErrorText(LastError));
+            logger.debug("Reconnect during write to {}: {}", address, ErrorText(LastError));
             Disconnect();
         }
         if (!Connected) {
@@ -154,12 +169,12 @@ public class PLCLogoClient extends S7Client {
             result = super.WriteArea(Area, DBNumber, Start, Amount, WordLength, Data);
 
             if (retry == MAX_RETRY_NUMBER) {
-                logger.debug("Giving up to write after {} retries.", MAX_RETRY_NUMBER);
+                logger.warn("Giving up writing to {} after {} retries.", address, MAX_RETRY_NUMBER);
                 break;
             }
 
             if (result != 0) {
-                logger.debug("Reconnect during write: {}.", ErrorText(result));
+                logger.warn("Reconnect during write to {}: {}", address, ErrorText(result));
                 retry = retry + 1;
                 Disconnect();
                 Connect();

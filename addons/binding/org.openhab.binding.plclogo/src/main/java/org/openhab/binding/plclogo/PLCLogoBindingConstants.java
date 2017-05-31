@@ -29,9 +29,6 @@ public class PLCLogoBindingConstants {
     public static final ThingTypeUID THING_TYPE_ANALOG = new ThingTypeUID(BINDING_ID, "analog");
     public static final ThingTypeUID THING_TYPE_DIGITAL = new ThingTypeUID(BINDING_ID, "digital");
 
-    // Bridge config properties
-    public static final String LOGO_HOST = "address";
-
     // List of all Channel Type UIDs
     public static final String ANALOG_CHANNEL_ID = "value";
     public static final String DIGITAL_CHANNEL_ID = "state";
