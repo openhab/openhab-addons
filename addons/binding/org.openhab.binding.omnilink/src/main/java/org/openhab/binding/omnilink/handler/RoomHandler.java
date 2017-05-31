@@ -88,6 +88,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
                     case 3:
                     case 4:
                     case 5:
+                        cmd = OmniLinkCmd.CMD_UNIT_UPB_LINK_ON.getNumber();
                         // little magic with link #. 0 and 1 are off, on. So A ends up being 2, but omnilink expects
                         // offset of 0. Thats why subtracting the 2
                         param2 = ((roomNum * 6) - 3) + cmdValue - 2;
@@ -96,6 +97,8 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
                 }
                 if (cmd > -1 && param2 > -1) {
                     getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, param2);
+                } else {
+                    logger.debug("Not sending message for scene, cmd: {}, param2: {}", cmd, param2);
                 }
             }
         }
