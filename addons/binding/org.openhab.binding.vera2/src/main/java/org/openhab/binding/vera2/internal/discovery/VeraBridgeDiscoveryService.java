@@ -121,8 +121,8 @@ public class VeraBridgeDiscoveryService extends AbstractDiscoveryService impleme
                         logger.debug("Thing or inbox entry already exists for UID={}, IP={}", thingUID, ipAddress);
                     }
                 }
-            } catch (Exception e) {
-                logger.warn("Discovery resulted in an unexpected exception", e);
+            } catch (IOException e) {
+                logger.warn("Discovery resulted in an unexpected exception: {}", e);
             }
         }
     }
