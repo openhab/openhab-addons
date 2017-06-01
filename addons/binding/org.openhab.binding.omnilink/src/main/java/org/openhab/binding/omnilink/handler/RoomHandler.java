@@ -25,7 +25,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand, channel id: {}, command: {}", channelUID, command);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int roomNum = Integer.parseInt(channelParts[2]);
+        int unitNum = Integer.parseInt(channelParts[2]);
 
         if (RefreshType.REFRESH.equals(command)) {
             logger.debug("Must implement refresh: {} ", channelUID);
@@ -52,6 +52,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
                     logger.error("Unexpected scene: {}", channelUID);
             }
             if (linkNum > -1) {
+                int roomNum = (unitNum + 7) / 8;
                 int param2 = ((roomNum * 6) - 3) + linkNum;
                 getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_UPB_LINK_ON.getNumber(), param1,
                         param2);
@@ -63,13 +64,13 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
             } else {
                 cmd = OmniLinkCmd.CMD_UNIT_OFF.getNumber();
             }
-            getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, roomNum);
+            getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, unitNum);
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_ON.equals(channelParts[3]) && OnOffType.ON.equals(command)) {
             int cmd;
             cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
-            getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, roomNum);
+            getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, unitNum);
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_OFF.equals(channelParts[3]) && OnOffType.ON.equals(command)) {
-            getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_OFF.getNumber(), 0, roomNum);
+            getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_OFF.getNumber(), 0, unitNum);
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_STATE.equals(channelParts[3])) {
             int cmd = -1;
             int param2 = -1;
@@ -78,11 +79,11 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
                 switch (cmdValue) {
                     case 0:
                         cmd = OmniLinkCmd.CMD_UNIT_OFF.getNumber();
-                        param2 = roomNum;
+                        param2 = unitNum;
                         break;
                     case 1:
                         cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
-                        param2 = roomNum;
+                        param2 = unitNum;
                         break;
                     case 2:
                     case 3:
@@ -91,6 +92,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
                         cmd = OmniLinkCmd.CMD_UNIT_UPB_LINK_ON.getNumber();
                         // little magic with link #. 0 and 1 are off, on. So A ends up being 2, but omnilink expects
                         // offset of 0. Thats why subtracting the 2
+                        int roomNum = (unitNum + 7) / 8;
                         param2 = ((roomNum * 6) - 3) + cmdValue - 2;
                         break;
 
