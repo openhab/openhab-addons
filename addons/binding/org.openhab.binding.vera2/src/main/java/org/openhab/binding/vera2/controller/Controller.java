@@ -158,7 +158,7 @@ public class Controller {
             denormalizeSdata(data);
             sdata = data;
         } catch (IOException e) {
-            logger.warn("Failed to update sdata: {}", e.getMessage());
+            logger.warn("Failed to update sdata: {}", e);
         }
     }
 

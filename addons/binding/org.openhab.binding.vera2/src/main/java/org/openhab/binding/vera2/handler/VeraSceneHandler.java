@@ -89,7 +89,7 @@ public class VeraSceneHandler extends BaseThingHandler {
                             "Controller is not online");
                 }
             } catch (Exception e) {
-                logger.error("{}", e.getMessage());
+                logger.error("Error occurred when adding scene as channel: {}", e);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                             "Error occurred when adding scene as channel: " + e.getMessage());

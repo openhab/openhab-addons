@@ -61,7 +61,7 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
                     logger.warn("Can't connect to Vera controller");
                 }
             } catch (Exception e) {
-                logger.error("Error occurred when initialize bridge: {}", e.getMessage());
+                logger.error("Error occurred when initialize bridge: {}", e);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                             "Error occurred when initialize bridge: " + e.getMessage());

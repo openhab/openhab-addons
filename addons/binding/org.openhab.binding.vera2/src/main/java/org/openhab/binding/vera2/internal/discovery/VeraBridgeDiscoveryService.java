@@ -77,7 +77,7 @@ public class VeraBridgeDiscoveryService extends AbstractDiscoveryService impleme
                 }
             }
         } catch (SocketException e) {
-            logger.warn("Error occurred while searching Vera controller ({})", e.getMessage());
+            logger.warn("Error occurred while searching Vera controller: {}", e);
         }
     }
 

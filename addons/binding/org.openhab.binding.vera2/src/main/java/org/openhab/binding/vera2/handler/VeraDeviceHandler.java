@@ -93,7 +93,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
                             "Controller is not online");
                 }
             } catch (Exception e) {
-                logger.error("Error occurred when adding device as channel: {}", e.getMessage());
+                logger.error("Error occurred when adding device as channel: {}", e);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                             "Error occurred when adding device as channel: " + e.getMessage());
