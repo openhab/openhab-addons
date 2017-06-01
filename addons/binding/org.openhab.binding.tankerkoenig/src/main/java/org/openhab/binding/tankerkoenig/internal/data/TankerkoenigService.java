@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,8 +17,6 @@ import java.net.URLConnection;
 import org.apache.commons.io.IOUtils;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigListResultDeserializer;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,35 +35,32 @@ public class TankerkoenigService {
             new CustomTankerkoenigListResultDeserializer());;
     private static final Gson GSON = GSON_BUILDER.create();
 
-    public TankerkoenigListResult getTankstellenListData(String apikey, String locationIDs) {
-        return this.getTankerkoenigListResult(apikey, locationIDs);
+    public TankerkoenigListResult getTankstellenListData(String apikey, String locationIDs, String userAgent) {
+        return this.getTankerkoenigListResult(apikey, locationIDs, userAgent);
     }
 
-    private String getResponseString(String apikey, String locationIDs) throws IOException {
+    private String getResponseString(String apikey, String locationIDs, String userAgent) throws IOException {
 
         String urlbase = "https://creativecommons.tankerkoenig.de/json/prices.php?";
         String urlcomplete = urlbase + "ids=" + locationIDs + "&apikey=" + apikey;
         try {
-            String userAgent = "openHAB, Tankerkoenig-Binding Version ";
-            Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
-            userAgent = userAgent + version.toString();
             URL url = new URL(urlcomplete);
             URLConnection connection = url.openConnection();
             connection.setRequestProperty("User-Agent", userAgent);
             return IOUtils.toString(connection.getInputStream());
         } catch (MalformedURLException e) {
-            logger.error("Error in getResponseString: {}", e.toString());
+            logger.error("Error in getResponseString: ", e);
             return null;
         }
     }
 
-    private TankerkoenigListResult getTankerkoenigListResult(String apikey, String locationIDs) {
+    private TankerkoenigListResult getTankerkoenigListResult(String apikey, String locationIDs, String userAgent) {
         String jsonData = "";
         try {
-            jsonData = getResponseString(apikey, locationIDs);
+            jsonData = getResponseString(apikey, locationIDs, userAgent);
             return GSON.fromJson(jsonData, TankerkoenigListResult.class);
         } catch (IOException e) {
-            logger.error("Error in getTankerkoenigListResult: {}", e);
+            logger.error("Error in getTankerkoenigListResult: ", e);
             return TankerkoenigListResult.emptyResult();
         }
     }

@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>Tankerkoenig Binding</name>
-    <description>The Tankerkoenig Binding allows to poll fuel prices of german gas stations by using the Tankerkoenig.de API.</description>
-    <author>Dennis Dollinger</author>
+    <description>The Tankerkoenig Binding allows to poll fuel prices of German gas stations by using the Tankerkoenig.de API.</description>
+    <author>Dennis Dollinger / Jürgen Baginski</author>
 
 </binding:binding>

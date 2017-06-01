@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,9 +40,10 @@ public class TankerkoenigHandler extends BaseThingHandler {
 
     private String apiKey;
     private boolean setupMode;
-    private boolean use_OpeningTime;
+    private boolean useOpeningTime;
     private String locationID;
     private OpeningTimes openingTimes;
+    private String userAgent;
 
     private ScheduledFuture<?> pollingJob;
 
@@ -68,6 +69,7 @@ public class TankerkoenigHandler extends BaseThingHandler {
             return;
         }
         BridgeHandler handler = (BridgeHandler) b.getHandler();
+        userAgent = handler.getUserAgent();
         setApiKey(handler.getApiKey());
         setSetupMode(handler.isSetupMode());
         setUseOpeningTime(handler.isUseOpeningTime());
@@ -138,7 +140,7 @@ public class TankerkoenigHandler extends BaseThingHandler {
     public void updateDetailData() {
         logger.debug("Running UpdateTankstellenDetails");
         TankerkoenigDetailService service = new TankerkoenigDetailService();
-        setOpeningTimes(service.getTankstellenDetailData(this.getApiKey(), locationID));
+        setOpeningTimes(service.getTankstellenDetailData(this.getApiKey(), locationID, userAgent));
         logger.debug("UpdateTankstellenDetails openingTimes: {}", this.openingTimes);
     }
 
@@ -167,11 +169,11 @@ public class TankerkoenigHandler extends BaseThingHandler {
     }
 
     public boolean isUseOpeningTime() {
-        return use_OpeningTime;
+        return useOpeningTime;
     }
 
     public void setUseOpeningTime(boolean use_OpeningTime) {
-        this.use_OpeningTime = use_OpeningTime;
+        this.useOpeningTime = use_OpeningTime;
     }
 
     public OpeningTimes getOpeningTimes() {

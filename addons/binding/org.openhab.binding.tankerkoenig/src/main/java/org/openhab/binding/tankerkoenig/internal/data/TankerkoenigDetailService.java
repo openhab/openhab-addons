@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,8 +18,6 @@ import org.apache.commons.io.IOUtils;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigDetailResult;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigDetailResultDeserializer;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +36,8 @@ public class TankerkoenigDetailService {
             .registerTypeAdapter(TankerkoenigDetailResult.class, new CustomTankerkoenigDetailResultDeserializer());;
     private static final Gson GSON = GSON_BUILDER.create();
 
-    public OpeningTimes getTankstellenDetailData(String apikey, String locationID) {
-        TankerkoenigDetailResult detailresult = this.getTankerkoenigDetailResult(apikey, locationID);
+    public OpeningTimes getTankstellenDetailData(String apikey, String locationID, String userAgent) {
+        TankerkoenigDetailResult detailresult = this.getTankerkoenigDetailResult(apikey, locationID, userAgent);
         if (detailresult.isOk()) {
             OpeningTimes openingtimes = new OpeningTimes(locationID, detailresult.iswholeDay(),
                     detailresult.getOpeningtimes());
@@ -51,32 +49,29 @@ public class TankerkoenigDetailService {
         }
     }
 
-    private String getResponseDetailString(String apikey, String locationID) throws IOException {
+    private String getResponseDetailString(String apikey, String locationID, String userAgent) throws IOException {
         String urlbase = "https://creativecommons.tankerkoenig.de/json/detail.php?";
         String urlcomplete = urlbase + "id=" + locationID + "&apikey=" + apikey;
         try {
-            String userAgent = "openHAB, Tankerkoenig-Binding Version ";
-            Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
-            userAgent = userAgent + version.toString();
             URL url = new URL(urlcomplete);
             URLConnection connection = url.openConnection();
             logger.debug("UpdateTankstellenDetails URL: {}", urlcomplete);
             return IOUtils.toString(connection.getInputStream());
         } catch (MalformedURLException e) {
-            logger.error("Error in getResponseDetailString: {}", e.toString());
+            logger.error("Error in getResponseDetailString: ", e);
             return null;
         }
     }
 
-    private TankerkoenigDetailResult getTankerkoenigDetailResult(String apikey, String locationID) {
+    private TankerkoenigDetailResult getTankerkoenigDetailResult(String apikey, String locationID, String userAgent) {
 
         String jsonData = "";
         try {
-            jsonData = getResponseDetailString(apikey, locationID);
+            jsonData = getResponseDetailString(apikey, locationID, userAgent);
             logger.debug("UpdateTankstellenDetails jsonData : {}", jsonData);
             return GSON.fromJson(jsonData, TankerkoenigDetailResult.class);
         } catch (IOException e) {
-            logger.debug("UpdateTankstellenDetails IOException: {}", e);
+            logger.debug("UpdateTankstellenDetails IOException: ", e);
             return TankerkoenigDetailResult.emptyResult();
         }
     }

@@ -22,7 +22,6 @@
                 </parameter>
             </config-description>
         </thing-type>
-        <!-- Sample Channel Type -->
         <channel-type id="diesel">
             <item-type>Number</item-type>
             <label>Diesel</label>

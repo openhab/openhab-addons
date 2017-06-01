@@ -22,9 +22,9 @@
                 <description>In mode Setup no data is polled.  After completing the Setup for all stations deactivation this mode will start the polling.</description>
                 <default>true</default>
             </parameter>
-            <parameter name="use_OpeningTime" type="boolean">
-                <label>Use_OpeningTime</label>
-                <description>In mode Use_OpeningTime only those gas stations (Tankstellen) are polled that are actually open.</description>
+            <parameter name="UseOpeningTime" type="boolean">
+                <label>UseOpeningTime</label>
+                <description>In mode UseOpeningTime only those gas stations (Tankstellen) are polled that are actually open.</description>
                 <default>false</default></parameter></config-description>
     </bridge-type>
 </thing:thing-descriptions>

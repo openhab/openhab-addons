@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,6 +34,8 @@ import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigService;
 import org.openhab.binding.tankerkoenig.internal.utility.Holiday;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     private int refreshInterval;
     private boolean setupMode;
     private boolean useOpeningTime;
+    private String userAgent;
 
     private List<Thing> tankstellenThingList;
     private Map<String, LittleStation> tankstellenList;
@@ -77,6 +80,11 @@ public class BridgeHandler extends BaseBridgeHandler {
         setRefreshInterval(((BigDecimal) config.get(TankerkoenigBindingConstants.CONFIG_REFRESH)).intValue());
         setSetupMode((boolean) config.get(TankerkoenigBindingConstants.CONFIG_SETUP_MODE));
         setUseOpeningTime((boolean) config.get(TankerkoenigBindingConstants.CONFIG_USE_OPENINGTIME));
+        // set the UserAgent, this string is used by TankerkoenigService and TankertkoenigDtailService
+        // to set a custom UserAgent for the WebRequest as specifically requested by Tankerkoening.de!
+        userAgent = "openHAB, Tankerkoenig-Binding Version ";
+        Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
+        userAgent = userAgent + version.toString();
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -92,7 +100,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                         updateTankstellenThings();
                     }
                 } catch (RuntimeException r) {
-                    logger.error("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: {}",
+                    logger.error("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ",
                             r);
                 }
             }
@@ -116,15 +124,13 @@ public class BridgeHandler extends BaseBridgeHandler {
         if (tankstellenThingList.size() >= 10) {
             return false;
         }
-        logger.info("Tankstelle {} was registered to config {} ", tankstelle.getUID().toString(),
-                getThing().getUID().toString());
+        logger.debug("Tankstelle {} was registered to config {} ", tankstelle.getUID(), getThing().getUID());
         tankstellenThingList.add(tankstelle);
         return true;
     }
 
     public void unregisterTankstelleThing(Thing tankstelle) {
-        logger.info("Tankstelle {} was unregistered from config {} ", tankstelle.getUID().toString(),
-                getThing().getUID().toString());
+        logger.debug("Tankstelle {} was unregistered from config {} ", tankstelle.getUID(), getThing().getUID());
         tankstellenThingList.remove(tankstelle);
     }
 
@@ -147,7 +153,8 @@ public class BridgeHandler extends BaseBridgeHandler {
                 return;
             }
             TankerkoenigService service = new TankerkoenigService();
-            TankerkoenigListResult result = service.getTankstellenListData(this.getApiKey(), locationIDsString);
+            TankerkoenigListResult result = service.getTankstellenListData(this.getApiKey(), locationIDsString,
+                    userAgent);
             if (!result.isOk()) {
                 // if the result is not OK, no updates are done and the status of the Bridge goes to unknown!
                 updateStatus(ThingStatus.UNKNOWN);
@@ -161,7 +168,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 logger.debug("UpdateTankstellenData: tankstellenList.size {}", tankstellenList.size());
             }
         } catch (ParseException e) {
-            logger.error("ParseException: {}", e.toString());
+            logger.error("ParseException: ", e);
             updateStatus(ThingStatus.UNKNOWN);
         }
     }
@@ -191,14 +198,11 @@ public class BridgeHandler extends BaseBridgeHandler {
         StringBuilder sb = new StringBuilder();
         for (Thing thing : tankstellenThingList) {
             TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
-            if (sb.toString().isEmpty()) {
-                sb.append(tkh.getLocationID());
-            } else {
+            if (sb.length() > 0) {
                 sb.append(",");
-                sb.append(tkh.getLocationID());
             }
+            sb.append(tkh.getLocationID());
         }
-
         return sb.toString();
     }
 
@@ -323,13 +327,11 @@ public class BridgeHandler extends BaseBridgeHandler {
                 opening = opening.plusMinutes(4);
             }
             if ((now.isAfter(opening) & (now.isBefore(closing)))) {
-                // logger.debug("Opening: {}, Closing: {}, now: {}", opening, closing, now);
                 logger.debug("Now is within opening times for today.");
-                if (sb.toString().equals("")) {
-                    sb.append(tkh.getLocationID());
-                } else {
-                    sb.append("," + tkh.getLocationID());
+                if (sb.length() > 0) {
+                    sb.append(",");
                 }
+                sb.append(tkh.getLocationID());
             }
         }
         return sb.toString();
@@ -374,4 +376,9 @@ public class BridgeHandler extends BaseBridgeHandler {
     public void setUseOpeningTime(boolean useOpeningTime) {
         this.useOpeningTime = useOpeningTime;
     }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
 }

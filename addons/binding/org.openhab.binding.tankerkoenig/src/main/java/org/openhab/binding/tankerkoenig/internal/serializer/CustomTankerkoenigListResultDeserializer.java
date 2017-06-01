@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,12 +39,12 @@ public class CustomTankerkoenigListResultDeserializer implements JsonDeserialize
             throws JsonParseException {
 
         final JsonObject jsonObject = json.getAsJsonObject();
+        final Gson gson = new Gson();
 
         TankerkoenigListResult result = new TankerkoenigListResult();
         result.setOk(jsonObject.get("ok").getAsBoolean());
         JsonObject jsonPrices = jsonObject.get("prices").getAsJsonObject();
         Set<Entry<String, JsonElement>> objects = jsonPrices.entrySet();
-        Gson gson = new Gson();
         Prices p = new Prices();
         result.setPrices(p);
         List<LittleStation> list = new ArrayList<>();
