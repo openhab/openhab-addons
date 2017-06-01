@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2010-2017 by the respective copyright holders.
+
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+-->
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="false" name="org.openhab.binding.knx.internal.factory.KNXHandlerFactory">
+
+   <implementation class="org.openhab.binding.knx.internal.factory.KNXHandlerFactory"/>
+   <reference bind="addKNXTypeMapper" cardinality="1..n" interface="org.openhab.binding.knx.KNXTypeMapper" name="KNXTypeMapper" policy="dynamic" unbind="removeKNXTypeMapper"/>
+   <service>
+      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+   </service>
+   <reference bind="addBridgeHandlerTracker" cardinality="0..n" interface="org.openhab.binding.knx.KNXBridgeHandlerTracker" name="KNXBridgeHandlerTracker" policy="dynamic" unbind="removeBridgeHandlerTracker"/>
+</scr:component>
