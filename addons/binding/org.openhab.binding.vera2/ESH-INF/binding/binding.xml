@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="vera2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
-
-	<name>Vera Binding</name>
-	<description>Vera (lite/edge/plus/etc version) is a popular Z-Wave controller. Vera binding automatically finds the addresses of all such controllers on the local network, and through HTTP api loads all their devices and scenes.</description>
-	<author>Dmitriy Ponomarev</author>
-
-</binding:binding>

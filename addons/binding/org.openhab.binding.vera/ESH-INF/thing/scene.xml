@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vera" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="veraScene">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="veraController" />
+		</supported-bridge-type-refs>
+
+		<label>Vera Scene</label>
+		<description>
+            A Vera scene represents one scene with the one channel.
+        </description>
+		<config-description>
+			<parameter name="sceneId" type="text" required="true">
+				<label>Scene Id</label>
+				<description>Id of the Vera scene</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
