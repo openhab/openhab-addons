@@ -2,16 +2,16 @@
 <feed xmlns="http://www.w3.org/2005/Atom" >
   <title>ExampleChannel</title>
   <link rel ="alternate" href="http://example.com/" />
-  <subtitle>Myexamplechannel</subtitle>
+  <subtitle>My example channel</subtitle>
   <entry>
-    <title>NewsforSeptembertheSecond</title>
+    <title>News for September the Second</title>
     <link rel="alternate" href="http://example.com/2002/09/01" />
     <author>
       <name />
     </author>
     <id>http://example.com/2002/09/01</id>
     <summary type ="html">
-      otherthingshappenedtoday
+      other things happened today
     </summary>
   </entry>
   <entry>
