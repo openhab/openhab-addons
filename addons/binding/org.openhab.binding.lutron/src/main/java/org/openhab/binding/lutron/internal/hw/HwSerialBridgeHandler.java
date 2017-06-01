@@ -7,7 +7,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.TooManyListenersException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -34,10 +40,14 @@ import gnu.io.UnsupportedCommOperationException;
  *
  */
 public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
-    private Logger logger = LoggerFactory.getLogger(HwSerialBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HwSerialBridgeHandler.class);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     private String serialPortName = "";
     private int baudRate;
+    private Boolean updateTime;
+    private ScheduledFuture<?> updateTimeJob;
 
     private SerialPort serialPort = null;
     private OutputStreamWriter serialOutput = null;
@@ -55,19 +65,22 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
         logger.debug("Initializing the Lutron HomeWorks RS232 bridge handler");
         HwSerialBridgeConfig configuration = getConfigAs(HwSerialBridgeConfig.class);
         serialPortName = configuration.serialPort;
+        baudRate = configuration.baudRate.intValue();
+        updateTime = configuration.updateTime;
 
         this.discService = new HwDiscoveryService(this);
         this.discReg = bundleContext.registerService(DiscoveryService.class, discService, null);
 
-        if (serialPortName != null) {
-            baudRate = configuration.baudRate.intValue();
-
-            logger.debug("Lutron HomeWorks RS232 Bridge Handler Initializing.");
-            logger.debug("   Serial Port: {},", serialPortName);
-            logger.debug("   Baud:        {},", baudRate);
-
-            scheduler.execute(() -> openConnection());
+        if (serialPortName == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port not specified");
+            return;
         }
+
+        logger.debug("Lutron HomeWorks RS232 Bridge Handler Initializing.");
+        logger.debug("   Serial Port: {},", serialPortName);
+        logger.debug("   Baud:        {},", baudRate);
+
+        scheduler.execute(() -> openConnection());
     }
 
     private void openConnection() {
@@ -95,8 +108,13 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             sendCommand("GSMOFF");
             sendCommand("DLMON"); // Turn on dimmer monitoring
 
-            logger.info("Setting status of {} to ONLINE", this.getThing().getBridgeUID().getAsString());
+            logger.info("Setting status to ONLINE");
             updateStatus(ThingStatus.ONLINE);
+
+            if (updateTime) {
+                startUpdateProcessorTimeJob();
+            }
+
         } catch (NoSuchPortException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid port: " + serialPortName);
         } catch (PortInUseException portInUseException) {
@@ -108,9 +126,55 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
         }
     }
 
+    private void startUpdateProcessorTimeJob() {
+        if (updateTimeJob != null) {
+            logger.debug("Canceling old scheduled job");
+            updateTimeJob.cancel(false);
+            updateTimeJob = null;
+        }
+
+        logger.debug("Scheduling time update job for 2:00 AM");
+
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime twoAm = now.withHour(2).withMinute(0).withSecond(0);
+        if (now.compareTo(twoAm) > 0) {
+            twoAm = twoAm.plusDays(1);
+        }
+
+        Duration duration = Duration.between(now, twoAm);
+        long initialDelay = duration.getSeconds();
+        long delay = Duration.ofDays(1).getSeconds();
+        TimeUnit unit = TimeUnit.SECONDS;
+
+        logger.debug("Update Time job will run in {} and every 1 day thereafter.", duration);
+        updateTimeJob = this.scheduler.scheduleWithFixedDelay(() -> updateProcessorTime(), initialDelay, delay, unit);
+
+        // For good measure, we'll call it once now.
+        updateProcessorTime();
+    }
+
+    private void updateProcessorTime() {
+        Date date = new Date();
+        String dateString = dateFormat.format(date.getTime());
+        String timeString = timeFormat.format(date.getTime());
+        logger.debug("Updating HomeWorks processor date and time to {} {}", dateString, timeString);
+
+        if (!this.getBridge().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.warn("HomeWorks Bridge is offline and cannot update time on HomeWorks processor.");
+            if (updateTimeJob != null) {
+                updateTimeJob.cancel(false);
+                updateTimeJob = null;
+            }
+            return;
+        }
+
+        sendCommand("SD, " + dateString);
+        sendCommand("ST, " + timeString);
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.error("Unexpected command for {}: {} - {}", getThing().getBridgeUID().getAsString(), channelUID, command);
+        logger.error("Unexpected command for HomeWorks Bridge: {} - {}", channelUID, command);
     }
 
     private void handleIncomingMessage(String line) {
@@ -118,7 +182,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             return;
         }
 
-        logger.info("{} received message from HomeWorks processor: {}", getThing().getBridgeUID().getAsString(), line);
+        logger.info("Received message from HomeWorks processor: {}", line);
         String[] data = line.replaceAll("\\s", "").toUpperCase().split(",");
         if ("DL".equals(data[0])) {
             try {
@@ -155,7 +219,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
      * @param serialPortEvent
      */
     @Override
-    public synchronized void serialEvent(SerialPortEvent serialPortEvent) {
+    public void serialEvent(SerialPortEvent serialPortEvent) {
         if (serialPortEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             try {
                 while (true) {
@@ -174,7 +238,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
 
     public void sendCommand(String command) {
         try {
-            logger.info("HomeWorks bridge {} sending command: {}", getThing().getBridgeUID().getAsString(), command);
+            logger.info("HomeWorks bridge sending command: {}", command);
             serialOutput.write(command.toString() + "\r");
             serialOutput.flush();
         } catch (IOException e) {
@@ -185,7 +249,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
 
     @Override
     public void dispose() {
-        logger.info("HomeWorks bridge {} being disposed.", getThing().getBridgeUID().getAsString());
+        logger.info("HomeWorks bridge being disposed.");
         if (serialPort != null) {
             serialPort.close();
         }
@@ -194,11 +258,15 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
         serialInput = null;
         serialOutput = null;
 
+        if (updateTimeJob != null) {
+            updateTimeJob.cancel(false);
+        }
+
         if (this.discReg != null) {
             this.discReg.unregister();
             this.discReg = null;
         }
-        logger.debug("Finished disposing bridge {}.", getThing().getBridgeUID().getAsString());
+        logger.debug("Finished disposing bridge.");
     }
 
 }

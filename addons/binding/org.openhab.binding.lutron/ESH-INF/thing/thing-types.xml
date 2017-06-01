@@ -409,7 +409,6 @@
 		</config-description>
 	</thing-type>
 
-
 	<bridge-type id="hwserialbridge">
 		<label>Lutron HomeWorks RS232 Bridge</label>
 		<description>RS232 access point to Lutron HomeWorks lighting control system</description>
@@ -418,14 +417,19 @@
 			<parameter name="serialPort" type="text" required="true">
 				<context>network_address</context>
 				<label>HomeWorks Bridge Serial Port</label>
-				<description>The serial port name for the HomeWorks processor. Valid values
-                    are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+				<description>
+				    The serial port name for the HomeWorks processor. Valid values
+                    are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.
+                </description>
 			</parameter>
 
 			<parameter name="baudRate" type="integer" required="false">
 				<label>Baud Rate</label>
-				<description>The baud rate of the DSC IT-100. Valid values are 300, 600, 1200, 2400, 4800,
-9600 (default), 19200, 38400, 57600, and 115200.</description>
+				<description>
+				    The baud rate to use for the RS232 connection. 
+				    Valid values are 300, 600, 1200, 2400, 4800, 9600 (default), 
+				    19200, 38400, 57600, and 115200.
+				</description>
 				<default>9600</default>
 				<limitToOptions>true</limitToOptions>
 				<options>
@@ -441,6 +445,16 @@
 					<option value="115200">115200</option>
 				</options>
 			</parameter>
+			
+	       <parameter name="updateTime" type="boolean" required="false">
+	           <default>false</default>
+	           <label>Update Processor Time</label>
+	           <description>
+	               The older HomeWorks processors seem to have difficulty keeping track of the time, 
+	               especially where daylight savings is concerned.  If this option is selected, the HomeWorks 
+	               bridge will automatically update the processor on initialization and once per day thereafter.
+	           </description>	           
+	       </parameter>
 
 		</config-description>
 	</bridge-type>

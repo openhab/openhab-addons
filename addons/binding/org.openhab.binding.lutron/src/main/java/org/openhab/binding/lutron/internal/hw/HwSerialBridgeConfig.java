@@ -8,7 +8,9 @@ package org.openhab.binding.lutron.internal.hw;
 public class HwSerialBridgeConfig {
     public static final String SERIAL_PORT = "serialPort";
     public static final String BAUD = "baudRate";
+    public static final String UPDATE_TIME = "updateTime";
 
     public String serialPort;
     public Integer baudRate;
+    public Boolean updateTime;
 }
