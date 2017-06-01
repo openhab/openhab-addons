@@ -11,11 +11,13 @@ import static org.openhab.binding.camera.CameraBindingConstants.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
@@ -51,7 +53,12 @@ import org.slf4j.LoggerFactory;
  */
 public class CameraHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(CameraHandler.class);
-    private ScheduledFuture<?> scheduledTask;
+    private final AtomicBoolean refreshInProgress = new AtomicBoolean(false);
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
+    private final ExecutorService serviceCached = Executors.newCachedThreadPool();
+    private String urlSnapshot;
+    private String urlUsername = "";
+    private String urlPassword = "";
 
     public CameraHandler(Thing thing) {
         super(thing);
@@ -65,10 +72,6 @@ public class CameraHandler extends BaseThingHandler {
             }
         }
     }
-
-    private String urlSnapshot;
-    private String urlUsername = "";
-    private String urlPassword = "";
 
     @Override
     public void initialize() {
@@ -88,11 +91,28 @@ public class CameraHandler extends BaseThingHandler {
         }
         try {
             Object param = getConfig().get("poll");
-            CONFIGURATION_POLLTIME_S = (int) Double.parseDouble(String.valueOf(param));
+            CONFIGURATION_POLLTIME_MS = (int) (Double.parseDouble(String.valueOf(param)) * 1000);
+            logger.debug("Schedule update at fixed rate {} ms.", CONFIGURATION_POLLTIME_MS);
         } catch (Exception e1) {
             logger.warn("could not read poll time", e1);
         }
-        scheduleUpdates();
+        if (initialized.compareAndSet(false, true)) {
+            WeakReference<CameraHandler> weakReference = new WeakReference<>(this);
+            serviceCached.submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    while (weakReference.get() != null) {
+                        try {
+                            refreshData();
+                        } catch (Exception e) {
+                            logger.error("error in refresh", e);
+                        }
+                        Thread.sleep(Math.max(10, CONFIGURATION_POLLTIME_MS));
+                    }
+                    return null;
+                }
+            });
+        }
         updateStatus(ThingStatus.OFFLINE);
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
@@ -101,8 +121,6 @@ public class CameraHandler extends BaseThingHandler {
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
     }
-
-    private final AtomicBoolean refreshInProgress = new AtomicBoolean(false);
 
     private void refreshData() {
         if (refreshInProgress.compareAndSet(false, true)) {
@@ -141,16 +159,6 @@ public class CameraHandler extends BaseThingHandler {
                 refreshInProgress.set(false);
             }
         }
-    }
-
-    private void scheduleUpdates() {
-        logger.debug("Schedule update at fixed rate {} s.", CONFIGURATION_POLLTIME_S);
-        scheduledTask = scheduler.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                refreshData();
-            }
-        }, 10, CONFIGURATION_POLLTIME_S, TimeUnit.SECONDS);
     }
 
     private static ByteArrayOutputStream readImage(URL url, String username, String password) throws Exception {

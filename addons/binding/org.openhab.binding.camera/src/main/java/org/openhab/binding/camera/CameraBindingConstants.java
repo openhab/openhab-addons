@@ -24,6 +24,6 @@ public class CameraBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_IMAGE = "image";
-    public static int CONFIGURATION_POLLTIME_S = 10;
+    public static int CONFIGURATION_POLLTIME_MS = 10;
 
 }
