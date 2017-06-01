@@ -59,7 +59,7 @@ public class RobonectHandlerTest {
     }
 
     @Test
-    public void shouldUpdateNextTimerChannelWithDateTimeState() {
+    public void shouldUpdateNextTimerChannelWithDateTimeState() throws InterruptedException {
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
 
         // given
@@ -98,7 +98,7 @@ public class RobonectHandlerTest {
     }
 
     @Test
-    public void shouldUpdateErrorChannelsIfErrorStatusReturned() {
+    public void shouldUpdateErrorChannelsIfErrorStatusReturned() throws InterruptedException {
         ArgumentCaptor<State> errorCodeCaptor = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> errorMessageCaptor = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> errorDateCaptor = ArgumentCaptor.forClass(State.class);
@@ -155,7 +155,7 @@ public class RobonectHandlerTest {
     }
 
     @Test
-    public void shouldResetErrorStateIfNoErrorInStatusUpdate() {
+    public void shouldResetErrorStateIfNoErrorInStatusUpdate() throws InterruptedException {
         ArgumentCaptor<State> errorCodeCaptor = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> errorMessageCaptor = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> errorDateCaptor = ArgumentCaptor.forClass(State.class);
@@ -189,7 +189,7 @@ public class RobonectHandlerTest {
     }
 
     @Test
-    public void shouldUpdateNumericStateOnMowerStatusRefresh() {
+    public void shouldUpdateNumericStateOnMowerStatusRefresh() throws InterruptedException {
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
 
         // given
@@ -217,7 +217,7 @@ public class RobonectHandlerTest {
     }
 
     @Test
-    public void shouldUpdateAllChannels() {
+    public void shouldUpdateAllChannels() throws InterruptedException {
         ArgumentCaptor<State> stateCaptorName = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> stateCaptorBattery = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> stateCaptorStatus = ArgumentCaptor.forClass(State.class);

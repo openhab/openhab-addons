@@ -51,6 +51,7 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_REMOTE_START;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_START;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_NAME;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_STARTED;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_BATTERY;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_DURATION;
@@ -63,7 +64,6 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERS
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_SERIAL;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_VERSION_VERSION;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_WLAN_SIGNAL;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_STARTED;
 
 /**
  * The {@link RobonectHandler} is responsible for handling commands, which are
@@ -170,7 +170,7 @@ public class RobonectHandler extends BaseThingHandler {
 
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (RobonectCommunicationException rce){
+        } catch (RobonectCommunicationException rce) {
             logger.error("Failed to communicate with the mower. Taking it offline.", rce);
             updateState(CHANNEL_STATUS, new DecimalType(MowerStatus.OFFLINE.getStatusCode()));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
@@ -180,7 +180,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    private void setMowerMode(Command command) {
+    private void setMowerMode(Command command) throws InterruptedException {
         String modeStr = command.toFullString();
         ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
         robonectClient.setMode(newMode);
@@ -219,7 +219,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    private void handleStartStop(OnOffType command) {
+    private void handleStartStop(OnOffType command) throws InterruptedException {
         OnOffType started = command;
         RobonectAnswer answer = null;
         boolean currentlyStopped = robonectClient.getMowerInfo().getStatus().isStopped();
@@ -234,7 +234,7 @@ public class RobonectHandler extends BaseThingHandler {
         refreshMowerInfo();
     }
 
-    private void updateName(StringType command) {
+    private void updateName(StringType command) throws InterruptedException {
         String newName = command.toFullString();
         Name name = robonectClient.setName(newName);
         if (name.isSuccessful()) {
@@ -245,13 +245,13 @@ public class RobonectHandler extends BaseThingHandler {
         refreshMowerInfo();
     }
 
-    private void refreshMowerInfo() {
+    private void refreshMowerInfo() throws InterruptedException {
 
         MowerInfo info = robonectClient.getMowerInfo();
         if (info.isSuccessful()) {
-            if(info.getError() != null){
+            if (info.getError() != null) {
                 updateErrorInfo(info.getError());
-            }else {
+            } else {
                 clearErrorInfo();
             }
             updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
@@ -281,15 +281,15 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void updateErrorInfo(ErrorEntry error) {
-        if(error.getDate() != null){
-            State dateTime = convertDateTimeType(error.getDate(), error.getTime());
-            updateState(CHANNEL_ERROR_DATE, dateTime);
+        if (error.getErrorMessage() != null) {
+            updateState(CHANNEL_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
         }
-        if(error.getErrorCode() != null){
+        if (error.getErrorCode() != null) {
             updateState(CHANNEL_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
         }
-        if(error.getErrorMessage() != null){
-            updateState(CHANNEL_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
+        if (error.getDate() != null) {
+            State dateTime = convertDateTimeType(error.getDate(), error.getTime());
+            updateState(CHANNEL_ERROR_DATE, dateTime);
         }
     }
 
@@ -299,21 +299,19 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private State convertDateTimeType(String date, String time) {
-        try{
-            Date nextTimer = new SimpleDateFormat("dd.MM.yy'T'HH:mm:ss")
-                    .parse(date + "T" + time);
+        try {
+            Date nextTimer = new SimpleDateFormat("dd.MM.yy'T'HH:mm:ss").parse(date + "T" + time);
             GregorianCalendar calendar = new GregorianCalendar();
             calendar.setTime(nextTimer);
             return new DateTimeType(calendar);
         } catch (ParseException e) {
-            logger.error("Could not parse date: {}T{} with pattern 'dd.MM.yy'T'HH:mm:ss'",
-                            date, time, e);
+            logger.error("Could not parse date: {}T{} with pattern 'dd.MM.yy'T'HH:mm:ss'", date, time, e);
             return UnDefType.UNDEF;
-            
+
         }
     }
 
-    private void refreshVersionInfo() {
+    private void refreshVersionInfo() throws InterruptedException {
 
         VersionInfo info = robonectClient.getVersionInfo();
         if (info.isSuccessful()) {
@@ -345,7 +343,7 @@ public class RobonectHandler extends BaseThingHandler {
                         refreshMowerInfo();
                         updateStatus(ThingStatus.ONLINE);
                     } catch (RobonectCommunicationException rce) {
-                        logger.error("Failed to communicate with the mower. Taking it offline.", rce);
+                        logger.info("Failed to communicate with the mower. Taking it offline.", rce);
                         updateState(CHANNEL_STATUS, new DecimalType(MowerStatus.OFFLINE.getStatusCode()));
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
                     } catch (Exception e) {

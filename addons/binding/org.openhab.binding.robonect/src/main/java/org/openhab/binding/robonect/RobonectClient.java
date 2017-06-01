@@ -3,14 +3,15 @@ package org.openhab.binding.robonect;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.B64Code;
 import org.openhab.binding.robonect.model.ErrorList;
 import org.openhab.binding.robonect.model.ModelParser;
@@ -110,7 +111,7 @@ public class RobonectClient {
         }
 
         public String toString() {
-            return String.format("Basic authentication result for %s", this.uri );
+            return String.format("Basic authentication result for %s", this.uri);
         }
     }
 
@@ -135,32 +136,32 @@ public class RobonectClient {
                 .encode(endpoint.getUser() + ":" + endpoint.getPassword(), StandardCharsets.ISO_8859_1)));
     }
 
-    public MowerInfo getMowerInfo() {
+    public MowerInfo getMowerInfo() throws InterruptedException {
         String responseString = sendCommand(new StatusCommand());
         return parser.parse(responseString, MowerInfo.class);
     }
 
-    public RobonectAnswer start() {
+    public RobonectAnswer start() throws InterruptedException {
         String responseString = sendCommand(new StartCommand());
         return parser.parse(responseString, RobonectAnswer.class);
     }
 
-    public RobonectAnswer stop() {
+    public RobonectAnswer stop() throws InterruptedException {
         String responseString = sendCommand(new StopCommand());
         return parser.parse(responseString, RobonectAnswer.class);
     }
 
-    public RobonectAnswer resetErrors() {
+    public RobonectAnswer resetErrors() throws InterruptedException {
         String responseString = sendCommand(new ErrorCommand().withReset(true));
         return parser.parse(responseString, RobonectAnswer.class);
     }
 
-    public ErrorList errorList() {
+    public ErrorList errorList() throws InterruptedException {
         String responseString = sendCommand(new ErrorCommand());
         return parser.parse(responseString, ErrorList.class);
     }
 
-    public RobonectAnswer setMode(ModeCommand.Mode mode) {
+    public RobonectAnswer setMode(ModeCommand.Mode mode) throws InterruptedException {
         String responseString = sendCommand(createCommand(mode));
         return parser.parse(responseString, RobonectAnswer.class);
     }
@@ -174,37 +175,33 @@ public class RobonectClient {
         }
     }
 
-    public Name getName() {
+    public Name getName() throws InterruptedException {
         String responseString = sendCommand(new NameCommand());
         return parser.parse(responseString, Name.class);
     }
 
-    public Name setName(String name) {
+    public Name setName(String name) throws InterruptedException {
         String responseString = sendCommand(new NameCommand().withNewName(name));
         return parser.parse(responseString, Name.class);
     }
 
-    private String sendCommand(Command command) {
-        ContentResponse response = null;
+    private String sendCommand(Command command) throws InterruptedException {
         try {
             if (logger.isDebugEnabled()) {
                 logger.debug("send HTTP GET to: {} ", command.toCommandURL(baseUrl));
             }
-            response = httpClient.GET(command.toCommandURL(baseUrl));
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-            logger.error("InterruptedException while trying to send command.", ie);           
+            String responseString = httpClient.newRequest(command.toCommandURL(baseUrl)).method(HttpMethod.GET)
+                    .timeout(30000, TimeUnit.MILLISECONDS).send().getContentAsString();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Response body was: {} ", responseString);
+            }
+            return responseString;
         } catch (ExecutionException | TimeoutException e) {
             throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(baseUrl), e);
         }
-        String responseString = response.getContentAsString();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Response body was: {} ", responseString);
-        }
-        return responseString;
     }
 
-    public VersionInfo getVersionInfo() {
+    public VersionInfo getVersionInfo() throws InterruptedException {
         String versionResponse = sendCommand(new VersionCommand());
         return parser.parse(versionResponse, VersionInfo.class);
     }
