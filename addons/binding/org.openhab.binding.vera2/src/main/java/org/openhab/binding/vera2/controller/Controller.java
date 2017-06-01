@@ -123,6 +123,7 @@ public class Controller {
     }
 
     private void setStatus(Device d, String status) {
+        d.setStatus(status);
         String service = "urn:upnp-org:serviceId:SwitchPower1";
         if ("7".equals(d.getCategory())) {
             service = "urn:micasaverde-com:serviceId:DoorLock1";
@@ -132,12 +133,10 @@ public class Controller {
     }
 
     public void turnDeviceOn(Device d) {
-        d.setStatus("1");
         setStatus(d, "1");
     }
 
     public void turnDeviceOff(Device d) {
-        d.setStatus("0");
         setStatus(d, "0");
     }
 

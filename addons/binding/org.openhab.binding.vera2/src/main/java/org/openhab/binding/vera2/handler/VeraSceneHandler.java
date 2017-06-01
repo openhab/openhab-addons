@@ -67,19 +67,11 @@ public class VeraSceneHandler extends BaseThingHandler {
                     // Set thing status to bridge status
                     updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
 
-                    try {
-                        logger.debug("Add channels");
-                        Scene scene = veraBridgeHandler.getController().getScene(mConfig.getSceneId());
-                        if (scene != null) {
-                            logger.debug("Found {} scene", scene.getName());
-                            addSceneAsChannel(scene);
-                        }
-                    } catch (Exception e) {
-                        logger.error("{}", e.getMessage());
-                        if (getThing().getStatus() == ThingStatus.ONLINE) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                    "Error occurred when adding scene as channel: " + mConfig.getSceneId());
-                        }
+                    logger.debug("Add channels");
+                    Scene scene = veraBridgeHandler.getController().getScene(mConfig.getSceneId());
+                    if (scene != null) {
+                        logger.debug("Found {} scene", scene.getName());
+                        addSceneAsChannel(scene);
                     }
 
                     // Initialize scene polling
@@ -94,13 +86,13 @@ public class VeraSceneHandler extends BaseThingHandler {
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Scenes not loaded");
+                            "Controller is not online");
                 }
             } catch (Exception e) {
                 logger.error("{}", e.getMessage());
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Error occurred when adding scene as channel.");
+                            "Error occurred when adding scene as channel: " + e.getMessage());
                 }
             }
         }
@@ -133,7 +125,7 @@ public class VeraSceneHandler extends BaseThingHandler {
     public void initialize() {
         setLocation();
         logger.debug("Initializing Vera scene handler ...");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                 "Checking configuration and bridge...");
         mConfig = loadAndCheckConfiguration();
         if (mConfig != null) {
@@ -220,7 +212,7 @@ public class VeraSceneHandler extends BaseThingHandler {
         Scene scene = veraBridgeHandler.getController().getScene(sceneId);
         if (scene == null) {
             logger.debug("Vera scene not found.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Channel refresh for sceneId: " + sceneId
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Channel refresh for sceneId: " + sceneId
                     + " with channel: " + channel.getChannelTypeUID() + " failed!");
         } else if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
             ThingStatusInfo statusInfo = veraBridgeHandler.getThing().getStatusInfo();

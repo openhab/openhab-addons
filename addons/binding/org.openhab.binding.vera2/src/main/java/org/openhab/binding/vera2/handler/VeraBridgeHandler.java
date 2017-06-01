@@ -64,7 +64,7 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
                 logger.error("Error occurred when initialize bridge: {}", e.getMessage());
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Error occurred when initialize bridge.");
+                            "Error occurred when initialize bridge: " + e.getMessage());
                 }
             }
         }
@@ -79,7 +79,7 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Vera controller ...");
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
 
         mConfig = getConfigAs(VeraBridgeConfiguration.class);
         if (mConfig != null) {

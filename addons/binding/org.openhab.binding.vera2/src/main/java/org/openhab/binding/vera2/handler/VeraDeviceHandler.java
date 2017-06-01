@@ -71,19 +71,11 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     // Set thing status to bridge status
                     updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
 
-                    try {
-                        logger.debug("Add channels");
-                        Device device = veraBridgeHandler.getController().getDevice(mConfig.getDeviceId());
-                        if (device != null && !"0".equals(device.getCategory())) {
-                            logger.debug("Found {} device", device.getName());
-                            addDeviceAsChannel(device);
-                        }
-                    } catch (Exception e) {
-                        logger.error("{}", e.getMessage());
-                        if (getThing().getStatus() == ThingStatus.ONLINE) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                    "Error occurred when adding device as channel.");
-                        }
+                    logger.debug("Add channels");
+                    Device device = veraBridgeHandler.getController().getDevice(mConfig.getDeviceId());
+                    if (device != null && !"0".equals(device.getCategory())) {
+                        logger.debug("Found {} device", device.getName());
+                        addDeviceAsChannel(device);
                     }
 
                     // Initialize device polling
@@ -98,13 +90,13 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Devices not loaded");
+                            "Controller is not online");
                 }
             } catch (Exception e) {
                 logger.error("Error occurred when adding device as channel: {}", e.getMessage());
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Error occurred when adding device as channel.");
+                            "Error occurred when adding device as channel: " + e.getMessage());
                 }
             }
         }
@@ -137,7 +129,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
     public void initialize() {
         setLocation();
         logger.debug("Initializing Vera device handler ...");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                 "Checking configuration and bridge...");
         mConfig = loadAndCheckConfiguration();
         if (mConfig != null) {
@@ -223,7 +215,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
 
         Device device = veraBridgeHandler.getController().getDevice(deviceId);
         if (device == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Channel refresh for device: " + deviceId
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Channel refresh for device: " + deviceId
                     + " with channel: " + channel.getChannelTypeUID() + " failed!");
             logger.debug("Vera device disconnected");
             return;
