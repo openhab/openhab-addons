@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.vera2.internal.converter;
 
-import static org.openhab.binding.vera2.VeraBindingConstants.BATTERY_CHANNEL;
+import static org.openhab.binding.vera2.VeraBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -27,8 +27,16 @@ import org.slf4j.Logger;
  */
 public class VeraDeviceStateConverter {
     public static State toState(Device device, Channel channel, Logger logger) {
-        if (channel.getUID().getId().split("-")[0].equals(BATTERY_CHANNEL)) {
+
+        String channelType = channel.getUID().getId().split("-")[0];
+        if (BATTERY_CHANNEL.equals(channelType)) {
             return getMultilevelState(device.getBatterylevel());
+        }
+        if (SENSOR_METER_KWH_CHANNEL.equals(channelType)) {
+            return getMultilevelState(device.getKwh());
+        }
+        if (SENSOR_METER_W_CHANNEL.equals(channelType)) {
+            return getMultilevelState(device.getWatts());
         }
 
         int subcategory = Integer.parseInt(device.getSubcategory());
@@ -127,6 +135,9 @@ public class VeraDeviceStateConverter {
 
     private static State getMultilevelState(String multilevelValue) {
         if (multilevelValue != null) {
+            if (multilevelValue.isEmpty()) {
+                return new DecimalType("0");
+            }
             return new DecimalType(multilevelValue);
         }
         return UnDefType.UNDEF;
@@ -134,6 +145,9 @@ public class VeraDeviceStateConverter {
 
     private static State getPercentState(String multilevelValue) {
         if (multilevelValue != null) {
+            if (multilevelValue.isEmpty()) {
+                return new PercentType("0");
+            }
             return new PercentType(multilevelValue);
         }
         return UnDefType.UNDEF;

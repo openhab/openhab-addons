@@ -40,6 +40,12 @@ public class Device {
     @SerializedName("parent")
     private String parent;
 
+    @SerializedName("kwh")
+    private String kwh;
+
+    @SerializedName("watts")
+    private String watts;
+
     @SerializedName("batterylevel")
     private String batterylevel;
 
@@ -108,6 +114,14 @@ public class Device {
 
     public String getRoom() {
         return room;
+    }
+
+    public String getKwh() {
+        return kwh;
+    }
+
+    public String getWatts() {
+        return watts;
     }
 
     public String getBatterylevel() {

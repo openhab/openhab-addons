@@ -339,7 +339,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     }
                     break;
                 case Switch:
-                    id = SWITCH_CONTROL_CHANNEL;
+                    id = SWITCH_BINARY_CHANNEL;
                     acceptedItemType = "Switch";
                     break;
                 case SecuritySensor:
@@ -400,7 +400,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     logger.warn("TODO: {}, {}", device, device.getCategoryType());
                     break;
                 case SceneController:
-                    id = SWITCH_CONTROL_CHANNEL;
+                    id = SWITCH_BINARY_CHANNEL;
                     acceptedItemType = "Switch";
                     break;
                 case AV: // TODO
@@ -464,6 +464,14 @@ public class VeraDeviceHandler extends BaseThingHandler {
 
                 if (device.getBatterylevel() != null && !device.getBatterylevel().isEmpty()) {
                     addChannel(BATTERY_CHANNEL, "Number", "Battery", properties);
+                }
+
+                if (device.getKwh() != null) {
+                    addChannel(SENSOR_METER_KWH_CHANNEL, "Number", "Energy ALL", properties);
+                }
+
+                if (device.getWatts() != null) {
+                    addChannel(SENSOR_METER_W_CHANNEL, "Number", "Energy Current", properties);
                 }
             } else {
                 // Thing status will not be updated because thing could have more than one channel

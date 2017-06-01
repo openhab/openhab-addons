@@ -4,9 +4,7 @@
 
 	<bridge-type id="veraController">
 		<label>Vera Controller</label>
-		<description>
-			The Vera Controller
-		</description>
+		<description>A popular Z-Wave controller Vera (lite/edge/plus/etc).</description>
 
 		<channels>
 			<channel id="actions" typeId="actions" />

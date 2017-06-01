@@ -263,23 +263,19 @@ public class VeraSceneHandler extends BaseThingHandler {
         final Channel channel = getThing().getChannel(channelUID.getId());
         final String sceneId = channel.getProperties().get(SCENE_CONFIG_ID);
         if (sceneId != null) {
-            try {
-                if (command instanceof RefreshType) {
-                    logger.debug("Handle command: RefreshType");
-                    refreshChannel(channel);
-                } else {
-                    if (command instanceof OnOffType) {
-                        if (command == OnOffType.ON) {
-                            logger.debug("Handle command: OnOffType");
-                            veraBridgeHandler.getController().runScene(sceneId);
-                            updateState(channelUID, OnOffType.OFF);
-                        }
-                    } else {
-                        logger.warn("Unknown command type: {}, {}, {}, {}", command, sceneId);
+            if (command instanceof RefreshType) {
+                logger.debug("Handle command: RefreshType");
+                refreshChannel(channel);
+            } else {
+                if (command instanceof OnOffType) {
+                    if (command == OnOffType.ON) {
+                        logger.debug("Handle command: OnOffType");
+                        veraBridgeHandler.getController().runScene(sceneId);
+                        updateState(channelUID, OnOffType.OFF);
                     }
+                } else {
+                    logger.warn("Unknown command type: {}, {}, {}, {}", command, sceneId);
                 }
-            } catch (UnsupportedOperationException e) {
-                logger.warn("Unknown command: {}", e.getMessage());
             }
         } else {
             logger.warn("Not found sceneId {}", sceneId);
