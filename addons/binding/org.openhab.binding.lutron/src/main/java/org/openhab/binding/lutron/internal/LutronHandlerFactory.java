@@ -12,6 +12,7 @@ import static org.openhab.binding.lutron.LutronBindingConstants.*;
 
 import java.util.Set;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -26,7 +27,6 @@ import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
 import org.openhab.binding.lutron.internal.hw.HwConstants;
 import org.openhab.binding.lutron.internal.hw.HwDimmerHandler;
 import org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -37,8 +37,6 @@ import com.google.common.collect.ImmutableSet;
  * @author Allan Tong - Initial contribution
  */
 public class LutronHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(LutronHandlerFactory.class);
-
     // Used by LutronDeviceDiscoveryService to discover these types
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
             THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD);
