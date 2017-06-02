@@ -14,7 +14,7 @@ In order to use the Mi|Home solution and the binding, you should first create an
 
 Currently the binding supports the following thing types:
 
-- *gateway* - MIHO001 Home Gateway, central part of any MiHome system. It can control lighting, heating and electrics;
+- *gateway* - MIHO001 Home Gateway, central part of any Mi|Home system. It can control lighting, heating and electrics;
 - *energyMonitor* - MIHO006 House Monitor, monitor the total energy usage of your home;
 - *motionSensor* - MIHO032 Motion Sensor;
 - *openSensor* - MIHO033 Open Sensor;
@@ -53,7 +53,7 @@ The channels supported from the different devices are listed below:
 
 | Channel Type ID   | Item Type | Description                                                | Thing type ID |
 |-------------------|-----------|------------------------------------------------------------|---------------|
-| lastSeen          | DateTime  | Time when the device was last seen from the MiHome server  | gateway       |
+| lastSeen          | DateTime  | Time when the device was last seen from the Mi|Home server | gateway       |
 | voltage           | Number    | Voltage                                                    | energyMonitor |
 | real_power        | Number    | Real power                                                 | energyMonitor |
 | today_consumption | Number    | Today consumption in Wh                                    | energyMonitor |

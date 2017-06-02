@@ -72,10 +72,10 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
     private def successfullRequest
 
     /** Determines if the status of the HTTP request is expected to be anything different from OK_200 */
-    private def HTTPRequestFailed
+    private def httpRequestFailed
 
     /** Determines if the status of the JSON request is expected to be anything different from "status":"success" */
-    private def JsonRequestFailed
+    private def jsonRequestFailed
 
     /** Determines if an IOException is expected to be thrown */
     private def IOExceptionCaught
@@ -113,13 +113,13 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
     HttpServlet servlet
     static EnergenieApiManager apiManager
 
-    public EnergenieApiManagerOSGiTest(def path, def requestContent, Callback callback, def successfullRequest, def HTTPRequestFailed, def JsonRequestFailed, def IOExceptionCaught) {
+    public EnergenieApiManagerOSGiTest(def path, def requestContent, Callback callback, def successfullRequest, def HTTPRequestFailed, def jsonRequestFailed, def IOExceptionCaught) {
         this.path = path;
         this.requestContent = requestContent;
         this.callback = callback;
         this.successfullRequest = successfullRequest;
-        this.HTTPRequestFailed = HTTPRequestFailed;
-        this.JsonRequestFailed = JsonRequestFailed;
+        this.httpRequestFailed = HTTPRequestFailed;
+        this.jsonRequestFailed = jsonRequestFailed;
         this.IOExceptionCaught = IOExceptionCaught;
     }
 
@@ -261,9 +261,9 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
             this.expectedContent = expectedContent
             this.timeout = timeout
 
-            if(!HTTPRequestFailed && !JsonRequestFailed && !IOExceptionCaught) {
+            if(!httpRequestFailed && !jsonRequestFailed && !IOExceptionCaught) {
                 this.responseContent = "{\"status\":\"success\"}"
-            } else if(JsonRequestFailed){
+            } else if(jsonRequestFailed){
                 this.responseContent ="{\"status\":\"not-found\"}"
             } else {
                 this.responseContent ="{}"
@@ -285,7 +285,7 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
             if(IOExceptionCaught) {
                 sleep(TEST_CONNECTION_TIMEOUT + 1000)
             }
-            if(HTTPRequestFailed) {
+            if(httpRequestFailed) {
                 // setting a status different from OK_200
                 resp.setStatus(HttpStatus.FORBIDDEN_403)
             } else {
@@ -325,7 +325,7 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
     @After
     public void tearDown (){
         unregisterServlet(path)
-        failingRequestHandler.setHTTPRequestFailed(false)
+        failingRequestHandler.setHttpRequestFailed(false)
         failingRequestHandler.setJsonRequestFailed(false)
         failingRequestHandler.setIOExceptionCaught(false)
     }
@@ -336,9 +336,9 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
             String response = callback.execute()
             boolean isRequestSuccessfull = response != null
             assertThat isRequestSuccessfull, is(successfullRequest);
-            assertThat "Unexpected HTTP status", HTTPRequestFailed, is(failingRequestHandler.isHTTPRequestFailed())
+            assertThat "Unexpected HTTP status", httpRequestFailed, is(failingRequestHandler.isHttpRequestFailed())
             assertThat "Unexpected IO exception handling", IOExceptionCaught, is(failingRequestHandler.isIOExceptionCaught())
-            assertThat "Unexpected JSON response handling", JsonRequestFailed, is(failingRequestHandler.isJsonRequestFailed())
+            assertThat "Unexpected JSON response handling", jsonRequestFailed, is(failingRequestHandler.isJsonRequestFailed())
         }
     }
     protected static void configureSslOnServer() {

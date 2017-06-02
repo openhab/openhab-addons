@@ -11,8 +11,8 @@ package org.openhab.binding.energenie.handler
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
 
-import java.text.SimpleDateFormat
 import java.time.*
+import java.time.format.DateTimeFormatter
 
 import org.eclipse.smarthome.core.thing.Bridge
 import org.eclipse.smarthome.core.thing.ThingRegistry
@@ -24,8 +24,8 @@ import org.junit.Test
 import org.openhab.binding.energenie.EnergenieBindingConstants
 import org.openhab.binding.energenie.internal.api.constants.*
 import org.openhab.binding.energenie.test.AbstractEnergenieOSGiTest
-import org.openhab.binding.energenie.test.JsonGateway
 import org.openhab.binding.energenie.test.EnergenieServlet
+import org.openhab.binding.energenie.test.JsonGateway
 
 /**
  * Tests for the {@link MiHomeGatewayHandler}
@@ -125,10 +125,10 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
         /* Sets the 'inactive' period of the gateway to be more than two minutes
          * in order to verify its status update
          */
-        LocalDateTime curentDateTime = LocalDateTime.now()
-        LocalDateTime previousDateTime = curentDateTime.minusMinutes(3)
-        Date date = Date.from(previousDateTime.atZone(ZoneId.systemDefault()).toInstant())
-        String previousDate = new SimpleDateFormat(EnergenieBindingConstants.DATE_TIME_PATTERN).format(date)
+        ZonedDateTime curentDateTime = ZonedDateTime.now()
+        ZonedDateTime previousDateTime = curentDateTime.minusMinutes(3)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(EnergenieBindingConstants.DATE_TIME_PATTERN)
+        String previousDate = formatter.format(previousDateTime)
 
         gatewayDevice.setLastSeenAt(previousDate)
         String listGatewaysServletContent = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)

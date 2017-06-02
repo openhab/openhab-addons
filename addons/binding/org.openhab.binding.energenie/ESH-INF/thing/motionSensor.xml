@@ -16,7 +16,7 @@
     </channels>
 
     <properties>
-      <property name="deviceID">Energenie Mi|Home device ID (received after registration)</property>
+      <property name="deviceID">Energenie Mi|Home device ID (retrieved after registration)</property>
       <property name="type">Energenie Mi|Home device type</property>
       <property name="gatewayID">Energenie Mi|Home gateway ID</property>
     </properties>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
@@ -17,4 +16,4 @@
 			<required>true</required>
 		</parameter>
 	</config-description>
-	</config-description:config-descriptions>
+</config-description:config-descriptions>

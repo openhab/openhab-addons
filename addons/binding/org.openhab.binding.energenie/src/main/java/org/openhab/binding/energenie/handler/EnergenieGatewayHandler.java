@@ -10,13 +10,12 @@ package org.openhab.binding.energenie.handler;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -41,11 +40,11 @@ import org.openhab.binding.energenie.EnergenieBindingConstants;
 import org.openhab.binding.energenie.internal.api.constants.DeviceConstants;
 import org.openhab.binding.energenie.internal.api.constants.DeviceTypesConstants;
 import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants;
-import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandler;
-import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandlerImpl;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManagerImpl;
+import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandler;
+import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandlerImpl;
 import org.openhab.binding.energenie.internal.api.manager.ThingCallback;
 import org.openhab.binding.energenie.internal.rest.RestClient;
 import org.osgi.framework.ServiceReference;
@@ -86,7 +85,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
     private static final int MAXIMUM_INACTIVE_PERIOD_SECONDS = 120;
 
     /** Pattern used to check if a given String represents an email address */
-    public static final String EMAIL_PATTERN = ".+.*@.+.*(\\.[-A-Za-z]{2,})";
+    public static final String EMAIL_PATTERN = ".+@.+(\\.[-A-Za-z]{2,})";
 
     /** Pattern used to check if a given String is valid gateway code */
     public static final String GATEWAY_CODE_PATTERN = "^[A-Z0-9]{10}$";
@@ -186,8 +185,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
 
     private boolean isGatewayComingFromDiscoveryService(Thing gatewayThing) {
         Map<String, String> props = gatewayThing.getProperties();
-        String authCode = props.get(EnergenieBindingConstants.PROPERTY_AUTH_CODE);
-        return authCode != null;
+        return props.containsKey(EnergenieBindingConstants.PROPERTY_AUTH_CODE);
     }
 
     /**
@@ -267,7 +265,6 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
                 String lastSeenString = lastSeenElement.getAsString();
                 handleCommand(thing.getChannel(EnergenieBindingConstants.CHANNEL_LAST_SEEN).getUID(),
                         DateTimeType.valueOf(lastSeenString));
-
                 handleLastSeenProperty(lastSeenString);
             }
         }
@@ -304,8 +301,9 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
 
     private void handleLastSeenProperty(String lastSeenString) {
         Long timeInterval = null;
-        String currentDateTimeString = new SimpleDateFormat(EnergenieBindingConstants.DATE_TIME_PATTERN)
-                .format(new Date());
+        ZonedDateTime curentLocalDateTime = ZonedDateTime.now();
+        String currentDateTimeString = DateTimeFormatter.ofPattern(EnergenieBindingConstants.DATE_TIME_PATTERN)
+                .format(curentLocalDateTime);
         try {
             timeInterval = getTimeInterval(currentDateTimeString, lastSeenString);
         } catch (ParseException e) {
@@ -330,22 +328,20 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      * Calculates the difference (in seconds) between two datetime stamps given
      * as Strings
      *
-     * @param currentDateTime
+     * @param currentTimeStamp
      *            - current datetime stamp
-     * @param previousDateTime
+     * @param previousTimeStamp
      *            - previous datetime stamp
      * @return the time that has elapsed between previousDateTime and
      *         currentDateTime (in seconds)
      * @throws ParseException
      *             - if any of the date Strings cannot be parsed correctly
      */
-    private Long getTimeInterval(String currentDateTime, String previousDateTime) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat(EnergenieBindingConstants.DATE_TIME_PATTERN);
-        sdf.setTimeZone(TimeZone.getDefault());
-        Date lastDate = sdf.parse(currentDateTime);
-        String previous = previousDateTime.replaceAll("Z$", "+0000");
-        Date previousDate = sdf.parse(previous);
-        return (lastDate.getTime() - previousDate.getTime()) / 1000;
+    private Long getTimeInterval(String currentTimeStamp, String previousTimeStamp) throws ParseException {
+        DateTimeFormatter sdf = DateTimeFormatter.ofPattern(EnergenieBindingConstants.DATE_TIME_PATTERN);
+        ZonedDateTime currentTime = ZonedDateTime.parse(currentTimeStamp, sdf);
+        ZonedDateTime previousTime = ZonedDateTime.parse(previousTimeStamp, sdf);
+        return Duration.between(previousTime, currentTime).getSeconds();
     }
 
     /**
@@ -603,8 +599,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
 
     public static String getFormattedCurrentDayTime() {
         LocalDateTime curentLocalDateTime = LocalDateTime.now();
-        Date currentDate = Date.from(curentLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        return new SimpleDateFormat(EnergenieBindingConstants.DATE_TIME_PATTERN).format(currentDate);
+        return DateTimeFormatter.ISO_DATE_TIME.format(curentLocalDateTime);
     }
 
     @Override

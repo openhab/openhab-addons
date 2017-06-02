@@ -46,8 +46,8 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
     // Server information
     public static final String PROTOCOL = "http"
     public static final String HOST = "localhost"
-    public static final int SECURE_PORT = 9090;
-    public static final String TEST_URL = "${PROTOCOL}://${HOST}:${SECURE_PORT}";
+    public static final int SECURE_PORT = 9090
+    public static final String TEST_URL = "${PROTOCOL}://${HOST}:${SECURE_PORT}"
 
     //Gateway information used for the purposes of the tests
     public static final String TEST_PASSWORD = "pass"
@@ -83,7 +83,7 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
         properties.put(EnergenieBindingConstants.CONFIG_USERNAME, userName)
         properties.put(EnergenieBindingConstants.CONFIG_GATEWAY_CODE, gatewayCode)
         properties.put(EnergenieBindingConstants.PROPERTY_DEVICE_ID, new BigDecimal(gatewayID))
-          // We set the auth_code to pretend that the device registration has passed correctly
+        // We set the auth_code to pretend that the device registration has passed correctly
         if(authCode != null) {
             properties.put(EnergenieBindingConstants.PROPERTY_AUTH_CODE, authCode)
         }
@@ -158,7 +158,7 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
         return JSONResponseHandler.responseStringtoJsonObject(response)
     }
 
-    public static JsonObject generateJsonDevicesListServerResponse(String status, JsonDevice ... devices){
+    public static JsonObject generateJsonDevicesListServerResponse(String status, JsonDevice ... devices) {
         Gson gson = new Gson();
         ListDevicesResponse responseObj = new ListDevicesResponse(devices, status)
         String response = gson.toJson(responseObj)
@@ -187,7 +187,7 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
      */
     static class ShowDeviceResponse {
         String status
-        JsonDevice data;
+        JsonDevice data
 
         ShowDeviceResponse(String status, JsonDevice data) {
             this.status = status
@@ -200,7 +200,7 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
      */
     static class ListDevicesResponse {
         String status
-        JsonDevice [] data;
+        JsonDevice [] data
 
         ListDevicesResponse(JsonDevice [] data, String status) {
             this.status = status

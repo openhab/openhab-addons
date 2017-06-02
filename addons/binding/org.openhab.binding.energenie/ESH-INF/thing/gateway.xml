@@ -5,16 +5,16 @@
 
   <bridge-type id="gateway">
     <label>Home Gateway</label>
-    <description>It is the central part of any Energenie MiHome system. It can control lighting, heating and electrics.</description>
+    <description>It is the central part of any Energenie Mi|Home system. It can control lighting, heating and electrics.</description>
 
     <channels>
       <channel typeId="lastSeen" id="lastSeen" />
     </channels>
 
     <properties>
-      <property name="deviceID">Mi|Home device ID (received after registration)</property>
+      <property name="deviceID">Mi|Home device ID (retrieved after registration)</property>
       <property name="type">Mi|Home device type</property>
-      <property name="userID">Mi|Home user ID (received after registration)</property>
+      <property name="userID">Mi|Home user ID (retrieved after registration)</property>
       <property name="mac">Mac address</property>
       <property name="ip">IP v4 address</property>
       <property name="port">Port</property>
