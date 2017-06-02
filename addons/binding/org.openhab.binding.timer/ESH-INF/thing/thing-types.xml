@@ -84,8 +84,6 @@
         <description>Whether this timer is currently on or off. This is what you should hook your rule into.</description>
         <state readOnly="true" />
     </channel-type>
-    
-    
 
     <channel-type id="description">
         <item-type>String</item-type>
@@ -94,7 +92,7 @@
         <state readOnly="true" />
     </channel-type>
     
-    	<channel-type id="on_time_day">
+    <channel-type id="on_time_day">
 		<item-type>Number</item-type>
 		<label>Date</label>
 		<description>The day of the month this timer will turn on</description>
@@ -107,7 +105,6 @@
 		<description>The month this timer will turn on</description>
 		<state min="1" max="12" step="1" readOnly="false" pattern="%s" />
 	</channel-type>	
-	
     
 	<channel-type id="on_time_year">
 		<item-type>Number</item-type>
@@ -115,7 +112,6 @@
 		<description>The year this timer will turn on</description>
 		<state min="2017" step="1" readOnly="false" pattern="%s" />
 	</channel-type>
-	
 
 	<channel-type id="on_time_hours">
 		<item-type>Number</item-type>
@@ -161,39 +157,40 @@
     
     <channel-type id="run_on_mon">
         <item-type>Switch</item-type>
-        <label>Run on Monday?</label>
+        <label>Monday</label>
         <description>Whether this timer runs on Mondays.</description>
     </channel-type>
 
     <channel-type id="run_on_tue">
         <item-type>Switch</item-type>
-        <label>Run on Tuesday?</label>
+        <label>Tuesday</label>
         <description>Whether this timer runs on Tuesdays.</description>
     </channel-type>
        
     <channel-type id="run_on_wed">
         <item-type>Switch</item-type>
-        <label>Run on Wednesday?</label>
+        <label>Wednesday</label>
         <description>Whether this timer runs on Wednesdays.</description>
     </channel-type>
     <channel-type id="run_on_thu">
         <item-type>Switch</item-type>
-        <label>Thur?</label>
+        <label>Thursday</label>
         <description>Whether this timer runs on Thursdays.</description>
     </channel-type>
-            <channel-type id="run_on_fri">
+    <channel-type id="run_on_fri">
         <item-type>Switch</item-type>
-        <label>Fri?</label>
+        <label>Friday</label>
         <description>Whether this timer runs on Fridays.</description>
     </channel-type>
+    
     <channel-type id="run_on_sat">
         <item-type>Switch</item-type>
-        <label>Sat?</label>
+        <label>Saturday</label>
         <description>Whether this timer runs on Saturdays.</description>
     </channel-type>
             <channel-type id="run_on_sun">
         <item-type>Switch</item-type>
-        <label>Sun?</label>
+        <label>Sunday</label>
         <description>Whether this timer runs on Sundays.</description>
     </channel-type>
 </thing:thing-descriptions>
