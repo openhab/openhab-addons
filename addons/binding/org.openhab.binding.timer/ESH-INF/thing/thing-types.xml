@@ -84,6 +84,8 @@
         <description>Whether this timer is currently on or off. This is what you should hook your rule into.</description>
         <state readOnly="true" />
     </channel-type>
+    
+    
 
     <channel-type id="description">
         <item-type>String</item-type>
@@ -91,7 +93,29 @@
         <description>A text description of this timers settings.</description>
         <state readOnly="true" />
     </channel-type>
-
+    
+    	<channel-type id="on_time_day">
+		<item-type>Number</item-type>
+		<label>Date</label>
+		<description>The day of the month this timer will turn on</description>
+		<state min="1" max="31" step="1" readOnly="false" pattern="%s" />
+	</channel-type>
+    
+	<channel-type id="on_time_month">
+		<item-type>Number</item-type>
+		<label>Month</label>
+		<description>The month this timer will turn on</description>
+		<state min="1" max="12" step="1" readOnly="false" pattern="%s" />
+	</channel-type>	
+	
+    
+	<channel-type id="on_time_year">
+		<item-type>Number</item-type>
+		<label>Year</label>
+		<description>The year this timer will turn on</description>
+		<state min="2017" step="1" readOnly="false" pattern="%s" />
+	</channel-type>
+	
 
 	<channel-type id="on_time_hours">
 		<item-type>Number</item-type>
