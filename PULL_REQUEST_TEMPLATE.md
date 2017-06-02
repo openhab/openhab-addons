@@ -24,12 +24,12 @@
 <!-- to both developers and tech-savy users. -->
 
 <!-- Please keep the following in mind: -->
-
-<!-- - What is the classification of the PR is it a Bugfix, Improvement, Novel Addition, ... ? -->
+<!-- - What is the classification of the PR, e.g. Bugfix, Improvement, Novel Addition, ... ? -->
 <!-- - Did you describe the PRs motivation and goal? -->
 <!-- - Did you provide a link to any prior discussion, e.g. an issue or community forum thread? -->
-<!-- - Did you describe the new features or any noteworthy modifications for the end user? --> 
-<!-- - Was the documentation (e.g. the addon README) updated accordingly? -->
+<!-- - Did you describe new features for the end user? -->
+<!-- - Did you describe any noteworthy changes in usage for the end user? --> 
+<!-- - Was the documentation updated accordingly, e.g. the addon README? -->
 <!-- - Does your contribution follow the coding guidelines: -->
 <!--   http://docs.openhab.org/developers/development/guidelines.html -->
 <!-- - Did you check for any (relevant) issues from the static code analysis: -->
