@@ -102,6 +102,10 @@ public class IkeaTradfriGatewayHandler extends BaseBridgeHandler implements Ikea
             dtlsConnector = new DTLSConnector(builder.build());
             endPoint = new CoapEndpoint(dtlsConnector, NetworkConfig.getStandard());
 
+            // we set it to UNKOWN as it can take up to a minute to figure out that observation does not work
+            // (e.g. because of bad credentials)
+            updateStatus(ThingStatus.UNKNOWN);
+
             logger.debug("Starting observe on devices...");
             observe("15001", getThing().getUID(), this);
         } else {
