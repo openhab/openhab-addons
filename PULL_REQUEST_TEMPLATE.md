@@ -21,13 +21,14 @@
 
 <!-- Please give a few sentences describing the overall goals of the pull request. -->
 <!-- Give enough details to make the improvement and changes of the PR understandable  -->
-<!-- to both developers and tech-savy users. The description can contain but is not limited to: -->
+<!-- to both developers and tech-savy users. -->
 
-<!-- - Classification of the PR as Bugfix, Improvement, Novel Addition, ... -->
-<!-- - A description of the PRs motivation and goal -->
-<!-- - Link to prior discussion, e.g. an issue ticket or community forum thread -->
-<!-- - Does the PR bring new features for the end user? --> 
-<!-- - Does the PR introduce noteworthy modifications for the end user? -->
+<!-- Please keep the following in mind: -->
+
+<!-- - What is the classification of the PR is it a Bugfix, Improvement, Novel Addition, ... ? -->
+<!-- - Did you describe the PRs motivation and goal? -->
+<!-- - Did you provide a link to any prior discussion, e.g. an issue or community forum thread? -->
+<!-- - Did you describe the new features or any noteworthy modifications for the end user? --> 
 <!-- - Was the documentation (e.g. the addon README) updated accordingly? -->
 <!-- - Does your contribution follow the coding guidelines: -->
 <!--   http://docs.openhab.org/developers/development/guidelines.html -->
