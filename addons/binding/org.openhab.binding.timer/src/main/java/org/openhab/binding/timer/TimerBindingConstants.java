@@ -8,7 +8,11 @@
  */
 package org.openhab.binding.timer;
 
+import java.util.Set;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link TimerBindingConstants} class defines common constants, which are
@@ -28,6 +32,10 @@ public class TimerBindingConstants {
     public static final ThingTypeUID THING_TYPE_ONE_TIME_BY_DELAY_TIMER = new ThingTypeUID(BINDING_ID,
             "oneTimeByDelayTimer");
     public static final ThingTypeUID THING_TYPE_MONTHLY_TIMER = new ThingTypeUID(BINDING_ID, "monthlyTimer");
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DAILY_TIMER,
+            THING_TYPE_MONTHLY_TIMER, THING_TYPE_ONE_TIME_BY_DATE_TIMER, THING_TYPE_ONE_TIME_BY_DELAY_TIMER,
+            THING_TYPE_PERIODIC_TIMER);
 
     // List of all Channel ids
     public static final String CHANNEL_ENABLED = "enabled";
