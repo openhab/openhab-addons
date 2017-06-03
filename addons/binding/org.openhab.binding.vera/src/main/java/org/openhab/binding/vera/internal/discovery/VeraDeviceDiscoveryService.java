@@ -76,14 +76,10 @@ public class VeraDeviceDiscoveryService extends AbstractDiscoveryService impleme
                     && callback.getExistingThing(thingUID) == null) {
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(device.getName())
                         .withBridge(bridgeUID).withProperty(DEVICE_CONFIG_ID, device.getId())
-                        .withProperty(PROP_ROOM, device.getRoomName())
                         .withProperty(DEVICE_PROP_CATEGORY, device.getCategory())
                         .withProperty(DEVICE_PROP_SUBCATEGORY, device.getSubcategory()).build();
                 thingDiscovered(discoveryResult);
                 logger.debug("Vera device found: {}, {}", device.getId(), device.getName());
-            } else {
-                logger.debug("Device already exists: UID={}, id={}, name={}", thingUID, device.getId(),
-                        device.getName());
             }
         }
 
@@ -93,12 +89,9 @@ public class VeraDeviceDiscoveryService extends AbstractDiscoveryService impleme
             if (callback != null && callback.getExistingDiscoveryResult(thingUID) == null
                     && callback.getExistingThing(thingUID) == null) {
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(scene.getName())
-                        .withBridge(bridgeUID).withProperty(SCENE_CONFIG_ID, scene.getId())
-                        .withProperty(PROP_ROOM, scene.getRoomName()).build();
+                        .withBridge(bridgeUID).withProperty(SCENE_CONFIG_ID, scene.getId()).build();
                 thingDiscovered(discoveryResult);
                 logger.debug("Vera scene found: {}, {}", scene.getId(), scene.getName());
-            } else {
-                logger.debug("Scene already exists: UID={}, id={}, name={}", thingUID, scene.getId(), scene.getName());
             }
         }
     }

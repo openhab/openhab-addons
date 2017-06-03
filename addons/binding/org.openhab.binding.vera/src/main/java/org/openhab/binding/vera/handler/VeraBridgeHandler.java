@@ -8,15 +8,19 @@
  */
 package org.openhab.binding.vera.handler;
 
+import static org.openhab.binding.vera.VeraBindingConstants.*;
+
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.vera.config.VeraBridgeConfiguration;
 import org.openhab.binding.vera.controller.Controller;
@@ -78,12 +82,10 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Vera controller ...");
-
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
-
         mConfig = getConfigAs(VeraBridgeConfiguration.class);
         if (mConfig != null) {
-            controller = new Controller(mConfig.getVeraIpAddress(), "" + mConfig.getVeraPort());
+            controller = new Controller(mConfig);
             scheduler.execute(new Initializer());
         }
     }
@@ -101,7 +103,11 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         logger.debug("Handle Vera configuration update ...");
+        if (pollingJob != null) {
+            pollingJob.cancel(false);
+        }
         initialize();
+        refreshAllThings();
         super.handleConfigurationUpdate(configurationParameters);
     }
 
@@ -114,12 +120,37 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
                     logger.debug("Connection to bridge {} restored.", getThing().getLabel());
                 }
+                refreshAllThings();
             } else if (getThing().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                         "Error occurred when polling bridge.");
             }
         }
     };
+
+    private void refreshAllThings() {
+        logger.debug("Handle bridge refresh command for all configured things ...");
+        for (Thing thing : getThing().getThings()) {
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof VeraDeviceHandler) {
+                logger.debug("Refreshing device: {}", thing.getLabel());
+                ((VeraDeviceHandler) handler).refreshAllChannels();
+            } else if (handler instanceof VeraSceneHandler) {
+                logger.debug("Refreshing scene: {}", thing.getLabel());
+                ((VeraSceneHandler) handler).refreshAllChannels();
+            }
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Handle command for channel: {} with command: {}", channelUID.getId(), command.toString());
+        if (channelUID.getId().equals(ACTIONS_CHANNEL)) {
+            if (command.toString().equals(ACTIONS_CHANNEL_OPTION_REFRESH)) {
+                refreshAllThings();
+            }
+        }
+    }
 
     protected VeraBridgeConfiguration getVeraBridgeConfiguration() {
         return mConfig;
@@ -131,9 +162,5 @@ public class VeraBridgeHandler extends BaseBridgeHandler {
 
     public Sdata getData() {
         return controller.getSdata();
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
     }
 }

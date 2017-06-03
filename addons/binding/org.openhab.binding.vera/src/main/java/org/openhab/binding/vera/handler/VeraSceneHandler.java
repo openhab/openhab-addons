@@ -12,8 +12,6 @@ import static org.openhab.binding.vera.VeraBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -31,7 +29,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.vera.VeraBindingConstants;
 import org.openhab.binding.vera.config.VeraSceneConfiguration;
 import org.openhab.binding.vera.controller.json.Scene;
 import org.slf4j.Logger;
@@ -46,13 +43,10 @@ import org.slf4j.LoggerFactory;
 public class VeraSceneHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private ScenePolling scenePolling;
-    private ScheduledFuture<?> pollingJob;
     private VeraSceneConfiguration mConfig;
 
     public VeraSceneHandler(Thing thing) {
         super(thing);
-        scenePolling = new ScenePolling();
     }
 
     private class Initializer implements Runnable {
@@ -71,18 +65,8 @@ public class VeraSceneHandler extends BaseThingHandler {
                     Scene scene = veraBridgeHandler.getController().getScene(mConfig.getSceneId());
                     if (scene != null) {
                         logger.debug("Found {} scene", scene.getName());
+                        updateLabelAndLocation(scene.getName(), scene.getRoomName());
                         addSceneAsChannel(scene);
-                    }
-
-                    // Initialize scene polling
-                    if (pollingJob == null || pollingJob.isCancelled()) {
-                        logger.debug("Starting polling job at intervall {}",
-                                veraBridgeHandler.getVeraBridgeConfiguration().getPollingInterval());
-                        pollingJob = scheduler.scheduleWithFixedDelay(scenePolling, 10,
-                                veraBridgeHandler.getVeraBridgeConfiguration().getPollingInterval(), TimeUnit.SECONDS);
-                    } else {
-                        // Called when thing or bridge updated ...
-                        logger.debug("Polling is already active");
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
@@ -123,7 +107,6 @@ public class VeraSceneHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        setLocation();
         logger.debug("Initializing Vera scene handler ...");
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                 "Checking configuration and bridge...");
@@ -142,10 +125,6 @@ public class VeraSceneHandler extends BaseThingHandler {
         if (mConfig.getSceneId() != null) {
             mConfig.setSceneId(null);
         }
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
         super.dispose();
     }
 
@@ -159,6 +138,20 @@ public class VeraSceneHandler extends BaseThingHandler {
         } else if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             // Initialize thing, if all OK the status of scene thing will be ONLINE
             scheduler.execute(new Initializer());
+        }
+    }
+
+    private void updateLabelAndLocation(String label, String location) {
+        if (!label.equals(thing.getLabel()) || !location.equals(thing.getLocation())) {
+            logger.debug("Set location to {}", location);
+            ThingBuilder thingBuilder = editThing();
+            if (!label.equals(thing.getLabel())) {
+                thingBuilder.withLabel(thing.getLabel());
+            }
+            if (!location.equals(thing.getLocation())) {
+                thingBuilder.withLocation(location);
+            }
+            updateThing(thingBuilder.build());
         }
     }
 
@@ -176,19 +169,6 @@ public class VeraSceneHandler extends BaseThingHandler {
         }
     };
 
-    private synchronized void setLocation() {
-        Map<String, String> properties = getThing().getProperties();
-        // Load location from properties
-        String location = properties.get(VeraBindingConstants.PROP_ROOM);
-        if (location != null && !location.isEmpty() && getThing().getLocation() == null) {
-            logger.debug("Set location to {}", location);
-            ThingBuilder thingBuilder = editThing();
-            thingBuilder.withLocation(location);
-            thingBuilder.withLabel(thing.getLabel());
-            updateThing(thingBuilder.build());
-        }
-    }
-
     protected void refreshAllChannels() {
         scheduler.execute(new ScenePolling());
     }
@@ -205,19 +185,21 @@ public class VeraSceneHandler extends BaseThingHandler {
         if (sceneId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     "Not found sceneId for channel: " + channel.getChannelTypeUID());
-            logger.debug("Vera scene disconnected");
+            logger.debug("Vera scene disconnected: {}", thing.getLabel());
             return;
         }
 
         Scene scene = veraBridgeHandler.getController().getScene(sceneId);
         if (scene == null) {
-            logger.debug("Vera scene not found.");
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Channel refresh for sceneId: " + sceneId
                     + " with channel: " + channel.getChannelTypeUID() + " failed!");
-        } else if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            ThingStatusInfo statusInfo = veraBridgeHandler.getThing().getStatusInfo();
-            updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
+            logger.debug("Vera scene disconnected: {}", sceneId);
+            return;
         }
+
+        updateLabelAndLocation(scene.getName(), scene.getRoomName());
+        ThingStatusInfo statusInfo = veraBridgeHandler.getThing().getStatusInfo();
+        updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
     }
 
     @Override
@@ -228,7 +210,7 @@ public class VeraSceneHandler extends BaseThingHandler {
             logger.debug("Vera bridge handler not found or not ONLINE.");
             return;
         }
-        super.channelLinked(channelUID); // performs a refresh command
+        super.channelLinked(channelUID);
     }
 
     @Override

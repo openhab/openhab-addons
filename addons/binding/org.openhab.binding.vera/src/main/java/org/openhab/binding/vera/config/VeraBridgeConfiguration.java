@@ -18,53 +18,26 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Dmitriy Ponomarev
  */
 public class VeraBridgeConfiguration {
-    private String veraControllerIpAddress;
-    private Integer veraControllerPort;
-    private String veraControllerProtocol;
-
-    private String veraControllerUsername;
-    private String veraControllerPassword;
-
+    private String veraIpAddress;
+    private Integer veraPort;
     private Integer pollingInterval;
+    private Boolean clearNames;
+    private String defaulRoomName;
 
     public String getVeraIpAddress() {
-        return veraControllerIpAddress;
+        return veraIpAddress;
     }
 
     public void setVeraIpAddress(String ipAddress) {
-        this.veraControllerIpAddress = ipAddress;
+        this.veraIpAddress = ipAddress;
     }
 
     public Integer getVeraPort() {
-        return veraControllerPort;
+        return veraPort;
     }
 
     public void setVeraPort(Integer port) {
-        this.veraControllerPort = port;
-    }
-
-    public String getVeraProtocol() {
-        return veraControllerProtocol;
-    }
-
-    public void setVeraProtocol(String protocol) {
-        this.veraControllerProtocol = protocol;
-    }
-
-    public String getVeraUsername() {
-        return veraControllerUsername;
-    }
-
-    public void setVeraUsername(String username) {
-        this.veraControllerUsername = username;
-    }
-
-    public String getVeraPassword() {
-        return veraControllerPassword;
-    }
-
-    public void setVeraPassword(String password) {
-        this.veraControllerPassword = password;
+        this.veraPort = port;
     }
 
     public Integer getPollingInterval() {
@@ -75,10 +48,28 @@ public class VeraBridgeConfiguration {
         this.pollingInterval = pollingInterval;
     }
 
+    public Boolean getClearNames() {
+        return clearNames;
+    }
+
+    public void setClearNames(Boolean clearNames) {
+        this.clearNames = clearNames;
+    }
+
+    public String getDefaulRoomName() {
+        return defaulRoomName;
+    }
+
+    public void setDefaulRoomName(String defaulRoomName) {
+        this.defaulRoomName = defaulRoomName;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this).append(BRIDGE_CONFIG_VERA_SERVER_IP_ADDRESS, this.getVeraIpAddress())
                 .append(BRIDGE_CONFIG_VERA_SERVER_PORT, this.getVeraPort())
-                .append(BRIDGE_CONFIG_POLLING_INTERVAL, this.getPollingInterval()).toString();
+                .append(BRIDGE_CONFIG_POLLING_INTERVAL, this.getPollingInterval())
+                .append(BRIDGE_CONFIG_CLEAR_NAMES, this.getClearNames())
+                .append(BRIDGE_CONFIG_DEFAULT_ROOM_NAME, this.getDefaulRoomName()).toString();
     }
 }

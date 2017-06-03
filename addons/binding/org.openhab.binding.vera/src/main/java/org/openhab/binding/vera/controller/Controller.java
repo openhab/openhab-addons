@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openhab.binding.vera.config.VeraBridgeConfiguration;
 import org.openhab.binding.vera.controller.json.Device;
 import org.openhab.binding.vera.controller.json.Room;
 import org.openhab.binding.vera.controller.json.Scene;
@@ -33,15 +34,17 @@ import com.google.gson.Gson;
 public class Controller {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final VeraBridgeConfiguration config;
     private final String veraHost;
     private final String veraPort;
     private final Gson gson;
 
     private Sdata sdata;
 
-    public Controller(String veraHost, String veraPort) {
-        this.veraHost = veraHost;
-        this.veraPort = veraPort;
+    public Controller(VeraBridgeConfiguration config) {
+        this.config = config;
+        this.veraHost = config.getVeraIpAddress();
+        this.veraPort = "" + config.getVeraPort();
         this.gson = new Gson();
 
         updateSdata();
@@ -60,11 +63,13 @@ public class Controller {
             roomMap.put(r.getId(), r);
         }
         for (Device d : data.getDevices()) {
-            d.setName(replaceTrash(d.getName()));
+            if (config.getClearNames()) {
+                d.setName(replaceTrash(d.getName()));
+            }
             if (d.getRoom() != null && roomMap.get(d.getRoom()) != null) {
                 d.setRoomName(roomMap.get(d.getRoom()).getName());
             } else {
-                d.setRoomName("no room");
+                d.setRoomName(config.getDefaulRoomName());
             }
             try {
                 d.setCategoryType(CategoryType.values()[Integer.parseInt(d.getCategory())]);
@@ -73,10 +78,13 @@ public class Controller {
             }
         }
         for (Scene s : data.getScenes()) {
+            if (config.getClearNames()) {
+                s.setName(replaceTrash(s.getName()));
+            }
             if (s.getRoom() != null && roomMap.get(s.getRoom()) != null) {
                 s.setRoomName(roomMap.get(s.getRoom()).getName());
             } else {
-                s.setRoomName("no room");
+                s.setRoomName(config.getDefaulRoomName());
             }
         }
     }
@@ -106,7 +114,7 @@ public class Controller {
             connection.setRequestMethod("GET");
             connection.getResponseMessage();
         } catch (IOException e) {
-            logger.warn("Error while get getJson: {}, {}", request, e);
+            logger.warn("Error while get getJson: {} ", request, e);
             return false;
         }
         return true;
@@ -125,7 +133,7 @@ public class Controller {
     private void setStatus(Device d, String status) {
         d.setStatus(status);
         String service = "urn:upnp-org:serviceId:SwitchPower1";
-        if ("7".equals(d.getCategory())) {
+        if (CategoryType.DoorLock.equals(d.getCategoryType())) {
             service = "urn:micasaverde-com:serviceId:DoorLock1";
         }
         sendCommand(getUrl() + "?id=action&DeviceNum=" + d.getId() + "&serviceId=" + service
@@ -158,7 +166,7 @@ public class Controller {
             denormalizeSdata(data);
             sdata = data;
         } catch (IOException e) {
-            logger.warn("Failed to update sdata: {}", e);
+            logger.warn("Failed to update sdata: {} ", getUrl(), e);
         }
     }
 

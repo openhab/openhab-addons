@@ -77,7 +77,7 @@ public class VeraBridgeDiscoveryService extends AbstractDiscoveryService impleme
                 }
             }
         } catch (SocketException e) {
-            logger.warn("Error occurred while searching Vera controller: {}", e);
+            logger.warn("Error occurred while searching Vera controller: ", e);
         }
     }
 
@@ -122,7 +122,7 @@ public class VeraBridgeDiscoveryService extends AbstractDiscoveryService impleme
                     }
                 }
             } catch (IOException e) {
-                logger.warn("Discovery resulted in an unexpected exception: {}", e);
+                logger.warn("Discovery resulted in an unexpected exception: ", e);
             }
         }
     }

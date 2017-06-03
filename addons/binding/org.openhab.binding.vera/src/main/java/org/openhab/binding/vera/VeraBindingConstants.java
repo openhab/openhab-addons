@@ -60,7 +60,6 @@ public class VeraBindingConstants {
     public static final String SENSOR_SMOKE_CHANNEL = "sensorSmoke";
     public static final String SENSOR_CO_CHANNEL = "sensorCo";
     public static final String SENSOR_FLOOD_CHANNEL = "sensorFlood";
-    public static final String SENSOR_TAMPER_CHANNEL = "sensorTamper";
     public static final String SENSOR_DOOR_WINDOW_CHANNEL = "sensorDoorWindow";
     public static final String SENSOR_MOTION_CHANNEL = "sensorMotion";
 
@@ -72,11 +71,11 @@ public class VeraBindingConstants {
     public static final String ACTIONS_CHANNEL_OPTION_REFRESH = "REFRESH";
 
     /* Bridge config properties */
-    public static final String BRIDGE_CONFIG_VERA_SERVER_IP_ADDRESS = "veraControllerIpAddress";
+    public static final String BRIDGE_CONFIG_VERA_SERVER_IP_ADDRESS = "veraIpAddress";
     public static final String BRIDGE_CONFIG_VERA_SERVER_PORT = "veraControllerPort";
     public static final String BRIDGE_CONFIG_POLLING_INTERVAL = "pollingInterval";
-
-    public static final String PROP_ROOM = "room";
+    public static final String BRIDGE_CONFIG_CLEAR_NAMES = "clearNames";
+    public static final String BRIDGE_CONFIG_DEFAULT_ROOM_NAME = "defaultRoomName";
 
     public static final String DEVICE_CONFIG_ID = "deviceId";
     public static final String DEVICE_PROP_CATEGORY = "category";

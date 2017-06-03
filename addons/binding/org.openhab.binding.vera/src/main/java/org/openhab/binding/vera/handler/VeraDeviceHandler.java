@@ -12,8 +12,6 @@ import static org.openhab.binding.vera.VeraBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -34,7 +32,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.vera.VeraBindingConstants;
 import org.openhab.binding.vera.config.VeraDeviceConfiguration;
 import org.openhab.binding.vera.controller.json.Device;
 import org.openhab.binding.vera.internal.converter.VeraDeviceStateConverter;
@@ -50,13 +47,10 @@ import org.slf4j.LoggerFactory;
 public class VeraDeviceHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private DevicePolling devicePolling;
-    private ScheduledFuture<?> pollingJob;
     private VeraDeviceConfiguration mConfig;
 
     public VeraDeviceHandler(Thing thing) {
         super(thing);
-        devicePolling = new DevicePolling();
     }
 
     private class Initializer implements Runnable {
@@ -73,20 +67,10 @@ public class VeraDeviceHandler extends BaseThingHandler {
 
                     logger.debug("Add channels");
                     Device device = veraBridgeHandler.getController().getDevice(mConfig.getDeviceId());
-                    if (device != null && !"0".equals(device.getCategory())) {
+                    if (device != null) {
                         logger.debug("Found {} device", device.getName());
+                        updateLabelAndLocation(device.getName(), device.getRoomName());
                         addDeviceAsChannel(device);
-                    }
-
-                    // Initialize device polling
-                    if (pollingJob == null || pollingJob.isCancelled()) {
-                        logger.debug("Starting polling job at intervall {}",
-                                veraBridgeHandler.getVeraBridgeConfiguration().getPollingInterval());
-                        pollingJob = scheduler.scheduleWithFixedDelay(devicePolling, 10,
-                                veraBridgeHandler.getVeraBridgeConfiguration().getPollingInterval(), TimeUnit.SECONDS);
-                    } else {
-                        // Called when thing or bridge updated ...
-                        logger.debug("Polling is already active");
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
@@ -127,7 +111,6 @@ public class VeraDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        setLocation();
         logger.debug("Initializing Vera device handler ...");
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                 "Checking configuration and bridge...");
@@ -146,10 +129,6 @@ public class VeraDeviceHandler extends BaseThingHandler {
         if (mConfig != null && mConfig.getDeviceId() != null) {
             mConfig.setDeviceId(null);
         }
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
         super.dispose();
     }
 
@@ -163,6 +142,20 @@ public class VeraDeviceHandler extends BaseThingHandler {
         } else if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             // Initialize thing, if all OK the status of device thing will be ONLINE
             scheduler.execute(new Initializer());
+        }
+    }
+
+    private void updateLabelAndLocation(String label, String location) {
+        if (!label.equals(thing.getLabel()) || !location.equals(thing.getLocation())) {
+            logger.debug("Set location to {}", location);
+            ThingBuilder thingBuilder = editThing();
+            if (!label.equals(thing.getLabel())) {
+                thingBuilder.withLabel(thing.getLabel());
+            }
+            if (!location.equals(thing.getLocation())) {
+                thingBuilder.withLocation(location);
+            }
+            updateThing(thingBuilder.build());
         }
     }
 
@@ -180,19 +173,6 @@ public class VeraDeviceHandler extends BaseThingHandler {
         }
     };
 
-    private synchronized void setLocation() {
-        Map<String, String> properties = getThing().getProperties();
-        // Load location from properties
-        String location = properties.get(VeraBindingConstants.PROP_ROOM);
-        if (location != null && !location.isEmpty() && getThing().getLocation() == null) {
-            logger.debug("Set location to {}", location);
-            ThingBuilder thingBuilder = editThing();
-            thingBuilder.withLocation(location);
-            thingBuilder.withLabel(thing.getLabel());
-            updateThing(thingBuilder.build());
-        }
-    }
-
     protected void refreshAllChannels() {
         scheduler.execute(new DevicePolling());
     }
@@ -209,7 +189,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
         if (deviceId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     "Not found deviceId for channel: " + channel.getChannelTypeUID());
-            logger.debug("Vera device disconnected");
+            logger.debug("Vera device disconnected: {}", deviceId);
             return;
         }
 
@@ -217,10 +197,11 @@ public class VeraDeviceHandler extends BaseThingHandler {
         if (device == null) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Channel refresh for device: " + deviceId
                     + " with channel: " + channel.getChannelTypeUID() + " failed!");
-            logger.debug("Vera device disconnected");
+            logger.debug("Vera device disconnected: {}", deviceId);
             return;
         }
 
+        updateLabelAndLocation(device.getName(), device.getRoomName());
         updateState(channel.getUID(), VeraDeviceStateConverter.toState(device, channel, logger));
         ThingStatusInfo statusInfo = veraBridgeHandler.getThing().getStatusInfo();
         updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
@@ -234,7 +215,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
             logger.debug("Vera bridge handler not found or not ONLINE.");
             return;
         }
-        super.channelLinked(channelUID); // performs a refresh command
+        super.channelLinked(channelUID);
     }
 
     @Override
