@@ -54,7 +54,7 @@ The following channels are currently supported.
 
 | Channel Type ID           | Item Type     | Category      | Vera category-subcategory    |
 | ------------------------- | ------------- | ------------- | ---------------------------- |
-| switchMultilevel          | Dimmer        | Switch        | 2-3: Dimmable Light          |
+| switchMultilevel          | Dimmer        | Switch        | 2-(1-3): Dimmable Light      |
 | switchColor               | Color         | ColorLight    | 2-4: Dimmable Light - TODO   |
 | switchBinary              | Switch        | Switch        | 3: Switch                    |
 | sensorDoorWindow          | Contact       | Contact       | 4-1: Security Sensor         |
@@ -81,20 +81,20 @@ The following channels are currently supported.
 
 ### Unsupported Vera device categories
 
-6: Camera
-9: Remote Control
-10: IR Transmitter
-11: Generic IO
-13: Serial Port
-15: A/V
-19: Z-Wave Interface
-20: Insteon Interface
-22: Alarm Panel
-23: Alarm Partition
-24: Siren
-25: Weather
-26: Philips Controller
-27: Appliance
+- 6: Camera
+- 9: Remote Control
+- 10: IR Transmitter
+- 11: Generic IO
+- 13: Serial Port
+- 15: A/V
+- 19: Z-Wave Interface
+- 20: Insteon Interface
+- 22: Alarm Panel
+- 23: Alarm Partition
+- 24: Siren
+- 25: Weather
+- 26: Philips Controller
+- 27: Appliance
 
 The integration for most of these types isn't planned.
 
