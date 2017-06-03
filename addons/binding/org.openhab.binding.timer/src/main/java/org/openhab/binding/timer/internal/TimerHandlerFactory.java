@@ -10,15 +10,14 @@ package org.openhab.binding.timer.internal;
 
 import static org.openhab.binding.timer.TimerBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.timer.handler.DailyTimerHandler;
+import org.openhab.binding.timer.handler.MonthlyTimerHandler;
+import org.openhab.binding.timer.handler.OnceDateTimeTimerHandler;
+import org.openhab.binding.timer.handler.OnceDelayTimerHandler;
 import org.openhab.binding.timer.handler.PeriodicTimerHandler;
 
 /**
@@ -28,10 +27,6 @@ import org.openhab.binding.timer.handler.PeriodicTimerHandler;
  * @author Neil Renaud - Initial contribution
  */
 public class TimerHandlerFactory extends BaseThingHandlerFactory {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new LinkedHashSet<ThingTypeUID>(Arrays.asList(
-            new ThingTypeUID[] { THING_TYPE_DAILY_TIMER, THING_TYPE_MONTHLY_TIMER, THING_TYPE_ONE_TIME_BY_DATE_TIMER,
-                    THING_TYPE_ONE_TIME_BY_DELAY_TIMER, THING_TYPE_PERIODIC_TIMER }));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,6 +41,12 @@ public class TimerHandlerFactory extends BaseThingHandlerFactory {
             return new DailyTimerHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_PERIODIC_TIMER)) {
             return new PeriodicTimerHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_MONTHLY_TIMER)) {
+            return new MonthlyTimerHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ONE_TIME_BY_DATE_TIMER)) {
+            return new OnceDateTimeTimerHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ONE_TIME_BY_DELAY_TIMER)) {
+            return new OnceDelayTimerHandler(thing);
         }
 
         return null;
