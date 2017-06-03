@@ -42,6 +42,6 @@ public class TankerkoenigBindingConstants {
     public static final String CONFIG_API_KEY = "apikey";
     public static final String CONFIG_REFRESH = "refresh";
     public static final String CONFIG_SETUP_MODE = "setupmode";
-    public static final String CONFIG_USE_OPENINGTIME = "use_OpeningTime";
+    public static final String CONFIG_USE_OPENINGTIME = "useOpeningTime";
 
 }
