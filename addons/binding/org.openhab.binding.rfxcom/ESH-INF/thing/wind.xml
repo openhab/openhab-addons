@@ -15,9 +15,10 @@
 		<description>A Wind device.</description>
 
 		<channels>
-			<channel id="avgWindSpeed" typeId="windspeed" />
+			<channel id="avgWindSpeed" typeId="windspeed">
 				<label>Average Wind Speed</label>
 				<description>Average wind speed in meters per second</description>
+			</channel>
 			<channel id="windSpeed" typeId="windspeed">
 				<label>Wind Gust</label>
 				<description>Wind gust in meters per second</description>
