@@ -253,6 +253,9 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                                 case TOTAL_USAGE:
                                     updateState(CHANNEL_TOTAL_USAGE, message.convertToState(valueSelector));
                                     break;
+                                case UV:
+                                    updateState(CHANNEL_UV, message.convertToState(valueSelector));
+                                    break;
                                 case VOLTAGE:
                                     updateState(CHANNEL_VOLTAGE, message.convertToState(valueSelector));
                                     break;

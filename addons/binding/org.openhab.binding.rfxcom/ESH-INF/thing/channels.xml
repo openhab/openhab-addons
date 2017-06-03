@@ -125,6 +125,13 @@
 		<state pattern="%.2f Ah" readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="uv">
+		<item-type>Number</item-type>
+		<label>UV</label>
+		<description>Current UV level</description>
+		<state pattern="%.1f" readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
