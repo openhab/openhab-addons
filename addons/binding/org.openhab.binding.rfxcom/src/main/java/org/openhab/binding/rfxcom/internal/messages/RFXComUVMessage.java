@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -23,7 +24,8 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
 /**
  * RFXCOM data class for UV and temperature message.
  *
- * @author Mike Jagdis - Initial contribution
+ * @author Damien Servant - OpenHAB1 version
+ * @author Mike Jagdis - Initial contribution, OpenHAB2 version
  */
 public class RFXComUVMessage extends RFXComBaseMessage {
 
@@ -156,7 +158,11 @@ public class RFXComUVMessage extends RFXComBaseMessage {
 
             } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
 
-                state = new DecimalType(temperature);
+                if (subType == SubType.UV3) {
+                    state = new DecimalType(temperature);
+                } else {
+                    state = UnDefType.UNDEF;
+                }
 
             } else {
                 throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
