@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,9 +88,10 @@ public class DailyTimerHandler extends BaseThingHandler {
     private void handleTimeRefresh(ChannelUID channelUID) {
         DecimalType state = times.get(channelUID.getId());
         if (state == null) {
-            state = new DecimalType(1);
+            updateState(channelUID.getId(), UnDefType.UNDEF);
+        } else {
+            updateState(channelUID.getId(), state);
         }
-        updateState(channelUID.getId(), state);
     }
 
     @Override
@@ -237,7 +239,22 @@ public class DailyTimerHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO: Need to initalise from previous state...
+        updateState(CHANNEL_ENABLED, UnDefType.UNDEF);
+        updateState(CHANNEL_DESCRIPTION, UnDefType.UNDEF);
+        updateState(CHANNEL_STATUS, UnDefType.UNDEF);
+        updateState(CHANNEL_ON_TIME_HOURS, UnDefType.UNDEF);
+        updateState(CHANNEL_ON_TIME_MINUTES, UnDefType.UNDEF);
+        updateState(CHANNEL_ON_TIME_SECONDS, UnDefType.UNDEF);
+        updateState(CHANNEL_OFF_TIME_HOURS, UnDefType.UNDEF);
+        updateState(CHANNEL_OFF_TIME_MINUTES, UnDefType.UNDEF);
+        updateState(CHANNEL_OFF_TIME_SECONDS, UnDefType.UNDEF);
+        updateState(CHANNEL_RUN_ON_MON, UnDefType.UNDEF);
+        updateState(CHANNEL_RUN_ON_TUE, UnDefType.UNDEF);
+        updateState(CHANNEL_RUN_ON_WED, UnDefType.UNDEF);
+        updateState(CHANNEL_RUN_ON_THU, UnDefType.UNDEF);
+        updateState(CHANNEL_RUN_ON_FRI, UnDefType.UNDEF);
+        updateState(CHANNEL_RUN_ON_SAT, UnDefType.UNDEF);
+        updateState(CHANNEL_RUN_ON_SUN, UnDefType.UNDEF);
         updateStatus(ThingStatus.ONLINE);
     }
 
