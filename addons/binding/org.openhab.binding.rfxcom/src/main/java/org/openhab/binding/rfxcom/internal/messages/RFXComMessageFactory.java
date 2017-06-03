@@ -59,7 +59,7 @@ public class RFXComMessageFactory {
                     put(PacketType.TEMPERATURE_HUMIDITY_BAROMETRIC, RFXComTemperatureHumidityBarometricMessage.class);
                     put(PacketType.RAIN, RFXComRainMessage.class);
                     put(PacketType.WIND, RFXComWindMessage.class);
-                    // put(PacketType.UV, RFXComUVMessage.class);
+                    put(PacketType.UV, RFXComUVMessage.class);
                     put(PacketType.DATE_TIME, RFXComDateTimeMessage.class);
                     // put(PacketType.CURRENT, RFXComCurrentMessage.class);
                     put(PacketType.ENERGY, RFXComEnergyMessage.class);

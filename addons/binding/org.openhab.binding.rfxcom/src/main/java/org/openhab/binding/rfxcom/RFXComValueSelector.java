@@ -33,6 +33,7 @@ public enum RFXComValueSelector {
     MOOD(RFXComBindingConstants.CHANNEL_MOOD, NumberItem.class),
     SIGNAL_LEVEL(RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL, NumberItem.class),
     DIMMING_LEVEL(RFXComBindingConstants.CHANNEL_DIMMING_LEVEL, DimmerItem.class),
+    UV(RFXComBindingConstants.CHANNEL_UV, NumberItem.class),
     TEMPERATURE(RFXComBindingConstants.CHANNEL_TEMPERATURE, NumberItem.class),
     HUMIDITY(RFXComBindingConstants.CHANNEL_HUMIDITY, NumberItem.class),
     HUMIDITY_STATUS(RFXComBindingConstants.CHANNEL_HUMIDITY_STATUS, StringItem.class),
