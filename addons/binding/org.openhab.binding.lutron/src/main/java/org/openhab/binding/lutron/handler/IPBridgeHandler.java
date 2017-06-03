@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Allan Tong - Initial contribution
  */
 public class IPBridgeHandler extends BaseBridgeHandler {
-    private static final Pattern STATUS_REGEX = Pattern.compile("~(OUTPUT|DEVICE|SYSTEM),([^,]+),(.*)");
+    private static final Pattern STATUS_REGEX = Pattern.compile("(?:GNET> )?~(OUTPUT|DEVICE|SYSTEM),([^,]+),(.*)");
 
     private static final String DB_UPDATE_DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
 
