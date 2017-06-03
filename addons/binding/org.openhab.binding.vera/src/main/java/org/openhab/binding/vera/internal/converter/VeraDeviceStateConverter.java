@@ -66,66 +66,40 @@ public class VeraDeviceStateConverter {
             case HVAC: // TODO
                 logger.warn("TODO: {}, {}", device, device.getCategoryType());
                 break;
-            case Camera: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
             case DoorLock:
                 return getBinaryState(device.getLocked());
             case WindowCovering:
                 return getPercentState(device.getLevel());
-            case RemoteControl: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
-            case IRTransmitter: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
-            case GenericIO: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
             case GenericSensor:
                 return getMultilevelState(device.getLevel());
-            case SerialPort: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
             case SceneController:
                 return getBinaryState(device.getStatus());
-            case AV: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
             case HumiditySensor:
                 return getMultilevelState(device.getHumidity());
             case TemperatureSensor:
                 return getMultilevelState(device.getTemperature());
             case LightSensor:
                 return getMultilevelState(device.getLight());
-            case ZWaveInterface: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
-            case InsteonInterface: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
             case PowerMeter:
                 return getMultilevelState(device.getLevel());
-            case AlarmPanel: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
-            case AlarmPartition: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
-            case Siren: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
-            case Weather: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
-            case PhilipsController: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
-            case Appliance: // TODO
-                logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                break;
             case UVSensor:
                 return getMultilevelState(device.getLevel());
+            case Camera:
+            case AV:
+            case ZWaveInterface:
+            case InsteonInterface:
+            case RemoteControl:
+            case IRTransmitter:
+            case GenericIO:
+            case SerialPort:
+            case AlarmPanel:
+            case AlarmPartition:
+            case Siren:
+            case Weather:
+            case PhilipsController:
+            case Appliance:
+                logger.warn("TODO: {}, {}", device, device.getCategoryType());
+                break;
             case Unknown:
                 logger.warn("Unknown device type: {}, {}", device, device.getCategory());
                 break;

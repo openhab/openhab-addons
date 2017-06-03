@@ -345,9 +345,6 @@ public class VeraDeviceHandler extends BaseThingHandler {
                 case HVAC: // TODO
                     logger.warn("TODO: {}, {}", device, device.getCategoryType());
                     break;
-                case Camera: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
                 case DoorLock:
                     id = DOORLOCK_CHANNEL;
                     acceptedItemType = "Switch";
@@ -356,28 +353,13 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     id = SWITCH_ROLLERSHUTTER_CHANNEL;
                     acceptedItemType = "Rollershutter";
                     break;
-                case RemoteControl: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
-                case IRTransmitter: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
-                case GenericIO: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
                 case GenericSensor:
                     id = SENSOR_BINARY_CHANNEL;
                     acceptedItemType = "Switch";
                     break;
-                case SerialPort: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
                 case SceneController:
                     id = SWITCH_BINARY_CHANNEL;
                     acceptedItemType = "Switch";
-                    break;
-                case AV: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
                     break;
                 case HumiditySensor:
                     id = SENSOR_HUMIDITY_CHANNEL;
@@ -391,37 +373,29 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     id = SENSOR_LUMINOSITY_CHANNEL;
                     acceptedItemType = "Number";
                     break;
-                case ZWaveInterface: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
-                case InsteonInterface: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
                 case PowerMeter:
                     id = SENSOR_ENERGY_CHANNEL;
                     acceptedItemType = "Number";
                     break;
-                case AlarmPanel: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
-                case AlarmPartition: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
-                case Siren: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
-                case Weather: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
-                case PhilipsController: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
-                case Appliance: // TODO
-                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
-                    break;
                 case UVSensor:
                     id = SENSOR_ULTRAVIOLET_CHANNEL;
                     acceptedItemType = "Number";
+                    break;
+                case Camera:
+                case RemoteControl:
+                case IRTransmitter:
+                case GenericIO:
+                case SerialPort:
+                case AV:
+                case ZWaveInterface:
+                case InsteonInterface:
+                case AlarmPanel:
+                case AlarmPartition:
+                case Siren:
+                case Weather:
+                case PhilipsController:
+                case Appliance:
+                    logger.warn("TODO: {}, {}", device, device.getCategoryType());
                     break;
                 case Unknown:
                     logger.warn("Unknown device type: {}, {}", device, device.getCategory());
