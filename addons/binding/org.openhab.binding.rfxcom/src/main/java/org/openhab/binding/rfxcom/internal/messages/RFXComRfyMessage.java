@@ -30,8 +30,8 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * RFXCOM data class for RFY (Somfy RTS) message.
  *
  * @author Jürgen Richtsfeld - Initial contribution
- * @author Pauli Anttila
- * @author Mike Jagdis
+ * @author Pauli Anttila - Ported from OpenHAB1
+ * @author Mike Jagdis - Added venetian support and sun+wind detector
  */
 public class RFXComRfyMessage extends RFXComBaseMessage {
 
