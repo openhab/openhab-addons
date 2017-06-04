@@ -51,7 +51,7 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
               (configuration.enableBlindsT1T2T3T4   ? 0x80 : 0x00)
             | (configuration.enableBlindsT0         ? 0x40 : 0x00)
             | (configuration.enableProGuard         ? 0x20 : 0x00)
-         // | (configuration.enableFS20Packets      ? 0x10 : 0x00)
+            | (configuration.enableFS20             ? 0x10 : 0x00)
             | (configuration.enableLaCrosse         ? 0x08 : 0x00)
             | (configuration.enableHidekiUPM        ? 0x04 : 0x00)
             | (configuration.enableADLightwaveRF    ? 0x02 : 0x00)
@@ -69,7 +69,10 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
             | (configuration.enableX10              ? 0x01 : 0x00)
         );
 
-        data[10] = 0;
+        data[10] = (byte)(
+              (configuration.enableHomeConfort      ? 0x02 : 0x00)
+            | (configuration.enableKEELOQ           ? 0x01 : 0x00)
+        );
         data[11] = 0;
         data[12] = 0;
         data[13] = 0;
