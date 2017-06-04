@@ -21,6 +21,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * RFXCOM data class for interface message.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Ivan Martinez - Older firmware support (OH1)
  */
 public class RFXComInterfaceMessage extends RFXComBaseMessage {
 

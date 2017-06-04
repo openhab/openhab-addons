@@ -20,8 +20,8 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
- * @author Mike Jagdis
+ * @author Martin van Wingerden - Initial contribution of empty test
+ * @author Mike Jagdis - added message handling and real test
  * @since 2.0.0
  */
 public class RFXComSecurity2MessageTest {
