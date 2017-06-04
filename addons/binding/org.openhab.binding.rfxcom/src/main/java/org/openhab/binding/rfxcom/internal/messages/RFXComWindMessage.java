@@ -25,6 +25,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Marc SAUVEUR - Initial contribution
  * @author Pauli Anttila
+ * @author Mike Jagdis - Support all available data from sensors
  */
 public class RFXComWindMessage extends RFXComBaseMessage {
 
