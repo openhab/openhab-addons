@@ -198,6 +198,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             Thread.sleep(1000); // Seems we need to wait a bit after initialization or channels won't
                                 // be updated. (making run() and initialize() synchronized doesn't work)
         } catch (InterruptedException e1) {
+            Thread.currentThread().interrupt();
             return;
         }
         while (connected && !exit) {
