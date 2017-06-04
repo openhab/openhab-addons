@@ -151,9 +151,9 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
     public PercentType readVolume() throws IOException {
         String volumeString = readUntil('!');
         int volume;
-        if (volumeString.equals("min")) {
+        if ("min".equals(volumeString)) {
             volume = 0;
-        } else if (volumeString.equals("max")) {
+        } else if ("max".equals(volumeString)) {
             volume = max_vol;
         } else {
             volume = Integer.parseInt(volumeString, 10);
@@ -207,41 +207,41 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
         while (connected && !exit) {
             try {
                 String command = readCommand();
-                if (command.equals("volume")) {
+                if ("volume".equals(command)) {
                     PercentType vol = readVolume();
                     updateState(getThing().getChannel("volume").getUID(), vol);
-                } else if (command.equals("mute")) {
+                } else if ("mute".equals(command)) {
                     String muteState = readUntil('!');
                     updateState(getThing().getChannel("mute").getUID(),
                             "on".equals(muteState) ? OnOffType.ON : OnOffType.OFF);
-                } else if (command.equals("power_off")) {
+                } else if ("power_off".equals(command)) {
                     power = false;
                     updateState(getThing().getChannel("mute").getUID(), OnOffType.OFF);
                     updateState(getThing().getChannel("power").getUID(), OnOffType.OFF);
                     updateState(getThing().getChannel("volume").getUID(), UnDefType.NULL);
                     updateState(getThing().getChannel("source").getUID(), UnDefType.NULL);
-                } else if (command.equals("power_on")) {
+                } else if ("power_on".equals(command)) {
                     power = true;
                     updateState(getThing().getChannel("power").getUID(), OnOffType.ON);
                     powerOnRefresh();
-                } else if (command.equals("power")) {
+                } else if ("power".equals(command)) {
                     String state = readUntil('!');
-                    if (state.equals("on")) {
+                    if ("on".equals(state)) {
                         power = true;
                         updateState(getThing().getChannel("power").getUID(), OnOffType.ON);
                         powerOnRefresh();
-                    } else if (state.equals("standby")) {
+                    } else if ("standby".equals(state)) {
                         updateState(getThing().getChannel("mute").getUID(), OnOffType.OFF);
                         updateState(getThing().getChannel("power").getUID(), OnOffType.OFF);
                         power = false;
                     }
-                } else if (command.equals("dimmer")) {
+                } else if ("dimmer".equals(command)) {
                     updateState(getThing().getChannel("dimmer").getUID(), readDimmer());
-                } else if (command.equals("freq")) {
+                } else if ("freq".equals(command)) {
                     updateState(getThing().getChannel("frequency").getUID(), readFrequency());
-                } else if (command.equals("source")) {
+                } else if ("source".equals(command)) {
                     updateState(getThing().getChannel("source").getUID(), new StringType(readUntil('!')));
-                } else if (command.equals("display")) {
+                } else if ("display".equals(command)) {
                     String str_length = readUntil(',');
                     int length = Integer.parseInt(str_length);
                     byte[] data = new byte[length];
@@ -281,7 +281,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (channelUID.getId().equals("power")) {
+            if ("power".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     sendForce("power_on!");
                 } else if (command == OnOffType.OFF) {
@@ -289,21 +289,21 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 } else if (command instanceof RefreshType) {
                     sendForce("get_current_power!");
                 }
-            } else if (channelUID.getId().equals("mute")) {
+            } else if ("mute".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     send("mute_on!");
                 } else {
                     send("mute_off!");
                 }
-            } else if (channelUID.getId().equals("volume")) {
+            } else if ("volume".equals(channelUID.getId())) {
                 handleVolume(command);
-            } else if (channelUID.getId().equals("dimmer")) {
+            } else if ("dimmer".equals(channelUID.getId())) {
                 // Invert the scale so 100% is brightest
                 if (command instanceof PercentType) {
                     double value = 6 - Math.floor(((PercentType) command).doubleValue() * 6 / 100.0);
                     send("dimmer_" + Integer.toString((int) value) + "!");
                 }
-            } else if (channelUID.getId().equals("source")) {
+            } else if ("source".equals(channelUID.getId())) {
                 if (command instanceof StringType) {
                     send(command.toString() + "!");
                 } else {
