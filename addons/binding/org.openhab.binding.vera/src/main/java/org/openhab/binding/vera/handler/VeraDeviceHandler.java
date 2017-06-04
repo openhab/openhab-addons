@@ -11,7 +11,9 @@ package org.openhab.binding.vera.handler;
 import static org.openhab.binding.vera.VeraBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -70,14 +72,15 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     if (device != null) {
                         logger.debug("Found {} device", device.getName());
                         updateLabelAndLocation(device.getName(), device.getRoomName());
-                        addDeviceAsChannel(device);
+                        addDeviceAsChannel(device,
+                                veraBridgeHandler.getVeraBridgeConfiguration().getHomekitIntegration());
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                             "Controller is not online");
                 }
             } catch (Exception e) {
-                logger.error("Error occurred when adding device as channel: {}", e);
+                logger.error("Error occurred when adding device as channel: ", e);
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                             "Error occurred when adding device as channel: " + e.getMessage());
@@ -282,15 +285,16 @@ public class VeraDeviceHandler extends BaseThingHandler {
         }
     }
 
-    protected synchronized void addDeviceAsChannel(Device device) {
+    protected synchronized void addDeviceAsChannel(Device device, boolean homekitIntegration) {
         if (device != null) {
             logger.debug("Add device as channel: {}", device.getName());
 
             HashMap<String, String> properties = new HashMap<>();
             properties.put("deviceId", device.getId());
 
-            String id = "";
+            String id = null;
             String acceptedItemType = "";
+            String tag = null;
 
             int subcategory = Integer.parseInt(device.getSubcategory());
             switch (device.getCategoryType()) {
@@ -304,16 +308,19 @@ public class VeraDeviceHandler extends BaseThingHandler {
                         case 3:
                             id = SWITCH_MULTILEVEL_CHANNEL;
                             acceptedItemType = "Dimmer";
+                            tag = "Lighting";
                             break;
                         case 4:
                             id = SWITCH_COLOR_CHANNEL;
                             acceptedItemType = "Color";
+                            tag = "Lighting";
                             break;
                     }
                     break;
                 case Switch:
                     id = SWITCH_BINARY_CHANNEL;
                     acceptedItemType = "Switch";
+                    tag = "Switchable";
                     break;
                 case SecuritySensor:
                     switch (subcategory) {
@@ -348,6 +355,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
                 case DoorLock:
                     id = DOORLOCK_CHANNEL;
                     acceptedItemType = "Switch";
+                    tag = "Switchable";
                     break;
                 case WindowCovering:
                     id = SWITCH_ROLLERSHUTTER_CHANNEL;
@@ -364,10 +372,12 @@ public class VeraDeviceHandler extends BaseThingHandler {
                 case HumiditySensor:
                     id = SENSOR_HUMIDITY_CHANNEL;
                     acceptedItemType = "Number";
+                    tag = "CurrentHumidity";
                     break;
                 case TemperatureSensor:
                     id = SENSOR_TEMPERATURE_CHANNEL;
                     acceptedItemType = "Number";
+                    tag = "CurrentTemperature";
                     break;
                 case LightSensor:
                     id = SENSOR_LUMINOSITY_CHANNEL;
@@ -402,23 +412,22 @@ public class VeraDeviceHandler extends BaseThingHandler {
                     break;
             }
 
-            // If at least one rule could mapped to a channel
-            if (!id.isEmpty()) {
-                addChannel(id, acceptedItemType, device.getName(), properties);
+            if (id != null) {
+                addChannel(id, acceptedItemType, device.getName(), properties, homekitIntegration ? tag : null);
 
                 logger.debug("Channel for device added with channel id: {}, accepted item type: {} and title: {}", id,
                         acceptedItemType, device.getName());
 
                 if (device.getBatterylevel() != null && !device.getBatterylevel().isEmpty()) {
-                    addChannel(BATTERY_CHANNEL, "Number", "Battery", properties);
+                    addChannel(BATTERY_CHANNEL, "Number", "Battery", properties, null);
                 }
 
                 if (device.getKwh() != null) {
-                    addChannel(SENSOR_METER_KWH_CHANNEL, "Number", "Energy ALL", properties);
+                    addChannel(SENSOR_METER_KWH_CHANNEL, "Number", "Energy ALL", properties, null);
                 }
 
                 if (device.getWatts() != null) {
-                    addChannel(SENSOR_METER_W_CHANNEL, "Number", "Energy Current", properties);
+                    addChannel(SENSOR_METER_W_CHANNEL, "Number", "Energy Current", properties, null);
                 }
             } else {
                 // Thing status will not be updated because thing could have more than one channel
@@ -428,7 +437,7 @@ public class VeraDeviceHandler extends BaseThingHandler {
     }
 
     private synchronized void addChannel(String id, String acceptedItemType, String label,
-            HashMap<String, String> properties) {
+            HashMap<String, String> properties, String tag) {
         String channelId = id + "-" + properties.get("deviceId");
         boolean channelExists = false;
         // Check if a channel for this device exist.
@@ -446,6 +455,11 @@ public class VeraDeviceHandler extends BaseThingHandler {
             channelBuilder.withType(channelTypeUID);
             channelBuilder.withLabel(label);
             channelBuilder.withProperties(properties);
+            if (tag != null) {
+                Set<String> tags = new HashSet<String>();
+                tags.add(tag);
+                channelBuilder.withDefaultTags(tags);
+            }
             thingBuilder.withChannel(channelBuilder.build());
             thingBuilder.withLabel(thing.getLabel());
             updateThing(thingBuilder.build());

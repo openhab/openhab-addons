@@ -42,6 +42,12 @@
 			<description>Default name for room, if no room specified.</description>
 			<default>No Room</default>
 		</parameter>
+		
+        <parameter name="homekitIntegration" groupName="binding" type="boolean" required="false">
+            <label>Homekit integration</label>
+            <description>If enabled, homekit tags are created for all supported devices. Please read Homekit add-on instructions.</description>
+            <default>true</default>
+        </parameter>
 	</config-description>
 
 </config-description:config-descriptions>

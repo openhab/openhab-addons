@@ -76,6 +76,7 @@ public class VeraBindingConstants {
     public static final String BRIDGE_CONFIG_POLLING_INTERVAL = "pollingInterval";
     public static final String BRIDGE_CONFIG_CLEAR_NAMES = "clearNames";
     public static final String BRIDGE_CONFIG_DEFAULT_ROOM_NAME = "defaultRoomName";
+    public static final String BRIDGE_CONFIG_HOMEKIT_INTEGRATION = "homekitIntegration";
 
     public static final String DEVICE_CONFIG_ID = "deviceId";
     public static final String DEVICE_PROP_CATEGORY = "category";

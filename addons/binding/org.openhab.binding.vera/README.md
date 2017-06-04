@@ -26,13 +26,14 @@ The textual configuration (via \*.thing files) isn't useful because the resultin
 
 ### Vera Controller (Bridge)
 
-| Name            | Type          | Description                                                                                        |
-|-----------------|---------------|----------------------------------------------------------------------------------------------------|
-| veraIpAddress   | string        | The IP address or hostname of the Vera controller.                                                 |
-| veraPort        | int           | The port of the Vera controller                                                                    |
-| pollingInterval | int           | Refresh all values (name, room, state) for all devices and scenes.                                 |
-| clearNames      | boolean       | Remove digits, slashes and double spaces from all names. Good for some voice recognition services. |
-| defaulRoomName  | string        | Default name for room, if no room specified.                                                       |
+| Name                | Type          | Description                                                                                              |
+|---------------------|---------------|----------------------------------------------------------------------------------------------------------|
+| veraIpAddress       | string        | The IP address or hostname of the Vera controller.                                                       |
+| veraPort            | int           | The port of the Vera controller                                                                          |
+| pollingInterval     | int           | Refresh all values (name, room, state) for all devices and scenes.                                       |
+| clearNames          | boolean       | Remove digits, slashes and double spaces from all names. Good for some voice recognition services.       |
+| defaulRoomName      | string        | Default name for room, if no room specified.                                                             |
+| homekitIntegration  | boolean       | If enabled, homekit tags are created for all supported devices. Please read Homekit add-on instructions. |
 
 ### Vera Device
 

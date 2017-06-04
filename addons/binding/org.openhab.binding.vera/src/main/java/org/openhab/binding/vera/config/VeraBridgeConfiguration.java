@@ -23,6 +23,7 @@ public class VeraBridgeConfiguration {
     private Integer pollingInterval;
     private Boolean clearNames;
     private String defaulRoomName;
+    private Boolean homekitIntegration;
 
     public String getVeraIpAddress() {
         return veraIpAddress;
@@ -64,12 +65,21 @@ public class VeraBridgeConfiguration {
         this.defaulRoomName = defaulRoomName;
     }
 
+    public Boolean getHomekitIntegration() {
+        return homekitIntegration;
+    }
+
+    public void setHomekitIntegration(Boolean homekitIntegration) {
+        this.homekitIntegration = homekitIntegration;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this).append(BRIDGE_CONFIG_VERA_SERVER_IP_ADDRESS, this.getVeraIpAddress())
                 .append(BRIDGE_CONFIG_VERA_SERVER_PORT, this.getVeraPort())
                 .append(BRIDGE_CONFIG_POLLING_INTERVAL, this.getPollingInterval())
                 .append(BRIDGE_CONFIG_CLEAR_NAMES, this.getClearNames())
-                .append(BRIDGE_CONFIG_DEFAULT_ROOM_NAME, this.getDefaulRoomName()).toString();
+                .append(BRIDGE_CONFIG_DEFAULT_ROOM_NAME, this.getDefaulRoomName())
+                .append(BRIDGE_CONFIG_HOMEKIT_INTEGRATION, this.getHomekitIntegration()).toString();
     }
 }
