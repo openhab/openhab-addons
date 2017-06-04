@@ -41,9 +41,9 @@ public class RFXComMessageFactory {
                     put(PacketType.CURTAIN1, RFXComCurtain1Message.class);
                     put(PacketType.BLINDS1, RFXComBlinds1Message.class);
                     put(PacketType.RFY, RFXComRfyMessage.class);
-                    // put(PacketType.HOME_CONFORT, RFXComHomeConfort.class);
+                    put(PacketType.HOME_CONFORT, RFXComHomeConfortMessage.class);
                     put(PacketType.SECURITY1, RFXComSecurity1Message.class);
-                    // put(PacketType.SECURITY2, RFXComSecurity2Message.class);
+                    put(PacketType.SECURITY2, RFXComSecurity2Message.class);
                     // put(PacketType.CAMERA1, RFXComCamera1Message.class);
                     // put(PacketType.REMOTE_CONTROL, RFXComRemoteControlMessage.class);
                     put(PacketType.THERMOSTAT1, RFXComThermostat1Message.class);
