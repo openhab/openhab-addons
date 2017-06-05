@@ -10,6 +10,7 @@ package org.openhab.binding.rotelra1x.handler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -108,8 +109,9 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 sendForce("get_current_power!");
                 updateState(getThing().getChannel("mute").getUID(), OnOffType.OFF);
                 updateState(getThing().getChannel("dimmer").getUID(), new PercentType(100));
-                Thread receiver = new Thread(this);
-                receiver.start();
+                // Seems we need to wait a bit after initialization for the channels to
+                // be ready to accept updates, so deferring input loop by 1 sec.
+                scheduler.schedule(this, 1, TimeUnit.SECONDS);
             } catch (IOException e) {
                 disconnect();
                 throw e;
@@ -205,13 +207,6 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
     @Override
     public void run() {
-        try {
-            Thread.sleep(1000); // Seems we need to wait a bit after initialization or channels won't
-                                // be updated. (making run() and initialize() synchronized doesn't work)
-        } catch (InterruptedException e1) {
-            Thread.currentThread().interrupt();
-            return;
-        }
         while (connected && !exit) {
             try {
                 String command = readCommand();
@@ -277,13 +272,13 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
     void send(String text) throws IOException {
         if (power) {
             connect();
-            serialPort.getOutputStream().write(text.getBytes());
+            serialPort.getOutputStream().write(text.getBytes(StandardCharsets.US_ASCII));
         }
     }
 
     void sendForce(String text) throws IOException {
         connect();
-        serialPort.getOutputStream().write(text.getBytes());
+        serialPort.getOutputStream().write(text.getBytes(StandardCharsets.US_ASCII));
     }
 
     @Override
