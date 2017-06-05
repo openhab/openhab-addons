@@ -50,6 +50,11 @@
             <channel id="temp-tempunits" typeId="temp-tempunits" />
             <channel id="temp-htpump" typeId="temp-htpump" />
             <channel id="pumps-pump1" typeId="pumps-pump1" />
+            <channel id="pumps-pump1-watts" typeId="pumps-pump1-watts" />
+            <channel id="pumps-pump1-rpm" typeId="pumps-pump1-rpm" />
+            <channel id="pumps-pump1-gpm" typeId="pumps-pump1-gpm" />
+            <channel id="pumps-pump1-filter" typeId="pumps-pump1-filter" />
+            <channel id="pumps-pump1-error" typeId="pumps-pump1-error" />
             <channel id="pumps-pump2" typeId="pumps-pump2" />
             <channel id="pumps-pump3" typeId="pumps-pump3" />
             <channel id="pumps-pump4" typeId="pumps-pump4" />
@@ -402,12 +407,47 @@
     </channel-type>
     
     <!--  Pump Channels -->
-       
-    <channel-type id="pumps-pump1">
+    
+    <channel-type id="pumps-pump1" advanced="true">
         <item-type>String</item-type>
         <label>Pump 1</label>
-        <description>Pump 1</description>
+        <description>Pump 1 raw value</description>
         <state readOnly="true" pattern="%s">
+        </state>
+    </channel-type>
+    <channel-type id="pumps-pump1-watts">
+        <item-type>Number</item-type>
+        <label>Pump 1 Watts</label>
+        <description>Pump 1 watts</description>
+        <state readOnly="true" pattern="%d">
+        </state>
+    </channel-type>
+    <channel-type id="pumps-pump1-rpm">
+        <item-type>Number</item-type>
+        <label>Pump 1 RPM</label>
+        <description>Pump 1 RPM</description>
+        <state readOnly="true" pattern="%d">
+        </state>
+    </channel-type>
+    <channel-type id="pumps-pump1-gpm">
+        <item-type>Number</item-type>
+        <label>Pump 1 GPM</label>
+        <description>Pump 1 GPM</description>
+        <state readOnly="true" pattern="%s">
+        </state>
+    </channel-type>
+    <channel-type id="pumps-pump1-filter">
+        <item-type>Number</item-type>
+        <label>Pump 1 Filter</label>
+        <description>Pump 1</description>
+        <state readOnly="true" pattern="%%%d">
+        </state>
+    </channel-type>
+    <channel-type id="pumps-pump1-error">
+        <item-type>Number</item-type>
+        <label>Pump 1 Error</label>
+        <description>Pump 1 error status</description>
+        <state readOnly="true" pattern="%d">
         </state>
     </channel-type>
     <channel-type id="pumps-pump2">

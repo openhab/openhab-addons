@@ -55,6 +55,9 @@ import org.xml.sax.InputSource;
  * these controllers.
  *
  * @see <a href="http://Autelis.com">http://autelis.com</a>
+ * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_HTTP_Command_Reference"</a> for Jandy API
+ * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference"</a> for Pentair
+ *      API
  *
  *      The {@link AutelisHandler} is responsible for handling commands, which
  *      are sent to one of the channels.
@@ -87,9 +90,29 @@ public class AutelisHandler extends BaseThingHandler {
     private static int NORMAL_CLEARTIME = 60 * 60; // one hour
 
     /**
-     * Clear state after an command is sent
+     * Default poll rate rate, this is derived from the Autelis web UI
      */
-    private static int UPDATE_CLEARTIME = 60 * 2; // two minutes
+    static final int DEFAULT_REFRSH = 5; // 3 seconds
+
+    /**
+     * How long should we wait to poll after we send an update, derived from trial and error
+     */
+    static final int COMMAND_UPDATE_TIME = 6; // 5 seconds
+
+    /**
+     * Autelis web port
+     */
+    static final int WEB_PORT = 80;
+
+    /**
+     * Pentair values for pump response
+     */
+    static final String[] PUMP_TYPES = { "watts", "rpm", "gpm", "filer", "error" };
+
+    /**
+     * Matcher for pump channel names for Pentair
+     */
+    static final Pattern pumpsPattern = Pattern.compile("(pumps/pump\\d?)-(watts|rpm|gpm|filter|error)");
 
     /**
      * Holds the next clear time in millis
@@ -124,11 +147,6 @@ public class AutelisHandler extends BaseThingHandler {
     private Pattern responsePattern = Pattern.compile("<response>(.+?)</response>", Pattern.DOTALL);
 
     /**
-     * is our config correct
-     */
-    private boolean properlyConfigured;
-
-    /**
      * Future to poll for updated
      */
     private ScheduledFuture<?> pollFuture;
@@ -146,7 +164,7 @@ public class AutelisHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
-        stopPolling();
+        clearPolling();
         stopHttpClient(client);
     }
 
@@ -158,7 +176,6 @@ public class AutelisHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (channelUID.getId().equals("lightscmd")) {
             /*
              * lighting command possible values, but we will let anything
@@ -204,6 +221,10 @@ public class AutelisHandler extends BaseThingHandler {
                     value = "up";
                 } else if (command == IncreaseDecreaseType.DECREASE) {
                     value = "down";
+                } else if (command == OnOffType.OFF) {
+                    value = "0";
+                } else if (command == OnOffType.ON) {
+                    value = "1";
                 } else {
                     value = command.toString();
                 }
@@ -218,106 +239,100 @@ public class AutelisHandler extends BaseThingHandler {
                     logger.error("Unknown temp type {}", name);
                     return;
                 }
-
                 String response = getUrl(baseURL + "/set.cgi?wait=1&name=" + name + "&" + cmd + "=" + value, TIMEOUT);
-                logger.debug("temp set {} {} : result {}", cmd, value, response);
+                logger.debug("temp set name:{} cmd:{} value:{} : result {}", name, cmd, value, response);
             } else {
                 logger.error("Unsupported type {}", type);
             }
         }
-        scheduleClearTime(UPDATE_CLEARTIME);
+        clearState(true);
+        // reset the schedule for our next poll which at that time will reflect if our command was successful or not.
+        initPolling(COMMAND_UPDATE_TIME);
     }
 
     /**
      * Configures this thing
      */
     private void configure() {
-
-        properlyConfigured = false;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
         AutelisConfiguration configuration = getConfig().as(AutelisConfiguration.class);
-        try {
-            Integer _refresh = configuration.refresh;
-            Integer _port = configuration.port;
-            String host = configuration.host;
-            String username = configuration.user;
-            String password = configuration.password;
+        Integer _refresh = configuration.refresh;
+        Integer _port = configuration.port;
+        String host = configuration.host;
+        String username = configuration.user;
+        String password = configuration.password;
 
-            if (StringUtils.isBlank(username)) {
-                throw new RuntimeException("username must not be empty");
-            }
-
-            if (StringUtils.isBlank(password)) {
-                throw new RuntimeException("password must not be empty");
-            }
-
-            if (StringUtils.isBlank(host)) {
-                throw new RuntimeException("hostname must not be empty");
-            }
-
-            refresh = 5;
-            if (_refresh != null) {
-                refresh = _refresh.intValue();
-            }
-
-            int port = 80;
-            if (_port != null) {
-                port = _port.intValue();
-            }
-
-            baseURL = "http://" + host + ":" + port;
-            basicAuthentication = "Basic " + B64Code.encode(username + ":" + password, StringUtil.__ISO_8859_1);
-            properlyConfigured = true;
-
-            logger.debug("Autelius binding configured with base url {} and refresh period of {}", baseURL, refresh);
-
-            initPolling();
-
-        } catch (Exception e) {
-            logger.error("Could not configure autelis instance", e);
+        if (StringUtils.isBlank(username)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "username must not be empty");
+            return;
         }
+
+        if (StringUtils.isBlank(password)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "password must not be empty");
+            return;
+        }
+
+        if (StringUtils.isBlank(host)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname must not be empty");
+            return;
+        }
+
+        refresh = DEFAULT_REFRSH;
+        if (_refresh != null) {
+            refresh = _refresh.intValue();
+        }
+
+        int port = WEB_PORT;
+        if (_port != null) {
+            port = _port.intValue();
+        }
+
+        baseURL = "http://" + host + ":" + port;
+        basicAuthentication = "Basic " + B64Code.encode(username + ":" + password, StringUtil.__ISO_8859_1);
+
+        logger.debug("Autelius binding configured with base url {} and refresh period of {}", baseURL, refresh);
+
+        initPolling(0);
     }
 
     /**
-     * starts this things polling future
+     * Starts/Restarts polling with an initial delay. This allows changes in the poll cycle for when commands are sent
+     * and we need to poll sooner then the next refresh cycle.
      */
-    private void initPolling() {
-        stopPolling();
+    private void initPolling(int initalDelay) {
+        clearPolling();
         pollFuture = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 try {
-                    if (properlyConfigured) {
-                        execute();
-                    }
+                    pollAutelisController();
                 } catch (Exception e) {
                     logger.debug("Exception during poll : {}", e);
                 }
             }
-        }, 0, refresh, TimeUnit.SECONDS);
-
+        }, initalDelay, DEFAULT_REFRSH, TimeUnit.SECONDS);
     }
 
     /**
-     * Stops this thing's polling future
+     * Stops/clears this thing's polling future
      */
-    private void stopPolling() {
+    private void clearPolling() {
         if (pollFuture != null && !pollFuture.isCancelled()) {
-            pollFuture.cancel(true);
-            pollFuture = null;
+            logger.trace("Canceling future");
+            pollFuture.cancel(false);
         }
     }
 
     /**
-     * The polling future executes this every iteration
+     * Poll the Autelis controller for updates. This will retrieve various xml documents and update channel states from
+     * its contents.
      */
-    protected void execute() {
+    protected void pollAutelisController() {
         logger.trace("Connecting to {}", baseURL);
 
+        // clear our cached stated IF it is time.
         clearState(false);
 
-        // we will reconstruct the document with all the responses combined for
-        // XPATH
+        // we will reconstruct the document with all the responses combined for XPATH
         StringBuilder sb = new StringBuilder("<response>");
 
         // pull down the three xml documents
@@ -347,22 +362,66 @@ public class AutelisHandler extends BaseThingHandler {
          * This xmlDoc will now contain the three XML documents we retrieved
          * wrapped in response tags for easier querying in XPath.
          */
+        HashMap<String, String> pumps = new HashMap<>();
         String xmlDoc = sb.toString();
         for (Channel channel : getThing().getChannels()) {
-            String key = channel.getUID().getId().replace('-', '/');
+            String key = channel.getUID().getId().replaceFirst("-", "/");
             XPathFactory xpathFactory = XPathFactory.newInstance();
             XPath xpath = xpathFactory.newXPath();
             try {
                 InputSource is = new InputSource(new StringReader(xmlDoc));
-                String value = xpath.evaluate("response/" + key, is);
+                String value = null;
+
+                /**
+                 * Work around for Pentair pumps. Rather then have child XML elements, the response rather uses commas
+                 * on the pump response to separate the different values like so:
+                 *
+                 * watts,rpm,gpm,filter,error
+                 *
+                 * Also, some pool will only report the first 3 out of the 5 values.
+                 */
+
+                Matcher matcher = pumpsPattern.matcher(key);
+                if (matcher.matches()) {
+                    if (!pumps.containsKey(key)) {
+                        String pumpValue = xpath.evaluate("response/" + matcher.group(1), is);
+                        String[] values = pumpValue.split(",");
+                        for (int i = 0; i < PUMP_TYPES.length; i++) {
+
+                            // this will be something like pump/pump1-rpm
+                            String newKey = matcher.group(1) + '-' + PUMP_TYPES[i];
+
+                            // some Pentair models only have the first 3 values
+                            if (i < values.length) {
+                                pumps.put(newKey, values[i]);
+                            } else {
+                                pumps.put(newKey, "");
+                            }
+                        }
+                    }
+                    value = pumps.get(key);
+                } else {
+                    value = xpath.evaluate("response/" + key, is);
+
+                    // Convert pentair salt levels to PPM.
+                    if ("chlor/salt".equals(key)) {
+                        try {
+                            value = String.valueOf(Integer.parseInt(value) * 50);
+                        } catch (NumberFormatException ignored) {
+
+                        }
+                    }
+                }
 
                 if (StringUtils.isEmpty((value))) {
                     continue;
                 }
+
                 State state = toState(channel.getAcceptedItemType(), value);
                 State oldState = stateMap.put(channel.getUID().getAsString(), state);
                 if (!state.equals(oldState)) {
-                    logger.trace("updating channel {} with state {}", channel, state);
+                    logger.trace("updating channel {} with state {} (old state {})", channel.getUID().getAsString(),
+                            state, oldState);
                     updateState(channel.getUID(), state);
                 }
             } catch (XPathExpressionException e) {
@@ -381,7 +440,7 @@ public class AutelisHandler extends BaseThingHandler {
     private String getUrl(String url, int timeout) {
         url += (url.contains("?") ? "&" : "?") + "timestamp=" + System.currentTimeMillis();
         startHttpClient(client);
-
+        logger.debug("Gettiing URL {} ", url);
         Request request = client.newRequest(url).timeout(TIMEOUT, TimeUnit.MILLISECONDS);
         request.header(HttpHeader.AUTHORIZATION, basicAuthentication);
 
@@ -423,17 +482,8 @@ public class AutelisHandler extends BaseThingHandler {
     private void clearState(boolean force) {
         if (force || System.currentTimeMillis() >= clearTime) {
             stateMap.clear();
-            scheduleClearTime(NORMAL_CLEARTIME);
+            clearTime = System.currentTimeMillis() + (NORMAL_CLEARTIME * 1000);
         }
-    }
-
-    /**
-     * Schedule when our next clear cycle will be
-     *
-     * @param secs
-     */
-    private void scheduleClearTime(int secs) {
-        clearTime = System.currentTimeMillis() + (secs * 1000);
     }
 
     private void startHttpClient(HttpClient client) {
