@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="knx"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- KNX Group Address -->
+	<thing-type id="virtualswitch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip" />
+			<bridge-type-ref id="serial" />
+		</supported-bridge-type-refs>
+
+		<label>Virtual Switch</label>
+		<description>This Thing defines KNX virtual switch actor</description>
+
+		<channels>
+			<channel id="switch" typeId="switch" />
+		</channels>
+
+		<config-description>
+		    <parameter name="address" type="text">
+                <label>Address</label>
+                <description>The individual address in area.line.device notation</description>
+                <required>true</required>
+            </parameter>
+			<parameter name="switchGA" type="text">
+				<label>Address</label>
+				<description>The group address in x/y/z notation to toggle the switch</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="statusGA" type="text">
+				<label>Address</label>
+				<description>The group address in x/y/z notation to read the switch status</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Input/Output Channel</label>
+		<description>The channel to toggle the switch</description>
+	</channel-type>
+	
+</thing:thing-descriptions>

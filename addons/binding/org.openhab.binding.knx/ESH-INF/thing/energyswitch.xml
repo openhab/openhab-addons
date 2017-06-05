@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="knx"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- KNX Group Address -->
+	<thing-type id="energyswitch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip" />
+			<bridge-type-ref id="serial" />
+		</supported-bridge-type-refs>
+
+		<label>Energy Switch</label>
+		<description>This Thing defines a KNX switch actor with energy management features</description>
+
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="hours" typeId="hours" />
+			<channel id="current" typeId="current" />
+			<channel id="energy" typeId="energy" />
+		</channels>
+
+		<config-description>
+		    <parameter name="address" type="text">
+                <label>Address</label>
+                <description>The individual address in area.line.device notation</description>
+                <required>false</required>
+            </parameter>
+			<parameter name="switchGA" type="text">
+				<label>Address</label>
+				<description>The group address in x/y/z notation to toggle the switch</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="statusGA" type="text">
+				<label>Address</label>
+				<description>The group address in x/y/z notation to read the switch status</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="operatingGA" type="text">
+				<label>Address</label>
+				<description>The group address in x/y/z notation to read the number of hours the switch is in the switched on position</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="currentGA" type="text">
+				<label>Address</label>
+				<description>The group address in x/y/z notation to read the current flowing through the switch or socket</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="energyGA" type="text">
+				<label>Address</label>
+				<description>The group address in x/y/z notation to read the energy consumption throug the switch or socket</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="read" type="boolean">
+				<label>Read</label>
+				<description>Flag to indicate if group addresses should be read at startup</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="interval" type="integer">
+				<label>Interval</label>
+				<description>Interval between attempts to read the group addresses on the bus, in seconds</description>
+				<required>false</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Input/Output Channel</label>
+		<description>The channel to toggle the switch</description>
+	</channel-type>
+
+	<channel-type id="hours">
+		<item-type>Number</item-type>
+		<label>Input/Output Channel</label>
+		<description>The channel read operating hours</description>
+	</channel-type>
+	
+		<channel-type id="current">
+		<item-type>Number</item-type>
+		<label>Input/Output Channel</label>
+		<description>The channel to read the electric current</description>
+	</channel-type>
+	
+		<channel-type id="energy">
+		<item-type>Number</item-type>
+		<label>Input/Output Channel</label>
+		<description>The channel to read energy consumption</description>
+	</channel-type>	
+</thing:thing-descriptions>
