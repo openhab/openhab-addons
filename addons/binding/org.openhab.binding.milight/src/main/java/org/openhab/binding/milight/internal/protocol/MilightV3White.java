@@ -51,6 +51,7 @@ public class MilightV3White extends MilightV3 {
             sendQueue.queueRepeatable(uidc(CAT_POWER_SET), new byte[] { command_on[zone], 0x00, 0x55 });
         } else {
             sendQueue.queueRepeatable(uidc(CAT_POWER_SET), new byte[] { command_off[zone], 0x00, 0x55 });
+            state.brightness = 0;
         }
     }
 
@@ -104,17 +105,17 @@ public class MilightV3White extends MilightV3 {
         state.colorTemperature = Math.min(100, Math.max(state.colorTemperature + color_temp_relative, 0));
         final byte c_on[] = { command_on[zone], 0x00, 0x55 };
         final byte c_temp[] = { (byte) (color_temp_relative > 0 ? 0x3E : 0x3F), 0x00, 0x55 };
-        sendQueue.queue(QueueItem.createRepeatable(uidc(CAT_COLOR_SET), c_on).addNonRepeatable(c_temp));
+        sendQueue.queue(QueueItem.createRepeatable(c_on).addNonRepeatable(c_temp));
     }
 
     // This just emulates an absolute brightness command with the relative commands.
     @Override
     public void setBrightness(int value, MilightThingState state) {
         if (value <= 0) {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), new byte[] { command_off[zone], 0x00, 0x55 });
+            setPower(false, state);
             return;
         } else if (value >= 100) {
-            sendQueue.queueRepeatable(uidc(CAT_BRIGHTNESS_SET), new byte[] { command_full[zone], 0x00, 0x55 });
+            setFull(zone, state);
             return;
         }
 
