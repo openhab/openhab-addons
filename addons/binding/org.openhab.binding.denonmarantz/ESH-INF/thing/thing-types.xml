@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="denonmarantz"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- AVR control using Telnet -->
+    <thing-type id="avr">
+        <label>Denon/Marantz AVR</label>
+        <description>Control a Denon/Marantz AVR.</description>
+
+        <channels>
+            <channel id="power" typeId="power"/>
+            <channel id="mainZonePower" typeId="mainZonePower"/>
+            <channel id="mainVolume" typeId="mainVolume"/>
+            <channel id="mainVolumeDB" typeId="mainVolumeDB"/>
+            <channel id="mute" typeId="mute"/>
+            <channel id="input" typeId="input"/>
+            <channel id="surroundProgram" typeId="surroundProgram"/>
+            <channel id="artist" typeId="artist"/>
+            <channel id="album" typeId="album"/>
+            <channel id="track" typeId="track"/>
+            <channel id="command" typeId="command"/>
+        </channels>
+
+        <config-description>
+            <parameter-group name="receiverProperties">
+                <label>Receiver properties</label>
+            </parameter-group>
+            <parameter-group name="connectionSettings">
+                <label>General connection settings</label>
+            </parameter-group>
+
+            <parameter-group name="telnetSettings">
+              <label>Telnet Settings</label>
+              <description>Settings for the Telnet port of the AVR</description>
+              <advanced>true</advanced>
+            </parameter-group>
+
+            <parameter-group name="httpSettings">
+              <label>HTTP Settings</label>
+              <description>Settings for the HTTP port of the AVR</description>
+              <advanced>true</advanced>
+            </parameter-group>
+
+            <parameter name="zoneCount" type="integer" required="true" groupName="receiverProperties">
+                <label>Zone count of the receiver</label>
+                <description>Number of zones (including main zone).</description>
+                <default>2</default>
+            </parameter>
+
+            <parameter name="host" type="text" required="true" groupName="connectionSettings">
+                <context>network-address</context>
+                <label>AVR Host or IP Address</label>
+                <description>Hostname or IP address of the AVR to control.</description>
+            </parameter>
+
+            <parameter name="telnetEnabled" type="boolean" required="true" groupName="connectionSettings">
+                <label>Use Telnet port?</label>
+                <description>By using telnet the AVR updates are received immediately. Also, some devices only support telnet. However, the AVR only allows 1 simultaneous connection. Uncheck if you are using dedicated apps to control the AVR. Then HTTP polling is used instead.</description>
+                <default>false</default>
+            </parameter>
+
+            <parameter name="telnetPort" type="integer" required="false" groupName="telnetSettings">
+                <label>Telnet port</label>
+                <description>Telnet port used for AVR communication. Normally shouldn't be changed.</description>
+                <default>23</default>
+                <advanced>true</advanced>
+            </parameter>
+
+            <parameter name="httpPort" type="integer" required="true" groupName="httpSettings">
+                <label>HTTP port</label>
+                <description>HTTP Port used for AVR communication. Normally shouldn't be changed.</description>
+                <default>80</default>
+                <advanced>true</advanced>
+            </parameter>
+
+            <parameter name="httpPollingInterval" type="integer" required="true" groupName="httpSettings">
+                <label>Polling interval</label>
+                <description>Refresh interval of the HTTP API in milliseconds</description>
+                <default>5000</default>
+                <advanced>true</advanced>
+            </parameter>
+        </config-description>
+
+    </thing-type>
+
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>Power ON/OFF the AVR</description>
+    </channel-type>
+
+    <channel-type id="mainZonePower">
+        <item-type>Switch</item-type>
+        <label>Power (main zone)</label>
+        <description>Power ON/OFF the main zone of the AVR</description>
+    </channel-type>
+
+    <channel-type id="mainVolume">
+        <item-type>Dimmer</item-type>
+        <label>Main volume</label>
+        <description>Set the volume level of the main zone</description>
+        <category>SoundVolume</category>
+    </channel-type>
+    
+    <channel-type id="mainVolumeDB" advanced="true">
+        <item-type>Number</item-type>
+        <label>Main volume (dB)</label>
+        <description>Set the volume level (dB). Same as [mainVolume - 80].</description>
+        <category>SoundVolume</category>
+        <state min="-80" max="18" step="0.5" pattern="%.1f dB" />
+    </channel-type>
+
+    <channel-type id="mute">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Enable/Disable Mute on the main zone of the AVR</description>
+    </channel-type>
+
+    <channel-type id="input">
+        <item-type>String</item-type>
+        <label>Input source</label>
+        <description>Select the input source for the main zone of the AVR</description>
+        <state>
+            <options>
+                <option value="DVD">DVD</option>
+                <option value="BD">BD</option>
+                <option value="TV">TV</option>
+                <option value="SAT/CBL">SAT/CBL</option>
+                <option value="SAT">SAT</option>
+                <option value="MPLAY">MPLAY</option>
+                <option value="VCR">VCR</option>
+                <option value="GAME">GAME</option>
+                <option value="V.AUX">V.AUX</option>
+                <option value="TUNER">TUNER</option>
+                <option value="HDRADIO">HDRADIO</option>
+                <option value="SIRIUS">SIRIUS</option>
+                <option value="SPOTIFY">SPOTIFY</option>
+                <option value="SIRIUSXM">SIRIUSXM</option>
+                <option value="RHAPSODY">RHAPSODY</option>
+                <option value="PANDORA">PANDORA</option>
+                <option value="NAPSTER">NAPSTER</option>
+                <option value="LASTFM">LASTFM</option>
+                <option value="FLICKR">FLICKR</option>
+                <option value="IRADIO">IRADIO</option>
+                <option value="SERVER">SERVER</option>
+                <option value="FAVORITES">FAVORITES</option>
+                <option value="CDR">CDR</option>
+                <option value="AUX1">AUX1</option>
+                <option value="AUX2">AUX2</option>
+                <option value="AUX3">AUX3</option>
+                <option value="AUX4">AUX4</option>
+                <option value="AUX5">AUX5</option>
+                <option value="AUX6">AUX6</option>
+                <option value="AUX7">AUX7</option>
+                <option value="NET">NET</option>
+                <option value="NET/USB">NET/USB</option>
+                <option value="BT">BT</option>
+                <option value="M-XPORT">M-XPORT</option>
+                <option value="USB/IPOD">USB/IPOD</option>
+                <option value="USB">USB</option>
+                <option value="IPD">IPD</option>
+                <option value="IRP">IRP</option>
+                <option value="FVP">FVP</option>
+                <option value="OTP">OTP</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="surroundProgram">
+        <item-type>String</item-type>
+        <label>Surround program</label>
+        <description>Select the surround program of the AVR</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="artist">
+        <item-type>String</item-type>
+        <label>Now Playing (artist)</label>
+        <description>Displays the artist of the now playing song.</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="album">
+        <item-type>String</item-type>
+        <label>Now Playing (album)</label>
+        <description>Displays the album of the now playing song.</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="track">
+        <item-type>String</item-type>
+        <label>Now Playing (track)</label>
+        <description>Displays the title of the now playing track.</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="command" advanced="true">
+        <item-type>String</item-type>
+        <label>Send a custom command text</label>
+        <description>Use this channel to send any custom command, e.g. SITV or MSSTANDARD</description>
+    </channel-type>
+
+    <channel-type id="zone2Power">
+        <item-type>Switch</item-type>
+        <label>Power (Zone 2)</label>
+        <description>Power ON/OFF Zone 2 of the AVR</description>
+    </channel-type>
+
+    <channel-type id="zone2Volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume (Zone 2)</label>
+        <description>Set the volume level of Zone 2</description>
+        <category>SoundVolume</category>
+    </channel-type>
+    
+     <channel-type id="zone2VolumeDB" advanced="true">
+        <item-type>Number</item-type>
+        <label>Zone 2 volume (dB)</label>
+        <description>Set the volume level (dB)</description>
+        <category>SoundVolume</category>
+        <state min="-80" max="18" step="1" pattern="%.1f dB" />
+    </channel-type>
+    
+    <channel-type id="zone2Mute">
+        <item-type>Switch</item-type>
+        <label>Mute (Zone 2)</label>
+        <description>Enable/Disable Mute on Zone 2 of the AVR</description>
+    </channel-type>
+
+    <channel-type id="zone2Input">
+        <item-type>String</item-type>
+        <label>Input source (Zone 2)</label>
+        <description>Select the input source for Zone 2 of the AVR</description>
+        <state>
+            <options>
+                <option value="DVD">DVD</option>
+                <option value="BD">BD</option>
+                <option value="TV">TV</option>
+                <option value="SAT/CBL">SAT/CBL</option>
+                <option value="SAT">SAT</option>
+                <option value="MPLAY">MPLAY</option>
+                <option value="VCR">VCR</option>
+                <option value="GAME">GAME</option>
+                <option value="V.AUX">V.AUX</option>
+                <option value="TUNER">TUNER</option>
+                <option value="HDRADIO">HDRADIO</option>
+                <option value="SIRIUS">SIRIUS</option>
+                <option value="SPOTIFY">SPOTIFY</option>
+                <option value="SIRIUSXM">SIRIUSXM</option>
+                <option value="RHAPSODY">RHAPSODY</option>
+                <option value="PANDORA">PANDORA</option>
+                <option value="NAPSTER">NAPSTER</option>
+                <option value="LASTFM">LASTFM</option>
+                <option value="FLICKR">FLICKR</option>
+                <option value="IRADIO">IRADIO</option>
+                <option value="SERVER">SERVER</option>
+                <option value="FAVORITES">FAVORITES</option>
+                <option value="CDR">CDR</option>
+                <option value="AUX1">AUX1</option>
+                <option value="AUX2">AUX2</option>
+                <option value="AUX3">AUX3</option>
+                <option value="AUX4">AUX4</option>
+                <option value="AUX5">AUX5</option>
+                <option value="AUX6">AUX6</option>
+                <option value="AUX7">AUX7</option>
+                <option value="NET">NET</option>
+                <option value="NET/USB">NET/USB</option>
+                <option value="BT">BT</option>
+                <option value="M-XPORT">M-XPORT</option>
+                <option value="USB/IPOD">USB/IPOD</option>
+                <option value="USB">USB</option>
+                <option value="IPD">IPD</option>
+                <option value="IRP">IRP</option>
+                <option value="FVP">FVP</option>
+                <option value="OTP">OTP</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="zone3Power">
+        <item-type>Switch</item-type>
+        <label>Power (Zone 3)</label>
+        <description>Power ON/OFF Zone 3 of the AVR</description>
+        <category>Switch</category>
+    </channel-type>
+
+    <channel-type id="zone3Volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume (Zone 3)</label>
+        <description>Set the volume level of Zone 3</description>
+        <category>SoundVolume</category>
+    </channel-type>
+    
+    <channel-type id="zone3VolumeDB" advanced="true">
+        <item-type>Number</item-type>
+        <label>Zone 3 volume (dB)</label>
+        <description>Set the volume level (dB)</description>
+        <category>SoundVolume</category>
+        <state min="-80" max="18" step="1" pattern="%.1f dB" />
+    </channel-type>
+
+    <channel-type id="zone3Mute">
+        <item-type>Switch</item-type>
+        <label>Mute (Zone 3)</label>
+        <description>Enable/Disable Mute on Zone 3 of the AVR</description>
+    </channel-type>
+
+     <channel-type id="zone3Input">
+        <item-type>String</item-type>
+        <label>Input source (Zone 3)</label>
+        <description>Select the input source for Zone 3 of the AVR</description>
+        <state>
+            <options>
+                <option value="DVD">DVD</option>
+                <option value="BD">BD</option>
+                <option value="TV">TV</option>
+                <option value="SAT/CBL">SAT/CBL</option>
+                <option value="SAT">SAT</option>
+                <option value="MPLAY">MPLAY</option>
+                <option value="VCR">VCR</option>
+                <option value="GAME">GAME</option>
+                <option value="V.AUX">V.AUX</option>
+                <option value="TUNER">TUNER</option>
+                <option value="HDRADIO">HDRADIO</option>
+                <option value="SIRIUS">SIRIUS</option>
+                <option value="SPOTIFY">SPOTIFY</option>
+                <option value="SIRIUSXM">SIRIUSXM</option>
+                <option value="RHAPSODY">RHAPSODY</option>
+                <option value="PANDORA">PANDORA</option>
+                <option value="NAPSTER">NAPSTER</option>
+                <option value="LASTFM">LASTFM</option>
+                <option value="FLICKR">FLICKR</option>
+                <option value="IRADIO">IRADIO</option>
+                <option value="SERVER">SERVER</option>
+                <option value="FAVORITES">FAVORITES</option>
+                <option value="CDR">CDR</option>
+                <option value="AUX1">AUX1</option>
+                <option value="AUX2">AUX2</option>
+                <option value="AUX3">AUX3</option>
+                <option value="AUX4">AUX4</option>
+                <option value="AUX5">AUX5</option>
+                <option value="AUX6">AUX6</option>
+                <option value="AUX7">AUX7</option>
+                <option value="NET">NET</option>
+                <option value="NET/USB">NET/USB</option>
+                <option value="BT">BT</option>
+                <option value="M-XPORT">M-XPORT</option>
+                <option value="USB/IPOD">USB/IPOD</option>
+                <option value="USB">USB</option>
+                <option value="IPD">IPD</option>
+                <option value="IRP">IRP</option>
+                <option value="FVP">FVP</option>
+                <option value="OTP">OTP</option>
+            </options>
+        </state>
+    </channel-type>
+
+</thing:thing-descriptions>
