@@ -10,6 +10,7 @@ package org.openhab.binding.rotelra1x.handler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -41,7 +42,7 @@ import gnu.io.UnsupportedCommOperationException;
 public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
     private final static int BAUD = 115200;
-    private int max_vol = 0;
+    private int maximumVolume = 0;
     private RXTXPort serialPort;
 
     private boolean connected;
@@ -56,7 +57,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
     @Override
     public void initialize() {
-        max_vol = ((BigDecimal) getThing().getConfiguration().get("max-vol")).intValue();
+        maximumVolume = ((BigDecimal) getThing().getConfiguration().get("maximum-volume")).intValue();
         exit = false;
         try {
             connect();
@@ -78,24 +79,31 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             }
             String portName = (String) getThing().getConfiguration().get("port");
             if (portName == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Serial port name not configured");
                 throw new IOException("Serial port not configured");
-            } else {
-                try {
-                    serialPort = new RXTXPort(portName);
-                    serialPort.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                            SerialPort.PARITY_NONE);
-                } catch (PortInUseException | UnsupportedCommOperationException e) {
-                    serialPort = null;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    throw new IOException(e);
-                }
+            }
+            try {
+                serialPort = new RXTXPort(portName);
+            } catch (PortInUseException e) {
+                serialPort = null;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                throw new IOException(e);
+            }
+            try {
+                serialPort.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                        SerialPort.PARITY_NONE);
+            } catch (UnsupportedCommOperationException e) {
+                serialPort.close();
+                serialPort = null;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                throw new IOException(e);
             }
             connected = true;
             try {
                 // Don't need continuous updates of the display, we still get updates when
                 // the volume, etc., changes
-                serialPort.getOutputStream().write("display_update_manual!".getBytes("ascii"));
+                sendForce("display_update_manual!");
                 updateStatus(ThingStatus.ONLINE);
                 sendForce("get_current_power!");
                 updateState(getThing().getChannel("mute").getUID(), OnOffType.OFF);
@@ -112,8 +120,8 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
     private void disconnect() {
         if (connected && serialPort != null) {
             serialPort.close();
-            serialPort = null;
         }
+        serialPort = null;
         connected = false;
         if (!exit) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -154,11 +162,11 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
         if ("min".equals(volumeString)) {
             volume = 0;
         } else if ("max".equals(volumeString)) {
-            volume = max_vol;
+            volume = maximumVolume;
         } else {
             volume = Integer.parseInt(volumeString, 10);
         }
-        double volumePct = volume * 100.0 / max_vol;
+        double volumePct = volume * 100.0 / maximumVolume;
         return new PercentType(BigDecimal.valueOf(Math.round(volumePct)));
     }
 
@@ -182,7 +190,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
     }
 
     void powerOnRefresh() {
-        new Thread() {
+        scheduler.schedule(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -192,7 +200,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                     logger.warn("Failed to request volume and source after powering on.", e);
                 }
             }
-        }.start();
+        }, 0, TimeUnit.SECONDS);
     }
 
     @Override
@@ -242,8 +250,8 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 } else if ("source".equals(command)) {
                     updateState(getThing().getChannel("source").getUID(), new StringType(readUntil('!')));
                 } else if ("display".equals(command)) {
-                    String str_length = readUntil(',');
-                    int length = Integer.parseInt(str_length);
+                    String stringLength = readUntil(',');
+                    int length = Integer.parseInt(stringLength);
                     byte[] data = new byte[length];
                     int off = 0;
                     while (off != length) {
@@ -298,11 +306,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
             } else if ("volume".equals(channelUID.getId())) {
                 handleVolume(command);
             } else if ("dimmer".equals(channelUID.getId())) {
-                // Invert the scale so 100% is brightest
-                if (command instanceof PercentType) {
-                    double value = 6 - Math.floor(((PercentType) command).doubleValue() * 6 / 100.0);
-                    send("dimmer_" + Integer.toString((int) value) + "!");
-                }
+                handleDimmer(command);
             } else if ("source".equals(channelUID.getId())) {
                 if (command instanceof StringType) {
                     send(command.toString() + "!");
@@ -322,10 +326,18 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
             send("volume_down!");
         } else if (command instanceof DecimalType) {
-            double value = Double.parseDouble(command.toString()) * max_vol / 100.0;
+            double value = Double.parseDouble(command.toString()) * maximumVolume / 100.0;
             send("volume_" + Integer.toString((int) value) + "!");
         } else if (command instanceof RefreshType) {
             send("get_current_volume!");
+        }
+    }
+
+    private void handleDimmer(Command command) throws IOException {
+        // Invert the scale so 100% is brightest
+        if (command instanceof PercentType) {
+            double value = 6 - Math.floor(((PercentType) command).doubleValue() * 6 / 100.0);
+            send("dimmer_" + Integer.toString((int) value) + "!");
         }
     }
 }
