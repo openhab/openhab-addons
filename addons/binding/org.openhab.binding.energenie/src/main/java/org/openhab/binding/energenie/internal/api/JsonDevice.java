@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.energenie.internal.api;
 
-import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
-
 import com.google.gson.annotations.SerializedName;
 
 /**

@@ -82,7 +82,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
     public void 'assert initialized Thing updates the properties' () {
         // register servlet representing successful gateway registration
         JsonGateway gatewayDevice = createTestGateway()
-        String content = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
+        String content = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet successfullGatewayRegistrationServlet = new EnergenieServlet(content)
         registerServlet(PATH_CREATE_GATEWAY, successfullGatewayRegistrationServlet)
 
@@ -106,7 +106,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
 
         // register servlet representing successful gateway registration
         JsonGateway gatewayDevice = createTestGateway()
-        String succesfulRegistrationServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
+        String succesfulRegistrationServletContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet successfullRegistrationServlet = new EnergenieServlet(succesfulRegistrationServletContent)
         registerServlet(PATH_CREATE_GATEWAY, successfullRegistrationServlet)
 
@@ -131,7 +131,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
         String previousDate = formatter.format(previousDateTime)
 
         gatewayDevice.setLastSeenAt(previousDate)
-        String listGatewaysServletContent = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
+        String listGatewaysServletContent = generateJsonDevicesListServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet listGatewaysServlet = new EnergenieServlet(listGatewaysServletContent)
         registerServlet(PATH_LIST_GATEWAYS, listGatewaysServlet)
 
@@ -145,7 +145,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
 
         // register servlet representing successful gateway registration
         JsonGateway gatewayDevice = createTestGateway()
-        String content = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
+        String content = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet successfullGatewayRegistrationServlet = new EnergenieServlet(content)
         registerServlet(PATH_CREATE_GATEWAY, successfullGatewayRegistrationServlet)
 
@@ -197,7 +197,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
 
         // register servlet representing successful gateway registration
         JsonGateway gatewayDevice = createTestGateway()
-        String showContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
+        String showContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet successfullGatewayRegistrationServlet = new EnergenieServlet(showContent)
         registerServlet(PATH_CREATE_GATEWAY, successfullGatewayRegistrationServlet)
 
@@ -205,7 +205,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
         assertThat gatewayThing,is(notNullValue())
 
         // Register servlet which returns a list of gateways containing the one we need
-        String listContent = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
+        String listContent = generateJsonDevicesListServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet nonEmptyGatewaysListServlet = new EnergenieServlet(listContent)
         registerServlet(PATH_CREATE_GATEWAY, nonEmptyGatewaysListServlet)
 
@@ -220,7 +220,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
         unregisterServlet(PATH_LIST_GATEWAYS)
 
         // Unregistering of a gateway can be represented by registering a servlet which returns an empty gateways list '
-        String emptyListContent = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS)
+        String emptyListContent = generateJsonDevicesListServerResponse(JsonResponseConstants.RESPONSE_SUCCESS)
         EnergenieServlet empyListGatewaysServlet = new EnergenieServlet(emptyListContent)
         registerServlet(PATH_LIST_GATEWAYS, empyListGatewaysServlet)
 
@@ -238,7 +238,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
     public void 'assert that thing is successfuly removed when the unregister gateway request is successfull'() {
         // register servlet representing successful gateway registration
         JsonGateway registeredGateway = createTestGateway()
-        String succesfulRegistrationServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, registeredGateway)
+        String succesfulRegistrationServletContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, registeredGateway)
         EnergenieServlet successfullRegistrationServlet = new EnergenieServlet(succesfulRegistrationServletContent)
         registerServlet(PATH_CREATE_GATEWAY, successfullRegistrationServlet)
 
@@ -259,7 +259,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
          * So basically the response is the same as the response from successful registration."
          */
         JsonGateway deletedGateway = createTestGateway()
-        String succesfulDeletionServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, deletedGateway)
+        String succesfulDeletionServletContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, deletedGateway)
         EnergenieServlet successfullDeletionServlet = new EnergenieServlet(succesfulDeletionServletContent)
         registerServlet(PATH_DELETE_GATEWAYS, successfullDeletionServlet)
 

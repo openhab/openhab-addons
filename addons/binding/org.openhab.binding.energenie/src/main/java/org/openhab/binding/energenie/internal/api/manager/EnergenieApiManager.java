@@ -8,9 +8,9 @@
  */
 package org.openhab.binding.energenie.internal.api.manager;
 
-import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
-
-import com.google.gson.JsonObject;
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.JsonGateway;
+import org.openhab.binding.energenie.internal.api.JsonSubdevice;
 
 /**
  * A helper class for executing requests to the Mi|Home REST API.
@@ -38,7 +38,7 @@ public interface EnergenieApiManager {
      *
      * @return details about the registered device
      */
-    public JsonObject registerGateway(String label, String authCode);
+    public JsonGateway registerGateway(String label, String authCode);
 
     /**
      * This method lists all gateway devices in your account.
@@ -46,7 +46,7 @@ public interface EnergenieApiManager {
      * @return details about all gateway devices in the account, along with information about available firmware
      *         upgrades
      */
-    public JsonObject listGateways();
+    public JsonGateway[] listGateways();
 
     /**
      * Unregister a gateway from the account.
@@ -54,7 +54,7 @@ public interface EnergenieApiManager {
      * @param id - the ID of the device to unregister
      * @return details of the removed device
      */
-    public JsonObject unregisterGateway(int id);
+    public JsonGateway unregisterGateway(int id);
 
     /**
      * Initiate an upgrade to the latest available firmware for a gateway.
@@ -63,14 +63,14 @@ public interface EnergenieApiManager {
      * @return if an upgrade can be commenced, information about the new firmware; if no update is
      *         available, a validation error
      */
-    public JsonObject upgradeGatewayFirmware(int id);
+    public JsonGateway upgradeGatewayFirmware(int id);
 
     /**
      * This method lists all subdevices in your account, along with information, basic status and usage information.
      *
      * @return array of subdevices, properties may vary between objects depending on their type
      */
-    public JsonObject listSubdevices();
+    public JsonSubdevice[] listSubdevices();
 
     /**
      * This method will initiate the registration (pairing) of a new subdevice to a radio master. Please follow the
@@ -80,7 +80,7 @@ public interface EnergenieApiManager {
      * @param deviceType - the type of subdevice we want to register. One of the available {@link EnergenieDeviceTypes}
      * @return details of the master device that will perform the pairing
      */
-    public JsonObject registerSubdevice(int gatewayID, String deviceType);
+    public JsonSubdevice registerSubdevice(int gatewayID, EnergenieDeviceTypes deviceType);
 
     /**
      * This method will show information about a particular subdevice.
@@ -88,7 +88,7 @@ public interface EnergenieApiManager {
      * @param id - the ID of the subdevice
      * @return details of the subdevice
      */
-    public JsonObject showSubdeviceInfo(int id);
+    public JsonSubdevice showSubdeviceInfo(int id);
 
     /**
      * This method allows you to update the properties of a subdevice.
@@ -97,7 +97,7 @@ public interface EnergenieApiManager {
      * @param label - a new friendly name for the device
      * @return details of the updated subdevice
      */
-    public JsonObject updateSubdevice(int id, String label);
+    public JsonSubdevice updateSubdevice(int id, String label);
 
     /**
      * This method allows you to unregister a subdevice from the system.
@@ -105,5 +105,5 @@ public interface EnergenieApiManager {
      * @param id - the ID of the subdevice to unregister
      * @return details of the removed subdevice
      */
-    public JsonObject unregisterSubdevice(int id);
+    public JsonSubdevice unregisterSubdevice(int id);
 }

@@ -29,10 +29,10 @@ import org.openhab.binding.energenie.EnergenieBindingConstants
 import org.openhab.binding.energenie.handler.EnergenieGatewayHandler
 import org.openhab.binding.energenie.handler.EnergenieSubdevicesHandler
 import org.openhab.binding.energenie.internal.api.JsonResponseHandler
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
 import org.openhab.binding.energenie.internal.api.JsonGateway
 import org.openhab.binding.energenie.internal.api.JsonSubdevice
-import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes
-import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants
+import org.openhab.binding.energenie.internal.api.constants.JsonResponseConstants
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager
 /**

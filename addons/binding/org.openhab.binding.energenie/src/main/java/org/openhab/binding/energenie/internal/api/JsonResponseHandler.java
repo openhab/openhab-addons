@@ -11,10 +11,11 @@ package org.openhab.binding.energenie.internal.api;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants;
+import org.openhab.binding.energenie.internal.api.constants.JsonResponseConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -48,12 +49,21 @@ public class JsonResponseHandler {
         return null;
     }
 
+    public static <T> T getObject(JsonObject jsonResponse, Class<T> type) {
+        if (jsonResponse != null && jsonResponse.get(JsonResponseConstants.DATA_KEY) != null) {
+            JsonElement data = jsonResponse.get(JsonResponseConstants.DATA_KEY);
+            Gson gson = new Gson();
+            return gson.fromJson(data, type);
+        }
+        return null;
+    }
+
     /**
      * Returns the status of the server's response
      */
     public static String getResponseStatus(JsonObject jsonResponse) {
         if (jsonResponse != null) {
-            JsonElement responseStatusElement = jsonResponse.get(JSONResponseConstants.RESPONSE_STATUS_KEY);
+            JsonElement responseStatusElement = jsonResponse.get(JsonResponseConstants.RESPONSE_STATUS_KEY);
             if (responseStatusElement != null) {
                 return responseStatusElement.getAsString();
             }
@@ -67,7 +77,7 @@ public class JsonResponseHandler {
     public static boolean isRequestSuccessful(JsonObject jsonResponse) {
         if (jsonResponse != null && !jsonResponse.isJsonNull()) {
             String responseStatus = getResponseStatus(jsonResponse);
-            return JSONResponseConstants.RESPONSE_SUCCESS.equals(responseStatus);
+            return JsonResponseConstants.RESPONSE_SUCCESS.equals(responseStatus);
         }
         return false;
     }
@@ -78,8 +88,8 @@ public class JsonResponseHandler {
      * property or the "errors" property
      */
     public static String getErrorMessageFromResponse(JsonObject responseData) {
-        JsonElement message = responseData.get(JSONResponseConstants.RESPONSE_MESSAGE_KEY);
-        JsonElement error = responseData.get(JSONResponseConstants.RESPONSE_ERROR_KEY);
+        JsonElement message = responseData.get(JsonResponseConstants.RESPONSE_MESSAGE_KEY);
+        JsonElement error = responseData.get(JsonResponseConstants.RESPONSE_ERROR_KEY);
         if (message != null) {
             return message.getAsString();
         }

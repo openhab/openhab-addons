@@ -14,7 +14,7 @@ package org.openhab.binding.energenie.internal.api.constants;
  * @author Mihaela Memova - Initial contribution
  *
  */
-public class JSONResponseConstants {
+public class JsonResponseConstants {
 
     public static final String RESPONSE_STATUS_KEY = "status";
     public static final String RESPONSE_MESSAGE_KEY = "message";

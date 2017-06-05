@@ -20,9 +20,10 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.JsonGateway;
 import org.openhab.binding.energenie.internal.api.JsonResponseHandler;
-import org.openhab.binding.energenie.internal.api.constants.DeviceConstants;
-import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.JsonSubdevice;
 import org.openhab.binding.energenie.internal.rest.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,15 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
     public static final String ACTION_DELETE = "delete";
     public static final String ACTION_SHOW = "show";
     public static final String ACTION_UPDATE = "update";
+
+    // Common constants used for request creation
+    private static final String DEVICE_TYPE_KEY = "device_type";
+    private static final String DEVICE_ID_KEY = "id";
+    private static final String DEVICE_LABEL_KEY = "label";
+    private static final String GATEWAY_AUTH_CODE_KEY = "auth_code";
+    private static final String SUBDEVICE_PARENT_ID_KEY = "device_id";
+    private static final String SUBDEVICE_INCLUDE_USAGE_DATA = "include_usage_data";
+
     /**
      * This is only internal Mi|Home firmware upgrade. There is no information about the device firmware description.
      */
@@ -76,75 +86,84 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
     }
 
     @Override
-    public JsonObject registerGateway(String label, String authCode) {
+    public JsonGateway registerGateway(String label, String authCode) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(DeviceConstants.DEVICE_TYPE_KEY, EnergenieDeviceTypes.GATEWAY.toString());
-        parameters.put(DeviceConstants.DEVICE_LABEL_KEY, label);
-        parameters.put(DeviceConstants.GATEWAY_AUTH_CODE_KEY, authCode);
+        parameters.put(DEVICE_TYPE_KEY, EnergenieDeviceTypes.GATEWAY.toString());
+        parameters.put(DEVICE_LABEL_KEY, label);
+        parameters.put(GATEWAY_AUTH_CODE_KEY, authCode);
 
-        return execute(CONTROLLER_DEVICES, ACTION_CREATE, parameters);
+        JsonObject result = execute(CONTROLLER_DEVICES, ACTION_CREATE, parameters);
+        return JsonResponseHandler.getObject(result, JsonGateway.class);
     }
 
     @Override
-    public JsonObject listGateways() {
-        return execute(CONTROLLER_DEVICES, ACTION_LIST);
+    public JsonGateway[] listGateways() {
+        JsonObject result = execute(CONTROLLER_DEVICES, ACTION_LIST);
+        return JsonResponseHandler.getObject(result, JsonGateway[].class);
 
     }
 
     @Override
-    public JsonObject unregisterGateway(int id) {
+    public JsonGateway unregisterGateway(int id) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(DeviceConstants.DEVICE_ID_KEY, id);
+        parameters.put(DEVICE_ID_KEY, id);
 
-        return execute(CONTROLLER_DEVICES, ACTION_DELETE, parameters);
+        JsonObject result = execute(CONTROLLER_DEVICES, ACTION_DELETE, parameters);
+        return JsonResponseHandler.getObject(result, JsonGateway.class);
     }
 
     @Override
-    public JsonObject upgradeGatewayFirmware(int id) {
+    public JsonGateway upgradeGatewayFirmware(int id) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(DeviceConstants.DEVICE_ID_KEY, id);
+        parameters.put(DEVICE_ID_KEY, id);
 
-        return execute(CONTROLLER_DEVICES, ACTION_UPDATE_FIRMWARE, parameters);
+        JsonObject result = execute(CONTROLLER_DEVICES, ACTION_UPDATE_FIRMWARE, parameters);
+        return JsonResponseHandler.getObject(result, JsonGateway.class);
     }
 
     @Override
-    public JsonObject listSubdevices() {
-        return execute(CONTROLLER_SUBDEVICES, ACTION_LIST);
+    public JsonSubdevice[] listSubdevices() {
+        JsonObject result = execute(CONTROLLER_SUBDEVICES, ACTION_LIST);
+        return JsonResponseHandler.getObject(result, JsonSubdevice[].class);
     }
 
     @Override
-    public JsonObject registerSubdevice(int gatewayID, String deviceType) {
+    public JsonSubdevice registerSubdevice(int gatewayID, EnergenieDeviceTypes deviceType) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(DeviceConstants.SUBDEVICE_PARENT_ID_KEY, gatewayID);
-        parameters.put(DeviceConstants.DEVICE_TYPE_KEY, deviceType);
-        return execute(CONTROLLER_SUBDEVICES, ACTION_CREATE, parameters);
+        parameters.put(SUBDEVICE_PARENT_ID_KEY, gatewayID);
+        parameters.put(DEVICE_TYPE_KEY, deviceType.toString());
+        JsonObject result = execute(CONTROLLER_SUBDEVICES, ACTION_CREATE, parameters);
+        return JsonResponseHandler.getObject(result, JsonSubdevice.class);
 
     }
 
     @Override
-    public JsonObject showSubdeviceInfo(int id) {
+    public JsonSubdevice showSubdeviceInfo(int id) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(DeviceConstants.DEVICE_ID_KEY, id);
+        parameters.put(DEVICE_ID_KEY, id);
         // With this parameter we exclude the historical usage data ("1" - to include, "0" - to exclude)
         // The historical data is from no importance to the user,
         // it consists of the number of events for each hour from the last 24 hours.
-        parameters.put(DeviceConstants.SUBDEVICE_INCLUDE_USAGE_DATA, 0);
-        return execute(CONTROLLER_SUBDEVICES, ACTION_SHOW, parameters);
+        parameters.put(SUBDEVICE_INCLUDE_USAGE_DATA, 0);
+        JsonObject result = execute(CONTROLLER_SUBDEVICES, ACTION_SHOW, parameters);
+        return JsonResponseHandler.getObject(result, JsonSubdevice.class);
     }
 
     @Override
-    public JsonObject updateSubdevice(int id, String label) {
+    public JsonSubdevice updateSubdevice(int id, String label) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(DeviceConstants.DEVICE_ID_KEY, id);
-        parameters.put(DeviceConstants.DEVICE_LABEL_KEY, label);
-        return execute(CONTROLLER_SUBDEVICES, ACTION_UPDATE, parameters);
+        parameters.put(DEVICE_ID_KEY, id);
+        parameters.put(DEVICE_LABEL_KEY, label);
+        JsonObject result = execute(CONTROLLER_SUBDEVICES, ACTION_UPDATE, parameters);
+        return JsonResponseHandler.getObject(result, JsonSubdevice.class);
     }
 
     @Override
-    public JsonObject unregisterSubdevice(int id) {
+    public JsonSubdevice unregisterSubdevice(int id) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(DeviceConstants.DEVICE_ID_KEY, id);
-        return execute(CONTROLLER_SUBDEVICES, ACTION_DELETE, parameters);
+        parameters.put(DEVICE_ID_KEY, id);
+        JsonObject result = execute(CONTROLLER_SUBDEVICES, ACTION_DELETE, parameters);
+        return JsonResponseHandler.getObject(result, JsonSubdevice.class);
     }
 
     private JsonObject execute(String controller, String action) {

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.energenie.internal.api.constants;
+package org.openhab.binding.energenie.internal.api;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -28,15 +28,12 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
 import org.openhab.binding.energenie.handler.EnergenieGatewayHandler;
 import org.openhab.binding.energenie.handler.EnergenieSubdevicesHandler;
-import org.openhab.binding.energenie.internal.api.constants.DeviceConstants;
-import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants;
+import org.openhab.binding.energenie.internal.api.JsonDevice;
+import org.openhab.binding.energenie.internal.api.JsonGateway;
+import org.openhab.binding.energenie.internal.api.JsonSubdevice;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * A discovery service for Energenie Mi|Home devices using the energenie Mi|Home REST API.
@@ -77,26 +74,22 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService {
             logger.warn("Your binding is not configured yet. Please set the credentials first.");
         } else {
             List<Thing> things = getAllEnergenieThings();
-            JsonObject registeredGatewaysResponse = apiManager.listGateways();
-            if (registeredGatewaysResponse != null) {
-                JsonArray registeredGateways = registeredGatewaysResponse.get(JSONResponseConstants.DATA_KEY)
-                        .getAsJsonArray();
-                List<JsonElement> newDevices = searchNewGateways(registeredGateways, things);
-
-                for (JsonElement device : newDevices) {
-                    createGatewayDiscoveryResult((JsonObject) device);
+            JsonGateway[] registeredGateways = apiManager.listGateways();
+            // TODO use searchNewGateways
+            if (registeredGateways != null) {
+                for (JsonGateway device : registeredGateways) {
+                    createGatewayDiscoveryResult(device);
                 }
             } else {
                 logger.error("Request for gateways information to Mi|Home server was not successful.");
             }
 
-            JsonObject response = apiManager.listSubdevices();
-            if (response != null) {
-                JsonArray devices = response.get(JSONResponseConstants.DATA_KEY).getAsJsonArray();
-                List<JsonElement> newDevices = searchNewDevices(devices, things);
+            JsonSubdevice[] subdevices = apiManager.listSubdevices();
+            if (subdevices != null) {
+                List<JsonSubdevice> newDevices = searchNewDevices(subdevices, things);
 
-                for (JsonElement device : newDevices) {
-                    createSubdeviceDiscoveryResult((JsonObject) device);
+                for (JsonSubdevice device : newDevices) {
+                    createSubdeviceDiscoveryResult(device);
                 }
             } else {
                 logger.error("Request for subdevices information to Mi|Home server wasn't successful.");
@@ -131,6 +124,7 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService {
         return supported;
     }
 
+    // TODO merge both methods into single one
     /**
      * Searches for paired gateways that don't have things created yet
      *
@@ -138,10 +132,10 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService {
      * @param things - all gateways things in the thing registry
      * @return list with the gateways that have no corresponding thing in the registry
      */
-    private List<JsonElement> searchNewGateways(JsonArray gateways, List<Thing> things) {
-        List<JsonElement> results = new LinkedList<>();
+    private List<JsonGateway> searchNewGateways(JsonGateway[] gateways, List<Thing> things) {
+        List<JsonGateway> results = new LinkedList<>();
 
-        for (JsonElement gateway : gateways) {
+        for (JsonGateway gateway : gateways) {
             if (!isThingCreatedForDevice(gateway, things)) {
                 results.add(gateway);
             }
@@ -157,10 +151,10 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService {
      * @param things - all things attached to the current gateway
      * @return list with the subdevices that have no corresponding thing in the registry
      */
-    private List<JsonElement> searchNewDevices(JsonArray subdevices, List<Thing> things) {
-        List<JsonElement> results = new LinkedList<>();
+    private List<JsonSubdevice> searchNewDevices(JsonSubdevice[] subdevices, List<Thing> things) {
+        List<JsonSubdevice> results = new LinkedList<>();
 
-        for (JsonElement device : subdevices) {
+        for (JsonSubdevice device : subdevices) {
             if (!isThingCreatedForDevice(device, things)) {
                 results.add(device);
             }
@@ -169,34 +163,31 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService {
         return results;
     }
 
-    private boolean isThingCreatedForDevice(JsonElement device, List<Thing> things) {
-        JsonElement idProperty = device.getAsJsonObject().get(DeviceConstants.DEVICE_ID_KEY);
-        if (idProperty != null) {
-            int deviceID = idProperty.getAsInt();
-            for (Thing registeredThing : things) {
-                Map<String, String> props = registeredThing.getProperties();
-                if (props.containsKey(EnergenieBindingConstants.PROPERTY_DEVICE_ID)) {
-                    int id;
-                    try {
-                        id = Integer.parseInt(props.get(EnergenieBindingConstants.PROPERTY_DEVICE_ID));
+    private boolean isThingCreatedForDevice(JsonDevice device, List<Thing> things) {
+        int deviceID = device.getID();
+        for (Thing registeredThing : things) {
+            Map<String, String> props = registeredThing.getProperties();
+            if (props.containsKey(EnergenieBindingConstants.PROPERTY_DEVICE_ID)) {
+                int id;
+                try {
+                    id = Integer.parseInt(props.get(EnergenieBindingConstants.PROPERTY_DEVICE_ID));
 
-                        if (deviceID == id) {
-                            return true;
-                        }
-                    } catch (NumberFormatException exception) {
-                        return false;
+                    if (deviceID == id) {
+                        return true;
                     }
+                } catch (NumberFormatException exception) {
+                    return false;
                 }
             }
         }
         return false;
     }
 
-    private void createGatewayDiscoveryResult(JsonObject gateway) {
-        String deviceType = gateway.get(DeviceConstants.DEVICE_TYPE_KEY).getAsString();
-        int deviceID = gateway.get(DeviceConstants.DEVICE_ID_KEY).getAsInt();
-        String label = gateway.get(DeviceConstants.DEVICE_LABEL_KEY).getAsString();
-        String gatewayCode = gateway.get(DeviceConstants.GATEWAY_AUTH_CODE_KEY).getAsString();
+    private void createGatewayDiscoveryResult(JsonGateway gateway) {
+        String deviceType = gateway.getType().toString();
+        int deviceID = gateway.getID();
+        String label = gateway.getLabel();
+        String gatewayCode = gateway.getAuthCode();
         ThingTypeUID thingTypeUID = EnergenieBindingConstants.THING_TYPE_GATEWAY;
 
         logger.debug("Creating DiscoveryResult for gateway with id {}", deviceID);
@@ -217,10 +208,10 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(result);
     }
 
-    private void createSubdeviceDiscoveryResult(JsonObject subdevice) {
-        String deviceType = subdevice.get(DeviceConstants.DEVICE_TYPE_KEY).getAsString();
-        int gatewayID = subdevice.get(DeviceConstants.SUBDEVICE_PARENT_ID_KEY).getAsInt();
-        int deviceID = subdevice.get(DeviceConstants.DEVICE_ID_KEY).getAsInt();
+    private void createSubdeviceDiscoveryResult(JsonSubdevice subdevice) {
+        String deviceType = subdevice.getType().toString();
+        int gatewayID = subdevice.getParentID();
+        int deviceID = subdevice.getID();
         Thing bridge = getGatewayThingFromThingRegistry(gatewayID);
         ThingTypeUID thingTypeUID = EnergenieBindingConstants.DEVICE_TYPE_TO_THING_TYPE.get(deviceType);
         if (thingTypeUID != null) {

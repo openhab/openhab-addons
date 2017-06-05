@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.energenie.internal.api;
 
-import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,7 +20,7 @@ public class JsonSubdevice extends JsonDevice {
 
     // ID of the gateway that the subdevice is paired to
     @SerializedName("device_id")
-    int deviceID;
+    int parentID;
 
     // For open and motion sensors
     @SerializedName("sensor_state")
@@ -40,20 +38,60 @@ public class JsonSubdevice extends JsonDevice {
 
     JsonSubdevice(int id, int gatewayID, EnergenieDeviceTypes type) {
         super(type, id, DEFAULT_LABEL);
-        this.deviceID = gatewayID;
+        this.parentID = gatewayID;
     }
 
     JsonSubdevice(int id, int gatewayID, EnergenieDeviceTypes type, Integer state) {
         super(type, id, DEFAULT_LABEL);
-        this.deviceID = gatewayID;
+        this.parentID = gatewayID;
         this.sensorState = state;
     }
 
     JsonSubdevice(int id, int gatewayID, EnergenieDeviceTypes type, double voltage, int power, int wh) {
         super(type, id, DEFAULT_LABEL);
-        this.deviceID = gatewayID;
+        this.parentID = gatewayID;
         this.voltage = voltage;
         this.realPower = power;
         this.todayWh = wh;
+    }
+
+    public int getParentID() {
+        return parentID;
+    }
+
+    public void setParentID(int parentID) {
+        this.parentID = parentID;
+    }
+
+    public Integer getSensorState() {
+        return sensorState;
+    }
+
+    public void setSensorState(Integer sensorState) {
+        this.sensorState = sensorState;
+    }
+
+    public double getVoltage() {
+        return voltage;
+    }
+
+    public void setVoltage(double voltage) {
+        this.voltage = voltage;
+    }
+
+    public int getRealPower() {
+        return realPower;
+    }
+
+    public void setRealPower(int realPower) {
+        this.realPower = realPower;
+    }
+
+    public int getTodayWh() {
+        return todayWh;
+    }
+
+    public void setTodayWh(int todayWh) {
+        this.todayWh = todayWh;
     }
 }

@@ -34,11 +34,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.openhab.binding.energenie.EnergenieBindingConstants
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes
 import org.openhab.binding.energenie.internal.api.JsonDevice
 import org.openhab.binding.energenie.internal.api.JsonGateway
 import org.openhab.binding.energenie.internal.api.JsonSubdevice
-import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes
-import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants
+import org.openhab.binding.energenie.internal.api.constants.JsonResponseConstants
 import org.openhab.binding.energenie.internal.api.manager.*
 import org.openhab.binding.energenie.internal.rest.*
 import org.openhab.binding.energenie.test.AbstractEnergenieOSGiTest
@@ -76,13 +76,13 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
 
         //Register Subdevices Servlets
         JsonSubdevice subdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, TEST_SUBDEVICE_TYPE)
-        String listSubdevice = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, subdevice)
+        String listSubdevice = generateJsonDevicesListServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, subdevice)
         listSubdevicesServlet = new EnergenieServlet(listSubdevice)
         registerServlet(PATH_LIST_SUBDEVICES, listSubdevicesServlet)
 
         registerServlet(PATH_CREATE_SUBDEVICE, createSubdeviceServlet)
 
-        String showSubdevice = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, subdevice)
+        String showSubdevice = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, subdevice)
         showSubdeviceServlet = new EnergenieServlet(showSubdevice)
         registerServlet(PATH_SHOW_SUBDEVICE, showSubdeviceServlet)
 
@@ -90,11 +90,11 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
 
         // in order to test subdevices we need to register servlet representing successful gateway registration
         JsonGateway gatewayDevice = createTestGateway()
-        String showContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
+        String showContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         registerServlet(PATH_CREATE_GATEWAY, new EnergenieServlet(showContent))
 
         // Register servlet with content representing list of gateways. It is needed for the refresh thread.
-        String listContent = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
+        String listContent = generateJsonDevicesListServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         registerServlet(PATH_LIST_GATEWAYS, new EnergenieServlet(listContent))
 
     }
@@ -248,11 +248,11 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
 
         // Pairing button was pressed and pairing was successful, MiHome REST API returns a new device
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, TEST_SUBDEVICE_TYPE)
-        String newSubdeviceList = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
+        String newSubdeviceList = generateJsonDevicesListServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
         listSubdevicesServlet.setContent(newSubdeviceList)
 
         // The label will be changed only if a request to the MiHome REST API is successful
-        String newSubdevice = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
+        String newSubdevice = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
         registerServlet(PATH_UPDATE_SUBDEVICE,new EnergenieServlet(newSubdevice))
 
         sleep(EnergenieSubdevicesHandler.PARING_WAIT_TIME_MSEC)
@@ -482,7 +482,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
     public void 'assert Subdevice will be removed when Gateway is removed' (){
         // Mock the MiHome server response
         JsonDevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, TEST_SUBDEVICE_TYPE)
-        String content = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
+        String content = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
         EnergenieServlet servlet = new EnergenieServlet(content);
         registerServlet(PATH_DELETE_GATEWAYS, servlet)
 
@@ -516,7 +516,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
     @Test
     public void 'assert ThingStatus is OFFLINE on REFRESH when device is removed from the MiHome server'() {
         JsonDevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, TEST_SUBDEVICE_TYPE)
-        String showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
+        String showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
         showSubdeviceServlet.setContent(showSubdeviceServletContent)
 
         initializePairedThing()
@@ -525,7 +525,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         assertThingStatus(ThingStatus.ONLINE,ThingStatusDetail.NONE)
 
         // The device has been removed from the MiHome server
-        showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_NOT_FOUND, jsonSubdevice)
+        showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_NOT_FOUND, jsonSubdevice)
         showSubdeviceServlet.setContent(showSubdeviceServletContent)
 
         // Send a command to refresh the channel state
@@ -539,7 +539,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
     @Test
     public void 'assert ThingStatus is OFFLINE when device is removed from the MiHome server'() {
         JsonDevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, TEST_SUBDEVICE_TYPE)
-        String showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
+        String showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
         showSubdeviceServlet.setContent(showSubdeviceServletContent)
 
         initializePairedThing()
@@ -548,7 +548,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         assertThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE)
 
         // The device has been removed from the MiHome server
-        showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_NOT_FOUND, jsonSubdevice)
+        showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_NOT_FOUND, jsonSubdevice)
         showSubdeviceServlet.setContent(showSubdeviceServletContent)
 
         // Wait for the refresh thread
@@ -559,7 +559,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
     }
 
     private void testDeviceState (EnergenieDeviceTypes subdeviceType, String channelID, JsonSubdevice jsonSubdevice, State expectedState) {
-        String showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
+        String showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
         showSubdeviceServlet.setContent(showSubdeviceServletContent)
 
         gatewayThing = createBridge(thingRegistry,TEST_PASSWORD,TEST_USERNAME,TEST_GATEWAY_CODE,TEST_GATEWAY_ID, TEST_AUTH_CODE)

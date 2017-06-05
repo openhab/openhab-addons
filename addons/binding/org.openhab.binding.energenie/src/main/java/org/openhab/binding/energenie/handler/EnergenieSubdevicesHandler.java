@@ -38,14 +38,12 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
-import org.openhab.binding.energenie.internal.api.constants.DeviceConstants;
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.JsonSubdevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * Handler for the Mi|Home Subdevices
@@ -144,9 +142,9 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
 
             this.energenieID = deviceID;
 
-            JsonObject data = gatewayHandler.getSubdeviceData(this.energenieID);
-            if (data != null) {
-                updateThingProperties(data);
+            JsonSubdevice subdevice = gatewayHandler.getSubdeviceData(this.energenieID);
+            if (subdevice != null) {
+                updateThingProperties(subdevice);
 
                 updateStatus(ThingStatus.ONLINE);
 
@@ -198,7 +196,7 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
             return;
         }
         ThingTypeUID thingTypeUID = getThing().getThingTypeUID();
-        final String type = EnergenieBindingConstants.THING_TYPE_TO_DEVICE_TYPE.get(thingTypeUID);
+        final EnergenieDeviceTypes type = EnergenieBindingConstants.THING_TYPE_TO_DEVICE_TYPE.get(thingTypeUID);
 
         Runnable runnable = new Runnable() {
             @Override
@@ -222,12 +220,12 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
         logger.info("Pairing for device of type {} to Mi|Home gateway with ID {} has been started", type, gatewayID);
     }
 
-    private boolean pairDevice(int gatewayID, String deviceType) {
+    private boolean pairDevice(int gatewayID, EnergenieDeviceTypes deviceType) {
         // List device before starting the pairing
         logger.debug(
                 "Gathering information about existing devices of type {}, registered on the Mi|Home gateway with id {}",
                 deviceType, gatewayID);
-        JsonArray subdevicesBefore = gatewayHandler.listSubdevices();
+        JsonSubdevice[] subdevicesBefore = gatewayHandler.listSubdevices();
         if (subdevicesBefore == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Unable to get information for subdevices");
@@ -257,7 +255,7 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
                 "Gathering information about existing devices of type {}, registered on the Mi|Home gateway with id {}",
                 deviceType, gatewayID);
         // List devices again and see if a new device is added
-        JsonArray subdevicesAfter = gatewayHandler.listSubdevices();
+        JsonSubdevice[] subdevicesAfter = gatewayHandler.listSubdevices();
         if (subdevicesAfter == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Unable to get information for subdevices");
@@ -265,7 +263,7 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
         }
 
         logger.debug("Searching for new devices of type {}", deviceType);
-        JsonObject newDevice = getNewDevice(subdevicesBefore, subdevicesAfter, deviceType, gatewayID);
+        JsonSubdevice newDevice = getNewDevice(subdevicesBefore, subdevicesAfter, deviceType, gatewayID);
         if (newDevice == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Can't find device of type " + deviceType + " for gateway " + gatewayID);
@@ -277,10 +275,10 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
         return true;
     }
 
-    private void finishPairing(JsonObject newDevice) {
+    private void finishPairing(JsonSubdevice newDevice) {
         // Get the device ID and persist it
         logger.info("Getting the device ID");
-        int deviceID = newDevice.get(DeviceConstants.DEVICE_ID_KEY).getAsInt();
+        int deviceID = newDevice.getID();
         Configuration configuration = editConfiguration();
         this.energenieID = deviceID;
         // We persist the device ID, it indicates that the device is already added in the Mi|Home cloud
@@ -291,7 +289,7 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
 
         // Update the label in the Mi|Home portal
         String label = getThing().getLabel();
-        JsonObject updateResponse = gatewayHandler.updateSubdevice(this.energenieID, label);
+        JsonSubdevice updateResponse = gatewayHandler.updateSubdevice(this.energenieID, label);
         if (updateResponse == null) {
             logger.warn("Failed to update label of newly paired subdevice {} to {}", this.energenieID, label);
         }
@@ -312,21 +310,20 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
             public void run() {
                 try {
                     if (getThing().getStatus() == ThingStatus.ONLINE) {
-                        JsonObject data = gatewayHandler.getSubdeviceData(energenieID);
-                        if (data != null) {
+                        JsonSubdevice subdevice = gatewayHandler.getSubdeviceData(energenieID);
+                        if (subdevice != null) {
                             // Update the channels
                             List<Channel> channels = getThing().getChannels();
                             for (Channel channel : channels) {
                                 ChannelUID uid = channel.getUID();
                                 if (isLinked(uid.getId())) {
-                                    updateThingState(data, uid);
+                                    updateThingState(subdevice, uid);
                                 }
                             }
 
                             // Update the label if changed
-                            JsonElement newLabelElement = data.get(DeviceConstants.DEVICE_LABEL_KEY);
-                            if (newLabelElement != null) {
-                                String newLabel = newLabelElement.getAsString();
+                            String newLabel = subdevice.getLabel();
+                            if (newLabel != null) {
                                 String currentLabel = getThing().getLabel();
                                 if (!newLabel.equals(currentLabel)) {
                                     getThing().setLabel(newLabel);
@@ -419,16 +416,16 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
         scheduleRegularUpdate(this.updateInterval);
     }
 
-    private JsonObject getNewDevice(JsonArray oldDevices, JsonArray newDevices, String deviceType, int gatewayID) {
+    private JsonSubdevice getNewDevice(JsonSubdevice[] oldDevices, JsonSubdevice[] newDevices,
+            EnergenieDeviceTypes deviceType, int gatewayID) {
         Set<Integer> oldIDs = new HashSet<Integer>();
         // Save the IDs of the old devices that are of the searched type for this bridge
-        for (JsonElement device : oldDevices) {
-            JsonObject deviceObj = (JsonObject) device;
-            String type = deviceObj.get(DeviceConstants.DEVICE_TYPE_KEY).getAsString();
-            int gateway = deviceObj.get(DeviceConstants.SUBDEVICE_PARENT_ID_KEY).getAsInt();
+        for (JsonSubdevice device : oldDevices) {
+            EnergenieDeviceTypes type = device.getType();
+            int gateway = device.getParentID();
 
-            if (deviceType.equals(type) && gateway == gatewayID) {
-                int deviceID = deviceObj.get(DeviceConstants.DEVICE_ID_KEY).getAsInt();
+            if (deviceType == type && gateway == gatewayID) {
+                int deviceID = device.getID();
                 oldIDs.add(deviceID);
             }
         }
@@ -436,15 +433,14 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
         // Search for new devices and return the first occurrence
         // We are not interested of the others(if the user pairs multiple device simultaneously), as the thing handler
         // is responsible only for a single device
-        for (JsonElement device : newDevices) {
-            JsonObject deviceObj = (JsonObject) device;
-            String type = deviceObj.get(DeviceConstants.DEVICE_TYPE_KEY).getAsString();
-            int deviceID = deviceObj.get(DeviceConstants.DEVICE_ID_KEY).getAsInt();
-            int gateway = deviceObj.get(DeviceConstants.SUBDEVICE_PARENT_ID_KEY).getAsInt();
+        for (JsonSubdevice device : newDevices) {
+            EnergenieDeviceTypes type = device.getType();
+            int deviceID = device.getID();
+            int gateway = device.getParentID();
 
-            boolean isNewDeviceFound = type.equals(deviceType) && gateway == gatewayID && !oldIDs.contains(deviceID);
+            boolean isNewDeviceFound = (type == deviceType) && (gateway == gatewayID) && (!oldIDs.contains(deviceID));
             if (isNewDeviceFound) {
-                return deviceObj;
+                return device;
             }
         }
 
@@ -455,10 +451,10 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         ThingStatus status = getThing().getStatus();
         if (status == ThingStatus.ONLINE) {
-            JsonObject deviceData = gatewayHandler.getSubdeviceData(energenieID);
-            if (deviceData != null) {
+            JsonSubdevice subdevice = gatewayHandler.getSubdeviceData(energenieID);
+            if (subdevice != null) {
                 if (command instanceof RefreshType && channelUID.getId().equals(CHANNEL_STATE)) {
-                    updateThingState(deviceData, channelUID);
+                    updateThingState(subdevice, channelUID);
                 } else {
                     logger.warn("Unsupported command {} for channel with UID {}", command.toFullString(), channelUID);
                 }
@@ -474,7 +470,7 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
 
     }
 
-    private void updateThingState(JsonObject deviceData, ChannelUID channelUID) {
+    private void updateThingState(JsonSubdevice subdevice, ChannelUID channelUID) {
         ThingTypeUID thingTypeUID = getThing().getThingTypeUID();
 
         String channelID = channelUID.getId();
@@ -482,13 +478,13 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
 
         switch (thingTypeUID.getId()) {
             case EnergenieBindingConstants.THING_ID_MOTION_SENSOR:
-                state = getMotionSensorState(deviceData, channelID);
+                state = getMotionSensorState(subdevice, channelID);
                 break;
             case EnergenieBindingConstants.THING_ID_OPEN_SENSOR:
-                state = getOpenSensorState(deviceData, channelID);
+                state = getOpenSensorState(subdevice, channelID);
                 break;
             case EnergenieBindingConstants.THING_ID_ENERGY_MONITOR:
-                state = getEnergyMonitorState(deviceData, channelID);
+                state = getEnergyMonitorState(subdevice, channelID);
                 break;
             default:
                 logger.warn("Channel with UID {} won't be updated! It is not supported from thing type {}", channelUID,
@@ -504,87 +500,56 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
         }
     }
 
-    private State getEnergyMonitorState(JsonObject deviceData, String channelID) {
+    private State getEnergyMonitorState(JsonSubdevice subdevice, String channelID) {
         State state = UnDefType.UNDEF;
         switch (channelID) {
             case EnergenieBindingConstants.CHANNEL_REAL_POWER: {
-                JsonElement jsonElement = deviceData.get(DeviceConstants.MONITOR_REAL_POWER_KEY);
-                state = getStateAsDecimalType(jsonElement);
+                state = new DecimalType(subdevice.getRealPower());
                 break;
             }
             case EnergenieBindingConstants.CHANNEL_TODAY_CONSUMPTION: {
-                JsonElement jsonElement = deviceData.get(DeviceConstants.MONITOR_TODAY_CONSUMPTION_KEY);
-                state = getStateAsDecimalType(jsonElement);
+                state = new DecimalType(subdevice.getTodayWh());
                 break;
             }
             case EnergenieBindingConstants.CHANNEL_VOLTAGE: {
-                JsonElement jsonElement = deviceData.get(DeviceConstants.MONITOR_VOLTAGE_KEY);
-                state = getStateAsDecimalType(jsonElement);
+                state = new DecimalType(subdevice.getVoltage());
                 break;
             }
         }
         return state;
     }
 
-    private State getStateAsDecimalType(JsonElement jsonElement) {
+    private State getOpenSensorState(JsonSubdevice subdevice, String channelID) {
         State state = UnDefType.UNDEF;
-        if (jsonElement != null) {
-            if (jsonElement.isJsonNull()) {
-                state = UnDefType.NULL;
+        if (channelID.equals(EnergenieBindingConstants.CHANNEL_STATE)) {
+            Integer jsonElement = subdevice.getSensorState();
+            if (jsonElement != null) {
+                return jsonElement == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
             } else {
-                double rawState = jsonElement.getAsDouble();
-                state = new DecimalType(rawState);
+                state = UnDefType.NULL;
             }
         }
         return state;
     }
 
-    private State getOpenSensorState(JsonObject deviceData, String channelID) {
+    private State getMotionSensorState(JsonSubdevice subdevice, String channelID) {
         State state = UnDefType.UNDEF;
         if (channelID.equals(EnergenieBindingConstants.CHANNEL_STATE)) {
-            JsonElement jsonElement = deviceData.get(DeviceConstants.SENSOR_STATE_KEY);
-            if (jsonElement != null) {
-                if (jsonElement.isJsonNull()) {
-                    state = UnDefType.NULL;
-                } else {
-                    return jsonElement.getAsInt() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-                }
+            Integer value = subdevice.getSensorState();
+            if (value != null) {
+                return value == 0 ? OnOffType.OFF : OnOffType.ON;
+            } else {
+                state = UnDefType.NULL;
             }
         }
         return state;
     }
 
-    private State getMotionSensorState(JsonObject deviceData, String channelID) {
-        State state = UnDefType.UNDEF;
-        if (channelID.equals(EnergenieBindingConstants.CHANNEL_STATE)) {
-            JsonElement jsonElement = deviceData.get(DeviceConstants.SENSOR_STATE_KEY);
-            if (jsonElement != null) {
-                if (jsonElement.isJsonNull()) {
-                    state = UnDefType.NULL;
-                } else {
-                    return jsonElement.getAsInt() == 0 ? OnOffType.OFF : OnOffType.ON;
-                }
-            }
-        }
-        return state;
-    }
-
-    protected void updateThingProperties(JsonObject deviceObj) {
+    protected void updateThingProperties(JsonSubdevice deviceObj) {
         Map<String, String> properties = editProperties();
-
-        JsonElement idProperty = deviceObj.get(DeviceConstants.DEVICE_ID_KEY);
-        if (idProperty != null && !idProperty.isJsonNull()) {
-            properties.put(EnergenieBindingConstants.PROPERTY_DEVICE_ID, idProperty.getAsString());
-        }
-        JsonElement typeProperty = deviceObj.get(DeviceConstants.DEVICE_TYPE_KEY);
-        if (typeProperty != null && !typeProperty.isJsonNull()) {
-            properties.put(EnergenieBindingConstants.PROPERTY_TYPE, typeProperty.getAsString());
-        }
-        JsonElement gatewayID = deviceObj.get(DeviceConstants.SUBDEVICE_PARENT_ID_KEY);
-        if (gatewayID != null && !gatewayID.isJsonNull()) {
-            properties.put(EnergenieBindingConstants.PROPERTY_GATEWAY_ID, gatewayID.getAsString());
-        }
-
+        properties.put(EnergenieBindingConstants.PROPERTY_DEVICE_ID, Integer.toString(deviceObj.getID()));
+        properties.put(EnergenieBindingConstants.PROPERTY_TYPE, deviceObj.getType().toString());
+        properties.put(EnergenieBindingConstants.PROPERTY_GATEWAY_ID, Integer.toString(deviceObj.getParentID()));
         updateProperties(properties);
         logger.debug("Thing properties updated");
     }
@@ -608,8 +573,8 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
         String oldLabel = this.thing.getLabel();
         String newLabel = updatedThing.getLabel();
         if (newLabel != null && !newLabel.equals(oldLabel)) {
-            JsonObject updateResponse = gatewayHandler.updateSubdevice(energenieID, newLabel);
-            if (updateResponse != null) {
+            JsonSubdevice subdevice = gatewayHandler.updateSubdevice(energenieID, newLabel);
+            if (subdevice != null) {
                 this.thing.setLabel(newLabel);
             } else {
                 logger.error("Label of device {} can't be changed to {}. Please check the log for more details.",

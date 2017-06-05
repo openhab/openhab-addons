@@ -11,7 +11,7 @@ package org.openhab.binding.energenie;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -43,10 +43,10 @@ public class EnergenieBindingConstants {
             EnergenieDeviceTypes.MOTION_SENSOR, EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR,
             EnergenieDeviceTypes.OPEN_SENSOR, EnergenieBindingConstants.THING_TYPE_OPEN_SENSOR);
 
-    public static final Map<ThingTypeUID, String> THING_TYPE_TO_DEVICE_TYPE = ImmutableMap.of(
-            EnergenieBindingConstants.THING_TYPE_ENERGY_MONITOR, EnergenieDeviceTypes.HOUSE_MONITOR.toString(),
-            EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR, EnergenieDeviceTypes.MOTION_SENSOR.toString(),
-            EnergenieBindingConstants.THING_TYPE_OPEN_SENSOR, EnergenieDeviceTypes.OPEN_SENSOR.toString());
+    public static final Map<ThingTypeUID, EnergenieDeviceTypes> THING_TYPE_TO_DEVICE_TYPE = ImmutableMap.of(
+            EnergenieBindingConstants.THING_TYPE_ENERGY_MONITOR, EnergenieDeviceTypes.HOUSE_MONITOR,
+            EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR, EnergenieDeviceTypes.MOTION_SENSOR,
+            EnergenieBindingConstants.THING_TYPE_OPEN_SENSOR, EnergenieDeviceTypes.OPEN_SENSOR);
 
     // List of all Channel IDs
     public static final String CHANNEL_LAST_SEEN = "lastSeen";

@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.energenie.internal.api.JsonResponseHandler;
-import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants;
+import org.openhab.binding.energenie.internal.api.constants.JsonResponseConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,23 +54,23 @@ public class FailingRequestHandlerImpl implements FailingRequestHandler {
     @Override
     public void handleFailingJsonRequest(JsonObject jsonResponse) {
         String responseStatus = JsonResponseHandler.getResponseStatus(jsonResponse);
-        JsonObject responseData = jsonResponse.get(JSONResponseConstants.DATA_KEY).getAsJsonObject();
+        JsonObject responseData = jsonResponse.get(JsonResponseConstants.DATA_KEY).getAsJsonObject();
         String errorMessage = JsonResponseHandler.getErrorMessageFromResponse(responseData);
         if (callback != null) {
             switch (responseStatus) {
-                case JSONResponseConstants.RESPONSE_ACCESS_DENIED:
+                case JsonResponseConstants.RESPONSE_ACCESS_DENIED:
                     callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             errorMessage);
                     break;
 
-                case JSONResponseConstants.RESPONSE_INTERNAL_SERVER_ERROR:
-                case JSONResponseConstants.RESPONSE_MAINTENANCE:
-                case JSONResponseConstants.RESPONSE_PARAMETER_ERROR:
-                case JSONResponseConstants.RESPONSE_VALIDATION_ERROR:
+                case JsonResponseConstants.RESPONSE_INTERNAL_SERVER_ERROR:
+                case JsonResponseConstants.RESPONSE_MAINTENANCE:
+                case JsonResponseConstants.RESPONSE_PARAMETER_ERROR:
+                case JsonResponseConstants.RESPONSE_VALIDATION_ERROR:
                     callback.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             errorMessage);
                     break;
-                case JSONResponseConstants.RESPONSE_NOT_FOUND:
+                case JsonResponseConstants.RESPONSE_NOT_FOUND:
                     logger.warn("{}", errorMessage);
                     break;
             }

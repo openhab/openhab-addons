@@ -11,7 +11,6 @@ package org.openhab.binding.energenie.handler;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -37,9 +36,9 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
-import org.openhab.binding.energenie.internal.api.constants.DeviceConstants;
-import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
-import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants;
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.JsonGateway;
+import org.openhab.binding.energenie.internal.api.JsonSubdevice;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManagerImpl;
@@ -50,10 +49,6 @@ import org.openhab.binding.energenie.internal.rest.RestClient;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * Handler for the Mi|Home Gateway (MIHO001). The gateway is a central
@@ -212,11 +207,10 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
     }
 
     public void registerNewGateway() {
-        JsonObject registrationResponse = apiManager.registerGateway(getThing().getLabel(), gatewayCode);
-        if (registrationResponse != null) {
-            JsonObject responseData = registrationResponse.get(JSONResponseConstants.DATA_KEY).getAsJsonObject();
-            gatewayId = responseData.get(DeviceConstants.DEVICE_ID_KEY).getAsInt();
-            setProperties(responseData);
+        JsonGateway gateway = apiManager.registerGateway(getThing().getLabel(), gatewayCode);
+        if (gateway != null) {
+            gatewayId = gateway.getID();
+            setProperties(gateway);
         } else {
             logger.warn(NOT_SUCCESSFULL_REGISTRATION_MESSAGE);
         }
@@ -254,18 +248,17 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
          * information. So in order to check when was the last time it was seen
          * you need to list all gateways and find the one you want by its id.
          */
-        JsonObject gateway = getGatewayById(gatewayId);
+        JsonGateway gateway = getGatewayById(gatewayId);
         if (gateway != null) {
             setProperties(gateway);
-            gatewayLabel = gateway.get(DeviceConstants.DEVICE_LABEL_KEY).getAsString();
+            gatewayLabel = gateway.getLabel();
             thing.setLabel(gatewayLabel);
 
-            JsonElement lastSeenElement = gateway.get(DeviceConstants.GATEWAY_LAST_SEEN_KEY);
-            if (!lastSeenElement.isJsonNull()) {
-                String lastSeenString = lastSeenElement.getAsString();
+            String lastSeen = gateway.getLastSeenAt();
+            if (lastSeen != null) {
                 handleCommand(thing.getChannel(EnergenieBindingConstants.CHANNEL_LAST_SEEN).getUID(),
-                        DateTimeType.valueOf(lastSeenString));
-                handleLastSeenProperty(lastSeenString);
+                        DateTimeType.valueOf(lastSeen));
+                handleLastSeenProperty(lastSeen);
             }
         }
     }
@@ -279,22 +272,19 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      * @return the gateway with the given id if it is registered or null if it
      *         is not
      */
-    private JsonObject getGatewayById(int searchedId) {
-        JsonObject response = apiManager.listGateways();
-        if (response != null) {
-            JsonArray allGateways = response.getAsJsonArray(JSONResponseConstants.DATA_KEY);
-            if (allGateways != null) {
-                for (JsonElement gateway : allGateways) {
-                    JsonElement id = gateway.getAsJsonObject().get(DeviceConstants.DEVICE_ID_KEY);
-                    if (!id.isJsonNull() && id.getAsInt() == searchedId) {
-                        return gateway.getAsJsonObject();
-                    }
+    private JsonGateway getGatewayById(int searchedId) {
+        JsonGateway[] gateways = apiManager.listGateways();
+        if (gateways != null) {
+            for (JsonGateway gateway : gateways) {
+                int id = gateway.getID();
+                if (id == searchedId) {
+                    return gateway;
                 }
-                logger.warn(UNREGISTERED_GATEWAY_MESSAGE);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNREGISTERED_GATEWAY_MESSAGE);
-                setGatewayAlreadyUnregistered(true);
-                return null;
             }
+            logger.warn(UNREGISTERED_GATEWAY_MESSAGE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNREGISTERED_GATEWAY_MESSAGE);
+            setGatewayAlreadyUnregistered(true);
+            return null;
         }
         return null;
     }
@@ -402,41 +392,18 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      * @param dataObj
      *            - JSON object containing all the needed information
      */
-    private void setProperties(JsonObject dataObj) {
+    private void setProperties(JsonGateway gateway) {
         logger.debug("Setting the thing properties...");
         Map<String, String> props = editProperties();
-        setProperty(dataObj, DeviceConstants.GATEWAY_PORT_KEY, props, EnergenieBindingConstants.PROPERTY_PORT);
-        setProperty(dataObj, DeviceConstants.GATEWAY_IP_ADDRESS_KEY, props,
-                EnergenieBindingConstants.PROPERTY_IP_ADDRESS);
-        setProperty(dataObj, DeviceConstants.DEVICE_TYPE_KEY, props, EnergenieBindingConstants.PROPERTY_TYPE);
-        setProperty(dataObj, DeviceConstants.GATEWAY_FIRMWARE_VERSION_KEY, props,
-                EnergenieBindingConstants.PROPERTY_FIRMWARE_VERSION);
-        setProperty(dataObj, DeviceConstants.DEVICE_ID_KEY, props, EnergenieBindingConstants.PROPERTY_DEVICE_ID);
-        setProperty(dataObj, DeviceConstants.USER_ID_KEY, props, EnergenieBindingConstants.PROPERTY_USER_ID);
-        setProperty(dataObj, DeviceConstants.GATEWAY_MAC_ADDRESS_KEY, props,
-                EnergenieBindingConstants.PROPERTY_MAC_ADDRESS);
+        props.put(EnergenieBindingConstants.PROPERTY_PORT, Integer.toString(gateway.getPort()));
+        props.put(EnergenieBindingConstants.PROPERTY_IP_ADDRESS, gateway.getIpAddress());
+        props.put(EnergenieBindingConstants.PROPERTY_FIRMWARE_VERSION,
+                Integer.toString(gateway.getFirmwareVersionID()));
+        props.put(EnergenieBindingConstants.PROPERTY_TYPE, gateway.getType().toString());
+        props.put(EnergenieBindingConstants.PROPERTY_DEVICE_ID, Integer.toString(gateway.getID()));
+        props.put(EnergenieBindingConstants.PROPERTY_USER_ID, Integer.toString(gateway.getUserID()));
+        props.put(EnergenieBindingConstants.PROPERTY_MAC_ADDRESS, gateway.getMacAddress());
         updateProperties(props);
-    }
-
-    /**
-     * Gets the property values from the device information one by one and puts
-     * them in the map
-     *
-     * @param dataObj
-     *            - JSON data object which the properties should be get from
-     * @param devicePropertyToGet
-     *            - the specific property to get from the data
-     * @param mapToPut
-     *            - a map where the taken property will be put
-     * @param thingPropertyToSet
-     *            - name of the property that is put in the map
-     */
-    private void setProperty(JsonObject dataObj, String devicePropertyToGet, Map<String, String> mapToPut,
-            String thingPropertyToSet) {
-        JsonElement property = dataObj.get(devicePropertyToGet);
-        if (!property.isJsonNull()) {
-            mapToPut.put(thingPropertyToSet, property.getAsString());
-        }
     }
 
     @Override
@@ -503,7 +470,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
     @Override
     public void handleRemoval() {
         logger.debug("About to unregister gateway with id : {}", gatewayId);
-        JsonObject deletionResponse = apiManager.unregisterGateway(gatewayId);
+        JsonGateway deletionResponse = apiManager.unregisterGateway(gatewayId);
         if (deletionResponse == null && !isGatewayAlreadyUnregistered()) {
             logger.debug(
                     "Cannot unregister gateway with id: {}. Please try to unregister the device from the Mi|Home server and force remove the thing.",
@@ -523,12 +490,8 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      * @return array with subdevices or null if no devices are registered or the
      *         request isn't successful
      */
-    public JsonArray listSubdevices() {
-        JsonObject response = apiManager.listSubdevices();
-        if (response != null) {
-            return (JsonArray) response.get(JSONResponseConstants.DATA_KEY);
-        }
-        return null;
+    public JsonSubdevice[] listSubdevices() {
+        return apiManager.listSubdevices();
     }
 
     /**
@@ -543,8 +506,8 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      * @return - true if the paring was initialized or false if the request
      *         isn't successful
      */
-    public boolean initializePairing(int gatewayID, String deviceType) {
-        JsonObject response = apiManager.registerSubdevice(gatewayID, deviceType);
+    public boolean initializePairing(int gatewayID, EnergenieDeviceTypes deviceType) {
+        JsonSubdevice response = apiManager.registerSubdevice(gatewayID, deviceType);
         return response != null;
 
     }
@@ -560,7 +523,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      * @return - true if the request is sent or false if it has failed
      */
     public boolean unregisterSubdevice(int subdeviceID) {
-        JsonObject response = apiManager.unregisterSubdevice(subdeviceID);
+        JsonSubdevice response = apiManager.unregisterSubdevice(subdeviceID);
         return response != null;
     }
 
@@ -572,12 +535,8 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      * @return JsonObject containing the requested data or null if the request
      *         isn't successful
      */
-    public JsonObject getSubdeviceData(int subdeviceID) {
-        JsonObject response = apiManager.showSubdeviceInfo(subdeviceID);
-        if (response != null) {
-            return (JsonObject) response.get(JSONResponseConstants.DATA_KEY);
-        }
-        return null;
+    public JsonSubdevice getSubdeviceData(int subdeviceID) {
+        return apiManager.showSubdeviceInfo(subdeviceID);
     }
 
     /**
@@ -589,17 +548,8 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      *            - the new label
      * @return null if the request was not successful, otherwise device data
      */
-    public JsonObject updateSubdevice(int subdeviceID, String newLabel) {
-        JsonObject response = apiManager.updateSubdevice(subdeviceID, newLabel);
-        if (response != null) {
-            return (JsonObject) response.get(JSONResponseConstants.DATA_KEY);
-        }
-        return null;
-    }
-
-    public static String getFormattedCurrentDayTime() {
-        LocalDateTime curentLocalDateTime = LocalDateTime.now();
-        return DateTimeFormatter.ISO_DATE_TIME.format(curentLocalDateTime);
+    public JsonSubdevice updateSubdevice(int subdeviceID, String newLabel) {
+        return apiManager.updateSubdevice(subdeviceID, newLabel);
     }
 
     @Override
