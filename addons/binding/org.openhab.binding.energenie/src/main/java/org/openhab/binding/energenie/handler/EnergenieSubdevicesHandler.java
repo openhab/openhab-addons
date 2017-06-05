@@ -185,8 +185,8 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
             try {
                 id = Integer.parseInt(propertyValue);
             } catch (NumberFormatException e) {
-                logger.debug("Can't parse property {} as int, value is {}", EnergenieBindingConstants.PROPERTY_DEVICE_ID,
-                        propertyValue);
+                logger.debug("Can't parse property {} as int, value is {}",
+                        EnergenieBindingConstants.PROPERTY_DEVICE_ID, propertyValue);
             }
         }
         return id;
@@ -341,13 +341,10 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
 
                     }
                 } catch (Exception e) {
-                    logger.error(
-                            "Exception occurred during execution of update task for device with ID {}. Subsequent executions will be cancelled : ",
-                            energenieID, e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
                     // The Exception will be caught by the ScheduleExecutorService and it will stop subsequent
                     // executions
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException("ScheduleExecutorService will stop subsequent executions.", e);
                 }
 
             }
@@ -411,7 +408,8 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
 
         // Update the configuration
         Configuration configuration = editConfiguration();
-        BigDecimal interval = (BigDecimal) configurationParameters.get(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL);
+        BigDecimal interval = (BigDecimal) configurationParameters
+                .get(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL);
         configuration.put(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL, interval);
         updateConfiguration(configuration);
 

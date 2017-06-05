@@ -10,6 +10,8 @@ package org.openhab.binding.energenie.internal.api.manager;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +40,7 @@ import com.google.gson.JsonParseException;
  */
 public class EnergenieApiManagerImpl implements EnergenieApiManager {
 
+    private static final String DEFAULT_RESPONSE_ENCODING = "UTF-8";
     // Mi|Home controllers IDs
     public static final String CONTROLLER_DEVICES = "devices";
     public static final String CONTROLLER_SUBDEVICES = "subdevices";
@@ -171,17 +174,28 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
                     httpHeaders, requestContent, RestClient.CONTENT_TYPE);
 
             byte[] rawResponse = contentResponse.getContent();
+
             String encoding = contentResponse.getEncoding() != null
-                    ? contentResponse.getEncoding().replaceAll("\"", "").trim() : "UTF-8";
+                    ? contentResponse.getEncoding().replaceAll("\"", "").trim() : DEFAULT_RESPONSE_ENCODING;
+
+            if (!Charset.availableCharsets().keySet().contains(encoding)) {
+                logger.warn("Unsupported content encoding : {}. Fall back to the default encoding {}", encoding,
+                        DEFAULT_RESPONSE_ENCODING);
+                encoding = DEFAULT_RESPONSE_ENCODING;
+            }
             responseBody = new String(rawResponse, encoding);
+
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Content encoding is not supported: ", e);
+            String failedUrl = restClient.getBaseURL() + controller + "/" + action;
+            failingRequestHandler.handleIOException(failedUrl, e);
+            return null;
         } catch (IOException e) {
             logger.error("Request execution failed: ", e);
             String failedUrl = restClient.getBaseURL() + controller + "/" + action;
             failingRequestHandler.handleIOException(failedUrl, e);
             return null;
         }
-
-        logger.trace(responseBody);
 
         if (!responseBody.isEmpty()) {
             int statusCode = contentResponse.getStatus();
@@ -194,7 +208,7 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
                 try {
                     jsonResponse = JSONResponseHandler.responseStringtoJsonObject(responseBody);
                 } catch (JsonParseException e) {
-                    logger.error("An error occurred while trying to parse the JSON response: ", jsonResponse, e);
+                    logger.error("An error occurred while trying to parse the JSON response {}:", jsonResponse, e);
                     return null;
                 }
                 if (JSONResponseHandler.isRequestSuccessful(jsonResponse)) {

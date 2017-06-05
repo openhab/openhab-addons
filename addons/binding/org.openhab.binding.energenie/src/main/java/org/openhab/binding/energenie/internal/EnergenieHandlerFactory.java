@@ -23,16 +23,14 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.energenie.handler.EnergenieGatewayHandler;
 import org.openhab.binding.energenie.handler.EnergenieSubdevicesHandler;
-import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandler;
-import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandlerImpl;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManagerImpl;
+import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandler;
+import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandlerImpl;
 import org.openhab.binding.energenie.internal.discovery.EnergenieDiscoveryService;
 import org.openhab.binding.energenie.internal.rest.RestClient;
 import org.osgi.service.component.ComponentContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
@@ -47,9 +45,8 @@ public class EnergenieHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_GATEWAY,
             THING_TYPE_ENERGY_MONITOR, THING_TYPE_MOTION_SENSOR, THING_TYPE_OPEN_SENSOR);
 
-    RestClient client;
-    ThingRegistry registry;
-    Logger logger = LoggerFactory.getLogger(EnergenieHandlerFactory.class);
+    private RestClient client;
+    private ThingRegistry registry;
 
     @Override
     protected void activate(ComponentContext componentContext) {

@@ -74,21 +74,19 @@ public class SSLContextBuilder {
      * Initializes the {@link SSLContext} using the appended {@link TrustManager}s and {@link KeyManager}s and
      * {@link SecureRandom} generator
      *
-     * @return SSLContext or null if no {@link TrustManager}s or {@link KeyManager}s are set
+     * @return SSLContext
+     * @throws IllegalStateException if no {@link TrustManager}s or {@link KeyManager}s are set
+     * @throws KeyManagementException - if initialization of KeyManager fails
+     * @throws NoSuchAlgorithmException - if no Provider supports a SSLContextSpi implementation for the SSL protocol
      */
-    public SSLContext build() {
-        try {
-            if (trustedManagers != null || keyManagers != null) {
-                SSLContext sslContext = SSLContext.getInstance(SSL_PROTOCOL);
-                sslContext.init(keyManagers, trustedManagers, randomGenerator);
-                return sslContext;
-            }
-        } catch (KeyManagementException e) {
-            logger.error("A KeyManagementException occurred", e);
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("A NoSuchAlgorithmException occurred", e);
+    public SSLContext build() throws KeyManagementException, NoSuchAlgorithmException {
+        if (trustedManagers != null || keyManagers != null) {
+            SSLContext sslContext = SSLContext.getInstance(SSL_PROTOCOL);
+            sslContext.init(keyManagers, trustedManagers, randomGenerator);
+            return sslContext;
+        } else {
+            throw new IllegalStateException("TrustManager or KeyManager has to be set.");
         }
-        return null;
     }
 
     /**

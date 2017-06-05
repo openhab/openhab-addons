@@ -30,7 +30,7 @@ import com.google.gson.JsonParser;
  */
 public class JSONResponseHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(JSONResponseHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JSONResponseHandler.class);
 
     /**
      * Converts a given response String to a JSON object
@@ -41,7 +41,7 @@ public class JSONResponseHandler {
                 JsonParser parser = new JsonParser();
                 return (JsonObject) parser.parse(jsonResponse);
             } catch (JsonParseException e) {
-                logger.error("An error occurred while trying to parse the JSON response: ", jsonResponse, e);
+                LOGGER.error("An error occurred while trying to parse the JSON response {}: ", jsonResponse, e);
                 return null;
             }
         }

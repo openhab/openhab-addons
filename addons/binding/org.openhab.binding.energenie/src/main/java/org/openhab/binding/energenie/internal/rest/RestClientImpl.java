@@ -10,6 +10,7 @@ package org.openhab.binding.energenie.internal.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -77,7 +78,7 @@ public class RestClientImpl implements RestClient {
         }
 
         // add content if a valid method is given ...
-        if (content != null && (httpMethod.equals(HttpMethod.POST) || httpMethod.equals(HttpMethod.PUT))) {
+        if (content != null && (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.PUT)) {
             request.content(new InputStreamContentProvider(content), contentType);
         }
 
@@ -93,8 +94,8 @@ public class RestClientImpl implements RestClient {
         return response;
     }
 
-    private void loadCertificate(String relativePath, String file)
-            throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+    private void loadCertificate(String relativePath, String file) throws KeyStoreException, NoSuchAlgorithmException,
+            CertificateException, IOException, KeyManagementException {
         SSLContext sslContext = SSLContextBuilder.create(bundleContext).withTrustedCertificate(relativePath, file)
                 .build();
         logger.info("Certificate {} loaded from directory {}", relativePath, file);
