@@ -74,7 +74,7 @@ public class EnergenieHandlerFactory extends BaseThingHandlerFactory {
         this.client = client;
     }
 
-    public void unsetRestClient() {
+    public void unsetRestClient(RestClient client) {
         this.client = null;
     }
 
@@ -82,7 +82,7 @@ public class EnergenieHandlerFactory extends BaseThingHandlerFactory {
         this.registry = registry;
     }
 
-    public void unsetThingRegistry() {
+    public void unsetThingRegistry(ThingRegistry registry) {
         this.registry = null;
     }
 

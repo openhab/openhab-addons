@@ -11,6 +11,7 @@ package org.openhab.binding.energenie.test
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
 
+import java.text.SimpleDateFormat
 import java.time.*
 
 import javax.servlet.http.HttpServlet
@@ -26,7 +27,10 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler
 import org.eclipse.smarthome.core.thing.binding.ThingHandler
 import org.eclipse.smarthome.test.OSGiTest
 import org.openhab.binding.energenie.EnergenieBindingConstants
-import org.openhab.binding.energenie.internal.api.JSONResponseHandler
+import org.openhab.binding.energenie.internal.api.JsonDevice
+import org.openhab.binding.energenie.internal.api.JsonGateway
+import org.openhab.binding.energenie.internal.api.JsonResponseHandler
+import org.openhab.binding.energenie.internal.api.JsonSubdevice
 import org.openhab.binding.energenie.internal.api.manager.*
 import org.openhab.binding.energenie.internal.rest.RestClient
 import org.osgi.service.http.HttpService
@@ -54,8 +58,16 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
     public static final String TEST_USERNAME = "test@my.com"
     public static final String TEST_GATEWAY_CODE = "FGSG5RSDFS"
     public static final int TEST_UPDATE_INTERVAL = 10
+
+    // Gateway device information
     public static final int TEST_GATEWAY_ID = 4541
-    public static final String TEST_AUTH_CODE = "testAuthCode"
+    public static final int TEST_USER_ID = 35764;
+    public static final String TEST_MAC_ADDRESS = "a0bb3e9013c9";
+    public static final String TEST_IP_ADDRESS = "195.24.43.238";
+    public static final int TEST_PORT = 49154;
+    public static final String TEST_LABEL = "New Gateway";
+    public static final String TEST_AUTH_CODE = "a21f913b022d";
+    public static final int TEST_FIRMWARE_VERSION = 13;
 
     /**
      * Test update interval for the subdevices in seconds
@@ -155,14 +167,14 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
         Gson gson = new GsonBuilder().serializeNulls().create();
         ShowDeviceResponse responseObj = new ShowDeviceResponse(status, device)
         String response = gson.toJson(responseObj)
-        return JSONResponseHandler.responseStringtoJsonObject(response)
+        return JsonResponseHandler.responseStringtoJsonObject(response)
     }
 
     public static JsonObject generateJsonDevicesListServerResponse(String status, JsonDevice ... devices) {
         Gson gson = new Gson();
         ListDevicesResponse responseObj = new ListDevicesResponse(devices, status)
         String response = gson.toJson(responseObj)
-        return JSONResponseHandler.responseStringtoJsonObject(response)
+        return JsonResponseHandler.responseStringtoJsonObject(response)
     }
 
     protected void registerServlet(String path, HttpServlet servlet){
@@ -223,5 +235,13 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
 
         client = getService(RestClient)
         client.setBaseURL(TEST_URL)
+    }
+
+    protected JsonGateway createTestGateway() {
+        LocalDateTime curentLocalDateTime = LocalDateTime.now();
+        Date currentDate = Date.from(curentLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        String timeStamp = new SimpleDateFormat(EnergenieBindingConstants.DATE_TIME_PATTERN).format(currentDate);
+
+        return new JsonGateway(TEST_USER_ID, TEST_GATEWAY_ID, TEST_LABEL, TEST_AUTH_CODE, TEST_MAC_ADDRESS, TEST_IP_ADDRESS, TEST_PORT, TEST_FIRMWARE_VERSION, timeStamp)
     }
 }

@@ -14,7 +14,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.energenie.internal.api.JSONResponseHandler;
+import org.openhab.binding.energenie.internal.api.JsonResponseHandler;
 import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +53,9 @@ public class FailingRequestHandlerImpl implements FailingRequestHandler {
 
     @Override
     public void handleFailingJsonRequest(JsonObject jsonResponse) {
-        String responseStatus = JSONResponseHandler.getResponseStatus(jsonResponse);
+        String responseStatus = JsonResponseHandler.getResponseStatus(jsonResponse);
         JsonObject responseData = jsonResponse.get(JSONResponseConstants.DATA_KEY).getAsJsonObject();
-        String errorMessage = JSONResponseHandler.getErrorMessageFromResponse(responseData);
+        String errorMessage = JsonResponseHandler.getErrorMessageFromResponse(responseData);
         if (callback != null) {
             switch (responseStatus) {
                 case JSONResponseConstants.RESPONSE_ACCESS_DENIED:

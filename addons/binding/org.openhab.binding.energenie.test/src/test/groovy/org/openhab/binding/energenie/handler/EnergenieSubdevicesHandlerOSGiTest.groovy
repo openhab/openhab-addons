@@ -33,16 +33,15 @@ import org.eclipse.smarthome.core.types.UnDefType
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.openhab.binding.energenie.handler.EnergenieSubdevicesHandler
 import org.openhab.binding.energenie.EnergenieBindingConstants
-import org.openhab.binding.energenie.internal.api.constants.DeviceTypesConstants
+import org.openhab.binding.energenie.internal.api.JsonDevice
+import org.openhab.binding.energenie.internal.api.JsonGateway
+import org.openhab.binding.energenie.internal.api.JsonSubdevice
+import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes
 import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants
 import org.openhab.binding.energenie.internal.api.manager.*
 import org.openhab.binding.energenie.internal.rest.*
 import org.openhab.binding.energenie.test.AbstractEnergenieOSGiTest
-import org.openhab.binding.energenie.test.JsonDevice
-import org.openhab.binding.energenie.test.JsonGateway
-import org.openhab.binding.energenie.test.JsonSubdevice
 import org.openhab.binding.energenie.test.EnergenieServlet
 
 import com.google.common.collect.Iterables
@@ -66,12 +65,9 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
     private EnergenieServlet showSubdeviceServlet
     private EnergenieServlet createSubdeviceServlet = new EnergenieServlet(EnergenieServlet.EMPTY_DATA_OBJECT)
 
-    // Gateway information
-    public static final int TEST_GATEWAY_ID = 4164
-
     // Subdevice information
     public static final int TEST_SUBDEVICE_ID = 53412
-    public static final String TEST_SUBDEVICE_TYPE = DeviceTypesConstants.MOTION_SENSOR_TYPE
+    public static final EnergenieDeviceTypes TEST_SUBDEVICE_TYPE = EnergenieDeviceTypes.MOTION_SENSOR
     public static final String TEST_SUBDEVICE_LABEL = JsonSubdevice.DEFAULT_LABEL
 
     @Before
@@ -93,7 +89,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         // Register Gateway Servlets
 
         // in order to test subdevices we need to register servlet representing successful gateway registration
-        JsonGateway gatewayDevice = new JsonGateway(TEST_GATEWAY_ID)
+        JsonGateway gatewayDevice = createTestGateway()
         String showContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         registerServlet(PATH_CREATE_GATEWAY, new EnergenieServlet(showContent))
 
@@ -353,7 +349,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         def sensorState = 0
         State expectedState = OnOffType.OFF
         String channelID = EnergenieBindingConstants.CHANNEL_STATE
-        String subdeviceType = DeviceTypesConstants.MOTION_SENSOR_TYPE
+        EnergenieDeviceTypes subdeviceType = EnergenieDeviceTypes.MOTION_SENSOR
 
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID,TEST_GATEWAY_ID, subdeviceType, sensorState)
 
@@ -365,7 +361,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         def sensorState = 1
         State expectedState = OnOffType.ON
         String channelID = EnergenieBindingConstants.CHANNEL_STATE
-        String subdeviceType = DeviceTypesConstants.MOTION_SENSOR_TYPE
+        EnergenieDeviceTypes subdeviceType = EnergenieDeviceTypes.MOTION_SENSOR
 
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, subdeviceType, sensorState)
 
@@ -377,7 +373,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         def sensorState = null
         State expectedState = UnDefType.NULL
         String channelID = EnergenieBindingConstants.CHANNEL_STATE
-        String subdeviceType = DeviceTypesConstants.MOTION_SENSOR_TYPE
+        EnergenieDeviceTypes subdeviceType = EnergenieDeviceTypes.MOTION_SENSOR
 
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, subdeviceType, sensorState)
 
@@ -389,7 +385,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         def sensorState = 0
         State expectedState = OpenClosedType.CLOSED
         String channelID = EnergenieBindingConstants.CHANNEL_STATE
-        String subdeviceType = DeviceTypesConstants.OPEN_SENSOR_TYPE
+        EnergenieDeviceTypes subdeviceType = EnergenieDeviceTypes.OPEN_SENSOR
 
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, subdeviceType, sensorState)
 
@@ -401,7 +397,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         def sensorState = 1
         State expectedState = OpenClosedType.OPEN
         String channelID = EnergenieBindingConstants.CHANNEL_STATE
-        String subdeviceType = DeviceTypesConstants.OPEN_SENSOR_TYPE
+        EnergenieDeviceTypes subdeviceType = EnergenieDeviceTypes.OPEN_SENSOR
 
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, subdeviceType, sensorState)
 
@@ -413,7 +409,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         def sensorState = null
         State expectedState = UnDefType.NULL
         String channelID = EnergenieBindingConstants.CHANNEL_STATE
-        String subdeviceType = DeviceTypesConstants.OPEN_SENSOR_TYPE
+        EnergenieDeviceTypes subdeviceType = EnergenieDeviceTypes.OPEN_SENSOR
 
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, subdeviceType, sensorState)
 
@@ -425,7 +421,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         double voltage = 4.3646
         State expectedState = new DecimalType(voltage)
         String channelID = EnergenieBindingConstants.CHANNEL_VOLTAGE
-        String subdeviceType = DeviceTypesConstants.HOUSE_MONITOR_TYPE
+        EnergenieDeviceTypes subdeviceType = EnergenieDeviceTypes.HOUSE_MONITOR
 
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, subdeviceType, voltage, 0, 0)
 
@@ -437,7 +433,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         int power = 56
         State expectedState = new DecimalType(power)
         String channelID = EnergenieBindingConstants.CHANNEL_REAL_POWER
-        String subdeviceType = DeviceTypesConstants.HOUSE_MONITOR_TYPE
+        EnergenieDeviceTypes subdeviceType = EnergenieDeviceTypes.HOUSE_MONITOR
 
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, subdeviceType, 0, power, 0)
 
@@ -449,7 +445,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         int consumption = 563
         State expectedState = new DecimalType(consumption)
         String channelID = EnergenieBindingConstants.CHANNEL_TODAY_CONSUMPTION
-        String subdeviceType = DeviceTypesConstants.HOUSE_MONITOR_TYPE
+        EnergenieDeviceTypes subdeviceType = EnergenieDeviceTypes.HOUSE_MONITOR
 
         JsonSubdevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, subdeviceType, 0, 0, consumption)
 
@@ -498,7 +494,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
          * when a deletion request is successful the server will respond with details of the removed device.
          * So basically the response is the same as the response from successful registration."
          */
-        JsonGateway gatewayDevice = new JsonGateway(TEST_GATEWAY_ID)
+        JsonGateway gatewayDevice = createTestGateway()
         String succesfulDeletionServletContent = generateShowJsonDeviceServerResponse("success", gatewayDevice)
         EnergenieServlet successfullDeletionServlet = new EnergenieServlet(succesfulDeletionServletContent)
         registerServlet(PATH_DELETE_GATEWAYS, successfullDeletionServlet)
@@ -562,7 +558,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         assertThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR)
     }
 
-    private void testDeviceState (String subdeviceType,String channelID,JsonSubdevice jsonSubdevice,State expectedState) {
+    private void testDeviceState (EnergenieDeviceTypes subdeviceType, String channelID, JsonSubdevice jsonSubdevice, State expectedState) {
         String showSubdeviceServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, jsonSubdevice)
         showSubdeviceServlet.setContent(showSubdeviceServletContent)
 
@@ -608,7 +604,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         assertThat "Unexpected value of property ${PROPERTY_GATEWAY_ID}", gatewayId , is(equalTo(Integer.toString(TEST_GATEWAY_ID)))
         def type = properties.get(PROPERTY_TYPE)
         assertThat "Property ${PROPERTY_TYPE} is missing", type, is(notNullValue())
-        assertThat "Unexpected value of property ${PROPERTY_TYPE}", type, is(equalTo(TEST_SUBDEVICE_TYPE))
+        assertThat "Unexpected value of property ${PROPERTY_TYPE}", type, is(equalTo(TEST_SUBDEVICE_TYPE.toString()))
     }
 
     private void assertGatewayStatus(ThingStatus expectedStatus) {

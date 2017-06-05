@@ -6,9 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.energenie.test;
+package org.openhab.binding.energenie.internal.api;
 
-import com.google.gson.annotations.SerializedName
+import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * JSON representation of a device (gateway or subdevice) used in the communication with the server.
@@ -19,23 +21,23 @@ import com.google.gson.annotations.SerializedName
 public class JsonDevice {
 
     @SerializedName("device_type")
-    private String type;
+    private EnergenieDeviceTypes type;
     @SerializedName("id")
     private int id;
     @SerializedName("label")
     private String label;
 
-    public JsonDevice(String type, int id, String label) {
+    public JsonDevice(EnergenieDeviceTypes type, int id, String label) {
         this.type = type;
         this.id = id;
         this.label = label;
     }
 
-    public String getType() {
+    public EnergenieDeviceTypes getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(EnergenieDeviceTypes type) {
         this.type = type;
     }
 

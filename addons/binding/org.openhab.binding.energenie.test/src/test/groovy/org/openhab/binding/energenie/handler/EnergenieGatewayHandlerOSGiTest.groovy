@@ -22,10 +22,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.openhab.binding.energenie.EnergenieBindingConstants
+import org.openhab.binding.energenie.internal.api.JsonGateway
 import org.openhab.binding.energenie.internal.api.constants.*
 import org.openhab.binding.energenie.test.AbstractEnergenieOSGiTest
 import org.openhab.binding.energenie.test.EnergenieServlet
-import org.openhab.binding.energenie.test.JsonGateway
 
 /**
  * Tests for the {@link MiHomeGatewayHandler}
@@ -81,7 +81,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
     @Test
     public void 'assert initialized Thing updates the properties' () {
         // register servlet representing successful gateway registration
-        JsonGateway gatewayDevice = new JsonGateway()
+        JsonGateway gatewayDevice = createTestGateway()
         String content = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet successfullGatewayRegistrationServlet = new EnergenieServlet(content)
         registerServlet(PATH_CREATE_GATEWAY, successfullGatewayRegistrationServlet)
@@ -105,7 +105,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
     public void 'assert OFLLINE status of a gateway that has not been active for more than two minutes'() {
 
         // register servlet representing successful gateway registration
-        JsonGateway gatewayDevice = new JsonGateway()
+        JsonGateway gatewayDevice = createTestGateway()
         String succesfulRegistrationServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet successfullRegistrationServlet = new EnergenieServlet(succesfulRegistrationServletContent)
         registerServlet(PATH_CREATE_GATEWAY, successfullRegistrationServlet)
@@ -144,7 +144,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
     public void 'assert that changing the gateway configuration is handled properly'() {
 
         // register servlet representing successful gateway registration
-        JsonGateway gatewayDevice = new JsonGateway()
+        JsonGateway gatewayDevice = createTestGateway()
         String content = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet successfullGatewayRegistrationServlet = new EnergenieServlet(content)
         registerServlet(PATH_CREATE_GATEWAY, successfullGatewayRegistrationServlet)
@@ -196,7 +196,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
     public void 'assert offline status of a gateway that has been unregistered'() {
 
         // register servlet representing successful gateway registration
-        JsonGateway gatewayDevice = new JsonGateway()
+        JsonGateway gatewayDevice = createTestGateway()
         String showContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gatewayDevice)
         EnergenieServlet successfullGatewayRegistrationServlet = new EnergenieServlet(showContent)
         registerServlet(PATH_CREATE_GATEWAY, successfullGatewayRegistrationServlet)
@@ -237,7 +237,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
     @Test
     public void 'assert that thing is successfuly removed when the unregister gateway request is successfull'() {
         // register servlet representing successful gateway registration
-        JsonGateway registeredGateway = new JsonGateway()
+        JsonGateway registeredGateway = createTestGateway()
         String succesfulRegistrationServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, registeredGateway)
         EnergenieServlet successfullRegistrationServlet = new EnergenieServlet(succesfulRegistrationServletContent)
         registerServlet(PATH_CREATE_GATEWAY, successfullRegistrationServlet)
@@ -258,7 +258,7 @@ class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
          * when a deletion request is successful the server will respond with details of the removed device.
          * So basically the response is the same as the response from successful registration."
          */
-        JsonGateway deletedGateway = new JsonGateway()
+        JsonGateway deletedGateway = createTestGateway()
         String succesfulDeletionServletContent = generateShowJsonDeviceServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, deletedGateway)
         EnergenieServlet successfullDeletionServlet = new EnergenieServlet(succesfulDeletionServletContent)
         registerServlet(PATH_DELETE_GATEWAYS, successfullDeletionServlet)

@@ -11,7 +11,7 @@ package org.openhab.binding.energenie;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.energenie.internal.api.constants.DeviceTypesConstants;
+import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -38,15 +38,15 @@ public class EnergenieBindingConstants {
     public static final ThingTypeUID THING_TYPE_OPEN_SENSOR = new ThingTypeUID(BINDING_ID, THING_ID_OPEN_SENSOR);
 
     // Mapping from thing type to device type and vice versa
-    public static final Map<String, ThingTypeUID> DEVICE_TYPE_TO_THING_TYPE = ImmutableMap.of(
-            DeviceTypesConstants.HOUSE_MONITOR_TYPE, EnergenieBindingConstants.THING_TYPE_ENERGY_MONITOR,
-            DeviceTypesConstants.MOTION_SENSOR_TYPE, EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR,
-            DeviceTypesConstants.OPEN_SENSOR_TYPE, EnergenieBindingConstants.THING_TYPE_OPEN_SENSOR);
+    public static final Map<EnergenieDeviceTypes, ThingTypeUID> DEVICE_TYPE_TO_THING_TYPE = ImmutableMap.of(
+            EnergenieDeviceTypes.HOUSE_MONITOR, EnergenieBindingConstants.THING_TYPE_ENERGY_MONITOR,
+            EnergenieDeviceTypes.MOTION_SENSOR, EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR,
+            EnergenieDeviceTypes.OPEN_SENSOR, EnergenieBindingConstants.THING_TYPE_OPEN_SENSOR);
 
     public static final Map<ThingTypeUID, String> THING_TYPE_TO_DEVICE_TYPE = ImmutableMap.of(
-            EnergenieBindingConstants.THING_TYPE_ENERGY_MONITOR, DeviceTypesConstants.HOUSE_MONITOR_TYPE,
-            EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR, DeviceTypesConstants.MOTION_SENSOR_TYPE,
-            EnergenieBindingConstants.THING_TYPE_OPEN_SENSOR, DeviceTypesConstants.OPEN_SENSOR_TYPE);
+            EnergenieBindingConstants.THING_TYPE_ENERGY_MONITOR, EnergenieDeviceTypes.HOUSE_MONITOR.toString(),
+            EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR, EnergenieDeviceTypes.MOTION_SENSOR.toString(),
+            EnergenieBindingConstants.THING_TYPE_OPEN_SENSOR, EnergenieDeviceTypes.OPEN_SENSOR.toString());
 
     // List of all Channel IDs
     public static final String CHANNEL_LAST_SEEN = "lastSeen";

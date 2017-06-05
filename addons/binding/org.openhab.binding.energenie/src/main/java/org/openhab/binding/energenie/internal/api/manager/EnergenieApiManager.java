@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.energenie.internal.api.manager;
 
-import org.openhab.binding.energenie.internal.api.constants.DeviceTypesConstants;
+import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
 
 import com.google.gson.JsonObject;
 
@@ -77,7 +77,7 @@ public interface EnergenieApiManager {
      * pairing instructions for the specific device to finish the pairing process
      *
      * @param gatewayID - the ID of the relevant gateway device
-     * @param deviceType - the type of subdevice we want to register. One of the available {@link DeviceTypesConstants}
+     * @param deviceType - the type of subdevice we want to register. One of the available {@link EnergenieDeviceTypes}
      * @return details of the master device that will perform the pairing
      */
     public JsonObject registerSubdevice(int gatewayID, String deviceType);

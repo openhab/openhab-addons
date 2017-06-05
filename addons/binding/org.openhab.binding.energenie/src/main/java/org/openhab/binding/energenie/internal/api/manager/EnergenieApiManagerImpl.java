@@ -20,9 +20,9 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.energenie.internal.api.JSONResponseHandler;
+import org.openhab.binding.energenie.internal.api.JsonResponseHandler;
 import org.openhab.binding.energenie.internal.api.constants.DeviceConstants;
-import org.openhab.binding.energenie.internal.api.constants.DeviceTypesConstants;
+import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
 import org.openhab.binding.energenie.internal.rest.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +78,7 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
     @Override
     public JsonObject registerGateway(String label, String authCode) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(DeviceConstants.DEVICE_TYPE_KEY, DeviceTypesConstants.GATEWAY_TYPE);
+        parameters.put(DeviceConstants.DEVICE_TYPE_KEY, EnergenieDeviceTypes.GATEWAY.toString());
         parameters.put(DeviceConstants.DEVICE_LABEL_KEY, label);
         parameters.put(DeviceConstants.GATEWAY_AUTH_CODE_KEY, authCode);
 
@@ -206,12 +206,12 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
             } else {
                 JsonObject jsonResponse = null;
                 try {
-                    jsonResponse = JSONResponseHandler.responseStringtoJsonObject(responseBody);
+                    jsonResponse = JsonResponseHandler.responseStringtoJsonObject(responseBody);
                 } catch (JsonParseException e) {
                     logger.error("An error occurred while trying to parse the JSON response {}:", jsonResponse, e);
                     return null;
                 }
-                if (JSONResponseHandler.isRequestSuccessful(jsonResponse)) {
+                if (JsonResponseHandler.isRequestSuccessful(jsonResponse)) {
                     return jsonResponse;
                 } else {
                     failingRequestHandler.handleFailingJsonRequest(jsonResponse);

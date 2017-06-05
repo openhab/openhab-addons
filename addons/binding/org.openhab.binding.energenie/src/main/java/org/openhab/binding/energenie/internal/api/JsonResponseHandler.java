@@ -28,9 +28,9 @@ import com.google.gson.JsonParser;
  * @author Mihaela Memova - Initial contribution
  *
  */
-public class JSONResponseHandler {
+public class JsonResponseHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JSONResponseHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonResponseHandler.class);
 
     /**
      * Converts a given response String to a JSON object

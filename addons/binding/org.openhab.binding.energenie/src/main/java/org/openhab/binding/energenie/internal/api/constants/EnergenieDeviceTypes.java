@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.energenie.internal.api.constants;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Contains all Energenie Mi|Home JSON keys associated with the device types.
  * They are used in the communication with the server
@@ -15,10 +17,27 @@ package org.openhab.binding.energenie.internal.api.constants;
  * @author Mihaela Memova - Initial contribution
  *
  */
-public class DeviceTypesConstants {
+public enum EnergenieDeviceTypes {
+    @SerializedName("gateway")
+    GATEWAY("gateway"),
 
-    public static final String GATEWAY_TYPE = "gateway";
-    public static final String OPEN_SENSOR_TYPE = "open";
-    public static final String MOTION_SENSOR_TYPE = "motion";
-    public static final String HOUSE_MONITOR_TYPE = "house";
+    @SerializedName("open")
+    OPEN_SENSOR("open"),
+
+    @SerializedName("motion")
+    MOTION_SENSOR("motion"),
+
+    @SerializedName("house")
+    HOUSE_MONITOR("house");
+
+    private String name;
+
+    private EnergenieDeviceTypes(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

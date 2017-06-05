@@ -38,7 +38,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
 import org.openhab.binding.energenie.internal.api.constants.DeviceConstants;
-import org.openhab.binding.energenie.internal.api.constants.DeviceTypesConstants;
+import org.openhab.binding.energenie.internal.api.constants.EnergenieDeviceTypes;
 import org.openhab.binding.energenie.internal.api.constants.JSONResponseConstants;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
@@ -539,7 +539,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      * @param gatewayID
      *            - the ID of the gateway
      * @param deviceType
-     *            - the device type, see {@link DeviceTypesConstants}
+     *            - the device type, see {@link EnergenieDeviceTypes}
      * @return - true if the paring was initialized or false if the request
      *         isn't successful
      */
