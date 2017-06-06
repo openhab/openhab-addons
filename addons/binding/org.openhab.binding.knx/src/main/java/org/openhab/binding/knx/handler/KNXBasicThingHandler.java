@@ -438,7 +438,7 @@ public class KNXBasicThingHandler extends BaseThingHandler implements Individual
                 }
 
                 logger.warn(
-                        "Ignoring KNX bus data: couldn't transform to an openHAB type (not supported). Destination='{}', datapoint='{}', data='{}'",
+                        "Ignoring KNX bus data: couldn't transform to Type (not supported). Destination='{}', datapoint='{}', data='{}'",
                         destination, datapoint, sb);
                 return;
             }

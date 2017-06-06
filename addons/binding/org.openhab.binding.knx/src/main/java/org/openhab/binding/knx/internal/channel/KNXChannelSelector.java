@@ -21,10 +21,7 @@ public final class KNXChannelSelector {
         private static final long serialVersionUID = 1L;
         {
             add(new TypeContact());
-            add(new TypeCurrent());
             add(new TypeDimmer());
-            add(new TypeEnergy());
-            add(new TypeOperatingHours());
             add(new TypeRollershutter());
             add(new TypeSetpoint());
             add(new TypeStatusSwitch());
