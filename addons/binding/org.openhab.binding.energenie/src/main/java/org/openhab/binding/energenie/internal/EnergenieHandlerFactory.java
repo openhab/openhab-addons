@@ -47,6 +47,7 @@ public class EnergenieHandlerFactory extends BaseThingHandlerFactory {
 
     private RestClient client;
     private ThingRegistry registry;
+    private EnergenieApiConfiguration apiConfig;
 
     @Override
     protected void activate(ComponentContext componentContext) {
@@ -54,11 +55,12 @@ public class EnergenieHandlerFactory extends BaseThingHandlerFactory {
         Dictionary<String, Object> properties = componentContext.getProperties();
         String user = (String) properties.get("user");
         String password = (String) properties.get("password");
-        registerEnergenieDiscoveryService(user, password);
+        EnergenieApiConfiguration config = new EnergenieApiConfiguration(user, password);
+        this.apiConfig = config;
+        registerEnergenieDiscoveryService(config);
     }
 
-    private void registerEnergenieDiscoveryService(String user, String password) {
-        EnergenieApiConfiguration config = new EnergenieApiConfiguration(user, password);
+    private void registerEnergenieDiscoveryService(EnergenieApiConfiguration config) {
         FailingRequestHandler handler = new FailingRequestHandlerImpl();
         EnergenieApiManager apiManager = new EnergenieApiManagerImpl(config, client, handler);
         EnergenieDiscoveryService service = new EnergenieDiscoveryService(apiManager, registry);
@@ -91,7 +93,7 @@ public class EnergenieHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
-            return new EnergenieGatewayHandler((Bridge) thing);
+            return new EnergenieGatewayHandler((Bridge) thing, apiConfig);
         } else {
             return new EnergenieSubdevicesHandler(thing);
         }

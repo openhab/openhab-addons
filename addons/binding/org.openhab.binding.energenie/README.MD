@@ -25,14 +25,19 @@ The binding implements discovery for all devices, except the Home Gateway.
 
 Discovery results will be created for each device that is already paired to a gateway (using the Mi|Home portal or other apps) and doesn't have a Thing representation.
 
-## Thing Configuration
-
-### Gateway configuration
+## Binding Configuration
 
 Required configuration parameters:
 
 - *userName* - User's email address in the Mi|Home portal;
 - *password* - User's password in the Mi|Home portal;
+
+## Thing Configuration
+
+### Gateway Configuration
+
+Required configuration parameters:
+
 - *gatewayCode* - 10-letter gateway code that can be found underneath the device;
 
 Optional configuration parameters:

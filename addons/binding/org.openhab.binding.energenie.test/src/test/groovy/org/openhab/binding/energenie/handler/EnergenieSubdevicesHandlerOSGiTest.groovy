@@ -269,7 +269,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         // Edit the configuration with invalid username
         ThingHandler handler = gatewayThing.getHandler()
         Configuration config = gatewayThing.getConfiguration()
-        config.put(EnergenieBindingConstants.CONFIG_USERNAME, "invalid_user_name")
+        config.put(EnergenieBindingConstants.CONFIG_GATEWAY_CODE, "invalid_gateway_code")
         handler.handleConfigurationUpdate(config.getProperties())
 
         // As we have no servlet registered to return the gateway state (and the last_seen information), the bridge will be set to OFFLINE state

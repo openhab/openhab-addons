@@ -91,11 +91,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      */
     public static final BigDecimal DEFAULT_UPDATE_INTERVAL = new BigDecimal(30);
 
-    /** email address used for the user's registration */
-    private String registrationEmailAddress;
-
-    /** user's password */
-    private String password;
+    private EnergenieApiConfiguration accountCredentials;
 
     /**
      * Gateway code (10 capital letters and numbers) written at the bottom of
@@ -124,8 +120,9 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
     /** Used for logging */
     private final Logger logger = LoggerFactory.getLogger(EnergenieGatewayHandler.class);
 
-    public EnergenieGatewayHandler(Bridge bridge) {
+    public EnergenieGatewayHandler(Bridge bridge, EnergenieApiConfiguration accountCredentials) {
         super(bridge);
+        this.accountCredentials = accountCredentials;
         logger.debug("Created bridge for thing {}", getThing().getUID());
     }
 
@@ -146,9 +143,9 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
         logger.debug("Initializing EnergenieGatewayHandler...");
         gatewayLabel = thing.getLabel();
         Configuration config = getConfig();
-        registrationEmailAddress = (String) config.get(EnergenieBindingConstants.CONFIG_USERNAME);
+        String registrationEmailAddress = accountCredentials.getUserName();
         gatewayCode = (String) config.get(EnergenieBindingConstants.CONFIG_GATEWAY_CODE);
-        password = (String) config.get(EnergenieBindingConstants.CONFIG_PASSWORD);
+        String password = accountCredentials.getPassword();
         BigDecimal interval = (BigDecimal) config.get(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL);
         this.updateInterval = interval.longValue();
 
@@ -434,31 +431,19 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         logger.debug("Editing the thing configuration...");
         Configuration config = editConfiguration();
-        registrationEmailAddress = (String) configurationParameters.get(EnergenieBindingConstants.CONFIG_USERNAME);
-        config.put(EnergenieBindingConstants.CONFIG_USERNAME, registrationEmailAddress);
         gatewayCode = (String) configurationParameters.get(EnergenieBindingConstants.CONFIG_GATEWAY_CODE);
         config.put(EnergenieBindingConstants.CONFIG_GATEWAY_CODE, gatewayCode);
-        password = configurationParameters.get(EnergenieBindingConstants.CONFIG_PASSWORD).toString();
-        config.put(EnergenieBindingConstants.CONFIG_PASSWORD, password);
         BigDecimal updateInterval = ((BigDecimal) configurationParameters
                 .get(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL));
         config.put(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL, updateInterval);
         this.updateInterval = updateInterval.longValue();
         updateConfiguration(config);
 
-        if (!isTextMatchingPattern(registrationEmailAddress, EMAIL_PATTERN)) {
-            logger.warn(INVALID_USER_MESSAGE);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, INVALID_USER_MESSAGE);
-            return;
-        }
-        configureApiManager(registrationEmailAddress, password);
-
         if (gatewayCode != null && !isTextMatchingPattern(gatewayCode, GATEWAY_CODE_PATTERN)) {
             logger.warn(INVALID_GATEWAY_CODE_MESSAGE);
+            System.out.println("Goes onffline");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, INVALID_GATEWAY_CODE_MESSAGE);
-        }
-        if (!isGatewayComingFromDiscoveryService(thing)) {
-            registerNewGateway();
+            return;
         }
         updateStatus(ThingStatus.ONLINE);
         scheduleUpdateTask(this.updateInterval);

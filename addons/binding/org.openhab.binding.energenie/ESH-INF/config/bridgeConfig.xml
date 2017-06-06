@@ -5,16 +5,6 @@
         http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="energenie:gateway">
-		<parameter name="username" type="text" required="true">
-			<label>Username</label>
-			<description>User's email address</description>
-			<context>email</context>
-		</parameter>
-		<parameter name="password" type="text" required="true">
-			<label>Password</label>
-			<description>User's password</description>
-			<context>password</context>
-		</parameter>
 		<parameter name="gatewayCode" type="text" required="false">
 			<label>Gateway code</label>
 			<description>Gateway code consisting of 10 capital letters and numbers</description>

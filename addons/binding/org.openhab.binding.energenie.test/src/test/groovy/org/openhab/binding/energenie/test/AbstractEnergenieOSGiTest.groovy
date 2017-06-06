@@ -25,8 +25,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID
 import org.eclipse.smarthome.core.thing.ThingUID
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler
 import org.eclipse.smarthome.core.thing.binding.ThingHandler
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory
 import org.eclipse.smarthome.test.OSGiTest
 import org.openhab.binding.energenie.EnergenieBindingConstants
+import org.openhab.binding.energenie.internal.EnergenieHandlerFactory
 import org.openhab.binding.energenie.internal.api.JsonDevice
 import org.openhab.binding.energenie.internal.api.JsonGateway
 import org.openhab.binding.energenie.internal.api.JsonResponseHandler
@@ -81,6 +83,7 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
     protected ManagedThingProvider managedThingProvider
     protected ThingRegistry thingRegistry
     protected HttpService httpService
+    protected EnergenieHandlerFactory handlerFactory
 
     protected RestClient client
     protected Bridge gatewayThing
@@ -90,9 +93,9 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
     }
 
     protected Bridge createBridge(ThingRegistry thingRegistry, String apiKey, String userName, String gatewayCode, Integer gatewayID, String authCode) {
+        handlerFactory.apiConfig = new EnergenieApiConfiguration(userName, apiKey)
+
         Map<String,Object> properties = new HashMap<String, Object>()
-        properties.put(EnergenieBindingConstants.CONFIG_PASSWORD, apiKey)
-        properties.put(EnergenieBindingConstants.CONFIG_USERNAME, userName)
         properties.put(EnergenieBindingConstants.CONFIG_GATEWAY_CODE, gatewayCode)
         properties.put(EnergenieBindingConstants.PROPERTY_DEVICE_ID, new BigDecimal(gatewayID))
         // We set the auth_code to pretend that the device registration has passed correctly
@@ -232,6 +235,9 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
 
         managedThingProvider = getService(ManagedThingProvider)
         assertThat managedThingProvider, is(notNullValue())
+
+        handlerFactory = getService(ThingHandlerFactory,EnergenieHandlerFactory)
+        assertThat handlerFactory, is(notNullValue())
 
         client = getService(RestClient)
         client.setBaseURL(TEST_URL)
