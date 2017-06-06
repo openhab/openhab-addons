@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
     <bridge-type id="config">
         <label>Tankerkoenig Configuration</label>
-        <description>Configuration of Tankerkoenig Bridge, which can handle 1 to 10 gas stations (Tankstellen).</description>
+        <description>Configuration of Tankerkoenig Bridge, which can handle 1 to 10 gas stations.</description>
         <config-description>
             <parameter name="apikey" type="text" required="true">
                 <label>API-Key</label>
@@ -24,7 +24,7 @@
             </parameter>
             <parameter name="useOpeningTime" type="boolean">
                 <label>UseOpeningTime</label>
-                <description>In mode UseOpeningTime only those gas stations (Tankstellen) are polled that are actually open.</description>
+                <description>In mode UseOpeningTime only those gas stations are polled that are actually open.</description>
                 <default>false</default></parameter></config-description>
     </bridge-type>
 </thing:thing-descriptions>
