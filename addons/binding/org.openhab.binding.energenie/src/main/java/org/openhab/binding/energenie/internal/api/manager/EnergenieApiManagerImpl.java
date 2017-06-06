@@ -21,6 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.JsonDevice;
 import org.openhab.binding.energenie.internal.api.JsonGateway;
 import org.openhab.binding.energenie.internal.api.JsonResponseHandler;
 import org.openhab.binding.energenie.internal.api.JsonSubdevice;
@@ -113,27 +114,18 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
     }
 
     @Override
-    public JsonGateway upgradeGatewayFirmware(int id) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(DEVICE_ID_KEY, id);
-
-        JsonObject result = execute(CONTROLLER_DEVICES, ACTION_UPDATE_FIRMWARE, parameters);
-        return JsonResponseHandler.getObject(result, JsonGateway.class);
-    }
-
-    @Override
     public JsonSubdevice[] listSubdevices() {
         JsonObject result = execute(CONTROLLER_SUBDEVICES, ACTION_LIST);
         return JsonResponseHandler.getObject(result, JsonSubdevice[].class);
     }
 
     @Override
-    public JsonSubdevice registerSubdevice(int gatewayID, EnergenieDeviceTypes deviceType) {
+    public JsonDevice registerSubdevice(int gatewayID, EnergenieDeviceTypes deviceType) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(SUBDEVICE_PARENT_ID_KEY, gatewayID);
         parameters.put(DEVICE_TYPE_KEY, deviceType.toString());
         JsonObject result = execute(CONTROLLER_SUBDEVICES, ACTION_CREATE, parameters);
-        return JsonResponseHandler.getObject(result, JsonSubdevice.class);
+        return JsonResponseHandler.getObject(result, JsonDevice.class);
 
     }
 

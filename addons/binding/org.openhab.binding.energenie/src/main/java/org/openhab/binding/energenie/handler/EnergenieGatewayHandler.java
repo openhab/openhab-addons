@@ -37,6 +37,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
 import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.JsonDevice;
 import org.openhab.binding.energenie.internal.api.JsonGateway;
 import org.openhab.binding.energenie.internal.api.JsonSubdevice;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
@@ -507,7 +508,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      *         isn't successful
      */
     public boolean initializePairing(int gatewayID, EnergenieDeviceTypes deviceType) {
-        JsonSubdevice response = apiManager.registerSubdevice(gatewayID, deviceType);
+        JsonDevice response = apiManager.registerSubdevice(gatewayID, deviceType);
         return response != null;
 
     }

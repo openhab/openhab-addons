@@ -35,7 +35,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes
 import org.openhab.binding.energenie.internal.api.manager.*
 import org.openhab.binding.energenie.internal.rest.*
 import org.openhab.binding.energenie.internal.ssl.SSLContextBuilder
@@ -131,7 +131,7 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
         // The sixth parameter indicates whether the JSON request is expected to fail
         // The seventh parameter indicates whether an IOException is expected
 
-        def cases = new Object[12][6]
+        def cases = new Object[11][6]
         // See <a href="https://mihome4u.co.uk/docs/api-documentation/subdevices-api/list-all-subdevices"/a>
         // for information about the expected parameters
         cases[0][0] = "/${CONTROLLER_SUBDEVICES}/${ACTION_LIST}"
@@ -198,37 +198,29 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
         cases[7][4] = false;
         cases[7][5] = false;
 
-        // See <a href="https://mihome4u.co.uk/docs/api-documentation/devices-api/initiate-a-firmware-upgrade"/a>
-        cases[8][0] = "/${CONTROLLER_DEVICES}/${ACTION_UPDATE_FIRMWARE}"
-        cases[8][1] = JsonOutput.toJson([id: TEST_DEVICE_ID])
-        cases[8][2] = [execute: { -> return apiManager.upgradeGatewayFirmware(TEST_DEVICE_ID)}] as Callback
-        cases[8][3] = false;
+        // test if failing HTTP request is handled properly. In this case the type of the request does not matter
+        cases[8][0] = "/${CONTROLLER_DEVICES}/${ACTION_LIST}"
+        cases[8][1] = MiHomeServlet.EMPTY_JSON
+        cases[8][2] = [execute: { -> return apiManager.listGateways()}] as Callback
+        cases[8][3] = true;
         cases[8][4] = false;
         cases[8][5] = false;
 
-        // test if failing HTTP request is handled properly. In this case the type of the request does not matter
+        // test if failing JSON request is handled properly. In this case the type of the request does not matter
         cases[9][0] = "/${CONTROLLER_DEVICES}/${ACTION_LIST}"
         cases[9][1] = MiHomeServlet.EMPTY_JSON
         cases[9][2] = [execute: { -> return apiManager.listGateways()}] as Callback
-        cases[9][3] = true;
-        cases[9][4] = false;
+        cases[9][3] = false;
+        cases[9][4] = true;
         cases[9][5] = false;
 
-        // test if failing JSON request is handled properly. In this case the type of the request does not matter
+        // test if an IOException is handled properly. In this case the type of the request does not matter
         cases[10][0] = "/${CONTROLLER_DEVICES}/${ACTION_LIST}"
         cases[10][1] = MiHomeServlet.EMPTY_JSON
         cases[10][2] = [execute: { -> return apiManager.listGateways()}] as Callback
         cases[10][3] = false;
-        cases[10][4] = true;
-        cases[10][5] = false;
-
-        // test if an IOException is handled properly. In this case the type of the request does not matter
-        cases[11][0] = "/${CONTROLLER_DEVICES}/${ACTION_LIST}"
-        cases[11][1] = MiHomeServlet.EMPTY_JSON
-        cases[11][2] = [execute: { -> return apiManager.listGateways()}] as Callback
-        cases[11][3] = false;
-        cases[11][4] = false;
-        cases[11][5]= true;
+        cases[10][4] = false;
+        cases[10][5]= true;
 
         return cases
     }

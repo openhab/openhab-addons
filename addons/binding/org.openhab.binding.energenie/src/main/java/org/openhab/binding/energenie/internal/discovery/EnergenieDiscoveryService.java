@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A discovery service for Energenie Mi|Home devices using the energenie Mi|Home REST API.
+ * A discovery service for Energenie Mi|Home devices using the Energenie Mi|Home REST API.
  * A {@link DiscoveryResult} is created for every registered/paired device in the user's profile
  * excluding those which already have a registered {@link Thing}
  *
@@ -74,10 +74,12 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService {
             logger.warn("Your binding is not configured yet. Please set the credentials first.");
         } else {
             List<Thing> things = getAllEnergenieThings();
+
             JsonGateway[] registeredGateways = apiManager.listGateways();
-            // TODO use searchNewGateways
             if (registeredGateways != null) {
-                for (JsonGateway device : registeredGateways) {
+                List<JsonGateway> newGateways = searchNewDevices(registeredGateways, things);
+
+                for (JsonGateway device : newGateways) {
                     createGatewayDiscoveryResult(device);
                 }
             } else {
@@ -124,37 +126,19 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService {
         return supported;
     }
 
-    // TODO merge both methods into single one
     /**
-     * Searches for paired gateways that don't have things created yet
+     * Searches for paired devices that don't have things created yet
      *
-     * @param gateways - all gateways registered in the Mi|Home REST API
-     * @param things - all gateways things in the thing registry
-     * @return list with the gateways that have no corresponding thing in the registry
-     */
-    private List<JsonGateway> searchNewGateways(JsonGateway[] gateways, List<Thing> things) {
-        List<JsonGateway> results = new LinkedList<>();
-
-        for (JsonGateway gateway : gateways) {
-            if (!isThingCreatedForDevice(gateway, things)) {
-                results.add(gateway);
-            }
-        }
-        logger.debug("{} registered gateways without things found.", results.size());
-        return results;
-    }
-
-    /**
-     * Searches for paired subdevices that don't have things created yet
+     * @param <T extends JsonDevice>
      *
-     * @param subdevices - all subdevices registered in the Mi|Home REST API
+     * @param subdevices - all devices registered in the Mi|Home REST API
      * @param things - all things attached to the current gateway
-     * @return list with the subdevices that have no corresponding thing in the registry
+     * @return list with the devices that have no corresponding thing in the registry
      */
-    private List<JsonSubdevice> searchNewDevices(JsonSubdevice[] subdevices, List<Thing> things) {
-        List<JsonSubdevice> results = new LinkedList<>();
+    private <T extends JsonDevice> List<T> searchNewDevices(T[] subdevices, List<Thing> things) {
+        List<T> results = new LinkedList<>();
 
-        for (JsonSubdevice device : subdevices) {
+        for (T device : subdevices) {
             if (!isThingCreatedForDevice(device, things)) {
                 results.add(device);
             }
