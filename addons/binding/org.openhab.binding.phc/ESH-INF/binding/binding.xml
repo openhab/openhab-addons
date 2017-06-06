@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="phc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>PHC Binding</name>
+	<description>This is a binding for PHC modules (EM, AM and JRM). It communicates with the PHC Modulbus (RS485).</description>
+	<author>Jonas Hohaus</author>
+
+</binding:binding>
