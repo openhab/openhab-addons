@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="thermostatvenstar" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>Venstar Thermostat</label>
+        <description>Venstar Thermostat Adapter</description>
+
+        <channels>
+            <channel id="coolSetPoint" typeId="temperatureC">
+                <properties>
+                    <property name="feature">VenstarCoolSetPoint</property>
+                </properties>
+            </channel>
+            <channel id="heatSetPoint" typeId="temperatureC">
+                <properties>
+                    <property name="feature">VenstarHeatSetPoint</property>
+                </properties>
+            </channel>
+            <channel id="thermostatMode" typeId="thermostatMode">
+                <properties>
+                    <property name="feature">VenstarSystemMode</property>
+                </properties>
+            </channel>
+            <channel id="fanMode" typeId="fanMode">
+                <properties>
+                    <property name="feature">VenstarFanMode</property>
+                </properties>
+            </channel>
+            <channel id="isHeating" typeId="switch">
+                <properties>
+                    <property name="feature">VenstarIsHeating</property>
+                </properties>
+            </channel>
+            <channel id="isCooling" typeId="switch">
+                <properties>
+                    <property name="feature">VenstarIsCooling</property>
+                </properties>
+            </channel>
+            <channel id="temperatureFarenheit" typeId="temperatureF">
+                <properties>
+                    <property name="feature">VenstarTemperatureFarnenheit</property>
+                </properties>
+            </channel>
+            <channel id="humidty" typeId="humidity">
+                <properties>
+                    <property name="feature">ThermostatHumidity</property>
+                </properties>
+            </channel>
+            <channel id="lastHeardFrom" typeId="lastHeardFrom" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
+        </channels>
+
+        <properties>
+            <property name="productKey">F00.00.21</property>
+            <property name="model">2441V</property>
+            <property name="deviceCategory">0x05</property>
+            <property name="deviceSubCategory">0x03</property>
+        </properties>
+    </thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,652 @@
+<xml>
+	<feature name="GenericSwitch" timeout="5000">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" group="1">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOnFast" group="1" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" group="1">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="FastOnOff">
+		<message-handler cmd="LightOnFast" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" mode="FAST">LightOffSwitchHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+	</feature>
+
+	<feature name="RampDimmer">
+		<!-- cmd1 defaults to 0x2E, 0x2F -->
+		<!-- default dispatcher uses 0x19 for lookup key instead of cmd1 -->
+		<message-handler cmd="LightStatusRequest">RampDimmerHandler</message-handler>
+		<command-handler command="PercentType">RampPercentHandler</command-handler>
+		<command-handler command="OnOffType">RampOnOffCommandHandler</command-handler>
+	</feature>
+
+	<feature name="RampDimmer_3435">
+		<!-- default dispatcher uses 0x19 for lookup key instead of cmd1 -->
+		<message-handler cmd="LightStatusRequest" on="0x34" off="0x35">RampDimmerHandler</message-handler>
+		<command-handler command="PercentType" on="0x34" off="0x35">RampPercentHandler</command-handler>
+		<command-handler command="OnOffType" on="0x34" off="0x35">RampOnOffCommandHandler</command-handler>
+	</feature>
+
+	<feature name="ManualChange">
+		<message-handler cmd="StartManualChange">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+	</feature>
+
+	<feature name="RemoteButton1">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="1" group="1">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="1" group="1">LightOffSwitchHandler</message-handler>
+	</feature>
+	<feature name="RemoteButton2">
+		<message-handler cmd="ProductDataRequest" group="2">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="2" group="2">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="2" group="2">LightOffSwitchHandler</message-handler>
+	</feature>
+	<feature name="RemoteButton3">
+		<message-handler cmd="ProductDataRequest" group="3">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="3" group="3">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="3" group="3">LightOffSwitchHandler</message-handler>
+	</feature>
+	<feature name="RemoteButton4">
+		<message-handler cmd="ProductDataRequest" group="4">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="4" group="4">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="4" group="4">LightOffSwitchHandler</message-handler>
+	</feature>
+	<feature name="RemoteButton5">
+		<message-handler cmd="ProductDataRequest" group="5">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="5" group="5">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="5" group="5">LightOffSwitchHandler</message-handler>
+	</feature>
+	<feature name="RemoteButton6">
+		<message-handler cmd="ProductDataRequest" group="6">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="6" group="6">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="6" group="6">LightOffSwitchHandler</message-handler>
+	</feature>
+	<feature name="RemoteButton7">
+		<message-handler cmd="ProductDataRequest" group="7">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="7" group="7">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="7" group="7">LightOffSwitchHandler</message-handler>
+	</feature>
+	<feature name="RemoteButton8">
+		<message-handler cmd="ProductDataRequest" group="8">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="8" group="8">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="8" group="8">LightOffSwitchHandler</message-handler>
+	</feature>
+	<feature name="LoadSwitchButton">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="1" group="1">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOnFast" button="1" group="1" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="1" group="1">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" button="1" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" button="1" group="1">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="LoadSwitchManualChange">
+		<message-handler cmd="StartManualChange" group="1">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="1">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+	</feature>
+
+	<feature name="LoadSwitchFastOnOff">
+		<message-handler cmd="LightOnFast" group="1" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" group="1">SwitchRequestReplyHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="1" mode="FAST">LightOffSwitchHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="LoadDimmerButton">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="1" group="1">LightOnDimmerHandler</message-handler>
+		<message-handler cmd="LightOnFast" button="1" group="1" mode="FAST">LightOnDimmerHandler</message-handler>
+		<message-handler cmd="LightOff" button="1" group="1">LightOffDimmerHandler</message-handler>
+		<message-handler cmd="LightOffFast" button="1" group="1" mode="FAST">LightOffDimmerHandler</message-handler>
+		<message-handler cmd="StartManualChange" button="1" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="StopManualChange" button="1" group="1">DimmerStopManualChangeHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" button="1" group="1">DimmerRequestReplyHandler</message-handler>
+		<command-handler command="PercentType">PercentHandler</command-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="LoadDimmerFastOnOff">
+		<message-handler cmd="LightOnFast" group="1" mode="FAST">LightOnDimmerHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="1" mode="FAST">LightOffDimmerHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="LoadDimmerManualChange">
+		<message-handler cmd="StartManualChange" group="1">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="1">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+	</feature>
+
+	<feature name="LoadDimmerRamp">
+		<!-- cmd1 defaults to 0x2E, 0x2F -->
+		<!-- default dispatcher uses 0x19 for lookup key instead of cmd1 -->
+		<message-handler cmd="LightStatusRequest" group="1">RampDimmerHandler</message-handler>
+		<command-handler command="PercentType">RampPercentHandler</command-handler>
+		<command-handler command="OnOffType">RampOnOffCommandHandler</command-handler>
+	</feature>
+
+	<feature name="KeyPadButton2">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="2" group="2">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOnFast" button="2" group="2" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="2" group="2">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" button="2" group="2" mode="FAST">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" button="2" group="2">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="FastOnOffButton2">
+		<message-handler cmd="LightOnFast" group="2" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="2" mode="FAST">LightOffSwitchHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="ManualChangeButton2">
+		<message-handler cmd="StartManualChange" group="2">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="2">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+	</feature>
+
+
+	<feature name="KeyPadButton3">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="3" group="3">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOnFast" button="3" group="3" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="3" group="3">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" button="3" group="3" mode="FAST">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" button="3" group="3">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="FastOnOffButton3">
+		<message-handler cmd="LightOnFast" group="3" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="3" mode="FAST">LightOffSwitchHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature>
+	<feature name="ManualChangeButton3">
+		<message-handler cmd="StartManualChange" group="3">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="3">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature>
+
+	<feature name="KeyPadButton4">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="4" group="4">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOnFast" button="4" group="4" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="4" group="4">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" button="4" group="4" mode="FAST">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" button="4" group="4">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="FastOnOffButton4">
+		<message-handler cmd="LightOnFast" group="4" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="4" mode="FAST">LightOffSwitchHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="ManualChangeButton4">
+		<message-handler cmd="StartManualChange" group="4">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="4">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+	</feature>
+
+
+	<feature name="KeyPadButton5">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="5" group="5">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOnFast" button="5" group="5" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="5" group="5">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" button="5" group="5" mode="FAST">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" button="5" group="5">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="FastOnOffButton5">
+		<message-handler cmd="LightOnFast" group="5" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="5" mode="FAST">LightOffSwitchHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature>
+	<feature name="ManualChangeButton5">
+		<message-handler cmd="StartManualChange" group="5">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="5">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature>
+
+
+	<feature name="KeyPadButton6">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="6" group="6">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOnFast" button="6" group="6" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="6" group="6">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" button="6" group="6" mode="FAST">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" button="6" group="6">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="FastOnOffButton6">
+		<message-handler cmd="LightOnFast" group="6" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="6" mode="FAST">LightOffSwitchHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="ManualChangeButton6">
+		<message-handler cmd="StartManualChange" group="6">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="6">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+	</feature>
+
+	<feature name="KeyPadButton7">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="7" group="7">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOnFast" button="7" group="7" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="7" group="7">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" button="7" group="7" mode="FAST">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" button="7" group="7">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="FastOnOffButton7">
+		<message-handler cmd="LightOnFast" group="7" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="7" mode="FAST">LightOffSwitchHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="ManualChangeButton7">
+		<message-handler cmd="StartManualChange" group="7">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="7">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+	</feature>
+
+	<feature name="KeyPadButton8">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" button="8" group="8">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOnFast" button="8" group="8" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOff" button="8" group="8">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" button="8" group="8" mode="FAST">LightOffSwitchHandler</message-handler>
+		<message-handler cmd="LightStatusRequest" button="8" group="8">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="FastOnOffButton8">
+		<message-handler cmd="LightOnFast" group="8" mode="FAST">LightOnSwitchHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="8" mode="FAST">LightOffSwitchHandler</message-handler>
+		<command-handler command="OnOffType">FastOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="ManualChangeButton8">
+		<message-handler cmd="StartManualChange" group="8">StartManualChangeHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="8">StopManualChangeHandler</message-handler>
+		<command-handler command="DecimalType">ManualChangeCommandHandler</command-handler>
+	</feature>
+
+
+	<feature name="GenericDimmer">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" group="1">LightOnDimmerHandler</message-handler>
+		<message-handler cmd="LightOnFast" group="1" mode="FAST">LightOnDimmerHandler</message-handler>
+		<message-handler cmd="LightOff" group="1">LightOffDimmerHandler</message-handler>
+		<message-handler cmd="LightOffFast" group="1" mode="FAST">LightOffDimmerHandler</message-handler>
+		<message-handler cmd="StartManualChange" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="StopManualChange" group="1">DimmerStopManualChangeHandler</message-handler>
+		<message-handler cmd="LightStatusRequest">DimmerRequestReplyHandler</message-handler>
+		<command-handler command="PercentType">PercentHandler</command-handler>
+		<command-handler command="IncreaseDecreaseType">IncreaseDecreaseCommandHandler</command-handler>
+		<command-handler command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="IOLincContact">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" group="1">OpenedContactHandler</message-handler>
+		<message-handler cmd="LightOff" group="1">ClosedContactHandler</message-handler>
+		<message-handler cmd="LightStatusRequest">ContactRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="IOLincSwitch">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOff" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightStatusRequest">SwitchRequestReplyHandler</message-handler>
+		<command-handler command="OnOffType">IOLincOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="WirelessMotionSensorContact">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" group="1">OpenedSleepingContactHandler</message-handler>
+		<message-handler cmd="LightOff" group="1">ClosedSleepingContactHandler</message-handler>
+		<message-handler cmd="LightStatusRequest">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOnWithRamp">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="MotionSensorData">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOff" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOnWithRamp">MotionSensorDataReplyHandler</message-handler>
+		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="HiddenDoorSensorData">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOff" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOnWithRamp">HiddenDoorSensorDataReplyHandler</message-handler>
+		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="GenericContact">
+		<message-handler cmd="ProductDataRequest" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn" group="1">OpenedContactHandler</message-handler>
+		<message-handler cmd="LightOff" group="1">ClosedContactHandler</message-handler>
+		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="LeakSensorContact">
+		<message-handler cmd="ProductDataRequest">NoOpMsgHandler</message-handler>
+		<message-handler cmd="LightOn">OpenedOrClosedContactHandler</message-handler>
+		<message-handler cmd="LightOff">OpenedOrClosedContactHandler</message-handler>
+		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="PowerMeter">
+		<message-handler cmd="ProductDataRequest">NoOpMsgHandler</message-handler>
+		<message-handler cmd="ResetPowerMeter">PowerMeterResetHandler</message-handler>
+		<message-handler cmd="UpdatePowerMeter">PowerMeterUpdateHandler</message-handler>
+		<command-handler command="OnOffType">PowerMeterCommandHandler</command-handler>
+	</feature>
+	<feature name="X10Dimmer" timeout="0" x10="true">
+		<message-handler cmd="On">X10OnHandler</message-handler>
+		<message-handler cmd="Off">X10OffHandler</message-handler>
+		<message-handler cmd="Bright">X10BrightHandler</message-handler>
+		<message-handler cmd="Dim">X10DimHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">X10OnOffCommandHandler</command-handler>
+		<command-handler command="PercentType">X10PercentCommandHandler</command-handler>
+		<command-handler command="IncreaseDecreaseType">X10IncreaseDecreaseCommandHandler</command-handler>
+	</feature>
+	<feature name="X10Switch" timeout="0" x10="true">
+		<message-handler cmd="On">X10OnHandler</message-handler>
+		<message-handler cmd="Off">X10OffHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">X10OnOffCommandHandler</command-handler>
+		<command-handler command="PercentType">NoOpCommandHandler</command-handler>
+		<command-handler command="IncreaseDecreaseType">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="X10Contact" x10="true">
+		<message-handler cmd="On">X10OpenHandler</message-handler>
+		<message-handler cmd="Off">X10ClosedHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatCoolSetPoint">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[7]">NumberMsgHandler
+		</message-handler>
+		<!-- handles direct ack after set point has been changed -->
+		<message-handler cmd="LightStatusRequest" ext="0" match_cmd1="0x6c" low_byte="Cmd2" factor="0.5">NumberMsgHandler
+		</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x71" ext="0" match_cmd1="0x71" low_byte="Cmd2">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x6c" factor="2" value="Cmd2">NumberCommandHandler
+		</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatHeatSetPoint">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[12]">NumberMsgHandler
+		</message-handler>
+		<!-- handles direct ack after set point has been changed -->
+		<message-handler cmd="LightStatusRequest" ext="0" match_cmd1="0x6d" low_byte="Cmd2" factor="0.5">NumberMsgHandler
+		</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x72" ext="0" match_cmd1="0x72" low_byte="Cm2">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x6d" factor="2" value="Cmd2">NumberCommandHandler
+		</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatSystemMode">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[6]"
+			mask="0xf0" rshift="4">ThermostatSystemModeMsgHandler</message-handler>
+		<!-- handles direct ack after system mode has been changed -->
+		<message-handler cmd="LightStatusRequest" ext="0" match_cmd1="0x6b" low_byte="Cmd2">ThermostatSystemModeReplyHandler
+		</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="Cmd2" mask="0x0f">NumberMsgHandler
+		</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x6b" value="Cmd2">ThermostatSystemModeCommandHandler
+		</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatFanMode">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[6]"
+			mask="0x0f">NumberMsgHandler</message-handler>
+		<!-- handles direct ack after fan mode has been changed -->
+		<message-handler cmd="LightStatusRequest" ext="0" match_cmd1="0x6b" low_byte="Cmd2">ThermostatFanModeReplyHandler
+		</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="Cmd2" mask="0xf0" rshift="4">NumberMsgHandler
+		</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x6b" value="Cmd2">ThermostatFanModeCommandHandler
+		</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatIsHeating">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[11]"
+			mask="0x02" rshift="1">NumberMsgHandler</message-handler>
+		<!-- handles all-link broadcast message OFF -->
+		<message-handler cmd="LightOff" ext="0" group="2" mask="0x00" low_byte="Cmd1">NumberMsgHandler</message-handler>
+		<!-- handles all-link broadcast message ON -->
+		<message-handler cmd="LightOn" ext="0" group="2" mask="0x01" low_byte="Cmd1">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatIsCooling">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[11]"
+			mask="0x01">NumberMsgHandler</message-handler>
+		<!-- handles all-link broadcast message OFF -->
+		<message-handler cmd="LightOff" ext="0" group="1" mask="0x00" low_byte="Cmd1">NumberMsgHandler</message-handler>
+		<!-- handles all-link broadcast message ON -->
+		<message-handler cmd="LightOn" ext="0" group="1" mask="0x01" low_byte="Cmd1">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatTemperatureCelsius">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[10]"
+			high_byte="Data[9]" factor="0.1">NumberMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x6e" ext="0" match_cmd1="0x6e" low_byte="Cmd2" offset="-17.7777778" factor="0.2777778">
+			NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatTemperatureFahrenheit">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[10]"
+			high_byte="Data[9]" offset="32" factor="0.18">NumberMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x6e" ext="0" match_cmd1="0x6e" low_byte="Cmd2" offset="0" factor="0.5">NumberMsgHandler
+		</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatHumidity">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x02" match_d1="0x01" low_byte="Data[8]">NumberMsgHandler
+		</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x6f" ext="0" match_cmd1="0x6f" low_byte="Cmd2">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatBackLightDuration">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x00"
+			low_byte="Data[10]">NumberMsgHandler</message-handler>
+		<!-- handles direct ack after backlight duration has been changed -->
+		<message-handler cmd="LightStatusRequest">TriggerPollMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x2e" data1="0x01" data2="0x05"
+			value="Data[3]">NumberCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatACDelay">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x00"
+			low_byte="Data[11]">NumberMsgHandler</message-handler>
+		<!-- handles direct ack after backlight duration has been changed -->
+		<message-handler cmd="LightStatusRequest">TriggerPollMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x2e" data1="0x01" data2="0x06"
+			value="Data[3]">NumberCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatHumidityHigh">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x01"
+			low_byte="Data[4]">NumberMsgHandler</message-handler>
+		<!-- handles direct ack after value has been changed -->
+		<message-handler cmd="LightStatusRequest">TriggerPollMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x2e" data1="0x01" data2="0x0b"
+			value="Data[3]">NumberCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatHumidityLow">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x01"
+			low_byte="Data[5]">NumberMsgHandler</message-handler>
+		<!-- handles direct ack after value has been changed -->
+		<message-handler cmd="LightStatusRequest">TriggerPollMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x2e" data1="0x01" data2="0x0c"
+			value="Data[3]">NumberCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ThermostatStage1Duration">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" match_d3="0x01"
+			low_byte="Data[11]">NumberMsgHandler</message-handler>
+		<!-- handles direct ack after value has been changed -->
+		<message-handler cmd="LightStatusRequest">TriggerPollMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="extendedCrc1" cmd1="0x2e" data1="0x01" data2="0x0a" value="Data[3]">
+			NumberCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="FanLincFan">
+		<message-handler cmd="LightStatusRequest" ext="0" low_byte="Cmd2">FanLincFanReplyHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x11" d1="0x02" value="Cmd2">FanLincFanCommandHandler
+		</command-handler>
+	</feature>
+	<feature name="BottomOutlet">
+		<message-handler cmd="LightStatusRequest" button="2" group="1">SwitchRequestReplyHandler</message-handler>
+		<command-handler data1="0x02" extended="extended1" command="OnOffType">LightOnOffCommandHandler</command-handler>
+	</feature>
+	<feature name="VenstarCoolSetPoint">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[6]">NumberMsgHandler
+		</message-handler>
+		<!-- handles direct ack after set point has been changed -->
+		<message-handler cmd="LightStatusRequest" ext="0" match_cmd1="0x6c" low_byte="Cmd2" factor="0.5">NumberMsgHandler
+		</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x71" ext="0" match_cmd1="0x71" low_byte="Cmd2">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x6c" factor="2" value="Cmd2">NumberCommandHandler
+		</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="VenstarHeatSetPoint">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[7]">NumberMsgHandler
+		</message-handler>
+		<!-- handles direct ack after set point has been changed -->
+		<message-handler cmd="LightStatusRequest" ext="0" match_cmd1="0x6d" low_byte="Cmd2" factor="0.5">NumberMsgHandler
+		</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x72" ext="0" match_cmd1="0x72" low_byte="Cmd2">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x6d" factor="2" value="Cmd2">NumberCommandHandler
+		</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="VenstarSystemMode">
+		<!-- handles direct extended message after query - use NumberMsgHandler because this adapator directly reports the correct 
+			number -->
+		<!-- 0=OFF, 1=HEAT, 2=COOL, 3= Auto, 4=Program 5=Program Heat 6=Program Cool -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" low_byte="Data[3]">NumberMsgHandler
+		</message-handler>
+		<!-- handles direct ack after system mode has been changed -->
+		<message-handler cmd="LightStatusRequest" ext="0" match_cmd1="0x6b" low_byte="Cmd2">ThermostatSystemModeReplyHandler
+		</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="Cmd2" mask="0x0f">NumberMsgHandler
+		</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x6b" value="Cmd2">ThermostatSystemModeCommandHandler
+		</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="VenstarFanMode">
+		<!-- handles direct extended message after query mask for second bit -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[9]" mask="0x10"
+			rshift="4">NumberMsgHandler</message-handler>
+		<!-- handles direct ack after fan mode has been changed -->
+		<message-handler cmd="LightStatusRequest" ext="0" match_cmd1="0x6b" low_byte="Cmd2">ThermostatFanModeReplyHandler
+		</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="0x70" ext="0" match_cmd1="0x70" low_byte="Cmd2" mask="0xf0" rshift="4">NumberMsgHandler
+		</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x6b" value="Cmd2">ThermostatFanModeCommandHandler
+		</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="VenstarTemperatureFahrenheit"> <!-- All temperatures reported in units currently set on thermostat -->
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" low_byte="Data[5]">NumberMsgHandler
+		</message-handler>
+		<!-- handles direct ack after value has been changed -->
+		<message-handler cmd="LightStatusRequest">TriggerPollMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedData1" cmd1="0x2e" data1="0x01" data2="0x0b"
+			value="Data[3]">NumberCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="VenstarHumidity">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" match_d2="0x01" low_byte="Data[4]">NumberMsgHandler
+		</message-handler>
+		<!-- handles direct ack after value has been changed -->
+		<message-handler cmd="LightStatusRequest">TriggerPollMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" extended="extendedCrc1" cmd1="0x2e" data1="0x01" data2="0x0c"
+			value="Data[3]">NumberCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="VenstarIsHeating">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[8]" mask="0x02"
+			rshift="1">NumberMsgHandler</message-handler>
+		<!-- handles all-link broadcast message OFF -->
+		<message-handler cmd="LightOff" ext="0" group="2" mask="0x00" low_byte="Cmd1">NumberMsgHandler</message-handler>
+		<!-- handles all-link broadcast message ON -->
+		<message-handler cmd="LightOn" ext="0" group="2" mask="0x01" low_byte="Cmd1">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="VenstarIsCooling">
+		<!-- handles direct extended message after query -->
+		<message-handler cmd="LightOnWithRamp" ext="1" match_cmd1="0x2e" match_cmd2="0x00" low_byte="Data[8]" mask="0x01">NumberMsgHandler
+		</message-handler>
+		<!-- handles all-link broadcast message OFF -->
+		<message-handler cmd="LightOff" ext="0" group="1" mask="0x00" low_byte="Cmd1">NumberMsgHandler</message-handler>
+		<!-- handles all-link broadcast message ON -->
+		<message-handler cmd="LightOn" ext="0" group="1" mask="0x01" low_byte="Cmd1">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+	</feature>
+	<feature name="ReceiveBroadcast">
+		<!-- handles out-of band status messages -->
+		<message-handler cmd="LightOn" ext="0" match_cmd1="0x11" low_byte="group">NumberMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+	</feature>
+
+</xml>

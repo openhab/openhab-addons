@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+    <thing-type id="morninglincdoc" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>MorningLinc Lock</label>
+        <description>MorningLinc lock controller</description>
+
+        <channels>
+            <channel id="switch" typeId="switch">
+                <properties>
+                    <property name="feature">GenericSwitch</property>
+                    <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x00</property>
+                </properties>
+            </channel>
+            <channel id="lastHeardFrom" typeId="lastHeardFrom" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
+        </channels>
+        
+        <properties>
+            <property name="productKey">F00.00.09</property>
+            <property name="model">2458-A1</property>
+            <property name="deviceCategory">0x0F</property>
+            <property name="deviceSubCategory">0x06</property>
+        </properties>
+    </thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>InsteonPLM Bridge</label>
+		<description>Connection to the insteon plm usb hub either via serial, usb or the insteon hub.</description>
+
+		<config-description>
+			<parameter-group name="tcphub">
+				<advanced>false</advanced>
+				<description>Parameters for use with a tcp/hub connection</description>
+			</parameter-group>
+			<parameter-group name="hub">
+				<advanced>false</advanced>
+				<description>Parameters for use with a hub connection</description>
+			</parameter-group>
+			<parameter-group name="serial">
+				<advanced>false</advanced>
+				<description>Parameters for use with a serial connection</description>
+			</parameter-group>
+			<parameter-group name="basic">
+				<advanced>false</advanced>
+				<description>Parameters for all insteon connections</description>
+			</parameter-group>
+
+
+			<parameter name="serialPort" type="text" groupName="serial">
+				<advanced>false</advanced>
+				<description>The serial port to connect to when setting up the insteon PLM</description>
+				<required>false</required>
+			</parameter>
+
+			<parameter name="host" type="text" groupName="tcphub">
+				<advanced>false</advanced>
+				<description>The host name for tcp/hub connections</description>
+				<required>false</required>
+			</parameter>
+
+			<parameter name="port" type="integer" groupName="tcphub">
+				<advanced>false</advanced>
+				<description>The port for tcp/hub connections</description>
+				<required>false</required>
+			</parameter>
+
+			<parameter name="user" type="text" groupName="hub">
+				<advanced>false</advanced>
+				<description>The User for hub connection</description>
+				<required>false</required>
+			</parameter>
+
+			<parameter name="password" type="text" groupName="hub">
+				<advanced>false</advanced>
+				<description>The password for hub connections</description>
+				<required>false</required>
+			</parameter>
+
+			<parameter name="pollTime" type="integer" groupName="basic">
+				<advanced>false</advanced>
+				<default>3600</default>
+				<description>How long between polls</description>
+				<required>false</required>
+			</parameter>
+
+			<parameter name="portType" type="text" groupName="basic">
+				<advanced>false</advanced>
+				<default>SerialPort</default>
+				<description>The serial port to connect to when setting up the insteron PLM</description>
+				<required>false</required>
+				<options>
+					<option value="SerialPort">Serial port</option>
+					<option value="Tcp">Tcp connection</option>
+					<option value="Hub">Hub connection</option>
+				</options>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

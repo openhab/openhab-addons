@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="x10switch" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>x10 switch</label>
+		<description>A wall switch that supports dimming</description>
+
+		<channels>
+			<channel id="switch" typeId="switch">
+				<properties>
+					<property name="feature">X10Switch</property>
+				</properties>
+			</channel>
+			<channel id="lastHeardFrom" typeId="lastHeardFrom" />
+			<channel id="pendingWrite" typeId="pendingWrite" />
+			<channel id="successfulySent" typeId="successfulySent" />
+			<channel id="errorSent" typeId="errorSent" />
+		</channels>
+
+		<properties>
+			<property name="productKey">X00.00.01</property>
+			<property name="model">X10 switch</property>
+			<property name="x10">true</property>
+		</properties>
+	</thing-type>
+</thing:thing-descriptions>

@@ -51,6 +51,8 @@
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
+    <module>org.openhab.binding.nest</module>
+    <module>org.openhab.binding.nest.test</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.oceanic</module>
@@ -79,6 +81,7 @@
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
+    <module>org.openhab.binding.insteonplm</module>
   </modules>
 
 </project>

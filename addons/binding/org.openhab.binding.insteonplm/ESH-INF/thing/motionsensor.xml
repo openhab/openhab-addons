@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+    <thing-type id="motionsensor" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>Motion Sensor</label>
+        <description>The 2841-222 motion sensor</description>
+
+        <channels>
+            <channel id="contact" typeId="contact">
+                <properties>
+                    <property name="message">WirelessMotionSensorContact</property>
+                </properties>
+            </channel>
+            <channel id="batteryLevel" typeId="battery">
+                <properties>
+                    <property name="message">MotionSensorBattery</property>
+                </properties>
+            </channel>
+            <channel id="lightLevel" typeId="lightLevel">
+                <properties>
+                    <property name="message">MotionSensorLightLevel</property>
+                </properties>
+            </channel>
+            <channel id="lastHeardFrom" typeId="lastHeardFrom" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
+        </channels>
+        
+        <properties>
+            <property name="productKey">0x00004A</property>
+            <property name="model">2842-222</property>
+            <property name="deviceCategory">0x10</property>
+            <property name="deviceSubCategory">0x01,0x04,0x05</property>
+        </properties>
+        
+    </thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="lastHeardFrom">
+		<item-type>String</item-type>
+		<label>Last Event</label>
+		<description>Last time the device was heard from.</description>
+		<category>lastEvent</category>
+		<state>
+		</state>
+	</channel-type>
+
+	<channel-type id="battery">
+		<item-type>Number</item-type>
+		<label>Battery</label>
+		<description>The battery level of the device (percentage)</description>
+		<category>battery</category>
+		<state min="0" max="100" />
+	</channel-type>
+
+	<channel-type id="batteryWatermark">
+		<item-type>Number</item-type>
+		<label>Battery</label>
+		<description>The battery watermark level of the device (percentage)</description>
+		<category>battery</category>
+		<state min="0" max="100" />
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>Contact</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="fanLevel">
+		<item-type>String</item-type>
+		<label>Fan Level</label>
+		<description>The level of the fan</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="low">Low</option>
+				<option value="medium">Medium</option>
+				<option value="high">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Dimmer</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="rampDimmer">
+		<item-type>Number</item-type>
+		<label>Ramp</label>
+		<description>Ramp (in seconds))</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="lightLevel">
+		<item-type>Number</item-type>
+		<label>Light Level</label>
+		<description>Light Level</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="powerLevel">
+		<item-type>Number</item-type>
+		<label>Power Level</label>
+		<description>Power Level</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="pendingWrite">
+		<item-type>Number</item-type>
+		<label>Pending Write</label>
+		<description>Number of packets in the queue pending to be written to the network</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<!-- Thermostat specific pieces -->
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Pending Write</label>
+		<description>Number of packets in the queue pending to be written to the network</description>
+		<state readOnly="false" max="100" min="0" />
+	</channel-type>
+
+	<channel-type id="duration">
+		<item-type>Number</item-type>
+		<label>Duration</label>
+		<description>Duration</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="temperatureF">
+		<item-type>Number</item-type>
+		<label>Temperature (F)</label>
+		<description>Temperature in Farenheit</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="temperatureC">
+		<item-type>Number</item-type>
+		<label>Temperature (C)</label>
+		<description>Temperature in Celsius</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="thermostatMode">
+		<item-type>Number</item-type>
+		<label>Thermostat Mode</label>
+		<description>Thermostat Mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+                <option value="3">Auto</option>
+				<option value="1">Heat</option>
+				<option value="2">Cool</option>
+                <option value="4">Program</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fanMode">
+		<item-type>Number</item-type>
+		<label>Temperature (C)</label>
+		<description>Temperature in Celsius</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Data for how the system is working, details about the packets and errors. -->
+
+	<channel-type id="successfulySent">
+		<item-type>Number</item-type>
+		<label>Successfully Sent</label>
+		<description>Number of packets successfully sent to this thing</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="errorSent">
+		<item-type>Number</item-type>
+		<label>Error Sent</label>
+		<description>Number of packets that errored being sent to this thing.</description>
+		<state readOnly="false" />
+	</channel-type>
+</thing:thing-descriptions>

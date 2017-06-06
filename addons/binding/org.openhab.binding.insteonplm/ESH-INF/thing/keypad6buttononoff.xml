@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteonplm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    
+    <thing-type id="keypadlinc6buttononoff" listed="false">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge" />
+        </supported-bridge-type-refs>
+
+        <label>KeypadLinc 6 Button on off</label>
+        <description>KeypadLinc 6 Button on off</description>
+
+        <channels>
+            <channel id="switch" typeId="switch">
+                <properties>
+                    <property name="message">LoadSwitchButton</property>
+                    <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x00</property>
+                </properties>
+            </channel>
+            <channel id="buttonA" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton3</property>
+                    <property name="dataGroup">datagroup1</property>
+                    <property name="pollHandler">FlexPollHandler:extendedNone,0x19,0x01</property>
+                </properties>
+            </channel>
+            <channel id="buttonB" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton4</property>
+                    <property name="dataGroup">datagroup1</property>
+                </properties>
+            </channel>
+            <channel id="buttonC" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton5</property>
+                    <property name="dataGroup">datagroup1</property>
+                </properties>
+            </channel>
+            <channel id="buttonD" typeId="switch">
+                <properties>
+                    <property name="message">KeyPadButton6</property>
+                    <property name="dataGroup">datagroup1</property>
+                </properties>
+            </channel>
+            <channel id="lastHeardFrom" typeId="lastHeardFrom" />
+            <channel id="pendingWrite" typeId="pendingWrite" />
+            <channel id="successfulySent" typeId="successfulySent" />
+            <channel id="errorSent" typeId="errorSent" />
+        </channels>
+        
+        <properties>
+            <property name="productKey">0x000014</property>
+            <property name="model">2487S</property>
+            <property name="deviceCategory">0x02</property>
+            <property name="deviceSubCategory">0x1E</property>
+        </properties>
+    </thing-type>
+</thing:thing-descriptions>
