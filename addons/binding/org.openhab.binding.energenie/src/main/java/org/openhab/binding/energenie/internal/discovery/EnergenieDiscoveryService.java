@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
 import org.openhab.binding.energenie.handler.EnergenieGatewayHandler;
 import org.openhab.binding.energenie.handler.EnergenieSubdevicesHandler;
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
 import org.openhab.binding.energenie.internal.api.JsonDevice;
 import org.openhab.binding.energenie.internal.api.JsonGateway;
 import org.openhab.binding.energenie.internal.api.JsonSubdevice;
@@ -193,7 +194,7 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void createSubdeviceDiscoveryResult(JsonSubdevice subdevice) {
-        String deviceType = subdevice.getType().toString();
+        EnergenieDeviceTypes deviceType = subdevice.getType();
         int gatewayID = subdevice.getParentID();
         int deviceID = subdevice.getID();
         Thing bridge = getGatewayThingFromThingRegistry(gatewayID);

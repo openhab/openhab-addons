@@ -290,7 +290,6 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
     @BeforeClass
     public static void setUp() {
         configureSslOnServer()
-
     }
 
     @Before
@@ -327,7 +326,7 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
         httpsConfig.setSecurePort(SECURE_PORT)
 
         // Set the SSLContext with trusted clients
-        SSLContext context = SSLContextBuilder.create(FrameworkUtil.getBundle(EnergenieApiManagerOSGiTest).getBundleContext()).withKeyManagers(KEYSTORE_PATH,KEYSTORE_NAME,KEYSTORE_PASSWORD).build()
+        SSLContext context = SSLContextBuilder.create(FrameworkUtil.getBundle(EnergenieApiManagerOSGiTest).getBundleContext()).withKeyStore(KEYSTORE_PATH,KEYSTORE_NAME,KEYSTORE_PASSWORD).build()
         assertThat  "Couldn't load key store from /${KEYSTORE_PATH}/${KEYSTORE_NAME}", context, is(notNullValue())
         SslContextFactory sslContextFactory =  new SslContextFactory()
         sslContextFactory.setSslContext(context)
@@ -349,7 +348,7 @@ class EnergenieApiManagerOSGiTest extends OSGiTest {
         EnergenieApiConfiguration config = new EnergenieApiConfiguration(TEST_USERNAME, TEST_API_KEY);
 
         // Load the trusted key store from file
-        SSLContext sslContext = SSLContextBuilder.create(FrameworkUtil.getBundle(EnergenieApiManagerOSGiTest).getBundleContext()).withTrustManagers(KEYSTORE_PATH,KEYSTORE_NAME,KEYSTORE_PASSWORD).build()
+        SSLContext sslContext = SSLContextBuilder.create(FrameworkUtil.getBundle(EnergenieApiManagerOSGiTest).getBundleContext()).withTrustStore(KEYSTORE_PATH,KEYSTORE_NAME,KEYSTORE_PASSWORD).build()
         assertThat "Couldn't load key store from /${KEYSTORE_PATH}/${KEYSTORE_NAME}", sslContext, is(notNullValue())
 
         //Inject the test SSLContext

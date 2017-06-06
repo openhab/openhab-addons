@@ -13,13 +13,14 @@ import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.net.ssl.SSLContext;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -95,11 +96,18 @@ public class RestClientImpl implements RestClient {
     }
 
     private void loadCertificate(String relativePath, String file) throws KeyStoreException, NoSuchAlgorithmException,
-            CertificateException, IOException, KeyManagementException {
-        SSLContext sslContext = SSLContextBuilder.create(bundleContext).withTrustedCertificate(relativePath, file)
-                .build();
-        logger.info("Certificate {} loaded from directory {}", relativePath, file);
-        httpClient.getSslContextFactory().setSslContext(sslContext);
+            CertificateException, IOException, KeyManagementException, UnrecoverableKeyException {
+        SSLContextBuilder sslContext = SSLContextBuilder.create(bundleContext);
+        try {
+            sslContext.withTrustedCertificate(relativePath, file);
+            logger.info("Certificate successfully loaded from bundle");
+        } catch (CertificateExpiredException e) {
+            logger.warn("Certificate has expired. Trying to load from URL {}", ENERGENIE_REST_API_URL);
+            sslContext.withTrustedCertificates(ENERGENIE_REST_API_URL);
+            logger.info("Certificate successfully loaded from URL {}", ENERGENIE_REST_API_URL);
+        } finally {
+            httpClient.getSslContextFactory().setSslContext(sslContext.build());
+        }
 
     }
 
