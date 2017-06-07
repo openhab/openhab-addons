@@ -40,6 +40,10 @@ public class JsonGateway extends JsonDevice {
     @SerializedName("last_seen_at")
     String lastSeenAt;
 
+    public JsonGateway() {
+
+    }
+
     public JsonGateway(int userID, int id, String label, String authCode, String macAddress, String ipAddress, int port,
             int firmwareVersionID, String lastSeenAt) {
         super(EnergenieDeviceTypes.GATEWAY, id, label);
@@ -50,6 +54,10 @@ public class JsonGateway extends JsonDevice {
         this.port = port;
         this.firmwareVersionID = firmwareVersionID;
         this.lastSeenAt = lastSeenAt;
+    }
+
+    public JsonGateway(int id, String label) {
+        super(EnergenieDeviceTypes.GATEWAY, id, label);
     }
 
     public int getUserID() {

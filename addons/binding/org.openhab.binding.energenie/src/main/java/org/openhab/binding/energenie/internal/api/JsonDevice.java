@@ -25,6 +25,10 @@ public class JsonDevice {
     @SerializedName("label")
     private String label;
 
+    public JsonDevice() {
+
+    }
+
     public JsonDevice(EnergenieDeviceTypes type, int id, String label) {
         this.type = type;
         this.id = id;

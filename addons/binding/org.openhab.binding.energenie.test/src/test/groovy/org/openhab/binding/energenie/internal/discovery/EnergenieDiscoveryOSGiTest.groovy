@@ -28,11 +28,10 @@ import org.junit.Test
 import org.openhab.binding.energenie.EnergenieBindingConstants
 import org.openhab.binding.energenie.handler.EnergenieGatewayHandler
 import org.openhab.binding.energenie.handler.EnergenieSubdevicesHandler
-import org.openhab.binding.energenie.internal.api.JsonResponseHandler
-import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes
+import org.openhab.binding.energenie.internal.api.JsonDevice
 import org.openhab.binding.energenie.internal.api.JsonGateway
 import org.openhab.binding.energenie.internal.api.JsonSubdevice
-import org.openhab.binding.energenie.internal.api.constants.JsonResponseConstants
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager
 /**
@@ -45,8 +44,9 @@ import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager
 class EnergenieDiscoveryOSGiTest {
     // MiHome internal API test data
     private static final int TEST_GATEWAY_ID = 4541
+    private static final String TEST_GATEWAY_LABEL = "TestGateway"
     private static final int TEST_DEVICE_ID = 51816
-    private static final String TEST_DEVICE_TYPE = EnergenieDeviceTypes.MOTION_SENSOR_TYPE
+    private static final EnergenieDeviceTypes TEST_DEVICE_TYPE = EnergenieDeviceTypes.MOTION_SENSOR
 
     //ESH test data
     private static final ThingTypeUID TEST_THING_TYPE_UID = EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR
@@ -57,14 +57,14 @@ class EnergenieDiscoveryOSGiTest {
     private EnergenieDiscoveryService discoveryService;
 
     private boolean isResultExpected = false
-    private String listGatewaysResponse
-    private String listSubdevicesResponse
+    private JsonDevice[] listGatewaysResponse
+    private JsonDevice[] listSubdevicesResponse
     private List<Thing> registeredThings = new ArrayList<Thing>();
 
 
     EnergenieApiManager mockedApiManager = [
-        listGateways : {return JSONResponseHandler.responseStringtoJsonObject(listGatewaysResponse) },
-        listSubdevices : { return JSONResponseHandler.responseStringtoJsonObject(listSubdevicesResponse) },
+        listGateways : {return listGatewaysResponse },
+        listSubdevices : { return listSubdevicesResponse },
         getConfiguration : { return new EnergenieApiConfiguration(TEST_USERNAME, TEST_PASSWORD) }
     ] as EnergenieApiManager
 
@@ -87,8 +87,9 @@ class EnergenieDiscoveryOSGiTest {
     @Test
     public void 'create result for gateway without a Thing'(){
         // Set up the backend response
-        JsonGateway gateway = new JsonGateway()
-        listGatewaysResponse = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gateway)
+        listSubdevicesResponse = new JsonSubdevice[0]
+        listGatewaysResponse = new JsonGateway[1];
+        listGatewaysResponse[0] = new JsonGateway(TEST_GATEWAY_ID, TEST_GATEWAY_LABEL)
 
         boolean expectDiscoveryResult = true
         DiscoveryListener discoveryListenerMock = [
@@ -112,7 +113,8 @@ class EnergenieDiscoveryOSGiTest {
     @Test
     public void 'dont create a result when no gateway is found' () {
         // Set up the backend response
-        listGatewaysResponse = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS)
+        listSubdevicesResponse = new JsonSubdevice[0]
+        listGatewaysResponse = new JsonGateway[0];
 
         DiscoveryListener discoveryListenerMock = [
             thingDiscovered : { DiscoveryService source, DiscoveryResult result ->
@@ -133,7 +135,8 @@ class EnergenieDiscoveryOSGiTest {
 
         // Set up the backend response
         JsonGateway gateway = new JsonGateway()
-        listGatewaysResponse = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, gateway)
+        listGatewaysResponse = new JsonGateway[1];
+        listGatewaysResponse[0] = new JsonGateway(TEST_GATEWAY_ID, TEST_GATEWAY_LABEL)
 
         // Add the listener
         DiscoveryListener discoveryListenerMock = [
@@ -153,9 +156,9 @@ class EnergenieDiscoveryOSGiTest {
         registeredThings.add(bridge)
 
         // Set up the backend response
-        JsonSubdevice subdevice = new JsonSubdevice(TEST_DEVICE_ID, TEST_GATEWAY_ID, TEST_DEVICE_TYPE)
-        listSubdevicesResponse = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, subdevice)
-        listGatewaysResponse = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS)
+        listSubdevicesResponse = new JsonSubdevice[1]
+        listSubdevicesResponse[0] = new JsonSubdevice(TEST_DEVICE_ID, TEST_GATEWAY_ID, TEST_DEVICE_TYPE)
+        listGatewaysResponse = new JsonGateway[0]
 
         boolean expectDiscoveryResult = true
         DiscoveryListener discoveryListenerMock = [
@@ -179,8 +182,8 @@ class EnergenieDiscoveryOSGiTest {
     @Test
     public void 'dont create a result when no subdevice is found' () {
         // Set up the backend response
-        listSubdevicesResponse = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS)
-        listGatewaysResponse = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS)
+        listSubdevicesResponse = new JsonSubdevice[0]
+        listGatewaysResponse = new JsonGateway[0]
 
         DiscoveryListener discoveryListenerMock = [
             thingDiscovered : { DiscoveryService source, DiscoveryResult result ->
@@ -200,8 +203,9 @@ class EnergenieDiscoveryOSGiTest {
         registeredThings.add(thing)
 
         // Set up the backend response
-        JsonSubdevice subdevice = new JsonSubdevice(TEST_DEVICE_ID,TEST_GATEWAY_ID,TEST_DEVICE_TYPE)
-        listSubdevicesResponse = generateJsonDevicesListServerResponse(JSONResponseConstants.RESPONSE_SUCCESS, subdevice)
+        listGatewaysResponse = new JsonGateway[0]
+        listSubdevicesResponse = new JsonSubdevice[1]
+        listSubdevicesResponse[0] = new JsonSubdevice(TEST_DEVICE_ID,TEST_GATEWAY_ID,TEST_DEVICE_TYPE)
 
         // Add the listener
         DiscoveryListener discoveryListenerMock = [
@@ -214,12 +218,11 @@ class EnergenieDiscoveryOSGiTest {
     }
 
     private assertGatewayDiscoveryResult(DiscoveryResult result){
-
         assertThat "DiscoveryResult has incorrect ThingUID", result.getThingUID(), is(TEST_GATEWAY_UID)
 
         Map<String,Object> properties = result.getProperties()
         assertThat "DiscoveryResult has incorrect ${EnergenieBindingConstants.PROPERTY_DEVICE_ID} property", properties.get(EnergenieBindingConstants.PROPERTY_DEVICE_ID), is(equalTo(TEST_GATEWAY_ID))
-        assertThat "DiscoveryResult has incorrect ${EnergenieBindingConstants.PROPERTY_TYPE} property", properties.get(EnergenieBindingConstants.PROPERTY_TYPE), is(equalTo(DeviceTypesConstants.GATEWAY_TYPE))
+        assertThat "DiscoveryResult has incorrect ${EnergenieBindingConstants.PROPERTY_TYPE} property", properties.get(EnergenieBindingConstants.PROPERTY_TYPE), is(equalTo(EnergenieDeviceTypes.GATEWAY.toString()))
         assertThat "DiscoveryResult doesn't contain default required configuration paramter ${EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL}", properties.get(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL), is(equalTo(EnergenieGatewayHandler.DEFAULT_UPDATE_INTERVAL))
     }
 

@@ -166,14 +166,14 @@ public abstract class AbstractEnergenieOSGiTest extends OSGiTest {
         }
     }
 
-    public static JsonObject generateShowJsonDeviceServerResponse(String status, JsonDevice device) {
+    public JsonObject generateShowJsonDeviceServerResponse(String status, JsonDevice device) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         ShowDeviceResponse responseObj = new ShowDeviceResponse(status, device)
         String response = gson.toJson(responseObj)
         return JsonResponseHandler.responseStringtoJsonObject(response)
     }
 
-    public static JsonObject generateJsonDevicesListServerResponse(String status, JsonDevice ... devices) {
+    public JsonObject generateJsonDevicesListServerResponse(String status, JsonDevice ... devices) {
         Gson gson = new Gson();
         ListDevicesResponse responseObj = new ListDevicesResponse(devices, status)
         String response = gson.toJson(responseObj)
