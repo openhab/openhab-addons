@@ -318,17 +318,19 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      *
      * @param currentTimeStamp
      *            - current datetime stamp
-     * @param previousTimeStamp
+     * @param lastSeenString
      *            - previous datetime stamp
      * @return the time that has elapsed between previousDateTime and
      *         currentDateTime (in seconds)
      * @throws ParseException
      *             - if any of the date Strings cannot be parsed correctly
      */
-    private Long getTimeInterval(String currentTimeStamp, String previousTimeStamp) throws ParseException {
+    private Long getTimeInterval(String currentTimeStamp, String lastSeenString) throws ParseException {
+        // The Z at end represents the UTC timezone
+        lastSeenString = lastSeenString.replace("Z", "+0000");
         DateTimeFormatter sdf = DateTimeFormatter.ofPattern(EnergenieBindingConstants.DATE_TIME_PATTERN);
         ZonedDateTime currentTime = ZonedDateTime.parse(currentTimeStamp, sdf);
-        ZonedDateTime previousTime = ZonedDateTime.parse(previousTimeStamp, sdf);
+        ZonedDateTime previousTime = ZonedDateTime.parse(lastSeenString, sdf);
         return Duration.between(previousTime, currentTime).getSeconds();
     }
 
@@ -441,7 +443,6 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
 
         if (gatewayCode != null && !isTextMatchingPattern(gatewayCode, GATEWAY_CODE_PATTERN)) {
             logger.warn(INVALID_GATEWAY_CODE_MESSAGE);
-            System.out.println("Goes onffline");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, INVALID_GATEWAY_CODE_MESSAGE);
             return;
         }
