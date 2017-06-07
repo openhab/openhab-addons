@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 
 public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler {
 
@@ -27,8 +29,22 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         int unitNum = Integer.parseInt(channelParts[2]);
 
-        if (RefreshType.REFRESH.equals(command)) {
-            logger.debug("Must implement refresh: {} ", channelUID);
+        if (RefreshType.REFRESH.equals(command)
+                && OmnilinkBindingConstants.CHANNEL_ROOM_STATE.equals(channelParts[3])) {
+            logger.debug("Unit '{}' got REFRESH command", thing.getLabel());
+            Futures.addCallback(getOmnilinkBridgeHander().getUnitStatus(Integer.parseInt(channelParts[2])),
+                    new FutureCallback<UnitStatus>() {
+                        @Override
+                        public void onFailure(Throwable arg0) {
+                            logger.error("Error refreshing unit status", arg0);
+                        }
+
+                        @Override
+                        public void onSuccess(UnitStatus status) {
+                            handleUnitStatus(status);
+                        }
+                    });
+
             return;
         }
         if (channelParts[3].startsWith("scene") && OnOffType.ON.equals(command)) {
