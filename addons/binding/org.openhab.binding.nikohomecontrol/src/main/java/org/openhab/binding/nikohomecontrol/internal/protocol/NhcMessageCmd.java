@@ -18,6 +18,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
  */
 @SuppressWarnings("unused")
 class NhcMessageCmd extends NhcMessageBase {
+
     private Integer id;
     private Integer value1;
     private Integer value2;
@@ -48,5 +49,4 @@ class NhcMessageCmd extends NhcMessageBase {
     void setEndValue(Integer endValue) {
         this.endValue = endValue;
     }
-
 }

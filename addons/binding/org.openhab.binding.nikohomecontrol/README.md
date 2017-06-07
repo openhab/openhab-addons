@@ -1,6 +1,6 @@
 # Niko Home Control Binding
 
-The openHAB2 Niko Home Control binding integrates with a [Niko Home Control](http://www.nikohomecontrol.be/) system through a Niko Home Control IP-interface.
+The Niko Home Control binding integrates with a [Niko Home Control](http://www.nikohomecontrol.be/) system through a Niko Home Control IP-interface.
 
 The binding has been tested with a Niko Home Control IP-interface (550-00508). This IP-interface provides access on the LAN. The binding does 
 not require a Niko Home Control Gateway (550-00580), but does work with it in the LAN. It will not make a remote connection.
@@ -15,13 +15,13 @@ Connected to a bridge, the Niko Home Control Binding supports on/off actions (e.
 
 ## Binding Configuration
 
-The bridge representing the Niko Home Control IP-interface needs to be added first in the things file or through Paper UI. A bridge can be auto-discovered or created manually. No bridge configuration is required. The communication only works if the openHab system and the Niko Home Control IP-interface are in the same subnet. Only one Niko Home Control IP-interface typically exists in a subnet, therefore only one bridge should typically be added to openHab.
+The bridge representing the Niko Home Control IP-interface needs to be added first in the things file or through Paper UI. A bridge can be auto-discovered or created manually. No bridge configuration is required. The communication only works if the openHAB system and the Niko Home Control IP-interface are in the same subnet. Only one Niko Home Control IP-interface typically exists in a subnet, therefore only one bridge should typically be added to openHAB.
 
 Optionally the IP-address or broadcast address and port can be set when manually creating the bridge. A fixed IP-address will take precedence over a broadcast address or fully automatic discovery to discover the IP-address of the Niko Home Control IP-interface.
 
 If the IP-address is set, no attempt will be made to discover the correct IP-address. You are responsible to force a fixed IP address on the Niko Home Control IP-interface through settings in your DHCP server
 
-If the broadcast address is set, it will be used to send the broadcast discovery message, rather than attempting to find the broadcast address automatically. This can be important if the openHab server is multi-homed, in which case the wrong subnet could be picked by the automatic discovery.
+If the broadcast address is set, it will be used to send the broadcast discovery message, rather than attempting to find the broadcast address automatically. This can be important if the openHAB server is multi-homed, in which case the wrong subnet could be picked by the automatic discovery.
 
 The port is set to 8000 by default and should match the port used by the Niko Home Control IP-interface.
 
@@ -29,7 +29,7 @@ An optional refresh interval will be used to restart the bridge at regular inter
 
 ## Discovery
 
-A discovery scan will first discover the Niko Home Control IP-interface in the network as a bridge. Default parameters will be used. Note that this may fail when openHab is running on a multi-homed server, in which case you will have to add the bridge manually.
+A discovery scan will first discover the Niko Home Control IP-interface in the network as a bridge. Default parameters will be used. Note that this may fail when openHAB is running on a multi-homed server, in which case you will have to add the bridge manually.
 
 When the Niko Home Control bridge is added as a thing, from the discovery inbox or manually, system information will be read from the Niko Home Control Controller and will be put in the bridge properties, visible through Paper UI.
 
@@ -45,28 +45,28 @@ Besides adding automatically discovered things through PaperUI, you can add thin
 The Thing configuration for the bridge uses the following syntax:
 
 ```
-Bridge nikohomecontrol:bridge:<bridgeID> [ ADDR="<IP-address of IP-interface>", PORT=<listening port>,
-                                           BROADCASTADDR="<IP broadcast address of network segment with IP-interface",
-                                           REFRESH="<Refresh interval>" ]
+Bridge nikohomecontrol:bridge:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>,
+                                           broadcastAddr="<IP broadcast address of network segment with IP-interface",
+                                           refresh="<Refresh interval>" ]
 ```
 
-`bridgeID` can have any value.
+`bridgeId` can have any value.
 
-All parameters are optional. ADDR is the fixed Niko Home Control IP-interface address. ADDR will be discovered if omitted. PORT will be the PORT used to connect and is 8000 by default. BROADCASTADDR is the broadcast address for the subnet on which the Niko Home Control IP-interface resides. BROADCASTADDR will be established from the local network interface if omitted. REFRESH is the interval to restart the communication in minutes (300 by default), if 0 or omitted the connection will not restart at regular intervals.
+All parameters are optional. `addr` is the fixed Niko Home Control IP-interface address. `addr` will be discovered if omitted. `port` will be the port used to connect and is 8000 by default. `broadcastAddr` is the broadcast address for the subnet on which the Niko Home Control IP-interface resides. `broadcastAddr` will be established from the local network interface if omitted. `refresh` is the interval to restart the communication in minutes (300 by default), if 0 or omitted the connection will not restart at regular intervals.
 
-The Thing configuration for the actions has the following syntax:
+The thing configuration for the actions has the following syntax:
 
 ```
-Thing nikohomecontrol:<thing type>:<bridgeID>:<oHActionID>
-                        [ ACTIONID=<Niko Home Control action ID>,
-                          STEP=<dimmer increase/decrease step value> ]
+Thing nikohomecontrol:<thing type>:<bridgeId>:<thingId>
+                        [ actionId=<Niko Home Control action ID>,
+                          step=<dimmer increase/decrease step value> ]
 ```
 
 or nested in the bridge configuration:
 
 ```
-<thing type> <oHActionID> [ ACTIONID=<Niko Home Control action ID>,
-                            STEP=<dimmer increase/decrease step value> ]
+<thing type> <thingId> [ actionId=<Niko Home Control action ID>,
+                         step=<dimmer increase/decrease step value> ]
 ```
                                
 The following thing types are valid for configuration:
@@ -75,11 +75,11 @@ The following thing types are valid for configuration:
 onOff, dimmer, blind
 ```
 
-`oHActionID` can have any value, but will be set to the same value as the ACTIONID parameter if discovery is used.
+`thingId` can have any value, but will be set to the same value as the actionId parameter if discovery is used.
 
-The ACTIONID parameter is the unique ip Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control programming software. It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery. For textual configuration, you can be manually retrieve it from the content of the .nhcp configuration file created by the programming software. Open the file with an unzip tool to read it's content.
+The `actionId` parameter is the unique ip Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control programming software. It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery. For textual configuration, you can be manually retrieve it from the content of the .nhcp configuration file created by the programming software. Open the file with an unzip tool to read it's content.
 
-The STEP parameter is only available for dimmers. It sets a step value for dimmer increase/decrease actions. The parameter is optional and set to 10 by default.
+The `step` parameter is only available for dimmers. It sets a step value for dimmer increase/decrease actions. The parameter is optional and set to 10 by default.
 
 ## Channels
 
@@ -105,16 +105,16 @@ Beyond action events, the Niko Home Control communication also supports thermost
 .things:
 
 ```
-Bridge nikohomecontrol:bridge:nhc1 [ ADDR="192.168.0.70", PORT=8000, REFRESH=300 ] {
-    onOff 1 [ ACTIONID=1 ]
-    dimmer 2 [ ACTIONID=2, STEP=5 ]
-    blind 3 [ ACTIONID=3 ]
+Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300 ] {
+    onOff 1 [ actionId=1 ]
+    dimmer 2 [ actionId=2, step=5 ]
+    blind 3 [ actionId=3 ]
 }
 
-Bridge nikohomecontrol:bridge:nhc2 [ BROADCASTADDR="192.168.7.255" ] {
-    onOff 11 [ ACTIONID=11 ]
-    dimmer 12 [ ACTIONID=12, STEP=5 ]
-    blind 13 [ ACTIONID=13 ]
+Bridge nikohomecontrol:bridge:nhc2 [ broadcastAddr="192.168.7.255" ] {
+    onOff 11 [ actionId=11 ]
+    dimmer 12 [ actionId=12, step=5 ]
+    blind 13 [ actionId=13 ]
 }
 ```
 

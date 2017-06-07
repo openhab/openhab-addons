@@ -57,7 +57,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-
         logger.debug("Niko Home Control: initializing bridge handler");
 
         Configuration config = this.getConfig();
@@ -97,7 +96,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
         }
 
         createCommunicationObject(addr, port, broadcastAddr);
-
     }
 
     /**
@@ -108,7 +106,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      * @param port
      */
     private void createCommunicationObject(InetAddress addr, int port, InetAddress broadcastAddr) {
-
         Configuration config = this.getConfig();
 
         scheduler.submit(new Runnable() {
@@ -146,9 +143,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
                             "Niko Home Control: error starting bridge connection");
                 }
             }
-
         });
-
     }
 
     private void setBridgeCallBack() {
@@ -161,7 +156,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      * @param interval_config Time before refresh in minutes.
      */
     private void setupRefreshTimer(Integer refreshInterval) {
-
         if (this.refreshTimer != null) {
             this.refreshTimer.cancel(true);
             this.refreshTimer = null;
@@ -214,7 +208,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      * in PaperUI.
      */
     private void updateProperties() {
-
         Map<String, String> properties = new HashMap<>();
 
         properties.put("ipAddress", this.nhcComm.getAddr().getHostAddress());
@@ -231,11 +224,14 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
         properties.put("connectionStartDate", this.nhcComm.getSystemInfo().getTime());
 
         thing.setProperties(properties);
-
     }
 
     @Override
     public void dispose() {
+        if (this.refreshTimer != null) {
+            this.refreshTimer.cancel(true);
+        }
+        this.refreshTimer = null;
         if (this.nhcComm != null) {
             this.nhcComm.stopCommunication();
         }
@@ -259,5 +255,4 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
     public NikoHomeControlCommunication getCommunication() {
         return this.nhcComm;
     }
-
 }

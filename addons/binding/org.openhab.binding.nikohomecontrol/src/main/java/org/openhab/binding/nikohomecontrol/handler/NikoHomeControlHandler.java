@@ -45,7 +45,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         Integer actionId = ((Number) this.getConfig().get(CONFIG_ACTION_ID)).intValue();
 
         if (this.nhcAction == null) {
@@ -65,9 +64,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         }
 
         if (nhcComm.communicationActive()) {
-
             handleCommandSelection(channelUID, command);
-
         } else {
             // We lost connection but the connection object is there, so was correctly started.
             // Try to restart communication.
@@ -76,7 +73,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
                 @Override
                 public void run() {
-
                     nhcComm.restartCommunication();
                     // If still not active, take thing offline and return.
                     if (!nhcComm.communicationActive()) {
@@ -90,9 +86,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                     // And finally handle the command
                     handleCommandSelection(channelUID, command);
                 }
-
             });
-
         }
     }
 
@@ -101,7 +95,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
 
         switch (channelUID.getId()) {
-
             case CHANNEL_SWITCH:
                 handleSwitchCommand(command);
                 updateStatus(ThingStatus.ONLINE);
@@ -121,7 +114,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Niko Home Control: channel unknown " + channelUID.getId());
         }
-
     }
 
     private void handleSwitchCommand(Command command) {
@@ -191,7 +183,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         Configuration config = this.getConfig();
 
         Integer actionId = ((Number) config.get(CONFIG_ACTION_ID)).intValue();
@@ -242,7 +233,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         if (thing.getLocation() == null) {
             thing.setLocation(actionLocation);
         }
-
     }
 
     @Override
@@ -254,7 +244,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     }
 
     public void handleStateUpdate(int actionType, int actionState) {
-
         switch (actionType) {
             case 0:
             case 1:

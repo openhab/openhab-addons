@@ -37,5 +37,4 @@ abstract class NhcMessageBase {
     void setEvent(String event) {
         this.event = event;
     }
-
 }

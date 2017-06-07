@@ -44,7 +44,6 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         if (BRIDGE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             NikoHomeControlBridgeHandler handler = new NikoHomeControlBridgeHandler((Bridge) thing);
             registerNikoHomeControlDiscoveryService(handler);

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class NhcAction {
 
-    private Logger logger = LoggerFactory.getLogger(NhcAction.class);
+    private final Logger logger = LoggerFactory.getLogger(NhcAction.class);
 
     private NikoHomeControlCommunication nhcComm;
 
@@ -130,7 +130,6 @@ public final class NhcAction {
      *            rollershutter action: between 0 (closed) and 100 (open), 255 to open, 254 to close, 253 to stop
      */
     public void execute(int percent) {
-
         logger.debug("Niko Home Control: execute action {} of type {} for {}", percent, this.type, this.id);
 
         NhcMessageCmd nhcCmd = new NhcMessageCmd("executeactions", this.id, percent);
@@ -150,7 +149,5 @@ public final class NhcAction {
         }
 
         nhcComm.sendMessage(nhcCmd);
-
     }
-
 }

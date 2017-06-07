@@ -30,5 +30,4 @@ class NhcMessageMap extends NhcMessageBase {
     void setData(Map<String, String> data) {
         this.data = data;
     }
-
 }

@@ -41,7 +41,6 @@ public final class NikoHomeControlDiscover {
     private String nhcBridgeId;
 
     public NikoHomeControlDiscover(InetAddress addr) throws IOException {
-
         InetAddress broadcastaddr = addr;
         if (broadcastaddr == null) {
             broadcastaddr = getBroadcastAddress();
@@ -67,7 +66,6 @@ public final class NikoHomeControlDiscover {
             setNhcBridgeId(packet);
             logger.debug("Niko Home Control: IP address is {}, unique ID is {}", this.addr, this.nhcBridgeId);
         }
-
     }
 
     public NikoHomeControlDiscover() throws IOException {
@@ -94,7 +92,6 @@ public final class NikoHomeControlDiscover {
      * @param packet
      */
     private void setNhcBridgeId(DatagramPacket packet) {
-
         byte[] packetData = packet.getData();
         int packetLength = packet.getLength();
         packetLength = packetLength > 6 ? 6 : packetLength;
@@ -103,7 +100,6 @@ public final class NikoHomeControlDiscover {
             sb.append(String.format("%02x", packetData[i]));
         }
         this.nhcBridgeId = sb.toString();
-
     }
 
     /**
@@ -113,7 +109,6 @@ public final class NikoHomeControlDiscover {
      * @return current broadcast address
      */
     private InetAddress getBroadcastAddress() {
-
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
             while (networkInterfaces.hasMoreElements()) {
@@ -131,5 +126,4 @@ public final class NikoHomeControlDiscover {
         }
         return null;
     }
-
 }

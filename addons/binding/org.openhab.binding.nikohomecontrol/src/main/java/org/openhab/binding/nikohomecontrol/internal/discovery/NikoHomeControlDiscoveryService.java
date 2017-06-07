@@ -62,7 +62,6 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
      * Discovers devices connected to a Niko Home Control controller
      */
     public void discoverDevices() {
-
         NikoHomeControlCommunication nhcComm = this.handler.getCommunication();
 
         if ((nhcComm == null) || !nhcComm.communicationActive()) {
@@ -100,9 +99,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
                     logger.debug("Niko Home Control: unrecognized action type {} for {} {}", nhcAction.getType(),
                             actionId, thingName);
             }
-
         }
-
     }
 
     private void addDevice(ThingUID uid, int actionId, String thingName, String thingLocation) {
@@ -121,5 +118,4 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
-
 }

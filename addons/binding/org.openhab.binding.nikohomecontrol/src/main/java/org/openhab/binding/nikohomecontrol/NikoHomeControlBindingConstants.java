@@ -46,13 +46,12 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
 
     // Bridge config properties
-    public static final String CONFIG_HOST_NAME = "ADDR";
-    public static final String CONFIG_PORT = "PORT";
-    public static final String CONFIG_REFRESH = "REFRESH";
-    public static final String CONFIG_BROADCAST_ADDRESS = "BROADCASTADDR";
+    public static final String CONFIG_HOST_NAME = "addr";
+    public static final String CONFIG_PORT = "port";
+    public static final String CONFIG_REFRESH = "refresh";
+    public static final String CONFIG_BROADCAST_ADDRESS = "broadcastaddr";
 
     // Thing config properties
-    public static final String CONFIG_ACTION_ID = "ACTIONID";
-    public static final String CONFIG_STEP_VALUE = "STEP";
-
+    public static final String CONFIG_ACTION_ID = "actionId";
+    public static final String CONFIG_STEP_VALUE = "step";
 }

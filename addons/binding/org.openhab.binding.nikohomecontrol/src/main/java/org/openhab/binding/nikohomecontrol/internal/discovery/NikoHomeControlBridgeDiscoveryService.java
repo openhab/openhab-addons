@@ -43,7 +43,6 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
      * Discovers devices connected to a Niko Home Control controller
      */
     public void discoverBridge() {
-
         try {
             NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover();
             addBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
@@ -53,7 +52,6 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
     }
 
     private void addBridge(InetAddress addr, String bridgeId) {
-
         logger.debug("Niko Home Control: bridge found at {}", addr);
 
         String bridgeName = "Niko Home Control Bridge";
@@ -62,7 +60,6 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
                 .withProperty("ipAddress", addr.getHostAddress()).build();
         thingDiscovered(discoveryResult);
-
     }
 
     @Override
@@ -75,5 +72,4 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
-
 }

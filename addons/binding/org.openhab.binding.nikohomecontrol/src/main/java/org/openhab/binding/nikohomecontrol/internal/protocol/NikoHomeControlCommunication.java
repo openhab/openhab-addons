@@ -77,7 +77,6 @@ public final class NikoHomeControlCommunication {
      * @throws IOException when Niko Home Control IP-interface cannot be found
      */
     public NikoHomeControlCommunication(InetAddress addr, InetAddress broadcastAddr) throws IOException {
-
         this.broadcastAddr = broadcastAddr;
 
         if (addr == null) {
@@ -96,7 +95,6 @@ public final class NikoHomeControlCommunication {
     }
 
     public NikoHomeControlCommunication() throws IOException {
-
         this(null, null);
     }
 
@@ -106,7 +104,6 @@ public final class NikoHomeControlCommunication {
      *
      */
     public void startCommunication(int port) {
-
         try {
             for (int i = 1; nhcEventsRunning && (i <= 5); i++) {
                 // the events listener thread did not finish yet, so wait max 5000ms before restarting
@@ -123,7 +120,7 @@ public final class NikoHomeControlCommunication {
             this.nhcSocket = new Socket(this.nhcAddress, this.nhcPort);
             this.nhcOut = new PrintWriter(this.nhcSocket.getOutputStream(), true);
             this.nhcIn = new BufferedReader(new InputStreamReader(this.nhcSocket.getInputStream()));
-            logger.info("Niko Home Control: connected from thread {}", Thread.currentThread().getId());
+            logger.debug("Niko Home Control: connected from thread {}", Thread.currentThread().getId());
 
             // initialize all info in local fields
             initialize();
@@ -140,7 +137,6 @@ public final class NikoHomeControlCommunication {
             // take bridge offline
             this.bridgeCallBack.bridgeOffline();
         }
-
     }
 
     /**
@@ -158,8 +154,7 @@ public final class NikoHomeControlCommunication {
             }
             this.nhcSocket = null;
         }
-        logger.warn("Niko Home Control: communication stopped from thread {}", Thread.currentThread().getId());
-
+        logger.debug("Niko Home Control: communication stopped from thread {}", Thread.currentThread().getId());
     }
 
     /**
@@ -169,7 +164,7 @@ public final class NikoHomeControlCommunication {
     public void restartCommunication() {
         stopCommunication();
 
-        logger.info("Niko Home Control: restart communication from thread {}", Thread.currentThread().getId());
+        logger.debug("Niko Home Control: restart communication from thread {}", Thread.currentThread().getId());
         if (!this.fixedIp) {
             try {
                 NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
@@ -183,7 +178,6 @@ public final class NikoHomeControlCommunication {
             }
         }
         startCommunication(this.nhcPort);
-
     }
 
     /**
@@ -204,7 +198,6 @@ public final class NikoHomeControlCommunication {
      *
      */
     private Runnable nhcEvents = new Runnable() {
-
         @Override
         public void run() {
             String nhcMessage;
@@ -233,7 +226,6 @@ public final class NikoHomeControlCommunication {
             logger.debug("Niko Home Control: event listener thread stopped on thread {}",
                     Thread.currentThread().getId());
         }
-
     };
 
     /**
@@ -242,7 +234,6 @@ public final class NikoHomeControlCommunication {
      * @param nhcMessage message read from Niko Home Control.
      */
     private void readMessage(String nhcMessage) {
-
         logger.debug("Niko Home Control: received json {} on thread {}", nhcMessage, Thread.currentThread().getId());
 
         try {
@@ -269,7 +260,6 @@ public final class NikoHomeControlCommunication {
         } catch (JsonParseException e) {
             logger.debug("Niko Home Control: not acted on unsupported json {}", nhcMessage);
         }
-
     }
 
     /**
@@ -282,7 +272,6 @@ public final class NikoHomeControlCommunication {
      * @throws IOException
      */
     private void initialize() throws IOException {
-
         sendAndReadMessage("systeminfo");
         sendAndReadMessage("startevents");
         sendAndReadMessage("listlocations");
@@ -291,7 +280,6 @@ public final class NikoHomeControlCommunication {
         sendAndReadMessage("listthermostatHVAC");
         sendAndReadMessage("readtariffdata");
         sendAndReadMessage("getalarms");
-
     }
 
     private void sendAndReadMessage(String command) throws IOException {
@@ -300,7 +288,6 @@ public final class NikoHomeControlCommunication {
     }
 
     private void cmdSystemInfo(Map<String, String> data) {
-
         logger.debug("Niko Home Control: systeminfo");
 
         if (data.containsKey("swversion")) {
@@ -336,7 +323,6 @@ public final class NikoHomeControlCommunication {
     }
 
     private void cmdStartEvents(Map<String, String> data) {
-
         Integer errorCode = Integer.valueOf(data.get("error"));
 
         if (errorCode.equals(0)) {
@@ -347,7 +333,6 @@ public final class NikoHomeControlCommunication {
     }
 
     private void cmdListLocations(List<Map<String, String>> data) {
-
         logger.debug("Niko Home Control: list locations");
 
         this.locations.clear();
@@ -361,7 +346,6 @@ public final class NikoHomeControlCommunication {
     }
 
     private void cmdListActions(List<Map<String, String>> data) {
-
         logger.debug("Niko Home Control: list actions");
 
         for (Map<String, String> action : data) {
@@ -392,7 +376,6 @@ public final class NikoHomeControlCommunication {
     }
 
     private void cmdExecuteActions(Map<String, String> data) {
-
         Integer errorCode = Integer.valueOf(data.get("error"));
         if (errorCode.equals(0)) {
             logger.debug("Niko Home Control: execute action success");
@@ -402,7 +385,6 @@ public final class NikoHomeControlCommunication {
     }
 
     private void eventListActions(List<Map<String, String>> data) {
-
         for (Map<String, String> action : data) {
             int id = Integer.valueOf(action.get("id"));
             if (!this.actions.containsKey(id)) {
@@ -475,5 +457,4 @@ public final class NikoHomeControlCommunication {
     public void setBridgeCallBack(NikoHomeControlBridgeHandler bridgeCallBack) {
         this.bridgeCallBack = bridgeCallBack;
     }
-
 }
