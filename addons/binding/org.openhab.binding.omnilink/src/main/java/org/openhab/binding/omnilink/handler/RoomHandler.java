@@ -112,9 +112,29 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     @Override
     public void handleUnitStatus(UnitStatus unitStatus) {
         logger.debug("need to handle status update{}", unitStatus);
-        updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH,
-                unitStatus.getStatus() == UNIT_ON ? OnOffType.ON : OnOffType.OFF);
+        // updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH,
+        // unitStatus.getStatus() == UNIT_ON ? OnOffType.ON : OnOffType.OFF);
+
         updateState(OmnilinkBindingConstants.CHANNEL_ROOM_STATE, new DecimalType(unitStatus.getStatus()));
+        // the on/off and scene buttons are only 1 can be on
+        if (unitStatus.getStatus() != 0) {
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_OFF, OnOffType.OFF);
+        }
+        if (unitStatus.getStatus() != 1) {
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_ON, OnOffType.OFF);
+        }
+        if (unitStatus.getStatus() != 2) {
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENEA, OnOffType.OFF);
+        }
+        if (unitStatus.getStatus() != 3) {
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENEB, OnOffType.OFF);
+        }
+        if (unitStatus.getStatus() != 4) {
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENEC, OnOffType.OFF);
+        }
+        if (unitStatus.getStatus() != 5) {
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENED, OnOffType.OFF);
+        }
 
     }
 
