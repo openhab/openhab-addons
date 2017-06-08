@@ -9,9 +9,9 @@
 package org.openhab.binding.homematic.type;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
@@ -24,8 +24,8 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicChannelTypeProviderImpl implements HomematicChannelTypeProvider {
-    private Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<ChannelTypeUID, ChannelType>();
-    private Map<ChannelGroupTypeUID, ChannelGroupType> channelGroupTypesByUID = new HashMap<ChannelGroupTypeUID, ChannelGroupType>();
+    private Map<ChannelTypeUID, ChannelType> channelTypesByUID = new TreeMap<ChannelTypeUID, ChannelType>();
+    private Map<ChannelGroupTypeUID, ChannelGroupType> channelGroupTypesByUID = new TreeMap<ChannelGroupTypeUID, ChannelGroupType>();
 
     /**
      * {@inheritDoc}
