@@ -8,14 +8,6 @@
  */
 package org.openhab.binding.vitotronic.internal.discovery;
 
-/**
- * The {@link VitotronicBridgeDiscovery} class handles the discovery of things.
- * with broadcasting and put it to inbox, if found.
- *
- *
- * @author Stefan Andres - Initial contribution
- */
-
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -25,6 +17,13 @@ import org.openhab.binding.vitotronic.handler.VitotronicBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link VitotronicBridgeDiscovery} class handles the discovery of things.
+ * with broadcasting and put it to inbox, if found.
+ *
+ *
+ * @author Stefan Andres - Initial contribution
+ */
 public class VitotronicDiscoveryService extends AbstractDiscoveryService {
 
     private Logger logger = LoggerFactory.getLogger(VitotronicDiscoveryService.class);

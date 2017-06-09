@@ -36,7 +36,8 @@ import org.openhab.binding.coolmasternet.handler.HVACHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/* Bridge to access a CoolMasterNet unit's ASCII protocol via TCP socket.
+/**
+ * Bridge to access a CoolMasterNet unit's ASCII protocol via TCP socket.
  *
  * A single CoolMasterNet can be connected to one or more HVAC units, each with a unique UID.
  * These are individual Things inside the bridge.
