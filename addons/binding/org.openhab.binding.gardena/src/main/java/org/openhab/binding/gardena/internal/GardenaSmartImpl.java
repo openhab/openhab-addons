@@ -142,7 +142,7 @@ public class GardenaSmartImpl implements GardenaSmart {
      */
     @Override
     public void dispose() {
-        stopRefreshThread();
+        stopRefreshThread(true);
         if (httpClient != null) {
             try {
                 httpClient.stop();
@@ -166,9 +166,9 @@ public class GardenaSmartImpl implements GardenaSmart {
     /**
      * Stops the device refresh thread.
      */
-    private void stopRefreshThread() {
+    private void stopRefreshThread(boolean force) {
         if (refreshThreadFuture != null) {
-            refreshThreadFuture.cancel(false);
+            refreshThreadFuture.cancel(force);
         }
     }
 
@@ -206,7 +206,7 @@ public class GardenaSmartImpl implements GardenaSmart {
      */
     @Override
     public void loadAllDevices() throws GardenaException {
-        stopRefreshThread();
+        stopRefreshThread(false);
         try {
             allLocations.clear();
             allDevicesById.clear();
@@ -314,7 +314,7 @@ public class GardenaSmartImpl implements GardenaSmart {
                 String propertyUrl = String.format(URL_PROPERTY, device.getId(), ABILITY_OUTLET,
                         PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME, device.getLocation().getId());
 
-                stopRefreshThread();
+                stopRefreshThread(false);
                 executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
                 device.getAbility(ABILITY_OUTLET).getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME)
                         .setValue(prop.getValue());
@@ -337,7 +337,7 @@ public class GardenaSmartImpl implements GardenaSmart {
         }
 
         if (command != null) {
-            stopRefreshThread();
+            stopRefreshThread(false);
             executeRequest(HttpMethod.POST, getCommandUrl(device, ability), command, NoResult.class);
             startRefreshThread();
         }
