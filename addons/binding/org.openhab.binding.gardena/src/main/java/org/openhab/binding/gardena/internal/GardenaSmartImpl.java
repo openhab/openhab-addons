@@ -159,8 +159,8 @@ public class GardenaSmartImpl implements GardenaSmart {
      * Schedules the device refresh thread.
      */
     private void startRefreshThread() {
-        refreshThreadFuture = scheduler.scheduleWithFixedDelay(refreshDevicesThread, config.getRefresh(),
-                config.getRefresh(), TimeUnit.SECONDS);
+        refreshThreadFuture = scheduler.scheduleWithFixedDelay(refreshDevicesThread, 6, config.getRefresh(),
+                TimeUnit.SECONDS);
     }
 
     /**
@@ -169,17 +169,6 @@ public class GardenaSmartImpl implements GardenaSmart {
     private void stopRefreshThread() {
         if (refreshThreadFuture != null) {
             refreshThreadFuture.cancel(true);
-        }
-    }
-
-    /**
-     * Schedules a intermediate device refresh.
-     */
-    private void scheduleIntermediateRefresh() {
-        if (refreshThreadFuture != null) {
-            if (refreshThreadFuture.getDelay(TimeUnit.SECONDS) > 5) {
-                scheduler.schedule(refreshDevicesThread, 3, TimeUnit.SECONDS);
-            }
         }
     }
 
@@ -324,7 +313,13 @@ public class GardenaSmartImpl implements GardenaSmart {
                         ObjectUtils.toString(value));
                 String propertyUrl = String.format(URL_PROPERTY, device.getId(), ABILITY_OUTLET,
                         PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME, device.getLocation().getId());
+
+                stopRefreshThread();
                 executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
+                device.getAbility(ABILITY_OUTLET).getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME)
+                        .setValue(prop.getValue());
+                startRefreshThread();
+
                 break;
             case OUTLET_VALVE:
                 ability = device.getAbility(ABILITY_OUTLET);
@@ -342,9 +337,10 @@ public class GardenaSmartImpl implements GardenaSmart {
         }
 
         if (command != null) {
+            stopRefreshThread();
             executeRequest(HttpMethod.POST, getCommandUrl(device, ability), command, NoResult.class);
+            startRefreshThread();
         }
-        scheduleIntermediateRefresh();
     }
 
     /**

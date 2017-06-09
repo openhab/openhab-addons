@@ -55,6 +55,13 @@ public class Property {
     }
 
     /**
+     * Sets the value of the property.
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
      * Returns the timestamp of the property.
      */
     public Date getTimestamp() {
