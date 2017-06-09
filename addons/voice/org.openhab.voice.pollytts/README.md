@@ -17,8 +17,11 @@ You have to add configuration data by adding a file "pollytts.cfg" to the servic
 Contents e.g. :
 ######################## Polly  Text-to-Speech Engine ########################
 #configuration data from Amazon Polly Service when registering
+
 accessKey=BKIAJIBOBQWL35PUIQLZ
+
 secretKey=1zv5TS96WiJa/zBobbyeVPdeKrNkui7GwkYD8x
+
 serviceRegion=us-east-1
 
 
