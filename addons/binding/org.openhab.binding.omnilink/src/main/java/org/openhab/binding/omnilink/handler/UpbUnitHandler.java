@@ -79,7 +79,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
 
         // TODO is dimmer, or just simple switch
         // assuming dimmer right now.
-        logger.debug("need to handle status update{}", unitStatus);
+        logger.debug("Handling status update{}", unitStatus);
         int status = unitStatus.getStatus();
         int level = 0;
         if (status == UNIT_ON) {

@@ -1,12 +1,16 @@
 package org.openhab.binding.omnilink.handler;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +36,9 @@ import com.digitaldan.jomnilinkII.Connection;
 import com.digitaldan.jomnilinkII.DisconnectListener;
 import com.digitaldan.jomnilinkII.Message;
 import com.digitaldan.jomnilinkII.NotificationListener;
+import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
+import com.digitaldan.jomnilinkII.OmniNotConnectedException;
+import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.OtherEventNotifications;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
@@ -41,6 +48,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
+import com.github.rholder.retry.RetryException;
+import com.github.rholder.retry.Retryer;
+import com.github.rholder.retry.RetryerBuilder;
+import com.github.rholder.retry.StopStrategies;
+import com.github.rholder.retry.WaitStrategies;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
@@ -61,7 +73,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     private ScheduledFuture<?> scheduledRefresh;
     // private CacheHolder<Unit> nodes;
-    private int secondsUntilReconnect = 1;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -69,18 +80,19 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     public void sendOmnilinkCommand(final int message, final int param1, final int param2) {
 
-        try {
-            listeningExecutor.submit(new Callable<Void>() {
+        listeningExecutor.execute(new Runnable() {
 
-                @Override
-                public Void call() throws Exception {
+            @Override
+            public void run() {
+                try {
                     omniConnection.controllerCommand(message, param1, param2);
-                    return null;
+                } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
+                        | OmniUnknownMessageTypeException e) {
+                    logger.debug("Error in sendOmnilinkCommand", e);
+                    // TODO should we be changing status of bridge on any of these errors?
                 }
-            });
-        } catch (Exception e) {
-            logger.error("Error sending command", e);
-        }
+            }
+        });
     }
 
     @Override
@@ -117,61 +129,77 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void initialize() {
         listeningExecutor = MoreExecutors.listeningDecorator(scheduler);
-        // TODO make this non-blocking
         makeOmnilinkConnection();
 
     }
 
     private void makeOmnilinkConnection() {
-        OmnilinkBridgeConfig config = getThing().getConfiguration().as(OmnilinkBridgeConfig.class);
+
+        Retryer<Void> retryer = RetryerBuilder.<Void> newBuilder().retryIfExceptionOfType(IOException.class)
+                .withWaitStrategy(WaitStrategies.exponentialWait(100, 5, TimeUnit.MINUTES))
+                .withStopStrategy(StopStrategies.neverStop()).build();
+
         try {
-            omniConnection = new Connection(config.getIpAddress(), 4369, config.getKey1() + ":" + config.getKey2());
+            retryer.call(new Callable<Void>() {
 
-            omniConnection.enableNotifications();
-
-            omniConnection.addNotificationListener(this);
-            omniConnection.addDisconnectListener(new DisconnectListener() {
                 @Override
-                public void notConnectedEvent(Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    doOmnilinkReconnect();
+                public Void call() throws Exception {
+                    logger.debug("Attempting to connect to omnilink");
+                    try {
+                        OmnilinkBridgeConfig config = getThing().getConfiguration().as(OmnilinkBridgeConfig.class);
+                        omniConnection = new Connection(config.getIpAddress(), 4369,
+
+                                config.getKey1() + ":" + config.getKey2());
+                        omniConnection.enableNotifications();
+
+                        omniConnection.addNotificationListener(OmnilinkBridgeHandler.this);
+                        omniConnection.addDisconnectListener(new DisconnectListener() {
+                            @Override
+                            public void notConnectedEvent(Exception e) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        e.getMessage());
+                                makeOmnilinkConnection();
+                            }
+                        });
+                        updateStatus(ThingStatus.ONLINE);
+                        getSystemInfo();
+                        getSystemStatus();
+                        // let's start a task which refreshes status
+                        scheduleRefresh();
+                    } catch (UnknownHostException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        logger.debug(e.toString());
+                        throw e;
+                    } catch (IOException e) {
+                        if (e.getCause() != null && e.getCause().getMessage().contains("Connection timed out")) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "IP Address probably incorrect, timed out creating connection");
+                        } else if (e.getCause() != null && e.getCause() instanceof SocketException) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    e.getCause().getMessage());
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    e.getCause().getMessage());
+                        }
+                        logger.debug(e.toString());
+                        throw e;
+                    } catch (Exception e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        logger.debug(e.toString());
+                        throw e;
+                    }
+                    return null;
                 }
             });
-            updateStatus(ThingStatus.ONLINE);
-            secondsUntilReconnect = 1;
-            getSystemInfo();
-            getSystemStatus();
-            // let's start a task which refreshes status every 6 hours
-            scheduleRefresh();
-        } catch (StringIndexOutOfBoundsException e) {
-            // key format error
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            doOmnilinkReconnect();
+        } catch (ExecutionException e) {
+            if ("Could not establish secure connection".equals(e.getCause().getMessage())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid Keys");
+            }
+            logger.debug("Received execution exception: {} ", e);
+        } catch (RetryException e) {
+            logger.error("Should never get retry exception, we are to retry forever", e);
         }
 
-    }
-
-    private void doOmnilinkReconnect() {
-        logger.debug("will try to establish another connection in {} seconds", secondsUntilReconnect);
-        scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    makeOmnilinkConnection();
-
-                } catch (Exception e) {
-                    logger.error("Error trying to reconnect", e);
-                    updateStatus(ThingStatus.OFFLINE);
-                    if (secondsUntilReconnect < 300) {
-                        secondsUntilReconnect = secondsUntilReconnect * 2;
-                    }
-                    doOmnilinkReconnect();
-                }
-
-            }
-        }, secondsUntilReconnect, TimeUnit.SECONDS);
     }
 
     private void handleUnitStatus(UnitStatus stat) {
@@ -211,7 +239,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private void loadUnitStatuses() {
-        Futures.addCallback(getUnitStatuses(), new FutureCallback<UnitStatus[]>() {
+        Futures.addCallback(getStatuses(Message.OBJ_TYPE_UNIT), new FutureCallback<UnitStatus[]>() {
 
             @Override
             public void onFailure(Throwable arg0) {
@@ -315,23 +343,25 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
-    private ListenableFuture<Integer> getMaxNumberUnit() {
+    private ListenableFuture<Integer> getMaxNumber(int objType) {
         return listeningExecutor.submit(new Callable<Integer>() {
 
             @Override
             public Integer call() throws Exception {
-                return omniConnection.reqObjectTypeCapacities(Message.OBJ_TYPE_UNIT).getCapacity();
+                return omniConnection.reqObjectTypeCapacities(objType).getCapacity();
             }
         });
     }
 
-    private ListenableFuture<UnitStatus[]> getUnitStatuses() {
+    private ListenableFuture<UnitStatus[]> getStatuses(int objType) {
 
-        ListenableFuture<ObjectStatus> getUnitsFuture = Futures.transform(getMaxNumberUnit(),
+        ListenableFuture<ObjectStatus> getUnitsFuture = Futures.transform(getMaxNumber(Message.OBJ_TYPE_UNIT),
                 new AsyncFunction<Integer, ObjectStatus>() {
                     @Override
                     public ListenableFuture<ObjectStatus> apply(Integer rowKey) {
-                        return requestObjectStatus(Message.OBJ_TYPE_UNIT, 1, rowKey);
+                        // TODO asking for extended because seemingly of bug in jomnilink
+                        return requestObjectStatus(Message.OBJ_TYPE_UNIT, 1, rowKey,
+                                objType == Message.OBJ_TYPE_UNIT ? true : false);
                     }
                 }, listeningExecutor);
 
@@ -409,75 +439,51 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         });
     }
 
-    private ListenableFuture<ObjectStatus> requestObjectStatus(final int arg1, final int arg2, final int arg3) {
+    private ListenableFuture<ObjectStatus> requestObjectStatus(final int objType, final int startObject,
+            final int endObject, boolean extended) {
 
         return listeningExecutor.submit(new Callable<ObjectStatus>() {
 
             @Override
             public ObjectStatus call() throws Exception {
-                return omniConnection.reqObjectStatus(arg1, arg2, arg3, true);
+                return omniConnection.reqObjectStatus(objType, startObject, endObject, extended);
             }
         });
     }
 
-    public ListenableFuture<UnitStatus> getUnitStatus(final int address) {
+    public ListenableFuture<UnitStatus> getUnitStatus(final int unitId) {
+        return Futures.transform(requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId, unitId, false),
+                new Function<ObjectStatus, UnitStatus>() {
 
-        ListenableFuture<ObjectStatus> omniCall = listeningExecutor.submit(new Callable<ObjectStatus>() {
-
-            @Override
-            public ObjectStatus call() throws Exception {
-                if (omniConnection == null) {
-                    Thread.sleep(100);
-                }
-                return omniConnection.reqObjectStatus(Message.OBJ_TYPE_UNIT, address, address);
-            }
-        });
-        return Futures.transform(omniCall, new Function<ObjectStatus, UnitStatus>() {
-
-            @Override
-            public UnitStatus apply(ObjectStatus t) {
-                return (UnitStatus) t.getStatuses()[0];
-            }
-        }, listeningExecutor);
+                    @Override
+                    public UnitStatus apply(ObjectStatus t) {
+                        return (UnitStatus) t.getStatuses()[0];
+                    }
+                }, listeningExecutor);
     }
 
     public ListenableFuture<ZoneStatus> getZoneStatus(final int address) {
 
-        ListenableFuture<ObjectStatus> omniCall = listeningExecutor.submit(new Callable<ObjectStatus>() {
+        return Futures.transform(requestObjectStatus(Message.OBJ_TYPE_ZONE, address, address, false),
+                new Function<ObjectStatus, ZoneStatus>() {
 
-            @Override
-            public ObjectStatus call() throws Exception {
-                if (omniConnection == null) {
-                    Thread.sleep(100);
-                }
-                return omniConnection.reqObjectStatus(Message.OBJ_TYPE_ZONE, address, address);
-            }
-        });
-        return Futures.transform(omniCall, new Function<ObjectStatus, ZoneStatus>() {
-
-            @Override
-            public ZoneStatus apply(ObjectStatus t) {
-                return (ZoneStatus) t.getStatuses()[0];
-            }
-        }, listeningExecutor);
+                    @Override
+                    public ZoneStatus apply(ObjectStatus t) {
+                        return (ZoneStatus) t.getStatuses()[0];
+                    }
+                }, listeningExecutor);
     }
 
     public ListenableFuture<AreaStatus> getAreaStatus(final int address) {
 
-        ListenableFuture<ObjectStatus> omniCall = listeningExecutor.submit(new Callable<ObjectStatus>() {
+        return Futures.transform(requestObjectStatus(Message.OBJ_TYPE_AREA, address, address, false),
+                new Function<ObjectStatus, AreaStatus>() {
 
-            @Override
-            public ObjectStatus call() throws Exception {
-                return omniConnection.reqObjectStatus(Message.OBJ_TYPE_AREA, address, address);
-            }
-        });
-        return Futures.transform(omniCall, new Function<ObjectStatus, AreaStatus>() {
-
-            @Override
-            public AreaStatus apply(ObjectStatus t) {
-                return (AreaStatus) t.getStatuses()[0];
-            }
-        }, listeningExecutor);
+                    @Override
+                    public AreaStatus apply(ObjectStatus t) {
+                        return (AreaStatus) t.getStatuses()[0];
+                    }
+                }, listeningExecutor);
     }
 
     public void setOmnilinkSystemDate(ZonedDateTime date) {
@@ -500,6 +506,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private void scheduleRefresh() {
+        // TODO this could be configurable
         int interval = 60 * 60 * 6;
         logger.info("Scheduling refresh updates at {} seconds", interval);
         scheduledRefresh = scheduler.scheduleWithFixedDelay(new Runnable() {
@@ -508,13 +515,20 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 logger.debug("Running scheduled refresh");
                 getSystemStatus();
                 loadUnitStatuses();
+                // TODO add areas, zones, flags, etc
             }
         }, interval, interval, TimeUnit.SECONDS);
     }
 
     @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        // TODO Auto-generated method stub
-        super.handleConfigurationUpdate(configurationParameters);
+    public void dispose() {
+        updateStatus(ThingStatus.OFFLINE);
+        if (omniConnection != null) {
+            omniConnection.disconnect();
+        }
+        if (scheduledRefresh != null) {
+            scheduledRefresh.cancel(true);
+        }
+        scheduledRefresh = null;
     }
 }

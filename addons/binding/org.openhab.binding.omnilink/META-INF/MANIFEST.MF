@@ -7,7 +7,8 @@ Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  lib/guava-18.0.jar,
- lib/jOmniLinkII.jar
+ lib/jOmniLinkII.jar,
+ lib/guava-retrying-2.0.0.jar
 Import-Package: 
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
