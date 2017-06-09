@@ -142,7 +142,7 @@ public class GardenaSmartImpl implements GardenaSmart {
      */
     @Override
     public void dispose() {
-        stopRefreshThread();
+        stopRefreshThread(true);
         if (httpClient != null) {
             try {
                 httpClient.stop();
@@ -159,27 +159,16 @@ public class GardenaSmartImpl implements GardenaSmart {
      * Schedules the device refresh thread.
      */
     private void startRefreshThread() {
-        refreshThreadFuture = scheduler.scheduleWithFixedDelay(refreshDevicesThread, config.getRefresh(),
-                config.getRefresh(), TimeUnit.SECONDS);
+        refreshThreadFuture = scheduler.scheduleWithFixedDelay(refreshDevicesThread, 6, config.getRefresh(),
+                TimeUnit.SECONDS);
     }
 
     /**
      * Stops the device refresh thread.
      */
-    private void stopRefreshThread() {
+    private void stopRefreshThread(boolean force) {
         if (refreshThreadFuture != null) {
-            refreshThreadFuture.cancel(true);
-        }
-    }
-
-    /**
-     * Schedules a intermediate device refresh.
-     */
-    private void scheduleIntermediateRefresh() {
-        if (refreshThreadFuture != null) {
-            if (refreshThreadFuture.getDelay(TimeUnit.SECONDS) > 5) {
-                scheduler.schedule(refreshDevicesThread, 3, TimeUnit.SECONDS);
-            }
+            refreshThreadFuture.cancel(force);
         }
     }
 
@@ -217,7 +206,7 @@ public class GardenaSmartImpl implements GardenaSmart {
      */
     @Override
     public void loadAllDevices() throws GardenaException {
-        stopRefreshThread();
+        stopRefreshThread(false);
         try {
             allLocations.clear();
             allDevicesById.clear();
@@ -324,7 +313,13 @@ public class GardenaSmartImpl implements GardenaSmart {
                         ObjectUtils.toString(value));
                 String propertyUrl = String.format(URL_PROPERTY, device.getId(), ABILITY_OUTLET,
                         PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME, device.getLocation().getId());
+
+                stopRefreshThread(false);
                 executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
+                device.getAbility(ABILITY_OUTLET).getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME)
+                        .setValue(prop.getValue());
+                startRefreshThread();
+
                 break;
             case OUTLET_VALVE:
                 ability = device.getAbility(ABILITY_OUTLET);
@@ -342,9 +337,10 @@ public class GardenaSmartImpl implements GardenaSmart {
         }
 
         if (command != null) {
+            stopRefreshThread(false);
             executeRequest(HttpMethod.POST, getCommandUrl(device, ability), command, NoResult.class);
+            startRefreshThread();
         }
-        scheduleIntermediateRefresh();
     }
 
     /**
