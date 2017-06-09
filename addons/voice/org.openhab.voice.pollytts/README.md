@@ -3,7 +3,7 @@
 ## Overview
 
 Polly is a Internet based TTS service hosted by Amazon
-It requires authorization Keys to get access to this service. T
+It requires authorization Keys to get access to this service. 
 
 ## Samples
 
