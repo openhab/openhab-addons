@@ -16,7 +16,7 @@ import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The {@link CommandSendserial} class sends a serial command string to the device.
  *
  * @author Mark Hilbush - Initial contribution

@@ -17,7 +17,7 @@ import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The {@link CommandSetserial} class implements the GlobalCache set_SERIAL command, which sets the serial
  * port parameters (baud, flow control, and parity) on the device.
  *
