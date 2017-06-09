@@ -168,7 +168,7 @@ public class GardenaSmartImpl implements GardenaSmart {
      */
     private void stopRefreshThread() {
         if (refreshThreadFuture != null) {
-            refreshThreadFuture.cancel(true);
+            refreshThreadFuture.cancel(false);
         }
     }
 
