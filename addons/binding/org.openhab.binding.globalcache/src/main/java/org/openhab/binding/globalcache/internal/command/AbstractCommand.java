@@ -20,7 +20,7 @@ import org.openhab.binding.globalcache.handler.GlobalCacheHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The {@link AbstractCommand} class implements the basic functionality needed for all GlobalCache commands.
  *
  * @author Mark Hilbush - Initial contribution
