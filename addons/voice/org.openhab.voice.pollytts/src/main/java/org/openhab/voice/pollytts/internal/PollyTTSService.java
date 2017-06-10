@@ -61,7 +61,7 @@ public class PollyTTSService implements TTSService {
      */
     protected void activate(Map<String, Object> config) {
         try {
-            new PollyClientConfig(config);
+            modified(config);
             pollyTssImpl = initVoiceImplementation();
             voices = initVoices();
             audioFormats = initAudioFormats();
@@ -69,6 +69,12 @@ public class PollyTTSService implements TTSService {
             logger.info("Using PollyTTS cache folder {}", getCacheFolderName());
         } catch (Throwable t) {
             logger.error("Failed to activate PollyTTS: {}", t.getMessage(), t);
+        }
+    }
+
+    protected void modified(Map<String, Object> config) throws TTSException {
+        if (config != null) {
+            new PollyClientConfig(config);
         }
     }
 

@@ -16,6 +16,6 @@
    </service>
    <property name="service.pid" type="String" value="org.openhab.pollytts"/>
    <property name="service.config.description.uri" type="String" value="voice:pollytts"/>
-   <property name="service.config.label" type="String" value="VoiceTTS"/>
+   <property name="service.config.label" type="String" value="PollyTTS"/>
    <property name="service.config.category" type="String" value="voice"/>
 </scr:component>
