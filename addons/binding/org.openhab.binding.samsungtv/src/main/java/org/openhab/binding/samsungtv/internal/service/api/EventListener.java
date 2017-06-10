@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.samsungtv.internal.service.api;
 
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
 
 /**
@@ -15,12 +16,21 @@ import org.eclipse.smarthome.core.types.State;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public interface ValueReceiver {
+public interface EventListener {
     /**
      * Invoked when value is received from the TV.
      * 
      * @param variable Name of the variable.
      * @param value Value of the variable value.
      */
-    public void valueReceived(String variable, State value);
+    void valueReceived(String variable, State value);
+
+    /**
+     * Report an error to this event listener
+     *
+     * @param statusDetail hint about the actual underlying problem
+     * @param message of the error
+     * @param e exception that might have occurred
+     */
+    void reportError(ThingStatusDetail statusDetail, String message, Throwable e);
 }

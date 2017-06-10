@@ -8,10 +8,11 @@ Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported.
 
 Tested TV models:
 
-| Model     | State | Notes |
-|-----------|-------|--------------------------------------------------------------------|
-| UE46E5505 | OK | Initial contribution is done by this model |
-| UE40F6500 | OK | All channels except `colorTemperature`, `programTitle` and `channelName` are working |
+| Model     | State   | Notes                                                                                |
+|-----------|---------|--------------------------------------------------------------------------------------|
+| UE46E5505 | OK      | Initial contribution is done by this model                                           |
+| UE46D5700 | PARTIAL | Supports at my home only commands via the fake remote, no discovery                  |
+| UE40F6500 | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working |
 
 
 ## Discovery
@@ -36,24 +37,23 @@ Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, refreshInte
 
 TV's support the following channels:
 
-| Channel Type ID | Item Type    | Description  |
-|-----------------|------------------------|--------------|
-| volume | Dimmer | Volume level of the TV. |
-| mute | Switch | Mute state of the TV. |
-| brightness | Dimmer | Brightness of the TV picture. |
-| contrast | Dimmer | Contrast of the TV picture. |
-| sharpness | Dimmer | Sharpness of the TV picture. |
-| colorTemperature | Number | Color temperature of the TV picture. Minimum value is 0 and maximum 4. |
-| sourceName | String | Name of the current source. |
-| sourceId | Number | Id of the current source. |
-| channel | Number | Selected TV channel number. |
-| programTitle | String | Program title of the current channel. |
-| channelName | String | Name of the current TV channel. |
-| url | String | Start TV web browser and go the given web page. |
-| stopBrowser | Switch | Stop TV's web browser and go back to TV mode. |
-| power | Switch | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely. |
-| keyCode | String | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
-
+| Channel Type ID  | Item Type | Description                                                                                             |
+|------------------|-----------|---------------------------------------------------------------------------------------------------------|
+| volume           | Dimmer    | Volume level of the TV.                                                                                 |
+| mute             | Switch    | Mute state of the TV.                                                                                   |
+| brightness       | Dimmer    | Brightness of the TV picture.                                                                           |
+| contrast         | Dimmer    | Contrast of the TV picture.                                                                             |
+| sharpness        | Dimmer    | Sharpness of the TV picture.                                                                            |
+| colorTemperature | Number    | Color temperature of the TV picture. Minimum value is 0 and maximum 4.                                  |
+| sourceName       | String    | Name of the current source.                                                                             |
+| sourceId         | Number    | Id of the current source.                                                                               |
+| channel          | Number    | Selected TV channel number.                                                                             |
+| programTitle     | String    | Program title of the current channel.                                                                   |
+| channelName      | String    | Name of the current TV channel.                                                                         |
+| url              | String    | Start TV web browser and go the given web page.                                                         |
+| stopBrowser      | Switch    | Stop TV's web browser and go back to TV mode.                                                           |
+| power            | Switch    | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.                         |
+| keyCode          | String    | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
 
 E.g.
 
