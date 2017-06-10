@@ -10,15 +10,11 @@ package org.openhab.binding.windcentrale.handler;
 
 import static org.openhab.binding.windcentrale.WindcentraleBindingConstants.*;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -29,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,12 +42,16 @@ public class WindcentraleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(WindcentraleHandler.class);
 
     private static final String BASE_URL = "https://zep-api.windcentrale.nl/production/";
-    private URL millUrl;
     private BigDecimal wd = BigDecimal.ONE;
     private ScheduledFuture<?> pollingJob;
 
+    private JsonParser parser;
+    private final int CACHE_EXPIRY = 5 * 1000; // 5s
+    private ExpiringCache<String> windcentraleCache;
+
     public WindcentraleHandler(Thing thing) {
         super(thing);
+        parser = new JsonParser();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class WindcentraleHandler extends BaseThingHandler {
             logger.debug("Refreshing {}", channelUID);
             updateData();
         } else {
-            logger.warn("This binding is a read-only binding and cannot handle commands");
+            logger.debug("This binding is a read-only binding and cannot handle commands");
         }
     }
 
@@ -94,14 +95,16 @@ public class WindcentraleHandler extends BaseThingHandler {
         updateProperty(Thing.PROPERTY_MODEL_ID, "Windmolen");
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Integer.toString(millId));
 
-        String urlString = BASE_URL + millId + "/live?ignoreLoadingBar=true";
-        try {
-            millUrl = new URL(urlString);
-        } catch (MalformedURLException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Constructed url '" + urlString + "' is not valid: " + e.getLocalizedMessage());
-            return;
-        }
+        String millUrl = BASE_URL + millId + "/live?ignoreLoadingBar=true";
+
+        windcentraleCache = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            try {
+                return HttpUtil.executeUrl("GET", millUrl, 5000);
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                return null;
+            }
+        });
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, pollingPeriod, TimeUnit.SECONDS);
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
@@ -120,38 +123,33 @@ public class WindcentraleHandler extends BaseThingHandler {
         logger.debug("Update windmill data '{}'", getThing().getUID());
 
         try {
-            String getMillData = getMillData();
-            JsonParser parser = new JsonParser();
-            JsonObject millData = (JsonObject) parser.parse(getMillData);
+            String getMillData = windcentraleCache.getValue();
+            if (getMillData != null) {
+                JsonObject millData = (JsonObject) parser.parse(getMillData);
 
-            logger.trace("Retrieved updated mill data: {}", millData);
+                logger.trace("Retrieved updated mill data: {}", millData);
 
-            updateState(CHANNEL_WIND_SPEED, new DecimalType(millData.get(CHANNEL_WIND_SPEED).getAsString()));
-            updateState(CHANNEL_WIND_DIRECTION, new StringType(millData.get(CHANNEL_WIND_DIRECTION).getAsString()));
-            updateState(CHANNEL_POWER_TOTAL, new DecimalType(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal()));
-            updateState(CHANNEL_POWER_PER_WD,
-                    new DecimalType(millData.get(CHANNEL_POWER_PER_WD).getAsBigDecimal().multiply(wd)));
-            updateState(CHANNEL_POWER_RELATIVE,
-                    new DecimalType(millData.get(CHANNEL_POWER_RELATIVE).getAsBigDecimal()));
-            updateState(CHANNEL_ENERGY, new DecimalType(millData.get(CHANNEL_ENERGY).getAsBigDecimal()));
-            updateState(CHANNEL_ENERGY_FC, new DecimalType(millData.get(CHANNEL_ENERGY_FC).getAsBigDecimal()));
-            updateState(CHANNEL_RUNTIME, new DecimalType(millData.get(CHANNEL_RUNTIME).getAsBigDecimal()));
-            updateState(CHANNEL_RUNTIME_PER, new DecimalType(millData.get(CHANNEL_RUNTIME_PER).getAsBigDecimal()));
-            updateState(CHANNEL_LAST_UPDATE, new DateTimeType(millData.get(CHANNEL_LAST_UPDATE).getAsString()));
+                updateState(CHANNEL_WIND_SPEED, new DecimalType(millData.get(CHANNEL_WIND_SPEED).getAsString()));
+                updateState(CHANNEL_WIND_DIRECTION, new StringType(millData.get(CHANNEL_WIND_DIRECTION).getAsString()));
+                updateState(CHANNEL_POWER_TOTAL, new DecimalType(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal()));
+                updateState(CHANNEL_POWER_PER_WD,
+                        new DecimalType(millData.get(CHANNEL_POWER_PER_WD).getAsBigDecimal().multiply(wd)));
+                updateState(CHANNEL_POWER_RELATIVE,
+                        new DecimalType(millData.get(CHANNEL_POWER_RELATIVE).getAsBigDecimal()));
+                updateState(CHANNEL_ENERGY, new DecimalType(millData.get(CHANNEL_ENERGY).getAsBigDecimal()));
+                updateState(CHANNEL_ENERGY_FC, new DecimalType(millData.get(CHANNEL_ENERGY_FC).getAsBigDecimal()));
+                updateState(CHANNEL_RUNTIME, new DecimalType(millData.get(CHANNEL_RUNTIME).getAsBigDecimal()));
+                updateState(CHANNEL_RUNTIME_PER, new DecimalType(millData.get(CHANNEL_RUNTIME_PER).getAsBigDecimal()));
+                updateState(CHANNEL_LAST_UPDATE, new DateTimeType(millData.get(CHANNEL_LAST_UPDATE).getAsString()));
 
-            if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                updateStatus(ThingStatus.ONLINE);
+                if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             }
-
         } catch (Exception e) {
-            logger.debug("Failed to update windmill data", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    private String getMillData() throws IOException {
-        try (InputStream connection = millUrl.openStream()) {
-            return IOUtils.toString(connection);
+            logger.debug("Failed to process windmill data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Failed to process mill data");
         }
     }
 }
