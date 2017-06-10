@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.jupnp.UpnpService;
+import org.jupnp.model.meta.Device;
 import org.jupnp.model.meta.LocalDevice;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.registry.Registry;
@@ -151,13 +152,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
      * Media Renderer UPnP device. This polling job tries to find another UPnP
      * devices related to same Samsung TV and create handler for those.
      */
-    private Runnable scanUPnPDevicesRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            checkAndCreateServices();
-        }
-    };
+    private Runnable scanUPnPDevicesRunnable = this::checkAndCreateServices;
 
     @Override
     public void initialize() {
@@ -283,7 +278,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     @Override
     public synchronized void valueReceived(String variable, State value) {
         logger.debug("Received value '{}':'{}' for thing '{}'",
-                new Object[] { variable, value, this.getThing().getUID() });
+                variable, value, this.getThing().getUID());
 
         updateState(new ChannelUID(getThing().getUID(), variable), value);
 
@@ -295,10 +290,9 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     private void checkAndCreateServices() {
         logger.debug("Check and create missing UPnP services");
-        Iterator<?> itr = upnpService.getRegistry().getDevices().iterator();
 
-        while (itr.hasNext()) {
-            RemoteDevice device = (RemoteDevice) itr.next();
+        for (Device o : upnpService.getRegistry().getDevices()) {
+            RemoteDevice device = (RemoteDevice) o;
             createService(device);
         }
 
