@@ -131,31 +131,26 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
     }
 
     private String readCommand() throws IOException {
-        int b;
-        StringBuilder commandPart = new StringBuilder();
-        do {
-            b = serialPort.getInputStream().read();
-            if (b == -1) {
-                throw new IOException("Connection unexpectedly closed");
-            } else {
-                commandPart.append((char) b);
-            }
-        } while (b != '!' && b != '=');
-        return commandPart.toString().substring(0, commandPart.length() - 1);
+        return readUntil('!', '=');
     }
 
     private String readUntil(char terminator) throws IOException {
-        int b;
-        StringBuilder commandPart = new StringBuilder();
-        do {
-            b = serialPort.getInputStream().read();
+        return readUntil(terminator, terminator);
+    }
+
+    private String readUntil(char terminator1, char terminator2) throws IOException {
+        StringBuilder result = new StringBuilder();
+        while (true) {
+            int b = serialPort.getInputStream().read();
             if (b == -1) {
                 throw new IOException("Connection unexpectedly closed");
+            } else if (b == terminator1 || b == terminator2) {
+                break;
             } else {
-                commandPart.append((char) b);
+                result.append((char) b);
             }
-        } while (b != terminator);
-        return commandPart.toString().substring(0, commandPart.length() - 1);
+        }
+        return result.toString();
     }
 
     public PercentType readVolume() throws IOException {
