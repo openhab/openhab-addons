@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Unit channels -->
+
+	<channel-type id="unit_status">
+		<item-type>Number</item-type>
+		<label>Status</label>
+		<description>Represents the numeric status of an unit object</description>
+		<state pattern="%d" readOnly="true" />
+	</channel-type>
+	<channel-type id="unit_level">
+		<item-type>Dimmer</item-type>
+		<label>Light Level</label>
+		<description>Increase/decrease the light level</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" pattern="%d %%" />
+	</channel-type>
+	<channel-type id="unit_switch">
+		<item-type>Switch</item-type>
+		<label>Load Switch</label>
+		<description>Toggle Load</description>
+		<category>Switch</category>
+		<state pattern="%s" />
+	</channel-type>
+	<channel-type id="scene_switch">
+		<item-type>Switch</item-type>
+		<label>On/Off</label>
+		<description>Send On/Off to a Scene</description>
+		<category>Switch</category>
+		<state pattern="%s" />
+	</channel-type>
+	<channel-type id="scene_on">
+		<item-type>Switch</item-type>
+		<label>On Scene</label>
+		<description>Turn on On Scene</description>
+		<category>Switch</category>
+		<state pattern="%s" />
+	</channel-type>
+	<channel-type id="scene_off">
+		<item-type>Switch</item-type>
+		<label>Off Scene</label>
+		<description>Turn on Off Scene</description>
+		<category>Switch</category>
+		<state pattern="%s" />
+	</channel-type>
+	<channel-type id="scene_toggle">
+		<item-type>Switch</item-type>
+		<label>Scene Toggle</label>
+		<description>Scene Toggle</description>
+		<category>Toggle</category>
+		<state pattern="%s" />
+	</channel-type>
+	<channel-type id="room_state">
+		<item-type>Number</item-type>
+		<label>State</label>
+		<description>Status of room (0 off, 1 on, 2 scene a, 3 scene b, etc)</description>
+		<state pattern="%s">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+				<option value="3">Scene A</option>
+				<option value="4">Scene B</option>
+				<option value="5">Scene C</option>
+				<option value="6">Scene D</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="flagvalue">
+		<item-type>Number</item-type>
+		<label>Flag Value</label>
+		<description>Represents value for a flag.</description>
+		<category>Flag Control</category>
+	</channel-type>
+	<channel-type id="flagswitch">
+		<item-type>Switch</item-type>
+		<label>On/Off</label>
+		<description>Flag Switch information</description>
+		<category>Switch</category>
+		<state pattern="%s" />
+	</channel-type>
+
+	<!-- Area channels -->
+
+	<channel-type id="omni_area_alarm">
+		<item-type>Number</item-type>
+		<label>Alarm</label>
+		<description>Represents an area alarm.</description>
+		<category>Alarm</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Burglary Alarm</option>
+				<option value="1">Fire Alarm</option>
+				<option value="2">Gas Alarm</option>
+				<option value="3">Auxiliary Alarm</option>
+				<option value="4">Freeze Alarm</option>
+				<option value="5">Water Alarm</option>
+				<option value="6">Duress Alarm</option>
+				<option value="7">Temperature Alarm</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="omni_area_mode">
+		<item-type>Number</item-type>
+		<label>Security Mode</label>
+		<description>Represents the area security mode.</description>
+		<category>Alarm</category>
+		<state pattern="%s">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Day</option>
+				<option value="2">Night</option>
+				<option value="3">Away</option>
+				<option value="4">Vacation</option>
+				<option value="5">Day Instant</option>
+				<option value="6">Night Delayed</option>
+				<!-- This options can be read, but not set -->
+				<option value="9">Arming Day</option>
+				<option value="10">Arming Night</option>
+				<option value="11">Arming Away</option>
+				<option value="12">Arming Vacation</option>
+				<option value="13">Arming Day Instant</option>
+				<option value="14">Arming Night Delayed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="lumina_area_mode">
+		<item-type>Number</item-type>
+		<label>Security Mode</label>
+		<description>Represents the area security mode.</description>
+		<category>Alarm</category>
+		<state pattern="%s">
+			<options>
+				<option value="1">Home</option>
+				<option value="2">Sleep</option>
+				<option value="3">Away</option>
+				<option value="4">Vacation</option>
+				<option value="5">Party</option>
+				<option value="6">Special</option>
+				<!-- This options can be read, but not set -->
+				<option value="9">Setting Home</option>
+				<option value="10">Setting Sleep</option>
+				<option value="11">Setting Away</option>
+				<option value="12">Setting Vacation</option>
+				<option value="13">Setting Party</option>
+				<option value="14">Setting Special</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Button Channels -->
+
+	<channel-type id="button_press">
+		<item-type>Switch</item-type>
+		<label>Button Press</label>
+		<description>Button Press</description>
+		<category>Contact</category>
+		<state pattern="%s" />
+	</channel-type>
+
+	<!-- Zone Channels -->
+
+	<channel-type id="zone_contact">
+		<item-type>Contact</item-type>
+		<label>Contact State</label>
+		<description>Contact state information</description>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true" />
+	</channel-type>
+	<channel-type id="zone_current_condition">
+		<item-type>String</item-type>
+		<label>Current Condition</label>
+		<description>Current condition of a zone.</description>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="Secure">Secure</option>
+				<option value="Not Ready">Not Ready</option>
+				<option value="Trouble">Trouble</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="zone_latched_alarm_status">
+		<item-type>String</item-type>
+		<label>Latched Alarm Status</label>
+		<description>Latched alarm status of a zone.</description>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="Secure">Secure</option>
+				<option value="Tripped">Tripped</option>
+				<option value="Reset">Reset, but previously tripped</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="zone_arming_status">
+		<item-type>String</item-type>
+		<label>Arming Status</label>
+		<description>Arming status of a zone.</description>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="Disarmed">Disarmed</option>
+				<option value="Bypass User">Bypassed by user</option>
+				<option value="Bypass System">Bypassed by system</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Code Channels -->
+
+	<channel-type id="code_name">
+		<item-type>String</item-type>
+		<label>Code Name</label>
+		<description>User Code Name</description>
+	</channel-type>
+
+	<!-- Message Channels -->
+
+	<channel-type id="message_name">
+		<item-type>String</item-type>
+		<label>Message Name</label>
+		<description>System Message Name</description>
+	</channel-type>
+
+	<!-- Thermostat Channels -->
+
+	<channel-type id="thermostat_status">
+		<item-type>String</item-type>
+		<label>Thermostat Status</label>
+		<description>Status of a Thermostat</description>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="None">None</option>
+				<option value="Communications failure">Communications failure</option>
+				<option value="Freeze alarm">Freeze alarm</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="thermostat_temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current Temperature of a Thermostat</description>
+		<category>Temperature</category>
+		<state pattern="%d°" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thermostat_heat_setpoint">
+		<item-type>Number</item-type>
+		<label>Heat Set Point</label>
+		<description> Heat Set Point for a Thermostat</description>
+		<category>Temperature</category>
+		<state pattern="%d°" />
+	</channel-type>
+
+	<channel-type id="thermostat_cool_setpoint">
+		<item-type>Number</item-type>
+		<label>Cool Set Point</label>
+		<description> Cool Set Point for a Thermostat</description>
+		<category>Temperature</category>
+		<state pattern="%d°" />
+	</channel-type>
+
+	<channel-type id="thermostat_system_mode">
+		<item-type>Number</item-type>
+		<label>System Mode</label>
+		<description>System Mode</description>
+		<category>Temperature</category>
+		<state pattern="%d°">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heat</option>
+				<option value="2">Cool</option>
+				<option value="3">Auto</option>
+				<option value="4">Emergency Heat</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="thermostat_fan_mode">
+		<item-type>Number</item-type>
+		<label>Fan Mode</label>
+		<description>Fan Mode</description>
+		<category>Temperature</category>
+		<state pattern="%d°">
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="thermostat_hold_status">
+		<item-type>Switch</item-type>
+		<label>Hold Status</label>
+		<description>Hold Mode</description>
+		<category>Temperature</category>
+		<state pattern="%s" />
+	</channel-type>
+
+	<!-- Controller Channels -->
+
+	<channel-type id="sysDate">
+		<item-type>DateTime</item-type>
+		<label>System Time</label>
+		<description>The date/time of omnilink last time received system status</description>
+		<!-- <state readOnly="true" /> pattern="%1$tF %1$tR" -->
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+		<label>Security Zone</label>
+		<description>Security Zone</description>
+		<channels>
+			<channel id="contact" typeId="zone_contact" />
+			<channel id="current_condition" typeId="zone_current_condition" />
+			<channel id="latched_alarm_status" typeId="zone_latched_alarm_status" />
+			<channel id="arming_status" typeId="zone_arming_status" />
+		</channels>
+		<properties>
+			<property name="name" />
+			<property name="area" />
+		</properties>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Zone Number</label>
+				<description>Zone Number</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

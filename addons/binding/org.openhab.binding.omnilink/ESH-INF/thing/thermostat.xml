@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="thermostat">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>Thermostat</label>
+        <description>Thermostat</description>
+        <channels>
+            <channel id="status" typeId="thermostat_status" />
+            <channel id="temperatureC" typeId="thermostat_temperature" />
+            <channel id="temperatureF" typeId="thermostat_temperature" />
+            <channel id="heat_setpointC" typeId="thermostat_heat_setpoint" />
+            <channel id="heat_setpointF" typeId="thermostat_heat_setpoint" />
+            <channel id="cool_setpointC" typeId="thermostat_cool_setpoint" />
+            <channel id="cool_setpointF" typeId="thermostat_cool_setpoint" />
+            <channel id="system_mode" typeId="thermostat_system_mode" />
+            <channel id="fan_mode" typeId="thermostat_fan_mode" />
+            <channel id="hold_status" typeId="hold_status" />
+        </channels>
+        <properties>
+            <property name="name" />
+            <property name="area" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Thermostat Number</label>
+                <description>Thermostat Number</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+</thing:thing-descriptions>

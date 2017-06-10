@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="controller">
+		<label>Omnilink controller</label>
+		<description>A Omnilink enabled system</description>
+		<channels>
+			<channel id="sysdate" typeId="sysDate" />
+		</channels>
+		<properties>
+			<property name="modelNumber" />
+			<property name="majorVersion" />
+			<property name="minorVersion" />
+			<property name="revision" />
+			<property name="phoneNUmber" />
+		</properties>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the Omnilink Controller</description>
+			</parameter>
+			<parameter name="port" type="decimal" required="true">
+				<context>network-port</context>
+				<label>Port</label>
+				<description>The port of the Omnilink Controller</description>
+			</parameter>
+			<parameter name="key1" type="text" required="true">
+				<label>Key 1</label>
+				<description>The first key</description>
+			</parameter>
+			<parameter name="key2" type="text" required="true">
+				<label>Key 2</label>
+				<description>The second key</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
+    

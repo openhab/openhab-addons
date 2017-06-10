@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="omni_area">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+		<label>Omni Area</label>
+		<description>Omni Area</description>
+		<channels>
+			<channel id="alarm" typeId="omni_area_alarm" />
+			<channel id="mode" typeId="omni_area_mode" />
+		</channels>
+		<properties>
+			<property name="name" />
+		</properties>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Zone Number</label>
+				<description>Zone Number</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="lumina_area">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>Lumina Area</label>
+        <description>Lumina Area</description>
+        <channels>
+            <channel id="mode" typeId="lumina_area_mode" />
+        </channels>
+        <properties>
+            <property name="name" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Zone Number</label>
+                <description>Zone Number</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+</thing:thing-descriptions>
