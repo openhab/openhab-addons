@@ -12,12 +12,18 @@
             <parameter name="host" type="text" required="true">
                 <context>network-address</context>
                 <label>Host</label>
-                <description>Hostname of the IKEA Trådfri gateway</description>
+                <description>Hostname or IP address of the IKEA Trådfri gateway</description>
             </parameter>
-            <parameter name="token" type="text" required="true">
+            <parameter name="port" type="integer" required="false">
+                <label>Port</label>
+                <description>Port for accessing the gateway</description>
+                <advanced>true</advanced>
+                <default>5684</default>
+            </parameter>
+            <parameter name="code" type="text" required="true">
                 <context>password</context>
                 <label>Security Code</label>
-                <description>Security Code printed on the label underneath the gateway.</description>
+                <description>Security code printed on the label underneath the gateway.</description>
             </parameter>
         </config-description>
     </bridge-type>
@@ -33,6 +39,13 @@
         <channels>
             <channel id="brightness" typeId="brightness"/>
         </channels>
+
+        <config-description>
+            <parameter name="id" type="text" required="true">
+                <label>ID</label>
+                <description>The identifier of the bulb on the gateway</description>
+            </parameter>
+        </config-description>
     </thing-type>
 
     <thing-type id="whitespectrum_bulb">
@@ -47,6 +60,13 @@
             <channel id="brightness" typeId="brightness"/>
             <channel id="colorTemperature" typeId="colorTemperature"/>
         </channels>
+
+        <config-description>
+            <parameter name="id" type="text" required="true">
+                <label>ID</label>
+                <description>The identifier of the bulb on the gateway</description>
+            </parameter>
+        </config-description>
     </thing-type>
 
     <channel-type id="brightness">

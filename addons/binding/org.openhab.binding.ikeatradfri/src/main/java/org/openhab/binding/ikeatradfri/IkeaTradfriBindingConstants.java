@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableSet;
  * used across the whole binding.
  *
  * @author Daniel Sundberg - Initial contribution
+ * @author Kai Kreuzer - refactorings
  */
 public class IkeaTradfriBindingConstants {
 
@@ -38,7 +39,6 @@ public class IkeaTradfriBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_BRIGHTNESS = "brightness";
-    public static final String CHANNEL_FADETIME = "fadeTime";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMPERATURE = "colorTemperature";
 

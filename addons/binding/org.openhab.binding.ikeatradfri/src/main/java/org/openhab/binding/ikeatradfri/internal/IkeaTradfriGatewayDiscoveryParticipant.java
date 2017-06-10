@@ -1,4 +1,12 @@
-package org.openhab.binding.ikeatradfri.discovery;
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.ikeatradfri.internal;
 
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -13,16 +21,16 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.ikeatradfri.IkeaTradfriBindingConstants;
-import org.openhab.binding.ikeatradfri.configuration.IkeaTradfriGatewayConfiguration;
+import org.openhab.binding.ikeatradfri.IkeaTradfriGatewayConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by dansu on 2017-04-18.
  * The {@link IkeaTradfriGatewayDiscoveryParticipant} is responsible for discovering
  * the IKEA Tradfri gateway
  *
  * @author Daniel Sundberg - Initial contribution
+ * @author Kai Kreuzer - refactorings
  */
 
 public class IkeaTradfriGatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
@@ -55,7 +63,7 @@ public class IkeaTradfriGatewayDiscoveryParticipant implements MDNSDiscoveryPart
 
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
-        logger.debug("IKEA Tradfri Gateway discover result: {}", service.toString());
+        logger.debug("IKEA Tradfri Gateway discovery result: {}", service.toString());
         DiscoveryResult result = null;
         String ip = null;
 
@@ -76,9 +84,11 @@ public class IkeaTradfriGatewayDiscoveryParticipant implements MDNSDiscoveryPart
                 properties.put(s, service.getPropertyString(s));
             }
 
-            properties.put(IkeaTradfriGatewayConfiguration.HOST, ip + ":" + service.getPort());
+            properties.put(IkeaTradfriGatewayConfiguration.HOST, ip);
+            properties.put(IkeaTradfriGatewayConfiguration.PORT, service.getPort());
             result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withLabel("IKEA Trådfri Gateway").build();
+                    .withLabel("IKEA Trådfri Gateway").withRepresentationProperty(IkeaTradfriGatewayConfiguration.HOST)
+                    .build();
         }
         return result;
     }

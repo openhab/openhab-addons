@@ -6,19 +6,22 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.ikeatradfri.configuration;
+package org.openhab.binding.ikeatradfri;
 
 /**
  * The {@link IkeaTradfriGatewayConfiguration} is responsible for holding
  * configuration information needed to access/poll the IKEA Tradfri gateway
  *
  * @author Daniel Sundberg - Initial contribution
+ * @author Kai Kreuzer - refactorings
  */
 public class IkeaTradfriGatewayConfiguration {
 
     public static final String HOST = "host";
-    public static final String TOKEN = "token";
+    public static final String PORT = "port";
+    public static final String CODE = "code";
 
     public String host;
-    public String token;
+    public int port = 5684; // default port
+    public String code;
 }

@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.ikeatradfri.discovery.gateway">
- <implementation class="org.openhab.binding.ikeatradfri.discovery.IkeaTradfriGatewayDiscoveryParticipant"/>
+ <implementation class="org.openhab.binding.ikeatradfri.internal.IkeaTradfriGatewayDiscoveryParticipant"/>
  <service>
     <provide interface="org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant"/>
  </service>

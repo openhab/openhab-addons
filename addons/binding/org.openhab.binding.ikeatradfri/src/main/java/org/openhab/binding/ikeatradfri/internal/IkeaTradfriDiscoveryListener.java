@@ -8,25 +8,25 @@
  */
 package org.openhab.binding.ikeatradfri.internal;
 
-import com.google.gson.JsonObject;
 import org.eclipse.smarthome.core.thing.ThingUID;
 
+import com.google.gson.JsonObject;
+
 /**
- * The {@link IkeaTradfriDiscoverListener} is notified by the bridge thing handler
+ * The {@link IkeaTradfriDiscoveryListener} is notified by the bridge handler
  * with updated data from the Tradfri gateway server.
  *
  * @author Daniel Sundberg - Initial contribution
+ * @author Kai Kreuzer - refactorings
  */
-public interface IkeaTradfriDiscoverListener {
+public interface IkeaTradfriDiscoveryListener {
 
     /**
      * This method is called just after the bridge thing handler fetched new data
      * from the IKEA Tradfri gateway.
      *
-     * @param bridge
-     *            The IKEA Tradfri gateway bridge.
-     * @param data
-     *            The Json object describing the new device.
+     * @param bridge The IKEA Tradfri gateway bridge.
+     * @param data The Json object describing the new device.
      */
     public void onDeviceFound(ThingUID bridge, JsonObject data);
 }
