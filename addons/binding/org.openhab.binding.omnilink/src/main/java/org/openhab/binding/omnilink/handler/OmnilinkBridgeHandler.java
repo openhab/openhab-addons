@@ -150,8 +150,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         omniConnection = new Connection(config.getIpAddress(), 4369,
 
                                 config.getKey1() + ":" + config.getKey2());
-                        omniConnection.enableNotifications();
-
                         omniConnection.addNotificationListener(OmnilinkBridgeHandler.this);
                         omniConnection.addDisconnectListener(new DisconnectListener() {
                             @Override
@@ -161,6 +159,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                                 makeOmnilinkConnection();
                             }
                         });
+                        omniConnection.enableNotifications();
                         updateStatus(ThingStatus.ONLINE);
                         getSystemInfo();
                         getSystemStatus();
