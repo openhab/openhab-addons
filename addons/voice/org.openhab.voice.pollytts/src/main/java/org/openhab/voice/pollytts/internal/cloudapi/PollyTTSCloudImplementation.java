@@ -39,9 +39,9 @@ public class PollyTTSCloudImplementation {
 
     private static Set<String> supportedAudioFormats = new HashSet<String>();
     static {
-        supportedAudioFormats.add("MP3");
-        supportedAudioFormats.add("OGG");
-        supportedAudioFormats.add("AAC");
+        supportedAudioFormats.add("mp3");
+        supportedAudioFormats.add("ogg_vorbis");
+        supportedAudioFormats.add("pcm");
     }
 
     /**
@@ -84,12 +84,12 @@ public class PollyTTSCloudImplementation {
     /**
      * This method will return an input stream to an audio stream for the given
      * parameters.
-     * Get the given text in specified locale and auido format as input stream.
+     * Get the given text in specified locale and audio format as input stream.
      *
      * @param text
      *            the text to translate into speech
      * @param label
-     *            the locale to use
+     *            the voice Label to use
      * @param audioFormat
      *            the audio format to use
      * @return an InputStream to the audio data in specified format
@@ -102,7 +102,7 @@ public class PollyTTSCloudImplementation {
         String voiceID = PollyClientConfig.labelToID.get(label);
 
         SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest().withText(text).withVoiceId(voiceID)
-                .withOutputFormat(OutputFormat.Mp3);
+                .withOutputFormat(OutputFormat.fromValue(audioFormat));
         SynthesizeSpeechResult synthRes = PollyClientConfig.polly.synthesizeSpeech(synthReq);
 
         return synthRes.getAudioStream();

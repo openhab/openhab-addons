@@ -52,6 +52,9 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
         // check if in cache
         File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + audioFormat.toLowerCase());
         if (audioFileInCache.exists()) {
+            long timestamp = System.currentTimeMillis();
+            // update use date
+            audioFileInCache.setLastModified(timestamp);
             return audioFileInCache;
         }
 

@@ -167,24 +167,23 @@ public class PollyTTSService implements TTSService {
         Boolean bigEndian = null;
         Integer bitDepth = 16;
         Integer bitRate = null;
-        Long frequency = 44100L;
+        Long frequency = 22050L;
 
-        if ("MP3".equals(apiFormat)) {
-            // we use by default: MP3, 44khz_16bit_mono with bitrate 64 kbps
+        if ("mp3".equals(apiFormat)) {
+            // use by default: MP3, 22khz_16bit_mono with bitrate 64 kbps
             bitRate = 64000;
-
             return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, bigEndian, bitDepth, bitRate,
                     frequency);
-        } else if ("OGG".equals(apiFormat)) {
-            // we use by default: OGG, 44khz_16bit_mono
-
+        } else if ("ogg_vorbis".equals(apiFormat)) {
+            // use by default: OGG, 22khz_16bit_mono
             return new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, bigEndian, bitDepth, bitRate,
                     frequency);
-        } else if ("AAC".equals(apiFormat)) {
-            // we use by default: AAC, 44khz_16bit_mono
+        } else if ("pcm".equals(apiFormat)) {
+            frequency = 16000L;
+            // use by default: PCM, 16khz_16bit_mono
 
-            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, bigEndian, bitDepth, bitRate,
-                    frequency);
+            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_UNSIGNED, bigEndian, bitDepth,
+                    bitRate, frequency);
         } else {
             throw new IllegalArgumentException("Audio format " + apiFormat + " not yet supported");
         }
@@ -192,11 +191,11 @@ public class PollyTTSService implements TTSService {
 
     private final String getApiAudioFormat(AudioFormat format) {
         if (format.getCodec().equals(AudioFormat.CODEC_MP3)) {
-            return "MP3";
+            return "mp3";
         } else if (format.getCodec().equals(AudioFormat.CODEC_VORBIS)) {
-            return "OGG";
+            return "ogg_vorbis";
         } else if (format.getCodec().equals(AudioFormat.CODEC_AAC)) {
-            return "AAC";
+            return "pcm";
         } else {
             throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
         }
