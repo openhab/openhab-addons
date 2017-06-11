@@ -51,7 +51,7 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
 		int arming = ((status.getStatus() >> 4) & 0x03);
 		State contactState = current == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-		logger.debug("handle Zone Status Change to state:{} current:{} latched:{} arming:{}" + contactState, current,
+		logger.debug("handle Zone Status Change to state:{} current:{} latched:{} arming:{}", contactState, current,
 				latched, arming);
 
 		updateState(OmnilinkBindingConstants.CHANNEL_ZONE_CONTACT, contactState);
