@@ -11,8 +11,8 @@
 		<channels>
 			<channel id="alarm_burglary" typeId="area_alarm_burglary" />
 			<channel id="alarm_fire" typeId="area_alarm_fire" />
-			<channel id="alarm_gas" typeId="area_larm_gas" />
-			<channel id="alarm_auxilary" typeId="area_alarm_auxilary" />
+			<channel id="alarm_gas" typeId="area_alarm_gas" />
+			<channel id="alarm_auxilary" typeId="area_alarm_auxiliary" />
 			<channel id="alarm_freeze" typeId="area_alarm_freeze" />
 			<channel id="alarm_water" typeId="area_alarm_water" />
 			<channel id="alarm_duress" typeId="area_alarm_duress" />
