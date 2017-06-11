@@ -10,9 +10,10 @@ package org.openhab.binding.tankerkoenig.handler;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -22,40 +23,37 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTime;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigService;
-import org.openhab.binding.tankerkoenig.internal.utility.Holiday;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BridgeHandler} is responsible for handling the things (Tankstellen)
+ * The {@link BridgeHandler} is responsible for handling the things (stations)
  *
  *
- * @author Dennis Dollinger/Jürgen Baginski
+ * @author Dennis Dollinger
+ * @author Jürgen Baginski
  */
 public class BridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private String apiKey;
     private int refreshInterval;
-    private boolean setupMode;
     private boolean useOpeningTime;
     private String userAgent;
+    private final TankerkoenigService service = new TankerkoenigService();
 
-    private List<Thing> tankstellenThingList;
-    private Map<String, LittleStation> tankstellenList;
+    private Map<String, LittleStation> stationMap;
 
     private TankerkoenigListResult tankerkoenigListResult;
 
@@ -63,8 +61,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     public BridgeHandler(Bridge bridge) {
         super(bridge);
-        tankstellenThingList = new ArrayList<Thing>();
-        tankstellenList = new HashMap<String, LittleStation>();
+        stationMap = new HashMap<String, LittleStation>();
     }
 
     @Override
@@ -78,13 +75,14 @@ public class BridgeHandler extends BaseBridgeHandler {
         Configuration config = getThing().getConfiguration();
         setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
         setRefreshInterval(((BigDecimal) config.get(TankerkoenigBindingConstants.CONFIG_REFRESH)).intValue());
-        setSetupMode((boolean) config.get(TankerkoenigBindingConstants.CONFIG_SETUP_MODE));
         setUseOpeningTime((boolean) config.get(TankerkoenigBindingConstants.CONFIG_USE_OPENINGTIME));
-        // set the UserAgent, this string is used by TankerkoenigService and TankertkoenigDtailService
+        // set the UserAgent, this string is used by TankerkoenigService
         // to set a custom UserAgent for the WebRequest as specifically requested by Tankerkoening.de!
-        userAgent = "openHAB, Tankerkoenig-Binding Version ";
+        StringBuilder sb = new StringBuilder();
+        sb.append("openHAB, Tankerkoenig-Binding Version ");
         Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
-        userAgent = userAgent + version.toString();
+        sb.append(version.toString());
+        userAgent = sb.toString();
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -93,15 +91,13 @@ public class BridgeHandler extends BaseBridgeHandler {
             @Override
             public void run() {
                 logger.debug("Try to refresh data");
-                // Just update data if setupMode is false(off)
                 try {
-                    if (!isSetupMode()) {
-                        updateTankstellenData();
-                        updateTankstellenThings();
-                    }
+                    updateStationData();
+                    updateStationThings();
                 } catch (RuntimeException r) {
-                    logger.error("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ",
+                    logger.debug("Caught exception in ScheduledExecutorService of BridgeHandler. RuntimeException: ",
                             r);
+                    updateStatus(ThingStatus.OFFLINE);
                 }
             }
         }, 30, pollingPeriod * 60, TimeUnit.SECONDS);
@@ -116,28 +112,9 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     /***
-     *
-     * @param tankstelle
-     * @return
-     */
-    public boolean registerTankstelleThing(Thing tankstelle) {
-        if (tankstellenThingList.size() >= 10) {
-            return false;
-        }
-        logger.debug("Tankstelle {} was registered to config {} ", tankstelle.getUID(), getThing().getUID());
-        tankstellenThingList.add(tankstelle);
-        return true;
-    }
-
-    public void unregisterTankstelleThing(Thing tankstelle) {
-        logger.debug("Tankstelle {} was unregistered from config {} ", tankstelle.getUID(), getThing().getUID());
-        tankstellenThingList.remove(tankstelle);
-    }
-
-    /***
      * Updates the data from tankerkoenig api (no update on things)
      */
-    public void updateTankstellenData() {
+    public void updateStationData() {
         // Get data
         try {
             String locationIDsString = "";
@@ -149,40 +126,39 @@ public class BridgeHandler extends BaseBridgeHandler {
                 locationIDsString = generateLocationIDsString();
             }
             if (locationIDsString.isEmpty()) {
-                logger.info("No tankstellen id's found. Nothing to update");
+                logger.debug("No tankstellen id's found. Nothing to update");
                 return;
             }
-            TankerkoenigService service = new TankerkoenigService();
-            TankerkoenigListResult result = service.getTankstellenListData(this.getApiKey(), locationIDsString,
-                    userAgent);
+            TankerkoenigListResult result = service.getStationListData(this.getApiKey(), locationIDsString, userAgent);
             if (!result.isOk()) {
-                // if the result is not OK, no updates are done and the status of the Bridge goes to unknown!
-                updateStatus(ThingStatus.UNKNOWN);
+                // if the result is not OK, no updates are done and the status of the Bridge goes to OFFLINE!
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Empty return or no internet connection");
             } else {
                 updateStatus(ThingStatus.ONLINE);
                 setTankerkoenigListResult(result);
-                tankstellenList.clear();
+                stationMap.clear();
                 for (LittleStation station : result.getPrices().getStations()) {
-                    tankstellenList.put(station.getID(), station);
+                    stationMap.put(station.getID(), station);
                 }
-                logger.debug("UpdateTankstellenData: tankstellenList.size {}", tankstellenList.size());
+                logger.debug("UpdateStationData: tankstellenList.size {}", stationMap.size());
             }
         } catch (ParseException e) {
             logger.error("ParseException: ", e);
-            updateStatus(ThingStatus.UNKNOWN);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
     /***
-     * Updates all registered Tankstellen with new data
+     * Updates all registered station with new data
      */
-    public void updateTankstellenThings() {
-        logger.debug("UpdateTankstellenThings: tankstellenThingList.size {}", tankstellenThingList.size());
-        for (Thing thing : tankstellenThingList) {
+    public void updateStationThings() {
+        logger.debug("UpdateStationThings: getThing().getThings().size {}", getThing().getThings().size());
+        for (Thing thing : getThing().getThings()) {
             TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
-            LittleStation s = this.tankstellenList.get(tkh.getLocationID());
+            LittleStation s = this.stationMap.get(tkh.getLocationID());
             if (s == null) {
-                logger.debug("Tankstelle with id {}  is not updated, because it is not open!", tkh.getLocationID());
+                logger.debug("Station with id {}  is not updated, because it is not open!", tkh.getLocationID());
             } else {
                 tkh.updateData(s);
             }
@@ -190,13 +166,13 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     /***
-     * Generates a comma separated string with all tankstellen id's
+     * Generates a comma separated string with all station id's
      *
      * @return
      */
     private String generateLocationIDsString() {
         StringBuilder sb = new StringBuilder();
-        for (Thing thing : tankstellenThingList) {
+        for (Thing thing : getThing().getThings()) {
             TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
             if (sb.length() > 0) {
                 sb.append(",");
@@ -207,7 +183,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     /***
-     * Generates a comma separated string of all open tankstellen id's
+     * Generates a comma separated string of all open station id's
      * calculated using the data stored in opentimesList
      * The settings in the section "override" from the json detail response are NOT used!
      *
@@ -216,8 +192,8 @@ public class BridgeHandler extends BaseBridgeHandler {
      */
     private String generateOpenLocationIDsString() throws ParseException {
         StringBuilder sb = new StringBuilder();
-        DateTime now = new LocalDate().toDateTimeAtCurrentTime();
-        for (Thing thing : tankstellenThingList) {
+        LocalDate today = LocalDate.now();
+        for (Thing thing : getThing().getThings()) {
             String start = "00:00";
             String ende = "00:00";
             TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
@@ -241,11 +217,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                         String day = o[i].getText();
                         String open = o[i].getStart();
                         String close = o[i].getEnd();
-                        int weekday = now.getDayOfWeek();
-                        // if today is an official German holiday (Feiertag), weekday is set to Sunday!
-                        if (Holiday.isHoliday(now)) {
-                            weekday = 7;
-                        }
+                        DayOfWeek weekday = today.getDayOfWeek();
                         logger.debug("Checking day: {}", day);
                         logger.debug("Todays weekday: {}", weekday);
                         // if Daily, further checking not needed!
@@ -254,43 +226,43 @@ public class BridgeHandler extends BaseBridgeHandler {
                             foundIt = true;
                         } else {
                             switch (weekday) {
-                                case 1:
+                                case MONDAY:
                                     if ((day.contains("Werktags")) || (day.contains("Mo"))) {
                                         logger.debug("Found a setting which is valid for today (Monday).");
                                         foundIt = true;
                                     }
                                     break;
-                                case 2:
+                                case TUESDAY:
                                     if ((day.contains("Werktags")) || (day.contains("Di")) || (day.contains("Mo-Fr"))) {
                                         logger.debug("Found a setting which is valid for today (Tuesday).");
                                         foundIt = true;
                                     }
                                     break;
-                                case 3:
+                                case WEDNESDAY:
                                     if ((day.contains("Werktags")) || (day.contains("Mi")) || (day.contains("Mo-Fr"))) {
                                         logger.debug("Found a setting which is valid for today (Wednesday).");
                                         foundIt = true;
                                     }
                                     break;
-                                case 4:
+                                case THURSDAY:
                                     if ((day.contains("Werktags")) || (day.contains("Do")) || (day.contains("Mo-Fr"))) {
                                         logger.debug("Found a setting which is valid for today (Thursday).");
                                         foundIt = true;
                                     }
                                     break;
-                                case 5:
+                                case FRIDAY:
                                     if ((day.contains("Werktags")) || (day.contains("Fr"))) {
                                         logger.debug("Found a setting which is valid for today (Fryday).");
                                         foundIt = true;
                                     }
                                     break;
-                                case 6:
+                                case SATURDAY:
                                     if ((day.contains("Wochendende")) || (day.contains("Sa"))) {
                                         logger.debug("Found a setting which is valid for today (Saturday).");
                                         foundIt = true;
                                     }
                                     break;
-                                case 7:
+                                case SUNDAY:
                                     if ((day.contains("Wochenende")) || (day.contains("So"))) {
                                         logger.debug("Found a setting which is valid for today (Sunday).");
                                         foundIt = true;
@@ -314,19 +286,16 @@ public class BridgeHandler extends BaseBridgeHandler {
                 start = "00:00";
                 ende = "23:59";
             }
-            LocalTime tempopening = LocalTime.parse(start);
-            LocalTime tempclosing = LocalTime.parse(ende);
-            DateTime opening = tempopening.toDateTimeToday();
-            DateTime closing = tempclosing.toDateTimeToday();
-            if (opening.isEqual(closing)) {
-                closing = opening.plusDays(1);
-            } else {
+            LocalTime opening = LocalTime.parse(start);
+            LocalTime closing = LocalTime.parse(ende);
+            LocalTime now = LocalTime.now();
+            if (!opening.equals(closing)) {
                 // Tankerkoenig.de does update the status "open" every 4 minutes
                 // due to this the status "open" could be sent up to 4 minutes after the published opening time
                 // therefore the first update is called 4 minutes after opening time!
                 opening = opening.plusMinutes(4);
             }
-            if ((now.isAfter(opening) & (now.isBefore(closing)))) {
+            if ((opening.equals(closing)) || ((now.isAfter(opening) & (now.isBefore(closing))))) {
                 logger.debug("Now is within opening times for today.");
                 if (sb.length() > 0) {
                     sb.append(",");
@@ -359,14 +328,6 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     public void setTankerkoenigListResult(TankerkoenigListResult tankerkoenigListResult) {
         this.tankerkoenigListResult = tankerkoenigListResult;
-    }
-
-    public boolean isSetupMode() {
-        return setupMode;
-    }
-
-    public void setSetupMode(boolean setupMode) {
-        this.setupMode = setupMode;
     }
 
     public boolean isUseOpeningTime() {

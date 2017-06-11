@@ -11,11 +11,13 @@ package org.openhab.binding.tankerkoenig.internal.data;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
+import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigDetailResult;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
+import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigDetailResultDeserializer;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigListResultDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,29 +29,54 @@ import com.google.gson.GsonBuilder;
  * Serivce class requesting data from tankerkoenig api and providing result objects
  *
  * @author Dennis Dollinger
- *
+ * @author Juergen Baginski
  */
 public class TankerkoenigService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final GsonBuilder GSON_BUILDER = new GsonBuilder().registerTypeAdapter(TankerkoenigListResult.class,
+    private final GsonBuilder GSON_BUILDER = new GsonBuilder().registerTypeAdapter(TankerkoenigListResult.class,
             new CustomTankerkoenigListResultDeserializer());;
-    private static final Gson GSON = GSON_BUILDER.create();
+    private final Gson GSON = GSON_BUILDER.create();
+    private final GsonBuilder GSON_BUILDER_DETAIL = new GsonBuilder()
+            .registerTypeAdapter(TankerkoenigDetailResult.class, new CustomTankerkoenigDetailResultDeserializer());;
+    private final Gson GSON_DETAIL = GSON_BUILDER_DETAIL.create();
+    private static final int REQUEST_TIMEOUT = 5000;
 
-    public TankerkoenigListResult getTankstellenListData(String apikey, String locationIDs, String userAgent) {
+    public TankerkoenigListResult getStationListData(String apikey, String locationIDs, String userAgent) {
         return this.getTankerkoenigListResult(apikey, locationIDs, userAgent);
     }
 
-    private String getResponseString(String apikey, String locationIDs, String userAgent) throws IOException {
+    public OpeningTimes getStationDetailData(String apikey, String locationID, String userAgent) {
+        TankerkoenigDetailResult detailresult = this.getTankerkoenigDetailResult(apikey, locationID, userAgent);
+        if (detailresult.isOk()) {
+            OpeningTimes openingtimes = new OpeningTimes(locationID, detailresult.iswholeDay(),
+                    detailresult.getOpeningtimes());
+            logger.debug("Found opening times for stationID: {}", locationID);
+            return openingtimes;
+        } else {
+            // no valid response for detail data
+            return null;
+        }
+    }
 
-        String urlbase = "https://creativecommons.tankerkoenig.de/json/prices.php?";
-        String urlcomplete = urlbase + "ids=" + locationIDs + "&apikey=" + apikey;
+    private String getResponseString(String apiKey, String locationIDs, String userAgent, boolean detail)
+            throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("https://creativecommons.tankerkoenig.de/json/");
+        if (detail) {
+            sb.append("detail.php?id=");
+        } else {
+            sb.append("prices.php?ids=");
+        }
+        sb.append(locationIDs);
+        sb.append("&apikey=");
+        sb.append(apiKey);
+        String url = sb.toString();
         try {
-            URL url = new URL(urlcomplete);
-            URLConnection connection = url.openConnection();
-            connection.setRequestProperty("User-Agent", userAgent);
-            return IOUtils.toString(connection.getInputStream());
+            Properties urlHeader = new Properties();
+            urlHeader.put("USER-AGENT", userAgent);
+            return HttpUtil.executeUrl("GET", url, urlHeader, null, "", REQUEST_TIMEOUT);
         } catch (MalformedURLException e) {
-            logger.error("Error in getResponseString: ", e);
+            logger.debug("Error in getResponseString: ", e);
             return null;
         }
     }
@@ -57,11 +84,26 @@ public class TankerkoenigService {
     private TankerkoenigListResult getTankerkoenigListResult(String apikey, String locationIDs, String userAgent) {
         String jsonData = "";
         try {
-            jsonData = getResponseString(apikey, locationIDs, userAgent);
+            jsonData = getResponseString(apikey, locationIDs, userAgent, false);
+            logger.debug("json-String: {}", jsonData);
             return GSON.fromJson(jsonData, TankerkoenigListResult.class);
         } catch (IOException e) {
-            logger.error("Error in getTankerkoenigListResult: ", e);
+            logger.debug("Error in getTankerkoenigListResult: ", e);
+            // the return of an empty result will force the status-update OFFLINE!
             return TankerkoenigListResult.emptyResult();
+        }
+    }
+
+    private TankerkoenigDetailResult getTankerkoenigDetailResult(String apiKey, String locationID, String userAgent) {
+        String jsonData = "";
+        try {
+            jsonData = getResponseString(apiKey, locationID, userAgent, true);
+            logger.debug("getTankerkoenigDetailResult jsonData : {}", jsonData);
+            return GSON_DETAIL.fromJson(jsonData, TankerkoenigDetailResult.class);
+        } catch (IOException e) {
+            logger.debug("getTankerkoenigDetailResult IOException: ", e);
+            // the return of an empty result will force the status-update OFFLINE!
+            return TankerkoenigDetailResult.emptyResult();
         }
     }
 }

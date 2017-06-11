@@ -19,14 +19,14 @@ import com.google.common.collect.Sets;
  * The {@link TankerkoenigBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Dennis Dollinger - Initial contribution
+ * @author Dennis Dollinger
  */
 public class TankerkoenigBindingConstants {
 
     public static final String BINDING_ID = "tankerkoenig";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_TANKSTELLE = new ThingTypeUID(BINDING_ID, "tankstelle");
+    public static final ThingTypeUID THING_TYPE_TANKSTELLE = new ThingTypeUID(BINDING_ID, "station");
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "config");
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
@@ -41,7 +41,6 @@ public class TankerkoenigBindingConstants {
     public static final String CONFIG_LOCATION_ID = "locationid";
     public static final String CONFIG_API_KEY = "apikey";
     public static final String CONFIG_REFRESH = "refresh";
-    public static final String CONFIG_SETUP_MODE = "setupmode";
     public static final String CONFIG_USE_OPENINGTIME = "useOpeningTime";
 
 }

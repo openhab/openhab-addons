@@ -14,7 +14,8 @@ package org.openhab.binding.tankerkoenig.internal.config;
  * details request
  * Actually used for OpeningTimes only.
  *
- * @author Dennis Dollinger/Jürgen Baginski
+ * @author Dennis Dollinger
+ * @author Jürgen Baginski
  *
  */
 public class TankerkoenigDetailResult {

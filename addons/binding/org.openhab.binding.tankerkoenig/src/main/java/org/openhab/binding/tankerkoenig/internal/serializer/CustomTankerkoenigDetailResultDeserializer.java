@@ -37,12 +37,10 @@ public class CustomTankerkoenigDetailResultDeserializer implements JsonDeseriali
         final JsonObject jsonStation = jsonObject.get("station").getAsJsonObject();
         final Boolean isWholeDay = jsonStation.get("wholeDay").getAsBoolean();
         OpeningTime[] openingtimes = context.deserialize(jsonStation.get("openingTimes"), OpeningTime[].class);
-
         TankerkoenigDetailResult result = new TankerkoenigDetailResult();
         result.setOk(isOK);
         result.setwholeDay(isWholeDay);
         result.setOpeningtimes(openingtimes);
         return result;
     }
-
 }

@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
-import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigDetailService;
+import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,17 +33,18 @@ import org.slf4j.LoggerFactory;
  * The {@link TankerkoenigHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Dennis Dollinger/Jürgen Baginski
+ * @author Dennis Dollinger
+ * @author Jürgen Baginski
  */
 public class TankerkoenigHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(TankerkoenigHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TankerkoenigHandler.class);
 
     private String apiKey;
-    private boolean setupMode;
     private boolean useOpeningTime;
     private String locationID;
     private OpeningTimes openingTimes;
     private String userAgent;
+    private final TankerkoenigService service = new TankerkoenigService();
 
     private ScheduledFuture<?> pollingJob;
 
@@ -71,12 +72,10 @@ public class TankerkoenigHandler extends BaseThingHandler {
         BridgeHandler handler = (BridgeHandler) b.getHandler();
         userAgent = handler.getUserAgent();
         setApiKey(handler.getApiKey());
-        setSetupMode(handler.isSetupMode());
         setUseOpeningTime(handler.isUseOpeningTime());
-        boolean registeredSuccessfully = handler.registerTankstelleThing(getThing());
-        if (!registeredSuccessfully) {
+        if (getBridge().getThings().size() > 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The limitation of tankstellen things for one tankstellen config (the bridge) is limited to 10");
+                    "The limitation of station things for one tankerkoenig webservice (the bridge) is limited to 10");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -85,39 +84,30 @@ public class TankerkoenigHandler extends BaseThingHandler {
             @Override
             public void run() {
                 try {
-                    if (isUseOpeningTime()) {
-                        logger.debug("Try to refresh detail data");
-                        updateDetailData();
-                    }
+                    logger.debug("Try to refresh detail data");
+                    updateDetailData();
                 } catch (RuntimeException r) {
-                    logger.error(
+                    logger.debug(
                             "Caught exception in ScheduledExecutorService of TankerkoenigHandler. RuntimeExcetion: {}",
                             r);
+                    // no status change, since in case of error in here,
+                    // the old values for opening time will be continue to be used
                 }
-
             }
         }, 15, 86400, TimeUnit.SECONDS);// 24*60*60 = 86400, a whole day in seconds!
-        logger.debug("Refresh job scheduled to run every 24 houres for '{}'", getThing().getUID());
+        logger.debug("Refresh job scheduled to run every 24 hours for '{}'", getThing().getUID());
     }
 
     @Override
     public void dispose() {
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            super.dispose();
         }
-    }
-
-    @Override
-    public void handleRemoval() {
-        Bridge b = this.getBridge();
-        BridgeHandler handler = (BridgeHandler) b.getHandler();
-        handler.unregisterTankstelleThing(getThing());
-        super.handleRemoval();
+        super.dispose();
     }
 
     /***
-     * Updates the channels of a tankstelle item
+     * Updates the channels of a station item
      *
      * @param station
      */
@@ -138,10 +128,13 @@ public class TankerkoenigHandler extends BaseThingHandler {
      * Updates the detail-data from tankerkoenig api, actually only the opening times are used.
      */
     public void updateDetailData() {
-        logger.debug("Running UpdateTankstellenDetails");
-        TankerkoenigDetailService service = new TankerkoenigDetailService();
-        setOpeningTimes(service.getTankstellenDetailData(this.getApiKey(), locationID, userAgent));
-        logger.debug("UpdateTankstellenDetails openingTimes: {}", this.openingTimes);
+        setOpeningTimes(service.getStationDetailData(this.getApiKey(), locationID, userAgent));
+        if (!(openingTimes == null)) {
+            updateStatus(ThingStatus.ONLINE);
+            logger.debug("updateDetailData openingTimes: {}", this.openingTimes);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
     public String getLocationID() {
@@ -158,14 +151,6 @@ public class TankerkoenigHandler extends BaseThingHandler {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
-    }
-
-    public boolean isSetupMode() {
-        return setupMode;
-    }
-
-    public void setSetupMode(boolean setupMode) {
-        this.setupMode = setupMode;
     }
 
     public boolean isUseOpeningTime() {
