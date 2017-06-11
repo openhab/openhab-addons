@@ -1,0 +1,29 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yunmi.waterpuri.v2",
+			"yunmi.waterpuri.lx2",
+			"yunmi.waterpuri.lx3",
+			"yunmi.waterpuri.lx4",
+			"yunmi.waterpurifier.v2",
+			"yunmi.waterpurifier.v3",
+			"yunmi.waterpurifier.v4"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"channelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			}
+		]
+	}
+}

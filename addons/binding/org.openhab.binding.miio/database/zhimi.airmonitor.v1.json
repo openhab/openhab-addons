@@ -1,0 +1,36 @@
+{
+  "deviceMapping": {
+    "id": [
+      "zhimi.airmonitor.v1"
+    ],
+    "channels": [
+      {
+        "property": "aqi",
+        "friendlyName": "Air Quality Index",
+        "channel": "aqi",
+        "type": "Number",
+        "refresh": true,
+        "ChannelGroup": "Status",
+        "actions": []
+      },
+      {
+        "property": "battery",
+        "friendlyName": "Battery",
+        "channel": "battery",
+        "type": "Number",
+        "refresh": true,
+        "ChannelGroup": "Status",
+        "actions": []
+      },
+      {
+        "property": "usb_state",
+        "friendlyName": "USB State",
+        "channel": "usb_state",
+        "type": "Number",
+        "refresh": true,
+        "ChannelGroup": "Status",
+        "actions": []
+      }
+    ]
+  }
+}
