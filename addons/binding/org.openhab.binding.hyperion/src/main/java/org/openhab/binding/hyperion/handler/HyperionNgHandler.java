@@ -26,6 +26,8 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -91,9 +93,9 @@ public class HyperionNgHandler extends BaseThingHandler {
                 if (response.isSuccess()) {
                     handleServerInfoResponse(response);
                 }
+                updateOnlineStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             } catch (IOException e) {
-                logger.error("Could not connect to server.");
-                updateOnlineStatus(ThingStatus.OFFLINE);
+                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             } catch (JsonParseException e) {
                 logger.error("{}", e.getMessage(), e);
             } catch (CommandUnsuccessfulException e) {
@@ -108,11 +110,10 @@ public class HyperionNgHandler extends BaseThingHandler {
             try {
                 if (!connection.isConnected()) {
                     connection.connect();
-                    updateOnlineStatus(ThingStatus.ONLINE);
+                    updateOnlineStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 }
             } catch (IOException e) {
-                logger.error("Could not connect to server.");
-                updateOnlineStatus(ThingStatus.OFFLINE);
+                updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
     };
@@ -139,7 +140,7 @@ public class HyperionNgHandler extends BaseThingHandler {
 
         } catch (UnknownHostException e) {
             logger.error("Could not resolve host: {}", e.getMessage());
-            updateOnlineStatus(ThingStatus.OFFLINE);
+            updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -317,8 +318,7 @@ public class HyperionNgHandler extends BaseThingHandler {
                 handleComponentEnabled(channelUID.getId(), command);
             }
         } catch (IOException e) {
-            logger.error("Unable to send command: {}", command.toString(), e);
-            updateOnlineStatus(ThingStatus.OFFLINE);
+            updateOnlineStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         } catch (CommandUnsuccessfulException e) {
             logger.warn("Server rejected the command: {}", e.getMessage());
         }
@@ -443,10 +443,12 @@ public class HyperionNgHandler extends BaseThingHandler {
         }
     }
 
-    private void updateOnlineStatus(ThingStatus status) {
-        ThingStatus current = thing.getStatus();
-        if (!current.equals(status)) {
-            updateStatus(status);
+    private void updateOnlineStatus(ThingStatus status, ThingStatusDetail detail) {
+        ThingStatusInfo currentStatusInfo = thing.getStatusInfo();
+        ThingStatus currentStatus = currentStatusInfo.getStatus();
+        ThingStatusDetail currentDetail = currentStatusInfo.getStatusDetail();
+        if (!currentStatus.equals(status) || !currentDetail.equals(detail)) {
+            updateStatus(status, detail);
         }
     }
 

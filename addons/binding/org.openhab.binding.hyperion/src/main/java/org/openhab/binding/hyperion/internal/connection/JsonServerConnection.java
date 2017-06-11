@@ -82,6 +82,6 @@ public class JsonServerConnection {
     }
 
     public boolean isConnected() {
-        return false;
+        return hyperionServerSocket != null && hyperionServerSocket.isConnected();
     }
 }
