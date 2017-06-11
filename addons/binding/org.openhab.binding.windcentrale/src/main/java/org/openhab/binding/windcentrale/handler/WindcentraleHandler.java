@@ -124,27 +124,27 @@ public class WindcentraleHandler extends BaseThingHandler {
 
         try {
             String getMillData = windcentraleCache.getValue();
-            if (getMillData != null) {
-                JsonObject millData = (JsonObject) parser.parse(getMillData);
+            if (getMillData == null) {
+                return;
+            }
+            JsonObject millData = (JsonObject) parser.parse(getMillData);
+            logger.trace("Retrieved updated mill data: {}", millData);
 
-                logger.trace("Retrieved updated mill data: {}", millData);
+            updateState(CHANNEL_WIND_SPEED, new DecimalType(millData.get(CHANNEL_WIND_SPEED).getAsString()));
+            updateState(CHANNEL_WIND_DIRECTION, new StringType(millData.get(CHANNEL_WIND_DIRECTION).getAsString()));
+            updateState(CHANNEL_POWER_TOTAL, new DecimalType(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal()));
+            updateState(CHANNEL_POWER_PER_WD,
+                    new DecimalType(millData.get(CHANNEL_POWER_PER_WD).getAsBigDecimal().multiply(wd)));
+            updateState(CHANNEL_POWER_RELATIVE,
+                    new DecimalType(millData.get(CHANNEL_POWER_RELATIVE).getAsBigDecimal()));
+            updateState(CHANNEL_ENERGY, new DecimalType(millData.get(CHANNEL_ENERGY).getAsBigDecimal()));
+            updateState(CHANNEL_ENERGY_FC, new DecimalType(millData.get(CHANNEL_ENERGY_FC).getAsBigDecimal()));
+            updateState(CHANNEL_RUNTIME, new DecimalType(millData.get(CHANNEL_RUNTIME).getAsBigDecimal()));
+            updateState(CHANNEL_RUNTIME_PER, new DecimalType(millData.get(CHANNEL_RUNTIME_PER).getAsBigDecimal()));
+            updateState(CHANNEL_LAST_UPDATE, new DateTimeType(millData.get(CHANNEL_LAST_UPDATE).getAsString()));
 
-                updateState(CHANNEL_WIND_SPEED, new DecimalType(millData.get(CHANNEL_WIND_SPEED).getAsString()));
-                updateState(CHANNEL_WIND_DIRECTION, new StringType(millData.get(CHANNEL_WIND_DIRECTION).getAsString()));
-                updateState(CHANNEL_POWER_TOTAL, new DecimalType(millData.get(CHANNEL_POWER_TOTAL).getAsBigDecimal()));
-                updateState(CHANNEL_POWER_PER_WD,
-                        new DecimalType(millData.get(CHANNEL_POWER_PER_WD).getAsBigDecimal().multiply(wd)));
-                updateState(CHANNEL_POWER_RELATIVE,
-                        new DecimalType(millData.get(CHANNEL_POWER_RELATIVE).getAsBigDecimal()));
-                updateState(CHANNEL_ENERGY, new DecimalType(millData.get(CHANNEL_ENERGY).getAsBigDecimal()));
-                updateState(CHANNEL_ENERGY_FC, new DecimalType(millData.get(CHANNEL_ENERGY_FC).getAsBigDecimal()));
-                updateState(CHANNEL_RUNTIME, new DecimalType(millData.get(CHANNEL_RUNTIME).getAsBigDecimal()));
-                updateState(CHANNEL_RUNTIME_PER, new DecimalType(millData.get(CHANNEL_RUNTIME_PER).getAsBigDecimal()));
-                updateState(CHANNEL_LAST_UPDATE, new DateTimeType(millData.get(CHANNEL_LAST_UPDATE).getAsString()));
-
-                if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+            if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                updateStatus(ThingStatus.ONLINE);
             }
         } catch (Exception e) {
             logger.debug("Failed to process windmill data", e);
