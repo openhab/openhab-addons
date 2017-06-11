@@ -73,9 +73,17 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     private ScheduledFuture<?> scheduledRefresh;
     // private CacheHolder<Unit> nodes;
+    private DisconnectListener retryingDisconnectListener;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
         super(bridge);
+        retryingDisconnectListener = new DisconnectListener() {
+            @Override
+            public void notConnectedEvent(Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                makeOmnilinkConnection();
+            }
+        };
     }
 
     public void sendOmnilinkCommand(final int message, final int param1, final int param2) {
@@ -151,14 +159,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
                                 config.getKey1() + ":" + config.getKey2());
                         omniConnection.addNotificationListener(OmnilinkBridgeHandler.this);
-                        omniConnection.addDisconnectListener(new DisconnectListener() {
-                            @Override
-                            public void notConnectedEvent(Exception e) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        e.getMessage());
-                                makeOmnilinkConnection();
-                            }
-                        });
+                        omniConnection.addDisconnectListener(retryingDisconnectListener);
                         omniConnection.enableNotifications();
                         updateStatus(ThingStatus.ONLINE);
                         getSystemInfo();
@@ -523,6 +524,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public void dispose() {
         updateStatus(ThingStatus.OFFLINE);
         if (omniConnection != null) {
+            // must remove this before disconnect, as this tries to create another connection
+            omniConnection.removeDisconnecListener(retryingDisconnectListener);
             omniConnection.disconnect();
         }
         if (scheduledRefresh != null) {
