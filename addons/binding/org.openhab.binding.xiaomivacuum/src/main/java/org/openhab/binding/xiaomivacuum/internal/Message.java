@@ -1,0 +1,199 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.xiaomivacuum.internal;
+
+import java.nio.ByteBuffer;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+/**
+ * The {@link Message} is responsible for creating Xiaomi messages.
+ *
+ * @author Marcel Verpaalen - Initial contribution
+ */
+public class Message {
+
+    private static final byte[] MAGIC = Utils.hexStringToByteArray("2131");
+
+    private byte[] data;
+    private byte[] header;
+    private byte[] magic = Utils.hexStringToByteArray("2131");
+    private int length = 0;
+    private byte[] unknowns = new byte[4];
+    private byte[] serialByte = new byte[4];
+    private Date timeStamp;
+    private byte[] tsByte = new byte[4];
+    private byte[] checksum;
+    private byte[] raw;
+
+    public Message(byte[] raw) {
+        this.setRaw(raw);
+        this.header = java.util.Arrays.copyOf(raw, 16);
+        this.magic = java.util.Arrays.copyOf(raw, 2);
+        byte[] msgL = java.util.Arrays.copyOfRange(raw, 2, 4);
+        this.length = ByteBuffer.wrap(msgL).getShort();
+        this.unknowns = java.util.Arrays.copyOfRange(raw, 4, 8);
+        this.serialByte = java.util.Arrays.copyOfRange(raw, 8, 12);
+        this.tsByte = java.util.Arrays.copyOfRange(raw, 12, 16);
+        this.timeStamp = new Date(ByteBuffer.wrap(tsByte).getInt() * 1000L);
+        this.checksum = java.util.Arrays.copyOfRange(raw, 16, 32);
+        this.data = java.util.Arrays.copyOfRange(raw, 32, length);
+    }
+
+    public static Message createMsg(byte[] data, byte[] token, byte[] serial) throws NoSuchAlgorithmException {
+        return new Message(createMsgData(data, token, serial));
+    }
+
+    public static byte[] createMsgData(byte[] data, byte[] token, byte[] serial) throws NoSuchAlgorithmException {
+        short msgLength = (short) (data.length + 32);
+        ByteBuffer header = ByteBuffer.allocate(16);
+        header.put(MAGIC);
+        header.putShort(msgLength);
+        header.put(new byte[4]);
+        header.put(serial);
+        header.putInt(nowtimestamp());
+
+        ByteBuffer msg = ByteBuffer.allocate(msgLength);
+        msg.put(header.array());
+        msg.put(getChecksum(header.array(), token, data));
+        msg.put(data);
+        return msg.array();
+    }
+
+    public static byte[] getChecksum(byte[] header, byte[] token, byte[] data) throws NoSuchAlgorithmException {
+        ByteBuffer msg = ByteBuffer.allocate(header.length + token.length + data.length);
+        msg.put(header);
+        msg.put(token);
+        msg.put(data);
+        return RoboCrypto.md5(msg.array());
+    }
+
+    private static int nowtimestamp() {
+        Date now = new Date();
+        now = Calendar.getInstance().getTime();
+        Long longTime = new Long(now.getTime() / 1000);
+        return longTime.intValue();
+    }
+
+    public String toSting() {
+
+        long ts = ByteBuffer.wrap(tsByte).getInt();
+        Date date = new Date(ts * 1000L);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+
+        sdf.setTimeZone(TimeZone.getDefault());
+
+        String formattedDate = sdf.format(date);
+
+        String s = "Message:\r\nHeader  : " + Utils.getHex(header) + "\r\nchecksum: " + Utils.getHex(checksum);
+        if (getLenght() > 32) {
+            s += "\r\ncontent : " + Utils.getHex(data);
+        } else {
+            s += "\r\ncontent : N/A";
+        }
+        s += "\r\nHeader Details: Magic:" + Utils.getHex(magic) + "\r\nLength:   " + Integer.toString(length);
+        s += "\r\nSerial:   " + Utils.getHex(serialByte) + "\r\nTS:" + formattedDate;
+        return s;
+    }
+
+    /**
+     * @return the data
+     */
+    public byte[] getData() {
+        return data;
+    }
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    /**
+     * @return the header
+     */
+    public byte[] getHeader() {
+        return header;
+    }
+
+    /**
+     * @param header the header to set
+     */
+    public void setHeader(byte[] header) {
+        this.magic = header;
+    }
+
+    /**
+     * @return the lenght
+     */
+    public int getLenght() {
+        return length;
+    }
+
+    /**
+     * @param lenght the lenght to set
+     */
+    public void setLenght(int lenght) {
+        this.length = lenght;
+    }
+
+    /**
+     * @return the unknowns
+     */
+    public byte[] getUnknowns() {
+        return unknowns;
+    }
+
+    /**
+     * @param unknowns the unknowns to set
+     */
+    public void setUnknowns(byte[] unknowns) {
+        this.unknowns = unknowns;
+    }
+
+    /**
+     * @return the serialByte
+     */
+    public byte[] getSerialByte() {
+        return serialByte;
+    }
+
+    /**
+     * @param serialByte the serialByte to set
+     */
+    public void setSerialByte(byte[] serialByte) {
+        this.serialByte = serialByte;
+    }
+
+    /**
+     * @return the tsByte
+     */
+    public Date getTimestamp() {
+        return timeStamp;
+    }
+
+    /**
+     * @return the raw
+     */
+    public byte[] getRaw() {
+        return raw;
+    }
+
+    /**
+     * @param raw the raw to set
+     */
+    public void setRaw(byte[] raw) {
+        this.raw = raw;
+    }
+}

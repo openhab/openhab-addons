@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="xiaomivacuum" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vacuum">
+		<label>Xiaomi Robot Vacuum</label>
+
+		<channel-groups>
+            <channel-group id="actions" typeId="actions" />
+			<channel-group id="status" typeId="status" />
+			<channel-group id="consumables" typeId="consumables" />		
+			<!-- <channel-group id="dnd" typeId="dnd" /> <channel-group id="history" typeId="history" /> -->
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">Xiaomi</property>
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP address Vacuum</label>
+			</parameter>
+			<parameter name="token" type="text" required="true">
+				<label>Token</label>
+				<description>Token for communication (in Hex)</description>
+				<default>FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="1" max="9999" required="false">
+				<label>Refresh interval</label>
+				<description>Refresh interval for refreshing the data in seconds</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-group-type id="actions">
+		<label>Action</label>
+		<channels>
+			<channel id="vacuum" typeId="vacuum" />
+			<channel id="spot_clean" typeId="spot_clean" />
+			<channel id="return" typeId="return" />
+			<channel id="pause" typeId="pause" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status">
+		<label>Status</label>
+		<channels>
+			<channel id="battery" typeId="system.battery-level" />
+			<channel id="clean_area" typeId="clean_area" />
+			<channel id="clean_time" typeId="clean_time" />
+			<channel id="dnd_enabled" typeId="dnd_enabled" />
+			<channel id="error_code" typeId="error_code" />
+			<channel id="fan_power" typeId="fan_power" />
+			<channel id="in_cleaning" typeId="in_cleaning" />
+			<channel id="map_present" typeId="map_present" />
+			<channel id="msg_seq" typeId="msg_seq" />
+			<channel id="msg_ver" typeId="msg_ver" />
+			<channel id="state" typeId="state" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="consumables">
+		<label>Consumables</label>
+		<channels>
+			<channel id="main_brush_time" typeId="main_brush_time" />
+			<channel id="side_brush_time" typeId="side_brush_time" />
+			<channel id="filter_time" typeId="filter_time" />
+			<channel id="sensor_dirt_time" typeId="sensor_dirt_time" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Status channels -->
+	<channel-type id="clean_area">
+		<item-type>Number</item-type>
+		<label>Cleaning Area</label>
+		<state pattern="%.2d M2" readOnly="true" />
+	</channel-type>
+	<channel-type id="clean_time">
+		<item-type>Number</item-type>
+		<label>Cleaning Time</label>
+		<state pattern="%.2d min" readOnly="true" />
+	</channel-type>
+	<channel-type id="dnd_enabled">
+		<item-type>Switch</item-type>
+		<label>Do not Disturb</label>
+	</channel-type>
+	<channel-type id="error_code">
+		<item-type>String</item-type>
+		<label>Error</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="fan_power">
+		<item-type>Number</item-type>
+		<label>Fan Power</label>
+		<state pattern="%.0d %%" readOnly="true" />
+	</channel-type>
+	<channel-type id="in_cleaning">
+		<item-type>Number</item-type>
+		<label>in_cleaning</label>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="map_present">
+		<item-type>Number</item-type>
+		<label>map_present</label>
+		<category>Energy</category>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="msg_seq">
+		<item-type>Number</item-type>
+		<label>msg_seq</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="msg_ver">
+		<item-type>Number</item-type>
+		<label>msg_ver</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>state</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Consumables channels -->
+	<channel-type id="main_brush_time">
+		<item-type>Number</item-type>
+		<label>Main Brush Time</label>
+		<state pattern="%.2d min" readOnly="true" />
+	</channel-type>
+	<channel-type id="side_brush_time">
+		<item-type>Number</item-type>
+		<label>Side Brush Time</label>
+		<state pattern="%.2d min" readOnly="true" />
+	</channel-type>
+	<channel-type id="filter_time">
+		<item-type>Number</item-type>
+		<label>Filter Usage Time</label>
+		<state pattern="%.2d min" readOnly="true" />
+	</channel-type>
+	<channel-type id="sensor_dirt_time">
+		<item-type>Number</item-type>
+		<label>Sensor Dirt Time</label>
+		<state pattern="%.2d min" readOnly="true" />
+	</channel-type>
+
+	<!-- actions -->
+	<channel-type id="vacuum">
+		<item-type>Switch</item-type>
+		<label>Vacuuming</label>
+	</channel-type>
+	<channel-type id="spot_clean">
+		<item-type>Switch</item-type>
+		<label>Spot Cleaning</label>
+	</channel-type>
+	<channel-type id="return">
+		<item-type>Switch</item-type>
+		<label>Return Base</label>
+	</channel-type>
+	<channel-type id="pause">
+		<item-type>Switch</item-type>
+		<label>Pause Cleaning</label>
+	</channel-type>
+
+</thing:thing-descriptions>
