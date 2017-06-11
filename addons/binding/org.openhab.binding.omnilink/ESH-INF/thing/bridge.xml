@@ -2,7 +2,6 @@
 <thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
 	<bridge-type id="controller">
 		<label>Omnilink controller</label>
 		<description>A Omnilink enabled system</description>
@@ -26,6 +25,7 @@
 				<context>network-port</context>
 				<label>Port</label>
 				<description>The port of the Omnilink Controller</description>
+				<default>4369</default>
 			</parameter>
 			<parameter name="key1" type="text" required="true">
 				<label>Key 1</label>

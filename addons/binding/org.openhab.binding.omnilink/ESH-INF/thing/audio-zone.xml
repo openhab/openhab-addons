@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="audio_source">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>Zone Name</label>
+        <description>Audio Zone Name</description>
+        <channels>
+            <channel id="name" typeId="audio_zone_name" />
+        </channels>
+        <properties>
+            <property name="name" />
+            <property name="area" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Audio Zone Number</label>
+                <description>Audio Zone Number</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+</thing:thing-descriptions>

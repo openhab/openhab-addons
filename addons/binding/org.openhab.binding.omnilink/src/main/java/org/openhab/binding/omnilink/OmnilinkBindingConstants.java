@@ -18,36 +18,52 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  */
 public class OmnilinkBindingConstants {
 
-    public static final String BINDING_ID = "omnilink";
+	public static final String BINDING_ID = "omnilink";
 
-    // List of all Channel ids
-    public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
-    public final static String CHANNEL_CONTACTSENSOR = "status";
+	// List of all Channel ids
 
-    public final static String CHANNEL_AREAMODE = "mode";
-    public final static String CHANNEL_AREAALARM = "alarm";
-    public final static String CHANNEL_FLAG = "value";
-    public final static String CHANNEL_FLAGSWITCH = "switch";
-    public final static String CHANNEL_BUTTON_PRESS = "press";
-    public final static String CHANNEL_SYSTEMDATE = "sysdate";
+	//zones
+	public final static String CHANNEL_ZONE_CONTACT = "contact";
+	public final static String CHANNEL_ZONE_CURRENT_CONDITION = "current_condition";
+	public final static String CHANNEL_ZONE_LATCHED_ALARM_STATUS = "latched_alarm_status";
+	public final static String CHANNEL_ZONE_ARMING_STATUS = "arming_status";
 
-    public final static String CHANNEL_ROOM_SWITCH = "switch";
-    public final static String CHANNEL_ROOM_ON = "on";
-    public final static String CHANNEL_ROOM_OFF = "off";
-    public final static String CHANNEL_ROOM_SCENEA = "scenea";
-    public final static String CHANNEL_ROOM_SCENEB = "sceneb";
-    public final static String CHANNEL_ROOM_SCENEC = "scenec";
-    public final static String CHANNEL_ROOM_SCENED = "scened";
-    public final static String CHANNEL_ROOM_STATE = "state";
-    // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "omnilinkBridge");
-    public final static ThingTypeUID THING_TYPE_AREA = new ThingTypeUID(BINDING_ID, "area");
-    public final static ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
-    public final static ThingTypeUID THING_TYPE_UNIT = new ThingTypeUID(BINDING_ID, "unit");
-    public final static ThingTypeUID THING_TYPE_FLAG = new ThingTypeUID(BINDING_ID, "flag");
-    public final static ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
-    public final static ThingTypeUID THING_TYPE_BUTTON = new ThingTypeUID(BINDING_ID, "button");
+	//areas
+	public final static String CHANNEL_AREA_MODE = "mode";
+	public final static String CHANNEL_AREA_ALARM = "alarm";
 
-    public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
+	//units
+	public final static String CHANNEL_UNIT_LEVEL = "level";
+	public final static String CHANNEL_FLAG = "value";
+	public final static String CHANNEL_ROOM_SWITCH = "switch";
+	public final static String CHANNEL_ROOM_ON = "on";
+	public final static String CHANNEL_ROOM_OFF = "off";
+	public final static String CHANNEL_ROOM_SCENEA = "scenea";
+	public final static String CHANNEL_ROOM_SCENEB = "sceneb";
+	public final static String CHANNEL_ROOM_SCENEC = "scenec";
+	public final static String CHANNEL_ROOM_SCENED = "scened";
+	public final static String CHANNEL_ROOM_STATE = "state";
+
+	public final static String CHANNEL_FLAGSWITCH = "switch";
+	public final static String CHANNEL_BUTTON_PRESS = "press";
+	public final static String CHANNEL_SYSTEMDATE = "sysdate";
+
+	//thing configuration and properties keys
+	public final static String THING_PROPERTIES_NAME = "name";
+	public final static String THING_PROPERTIES_NUMBER = "number";
+	public final static String THING_PROPERTIES_AREA = "area";
+	public final static String THING_PROPERTIES_ROOM = "room";
+
+	// List of all Thing Type UIDs
+	public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "controller");
+	public final static ThingTypeUID THING_TYPE_OMNI_AREA = new ThingTypeUID(BINDING_ID, "area");
+	public final static ThingTypeUID THING_TYPE_LUMINA_AREA = new ThingTypeUID(BINDING_ID, "lumina_area");
+	public final static ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
+	public final static ThingTypeUID THING_TYPE_UNIT = new ThingTypeUID(BINDING_ID, "unit");
+	public final static ThingTypeUID THING_TYPE_FLAG = new ThingTypeUID(BINDING_ID, "flag");
+	public final static ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
+	public final static ThingTypeUID THING_TYPE_BUTTON = new ThingTypeUID(BINDING_ID, "button");
+
+	public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
 
 }

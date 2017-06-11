@@ -93,7 +93,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
         State newState = PercentType.valueOf(Integer.toString(level));
 
         logger.debug("handle Unit Status Change to: " + newState);
-        updateState(OmnilinkBindingConstants.CHANNEL_LIGHTLEVEL, newState);
+        updateState(OmnilinkBindingConstants.CHANNEL_UNIT_LEVEL, newState);
 
     }
 }

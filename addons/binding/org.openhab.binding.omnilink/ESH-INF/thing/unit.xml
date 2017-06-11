@@ -34,7 +34,7 @@
 		<label>UPB Unit</label>
 		<description>A UPB based unit</description>
 		<channels>
-			<channel id="lightlevel" typeId="lightlevel" />
+			<channel id="level" typeId="unit_level" />
 		</channels>
         <properties>
             <property name="name" />

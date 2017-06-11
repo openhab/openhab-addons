@@ -43,70 +43,68 @@ import com.google.common.collect.ImmutableSet;
  */
 public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
 
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-        // if the omnilink bridge, let's fix up discovery
-        super.removeHandler(thingHandler);
-        if (thingHandler instanceof OmnilinkBridgeHandler) {
-            ServiceRegistration<?> discovery = discoveryServiceRegistrations.get(thingHandler.getThing().getUID());
-            logger.debug("unRegistering omnilink discovery: {} ", discovery);
-            discovery.unregister();
-        }
-    }
+	@Override
+	protected void removeHandler(ThingHandler thingHandler) {
+		// if the omnilink bridge, let's fix up discovery
+		super.removeHandler(thingHandler);
+		if (thingHandler instanceof OmnilinkBridgeHandler) {
+			ServiceRegistration<?> discovery = discoveryServiceRegistrations.get(thingHandler.getThing().getUID());
+			logger.debug("unRegistering omnilink discovery: {} ", discovery);
+			discovery.unregister();
+		}
+	}
 
-    private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_AREA,
-            THING_TYPE_ZONE, THING_TYPE_UNIT, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM, THING_TYPE_BUTTON);
+	private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
+	private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_OMNI_AREA,
+			THING_TYPE_ZONE, THING_TYPE_UNIT, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM, THING_TYPE_BUTTON);
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
+	private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
-    @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-    }
+	@Override
+	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+		return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+	}
 
-    @Override
-    protected ThingHandler createHandler(Thing thing) {
+	@Override
+	protected ThingHandler createHandler(Thing thing) {
+		ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+		if (thingTypeUID.equals(THING_TYPE_UNIT)) {
+			return new UpbUnitHandler(thing);
+		} else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
+			OmnilinkBridgeHandler handler = new OmnilinkBridgeHandler((Bridge) thing);
+			registerOmnilnkBridgeDiscoveryService(handler);
+			return handler;
+		} else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
+			return new ZoneHandler(thing);
+		} else if (thingTypeUID.equals(THING_TYPE_OMNI_AREA)) {
+			return new AreaHandler(thing);
+		} else if (thingTypeUID.equals(THING_TYPE_FLAG)) {
+			return new FlagHandler(thing);
+		} else if (thingTypeUID.equals(THING_TYPE_ROOM)) {
+			return new RoomHandler(thing);
+		} else if (thingTypeUID.equals(THING_TYPE_BUTTON)) {
+			return new ButtonHandler(thing);
+		}
 
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+		return null;
+	}
 
-        if (thingTypeUID.equals(THING_TYPE_UNIT)) {
-            return new UpbUnitHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            OmnilinkBridgeHandler handler = new OmnilinkBridgeHandler((Bridge) thing);
-            registerOmnilnkBridgeDiscoveryService(handler);
-            return handler;
-        } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
-            return new ZoneHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_AREA)) {
-            return new AreaHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_FLAG)) {
-            return new FlagHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_ROOM)) {
-            return new RoomHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_BUTTON)) {
-            return new ButtonHandler(thing);
-        }
+	/**
+	 * Register the Thing Discovery Service for a bridge.
+	 *
+	 * @param bridgeHandler
+	 */
+	private void registerOmnilnkBridgeDiscoveryService(OmnilinkBridgeHandler bridgeHandler) {
+		OmnilinkDiscoveryService discoveryService = new OmnilinkDiscoveryService(bridgeHandler);
+		discoveryService.activate();
 
-        return null;
-    }
+		ServiceRegistration<?> discoveryServiceRegistration = bundleContext
+				.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
+		discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceRegistration);
 
-    /**
-     * Register the Thing Discovery Service for a bridge.
-     *
-     * @param bridgeHandler
-     */
-    private void registerOmnilnkBridgeDiscoveryService(OmnilinkBridgeHandler bridgeHandler) {
-        OmnilinkDiscoveryService discoveryService = new OmnilinkDiscoveryService(bridgeHandler);
-        discoveryService.activate();
-
-        ServiceRegistration<?> discoveryServiceRegistration = bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
-        discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceRegistration);
-
-        logger.debug(
-                "registerOmnilinkBridgeDiscoveryService(): Bridge Handler - {}, Class Name - {}, Discovery Service - {}",
-                bridgeHandler, DiscoveryService.class.getName(), discoveryService);
-    }
+		logger.debug(
+				"registerOmnilinkBridgeDiscoveryService(): Bridge Handler - {}, Class Name - {}, Discovery Service - {}",
+				bridgeHandler, DiscoveryService.class.getName(), discoveryService);
+	}
 
 }
