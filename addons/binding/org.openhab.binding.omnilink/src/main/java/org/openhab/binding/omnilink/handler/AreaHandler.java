@@ -1,6 +1,7 @@
 package org.openhab.binding.omnilink.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.UID;
@@ -53,7 +54,14 @@ public class AreaHandler extends AbstractOmnilinkHandler {
 		logger.debug("handle area event: {}", status);
 		updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_MODE),
 				new DecimalType(status.getMode()));
-		updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_ALARM),
-				new DecimalType(status.getAlarms()));
+		for (int i = 0; i < OmnilinkBindingConstants.CHANNEL_AREA_ALARMS.length; i++) {
+			if (((status.getAlarms() >> i) & 1) > 0) {
+				updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_ALARMS[i]),
+						OnOffType.ON);
+			} else {
+				updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_ALARMS[i]),
+						OnOffType.OFF);
+			}
+		}
 	}
 }
