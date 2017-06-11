@@ -68,8 +68,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             generateButtons(c);
         } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
                 | OmniUnknownMessageTypeException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Received error during discovery", e);
         }
     }
 
