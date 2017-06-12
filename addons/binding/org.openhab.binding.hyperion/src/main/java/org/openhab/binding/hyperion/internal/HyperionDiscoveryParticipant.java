@@ -58,6 +58,10 @@ public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         String longName = service.getName();
         int pos = longName.indexOf("@");
+        if (pos < 0 || pos >= longName.length()) {
+            return null;
+        }
+
         String friendlyName = longName.substring(0, pos);
         ThingUID uid = getThingUID(service);
 
