@@ -99,7 +99,6 @@ public class AreaHandler extends AbstractOmnilinkHandler {
                     }
                 } catch (OmniInvalidResponseException e) {
                     logger.debug("Could not arm area, are all zones closed?", e);
-                    throw new RuntimeException("Could not arm system", e);
                 } catch (OmniUnknownMessageTypeException | BridgeOfflineException e) {
                     logger.error("Could not send area command", e);
                 }
