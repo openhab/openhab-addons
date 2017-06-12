@@ -251,7 +251,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                                     updateState(CHANNEL_TEMPERATURE, message.convertToState(valueSelector));
                                     break;
                                 case CHILL_TEMPERATURE:
-                                    updateState(CHANNEL_TEMPERATURE, message.convertToState(valueSelector));
+                                    updateState(CHANNEL_CHILL_TEMPERATURE, message.convertToState(valueSelector));
                                     break;
                                 case TOTAL_AMP_HOUR:
                                     updateState(CHANNEL_TOTAL_AMP_HOUR, message.convertToState(valueSelector));
