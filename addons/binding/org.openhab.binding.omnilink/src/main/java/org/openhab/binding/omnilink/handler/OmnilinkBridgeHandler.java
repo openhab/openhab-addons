@@ -120,6 +120,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     public Connection getOmnilinkConnection() {
+        logger.warn(
+                "This method will be made private.  Only place to be calling it right now is startScan of discovery.  Do not call from the handlers. ");
         return omniConnection;
     }
 
