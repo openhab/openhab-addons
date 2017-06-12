@@ -66,11 +66,10 @@ public class AreaHandler extends AbstractOmnilinkHandler {
 
         /*
          * According to the spec, if the 3rd bit is set on a area mode, then that mode is in a delayed state.
-         * Unfortunately, this is not the case, but we can fix that by looking to see if the entry/exit timer
+         * Unfortunately, this is not the case, but we can fix that by looking to see if the exit timer
          * is set and do this manually.
          */
-        int mode = status.getEntryTimer() > 0 || status.getExitTimer() > 0 ? status.getMode() | 1 << 3
-                : status.getMode();
+        int mode = status.getExitTimer() > 0 ? status.getMode() | 1 << 3 : status.getMode();
         updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_MODE), new DecimalType(mode));
 
         /*
