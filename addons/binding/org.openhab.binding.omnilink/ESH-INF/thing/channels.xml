@@ -250,7 +250,12 @@
 			</options>
 		</state>
 	</channel-type>
-
+    <channel-type id="zone_command">
+        <item-type>String</item-type>
+        <label>Zone Command</label>
+        <description>Sends a user code and command to the zone.</description>
+        <category>Alarm</category>
+    </channel-type>
 	<!-- Code Channels -->
 
 	<channel-type id="code_name">
