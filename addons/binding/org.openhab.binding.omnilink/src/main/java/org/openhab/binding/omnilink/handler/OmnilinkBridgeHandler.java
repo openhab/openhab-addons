@@ -85,6 +85,18 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         };
     }
 
+    public void sendOmnilinkCommandNew(final int message, final int param1, final int param2)
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+
+        try {
+            omniConnection.controllerCommand(message, param1, param2);
+        } catch (IOException | OmniNotConnectedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            throw new BridgeOfflineException(e);
+        }
+
+    }
+
     public void sendOmnilinkCommand(final int message, final int param1, final int param2) {
 
         listeningExecutor.execute(new Runnable() {
@@ -440,6 +452,40 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         });
     }
 
+    /**
+     * new non-blocking version. the existing will be phased out and moved to this, then we can rename
+     *
+     * @param objType
+     * @param startObject
+     * @param endObject
+     * @param extended
+     * @return
+     * @throws OmniInvalidResponseException
+     * @throws OmniUnknownMessageTypeException
+     * @throws BridgeOfflineException
+     */
+
+    public ObjectStatus requestObjectStatusNew(final int objType, final int startObject, final int endObject,
+            boolean extended)
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        try {
+            return omniConnection.reqObjectStatus(objType, startObject, endObject, extended);
+        } catch (OmniNotConnectedException | IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            throw new BridgeOfflineException(e);
+            // do we need to reconnect, or will reconnect listener get called?
+        }
+    }
+
+    /**
+     * @deprecated
+     * @param objType
+     * @param startObject
+     * @param endObject
+     * @param extended
+     * @return
+     */
+    @Deprecated
     private ListenableFuture<ObjectStatus> requestObjectStatus(final int objType, final int startObject,
             final int endObject, boolean extended) {
 

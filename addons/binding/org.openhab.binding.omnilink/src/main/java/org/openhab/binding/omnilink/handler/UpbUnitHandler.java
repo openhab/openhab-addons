@@ -17,9 +17,11 @@ import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
+import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
+import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 
 public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandler {
 
@@ -44,6 +46,23 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         logger.debug("handleCommand called");
         OmniLinkCmd omniCmd;
+        int unitId = Integer.parseInt(channelParts[2]);
+
+        // handle refresh
+        if (command instanceof RefreshType) {
+            logger.debug("Unit '{}' got REFRESH command", thing.getLabel());
+            ObjectStatus objStatus;
+            try {
+                objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_UNIT, unitId, unitId,
+                        false);
+                handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
+
+            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+                logger.debug("Unexpected exception refreshing unit:", e);
+            }
+            return;
+        }
+
         if (command instanceof PercentType) {
             int lightLevel = ((PercentType) command).intValue();
             if (lightLevel == 0 || lightLevel == 100) {
@@ -51,25 +70,20 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
             } else {
                 omniCmd = OmniLinkCmd.CMD_UNIT_PERCENT;
             }
-            getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((PercentType) command).intValue(),
-                    Integer.parseInt(channelParts[2]));
-        } else if (command instanceof RefreshType) {
-            logger.debug("Unit '{}' got REFRESH command", thing.getLabel());
-            Futures.addCallback(getOmnilinkBridgeHander().getUnitStatus(Integer.parseInt(channelParts[2])),
-                    new FutureCallback<UnitStatus>() {
-                        @Override
-                        public void onFailure(Throwable arg0) {
-                            logger.error("Error refreshing unit status", arg0);
-                        }
+            try {
+                getOmnilinkBridgeHander().sendOmnilinkCommandNew(omniCmd.getNumber(),
+                        ((PercentType) command).intValue(), unitId);
+            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+                logger.debug("received exception handling command", e);
+            }
 
-                        @Override
-                        public void onSuccess(UnitStatus status) {
-                            handleUnitStatus(status);
-                        }
-                    });
         } else {
             omniCmd = sCommandMappingMap.get(command);
-            getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), 0, Integer.parseInt(channelParts[2]));
+            try {
+                getOmnilinkBridgeHander().sendOmnilinkCommandNew(omniCmd.getNumber(), 0, unitId);
+            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+                logger.debug("received exception handling command", e);
+            }
         }
 
     }
