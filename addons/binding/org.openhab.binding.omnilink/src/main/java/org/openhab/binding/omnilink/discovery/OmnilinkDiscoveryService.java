@@ -178,7 +178,6 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, o.getName());
-
             DiscoveryResult discoveryResult;
             if (isRoomController) {
                 discoveryResult = DiscoveryResultBuilder
@@ -189,7 +188,12 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                     thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_FLAG, thingID);
 
                 } else {
-                    thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT, thingID);
+                    if (o.getUnitType() == UnitProperties.UNIT_TYPE_UPB
+                            || o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_LOAD) {
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB, thingID);
+                    } else {
+                        logger.debug("Unsupported unit type: {}", o.getUnitType());
+                    }
                     // let's prepend room name to unit name for label
                     // TODO could make this configurable
                     thingLabel = currentRoomName + ": " + o.getName();
