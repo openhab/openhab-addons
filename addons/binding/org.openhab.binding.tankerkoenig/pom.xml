@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.binding.tankerkoenig</artifactId>
 
-  <name>Tankerkönig Binding</name>
+  <name>Tankerkoenig Binding</name>
   <packaging>eclipse-plugin</packaging>
 
 </project>
