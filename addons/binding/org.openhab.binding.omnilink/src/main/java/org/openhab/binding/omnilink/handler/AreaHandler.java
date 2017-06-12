@@ -84,7 +84,14 @@ public class AreaHandler extends AbstractOmnilinkHandler {
                      * 2 Manager
                      * 3 User
                      */
-                    if (codeValidation.getAuthorityLevel() > 0) {
+                    logger.debug("User code number:{} level:{}", codeValidation.getCodeNumber(),
+                            codeValidation.getAuthorityLevel());
+
+                    /*
+                     * Valid user code number are 1-99, 251 is duress code, 0 means code does not exist
+                     */
+                    if ((codeValidation.getCodeNumber() > 0 && codeValidation.getCodeNumber() <= 99)
+                            && codeValidation.getAuthorityLevel() > 0) {
                         getOmnilinkBridgeHander().sendOmnilinkCommandNew(mode, codeValidation.getCodeNumber(),
                                 areaNumber);
                     } else {
@@ -96,7 +103,6 @@ public class AreaHandler extends AbstractOmnilinkHandler {
                 } catch (OmniUnknownMessageTypeException | BridgeOfflineException e) {
                     logger.error("Could not send area command", e);
                 }
-                getOmnilinkBridgeHander().sendOmnilinkCommand(mode, 1, areaNumber);
             }
             // this is a send only channel, so don't store the user code
             updateState(channelUID, UnDefType.UNDEF);
