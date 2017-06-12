@@ -10,7 +10,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
@@ -47,21 +46,6 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
         logger.debug("handleCommand called");
         OmniLinkCmd omniCmd;
         int unitId = Integer.parseInt(channelParts[2]);
-
-        // handle refresh
-        if (command instanceof RefreshType) {
-            logger.debug("Unit '{}' got REFRESH command", thing.getLabel());
-            ObjectStatus objStatus;
-            try {
-                objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_UNIT, unitId, unitId,
-                        false);
-                handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
-
-            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-                logger.debug("Unexpected exception refreshing unit:", e);
-            }
-            return;
-        }
 
         if (command instanceof PercentType) {
             int lightLevel = ((PercentType) command).intValue();
@@ -110,4 +94,21 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
         updateState(OmnilinkBindingConstants.CHANNEL_UNIT_LEVEL, newState);
 
     }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        logger.debug("channel linked: {}", channelUID);
+        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
+        int unitId = Integer.parseInt(channelParts[2]);
+
+        ObjectStatus objStatus;
+        try {
+            objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
+            handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
+
+        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+            logger.debug("Unexpected exception refreshing unit:", e);
+        }
+    }
+
 }
