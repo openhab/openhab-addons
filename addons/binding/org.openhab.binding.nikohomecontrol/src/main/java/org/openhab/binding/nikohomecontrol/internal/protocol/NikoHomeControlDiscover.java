@@ -11,13 +11,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * Class {@link NikoHomeControlDiscover} is used to get the Niko Home Control IP-interface IP address for bridge
  * discovery.
  * <p>
- * The constructor sends a UDP packet with content 0x44 to the local network on port 10000.
+ * The constructor broadcasts a UDP packet with content 0x44 on port 10000.
  * The Niko Home Control IP-interface responds to this UDP packet.
  * The IP-address from the Niko Home Control IP-interface is then extracted from the response packet.
  * The data content of the response packet is used as a unique identifier for the bridge.
@@ -35,25 +29,18 @@ import org.slf4j.LoggerFactory;
  */
 public final class NikoHomeControlDiscover {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication.class);
+    private Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
 
     private InetAddress addr;
     private String nhcBridgeId;
 
-    public NikoHomeControlDiscover(InetAddress addr) throws IOException {
-        InetAddress broadcastaddr = addr;
-        if (broadcastaddr == null) {
-            broadcastaddr = getBroadcastAddress();
-        }
-        if (broadcastaddr == null) {
-            throw new IOException("Cannot determine broadcast address");
-        }
+    public NikoHomeControlDiscover() throws IOException {
+        final byte[] discoverBuffer = { (byte) 0x44 };
+        final InetAddress broadcastAddr = InetAddress.getByName("255.255.255.255");
+        final int broadcastPort = 10000;
 
-        final byte[] discoverbuffer = { (byte) 0x44 };
-        final int broadcastport = 10000;
-
-        DatagramPacket discoveryPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcastaddr,
-                broadcastport);
+        DatagramPacket discoveryPacket = new DatagramPacket(discoverBuffer, discoverBuffer.length, broadcastAddr,
+                broadcastPort);
         byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
@@ -66,10 +53,6 @@ public final class NikoHomeControlDiscover {
             setNhcBridgeId(packet);
             logger.debug("Niko Home Control: IP address is {}, unique ID is {}", this.addr, this.nhcBridgeId);
         }
-    }
-
-    public NikoHomeControlDiscover() throws IOException {
-        this(null);
     }
 
     /**
@@ -100,30 +83,5 @@ public final class NikoHomeControlDiscover {
             sb.append(String.format("%02x", packetData[i]));
         }
         this.nhcBridgeId = sb.toString();
-    }
-
-    /**
-     * Method to try to find a broadcast address from the local network interfaces.
-     * If this does not yield the correct result, the broadcast address needs to be set in the configuration.
-     *
-     * @return current broadcast address
-     */
-    private InetAddress getBroadcastAddress() {
-        try {
-            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            while (networkInterfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = networkInterfaces.nextElement();
-                List<InterfaceAddress> interfaceAddresses = networkInterface.getInterfaceAddresses();
-                for (InterfaceAddress interfaceAddress : interfaceAddresses) {
-                    InetAddress addr = interfaceAddress.getAddress();
-                    if (!addr.isLinkLocalAddress() && !addr.isLoopbackAddress() && addr instanceof Inet4Address) {
-                        return interfaceAddress.getBroadcast();
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            logger.warn("Niko Home Control: unable to determine broadcast address");
-        }
-        return null;
     }
 }

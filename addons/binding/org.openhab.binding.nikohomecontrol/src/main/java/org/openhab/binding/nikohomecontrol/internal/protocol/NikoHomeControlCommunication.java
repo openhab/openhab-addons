@@ -46,10 +46,8 @@ public final class NikoHomeControlCommunication {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication.class);
 
-    private boolean fixedIp;
     private InetAddress nhcAddress;
     private int nhcPort;
-    private InetAddress broadcastAddr;
 
     private Socket nhcSocket;
     private PrintWriter nhcOut;
@@ -72,38 +70,23 @@ public final class NikoHomeControlCommunication {
      * Constructor for Niko Home Control communication object, manages communication with
      * Niko Home Control IP-interface.
      *
-     * @param addr Can be null or omitted, will attempt to discover IP address if omitted.
-     *
-     * @throws IOException when Niko Home Control IP-interface cannot be found
      */
-    public NikoHomeControlCommunication(InetAddress addr, InetAddress broadcastAddr) throws IOException {
-        this.broadcastAddr = broadcastAddr;
-
-        if (addr == null) {
-            NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
-            this.nhcAddress = nhcDiscover.getAddr();
-            this.fixedIp = false;
-        } else {
-            this.nhcAddress = addr;
-            this.fixedIp = true;
-        }
-
-        // When we set up this object, we also want to get the proper gson adapter set up once
+    public NikoHomeControlCommunication() {
+        // When we set up this object, we want to get the proper gson adapter set up once
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(NhcMessageBase.class, new NikoHomeControlMessageDeserializer());
         this.gsonIn = gsonBuilder.create();
-    }
-
-    public NikoHomeControlCommunication() throws IOException {
-        this(null, null);
     }
 
     /**
      * Start communication with Niko Home Control IP-interface, run through initialization and start thread listening
      * to all messages coming from Niko Home Control.
      *
+     * @param addr IP-address of Niko Home Control IP-interface
+     * @param port port
+     *
      */
-    public void startCommunication(int port) {
+    public void startCommunication(InetAddress addr, int port) {
         try {
             for (int i = 1; nhcEventsRunning && (i <= 5); i++) {
                 // the events listener thread did not finish yet, so wait max 5000ms before restarting
@@ -116,8 +99,9 @@ public final class NikoHomeControlCommunication {
                 throw new IOException();
             }
 
+            this.nhcAddress = addr;
             this.nhcPort = port;
-            this.nhcSocket = new Socket(this.nhcAddress, this.nhcPort);
+            this.nhcSocket = new Socket(addr, port);
             this.nhcOut = new PrintWriter(this.nhcSocket.getOutputStream(), true);
             this.nhcIn = new BufferedReader(new InputStreamReader(this.nhcSocket.getInputStream()));
             logger.debug("Niko Home Control: connected from thread {}", Thread.currentThread().getId());
@@ -130,11 +114,9 @@ public final class NikoHomeControlCommunication {
             (new Thread(nhcEvents)).start();
 
         } catch (IOException | InterruptedException e) {
-            // if the error occurs in the initialization, don't try to restart
             logger.warn("Niko Home Control: error initializing communication from thread {}",
                     Thread.currentThread().getId());
             stopCommunication();
-            // take bridge offline
             this.bridgeCallBack.bridgeOffline();
         }
     }
@@ -165,19 +147,8 @@ public final class NikoHomeControlCommunication {
         stopCommunication();
 
         logger.debug("Niko Home Control: restart communication from thread {}", Thread.currentThread().getId());
-        if (!this.fixedIp) {
-            try {
-                NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
-                this.nhcAddress = nhcDiscover.getAddr();
-            } catch (IOException e) {
-                // if the error occurs in the initialization, don't try to restart
-                logger.warn("Niko Home Control: cannot find IP-interface");
-                // take bridge offline
-                this.bridgeCallBack.bridgeOffline();
-                return;
-            }
-        }
-        startCommunication(this.nhcPort);
+
+        startCommunication(this.nhcAddress, this.nhcPort);
     }
 
     /**
@@ -213,7 +184,7 @@ public final class NikoHomeControlCommunication {
             } catch (IOException e) {
                 if (!listenerStopped) {
                     nhcEventsRunning = false;
-                    // this is not an communication stop triggered from outside this runnable
+                    // this is a socket error, not a communication stop triggered from outside this runnable
                     logger.warn("Niko Home Control: IO error in listener on thread {}", Thread.currentThread().getId());
                     // the IO has stopped working, so we need to close cleanly and try to restart
                     restartCommunication();
@@ -402,7 +373,7 @@ public final class NikoHomeControlCommunication {
      *
      * @param nhcMessage
      */
-    public void sendMessage(Object nhcMessage) {
+    void sendMessage(Object nhcMessage) {
         String json = gsonOut.toJson(nhcMessage);
         logger.debug("Niko Home Control: send json {}", json);
         this.nhcOut.println(json);

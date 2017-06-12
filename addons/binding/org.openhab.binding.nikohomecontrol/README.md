@@ -15,13 +15,11 @@ Connected to a bridge, the Niko Home Control Binding supports on/off actions (e.
 
 ## Binding Configuration
 
-The bridge representing the Niko Home Control IP-interface needs to be added first in the things file or through Paper UI. A bridge can be auto-discovered or created manually. No bridge configuration is required. The communication only works if the openHAB system and the Niko Home Control IP-interface are in the same subnet. Only one Niko Home Control IP-interface typically exists in a subnet, therefore only one bridge should typically be added to openHAB.
+The bridge representing the Niko Home Control IP-interface needs to be added first in the things file or through Paper UI. A bridge can be auto-discovered or created manually. No bridge configuration is required when using auto-discovery.
 
-Optionally the IP-address or broadcast address and port can be set when manually creating the bridge. A fixed IP-address will take precedence over a broadcast address or fully automatic discovery to discover the IP-address of the Niko Home Control IP-interface.
+The IP-address and port can be set when manually creating the bridge.
 
-If the IP-address is set, no attempt will be made to discover the correct IP-address. You are responsible to force a fixed IP address on the Niko Home Control IP-interface through settings in your DHCP server
-
-If the broadcast address is set, it will be used to send the broadcast discovery message, rather than attempting to find the broadcast address automatically. This can be important if the openHAB server is multi-homed, in which case the wrong subnet could be picked by the automatic discovery.
+If the IP-address is set, no attempt will be made to discover the correct IP-address. You are responsible to force a fixed IP address on the Niko Home Control IP-interface through settings in your DHCP server.
 
 The port is set to 8000 by default and should match the port used by the Niko Home Control IP-interface.
 
@@ -29,7 +27,7 @@ An optional refresh interval will be used to restart the bridge at regular inter
 
 ## Discovery
 
-A discovery scan will first discover the Niko Home Control IP-interface in the network as a bridge. Default parameters will be used. Note that this may fail when openHAB is running on a multi-homed server, in which case you will have to add the bridge manually.
+A discovery scan will first discover the Niko Home Control IP-interface in the network as a bridge. Default parameters will be used. Note that this may fail to find the correct Niko Home Control IP-interface when there are multiple IP-interfaces in the network.
 
 When the Niko Home Control bridge is added as a thing, from the discovery inbox or manually, system information will be read from the Niko Home Control Controller and will be put in the bridge properties, visible through Paper UI.
 
@@ -40,19 +38,18 @@ If the Niko Home Control system has locations configured, these will be copied t
 
 ## Thing Configuration
 
-Besides adding automatically discovered things through PaperUI, you can add thing definitions in the things file.
+Besides using PaperUI to manually configure things or adding automatically discovered things through PaperUI, you can add thing definitions in the things file.
 
 The Thing configuration for the bridge uses the following syntax:
 
 ```
 Bridge nikohomecontrol:bridge:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>,
-                                           broadcastAddr="<IP broadcast address of network segment with IP-interface",
                                            refresh="<Refresh interval>" ]
 ```
 
 `bridgeId` can have any value.
 
-All parameters are optional. `addr` is the fixed Niko Home Control IP-interface address. `addr` will be discovered if omitted. `port` will be the port used to connect and is 8000 by default. `broadcastAddr` is the broadcast address for the subnet on which the Niko Home Control IP-interface resides. `broadcastAddr` will be established from the local network interface if omitted. `refresh` is the interval to restart the communication in minutes (300 by default), if 0 or omitted the connection will not restart at regular intervals.
+`addr` is the fixed Niko Home Control IP-interface address and is required. `port` will be the port used to connect and is 8000 by default. `refresh` is the interval to restart the communication in minutes (300 by default), if 0 or omitted the connection will not restart at regular intervals.
 
 The thing configuration for the actions has the following syntax:
 
@@ -111,7 +108,7 @@ Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300
     blind 3 [ actionId=3 ]
 }
 
-Bridge nikohomecontrol:bridge:nhc2 [ broadcastAddr="192.168.7.255" ] {
+Bridge nikohomecontrol:bridge:nhc2 [ addr="192.168.0.110" ] {
     onOff 11 [ actionId=11 ]
     dimmer 12 [ actionId=12, step=5 ]
     blind 13 [ actionId=13 ]

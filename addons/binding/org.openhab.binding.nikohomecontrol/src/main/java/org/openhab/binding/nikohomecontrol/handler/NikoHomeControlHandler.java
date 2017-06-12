@@ -91,7 +91,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     }
 
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
-
         logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
 
         switch (channelUID.getId()) {
@@ -208,28 +207,9 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
         this.nhcAction.setThingHandler(this);
 
-        switch (actionType) {
-            case 0:
-            case 1:
-                updateState(CHANNEL_SWITCH, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
-                logger.debug("Niko Home Control: switch intialized {}", actionId);
-                updateStatus(ThingStatus.ONLINE);
-                break;
-            case 2:
-                updateState(CHANNEL_BRIGHTNESS, new PercentType(actionState));
-                logger.debug("Niko Home Control: dimmer intialized {}", actionId);
-                updateStatus(ThingStatus.ONLINE);
-                break;
-            case 4:
-            case 5:
-                updateState(CHANNEL_ROLLERSHUTTER, new PercentType(actionState));
-                logger.debug("Niko Home Control: rollershutter intialized {}", actionId);
-                updateStatus(ThingStatus.ONLINE);
-                break;
-            default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Niko Home Control: unknown action type " + actionType);
-        }
+        handleStateUpdate(actionType, actionState);
+        logger.debug("Niko Home Control: action intialized {}", actionId);
+
         if (thing.getLocation() == null) {
             thing.setLocation(actionLocation);
         }

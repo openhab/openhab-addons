@@ -10,7 +10,6 @@ package org.openhab.binding.nikohomecontrol.handler;
 
 import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -61,89 +60,63 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
         Configuration config = this.getConfig();
 
-        InetAddress addr = null;
+        String hostname = (String) config.get(CONFIG_HOST_NAME);
         int port = ((Number) config.get(CONFIG_PORT)).intValue();
-        InetAddress broadcastAddr = null;
 
-        logger.debug("Niko Home Control: bridge handler port {}", port);
+        logger.debug("Niko Home Control: bridge handler host {}, port {}", hostname, port);
 
-        if (config.get(CONFIG_HOST_NAME) != null) {
-            try {
-                // If hostname or address was provided in the configuration, try to use this to for bridge and give
-                // error when hostname parameter was not valid.
-                // No hostname provided is a valid configuration, therefore allow null addr to pass through.
-                logger.debug("Niko Home Control: configure bridge with host parameter {}",
-                        config.get(CONFIG_HOST_NAME));
-                addr = InetAddress.getByName((String) config.get(CONFIG_HOST_NAME));
-            } catch (UnknownHostException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        "Niko Home Control: cannot resolve bridge IP with hostname " + config.get(CONFIG_HOST_NAME));
-                return;
-            }
-        } else if (config.get(CONFIG_BROADCAST_ADDRESS) != null) {
-            try {
-                logger.debug("Niko Home Control: configure bridge with broadcast parameter {}",
-                        config.get(CONFIG_BROADCAST_ADDRESS));
-                broadcastAddr = InetAddress.getByName((String) config.get(CONFIG_BROADCAST_ADDRESS));
-            } catch (UnknownHostException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        "Niko Home Control: cannot resolve broadcast address " + config.get(CONFIG_BROADCAST_ADDRESS));
-                return;
-
-            }
-        } else {
-            logger.debug("Niko Home Control: try to auto-discover bridge address");
+        try {
+            InetAddress addr = InetAddress.getByName(hostname);
+            createCommunicationObject(addr, port);
+        } catch (UnknownHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Niko Home Control: cannot resolve bridge IP with hostname " + config.get(CONFIG_HOST_NAME));
         }
 
-        createCommunicationObject(addr, port, broadcastAddr);
     }
 
     /**
      * Create communication object to Niko Home Control IP-interface and start communication.
      * Trigger discovery when communication setup is successful.
      *
-     * @param addr IP address of Niko Home Control IP-interface or null
+     * @param addr IP address of Niko Home Control IP-interface
      * @param port
      */
-    private void createCommunicationObject(InetAddress addr, int port, InetAddress broadcastAddr) {
+    private void createCommunicationObject(InetAddress addr, int port) {
         Configuration config = this.getConfig();
 
         scheduler.submit(new Runnable() {
 
             @Override
             public void run() {
-                try {
-                    nhcComm = new NikoHomeControlCommunication(addr, broadcastAddr);
+                nhcComm = new NikoHomeControlCommunication();
 
-                    nhcComm.startCommunication(port);
-                    if (!nhcComm.communicationActive()) {
-                        throw new IOException("Niko Home Control: communication socket error");
-                    }
-
-                    // Set callback from NikoHomeControlCommunication object to this bridge to be able to take bridge
-                    // offline when non-resolvable communication error occurs.
-                    setBridgeCallBack();
-
-                    updateProperties();
-
-                    updateStatus(ThingStatus.ONLINE);
-
-                    Integer refreshInterval = ((Number) config.get(CONFIG_REFRESH)).intValue();
-                    setupRefreshTimer(refreshInterval);
-
-                    if (nhcDiscovery != null) {
-                        nhcDiscovery.discoverDevices();
-                    } else {
-                        logger.debug("Niko Home Control: cannot discover, discovery service not started");
-                    }
-
-                } catch (IOException e) {
+                nhcComm.startCommunication(addr, port);
+                if (!nhcComm.communicationActive()) {
                     nhcComm = null;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "Niko Home Control: error starting bridge connection");
+                    bridgeOffline();
+                    return;
+                }
+
+                // Set callback from NikoHomeControlCommunication object to this bridge to be able to take bridge
+                // offline when non-resolvable communication error occurs.
+                setBridgeCallBack();
+
+                updateProperties();
+
+                updateStatus(ThingStatus.ONLINE);
+
+                Integer refreshInterval = ((Number) config.get(CONFIG_REFRESH)).intValue();
+                setupRefreshTimer(refreshInterval);
+
+                if (nhcDiscovery != null) {
+                    nhcDiscovery.discoverDevices();
+                } else {
+                    logger.debug("Niko Home Control: cannot discover actions, discovery service not started");
                 }
             }
         });
+
     }
 
     private void setBridgeCallBack() {
@@ -185,6 +158,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
             }
         }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
+
     }
 
     /**
@@ -193,14 +167,16 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
      */
     public void bridgeOffline() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Niko Home Control: error restarting bridge connection");
+                "Niko Home Control: error starting bridge connection");
     }
 
     /**
      * Put bridge online when error in communication resolved.
      */
     public void bridgeOnline() {
+        updateProperties();
         updateStatus(ThingStatus.ONLINE);
+
     }
 
     /**
@@ -210,8 +186,6 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
     private void updateProperties() {
         Map<String, String> properties = new HashMap<>();
 
-        properties.put("ipAddress", this.nhcComm.getAddr().getHostAddress());
-        properties.put("port", Integer.toString(this.nhcComm.getPort()));
         properties.put("softwareVersion", this.nhcComm.getSystemInfo().getSwVersion());
         properties.put("apiVersion", this.nhcComm.getSystemInfo().getApi());
         properties.put("language", this.nhcComm.getSystemInfo().getLanguage());
@@ -224,6 +198,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
         properties.put("connectionStartDate", this.nhcComm.getSystemInfo().getTime());
 
         thing.setProperties(properties);
+
     }
 
     @Override
@@ -236,6 +211,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
             this.nhcComm.stopCommunication();
         }
         this.nhcComm = null;
+
     }
 
     /**

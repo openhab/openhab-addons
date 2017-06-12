@@ -7,10 +7,10 @@
 		<label>Niko Home Control Bridge</label>
 		<description>This bridge represents a Niko Home Control IP-interface</description>
 		<config-description>
-			<parameter name="addr" type="text" required="false">
+			<parameter name="addr" type="text" required="true">
 				<label>IP or Host Name</label>
-				<description>Address will be resolved on connection if not configured</description>
-				<advanced>true</advanced>
+				<description>IP Address of Niko Home Control IP-interface</description>
+				<advanced>false</advanced>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
@@ -19,11 +19,6 @@
 				<default>8000</default>
 				<advanced>true</advanced>
 			</parameter>
-            <parameter name="broadcastaddr" type="text" required="false">
-                <label>Broadcast address</label>
-                <description>Broadcast address used to discover Niko Home Control IP-interface, will be derived from local IP if left empty.</description>
-                <advanced>true</advanced>
-            </parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh interval</label>
 				<description>Refresh interval for connection with Niko Home Control IP-interface (min), default 300. If set to 0 or left empty, no refresh will be scheduled</description>
