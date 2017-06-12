@@ -42,6 +42,7 @@ public class TadoACHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TadoACHandler.class);
     private TadoACSetting setting;
     private ScheduledFuture<?> sendFuture;
+    private ScheduledFuture<?> refreshFuture;
 
     public TadoACHandler(Thing thing) {
         super(thing);
@@ -106,7 +107,7 @@ public class TadoACHandler extends BaseThingHandler {
             if (username == null || password == null) {
                 logger.error("login credentials not configured");
                 updateStatus(ThingStatus.OFFLINE);
-
+                return;
             }
 
             // validate setting
@@ -141,9 +142,74 @@ public class TadoACHandler extends BaseThingHandler {
 
     }
 
+    private synchronized void refreshSetting() {
+        try {
+            String username = (String) getConfig().get("username");
+            String password = (String) getConfig().get("password");
+            int homeid = ((BigDecimal) getConfig().get("homeid")).intValue();
+            int zoneid = ((BigDecimal) getConfig().get("zoneid")).intValue();
+            if (username == null || password == null) {
+                logger.error("login credentials not configured");
+                updateStatus(ThingStatus.OFFLINE);
+                return;
+            }
+            TadoACConnector connector = new TadoACConnector(username, password);
+            TadoACSetting newSetting = connector.getSetting(homeid, zoneid);
+            // Check each part and copy them to the previous state (No loss of data)
+
+            if (newSetting.getPower() != null) {
+                setting.setPower(newSetting.getPower());
+                updateState(CHANNEL_POWER, newSetting.getPower() == TadoACPower.ON ? OnOffType.ON : OnOffType.OFF);
+            }
+            if (newSetting.getFanSpeed() != null) {
+                setting.setFanSpeed(newSetting.getFanSpeed());
+                int fanSpeed = 1;
+                switch (newSetting.getFanSpeed()) {
+                    case LOW:
+                        fanSpeed = 1;
+                        break;
+                    case MIDDLE:
+                        fanSpeed = 2;
+                        break;
+                    case HIGH:
+                        fanSpeed = 3;
+                        break;
+                    default:
+                        break;
+                }
+                updateState(CHANNEL_FANSPEED, new DecimalType(fanSpeed));
+            }
+            if (newSetting.getMode() != null) {
+                setting.setMode(newSetting.getMode());
+                int mode = 1;
+                switch (newSetting.getMode()) {
+                    case COOL:
+                        mode = 1;
+                        break;
+                    case DRY:
+                        mode = 2;
+                        break;
+                    case FAN:
+                        mode = 3;
+                        break;
+                    default:
+                        break;
+                }
+                updateState(CHANNEL_MODE, new DecimalType(mode));
+            }
+            if (newSetting.getTemperature() != null) {
+                setting.setTemperature(newSetting.getTemperature());
+                updateState(CHANNEL_TEMP, new DecimalType(newSetting.getTemperature().getCelsius()));
+            }
+        } catch (Exception e) {
+            logger.error("error while polling for new state", e);
+        }
+    }
+
     @Override
     public void initialize() {
         setting = new TadoACSetting();
+        refreshFuture = scheduler.scheduleAtFixedRate(() -> refreshSetting(), 3, 60, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
 
     }
