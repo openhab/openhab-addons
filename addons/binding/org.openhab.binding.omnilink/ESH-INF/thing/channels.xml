@@ -57,7 +57,7 @@
 		<item-type>Number</item-type>
 		<label>State</label>
 		<description>Status of room (0 off, 1 on, 2 scene a, 3 scene b, etc)</description>
-		<state pattern="%s">
+		<state pattern="%d">
 			<options>
 				<option value="0">Off</option>
 				<option value="1">On</option>
@@ -144,7 +144,7 @@
 		<label>Security Mode</label>
 		<description>Represents the area security mode.</description>
 		<category>Alarm</category>
-		<state pattern="%s">
+		<state pattern="%d">
 			<options>
 				<option value="0">Off</option>
 				<option value="1">Day</option>
@@ -168,7 +168,7 @@
 		<label>Security Mode</label>
 		<description>Represents the area security mode.</description>
 		<category>Alarm</category>
-		<state pattern="%s">
+		<state pattern="%d">
 			<options>
 				<option value="1">Home</option>
 				<option value="2">Sleep</option>
@@ -207,41 +207,42 @@
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
 	<channel-type id="zone_current_condition">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Current Condition</label>
 		<description>Current condition of a zone.</description>
 		<category>Contact</category>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 			<options>
-				<option value="Secure">Secure</option>
-				<option value="Not Ready">Not Ready</option>
-				<option value="Trouble">Trouble</option>
+				<option value="0">Secure</option>
+				<option value="1">Not Ready</option>
+				<option value="2">Trouble</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="zone_latched_alarm_status">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Latched Alarm Status</label>
 		<description>Latched alarm status of a zone.</description>
 		<category>Contact</category>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 			<options>
-				<option value="Secure">Secure</option>
-				<option value="Tripped">Tripped</option>
-				<option value="Reset">Reset, but previously tripped</option>
+				<option value="0">Secure</option>
+				<option value="1">Tripped</option>
+				<option value="2">Reset, but previously tripped</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="zone_arming_status">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Arming Status</label>
 		<description>Arming status of a zone.</description>
 		<category>Contact</category>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%d" readOnly="true">
 			<options>
-				<option value="Disarmed">Disarmed</option>
-				<option value="Bypass User">Bypassed by user</option>
-				<option value="Bypass System">Bypassed by system</option>
+				<option value="0">Disarmed</option>
+				<option value="1">Armed</option>
+				<option value="2">Bypassed by user</option>
+				<option value="3">Bypassed by system</option>
 			</options>
 		</state>
 	</channel-type>
