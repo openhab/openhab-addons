@@ -144,7 +144,7 @@
 		<label>Security Mode</label>
 		<description>Represents the area security mode.</description>
 		<category>Alarm</category>
-		<state pattern="%d">
+		<state pattern="%d" readOnly="true">
 			<options>
 				<option value="0">Off</option>
 				<option value="1">Day</option>
@@ -153,7 +153,6 @@
 				<option value="4">Vacation</option>
 				<option value="5">Day Instant</option>
 				<option value="6">Night Delayed</option>
-				<!-- This options can be read, but not set -->
 				<option value="9">Arming Day</option>
 				<option value="10">Arming Night</option>
 				<option value="11">Arming Away</option>
@@ -163,12 +162,18 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="area_command">
+        <item-type>String</item-type>
+        <label>Security Command</label>
+        <description>Sends a user code and command to the area.</description>
+        <category>Alarm</category>
+    </channel-type>
 	<channel-type id="lumina_area_mode">
 		<item-type>Number</item-type>
 		<label>Security Mode</label>
 		<description>Represents the area security mode.</description>
 		<category>Alarm</category>
-		<state pattern="%d">
+		<state pattern="%d" readOnly="true">
 			<options>
 				<option value="1">Home</option>
 				<option value="2">Sleep</option>
@@ -176,7 +181,6 @@
 				<option value="4">Vacation</option>
 				<option value="5">Party</option>
 				<option value="6">Special</option>
-				<!-- This options can be read, but not set -->
 				<option value="9">Setting Home</option>
 				<option value="10">Setting Sleep</option>
 				<option value="11">Setting Away</option>
