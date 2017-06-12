@@ -55,4 +55,7 @@ public class SenseBoxBindingConstants {
 
     // Minimum timeslice between API requests in seconds
     public static final int MINIMUM_UPDATE_INTERVAL = 5 * 60;
+
+    // 67108860 is an invalid reading which the API sends us nevertheless
+    public static final String INVALID_BRIGHTNESS = "67108860";
 }

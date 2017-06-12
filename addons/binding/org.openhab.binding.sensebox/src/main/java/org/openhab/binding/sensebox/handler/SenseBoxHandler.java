@@ -232,7 +232,11 @@ public class SenseBoxHandler extends BaseThingHandler {
                             logger.debug("SDS 011 sensor title is {}", sensor.getTitle());
                         }
                     } else if ("lx".equals(sensor.getUnit())) {
-                        parsedData.setLuminance(sensor);
+                        if (sensor.getLastMeasurement() != null) {
+                            if (!(INVALID_BRIGHTNESS.equals(sensor.getLastMeasurement().getValue()))) {
+                                parsedData.setLuminance(sensor);
+                            }
+                        }
                     } else if ("hPa".equals(sensor.getUnit())) {
                         parsedData.setPressure(sensor);
                     } else if ("%".equals(sensor.getUnit())) {
