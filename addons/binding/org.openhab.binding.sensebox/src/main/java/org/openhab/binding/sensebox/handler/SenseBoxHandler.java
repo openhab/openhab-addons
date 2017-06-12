@@ -53,11 +53,9 @@ public class SenseBoxHandler extends BaseThingHandler {
 
     ScheduledFuture<?> refreshJob;
 
-    private final int CACHE_EXPIRY = 10 * 1000; // 10s
+    private static final String CACHE_KEY_DATA = "DATA";
 
-    private final ExpiringCacheMap<String, SenseBoxData> CACHE = new ExpiringCacheMap<String, SenseBoxData>(CACHE_EXPIRY);
-
-    private final String CACHE_KEY_DATA = "DATA";
+    private final ExpiringCacheMap<String, SenseBoxData> cache = new ExpiringCacheMap<String, SenseBoxData>(CACHE_EXPIRY);
 
     private final SenseBoxAPIConnection connection = new SenseBoxAPIConnection();
 
@@ -96,7 +94,7 @@ public class SenseBoxHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, offlineReason);
         }
 
-        CACHE.put(CACHE_KEY_DATA, () -> {
+        cache.put(CACHE_KEY_DATA, () -> {
             return connection.reallyFetchDataFromServer(senseBoxId);
         });
 
@@ -169,7 +167,7 @@ public class SenseBoxHandler extends BaseThingHandler {
     }
 
     private SenseBoxData fetchData() throws IOException {
-       return CACHE.get(CACHE_KEY_DATA);
+       return cache.get(CACHE_KEY_DATA);
     }
 
     private void publishProperties() {
