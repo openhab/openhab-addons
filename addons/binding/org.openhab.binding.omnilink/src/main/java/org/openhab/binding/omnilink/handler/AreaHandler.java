@@ -61,9 +61,22 @@ public class AreaHandler extends AbstractOmnilinkHandler {
     }
 
     public void handleAreaEvent(AreaStatus status) {
-        logger.debug("handle area event: {}", status);
-        updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_MODE),
-                new DecimalType(status.getMode()));
+        logger.debug("handle area event: mode:{} alarms:{} entryTimer:{} exitTimer:{}", status.getMode(),
+                status.getAlarms(), status.getEntryTimer(), status.getExitTimer());
+
+        /*
+         * According to the spec, if the 3rd bit is set on a area mode, then that mode is in a delayed state.
+         * Unfortunately, this is not the case, but we can fix that by looking to see if the entry/exit timer
+         * is set and do this manually.
+         */
+        int mode = status.getEntryTimer() > 0 || status.getExitTimer() > 0 ? status.getMode() | 1 << 3
+                : status.getMode();
+        updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_MODE), new DecimalType(mode));
+
+        /*
+         * Alarm status is actually 8 status, packed into each bit, so we loop through to see if a bit is set, note that
+         * this means you can have multiple alarms set at once
+         */
         for (int i = 0; i < OmnilinkBindingConstants.CHANNEL_AREA_ALARMS.length; i++) {
             if (((status.getAlarms() >> i) & 1) > 0) {
                 updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_ALARMS[i]),
