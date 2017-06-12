@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
@@ -83,12 +82,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         try {
             logger.debug("Configuring bed status cache");
             statusCache = new ExpiringCache<>(TimeUnit.SECONDS.toMillis(getPollingInterval() / 2),
-                    new Supplier<FamilyStatus>() {
-                        @Override
-                        public FamilyStatus get() {
-                            return cloud.getFamilyStatus();
-                        }
-                    });
+                    () -> cloud.getFamilyStatus());
 
             createCloudConnection();
 
