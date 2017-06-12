@@ -10,6 +10,7 @@ package org.openhab.binding.sensebox.internal;
 
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.sensebox.model.SenseBoxData;
 import org.openhab.binding.sensebox.model.SenseBoxDescriptor;
@@ -65,6 +66,9 @@ public class SenseBoxAPIConnection {
 
             logger.trace("Fetched Data: {}", body);
             SenseBoxData parsedData = gson.fromJson(body, SenseBoxData.class);
+
+            // Assume all is well at first
+            parsedData.setStatus(ThingStatus.ONLINE);
 
             // Could perhaps be simplified via triply-nested arrays
             // http://stackoverflow.com/questions/36946875/how-can-i-parse-geojson-with-gson
@@ -144,8 +148,7 @@ public class SenseBoxAPIConnection {
 
         } catch (IOException e) {
             logger.debug("IO problems while fetching data: {} / {}", query, e.getMessage());
-            // TODO how would we switch the caller to OFFLINE???
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            result.setStatus(ThingStatus.OFFLINE);
         }
 
         return result;

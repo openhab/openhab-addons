@@ -104,12 +104,11 @@ public class SenseBoxHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            try {
-                data = fetchData();
+            data = fetchData();
+            if (ThingStatus.ONLINE == data.getStatus()) {
                 publishDataForChannel(channelUID.getId());
                 updateStatus(ThingStatus.ONLINE);
-            } catch (IOException e) {
-                logger.debug("Exception occurred during fetching data: {}", e.getMessage());
+            } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } else {
@@ -131,8 +130,8 @@ public class SenseBoxHandler extends BaseThingHandler {
                 logger.debug("Refreshing data for box {}, scheduled after {} seconds...",
                         thingConfiguration.getSenseBoxId(), thingConfiguration.getRefreshInterval());
 
-                try {
-                    data = fetchData();
+                data = fetchData();
+                if (ThingStatus.ONLINE == data.getStatus()) {
 
                     publishProperties();
 
@@ -155,8 +154,7 @@ public class SenseBoxHandler extends BaseThingHandler {
                     publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10_LR);
 
                     updateStatus(ThingStatus.ONLINE);
-                } catch (IOException e) {
-                    logger.debug("Exception occurred during fetching data: {}", e.getMessage());
+                } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }
@@ -166,7 +164,7 @@ public class SenseBoxHandler extends BaseThingHandler {
                 TimeUnit.SECONDS);
     }
 
-    private SenseBoxData fetchData() throws IOException {
+    private SenseBoxData fetchData() {
        return cache.get(CACHE_KEY_DATA);
     }
 
