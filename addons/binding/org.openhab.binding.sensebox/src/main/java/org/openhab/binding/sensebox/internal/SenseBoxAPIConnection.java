@@ -117,13 +117,15 @@ public class SenseBoxAPIConnection {
                 } else if ("°C".equals(sensor.getUnit())) {
                     parsedData.setTemperature(sensor);
                 } else {
-                    logger.debug("    Sensor: {}", sensor);
-                    logger.debug("    Sensor unit: {}", sensor.getUnit());
-                    logger.debug("    Sensor type: {}", sensor.getSensorType());
-                    logger.debug("    Sensor LM: {}", sensor.getLastMeasurement());
-                    if (sensor.getLastMeasurement() != null) {
-                        logger.debug("    Sensor LM value: {}", sensor.getLastMeasurement().getValue());
-                        logger.debug("    Sensor LM date: '{}'", sensor.getLastMeasurement().getCreatedAt());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("    Sensor: {}", sensor);
+                        logger.debug("    Sensor unit: {}", sensor.getUnit());
+                        logger.debug("    Sensor type: {}", sensor.getSensorType());
+                        logger.debug("    Sensor LM: {}", sensor.getLastMeasurement());
+                        if (sensor.getLastMeasurement() != null) {
+                            logger.debug("    Sensor LM value: {}", sensor.getLastMeasurement().getValue());
+                            logger.debug("    Sensor LM date: '{}'", sensor.getLastMeasurement().getCreatedAt());
+                        }
                     }
                 }
             }
