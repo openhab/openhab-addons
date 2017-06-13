@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.milight.internal.protocol;
 
+/**
+ *
+ * @author David Graeff - Initial contribution
+ */
 public class QueueItem {
     static final int INVALID = -1;
     byte[] data;

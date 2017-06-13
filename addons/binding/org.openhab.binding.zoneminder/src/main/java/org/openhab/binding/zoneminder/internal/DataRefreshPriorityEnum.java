@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.zoneminder.internal;
 
+/**
+ *
+ * @author Martin S. Eskildsen - Initial contribution
+ */
 public enum DataRefreshPriorityEnum {
     SCHEDULED,
     HIGH_PRIORITY;
