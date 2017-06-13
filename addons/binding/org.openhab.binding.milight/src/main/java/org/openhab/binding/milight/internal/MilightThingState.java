@@ -11,7 +11,7 @@ package org.openhab.binding.milight.internal;
 /**
  * Contains a led bulb state including the HSB value, white color temperature and animation values.
  *
- * @since 2.0
+ * @author David Graeff - Initial contribution
  */
 public class MilightThingState {
     public int animationMode = 0;

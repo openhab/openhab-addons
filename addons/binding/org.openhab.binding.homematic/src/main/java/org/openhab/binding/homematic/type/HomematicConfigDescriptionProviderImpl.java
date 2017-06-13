@@ -16,6 +16,10 @@ import java.util.Map;
 
 import org.eclipse.smarthome.config.core.ConfigDescription;
 
+/**
+ *
+ * @author Gerhard Riegler - Initial contribution
+ */
 public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDescriptionProvider {
     private Map<URI, ConfigDescription> configDescriptionsByURI = new HashMap<URI, ConfigDescription>();
 
