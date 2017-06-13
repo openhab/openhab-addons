@@ -202,7 +202,7 @@ public class TadoACHandler extends BaseThingHandler {
                 updateState(CHANNEL_TEMP, new DecimalType(newSetting.getTemperature().getCelsius()));
             }
         } catch (Exception e) {
-            logger.error("error while polling for new state", e);
+            logger.warn("Error while polling for new state. Maybe your AC is not in manual mode", e);
         }
     }
 
