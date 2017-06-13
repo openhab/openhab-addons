@@ -97,6 +97,17 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
+    public SecurityCodeValidation reqSecurityCodeValidation(int area, int digit1, int digit2, int digit3, int digit4)
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        try {
+            return omniConnection.reqSecurityCodeValidation(area, digit1, digit2, digit3, digit4);
+        } catch (IOException | OmniNotConnectedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            throw new BridgeOfflineException(e);
+        }
+
+    }
+
     public void sendOmnilinkCommand(final int message, final int param1, final int param2) {
 
         listeningExecutor.execute(new Runnable() {

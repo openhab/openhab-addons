@@ -18,6 +18,13 @@
 			<channel id="alarm_duress" typeId="area_alarm_duress" />
 			<channel id="alarm_temperature" typeId="area_alarm_temperature" />
 			<channel id="mode" typeId="omni_area_mode" />
+			<channel id="disarm" typeId="area_command" />
+			<channel id="day" typeId="area_command" />
+			<channel id="night" typeId="area_command" />
+			<channel id="away" typeId="area_command" />
+			<channel id="vacation" typeId="area_command" />
+			<channel id="day_instant" typeId="area_command" />
+			<channel id="night_delayed" typeId="area_command" />
 		</channels>
 		<properties>
 			<property name="name" />
@@ -38,6 +45,12 @@
         <description>Lumina Area</description>
         <channels>
             <channel id="mode" typeId="lumina_area_mode" />
+            <channel id="home" typeId="lumina_area_command" />
+            <channel id="sleep" typeId="lumina_area_command" />
+            <channel id="away" typeId="lumina_area_command" />
+            <channel id="vacation" typeId="lumina_area_command" />
+            <channel id="party" typeId="lumina_area_command" />
+            <channel id="special" typeId="lumina_area_command" />
         </channels>
         <properties>
             <property name="name" />

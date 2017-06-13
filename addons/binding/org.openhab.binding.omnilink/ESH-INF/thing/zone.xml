@@ -13,6 +13,8 @@
 			<channel id="current_condition" typeId="zone_current_condition" />
 			<channel id="latched_alarm_status" typeId="zone_latched_alarm_status" />
 			<channel id="arming_status" typeId="zone_arming_status" />
+			<channel id="bypass" typeId="zone_command" />
+			<channel id="restore" typeId="zone_command" />
 		</channels>
 		<properties>
 			<property name="name" />
