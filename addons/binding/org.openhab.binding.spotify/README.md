@@ -4,7 +4,7 @@ This binding implements a bridge to the Spotify Player Web API and makes it poss
 ## Configuring the binding
 The binding requires you to register an Application with Spotify Web API at https://developer.spotify.com - this will get you a set of Client ID and Client Secret parameters to be used by your binding configuration.
 
-###Create Spotify Application
+### Create Spotify Application
 Follow the instructions in the tutorial at https://developer.spotify.com/web-api/tutorial/. Skip into and follow instructions under:
 
  1. Setting Up Your Account
@@ -57,6 +57,7 @@ The discovery of devices in the Spotify Web API is based on what is known by Spo
 The channels on the bridge are the ones used to both control the active device and get details of currently playing music on the Spotify Account associated with the bridge.
 
 __Common Channels:__
+
 | Channel Type ID       | Item Type    | Description  |
 |-----------------------|------------------------|--------------|
 | deviceName 		| String 	| Name of the currently active Connect Device |
@@ -72,6 +73,7 @@ __Common Channels:__
 | artistName 		| String 	| Artist Name of the currently played track | 
 
 __Advanced Channels:__
+
 | Channel Type ID       | Item Type    | Description  |
 |-----------------------|------------------------|--------------|
 | accessToken			| String	| The current accessToken used in communication with Web API. This can be used in client-side scripting towards the Web API if you would like to maintain your playlists etc. |
@@ -96,6 +98,7 @@ There are channels on the devices that seemingly overlap those of the bridge. Th
 E.g. if you assign a playlist to the _trackPlay_ channel of the device, the playing of that playlist will be activated on that particular device. Assigning a playlist to the _trackPlay_ channel of the bridge will start playing the list on whatever device is active. 
 
 __Common Channels:__
+
 | Channel Type ID       | Item Type    		| Description  |
 |-----------------------|-----------------------|--------------|
 | trackPlay 		| String 		| Track to play on the device. Assigning a track, playlist, artist etc will activate the device and make it the currently playing device. |
@@ -105,6 +108,7 @@ __Common Channels:__
 | deviceShuffle 	| Switch 		| Turn on/off shuffle play |
 
 __Advanced Channels:__
+
 | Channel Type ID       | Item Type    		| Description  |
 |-----------------------|-----------------------|--------------|
 | deviceId | String | The Spotify Connect device Id. |
