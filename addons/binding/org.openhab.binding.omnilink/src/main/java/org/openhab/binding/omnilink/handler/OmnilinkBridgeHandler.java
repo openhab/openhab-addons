@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.openhab.binding.omnilink.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
@@ -41,7 +40,6 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.OtherEventNotifications;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
-import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
@@ -52,9 +50,6 @@ import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -83,7 +78,23 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         };
     }
 
+    /**
+     * @deprecated You can call sendOmnilinkCommand now, it has been fixed to be non-NIO
+     *
+     * @param message
+     * @param param1
+     * @param param2
+     * @throws OmniInvalidResponseException
+     * @throws OmniUnknownMessageTypeException
+     * @throws BridgeOfflineException
+     */
+    @Deprecated
     public void sendOmnilinkCommandNew(final int message, final int param1, final int param2)
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        sendOmnilinkCommand(message, param1, param2);
+    }
+
+    public void sendOmnilinkCommand(final int message, final int param1, final int param2)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
         try {
@@ -106,23 +117,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
-    public void sendOmnilinkCommand(final int message, final int param1, final int param2) {
-
-        listeningExecutor.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    omniConnection.controllerCommand(message, param1, param2);
-                } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
-                        | OmniUnknownMessageTypeException e) {
-                    logger.debug("Error in sendOmnilinkCommand", e);
-                    // TODO should we be changing status of bridge on any of these errors?
-                }
-            }
-        });
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("handleCommand called); " + command);
@@ -131,15 +125,21 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             if (command instanceof DateTimeType) {
                 ZonedDateTime zdt = ZonedDateTime.ofInstant(((DateTimeType) command).getCalendar().toInstant(),
                         ZoneId.systemDefault());
-                setOmnilinkSystemDate(zdt);
-            } else if (command instanceof RefreshType) {
-                getSystemStatus();
+                boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
+                try {
+                    omniConnection.setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(), zdt.getDayOfMonth(),
+                            zdt.getDayOfWeek().getValue(), zdt.getHour(), zdt.getMinute(), inDaylightSavings);
+                } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
+                        | OmniUnknownMessageTypeException e) {
+                    logger.debug("Unable to set system date", e);
+                }
             } else {
                 logger.warn("Invalid command for system date, must be DateTimeType, instead was: {}", command);
             }
         }
     }
 
+    @Deprecated
     public Connection getOmnilinkConnection() {
         logger.warn(
                 "This method will be made private.  Only place to be calling it right now is startScan of discovery.  Do not call from the handlers. ");
@@ -184,8 +184,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         omniConnection.addDisconnectListener(retryingDisconnectListener);
                         omniConnection.enableNotifications();
                         updateStatus(ThingStatus.ONLINE);
-                        getSystemInfo();
-                        getSystemStatus();
                         // let's start a task which refreshes status
                         scheduleRefresh();
                     } catch (UnknownHostException e) {
@@ -348,16 +346,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
-    private ListenableFuture<Integer> getMaxNumber(int objType) {
-        return listeningExecutor.submit(new Callable<Integer>() {
-
-            @Override
-            public Integer call() throws Exception {
-                return omniConnection.reqObjectTypeCapacities(objType).getCapacity();
-            }
-        });
-    }
-
     private UnitStatus[] getUnitStatuses() throws OmniInvalidResponseException, OmniUnknownMessageTypeException,
             BridgeOfflineException, IOException, OmniNotConnectedException {
         ObjectStatus val;
@@ -367,75 +355,26 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
-    private void getSystemInfo() {
+    private void getSystemStatus() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
+            OmniUnknownMessageTypeException {
 
-        ListenableFuture<SystemInformation> systemStatus = listeningExecutor.submit(new Callable<SystemInformation>() {
-
-            @Override
-            public SystemInformation call() throws Exception {
-                return omniConnection.reqSystemInformation();
-            }
-        });
-        Futures.addCallback(systemStatus, new FutureCallback<SystemInformation>() {
-            @Override
-            public void onFailure(Throwable arg0) {
-                logger.error("Error retrieving system status", arg0);
-            }
-
-            @Override
-            public void onSuccess(SystemInformation status) {
-                logger.debug("received system info: {}", status);
-            }
-        });
-
-    }
-
-    private void getSystemStatus() {
         if (omniConnection != null) {
-            ListenableFuture<SystemStatus> systemStatus = listeningExecutor.submit(new Callable<SystemStatus>() {
+            SystemStatus status = omniConnection.reqSystemStatus();
+            logger.debug("received system status: {}", status);
+            // let's update system time
+            String dateString = new StringBuilder().append(2000 + status.getYear()).append("-")
+                    .append(status.getMonth()).append("-").append(status.getDay()).append("T").append(status.getHour())
+                    .append(":").append(status.getMinute()).append(":").append(status.getSecond()).toString();
+            DateTimeType sysDateTime = new DateTimeType(dateString);
 
-                @Override
-                public SystemStatus call() throws Exception {
-                    return omniConnection.reqSystemStatus();
-                }
-            });
-            Futures.addCallback(systemStatus, new FutureCallback<SystemStatus>() {
-                @Override
-                public void onFailure(Throwable arg0) {
-                    logger.error("Error retrieving system status", arg0);
-                }
+            updateState(OmnilinkBindingConstants.CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
+            logger.debug("System date is: {}", sysDateTime);
 
-                @Override
-                public void onSuccess(SystemStatus status) {
-                    logger.debug("received system status: {}", status);
-                    // let's update system time
-                    String dateString = new StringBuilder().append(2000 + status.getYear()).append("-")
-                            .append(status.getMonth()).append("-").append(status.getDay()).append("T")
-                            .append(status.getHour()).append(":").append(status.getMinute()).append(":")
-                            .append(status.getSecond()).toString();
-                    DateTimeType sysDateTime = new DateTimeType(dateString);
-
-                    updateState(OmnilinkBindingConstants.CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
-                    logger.debug("System date is: {}", sysDateTime);
-                }
-            });
         }
     }
 
-    public ListenableFuture<SecurityCodeValidation> validateSecurity(int area, final int code1, final int code2,
-            final int code3, final int code4) {
-
-        return listeningExecutor.submit(new Callable<SecurityCodeValidation>() {
-            @Override
-            public SecurityCodeValidation call() throws Exception {
-                return omniConnection.reqSecurityCodeValidation(area, code1, code2, code3, code4);
-            }
-        });
-    }
-
     /**
-     * new non-blocking version. the existing will be phased out and moved to this, then we can rename
-     *
+     * @deprecated You can call requestObjectStatus now, it has been fixed to be non-NIO
      * @param objType
      * @param startObject
      * @param endObject
@@ -445,8 +384,14 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
      * @throws OmniUnknownMessageTypeException
      * @throws BridgeOfflineException
      */
-
+    @Deprecated
     public ObjectStatus requestObjectStatusNew(final int objType, final int startObject, final int endObject,
+            boolean extended)
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        return requestObjectStatus(objType, startObject, endObject, extended);
+    }
+
+    public ObjectStatus requestObjectStatus(final int objType, final int startObject, final int endObject,
             boolean extended)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
@@ -458,25 +403,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
-    public void setOmnilinkSystemDate(ZonedDateTime date) {
-
-        boolean inDaylightSavings = date.getZone().getRules().isDaylightSavings(date.toInstant());
-
-        try {
-            listeningExecutor.submit(new Callable<Void>() {
-
-                @Override
-                public Void call() throws Exception {
-                    omniConnection.setTimeCommand(date.getYear() - 2000, date.getMonthValue(), date.getDayOfMonth(),
-                            date.getDayOfWeek().getValue(), date.getHour(), date.getMinute(), inDaylightSavings);
-                    return null;
-                }
-            });
-        } catch (Exception e) {
-            logger.error("Error sending command", e);
-        }
-    }
-
+    /**
+     * Every six hours let's poll the omnilink to make sure we have correct state
+     */
     private void scheduleRefresh() {
         // TODO this could be configurable
         int interval = 60 * 60 * 6;
@@ -485,9 +414,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             @Override
             public void run() {
                 logger.debug("Running scheduled refresh");
-                getSystemStatus();
-
                 try {
+                    getSystemStatus();
                     for (UnitStatus unitStatus : getUnitStatuses()) {
                         handleUnitStatus(unitStatus);
                     }
@@ -498,6 +426,16 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 // TODO add areas, zones, flags, etc
             }
         }, interval, interval, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        try {
+            getSystemStatus();
+        } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
+                | OmniUnknownMessageTypeException e) {
+            logger.error("Unable to retrieve system info", e);
+        }
     }
 
     @Override

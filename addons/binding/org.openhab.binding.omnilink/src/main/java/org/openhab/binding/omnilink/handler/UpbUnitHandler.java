@@ -55,8 +55,8 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
                 omniCmd = OmniLinkCmd.CMD_UNIT_PERCENT;
             }
             try {
-                getOmnilinkBridgeHander().sendOmnilinkCommandNew(omniCmd.getNumber(),
-                        ((PercentType) command).intValue(), unitId);
+                getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((PercentType) command).intValue(),
+                        unitId);
             } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
                 logger.debug("received exception handling command", e);
             }
@@ -64,7 +64,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
         } else {
             omniCmd = sCommandMappingMap.get(command);
             try {
-                getOmnilinkBridgeHander().sendOmnilinkCommandNew(omniCmd.getNumber(), 0, unitId);
+                getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), 0, unitId);
             } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
                 logger.debug("received exception handling command", e);
             }
@@ -103,7 +103,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
 
         ObjectStatus objStatus;
         try {
-            objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
+            objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
             handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

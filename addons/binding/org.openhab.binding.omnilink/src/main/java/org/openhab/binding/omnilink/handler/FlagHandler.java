@@ -43,12 +43,22 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
             } else {
                 omniCmd = OmniLinkCmd.CMD_UNIT_SET_COUNTER;
             }
-            getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((DecimalType) command).intValue(),
-                    Integer.parseInt(channelParts[2]));
+            try {
+                getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((DecimalType) command).intValue(),
+                        Integer.parseInt(channelParts[2]));
+            } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
+                    | BridgeOfflineException e) {
+                logger.debug("Could not send command to omnilink: {}", e);
+            }
         } else if (command instanceof OnOffType) {
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
-            getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_SET_COUNTER.getNumber(),
-                    OnOffType.ON.equals(command) ? 1 : 0, Integer.parseInt(channelParts[2]));
+            try {
+                getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_SET_COUNTER.getNumber(),
+                        OnOffType.ON.equals(command) ? 1 : 0, Integer.parseInt(channelParts[2]));
+            } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
+                    | BridgeOfflineException e) {
+                logger.debug("Could not send command to omnilink: {}", e);
+            }
         } else {
             logger.warn("Must handle command: {}", command);
         }
@@ -72,7 +82,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
 
         ObjectStatus objStatus;
         try {
-            objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
+            objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
             handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

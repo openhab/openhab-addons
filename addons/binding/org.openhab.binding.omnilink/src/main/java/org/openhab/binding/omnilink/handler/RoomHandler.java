@@ -53,8 +53,12 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
             if (linkNum > -1) {
                 int roomNum = (unitNum + 7) / 8;
                 int param2 = ((roomNum * 6) - 3) + linkNum;
-                getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_UPB_LINK_ON.getNumber(), param1,
-                        param2);
+                try {
+                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_UPB_LINK_ON.getNumber(), param1,
+                            param2);
+                } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+                    logger.debug("Could not send command to omnilink: {}", e);
+                }
             }
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH.equals(channelParts[3])) {
             int cmd;
@@ -63,13 +67,24 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
             } else {
                 cmd = OmniLinkCmd.CMD_UNIT_OFF.getNumber();
             }
-            getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, unitNum);
+            try {
+                getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, unitNum);
+            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+                logger.debug("Could not send command to omnilink: {}", e);
+            }
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_ON.equals(channelParts[3]) && OnOffType.ON.equals(command)) {
-            int cmd;
-            cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
-            getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, unitNum);
+            int cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
+            try {
+                getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, unitNum);
+            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+                logger.debug("Could not send command to omnilink: {}", e);
+            }
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_OFF.equals(channelParts[3]) && OnOffType.ON.equals(command)) {
-            getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_OFF.getNumber(), 0, unitNum);
+            try {
+                getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_OFF.getNumber(), 0, unitNum);
+            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+                logger.debug("Could not send command to omnilink: {}", e);
+            }
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_STATE.equals(channelParts[3])) {
             int cmd = -1;
             int param2 = -1;
@@ -97,7 +112,12 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
 
                 }
                 if (cmd > -1 && param2 > -1) {
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, param2);
+                    try {
+                        getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, param2);
+                    } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException
+                            | BridgeOfflineException e) {
+                        logger.debug("Could not send command to omnilink: {}", e);
+                    }
                 } else {
                     logger.debug("Not sending message for scene, cmd: {}, param2: {}", cmd, param2);
                 }
@@ -143,7 +163,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
 
         ObjectStatus objStatus;
         try {
-            objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
+            objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
             handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
