@@ -78,22 +78,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         };
     }
 
-    /**
-     * @deprecated You can call sendOmnilinkCommand now, it has been fixed to be non-NIO
-     *
-     * @param message
-     * @param param1
-     * @param param2
-     * @throws OmniInvalidResponseException
-     * @throws OmniUnknownMessageTypeException
-     * @throws BridgeOfflineException
-     */
-    @Deprecated
-    public void sendOmnilinkCommandNew(final int message, final int param1, final int param2)
-            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
-        sendOmnilinkCommand(message, param1, param2);
-    }
-
     public void sendOmnilinkCommand(final int message, final int param1, final int param2)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
@@ -349,7 +333,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private UnitStatus[] getUnitStatuses() throws OmniInvalidResponseException, OmniUnknownMessageTypeException,
             BridgeOfflineException, IOException, OmniNotConnectedException {
         ObjectStatus val;
-        val = requestObjectStatusNew(Message.OBJ_TYPE_UNIT, 1,
+        val = requestObjectStatus(Message.OBJ_TYPE_UNIT, 1,
                 omniConnection.reqObjectTypeCapacities(Message.OBJ_TYPE_UNIT).getCapacity(), false);
         return (UnitStatus[]) val.getStatuses();
 
@@ -371,24 +355,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             logger.debug("System date is: {}", sysDateTime);
 
         }
-    }
-
-    /**
-     * @deprecated You can call requestObjectStatus now, it has been fixed to be non-NIO
-     * @param objType
-     * @param startObject
-     * @param endObject
-     * @param extended
-     * @return
-     * @throws OmniInvalidResponseException
-     * @throws OmniUnknownMessageTypeException
-     * @throws BridgeOfflineException
-     */
-    @Deprecated
-    public ObjectStatus requestObjectStatusNew(final int objType, final int startObject, final int endObject,
-            boolean extended)
-            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
-        return requestObjectStatus(objType, startObject, endObject, extended);
     }
 
     public ObjectStatus requestObjectStatus(final int objType, final int startObject, final int endObject,
