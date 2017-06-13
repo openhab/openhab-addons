@@ -40,6 +40,7 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.OtherEventNotifications;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
+import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
@@ -101,6 +102,16 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
+    public SystemInformation reqSystemInformation()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        try {
+            return omniConnection.reqSystemInformation();
+        } catch (IOException | OmniNotConnectedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            throw new BridgeOfflineException(e);
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("handleCommand called); " + command);
@@ -121,13 +132,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 logger.warn("Invalid command for system date, must be DateTimeType, instead was: {}", command);
             }
         }
-    }
-
-    @Deprecated
-    public Connection getOmnilinkConnection() {
-        logger.warn(
-                "This method will be made private.  Only place to be calling it right now is startScan of discovery.  Do not call from the handlers. ");
-        return omniConnection;
     }
 
     public void registerDiscoveryService(OmnilinkDiscoveryService isyBridgeDiscoveryService) {
@@ -330,15 +334,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
-    private UnitStatus[] getUnitStatuses() throws OmniInvalidResponseException, OmniUnknownMessageTypeException,
-            BridgeOfflineException, IOException, OmniNotConnectedException {
-        ObjectStatus val;
-        val = requestObjectStatus(Message.OBJ_TYPE_UNIT, 1,
-                omniConnection.reqObjectTypeCapacities(Message.OBJ_TYPE_UNIT).getCapacity(), false);
-        return (UnitStatus[]) val.getStatuses();
-
-    }
-
     private void getSystemStatus() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
             OmniUnknownMessageTypeException {
 
@@ -357,6 +352,17 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
+    public Message reqObjectProperties(int objectType, int objectNum, int direction, int filter1, int filter2,
+            int filter3) throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        try {
+            return omniConnection.reqObjectProperties(objectType, objectNum, direction, filter1, filter2, filter3);
+        } catch (OmniNotConnectedException | IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            throw new BridgeOfflineException(e);
+        }
+
+    }
+
     public ObjectStatus requestObjectStatus(final int objType, final int startObject, final int endObject,
             boolean extended)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
@@ -365,8 +371,16 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         } catch (OmniNotConnectedException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             throw new BridgeOfflineException(e);
-            // do we need to reconnect, or will reconnect listener get called?
         }
+    }
+
+    private UnitStatus[] getUnitStatuses() throws OmniInvalidResponseException, OmniUnknownMessageTypeException,
+            BridgeOfflineException, IOException, OmniNotConnectedException {
+        ObjectStatus val;
+        val = requestObjectStatus(Message.OBJ_TYPE_UNIT, 1,
+                omniConnection.reqObjectTypeCapacities(Message.OBJ_TYPE_UNIT).getCapacity(), false);
+        return (UnitStatus[]) val.getStatuses();
+
     }
 
     /**
