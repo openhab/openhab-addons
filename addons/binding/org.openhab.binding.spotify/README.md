@@ -19,7 +19,7 @@ If you run your openHAB server on "http://openhab.mydomain.com:8080"  you should
 
 This is important since the authentication process with Spotify takes place using your client web browser and Spotify will have to know the right URLs to your openHAB server for the authentication to be completed. When you have authenticated with Spotify, this Redirect URI is where authorization tokens for your openHAB Spotify Brigde will be sent and they have to be received by the servlet on "/connectspotify".
 
-## Configure binding
+### Configure binding
 
 1. Install the binding and make sure the _Spotify Binding_ is listed on your server
 1. Complete the Spotify Application Registation if you have not already done so, see above.
