@@ -18,7 +18,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * See {@link DevicelistModel}.
  *
- * @author Robert Bausdorf
+ * @author Robert Bausdorf - Initial contribution
+ * @author Christoph Weitkamp - Added new channels `locked`, `mode` and `radiator_mode`
  *
  */
 @XmlRootElement(name = "temperature")
@@ -30,7 +31,7 @@ public class TemperatureModel {
     private BigDecimal offset;
 
     public BigDecimal getCelsius() {
-        return celsius != null ? celsius.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+        return celsius;
     }
 
     public void setCelsius(BigDecimal celsius) {
@@ -38,16 +39,22 @@ public class TemperatureModel {
     }
 
     public BigDecimal getOffset() {
-        return offset != null ? offset.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+        return offset;
     }
 
     public void setOffset(BigDecimal offset) {
         this.offset = offset;
     }
 
+    public static BigDecimal toCelsius(BigDecimal fritzValue) {
+        if (fritzValue == null) {
+            return BigDecimal.ZERO;
+        }
+        return TEMP_FACTOR.multiply(fritzValue);
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("celsius", this.getCelsius()).append("offset", this.getOffset())
-                .toString();
+        return new ToStringBuilder(this).append("celsius", getCelsius()).append("offset", getOffset()).toString();
     }
 }

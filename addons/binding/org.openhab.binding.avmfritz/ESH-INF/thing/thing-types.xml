@@ -331,7 +331,6 @@
 		<item-type>DateTime</item-type>
 		<label>Next Setpoint Change</label>
 		<description>Next change of Set Temperature</description>
-		<category>Temperature</category>
 		<state readOnly="true" />
 	</channel-type>
 
