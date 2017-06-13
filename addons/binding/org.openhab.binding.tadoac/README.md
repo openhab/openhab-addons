@@ -1,52 +1,61 @@
 # TadoAC Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This is the TadoAC binding which uses the unofficial v2 REST-API.  
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+Currently the binding supports the Tado AC Control (IR). 
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Tado uses a cloud service for their devices. So discovery is not available
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+We need to find out two parameters: Your home ID and your zone ID.
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+First we need to login into the webinterface (https://my.tado.com). Then navigate to your zone that you want to control and look at your URL-bar. In our example chrome shows us this URL:
+
+`https://my.tado.com/webapp/#/home/zone/1`
+
+The last number is your zone id. Finding out the home id is a little bit tricky. We need to sniffer the API calls. We recommend the Google Chrome developer tools. Look for a call looking like this:
+
+`https://my.tado.com/api/v2/homes/1234/zones/1/state`
+
+In this case 1234 is your home ID
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+ channel  | item-type  | description |
+|---|---|---|
+| power      | Switch |AC Power switch|
+| mode      | Number | 1=Cool, 2=Dry, 3=Fan |
+| fanspeed       | Number | 1=Low, 2=Medium, 3=High|
+|temperature| Number| The interval and the steps are given by your AC|
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+.things file
 
-## Any custom content here!
+```
+tadoac:airconditioner:seelab [username="foo@bar.de", password="foobar", homeid=1234, zoneid=1]
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+.items file
+
+```
+Switch ac_power "Power" {channel="tadoac:airconditioner:seelab:power"}
+Number ac_mode "Mode "{channel="tadoac:airconditioner:seelab:mode"}
+Number ac_temperature "Temperature [%d°C]" {channel="tadoac:airconditioner:seelab:temperature"}
+Number ac_fanspeed "Fanspeed" {channel="tadoac:airconditioner:seelab:fanspeed"}
+```
+
+.sitemap file
+
+```
+Switch item=ac_power label="Power"
+Switch item=ac_mode mappings=[1="Cool", 2="Dry", 3="Fan"]
+Switch item=ac_fanspeed mappings=[1="Low", 2="Medium", 3="High"]
+Setpoint item=ac_temperature minValue=16 maxValue=25 step=1 //Depends on your AC
+```
