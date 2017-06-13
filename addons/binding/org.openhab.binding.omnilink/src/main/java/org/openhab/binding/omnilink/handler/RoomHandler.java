@@ -6,14 +6,15 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
+import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
+import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 
 public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler {
 
@@ -29,24 +30,6 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         int unitNum = Integer.parseInt(channelParts[2]);
 
-        if (RefreshType.REFRESH.equals(command)
-                && OmnilinkBindingConstants.CHANNEL_ROOM_STATE.equals(channelParts[3])) {
-            logger.debug("Unit '{}' got REFRESH command", thing.getLabel());
-            Futures.addCallback(getOmnilinkBridgeHander().getUnitStatus(Integer.parseInt(channelParts[2])),
-                    new FutureCallback<UnitStatus>() {
-                        @Override
-                        public void onFailure(Throwable arg0) {
-                            logger.error("Error refreshing unit status", arg0);
-                        }
-
-                        @Override
-                        public void onSuccess(UnitStatus status) {
-                            handleUnitStatus(status);
-                        }
-                    });
-
-            return;
-        }
         if (channelParts[3].startsWith("scene") && OnOffType.ON.equals(command)) {
 
             int param1 = 0;
@@ -152,4 +135,19 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
 
     }
 
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        logger.debug("channel linked: {}", channelUID);
+        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
+        int unitId = Integer.parseInt(channelParts[2]);
+
+        ObjectStatus objStatus;
+        try {
+            objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
+            handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
+
+        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+            logger.debug("Unexpected exception refreshing unit:", e);
+        }
+    }
 }

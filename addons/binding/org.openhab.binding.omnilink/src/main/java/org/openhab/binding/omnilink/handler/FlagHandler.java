@@ -6,15 +6,16 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
+import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
+import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 
 public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler {
 
@@ -33,21 +34,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand called for channel:{}, command:{}", channelUID, command);
         final String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        if (command instanceof RefreshType) {
-            logger.debug("Handling refresh, flag id: {}", channelParts[2]);
-            Futures.addCallback(getOmnilinkBridgeHander().getUnitStatus(Integer.parseInt(channelParts[2])),
-                    new FutureCallback<UnitStatus>() {
-                        @Override
-                        public void onFailure(Throwable arg0) {
-                            logger.error("Failed retrieving status for flag #: {}", channelParts[2], arg0);
-                        }
-
-                        @Override
-                        public void onSuccess(UnitStatus status) {
-                            handleUnitStatus(status);
-                        }
-                    });
-        } else if (command instanceof DecimalType) {
+        if (command instanceof DecimalType) {
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
             OmniLinkCmd omniCmd;
             int level = ((DecimalType) command).intValue();
@@ -75,5 +62,21 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
         updateState(OmnilinkBindingConstants.CHANNEL_FLAGSWITCH,
                 unitStatus.getStatus() == 0 ? OnOffType.OFF : OnOffType.ON);
 
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        logger.debug("channel linked: {}", channelUID);
+        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
+        int unitId = Integer.parseInt(channelParts[2]);
+
+        ObjectStatus objStatus;
+        try {
+            objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
+            handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
+
+        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+            logger.debug("Unexpected exception refreshing unit:", e);
+        }
     }
 }

@@ -52,8 +52,6 @@ import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
-import com.google.common.base.Function;
-import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -262,23 +260,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
-    private void loadUnitStatuses() {
-        Futures.addCallback(getStatuses(Message.OBJ_TYPE_UNIT), new FutureCallback<UnitStatus[]>() {
-
-            @Override
-            public void onFailure(Throwable arg0) {
-                logger.error("Error getting unit statuses", arg0);
-            }
-
-            @Override
-            public void onSuccess(UnitStatus[] status) {
-                for (UnitStatus unitStatus : status) {
-                    handleUnitStatus(unitStatus);
-                }
-            }
-        });
-    }
-
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         logger.debug("childHandlerInitialized called with '{}', childThing '{}'", childHandler, childThing);
@@ -377,24 +358,13 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         });
     }
 
-    private ListenableFuture<UnitStatus[]> getStatuses(int objType) {
+    private UnitStatus[] getUnitStatuses() throws OmniInvalidResponseException, OmniUnknownMessageTypeException,
+            BridgeOfflineException, IOException, OmniNotConnectedException {
+        ObjectStatus val;
+        val = requestObjectStatusNew(Message.OBJ_TYPE_UNIT, 1,
+                omniConnection.reqObjectTypeCapacities(Message.OBJ_TYPE_UNIT).getCapacity(), false);
+        return (UnitStatus[]) val.getStatuses();
 
-        ListenableFuture<ObjectStatus> getUnitsFuture = Futures.transform(getMaxNumber(Message.OBJ_TYPE_UNIT),
-                new AsyncFunction<Integer, ObjectStatus>() {
-                    @Override
-                    public ListenableFuture<ObjectStatus> apply(Integer rowKey) {
-                        // TODO asking for extended because seemingly of bug in jomnilink
-                        return requestObjectStatus(Message.OBJ_TYPE_UNIT, 1, rowKey,
-                                objType == Message.OBJ_TYPE_UNIT ? true : false);
-                    }
-                }, listeningExecutor);
-
-        return Futures.transform(getUnitsFuture, new Function<ObjectStatus, UnitStatus[]>() {
-            @Override
-            public UnitStatus[] apply(ObjectStatus t) {
-                return (UnitStatus[]) t.getStatuses();
-            }
-        }, listeningExecutor);
     }
 
     private void getSystemInfo() {
@@ -488,62 +458,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
-    /**
-     * @deprecated
-     * @param objType
-     * @param startObject
-     * @param endObject
-     * @param extended
-     * @return
-     */
-    @Deprecated
-    private ListenableFuture<ObjectStatus> requestObjectStatus(final int objType, final int startObject,
-            final int endObject, boolean extended) {
-
-        return listeningExecutor.submit(new Callable<ObjectStatus>() {
-
-            @Override
-            public ObjectStatus call() throws Exception {
-                return omniConnection.reqObjectStatus(objType, startObject, endObject, extended);
-            }
-        });
-    }
-
-    public ListenableFuture<UnitStatus> getUnitStatus(final int unitId) {
-        return Futures.transform(requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId, unitId, false),
-                new Function<ObjectStatus, UnitStatus>() {
-
-                    @Override
-                    public UnitStatus apply(ObjectStatus t) {
-                        return (UnitStatus) t.getStatuses()[0];
-                    }
-                }, listeningExecutor);
-    }
-
-    public ListenableFuture<ZoneStatus> getZoneStatus(final int address) {
-
-        return Futures.transform(requestObjectStatus(Message.OBJ_TYPE_ZONE, address, address, false),
-                new Function<ObjectStatus, ZoneStatus>() {
-
-                    @Override
-                    public ZoneStatus apply(ObjectStatus t) {
-                        return (ZoneStatus) t.getStatuses()[0];
-                    }
-                }, listeningExecutor);
-    }
-
-    public ListenableFuture<AreaStatus> getAreaStatus(final int address) {
-
-        return Futures.transform(requestObjectStatus(Message.OBJ_TYPE_AREA, address, address, false),
-                new Function<ObjectStatus, AreaStatus>() {
-
-                    @Override
-                    public AreaStatus apply(ObjectStatus t) {
-                        return (AreaStatus) t.getStatuses()[0];
-                    }
-                }, listeningExecutor);
-    }
-
     public void setOmnilinkSystemDate(ZonedDateTime date) {
 
         boolean inDaylightSavings = date.getZone().getRules().isDaylightSavings(date.toInstant());
@@ -572,7 +486,15 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             public void run() {
                 logger.debug("Running scheduled refresh");
                 getSystemStatus();
-                loadUnitStatuses();
+
+                try {
+                    for (UnitStatus unitStatus : getUnitStatuses()) {
+                        handleUnitStatus(unitStatus);
+                    }
+                } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException
+                        | IOException | OmniNotConnectedException e) {
+                    logger.error("Unable to refresh unit statuses");
+                }
                 // TODO add areas, zones, flags, etc
             }
         }, interval, interval, TimeUnit.SECONDS);
