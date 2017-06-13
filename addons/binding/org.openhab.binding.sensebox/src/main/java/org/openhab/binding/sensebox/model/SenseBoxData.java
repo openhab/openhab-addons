@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 
 /**
  * The {@link SenseBoxData} holds a de-serialized representation
@@ -38,6 +39,9 @@ public class SenseBoxData {
 
     @SerializedName("sensors")
     private List<SenseBoxSensor> sensors;
+
+    @Expose(deserialize = false)
+    private ThingStatus status;
 
     @Expose(deserialize = false)
     private SenseBoxDescriptor descriptor;
@@ -128,6 +132,14 @@ public class SenseBoxData {
 
     public void setSensors(List<SenseBoxSensor> sensors) {
         this.sensors = sensors;
+    }
+
+    public ThingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ThingStatus status) {
+        this.status = status;
     }
 
     public SenseBoxSensor getUvIntensity() {
