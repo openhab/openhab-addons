@@ -9,7 +9,8 @@
 package org.openhab.binding.loxone.core;
 
 import java.io.IOException;
-import java.util.Map;
+
+import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
 
 /**
  * A switch type of control on Loxone Miniserver.
@@ -51,41 +52,15 @@ public class LxControlSwitch extends LxControl {
      *            communication client used to send commands to the Miniserver
      * @param uuid
      *            switch's UUID
-     * @param name
-     *            switch's name
+     * @param json
+     *            JSON describing the control as received from the Miniserver
      * @param room
      *            room to which switch belongs
      * @param category
      *            category to which switch belongs
-     * @param states
-     *            switch's states and their names (expecting one object with "active" name)
      */
-    LxControlSwitch(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
-            Map<String, LxControlState> states) {
-        super(client, uuid, name, room, category, states, TYPE_NAME);
-    }
-
-    /**
-     * Create switch control object.
-     *
-     * @param client
-     *            communication client used to send commands to the Miniserver
-     * @param uuid
-     *            switch's UUID
-     * @param name
-     *            switch's name
-     * @param room
-     *            room to which switch belongs
-     * @param category
-     *            category to which switch belongs
-     * @param states
-     *            switch's states and their names (expecting one object with "active" name)
-     * @param typeName
-     *            type name of the switch (for child classes)
-     */
-    LxControlSwitch(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
-            Map<String, LxControlState> states, String typeName) {
-        super(client, uuid, name, room, category, states, typeName);
+    LxControlSwitch(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        super(client, uuid, json, room, category);
     }
 
     /**

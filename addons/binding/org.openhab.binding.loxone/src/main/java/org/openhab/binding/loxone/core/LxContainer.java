@@ -85,4 +85,16 @@ public class LxContainer {
         controls.add(control);
         control.getUuid().setUpdate(true);
     }
+
+    /**
+     * Removes a control from the container
+     *
+     * @param control
+     *            control object to remove from the container
+     * @return
+     *         true if control object existed in the container and was removed
+     */
+    boolean removeControl(LxControl control) {
+        return controls.remove(control);
+    }
 }

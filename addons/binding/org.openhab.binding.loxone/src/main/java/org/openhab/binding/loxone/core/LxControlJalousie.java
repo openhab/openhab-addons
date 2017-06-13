@@ -9,7 +9,8 @@
 package org.openhab.binding.loxone.core;
 
 import java.io.IOException;
-import java.util.Map;
+
+import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
 
 /**
  * A jalousie type of control on Loxone Miniserver.
@@ -104,18 +105,15 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
      *            communication client used to send commands to the Miniserver
      * @param uuid
      *            jalousie's UUID
-     * @param name
-     *            jalousie's name
+     * @param json
+     *            JSON describing the control as received from the Miniserver
      * @param room
      *            room to which jalousie belongs
      * @param category
      *            category to which jalousie belongs
-     * @param states
-     *            jalousie's states and their names
      */
-    LxControlJalousie(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
-            Map<String, LxControlState> states) {
-        super(client, uuid, name, room, category, states, TYPE_NAME);
+    LxControlJalousie(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        super(client, uuid, json, room, category);
 
         LxControlState positionState = getState(STATE_POSITION);
         if (positionState != null) {

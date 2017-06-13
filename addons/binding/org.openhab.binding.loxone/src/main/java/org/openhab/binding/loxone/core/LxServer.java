@@ -23,9 +23,6 @@ import org.openhab.binding.loxone.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-
 /**
  * Loxone Miniserver representaton.
  * <p>
@@ -541,6 +538,9 @@ public class LxServer {
             if (!entry.getKey().getUpdate()) {
                 uuids.remove(entry.getKey());
                 it.remove();
+                if (entry.getValue() instanceof LxControl) {
+                    ((LxControl) entry.getValue()).dispose();
+                }
             }
         }
     }
@@ -698,8 +698,7 @@ public class LxServer {
      */
     private void addOrUpdateControl(LxJsonApp3.LxJsonControl json) {
 
-        if (json == null || json.uuidAction == null || json.name == null
-                || json.type == null) {
+        if (json == null || json.uuidAction == null || json.name == null || json.type == null) {
             return;
         }
 
@@ -711,94 +710,31 @@ public class LxServer {
         if (json.room != null) {
             roomId = new LxUuid(json.room);
         }
-
-        // retrieve all states from the configuration
-        Map<String, LxControlState> states = new HashMap<String, LxControlState>();
-        if (json.states != null) {
-            for (Map.Entry<String, JsonElement> state : json.states.entrySet()) {
-                JsonElement element = state.getValue();
-                if (element instanceof JsonArray) {
-                    // temperature state of intelligent home controller object is the only
-                    // one that has state represented as an array, as this is not implemented
-                    // yet, we will skip this state
-                    continue;
-                }
-                String value = element.getAsString();
-                if (value != null) {
-                    LxUuid stateId = new LxUuid(value);
-                    String stateName = state.getKey().toLowerCase();
-                    LxControlState controlState = findState(stateId);
-                    if (controlState == null) {
-                        stateId = addUuid(stateId);
-                        controlState = new LxControlState(stateId, stateName, null);
-                    } else {
-                        controlState.setName(stateName);
-                    }
-                    states.put(stateName, controlState);
-                }
-            }
-        }
-
         LxContainer room = findRoom(roomId);
         LxCategory category = findCategory(categoryId);
-        String name = json.name;
 
         LxUuid id = new LxUuid(json.uuidAction);
-        LxControl ctrl = findControl(id);
-        if (ctrl != null) {
-            ctrl.update(json.name, room, category, states);
-
+        LxControl control = findControl(id);
+        if (control != null) {
+            control.update(json, room, category);
         } else {
             id = addUuid(id);
-            String type = json.type.toLowerCase();
-
-            if (LxControlSwitch.accepts(type)) {
-                ctrl = new LxControlSwitch(socketClient, id, name, room, category, states);
-
-            } else if (LxControlPushbutton.accepts(type)) {
-                ctrl = new LxControlPushbutton(socketClient, id, name, room, category, states);
-
-            } else if (LxControlJalousie.accepts(type)) {
-                ctrl = new LxControlJalousie(socketClient, id, name, room, category, states);
-
-            } else if (json.details != null) {
-
-                if (LxControlInfoOnlyDigital.accepts(type) && json.details.text != null) {
-                    ctrl = new LxControlInfoOnlyDigital(socketClient, id, name, room, category, states,
-                            json.details.text.on, json.details.text.off);
-
-                } else if (LxControlInfoOnlyAnalog.accepts(type)) {
-                    ctrl = new LxControlInfoOnlyAnalog(socketClient, id, name, room, category, states,
-                            json.details.format);
-
-                } else if (LxControlLightController.accepts(type)) {
-                    ctrl = new LxControlLightController(socketClient, id, name, room, category, states,
-                            json.details.movementScene);
-                    if (json.subControls != null) {
-                        for (LxJsonApp3.LxJsonControl subControl : json.subControls.values()) {
-                            // recursively create a subcontrol as a new control
-                            subControl.room = json.room;
-                            subControl.cat = json.cat;
-                            addOrUpdateControl(subControl);
-                        }
-                    }
-
-                } else if (LxControlRadio.accepts(type)) {
-                    ctrl = new LxControlRadio(socketClient, id, name, room, category, states,
-                            json.details.outputs, json.details.allOff);
-                }
-            }
-
-            if (ctrl != null) {
-                controls.put(id, ctrl);
-            }
+            control = LxControl.createControl(socketClient, id, json, room, category);
         }
+        if (control != null) {
+            updateControls(control);
+        }
+    }
 
-        if (ctrl != null) {
-            // get and store its states objects for state updates
-            for (LxControlState state : states.values()) {
-                this.states.put(state.getUuid(), state);
-            }
+    private void updateControls(LxControl control) {
+        for (LxControlState state : control.getStates().values()) {
+            state.getUuid().setUpdate(true);
+            states.put(state.getUuid(), state);
+        }
+        controls.put(control.uuid, control);
+        control.uuid.setUpdate(true);
+        for (LxControl subControl : control.getSubControls().values()) {
+            updateControls(subControl);
         }
     }
 

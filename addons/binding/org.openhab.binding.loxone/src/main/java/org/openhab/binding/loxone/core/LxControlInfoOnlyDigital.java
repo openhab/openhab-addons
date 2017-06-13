@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.loxone.core;
 
-import java.util.Map;
+import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
 
 /**
  * An InfoOnlyDigital type of control on Loxone Miniserver.
@@ -29,8 +29,8 @@ public class LxControlInfoOnlyDigital extends LxControl {
      */
     private static final String STATE_ACTIVE = "active";
 
-    private String textOn;
-    private String textOff;
+    private String textOn = null;
+    private String textOff = null;
 
     /**
      * Create InfoOnlyDigital control object.
@@ -39,24 +39,20 @@ public class LxControlInfoOnlyDigital extends LxControl {
      *            communication client used to send commands to the Miniserver
      * @param uuid
      *            control's UUID
-     * @param name
-     *            control's name
+     * @param json
+     *            JSON describing the control as received from the Miniserver
      * @param room
      *            room to which control belongs
      * @param category
      *            category to which control belongs
-     * @param states
-     *            control's states and their names
-     * @param textOn
-     *            string describing what it means when control in in ON state
-     * @param textOff
-     *            string describing what it means when control in in OFF state
      */
-    LxControlInfoOnlyDigital(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
-            Map<String, LxControlState> states, String textOn, String textOff) {
-        super(client, uuid, name, room, category, states, TYPE_NAME);
-        this.textOn = textOn;
-        this.textOff = textOff;
+    LxControlInfoOnlyDigital(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
+            LxCategory category) {
+        super(client, uuid, json, room, category);
+        if (json.details != null && json.details.text != null) {
+            this.textOn = json.details.text.on;
+            this.textOff = json.details.text.off;
+        }
     }
 
     /**

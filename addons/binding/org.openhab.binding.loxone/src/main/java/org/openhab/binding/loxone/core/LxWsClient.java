@@ -62,7 +62,6 @@ class LxWsClient {
     private int maxTextMsgSize = 512; // 512 KB
 
     private LxWebSocket socket = null;
-    private LxWsBinaryHeader header = null;
     private WebSocketClient wsClient = null;
     private BlockingQueue<LxServerEvent> queue;
     private ClientState state = ClientState.IDLE;
@@ -265,13 +264,13 @@ class LxWsClient {
             request.setSubProtocols("remotecontrol");
 
             wsClient.connect(socket, target, request);
-            state = ClientState.CONNECTING;
+            setClientState(ClientState.CONNECTING);
 
             logger.debug("[{}] Connecting to server : {} ", debugId, target);
             return true;
 
         } catch (Exception e) {
-            state = ClientState.IDLE;
+            setClientState(ClientState.IDLE);
             close("Connection to websocket failed : " + e.getMessage());
             return false;
         }
@@ -290,6 +289,8 @@ class LxWsClient {
             } catch (Exception e) {
                 logger.debug("[{}] Failed to stop websocket client, message = {}", debugId, e.getMessage());
             }
+        } else {
+            logger.debug("[{}] Attempt to disconnect websocket client, but wsClient = null", debugId);
         }
     }
 
@@ -306,14 +307,16 @@ class LxWsClient {
                 if (socket.session != null) {
                     if (state != ClientState.IDLE) {
                         logger.debug("[{}] Closing websocket session, reason : {}", debugId, reason);
-                        state = ClientState.CLOSING;
+                        setClientState(ClientState.CLOSING);
                     }
                     socket.session.close(StatusCode.NORMAL, reason);
                 } else {
                     logger.debug("[{}] Closing websocket, but no session, reason : {}", debugId, reason);
-                    state = ClientState.IDLE;
+                    setClientState(ClientState.IDLE);
                 }
             }
+        } else {
+            logger.debug("[{}] Closing websocket, but socket = null", debugId);
         }
     }
 
@@ -359,6 +362,11 @@ class LxWsClient {
         socket.sendString(command);
     }
 
+    private void setClientState(LxWsClient.ClientState state) {
+        logger.debug("[{}] changing client state to: {}", debugId, state.toString());
+        this.state = state;
+    }
+
     /**
      * Implementation of jetty websocket client
      *
@@ -369,12 +377,12 @@ class LxWsClient {
     public class LxWebSocket {
         Session session;
         private ScheduledFuture<?> keepAlive = null;
+        private LxWsBinaryHeader header = null;
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
             logger.debug("[{}] Websocket connection in state {} closed with code {} reason : {}", debugId,
                     state.toString(), statusCode, reason);
-
             if (keepAlive != null) {
                 keepAlive.cancel(true);
                 keepAlive = null;
@@ -394,7 +402,7 @@ class LxWsClient {
                 }
                 notifyMaster(EventType.SERVER_OFFLINE, reasonCode, reason);
             }
-            state = ClientState.IDLE;
+            setClientState(ClientState.IDLE);
         }
 
         @OnWebSocketConnect
@@ -412,7 +420,7 @@ class LxWsClient {
             logger.debug("[{}] Websocket connected (maxBinMsgSize={}, maxTextMsgSize={})", debugId,
                     policy.getMaxBinaryMessageSize(), policy.getMaxTextMessageSize());
             this.session = session;
-            state = ClientState.CONNECTED;
+            setClientState(ClientState.CONNECTED);
 
             try {
                 sendString(CMD_GET_KEY);
@@ -502,6 +510,13 @@ class LxWsClient {
 
         @OnWebSocketMessage
         public void onMessage(String msg) {
+            if (logger.isTraceEnabled()) {
+                String trace = msg;
+                if (trace.length() > 100) {
+                    trace = msg.substring(0, 100);
+                }
+                logger.trace("[{}] received message in state {}: {}", debugId, state.toString(), trace);
+            }
             try {
                 LxJsonResponse resp;
 
@@ -521,7 +536,7 @@ class LxWsClient {
                             String credentials = hashCredentials(resp.LL.value);
                             if (credentials != null) {
                                 sendString(CMD_AUTHENTICATE + credentials);
-                                state = ClientState.AUTHENTICATING;
+                                setClientState(ClientState.AUTHENTICATING);
                             } else {
                                 notifyMaster(EventType.SERVER_OFFLINE, LxServer.OfflineReason.INTERNAL_ERROR, null);
                                 close("Error creating credentials");
@@ -539,7 +554,7 @@ class LxWsClient {
                         } else if (resp.LL.Code == 200) {
                             logger.debug("[{}] Websocket authentication successfull.", debugId);
                             sendString(CMD_GET_APP_CONFIG);
-                            state = ClientState.UPDATING_CONFIGURATION;
+                            setClientState(ClientState.UPDATING_CONFIGURATION);
                         }
                         break;
                     case UPDATING_CONFIGURATION:
@@ -548,7 +563,7 @@ class LxWsClient {
                             logger.debug("[{}] Received configuration from server", debugId);
                             notifyMaster(EventType.RECEIVED_CONFIG, null, config);
                             sendString(CMD_ENABLE_UPDATES);
-                            state = ClientState.RUNNING;
+                            setClientState(ClientState.RUNNING);
                             notifyMaster(EventType.SERVER_ONLINE, null, null);
                         } else {
                             notifyMaster(EventType.SERVER_OFFLINE, LxServer.OfflineReason.INTERNAL_ERROR, null);
@@ -580,8 +595,12 @@ class LxWsClient {
 
         private void sendString(String string) throws IOException {
             synchronized (this) {
-                if (session != null) {
+                if (session != null && state != ClientState.IDLE && state != ClientState.CONNECTING
+                        && state != ClientState.CLOSING) {
+                    logger.debug("[{}] sending command: {}", debugId, string);
                     session.getRemote().sendString(string);
+                } else {
+                    logger.debug("[{}] NOT sending command, state {}: {}", debugId, state.toString(), string);
                 }
             }
         }

@@ -82,7 +82,7 @@ class LxControlState {
 
     /**
      * Sets current text value of the control's state
-     * 
+     *
      * @param value
      *            new text message value
      */
@@ -118,17 +118,6 @@ class LxControlState {
      */
     LxControl getControl() {
         return control;
-    }
-
-    /**
-     * Sets control to which state belongs.
-     *
-     * @param control
-     *            state's control object
-     */
-    void setControl(LxControl control) {
-        this.control = control;
-        uuid.setUpdate(true);
     }
 
     /**

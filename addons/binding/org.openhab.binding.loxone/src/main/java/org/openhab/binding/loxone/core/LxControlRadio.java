@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
+
 /**
  * A radio-button type of control on Loxone Miniserver.
  *
@@ -49,29 +51,21 @@ public class LxControlRadio extends LxControl {
      *            communication client used to send commands to the Miniserver
      * @param uuid
      *            radio-button's UUID
-     * @param name
-     *            radio-button's name
+     * @param json
+     *            JSON describing the control as received from the Miniserver
      * @param room
      *            room to which radio-button belongs
-     * @param category
-     *            category to which radio-button belongs
-     * @param states
-     *            radio-button's states and their names (expecting one object with "activeOutput" name)
-     * @param outputs
-     *            a map of output names with output number as a key (1-8 or 1-16) or 0 for no active outputs and
-     *            corresponding name (not all outputs need to be defined and names can be null)
-     * @param noOutputs
-     *            a text description of a situation where no output is active (can be null)
      */
-    LxControlRadio(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
-            Map<String, LxControlState> states, Map<String, String> outputs, String noOutputs) {
-        super(client, uuid, name, room, category, states, TYPE_NAME);
-        if (outputs != null) {
-            this.outputs = new TreeMap<String, String>(outputs);
+    LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
+        super(client, uuid, json, room, category);
+        if (json.details.outputs != null) {
+            outputs = new TreeMap<String, String>(json.details.outputs);
         } else {
-            this.outputs = new TreeMap<String, String>();
+            outputs = new TreeMap<String, String>();
         }
-        this.outputs.put("0", noOutputs);
+        if (json.details != null && json.details.allOff != null) {
+            outputs.put("0", json.details.allOff);
+        }
     }
 
     /**

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
+
 /**
  * A Light Controller type of control on Loxone Miniserver.
  * <p>
@@ -60,6 +62,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
     public static final int NUM_OF_SCENES = 10;
     private Map<String, String> sceneNames = new TreeMap<String, String>();
     private boolean newSceneNames = false;
+    private int movementScene = -1;
 
     /**
      * Create lighting controller object.
@@ -68,26 +71,71 @@ public class LxControlLightController extends LxControl implements LxControlStat
      *            communication client used to send commands to the Miniserver
      * @param uuid
      *            controller's UUID
-     * @param name
-     *            controller's name
+     * @param json
+     *            JSON describing the control as received from the Miniserver
      * @param room
      *            room to which controller belongs
      * @param category
      *            category to which controller belongs
-     * @param states
-     *            controller's states and their names
-     * @param movementScene
-     *            scene number (0-9) that is designated as a 'movement' scene
      */
-    LxControlLightController(LxWsClient client, LxUuid uuid, String name, LxContainer room, LxCategory category,
-            Map<String, LxControlState> states, int movementScene) {
-        super(client, uuid, name, room, category, states, TYPE_NAME);
+    LxControlLightController(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
+            LxCategory category) {
+        super(client, uuid, json, room, category);
+
+        if (json.details != null) {
+            this.movementScene = json.details.movementScene;
+        }
+
+        if (json.subControls != null) {
+            for (LxJsonControl subControl : json.subControls.values()) {
+                // recursively create a subcontrol as a new control
+                subControl.room = json.room;
+                subControl.cat = json.cat;
+                LxUuid subId = new LxUuid(subControl.uuidAction);
+                LxControl control = LxControl.createControl(client, subId, subControl, room, category);
+                subControls.put(control.uuid, control);
+            }
+        }
 
         LxControlState sceneListState = getState(STATE_SCENE_LIST);
         if (sceneListState != null) {
             sceneListState.addListener(this);
         }
+    }
 
+    /**
+     * Update Miniserver's control in runtime.
+     *
+     * @param json
+     *            JSON describing the control as received from the Miniserver
+     * @param room
+     *            New room that this control belongs to
+     * @param category
+     *            New category that this control belongs to
+     */
+    @Override
+    void update(LxJsonControl json, LxContainer room, LxCategory category) {
+        super.update(json, room, category);
+
+        if (json.subControls != null) {
+            for (LxJsonControl subControl : json.subControls.values()) {
+                // recursively create a subcontrol as a new control
+                subControl.room = json.room;
+                subControl.cat = json.cat;
+                LxUuid uuid = new LxUuid(subControl.uuidAction);
+                if (subControls.containsKey(uuid)) {
+                    subControls.get(uuid).update(json, room, category);
+                } else {
+                    LxControl control = LxControl.createControl(socketClient, uuid, subControl, room, category);
+                    subControls.put(control.uuid, control);
+                }
+            }
+        }
+        for (LxControl control : subControls.values()) {
+            if (!control.uuid.getUpdate()) {
+                subControls.remove(control.uuid);
+            }
+        }
     }
 
     /**
@@ -170,6 +218,16 @@ public class LxControlLightController extends LxControl implements LxControlStat
             return (int) state.getValue();
         }
         return -1;
+    }
+
+    /**
+     * Get scene designated as 'movement'
+     *
+     * @return
+     *         number of the movement scene (0-9, 0-all off, 9-all on) or -1 if undefined
+     */
+    public int getMovementScene() {
+        return movementScene;
     }
 
     /**
