@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="stiebelheatpump"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Stiebel Eltron heat pump Binding</name>
+	<description>This binding is used to communicate Stiebel Eltron LWZ heat pumps via a serial interface.
+	The binding is inspired by the work of [Monitoring a Stiebel Eltron LWZ (http://robert.penz.name/heat-pump-lwz) which is hosted at
+	Heatpumpmonitor (https://launchpad.net/heatpumpmonitor)
+	and is written in Python..</description>
+	<author>Peter Kreutzer</author>
+
+</binding:binding>

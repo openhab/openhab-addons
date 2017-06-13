@@ -1,0 +1,761 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="stiebelheatpump"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+<!--    
+
+    Stiebel Eltron LWZ 303
+    Stiebel Eltron LWZ 403
+    Stiebel Eltron LWZ 303 SOL
+    Stiebel Eltron LWZ 403 SOL
+    Tecalor THZ 303
+    Tecalor THZ 403
+    Tecalor THZ 303 SOL
+    Tecalor THZ 403 SOL 
+    
+    -->
+
+    <thing-type id="stiebelHeatPumpLWZ303_2_06">
+        <label>Stiebel heat pump LWZ303 2.06</label>
+        <description>Stiebel heat pump binding for LWZ/THZ connecting via serial RS232 interface to firmware version 2.06.</description>
+	    <channel-groups>
+	     <!-- at least 1 channel-group with id = version must be included  -->
+            <channel-group id="version" typeId="channelGroupTypeVersion"/>
+	        <channel-group id="time" typeId="channelGroupTypeTime"/>
+	        <channel-group id="currentValues" typeId="channelGroupTypeCurrentValues"/>
+            <channel-group id="operationCounters" typeId="channelGroupTypeOperationCounters"/>
+            <channel-group id="nominalValues" typeId="channelGroupTypeNominalValues"/>
+
+	    </channel-groups>
+        <properties>
+             <property name="vendor">Stiebel Eltron</property>
+             <property name="modelId">LWZ303</property>
+             <property name="protocol">Serial</property>
+             <property name="firmware">2.06</property>
+        </properties>
+        <config-description>
+            <parameter name="port" type="text" required="true">
+                <label>Portname</label>
+                <description>Serial port to use connecting to the heat pump device e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+                <default>/dev/ttyS4</default>
+            </parameter>
+            <parameter name="baudRate" type="decimal"  required="true">
+                <label>Baud rate</label>
+                <description>Baud rate of the serial interface.</description>
+                <default>9600</default>
+            </parameter>
+            <parameter name="waitingTime" type="integer"  required="true">
+                <label>Waiting time between requests</label>
+                <description>Time between polling requests in [ms], it depends on the speed of the heat pump CPU and interface .</description>
+                <default>1200</default>
+            </parameter>
+            <parameter name="refresh" type="decimal" required="true">
+                <label>Heat pump refresh rate</label>
+                <description>Refresh rate in [s] to query the meter data.</description>
+                <default>60</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="stiebelHeatPumpLWZ303_5_09">
+        <label>Stiebel heat pump LWZ303 5.09</label>
+        <description>Stiebel heat pump binding for LWZ/THZ connecting via serial RS232 interface to firmware version 5.09.</description>
+        <channel-groups>
+         <!-- at least 1 channel-group with id = version must be included  -->
+            <channel-group id="version" typeId="channelGroupTypeVersion"/>
+            <channel-group id="time" typeId="channelGroupTypeTime"/>
+            <channel-group id="currentValues" typeId="channelGroupTypeCurrentValues"/>
+            <channel-group id="operationCounters" typeId="channelGroupTypeOperationCounters"/>
+            <channel-group id="nominalValues" typeId="channelGroupTypeNominalValues"/>
+
+        </channel-groups>
+        <properties>
+             <property name="vendor">Stiebel Eltron</property>
+             <property name="modelId">LWZ303</property>
+             <property name="protocol">Serial</property>
+             <property name="firmware">5.09</property>
+        </properties>
+        <config-description>
+            <parameter name="port" type="text" required="true">
+                <label>Portname</label>
+                <description>Serial port to use connecting to the heat pump device e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+                <default>/dev/ttyUSB0</default>
+            </parameter>
+            <parameter name="baudRate" type="decimal" required="true">
+                <label>Baud rate</label>
+                <description>Baud rate of the serial interface.</description>
+                <default>115200</default>
+            </parameter>
+            <parameter name="waitingTime" type="integer"  required="true">
+                <label>Waiting time between requests</label>
+                <description>Time between polling requests in [ms], it depends on the speed of the heat pump CPU and interface .</description>
+                <default>1200</default>
+            </parameter>
+            <parameter name="refresh" type="decimal" required="true">
+                <label>Heat pump refresh rate</label>
+                <description>Refresh rate in [s] to query the meter data.</description>
+                <default>60</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <thing-type id="stiebelHeatPumpLWZ303_5_39">
+        <label>Stiebel heat pump LWZ303 5.39</label>
+        <description>Stiebel heat pump binding for LWZ/THZ connecting via serial RS232 interface to firmware version 5.39.</description>
+        <channel-groups>
+         <!-- at least 1 channel-group with id = version must be included  -->
+            <channel-group id="version" typeId="channelGroupTypeVersion"/>
+            <channel-group id="time" typeId="channelGroupTypeTime"/>
+            <channel-group id="currentValues" typeId="channelGroupTypeCurrentValues"/>
+            <channel-group id="operationCounters" typeId="channelGroupTypeOperationCounters"/>
+            <channel-group id="nominalValues" typeId="channelGroupTypeNominalValues"/>
+
+        </channel-groups>
+        <properties>
+             <property name="vendor">Stiebel Eltron</property>
+             <property name="modelId">LWZ303</property>
+             <property name="protocol">Serial</property>
+             <property name="firmware">5.39</property>
+        </properties>
+        <config-description>
+            <parameter name="port" type="text" required="true">
+                <label>Portname</label>
+                <description>Serial port to use connecting to the heat pump device e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+                <default>/dev/ttyUSB0</default>
+            </parameter>
+            <parameter name="baudRate" type="decimal" required="true">
+                <label>Baud rate</label>
+                <description>Baud rate of the serial interface.</description>
+                <default>115200</default>
+            </parameter>
+            <parameter name="waitingTime" type="integer"  required="true">
+                <label>Waiting time between requests</label>
+                <description>Time between polling requests in [ms], it depends on the speed of the heat pump CPU and interface .</description>
+                <default>1200</default>
+            </parameter>
+            <parameter name="refresh" type="decimal" required="true">
+                <label>Heat pump refresh rate</label>
+                <description>Refresh rate in [s] to query the meter data.</description>
+                <default>60</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+	<channel-group-type id="channelGroupTypeVersion" >
+	    <label>Version</label>
+	    <description>Version information of heat pump firmware</description>
+	    <channels>
+	    <!-- at least 1 channel-group with id = version must be included  -->
+	        <channel id="version" typeId="version" >
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0xfd</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.01</property>
+                </properties>
+            </channel>
+	    </channels>
+	</channel-group-type>
+    <channel-group-type id="channelGroupTypeTime" advanced="true" >
+        <label>Time</label>
+        <description>Date and time information of heat pump</description>
+        <channels >
+            <channel id="weekday" typeId="weekday">
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0xfc</property>
+                    <property name="position">5</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="min">1</property>
+                    <property name="max">6</property>
+                    <property name="step">1.0</property>
+                    <property name="unit">d</property>
+                </properties>
+            </channel>
+            <channel id="hours" typeId="hours" >
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0xfc</property>
+                    <property name="position">6</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="min">0</property>
+                    <property name="max">23</property>
+                    <property name="step">1.0</property>
+                    <property name="unit">h</property>
+                </properties>
+            </channel>
+            <channel id="minutes" typeId="minutes" >
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0xfc</property>
+                    <property name="position">7</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="min">0</property>
+                    <property name="max">59</property>
+                    <property name="step">1.0</property>
+                    <property name="unit">min</property>
+                </properties>
+            </channel>
+            <channel id="seconds" typeId="seconds" >
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0xfc</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="min">0</property>
+                    <property name="max">59</property>
+                    <property name="step">1.0</property>
+                    <property name="unit">s</property>
+                </properties>
+            </channel>
+            <channel id="year" typeId="year" >
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0xfc</property>
+                    <property name="position">9</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="min">0</property>
+                    <property name="max">99</property>
+                    <property name="step">1.0</property>
+                    <property name="unit">YY</property>
+                </properties>
+            </channel>
+            <channel id="month" typeId="month" >
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0xfc</property>
+                    <property name="position">11</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="min">1</property>
+                    <property name="max">12</property>
+                    <property name="step">1.0</property>
+                    <property name="unit">MM</property>
+                </properties>
+            </channel>
+            <channel id="day" typeId="day" >
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0xfc</property>
+                    <property name="position">12</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="min">1</property>
+                    <property name="max">31</property>
+                    <property name="step">1.0</property>
+                    <property name="unit">DD</property>
+                </properties>
+            </channel>
+        </channels>
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeCurrentValues" >
+        <label>Measurements</label>
+        <description>Temperature measurements of the heat pump.</description>
+        <channels >
+            <channel id="collectorTemperatur" typeId="temperature">
+                <label>Collector temperature</label>
+                <description>Collector temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="outsideTemperatur" typeId="temperature">
+                <label>Outside temperature</label>
+                <description>Outside temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="flowTemperatur" typeId="temperature">
+                <label>Flow temperature</label>
+                <description>Flow temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">8</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="returnTemperatur" typeId="temperature">
+                <label>Return temperature</label>
+                <description>Return temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="hotGasTemperatur" typeId="temperature">
+                <label>Hot gas temperature</label>
+                <description>Hot gas temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">12</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="dHWTemperatur" typeId="temperature">
+                <label>Cylinder temperature</label>
+                <description>Cylinder temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">14</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="flowHC2Temperatur" typeId="temperature">
+                <label>Cylinder temperature</label>
+                <description>Cylinder temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">16</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="insideTemperatur" typeId="temperature">
+                <label>Cylinder temperature</label>
+                <description>Cylinder temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">18</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="evaporatorTemperatur" typeId="temperature">
+                <label>Evaporator temperature</label>
+                <description>Evaporator temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">20</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="condenserTemperature" typeId="temperature">
+                <label>Condenser temperature</label>
+                <description>Condenser temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">22</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+            <channel id="extractFanSpeed" typeId="speed">
+                <label>Extract fan speed</label>
+                <description>Extract fan speed</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">30</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit">%</property>
+                </properties>
+            </channel>
+            <channel id="supplyFanSpeed" typeId="speed">
+                <label>Supply fan speed</label>
+                <description>Supply fan speed</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">31</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit">rpm</property>
+                </properties>
+            </channel>
+            <channel id="exhaustFanSpeed" typeId="speed">
+                <label>Exhaust fan speed</label>
+                <description>Exhaust fan speed</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">32</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit">%</property>
+                </properties>
+            </channel>
+            <channel id="filteredOutsideTemperatur" typeId="temperature">
+                <label>Filtered outside temperature</label>
+                <description>Filtered outside temperature</description>
+                <properties>
+                    <property name="dataType">Sensor</property>
+                    <property name="requestByte">0xfb</property>
+                    <property name="position">34</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                </properties>
+            </channel>
+        </channels>
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeOperationCounters">
+        <label>Operation Counters</label>
+        <description>Reads Operation counters of the heat pump.</description>
+        <channels >
+            <channel id="compressorA" typeId="hourCounter">
+                <label>Operation counter compressor A</label>
+                <description>Operation counter compressor A</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0x09</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit">h</property>
+                </properties>
+            </channel>
+            <channel id="compressorB" typeId="hourCounter">
+                <label>Operation counter compressor B</label>
+                <description>Operation counter compressor B</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0x09</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit">h</property>
+                </properties>
+            </channel>
+            <channel id="heatingMode" typeId="hourCounter">
+                <label>Operation counter heating mode</label>
+                <description>Operation counter heating mode</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0x09</property>
+                    <property name="position">8</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit">h</property>
+                </properties>
+            </channel>    
+            <channel id="dHWMode" typeId="hourCounter">
+                <label>Operation counter DHW mode</label>
+                <description>Operation counter DHW mode</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0x09</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit">h</property>
+                </properties>
+            </channel>    
+            <channel id="coolingMode" typeId="hourCounter">
+                <label>Operation counter cooling mode</label>
+                <description>Operation counter cooling mode</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0x09</property>
+                    <property name="position">12</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit">h</property>
+                </properties>
+            </channel>    
+        </channels>
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeNominalValues" advanced="true">
+        <label>Settings nominal values</label>
+        <description>Reads settings nominal values of the heat pump.</description>
+        <channels >
+            <channel id="p01RoomTemperatureStandardMode" typeId="temperatureSetting">
+                <label>P01 Room temperature standard</label>
+                <description>P01 Room temperature standard mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                    <property name="min">10</property>
+                    <property name="max">30</property>
+                    <property name="step">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p02RoomTemperatureSetbackMode" typeId="temperatureSetting">
+                <label>P02 Room temperature set back</label>
+                <description>P02 Room temperature set back mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                    <property name="min">10</property>
+                    <property name="max">30</property>
+                    <property name="step">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p03RoomTemperatureStandby" typeId="temperatureSetting">
+                <label>P03 Room temperature standby</label>
+                <description>P03 Room temperature standby mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">8</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                    <property name="min">10</property>
+                    <property name="max">30</property>
+                    <property name="step">0.1</property>                </properties>
+            </channel>
+            <channel id="p04DHWTemperatureStandardMode" typeId="temperatureSetting">
+                <label>P04 Domestic hot water temperature standard</label>
+                <description>P04 Domestic hot water standard mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                    <property name="min">10</property>
+                    <property name="max">55</property>
+                    <property name="step">0.1</property>                </properties>
+            </channel>
+            <channel id="p05DHWTemperaturSetbackMode" typeId="temperatureSetting">
+                <label>P05 Domestic hot water temperature set back</label>
+                <description>P05 Domestic hot water set back mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">12</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                    <property name="min">10</property>
+                    <property name="max">55</property>
+                    <property name="step">0.1</property>                </properties>
+            </channel>
+            <channel id="p06DHWTemperatureStandby" typeId="temperatureSetting">
+                <label>P06 Domestic hot water temperature set back</label>
+                <description>P06 Domestic hot water set back mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">14</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                    <property name="min">10</property>
+                    <property name="max">55</property>
+                    <property name="step">0.1</property>                </properties>
+            </channel>
+            <channel id="p07FanStageStandardMode" typeId="fanStageSetting">
+                <label>P07 Fan stage standard</label>
+                <description>P07 Fan stage standard mode setting</description>
+                <properties>
+                    <property name=""/>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">16</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit"></property>
+                    <property name="min">0</property>
+                    <property name="max">3</property>
+                    <property name="step">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p08FanStageSetbackMode" typeId="fanStageSetting">
+                <label>P08 Fan stage set back</label>
+                <description>P08 Fan stage set back mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">17</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit"></property>
+                    <property name="min">0</property>
+                    <property name="max">3</property>
+                    <property name="step">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p09FanStageStandby" typeId="fanStageSetting">
+                <label>P09 Fan stage standby</label>
+                <description>P09 Fan stage standby mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">18</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit"></property>
+                    <property name="min">0</property>
+                    <property name="max">3</property>
+                    <property name="step">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p10HeatingCircuitTemperatureManual" typeId="temperatureManualSetting">
+                <label>P10 Heating circuit temperature manual</label>
+                <description>P10 Heating circuit temperature manual mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">19</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                    <property name="min">10</property>
+                    <property name="max">65</property>
+                    <property name="step">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p11DHWTemperatureManual" typeId="temperatureManualSetting">
+                <label>P11 Domestic hot water temperature manual</label>
+                <description>P11 Domestic hot water manual mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">21</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                    <property name="unit">°C</property>
+                    <property name="min">10</property>
+                    <property name="max">65</property>
+                    <property name="step">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p12FanStageManual" typeId="fanStageSetting">
+                <label>P12 Fan stage standby</label>
+                <description>P12 Fan stage manual mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x17</property>
+                    <property name="position">23</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="unit"></property>
+                    <property name="min">0</property>
+                    <property name="max">3</property>
+                    <property name="step">1.0</property>
+                </properties>
+            </channel>
+        </channels>
+    </channel-group-type>
+
+    <channel-type id="version">
+        <item-type>String</item-type>
+        <label>Version</label>
+        <description>Firmware version of heat pump.</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <category>Temperature</category>
+        <state pattern="%.1f °C" readOnly="true"/>
+    </channel-type>
+    <channel-type id="speed">
+        <item-type>Number</item-type>
+        <label>Fan speed</label>
+        <state pattern="%d %%" readOnly="true"/>
+    </channel-type>
+    <channel-type id="hourCounter">
+        <item-type>Number</item-type>
+        <label>Operation Counter in [h]</label>
+        <state pattern="%d h" readOnly="true"/>
+    </channel-type>
+    <channel-type id="temperatureSetting" advanced="true">
+        <item-type>Number</item-type>
+        <label>Temperature Setting in [°C]</label>
+        <state min="10" max="30" step="0.1" pattern="%.1f °C"/>
+    </channel-type>
+    <channel-type id="temperatureManualSetting" advanced="true">
+        <item-type>Number</item-type>
+        <label>Temperature Setting in [°C]</label>
+        <state min="10" max="65" step="0.1" pattern="%.1f °C"/>
+    </channel-type>
+    <channel-type id="fanStageSetting" advanced="true">
+        <item-type>Number</item-type>
+        <label>Fan stage Setting</label>
+        <state min="0" max="3" step="1"/>
+    </channel-type>
+    <channel-type id="weekday" advanced="true">
+        <item-type>Number</item-type>
+        <label>Week day</label>
+        <description>Weekday of the current time.</description>
+        <state  min="1" max="7" step="1" readOnly="true" />
+    </channel-type>
+    <channel-type id="hours" advanced="true">
+        <item-type>Number</item-type>
+        <label>Hours</label>
+        <description>Hours of the current time.</description>
+        <state  min="0" max="23" step="1" readOnly="true"/>
+    </channel-type>
+    <channel-type id="minutes" advanced="true">
+        <item-type>Number</item-type>
+        <label>Minutes</label>
+        <description>Minutes of the current time.</description>
+        <state  min="0" max="59" step="1" readOnly="true"/>
+    </channel-type>
+    <channel-type id="seconds" advanced="true">
+        <item-type>Number</item-type>
+        <label>Seconds</label>
+        <description>Seconds of the current time.</description>
+        <state  min="0" max="59" step="1" readOnly="true"/>
+    </channel-type>
+    <channel-type id="year" advanced="true">
+        <item-type>Number</item-type>
+        <label>Seconds</label>
+        <description>Year of the current time.</description>
+        <state  min="0" max="99" step="1" readOnly="true"/>
+    </channel-type>
+    <channel-type id="month" advanced="true">
+        <item-type>Number</item-type>
+        <label>Month</label>
+        <description>Month of the current time.</description>
+        <state  min="1" max="12" step="1" readOnly="true"/>
+    </channel-type>
+    <channel-type id="day" advanced="true">
+        <item-type>Number</item-type>
+        <label>Day</label>
+        <description>Hours of the current time.</description>
+        <state  min="1" max="31" step="1" readOnly="true"/>
+    </channel-type>
+
+</thing:thing-descriptions>
