@@ -134,8 +134,7 @@ public class SpotifyAuthServlet extends HttpServlet implements SpotifyAuthServic
         } else if (url.equals(SERVLET_NAME + "/")) {
             // help finding the index page as default
             String indexPage = WEBAPP_ALIAS + "/index.html";
-            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(indexPage);
-            dispatcher.forward(req, resp);
+            resp.sendRedirect(resp.encodeRedirectURL(indexPage));
 
         } else if (url.equals(CALLBACK_ALIAS)) {
             // this entry point is for step 3 of the authorization flow
@@ -203,6 +202,28 @@ public class SpotifyAuthServlet extends HttpServlet implements SpotifyAuthServic
                 }
 
             }
+        } else if (url.equals(SERVLET_NAME + "/redirect_uri")) {
+            // this entry point is provided for index.html to present the expected Redirect URIs.
+            logger.debug("Spotify auth callback servlet received GET /list request");
+            String redirectUri = servletBaseURL + CALLBACK_ALIAS;
+            PrintWriter wrout = resp.getWriter();
+            wrout.println("{ \"redirect_uri\" : \"" + redirectUri + "\"}");
+
+        } else if (url.equals(SERVLET_NAME + "/remove")) {
+            // this entry point is provided for index.html to remove devices to authorize.
+            logger.debug("Spotify auth callback servlet received GET /remove request");
+
+            // expects the thing uid of a Spotify bridge
+            final String spotifyHandlerId = req.getParameter("playerId");
+
+            SpotifyHandler authHandler = getHandler(spotifyHandlerId);
+            if (authHandler != null) {
+                handlers.remove(authHandler);
+            }
+
+            String indexPage = WEBAPP_ALIAS + "/index.html";
+            resp.sendRedirect(resp.encodeRedirectURL(indexPage));
+
         } else if (url.equals(SERVLET_NAME + "/list")) {
             // this entry point is provided for index.html to retrieve the bridge(s) to authorize.
             logger.debug("Spotify auth callback servlet received GET /list request");
@@ -230,13 +251,7 @@ public class SpotifyAuthServlet extends HttpServlet implements SpotifyAuthServic
 
             logger.debug("Spotify auth callback servlet received GET /login request for {}.", spotifyHandlerId);
 
-            SpotifyHandler authHandler = null;
-            for (SpotifyHandler handler : handlers) {
-                if (handler.getThing().getUID().getAsString().equals(spotifyHandlerId)) {
-                    authHandler = handler;
-                    break;
-                }
-            }
+            SpotifyHandler authHandler = getHandler(spotifyHandlerId);
 
             if (authHandler != null) {
 
@@ -264,6 +279,21 @@ public class SpotifyAuthServlet extends HttpServlet implements SpotifyAuthServic
 
             }
         }
+    }
+
+    /**
+     * @param spotifyHandlerId
+     * @param authHandler
+     * @return
+     */
+    private SpotifyHandler getHandler(final String spotifyHandlerId) {
+
+        for (SpotifyHandler handler : handlers) {
+            if (handler.getThing().getUID().getAsString().equals(spotifyHandlerId)) {
+                return handler;
+            }
+        }
+        return null;
     }
 
     /*

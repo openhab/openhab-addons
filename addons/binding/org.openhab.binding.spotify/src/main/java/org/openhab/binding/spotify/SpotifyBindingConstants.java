@@ -24,11 +24,9 @@ public class SpotifyBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids
-    public static final String CHANNEL_REFRESHTOKEN = "refreshToken";
+    public static final String CHANNEL_ACCESSTOKEN = "accessToken";
 
-    public static final String CHANNEL_TRACKID = "trackId";
-    public static final String CHANNEL_TRACKURI = "trackUri";
-    public static final String CHANNEL_TRACKHREF = "trackHref";
+    public static final String CHANNEL_TRACKPLAY = "trackPlay";
     public static final String CHANNEL_TRACKPLAYER = "trackPlayer";
     public static final String CHANNEL_TRACKSHUFFLE = "trackShuffle";
     public static final String CHANNEL_TRACKREPEAT = "trackRepeat";
@@ -41,10 +39,10 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_PLAYED_TRACKNUMBER = "trackNumber";
     public static final String CHANNEL_PLAYED_TRACKDISCNUMBER = "trackDiscNumber";
     public static final String CHANNEL_PLAYED_TRACKPOPULARITY = "trackPopularity";
-    public static final String CHANNEL_PLAYED_TRACKDURATION = "trackDuration";
-    public static final String CHANNEL_PLAYED_TRACKPROGRESS = "trackProgress";
-    public static final String CHANNEL_PLAYED_TRACKDURATIONFMT = "trackDurationFmt";
-    public static final String CHANNEL_PLAYED_TRACKPROGRESSFMT = "trackProgressFmt";
+    public static final String CHANNEL_PLAYED_TRACKDURATION_MS = "trackDurationMs";
+    public static final String CHANNEL_PLAYED_TRACKPROGRESS_MS = "trackProgressMs";
+    public static final String CHANNEL_PLAYED_TRACKDURATION_FMT = "trackDuration";
+    public static final String CHANNEL_PLAYED_TRACKPROGRESS_FMT = "trackProgress";
 
     public static final String CHANNEL_PLAYED_ALBUMID = "albumId";
     public static final String CHANNEL_PLAYED_ALBUMURI = "albumUri";

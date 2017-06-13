@@ -41,9 +41,9 @@ public class SpotifyDeviceDiscovery extends AbstractDiscoveryService {
 
     private SpotifyHandler player = null;
 
-    public SpotifyDeviceDiscovery(SpotifyHandler coordinatorHandler) {
+    public SpotifyDeviceDiscovery(SpotifyHandler player) {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
-        this.player = coordinatorHandler;
+        this.player = player;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class SpotifyDeviceDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("Starting Spotify Device discovery !");
+        logger.debug("Starting Spotify Device discovery for bridge {}", player.getThing().getUID().getAsString());
 
         List<SpotifyWebAPIDeviceList.Device> spotifyDevices = player.getSpotifySession().listDevices();
 
@@ -62,14 +62,10 @@ public class SpotifyDeviceDiscovery extends AbstractDiscoveryService {
 
                 Map<String, Object> devConf = new HashMap<String, Object>();
                 devConf.put("id", device.getId());
-                devConf.put("name", device.getName());
-                devConf.put("is_active", device.getIsActive());
                 devConf.put("is_restricted", device.getIsRestricted());
-                devConf.put("type", device.getType());
-                devConf.put("volumePercent", device.getVolumePercent());
 
-                ThingUID thing = new ThingUID(SpotifyBindingConstants.THING_TYPE_DEVICE,
-                        player.getThing().getUID(), device.getId());
+                ThingUID thing = new ThingUID(SpotifyBindingConstants.THING_TYPE_DEVICE, player.getThing().getUID(),
+                        device.getId());
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thing)
                         .withBridge(player.getThing().getUID()).withProperties(devConf).withLabel(device.getName())

@@ -74,6 +74,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
 
                 if (command instanceof PlayPauseType) {
                     if (command.equals(PlayPauseType.PLAY)) {
+                        player.getSpotifySession().transferPlay(getDeviceId());
                         player.getSpotifySession().playActiveTrack(getDeviceId());
                     } else if (command.equals(PlayPauseType.PAUSE)) {
                         player.getSpotifySession().pauseActiveTrack(getDeviceId());
@@ -81,6 +82,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                 }
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
+                        player.getSpotifySession().transferPlay(getDeviceId());
                         player.getSpotifySession().playActiveTrack(getDeviceId());
                     } else if (command.equals(OnOffType.OFF)) {
                         player.getSpotifySession().pauseActiveTrack(getDeviceId());
@@ -129,10 +131,9 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                     setChannelValue(CHANNEL_DEVICEVOLUME, volume);
                 }
                 break;
-            case CHANNEL_TRACKID:
-            case CHANNEL_TRACKURI:
-            case CHANNEL_TRACKHREF:
+            case CHANNEL_TRACKPLAY:
                 if (command instanceof StringType) {
+                    player.getSpotifySession().transferPlay(getDeviceId(), ((StringType) command).toString());
                     player.getSpotifySession().playTrack(getDeviceId(), ((StringType) command).toString());
                 }
                 break;
@@ -141,20 +142,20 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initialize SpotifyConnect handler.");
+        logger.debug("Initialize Spotify device handler.");
 
         super.initialize();
         Map<String, String> props = this.thing.getProperties();
         deviceId = props.get("id");
         String isRestricted = props.get("is_restricted");
 
-        if (isRestricted.equals("true")) {
+        if (isRestricted == null || isRestricted.equals("true")) {
             updateStatus(ThingStatus.OFFLINE);
         } else {
             updateStatus(ThingStatus.ONLINE);
         }
 
-        logger.debug("Initialize SpotifyConnect handler done.");
+        logger.debug("Initialize Spotify device handler done.");
     }
 
     @Override

@@ -9,31 +9,33 @@
     <bridge-type id="player">
 
         <label>Spotify Player Bridge</label>
-        <description>Thing representing Spotify Player</description>
+        <description>Bridge representing the Spotify Player in the context of a user account. The bridge is associated with one specific Spotify account. If you want to control your devices in the context of different accounts you have to register a bridge for each account.</description>
 
         <channels>
-            <channel id="refreshToken" typeId="refreshToken" />
+            <channel id="accessToken" typeId="accessToken" />
+            
             <channel id="deviceId" typeId="deviceId"/>
             <channel id="deviceName" typeId="deviceName"/>
             <channel id="deviceType" typeId="deviceType"/>
             <channel id="deviceVolume" typeId="deviceVolume"/>
             <channel id="deviceActive" typeId="deviceActive"/>
 
-            <channel id="trackId" typeId="trackId"/>
-            <channel id="trackHref" typeId="trackHref"/>
-            <channel id="trackUri" typeId="trackUri"/>
+            <channel id="trackPlay" typeId="trackPlay"/>
             <channel id="trackPlayer" typeId="trackPlayer"/>
             <channel id="trackRepeat" typeId="trackRepeat"/>
             <channel id="trackShuffle" typeId="trackShuffle"/>
+            <channel id="trackId" typeId="currentlyPlayedTrackId"/>
+            <channel id="trackHref" typeId="currentlyPlayedTrackHref"/>
+            <channel id="trackUri" typeId="currentlyPlayedTrackUri"/>
             <channel id="trackName" typeId="currentlyPlayedTrackName"/>
             <channel id="trackType" typeId="currentlyPlayedTrackType"/>
             <channel id="trackNumber" typeId="currentlyPlayedTrackNumber"/>
             <channel id="trackDiscNumber" typeId="currentlyPlayedTrackDiscNumber"/>
             <channel id="trackPopularity" typeId="currentlyPlayedTrackPopularity"/>
+            <channel id="trackDurationMs" typeId="currentlyPlayedTrackDurationMs"/>
+            <channel id="trackProgressMs" typeId="currentlyPlayedTrackProgressMs"/>
             <channel id="trackDuration" typeId="currentlyPlayedTrackDuration"/>
             <channel id="trackProgress" typeId="currentlyPlayedTrackProgress"/>
-            <channel id="trackDurationFmt" typeId="currentlyPlayedTrackDurationFmt"/>
-            <channel id="trackProgressFmt" typeId="currentlyPlayedTrackProgressFmt"/>
 
             <channel id="albumId" typeId="currentlyPlayedAlbumId"/>
             <channel id="albumUri" typeId="currentlyPlayedAlbumUri"/>
@@ -53,14 +55,14 @@
                 <context>clientId</context>
                 <required>true</required>
                 <label>Spotify Application Client ID</label>
-                <description>This is the Client ID provided by Spotify when you add a new Application for OpenHAB/SmartHome to your Spotify Account. Go to https://developer.spotify.com/</description>
+                <description>This is the Client ID provided by Spotify when you add a new Application for openHAB to your Spotify Account. Go to https://developer.spotify.com/</description>
             </parameter>
             <parameter name="clientSecret" type="text">
                 <context>clientSecret</context>
                 <required>true</required>
                 <label>Spotify Application Client Secret</label>
                 <description>
-                    This is the Client Secret provided by Spotify when you add a new Application for OpenHAB/SmartHome to your Spotify Account.
+                    This is the Client Secret provided by Spotify when you add a new Application for openHAB to your Spotify Account.
                 </description>
             </parameter>
             <parameter name="refreshPeriod" type="integer" min="1" max="60">
@@ -93,13 +95,11 @@
             <bridge-type-ref id="player" />
         </supported-bridge-type-refs>
         
-                <label>Spotify Connect Player Device Thing</label>
-                <description>Thing representing Spotify Connect Device</description>
+                <label>Spotify Connect Device Thing</label>
+                <description>Thing representing a Spotify Connect device. The device exists in the context of the bridge and the Spotfy account associated with the bride. This means the same device can be present as a thing under each Spotify bridge you have configured.</description>
 
                 <channels>
-            <channel id="trackId" typeId="trackId"/>
-            <channel id="trackHref" typeId="trackHref"/>
-            <channel id="trackUri" typeId="trackUri"/>
+            <channel id="trackPlay" typeId="trackPlay"/>
             <channel id="deviceId" typeId="deviceId"/>
             <channel id="deviceName" typeId="deviceName"/>
             <channel id="deviceType" typeId="deviceType"/>
@@ -112,36 +112,22 @@
         
        <properties>
              <property name="id"></property>
-             <property name="type"></property>
-             <property name="name"></property>
-             <property name="is_active"></property>
              <property name="is_restricted"></property>
-             <property name="volume_percent"></property>
         </properties>
         
         </thing-type>
 
 
         <!-- Channel Types -->
-    <channel-type id="refreshToken">
-        <item-type>Switch</item-type>
-        <label>Spotify Token Refresh Trigger</label>
-        <description>Channel for Spotify to initiate refresh of access token. This channel will automatically trigger ON/OFF state while the token is being refreshed.</description>
-    </channel-type>
-    <channel-type id="trackId">
+    <channel-type id="accessToken" advanced="true">
         <item-type>String</item-type>
-        <label>Spotify track Id</label>
-        <description>Channel for Spotify track id to play or currently played</description>
+        <label>Spotify Access Token</label>
+        <description>This channel provides the access token used to authorize calls to the Spotify WebAPI. It can be used from rules or client-side scripting make call to WebAPI.</description>
     </channel-type>
-    <channel-type id="trackHref">
+    <channel-type id="trackPlay">
         <item-type>String</item-type>
-        <label>Spotify track href</label>
-        <description>Channel for Spotify track href to play or currently played</description>
-    </channel-type>
-    <channel-type id="trackUri">
-        <item-type>String</item-type>
-        <label>Spotify track Uri</label>
-        <description>Channel for Spotify track Uri to play or currently played</description>
+        <label>Spotify Track to Play</label>
+        <description>Channel to assign Spotify track/album/playlist to play. Accepts Spotify Uri:s and Hrefs.</description>
     </channel-type>
     <channel-type id="trackPlayer">
         <item-type>Player</item-type>
@@ -158,64 +144,79 @@
         <label>Spotify Track Player Shuffle</label>
         <description>Channel for Spotify player shuffle mode</description>
     </channel-type>
+    <channel-type id="currentlyPlayedTrackId" advanced="true">
+        <item-type>String</item-type>
+        <label>Spotify Track Id</label>
+        <description>Channel for Spotify track id currently being played.</description>
+    </channel-type>
+    <channel-type id="currentlyPlayedTrackHref" advanced="true">
+        <item-type>String</item-type>
+        <label>Spotify Track href</label>
+        <description>Channel for Spotify track href currently played</description>
+    </channel-type>
+    <channel-type id="currentlyPlayedTrackUri" advanced="true">
+        <item-type>String</item-type>
+        <label>Spotify Track Uri</label>
+        <description>Channel for Spotify track Uri currently played</description>
+    </channel-type>
     <channel-type id="currentlyPlayedTrackName">
         <item-type>String</item-type>
         <label>Spotify Track Name</label>
         <description>Channel for Spotify currently played track name</description>
     </channel-type>
-    <channel-type id="currentlyPlayedTrackType">
+    <channel-type id="currentlyPlayedTrackType" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Track Type</label>
         <description>Channel for Spotify currently played track type</description>
     </channel-type>
-    <channel-type id="currentlyPlayedTrackDuration">
+    <channel-type id="currentlyPlayedTrackDurationMs" advanced="true">
         <item-type>Number</item-type>
         <label>Spotify Track Duration ms</label>
         <description>Channel for Spotify currently played track duration (ms)</description>
     </channel-type>
-    <channel-type id="currentlyPlayedTrackProgress">
+    <channel-type id="currentlyPlayedTrackProgressMs" advanced="true">
         <item-type>Number</item-type>
         <label>Spotify Track Progress ms</label>
         <description>Channel for Spotify currently played track progress (ms)</description>
     </channel-type>
-    <channel-type id="currentlyPlayedTrackDurationFmt">
+    <channel-type id="currentlyPlayedTrackDuration">
         <item-type>String</item-type>
-        <label>Spotify Track Duration Formatted</label>
+        <label>Spotify Track Duration (m:ss)</label>
         <description>Channel for Spotify currently played track duration formatted (m:ss)</description>
     </channel-type>
-    <channel-type id="currentlyPlayedTrackProgressFmt">
+    <channel-type id="currentlyPlayedTrackProgress">
         <item-type>String</item-type>
-        <label>Spotify Track Progress Formatted</label>
+        <label>Spotify Track Progress (m:ss)</label>
         <description>Channel for Spotify currently played track progress formatted (m:ss)</description>
     </channel-type>
-    <channel-type id="currentlyPlayedTrackNumber">
+    <channel-type id="currentlyPlayedTrackNumber" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Track Number</label>
         <description>Channel for Spotify currently played track number</description>
     </channel-type>
-    <channel-type id="currentlyPlayedTrackDiscNumber">
+    <channel-type id="currentlyPlayedTrackDiscNumber" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Track Disc Number</label>
         <description>Channel for Spotify currently played track disc number</description>
     </channel-type>
-    <channel-type id="currentlyPlayedTrackPopularity">
-        <item-type>Number</item-type>
+    <channel-type id="currentlyPlayedTrackPopularity" advanced="true">
+        <item-type>Dimmer</item-type>
         <label>Spotify Track Popularity</label>
         <description>Channel for Spotify currently played track popularity</description>
     </channel-type>
 
     
-    <channel-type id="currentlyPlayedAlbumId">
+    <channel-type id="currentlyPlayedAlbumId" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Album href</label>
         <description>Channel for Spotify currently played album href</description>
     </channel-type>
-    <channel-type id="currentlyPlayedAlbumHref">
+    <channel-type id="currentlyPlayedAlbumHref" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Album href</label>
         <description>Channel for Spotify currently played album href</description>
     </channel-type>
-    <channel-type id="currentlyPlayedAlbumUri">
+    <channel-type id="currentlyPlayedAlbumUri" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Album href</label>
         <description>Channel for Spotify currently played album Uri</description>
@@ -225,24 +226,24 @@
         <label>Spotify Album Name</label>
         <description>Channel for Spotify currently played album name</description>
     </channel-type>    
-    <channel-type id="currentlyPlayedAlbumType">
+    <channel-type id="currentlyPlayedAlbumType" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Album Type</label>
         <description>Channel for Spotify currently played album type</description>
     </channel-type>    
 
 
-   <channel-type id="currentlyPlayedArtistId">
+   <channel-type id="currentlyPlayedArtistId" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Artist Id</label>
         <description>Channel for Spotify currently played artist Id</description>
     </channel-type>
-    <channel-type id="currentlyPlayedArtistHref">
+    <channel-type id="currentlyPlayedArtistHref" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Artist href</label>
         <description>Channel for Spotify currently played artist href</description>
     </channel-type>
-    <channel-type id="currentlyPlayedArtistUri">
+    <channel-type id="currentlyPlayedArtistUri" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Artist Uri</label>
         <description>Channel for Spotify currently played artist Uri</description>
@@ -252,14 +253,14 @@
         <label>Spotify Artist Name</label>
         <description>Channel for Spotify currently played artist name</description>
     </channel-type>    
-    <channel-type id="currentlyPlayedArtistType">
+    <channel-type id="currentlyPlayedArtistType" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Artist Type</label>
         <description>Channel for Spotify currently played artist type</description>
     </channel-type>    
  
    
-    <channel-type id="deviceId">
+    <channel-type id="deviceId" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Connect Active Device Id</label>
         <description>Channel for SpotifyConnect active device id</description>
@@ -269,7 +270,7 @@
         <label>Spotify Connect Device Name</label>
         <description>Channel for SpotifyConnect active device name</description>
     </channel-type>
-    <channel-type id="deviceType">
+    <channel-type id="deviceType" advanced="true">
         <item-type>String</item-type>
         <label>Spotify Connect Device Type</label>
         <description>Channel reports device type</description>
@@ -292,13 +293,13 @@
         <description>Channel controls shuffle for device</description>
         <category>Switch</category>
     </channel-type>
-    <channel-type id="deviceActive">
+    <channel-type id="deviceActive" advanced="true">
         <item-type>Switch</item-type>
         <label>Spotify Connect Device Active</label>
         <description>Channel reports active status for device</description>
         <category>Switch</category>
     </channel-type>
-    <channel-type id="deviceRestricted">
+    <channel-type id="deviceRestricted" advanced="true">
         <item-type>Switch</item-type>
         <label>Spotify Connect Device Restricted</label>
         <description>Channel reports whether the device is restricted or not - can it be controlled or not?</description>

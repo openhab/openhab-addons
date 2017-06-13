@@ -5,7 +5,7 @@
 				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
         <name>Spotify Binding</name>
-        <description>This is the OpenHAB2 binding for Spotify used to manage Connect devices. Using the Spotify WebAPI.</description>
+        <description>This is the openHAB binding for Spotify used to manage Connect devices. Using the Spotify WebAPI.</description>
         <author>Andreas Stenlund</author>
 
 </binding:binding>

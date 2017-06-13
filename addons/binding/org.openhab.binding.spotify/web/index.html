@@ -1,18 +1,23 @@
 <html>
 <!--  Not a too fancy page, minimal effort! :-) -->
 <head>
-<title>Index of Spotify Connect Web</title>
+<title>Authorize openHAB binding for Spotify</title>
+<link rel="icon" href="favicon.ico" type="image/vnd.microsoft.icon"><link>
 <script>
-
 function authenticate(playerId) {
-    var url = window.location.href + "login?playerId=" + playerId;
-    //alert(url);
-    //document.location.href = "/login?playerId=" + playerId;
-    window.location.href = url;
+    window.location.href  = "/connectspotify/login?playerId=" + playerId;
+}
+function removePlayer(playerId) {
+    window.location.href = "/connectspotify/remove?playerId=" + playerId;
 }
 
 </script>
 <style>
+html
+{
+    font-family:sans-serif;
+}
+
 .player 
 {
     display: table;
@@ -36,22 +41,25 @@ function authenticate(playerId) {
 </style>
 </head>
 <body>
-<h1>Index of Spotify Connect Web</h1>
+<h1>Authorize openHAB binding for Spotify</h1>
 <p>
-When adding a new Spotify Player bridge thing and entered the clientId and clientSecret you have to login to your Spotify Account and authorize this binding application to access your Spotify Account.
+When you add a new Spotify Player bridge and configured it with the clientId and clientSecret of the Spotify Application on your account, you have to login to your Spotify Account and authorize this binding to access your account.
 </p>
+<div id="redirect">
+</div>
 
 <div id="players">
 </div>
 <script>
 
-var xmlhttp = new XMLHttpRequest();
-xmlhttp.onreadystatechange = function() {
+var playersRequest = new XMLHttpRequest();
+playersRequest.open("GET", "/connectspotify/list", true);
+playersRequest.onload = function() {
     if (this.readyState == 4 && this.status == 200) {
         players = JSON.parse(this.responseText);
         
         if(players.length == 0)
-            document.getElementById("players").innerHTML = "<i>No players need to be authenticated.</i>";
+            document.getElementById("players").innerHTML = "<i>No players need authorization.</i>";
         
         for(i=0;i<players.length;i++)
         {
@@ -59,13 +67,25 @@ xmlhttp.onreadystatechange = function() {
             document.getElementById("players").innerHTML += '<div class="player" id="' + player.id + '">';
             document.getElementById("players").innerHTML += '<div class="row"><div class="hdrcol">Player thing id:</div><div class="col">' + player.id +'</div></div>';
             document.getElementById("players").innerHTML += '<div class="row"><div class="hdrcol">Spotify client Id:</div><div class="col">' + player.clientId + '</div></div>';
-            document.getElementById("players").innerHTML += '<div class="row"><div class="col"><input type="button" value="Authenticate Player with Spotify WebAPI" onclick=authenticate(\"' + player.id + '\"); /></div></div>';
+            document.getElementById("players").innerHTML += '<div class="row"><div class="col"><input type="button" value="Authenticate Player with Spotify WebAPI" onclick=authenticate(\"' + player.id + '\"); /></div><div class="col"><input type="button" value="Remove" alt="Remove from this list" onclick=removePlayer(\"' + player.id + '\"); /></div></div>';
             document.getElementById("players").innerHTML += '</div><br/>';
         }
     }
 };
-xmlhttp.open("GET", "/connectspotify/list", true);
-xmlhttp.send();
+playersRequest.send();
+
+var redirectUri = new XMLHttpRequest();
+redirectUri.open("GET", "/connectspotify/redirect_uri", true);
+redirectUri.onload = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        redirectConfig = JSON.parse(this.responseText);
+
+        document.getElementById("redirect").innerHTML = '<p>The redirect URI to use with Spotify for this openHAB installation:<br/><b>' + redirectConfig.redirect_uri + '</b></p>';
+    } else {
+        alert("Not OK!");
+    }
+};
+redirectUri.send();
 
 </script>
 

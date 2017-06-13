@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -69,7 +68,6 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
     private SpotifyHandlerFactory handlerFactory = null;
 
     private Integer pollingInterval = 5;
-    private Map<String, SpotifyDeviceHandler> knownDevices = new HashMap<String, SpotifyDeviceHandler>();
 
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     @SuppressWarnings("rawtypes")
@@ -125,9 +123,7 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
         String channel = channelUID.getId();
 
         switch (channel) {
-            case CHANNEL_TRACKID:
-            case CHANNEL_TRACKURI:
-            case CHANNEL_TRACKHREF:
+            case CHANNEL_TRACKPLAY:
                 if (command instanceof StringType) {
                     spotifySession.playTrack(((StringType) command).toString());
                 }
@@ -228,7 +224,7 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
         }
 
         if (getConfig().get("clientId") != null) {
-            setSpotifySession(SpotifySession.getInstance(clientId, clientSecret, refreshToken));
+            setSpotifySession(SpotifySession.getInstance(this, clientId, clientSecret, refreshToken));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Spotify Web API - client parameters not set.");
@@ -240,7 +236,6 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
         logger.debug("Initializing child {} : {} .", thingHandler.getClass().getName(), thing.getLabel());
         SpotifyDeviceHandler handler = (SpotifyDeviceHandler) thingHandler;
         handler.setController(this);
-        knownDevices.put(handler.getDeviceId(), handler);
 
     }
 
@@ -287,66 +282,64 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
      * Updates
      */
     private void updateDeviceStatus() {
-        List<SpotifyDeviceHandler> availableDevices = new ArrayList<SpotifyDeviceHandler>();
+        final HashMap<String, SpotifyDeviceHandler> allDevices = new HashMap<String, SpotifyDeviceHandler>();
+        final List<SpotifyDeviceHandler> availableDevices = new ArrayList<SpotifyDeviceHandler>();
 
-        // No reason to query Spotify for device and player status if we don't have any devices configured.
-        if (knownDevices.size() > 0) {
-            logger.debug("Spotify known devices: {}", knownDevices.size());
+        final List<SpotifySession.SpotifyWebAPIDeviceList.Device> spotifyDevices = spotifySession.listDevices();
 
-            // TODO: decide on whether to add automatic discovery of devices not configured as things here and
-            // get rid of discovery implementation.
-            List<SpotifySession.SpotifyWebAPIDeviceList.Device> spotifyDevices = spotifySession.listDevices();
-            for (SpotifySession.SpotifyWebAPIDeviceList.Device device : spotifyDevices) {
-                if (knownDevices.containsKey(device.getId())) {
+        List<Thing> bridgeThings = this.getThing().getThings();
+        for (Thing thing : bridgeThings) {
+            if (thing.getHandler() instanceof SpotifyDeviceHandler) {
+                SpotifyDeviceHandler handler = (SpotifyDeviceHandler) thing.getHandler();
 
-                    SpotifyDeviceHandler handler = knownDevices.get(device.getId());
+                String handlerDeviceId = handler.getDeviceId();
+                allDevices.put(handlerDeviceId, handler);
+            }
+        }
 
-                    logger.debug("Spotify device is a thing: {} {} ({}, {})", handler.getThing().getUID().getAsString(),
-                            device.getName(), device.getType(), device.getId());
+        for (SpotifySession.SpotifyWebAPIDeviceList.Device device : spotifyDevices) {
+            if (allDevices.keySet().contains(device.getId())) {
+                SpotifyDeviceHandler handler = allDevices.get(device.getId());
 
-                    // Device status is not always available from Spotify Web API so list of available devices
-                    // varies, keep track of the active ones
-                    availableDevices.add(handler);
+                logger.debug("Spotify device is a thing: {} Device [ {} {}, {} ]",
+                        handler.getThing().getUID().getAsString(), device.getId(), device.getName(), device.getType());
 
-                    handler.setChannelValue(CHANNEL_DEVICENAME, new StringType(device.getName()));
-                    handler.setChannelValue(CHANNEL_DEVICETYPE, new StringType(device.getType()));
+                // Device status is not always available from Spotify Web API so list of available devices
+                // varies, keep track of the active ones
+                availableDevices.add(handler);
+
+                handler.setChannelValue(CHANNEL_DEVICENAME, new StringType(device.getName()));
+                handler.setChannelValue(CHANNEL_DEVICETYPE, new StringType(device.getType()));
+                if (device.getVolumePercent() != null) {
                     handler.setChannelValue(CHANNEL_DEVICEVOLUME, new PercentType(device.getVolumePercent()));
-                    handler.setChannelValue(CHANNEL_DEVICEACTIVE, device.getIsActive() ? OnOffType.ON : OnOffType.OFF);
-                    handler.setChannelValue(CHANNEL_DEVICERESTRICTED,
-                            device.getIsRestricted() ? OnOffType.ON : OnOffType.OFF);
+                }
+                handler.setChannelValue(CHANNEL_DEVICEACTIVE, device.getIsActive() ? OnOffType.ON : OnOffType.OFF);
+                handler.setChannelValue(CHANNEL_DEVICERESTRICTED,
+                        device.getIsRestricted() ? OnOffType.ON : OnOffType.OFF);
+            } else {
+                // TODO: add new Thing? Decide on whether to add automatic discovery of devices not configured as things
+                // here
+                // and get rid of discovery implementation?
+                logger.debug("Spotify device is not a thing: {} ({}, {})", device.getName(), device.getType(),
+                        device.getId());
+            }
+        }
 
-                } else {
-                    // TODO: add new thing to Inbox ?
-                    logger.debug("Spotify device is not a thing: {} ({}, {})", device.getName(), device.getType(),
-                            device.getId());
+        // Change status of the device
+        for (SpotifyDeviceHandler handler : allDevices.values()) {
+            if (availableDevices.contains(handler)) {
+                // If device is available, but OFFLINE - take ONLINE
+                if (handler.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+                    logger.debug("Taking device {} ONLINE.", handler.getThing().getUID());
+                    handler.changeStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                // If device is not available, but ONLINE - take OFFLINE
+                if (handler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    logger.debug("Taking device {} OFFLINE.", handler.getThing().getUID());
+                    handler.changeStatus(ThingStatus.OFFLINE);
                 }
             }
-
-            // Go through list of all OpenHAB things and update their status
-            Collection<SpotifyDeviceHandler> spotifyDevicesList = knownDevices.values();
-            for (SpotifyDeviceHandler handler : spotifyDevicesList) {
-
-                if (availableDevices.contains(handler)) {
-                    // If device is available, but OFFLINE - take ONLINE
-                    if (handler.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
-                        logger.debug("Taking device {} ONLINE.", handler.getThing().getUID());
-                        handler.changeStatus(ThingStatus.ONLINE);
-                    }
-                } else {
-                    // If device is not available, but ONLINE - take OFFLINE
-                    if (handler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-
-                        // Set device active channel to OFF.
-                        Channel channel = handler.getThing().getChannel(CHANNEL_DEVICEACTIVE);
-                        updateState(channel.getUID(), OnOffType.OFF);
-
-                        logger.debug("Taking device {} OFFLINE.", handler.getThing().getUID());
-                        handler.changeStatus(ThingStatus.OFFLINE);
-                    }
-                }
-            }
-        } else {
-            logger.debug("No known devices to update.");
         }
     }
 
@@ -362,18 +355,15 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
 
         Long progress = playerInfo.getProgressMs();
         Long duration = playerInfo.getItem().getDurationMs();
-        setChannelValue(CHANNEL_PLAYED_TRACKPROGRESS, new DecimalType(progress));
-        setChannelValue(CHANNEL_PLAYED_TRACKDURATION, new DecimalType(duration));
+        setChannelValue(CHANNEL_PLAYED_TRACKPROGRESS_MS, new DecimalType(progress));
+        setChannelValue(CHANNEL_PLAYED_TRACKDURATION_MS, new DecimalType(duration));
 
-        try {
-            SimpleDateFormat fmt = new SimpleDateFormat("m:ss");
-            String progressFmt = fmt.format(new Date(progress));
-            String durationFmt = fmt.format(new Date(duration));
-            setChannelValue(CHANNEL_PLAYED_TRACKPROGRESSFMT, new StringType(progressFmt));
-            setChannelValue(CHANNEL_PLAYED_TRACKDURATIONFMT, new StringType(durationFmt));
-        } catch (Exception ex) {
-            logger.error("Exception while formatting duration and progress", ex);
-        }
+        SimpleDateFormat fmt = new SimpleDateFormat("m:ss");
+        String progressFmt = fmt.format(new Date(progress));
+        String durationFmt = fmt.format(new Date(duration));
+        setChannelValue(CHANNEL_PLAYED_TRACKPROGRESS_FMT, new StringType(progressFmt));
+        setChannelValue(CHANNEL_PLAYED_TRACKDURATION_FMT, new StringType(durationFmt));
+
         setChannelValue(CHANNEL_PLAYED_TRACKID, new StringType(playerInfo.getItem().getId()));
         setChannelValue(CHANNEL_PLAYED_TRACKHREF, new StringType(playerInfo.getItem().getHref()));
         setChannelValue(CHANNEL_PLAYED_TRACKURI, new StringType(playerInfo.getItem().getUri()));
@@ -424,10 +414,14 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
 
     public void setChannelValue(String CHANNEL, State state) {
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            Channel channel = getThing().getChannel(CHANNEL);
 
-            logger.trace("Updating status of spotify device {} channel {}.", getThing().getLabel(), channel.getUID());
-            updateState(channel.getUID(), state);
+            if (isLinked(CHANNEL)) {
+                Channel channel = getThing().getChannel(CHANNEL);
+
+                logger.trace("Updating status of spotify device {} channel {}.", getThing().getLabel(),
+                        channel.getUID());
+                updateState(channel.getUID(), state);
+            }
         }
     }
 
@@ -439,7 +433,7 @@ public class SpotifyHandler extends ConfigStatusBridgeHandler {
         configuration.put("refreshToken", refreshToken);
         updateConfiguration(configuration);
 
-        SpotifySession newSession = SpotifySession.getInstance(clientId, clientSecret, refreshToken);
+        SpotifySession newSession = SpotifySession.getInstance(this, clientId, clientSecret, refreshToken);
         setSpotifySession(newSession);
 
     }
