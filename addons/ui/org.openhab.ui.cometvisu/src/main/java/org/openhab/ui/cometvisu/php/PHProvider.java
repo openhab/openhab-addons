@@ -16,6 +16,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ *
+ * @author Tobias Bräutigam - Initial contribution
+ */
 public interface PHProvider {
     public void createQuercusEngine();
 
