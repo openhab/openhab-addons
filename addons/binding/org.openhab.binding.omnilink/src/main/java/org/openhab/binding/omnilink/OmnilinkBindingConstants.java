@@ -33,7 +33,7 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_AREA_ALARM_BURGLARY = "area_alarm_burglary";
     public final static String CHANNEL_AREA_ALARM_FIRE = "area_alarm_fire";
     public final static String CHANNEL_AREA_ALARM_GAS = "area_alarm_gas";
-    public final static String CHANNEL_AREA_ALARM_AUXILARY = "area_alarm_auxilary";
+    public final static String CHANNEL_AREA_ALARM_AUXILARY = "area_alarm_auxiliary";
     public final static String CHANNEL_AREA_ALARM_FREEZE = "area_alarm_freeze";
     public final static String CHANNEL_AREA_ALARM_WATER = "area_alarm_water";
     public final static String CHANNEL_AREA_ALARM_DURESS = "area_alarm_duress";
