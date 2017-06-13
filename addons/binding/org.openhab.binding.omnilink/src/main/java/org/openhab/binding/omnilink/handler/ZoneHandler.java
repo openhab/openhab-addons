@@ -70,8 +70,7 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
                      */
                     if ((codeValidation.getCodeNumber() > 0 && codeValidation.getCodeNumber() <= 99)
                             && codeValidation.getAuthorityLevel() > 0) {
-                        getOmnilinkBridgeHander().sendOmnilinkCommandNew(mode, codeValidation.getCodeNumber(),
-                                zoneNumber);
+                        getOmnilinkBridgeHander().sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), zoneNumber);
                     } else {
                         logger.error("System reported an invalid code");
                     }
@@ -108,7 +107,7 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
         int zoneId = Integer.parseInt(channelParts[2]);
         ObjectStatus objStatus;
         try {
-            objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_ZONE, zoneId, zoneId, false);
+            objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_ZONE, zoneId, zoneId, false);
             handleZoneStatus((ZoneStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing zone:", e);

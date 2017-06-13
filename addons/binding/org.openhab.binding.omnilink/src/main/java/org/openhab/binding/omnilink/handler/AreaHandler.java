@@ -92,8 +92,7 @@ public class AreaHandler extends AbstractOmnilinkHandler {
                      */
                     if ((codeValidation.getCodeNumber() > 0 && codeValidation.getCodeNumber() <= 99)
                             && codeValidation.getAuthorityLevel() > 0) {
-                        getOmnilinkBridgeHander().sendOmnilinkCommandNew(mode, codeValidation.getCodeNumber(),
-                                areaNumber);
+                        getOmnilinkBridgeHander().sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), areaNumber);
                     } else {
                         logger.error("System reported an invalid code");
                     }
@@ -142,7 +141,7 @@ public class AreaHandler extends AbstractOmnilinkHandler {
         int areaId = Integer.parseInt(channelParts[2]);
         ObjectStatus objStatus;
         try {
-            objStatus = getOmnilinkBridgeHander().requestObjectStatusNew(Message.OBJ_TYPE_AREA, areaId, areaId, false);
+            objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AREA, areaId, areaId, false);
             handleAreaEvent((AreaStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing area:", e);
