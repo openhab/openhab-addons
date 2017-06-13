@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hs110" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="HS100">
+		<label>HS100 Binding Thing</label>
+		<description>Definition for TP-Link HS100 Wifi Power Plug</description>
+		<channels>
+			<channel id="switch" typeId="switch-channel" />
+			<channel id="sysinfo" typeId="sysinfo-channel" />
+		</channels>
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<label>IP</label>
+				<description>IP Address of the Plug</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh rate</label>
+				<description>Refresh of plug state in seconds</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="HS110">
+		<label>HS110 Binding Thing</label>
+		<description>Definition for TP-Link HS110 Wifi Power Plug</description>
+		<channels>
+			<channel id="switch" typeId="switch-channel" />
+			<channel id="wattage" typeId="wattage-channel" />
+			<channel id="total" typeId="total-channel" />
+			<channel id="sysinfo" typeId="sysinfo-channel" />
+		</channels>
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<label>IP</label>
+				<description>IP Address of the Plug
+                </description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh rate</label>
+				<description>Refresh of plug state in seconds</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>On Off Switch</description>
+	</channel-type>
+	<channel-type id="wattage-channel">
+		<item-type>Number</item-type>
+		<label>Wattage</label>
+		<description>Wattage of Plug</description>
+	</channel-type>
+	<channel-type id="total-channel">
+		<item-type>Number</item-type>
+		<label>Total power in kWh</label>
+		<description>Total power used</description>
+	</channel-type>
+	<channel-type id="sysinfo-channel">
+		<item-type>String</item-type>
+		<label>Sysinfo</label>
+		<description>SysInfo for debugging only</description>
+	</channel-type>
+
+</thing:thing-descriptions>
