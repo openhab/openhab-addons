@@ -14,12 +14,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
-import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType;
 
+/**
+ *
+ * @author Pauli Anttila - Initial contribution
+ */
 public class RFXComMessageFactory {
 
     @SuppressWarnings("serial")
