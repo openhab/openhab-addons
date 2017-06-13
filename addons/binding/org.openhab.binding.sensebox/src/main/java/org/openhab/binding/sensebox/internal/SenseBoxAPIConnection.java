@@ -17,6 +17,7 @@ import org.openhab.binding.sensebox.model.SenseBoxDescriptor;
 import org.openhab.binding.sensebox.model.SenseBoxLoc;
 import org.openhab.binding.sensebox.model.SenseBoxLocation;
 import org.openhab.binding.sensebox.model.SenseBoxSensor;
+import org.openhab.core.OpenHAB;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -48,9 +49,8 @@ public class SenseBoxAPIConnection {
     private static final int TIMEOUT = 30 * 1000; // 30 seconds
 
     public SenseBoxAPIConnection() {
-        String openHABVersion = "2.1.0-SNAPSHOT";
+        String openHABVersion = OpenHAB.getVersion() + " / " + OpenHAB.buildString();
         Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
-        // TODO is there a way to obtain the OH version?
         HEADERS.put("User-Agent", "openHAB " + openHABVersion + " / senseBox binding " + version.toString());
         logger.trace("Headers: {}", HEADERS);
     }
