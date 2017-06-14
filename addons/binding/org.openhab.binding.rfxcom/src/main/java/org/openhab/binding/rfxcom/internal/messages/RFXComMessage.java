@@ -76,13 +76,6 @@ public interface RFXComMessage {
     List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException;
 
     /**
-     * Procedure for get supported value selector list for output values.
-     *
-     * @return List of supported value selectors.
-     */
-    List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException;
-
-    /**
      * Procedure to pass configuration to a message
      *
      * @param deviceConfiguration configuration about the device

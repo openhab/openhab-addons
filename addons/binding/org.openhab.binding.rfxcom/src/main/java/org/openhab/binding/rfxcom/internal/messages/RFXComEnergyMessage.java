@@ -63,8 +63,6 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.INSTANT_POWER,
             RFXComValueSelector.TOTAL_USAGE, RFXComValueSelector.INSTANT_AMPS, RFXComValueSelector.TOTAL_AMP_HOUR);
 
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
-
     public SubType subType;
     public int sensorId;
     public byte count;
@@ -223,10 +221,4 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
 }

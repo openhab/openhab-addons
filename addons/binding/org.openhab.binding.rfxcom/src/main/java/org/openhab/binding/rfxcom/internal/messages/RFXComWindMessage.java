@@ -67,8 +67,6 @@ public class RFXComWindMessage extends RFXComBaseMessage {
             RFXComValueSelector.AVG_WIND_SPEED, RFXComValueSelector.WIND_SPEED, RFXComValueSelector.TEMPERATURE,
             RFXComValueSelector.CHILL_TEMPERATURE);
 
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
-
     public SubType subType;
     public int sensorId;
     public double windDirection;
@@ -248,10 +246,4 @@ public class RFXComWindMessage extends RFXComBaseMessage {
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
 }

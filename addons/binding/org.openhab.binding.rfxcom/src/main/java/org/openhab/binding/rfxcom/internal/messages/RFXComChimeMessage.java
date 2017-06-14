@@ -62,9 +62,6 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
     private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.CHIME_SOUND);
 
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections
-            .singletonList(RFXComValueSelector.CHIME_SOUND);
-
     public SubType subType;
     public int sensorId;
     public int chimeSound;
@@ -211,10 +208,4 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
 }

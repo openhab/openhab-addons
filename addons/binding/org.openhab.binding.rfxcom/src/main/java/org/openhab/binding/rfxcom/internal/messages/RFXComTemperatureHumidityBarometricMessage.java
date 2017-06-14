@@ -119,8 +119,6 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
     private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(SIGNAL_LEVEL,
             BATTERY_LEVEL, TEMPERATURE, HUMIDITY, HUMIDITY_STATUS, PRESSURE, FORECAST);
 
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
-
     public SubType subType;
     public int sensorId;
     public double temperature;
@@ -278,10 +276,5 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 }

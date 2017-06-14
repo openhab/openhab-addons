@@ -103,9 +103,6 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
     private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
             .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.COMMAND, RFXComValueSelector.CONTACT);
 
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections
-            .singletonList(RFXComValueSelector.COMMAND);
-
     public SubType subType;
     public char houseCode;
     public byte unitCode;
@@ -292,10 +289,4 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
 }

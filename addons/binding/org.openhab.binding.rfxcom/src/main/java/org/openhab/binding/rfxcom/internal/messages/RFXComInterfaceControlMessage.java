@@ -122,9 +122,4 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         throw new RFXComException("Not supported");
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
 }

@@ -170,10 +170,4 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         return null;
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return null;
-    }
-
 }

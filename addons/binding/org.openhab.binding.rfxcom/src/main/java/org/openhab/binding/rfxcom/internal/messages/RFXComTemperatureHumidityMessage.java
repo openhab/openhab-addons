@@ -100,8 +100,6 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.TEMPERATURE,
             RFXComValueSelector.HUMIDITY, RFXComValueSelector.HUMIDITY_STATUS);
 
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
-
     public SubType subType;
     public int sensorId;
     public double temperature;
@@ -242,10 +240,4 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
-    }
-
 }

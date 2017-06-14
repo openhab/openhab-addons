@@ -60,8 +60,6 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.CHANNEL1_AMPS,
             RFXComValueSelector.CHANNEL2_AMPS, RFXComValueSelector.CHANNEL3_AMPS, RFXComValueSelector.TOTAL_USAGE);
 
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
-
     public SubType subType;
     public int sensorId;
     public byte count;
@@ -192,11 +190,6 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 
     @Override

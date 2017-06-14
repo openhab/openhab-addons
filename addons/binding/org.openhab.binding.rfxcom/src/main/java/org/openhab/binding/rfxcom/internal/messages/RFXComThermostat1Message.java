@@ -118,8 +118,6 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
             RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.TEMPERATURE, RFXComValueSelector.SET_POINT,
             RFXComValueSelector.CONTACT);
 
-    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Collections.emptyList();
-
     public SubType subType;
     public int sensorId;
     public byte temperature;
@@ -251,10 +249,5 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
         return SUPPORTED_INPUT_VALUE_SELECTORS;
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 }
