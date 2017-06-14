@@ -65,6 +65,7 @@
     <module>org.openhab.binding.rfxcom.test</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.samsungtv</module>
+    <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
