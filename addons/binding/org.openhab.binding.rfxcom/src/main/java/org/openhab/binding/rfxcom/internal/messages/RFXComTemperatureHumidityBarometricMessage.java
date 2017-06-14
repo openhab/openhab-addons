@@ -210,29 +210,30 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
+        switch (channelId) {
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
-            return new DecimalType(batteryLevel);
+            case CHANNEL_BATTERY_LEVEL:
+                return new DecimalType(batteryLevel);
 
-        } else if (channelId == CHANNEL_TEMPERATURE) {
-            return new DecimalType(temperature);
+            case CHANNEL_TEMPERATURE:
+                return new DecimalType(temperature);
 
-        } else if (channelId == CHANNEL_HUMIDITY) {
-            return new DecimalType(humidity);
+            case CHANNEL_HUMIDITY:
+                return new DecimalType(humidity);
 
-        } else if (channelId == CHANNEL_PRESSURE) {
-            return new DecimalType(pressure);
+            case CHANNEL_PRESSURE:
+                return new DecimalType(pressure);
 
-        } else if (channelId == CHANNEL_HUMIDITY_STATUS) {
-            return new StringType(humidityStatus.toString());
+            case CHANNEL_HUMIDITY_STATUS:
+                return new StringType(humidityStatus.toString());
 
-        } else if (channelId == CHANNEL_FORECAST) {
-            return new StringType(forecastStatus.toString());
+            case CHANNEL_FORECAST:
+                return new StringType(forecastStatus.toString());
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

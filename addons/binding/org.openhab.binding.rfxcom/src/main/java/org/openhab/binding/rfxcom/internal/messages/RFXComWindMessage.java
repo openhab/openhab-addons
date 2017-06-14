@@ -179,29 +179,30 @@ public class RFXComWindMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
+        switch (channelId) {
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
-            return new DecimalType(batteryLevel);
+            case CHANNEL_BATTERY_LEVEL:
+                return new DecimalType(batteryLevel);
 
-        } else if (channelId == CHANNEL_WIND_DIRECTION) {
-            return new DecimalType(windDirection);
+            case CHANNEL_WIND_DIRECTION:
+                return new DecimalType(windDirection);
 
-        } else if (channelId == CHANNEL_AVG_WIND_SPEED) {
-            return new DecimalType(avgWindSpeed);
+            case CHANNEL_AVG_WIND_SPEED:
+                return new DecimalType(avgWindSpeed);
 
-        } else if (channelId == CHANNEL_WIND_SPEED) {
-            return new DecimalType(windSpeed);
+            case CHANNEL_WIND_SPEED:
+                return new DecimalType(windSpeed);
 
-        } else if (channelId == CHANNEL_TEMPERATURE) {
-            return new DecimalType(temperature);
+            case CHANNEL_TEMPERATURE:
+                return new DecimalType(temperature);
 
-        } else if (channelId == CHANNEL_CHILL_TEMPERATURE) {
-            return new DecimalType(chillTemperature);
+            case CHANNEL_CHILL_TEMPERATURE:
+                return new DecimalType(chillTemperature);
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

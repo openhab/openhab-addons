@@ -149,26 +149,28 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
 
     @Override
     public State convertToState(String channelId) throws RFXComException {
-        if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
-            return new DecimalType(batteryLevel);
+        switch (channelId) {
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_CHANNEL1_AMPS) {
-            return new DecimalType(channel1Amps);
+            case CHANNEL_BATTERY_LEVEL:
+                return new DecimalType(batteryLevel);
 
-        } else if (channelId == CHANNEL_CHANNEL2_AMPS) {
-            return new DecimalType(channel2Amps);
+            case CHANNEL_CHANNEL1_AMPS:
+                return new DecimalType(channel1Amps);
 
-        } else if (channelId == CHANNEL_CHANNEL3_AMPS) {
-            return new DecimalType(channel3Amps);
+            case CHANNEL_CHANNEL2_AMPS:
+                return new DecimalType(channel2Amps);
 
-        } else if (channelId == CHANNEL_TOTAL_USAGE) {
-            return new DecimalType(totalUsage);
+            case CHANNEL_CHANNEL3_AMPS:
+                return new DecimalType(channel3Amps);
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            case CHANNEL_TOTAL_USAGE:
+                return new DecimalType(totalUsage);
+
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

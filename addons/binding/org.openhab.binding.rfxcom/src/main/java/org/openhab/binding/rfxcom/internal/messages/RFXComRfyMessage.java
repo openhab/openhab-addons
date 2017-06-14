@@ -164,14 +164,15 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
+        switch (channelId) {
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_COMMAND) {
-            return (command == Commands.DOWN ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            case CHANNEL_COMMAND:
+                return (command == Commands.DOWN ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

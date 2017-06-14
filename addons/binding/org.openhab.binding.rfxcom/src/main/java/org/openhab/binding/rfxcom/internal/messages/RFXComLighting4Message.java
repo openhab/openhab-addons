@@ -211,20 +211,22 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_COMMAND || channelId == CHANNEL_MOTION) {
-            return command.isOn() ? OnOffType.ON : OnOffType.OFF;
+        switch (channelId) {
+            case CHANNEL_COMMAND:
+            case CHANNEL_MOTION:
+                return command.isOn() ? OnOffType.ON : OnOffType.OFF;
 
-        } else if (channelId == CHANNEL_CONTACT) {
-            return command.isOn() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            case CHANNEL_CONTACT:
+                return command.isOn() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
 
-        } else if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_COMMAND_ID) {
-            return new DecimalType(commandId);
+            case CHANNEL_COMMAND_ID:
+                return new DecimalType(commandId);
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

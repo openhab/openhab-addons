@@ -139,14 +139,15 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_RAW_MESSAGE) {
-            return new StringType(DatatypeConverter.printHexBinary(rawMessage));
+        switch (channelId) {
+            case CHANNEL_RAW_MESSAGE:
+                return new StringType(DatatypeConverter.printHexBinary(rawMessage));
 
-        } else if (channelId == CHANNEL_RAW_PAYLOAD) {
-            return new StringType(DatatypeConverter.printHexBinary(rawPayload));
+            case CHANNEL_RAW_PAYLOAD:
+                return new StringType(DatatypeConverter.printHexBinary(rawPayload));
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

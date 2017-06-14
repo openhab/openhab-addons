@@ -129,26 +129,27 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_CONTACT) {
-            return ((buttonStatus & BUTTON_0_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        switch (channelId) {
+            case CHANNEL_CONTACT:
+                return ((buttonStatus & BUTTON_0_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-        } else if (channelId == CHANNEL_CONTACT_1) {
-            return ((buttonStatus & BUTTON_1_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            case CHANNEL_CONTACT_1:
+                return ((buttonStatus & BUTTON_1_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-        } else if (channelId == CHANNEL_CONTACT_2) {
-            return ((buttonStatus & BUTTON_2_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            case CHANNEL_CONTACT_2:
+                return ((buttonStatus & BUTTON_2_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-        } else if (channelId == CHANNEL_CONTACT_3) {
-            return ((buttonStatus & BUTTON_3_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            case CHANNEL_CONTACT_3:
+                return ((buttonStatus & BUTTON_3_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-        } else if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
-            return new DecimalType(batteryLevel);
+            case CHANNEL_BATTERY_LEVEL:
+                return new DecimalType(batteryLevel);
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

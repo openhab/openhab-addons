@@ -134,20 +134,21 @@ public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
+        switch (channelId) {
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
-            return new DecimalType(batteryLevel);
+            case CHANNEL_BATTERY_LEVEL:
+                return new DecimalType(batteryLevel);
 
-        } else if (channelId == CHANNEL_TEMPERATURE) {
-            return new DecimalType(temperature);
+            case CHANNEL_TEMPERATURE:
+                return new DecimalType(temperature);
 
-        } else if (channelId == CHANNEL_RAIN_TOTAL) {
-            return new DecimalType(rainTotal);
+            case CHANNEL_RAIN_TOTAL:
+                return new DecimalType(rainTotal);
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

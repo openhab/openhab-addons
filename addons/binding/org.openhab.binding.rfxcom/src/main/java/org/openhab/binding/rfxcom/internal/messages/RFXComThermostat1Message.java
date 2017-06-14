@@ -186,27 +186,28 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
+        switch (channelId) {
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_TEMPERATURE) {
-            return new DecimalType(temperature);
+            case CHANNEL_TEMPERATURE:
+                return new DecimalType(temperature);
 
-        } else if (channelId == CHANNEL_SET_POINT) {
-            return new DecimalType(set);
+            case CHANNEL_SET_POINT:
+                return new DecimalType(set);
 
-        } else if (channelId == CHANNEL_CONTACT) {
-            switch (status) {
-                case DEMAND:
-                    return OpenClosedType.CLOSED;
-                case NO_DEMAND:
-                    return OpenClosedType.OPEN;
-                default:
-                    return UnDefType.UNDEF;
-            }
+            case CHANNEL_CONTACT:
+                switch (status) {
+                    case DEMAND:
+                        return OpenClosedType.CLOSED;
+                    case NO_DEMAND:
+                        return OpenClosedType.OPEN;
+                    default:
+                        return UnDefType.UNDEF;
+                }
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

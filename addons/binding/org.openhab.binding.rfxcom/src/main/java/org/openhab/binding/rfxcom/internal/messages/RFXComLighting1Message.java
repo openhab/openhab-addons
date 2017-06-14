@@ -173,49 +173,50 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
+        switch (channelId) {
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_COMMAND) {
-            switch (command) {
-                case OFF:
-                case GROUP_OFF:
-                case DIM:
-                    return OnOffType.OFF;
+            case CHANNEL_COMMAND:
+                switch (command) {
+                    case OFF:
+                    case GROUP_OFF:
+                    case DIM:
+                        return OnOffType.OFF;
 
-                case ON:
-                case GROUP_ON:
-                case BRIGHT:
-                    return OnOffType.ON;
+                    case ON:
+                    case GROUP_ON:
+                    case BRIGHT:
+                        return OnOffType.ON;
 
-                case CHIME:
-                    return OnOffType.ON;
+                    case CHIME:
+                        return OnOffType.ON;
 
-                default:
-                    throw new RFXComException("Can't convert " + command + " for " + channelId);
-            }
+                    default:
+                        throw new RFXComException("Can't convert " + command + " for " + channelId);
+                }
 
-        } else if (channelId == CHANNEL_CONTACT) {
-            switch (command) {
-                case OFF:
-                case GROUP_OFF:
-                case DIM:
-                    return OpenClosedType.CLOSED;
+            case CHANNEL_CONTACT:
+                switch (command) {
+                    case OFF:
+                    case GROUP_OFF:
+                    case DIM:
+                        return OpenClosedType.CLOSED;
 
-                case ON:
-                case GROUP_ON:
-                case BRIGHT:
-                    return OpenClosedType.OPEN;
+                    case ON:
+                    case GROUP_ON:
+                    case BRIGHT:
+                        return OpenClosedType.OPEN;
 
-                case CHIME:
-                    return OpenClosedType.OPEN;
+                    case CHIME:
+                        return OpenClosedType.OPEN;
 
-                default:
-                    throw new RFXComException("Can't convert " + command + " for " + channelId);
-            }
+                    default:
+                        throw new RFXComException("Can't convert " + command + " for " + channelId);
+                }
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

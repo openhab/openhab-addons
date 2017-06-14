@@ -260,41 +260,42 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
     @Override
     public State convertToState(String channelId) throws RFXComException {
 
-        if (channelId == CHANNEL_MOTION) {
-            switch (status) {
-                case MOTION:
-                    return OnOffType.ON;
-                case NO_MOTION:
-                    return OnOffType.OFF;
-                default:
-                    throw new RFXComException("Can't convert " + status + " for " + channelId);
-            }
+        switch (channelId) {
+            case CHANNEL_MOTION:
+                switch (status) {
+                    case MOTION:
+                        return OnOffType.ON;
+                    case NO_MOTION:
+                        return OnOffType.OFF;
+                    default:
+                        throw new RFXComException("Can't convert " + status + " for " + channelId);
+                }
 
-        } else if (channelId == CHANNEL_CONTACT) {
-            switch (status) {
-                case NORMAL:
-                    return OpenClosedType.CLOSED;
-                case NORMAL_DELAYED:
-                    return OpenClosedType.CLOSED;
-                case ALARM:
-                    return OpenClosedType.OPEN;
-                case ALARM_DELAYED:
-                    return OpenClosedType.OPEN;
-                default:
-                    throw new RFXComException("Can't convert " + status + " for " + channelId);
-            }
+            case CHANNEL_CONTACT:
+                switch (status) {
+                    case NORMAL:
+                        return OpenClosedType.CLOSED;
+                    case NORMAL_DELAYED:
+                        return OpenClosedType.CLOSED;
+                    case ALARM:
+                        return OpenClosedType.OPEN;
+                    case ALARM_DELAYED:
+                        return OpenClosedType.OPEN;
+                    default:
+                        throw new RFXComException("Can't convert " + status + " for " + channelId);
+                }
 
-        } else if (channelId == CHANNEL_STATUS) {
-            return new StringType(status.toString());
+            case CHANNEL_STATUS:
+                return new StringType(status.toString());
 
-        } else if (channelId == CHANNEL_SIGNAL_LEVEL) {
-            return new DecimalType(signalLevel);
+            case CHANNEL_SIGNAL_LEVEL:
+                return new DecimalType(signalLevel);
 
-        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
-            return new DecimalType(batteryLevel);
+            case CHANNEL_BATTERY_LEVEL:
+                return new DecimalType(batteryLevel);
 
-        } else {
-            throw new RFXComException("Nothing relevant for " + channelId);
+            default:
+                throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 
