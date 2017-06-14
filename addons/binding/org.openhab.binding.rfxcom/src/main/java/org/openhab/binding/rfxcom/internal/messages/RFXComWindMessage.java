@@ -184,49 +184,30 @@ public class RFXComWindMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
+        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+            return new DecimalType(batteryLevel);
 
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        } else if (valueSelector == RFXComValueSelector.WIND_DIRECTION) {
+            return new DecimalType(windDirection);
 
-                state = new DecimalType(signalLevel);
+        } else if (valueSelector == RFXComValueSelector.AVG_WIND_SPEED) {
+            return new DecimalType(avgWindSpeed);
 
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+        } else if (valueSelector == RFXComValueSelector.WIND_SPEED) {
+            return new DecimalType(windSpeed);
 
-                state = new DecimalType(batteryLevel);
+        } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
+            return new DecimalType(temperature);
 
-            } else if (valueSelector == RFXComValueSelector.WIND_DIRECTION) {
-
-                state = new DecimalType(windDirection);
-
-            } else if (valueSelector == RFXComValueSelector.AVG_WIND_SPEED) {
-
-                state = new DecimalType(avgWindSpeed);
-
-            } else if (valueSelector == RFXComValueSelector.WIND_SPEED) {
-
-                state = new DecimalType(windSpeed);
-
-            } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
-
-                state = new DecimalType(temperature);
-
-            } else if (valueSelector == RFXComValueSelector.CHILL_TEMPERATURE) {
-
-                state = new DecimalType(chillTemperature);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
+        } else if (valueSelector == RFXComValueSelector.CHILL_TEMPERATURE) {
+            return new DecimalType(chillTemperature);
 
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
     }
 
     @Override

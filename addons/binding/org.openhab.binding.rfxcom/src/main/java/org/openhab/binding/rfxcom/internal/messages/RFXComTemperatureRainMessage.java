@@ -138,24 +138,22 @@ public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
 
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-        State state;
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
-            if (valueSelector == SIGNAL_LEVEL) {
-                state = new DecimalType(signalLevel);
-            } else if (valueSelector == BATTERY_LEVEL) {
-                state = new DecimalType(batteryLevel);
-            } else if (valueSelector == TEMPERATURE) {
-                state = new DecimalType(temperature);
-            } else if (valueSelector == RAIN_TOTAL) {
-                state = new DecimalType(rainTotal);
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
+        if (valueSelector == SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
+
+        } else if (valueSelector == BATTERY_LEVEL) {
+            return new DecimalType(batteryLevel);
+
+        } else if (valueSelector == TEMPERATURE) {
+            return new DecimalType(temperature);
+
+        } else if (valueSelector == RAIN_TOTAL) {
+            return new DecimalType(rainTotal);
+
         } else {
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-        return state;
     }
 
     @Override

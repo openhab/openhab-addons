@@ -25,66 +25,58 @@ import org.eclipse.smarthome.core.library.items.SwitchItem;
  */
 public enum RFXComValueSelector {
 
-    RAW_MESSAGE(RFXComBindingConstants.CHANNEL_RAW_MESSAGE, StringItem.class),
-    RAW_PAYLOAD(RFXComBindingConstants.CHANNEL_RAW_PAYLOAD, StringItem.class),
-    SHUTTER(RFXComBindingConstants.CHANNEL_SHUTTER, RollershutterItem.class),
-    VENETIAN_BLIND(RFXComBindingConstants.CHANNEL_VENETIAN_BLIND, DimmerItem.class),
-    SUN_WIND_DETECTOR(RFXComBindingConstants.CHANNEL_SUN_WIND_DETECTOR, SwitchItem.class),
-    PROGRAM(RFXComBindingConstants.CHANNEL_PROGRAM, SwitchItem.class),
-    COMMAND(RFXComBindingConstants.CHANNEL_COMMAND, SwitchItem.class),
-    COMMAND_ID(RFXComBindingConstants.CHANNEL_COMMAND_ID, NumberItem.class),
-    MOOD(RFXComBindingConstants.CHANNEL_MOOD, NumberItem.class),
-    SIGNAL_LEVEL(RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL, NumberItem.class),
-    DIMMING_LEVEL(RFXComBindingConstants.CHANNEL_DIMMING_LEVEL, DimmerItem.class),
-    UV(RFXComBindingConstants.CHANNEL_UV, NumberItem.class),
-    TEMPERATURE(RFXComBindingConstants.CHANNEL_TEMPERATURE, NumberItem.class),
-    FOOD_TEMPERATURE(RFXComBindingConstants.CHANNEL_FOOD_TEMPERATURE, NumberItem.class),
-    BBQ_TEMPERATURE(RFXComBindingConstants.CHANNEL_BBQ_TEMPERATURE, NumberItem.class),
-    HUMIDITY(RFXComBindingConstants.CHANNEL_HUMIDITY, NumberItem.class),
-    HUMIDITY_STATUS(RFXComBindingConstants.CHANNEL_HUMIDITY_STATUS, StringItem.class),
-    BATTERY_LEVEL(RFXComBindingConstants.CHANNEL_BATTERY_LEVEL, NumberItem.class),
-    PRESSURE(RFXComBindingConstants.CHANNEL_PRESSURE, NumberItem.class),
-    FORECAST(RFXComBindingConstants.CHANNEL_FORECAST, StringItem.class),
-    RAIN_RATE(RFXComBindingConstants.CHANNEL_RAIN_RATE, NumberItem.class),
-    RAIN_TOTAL(RFXComBindingConstants.CHANNEL_RAIN_TOTAL, NumberItem.class),
-    WIND_DIRECTION(RFXComBindingConstants.CHANNEL_WIND_DIRECTION, NumberItem.class),
-    AVG_WIND_SPEED(RFXComBindingConstants.CHANNEL_AVG_WIND_SPEED, NumberItem.class),
-    WIND_SPEED(RFXComBindingConstants.CHANNEL_WIND_SPEED, NumberItem.class),
-    CHILL_TEMPERATURE(RFXComBindingConstants.CHANNEL_CHILL_TEMPERATURE, NumberItem.class),
-    INSTANT_POWER(RFXComBindingConstants.CHANNEL_INSTANT_POWER, NumberItem.class),
-    TOTAL_USAGE(RFXComBindingConstants.CHANNEL_TOTAL_USAGE, NumberItem.class),
-    INSTANT_AMPS(RFXComBindingConstants.CHANNEL_INSTANT_AMPS, NumberItem.class),
-    TOTAL_AMP_HOUR(RFXComBindingConstants.CHANNEL_TOTAL_AMP_HOUR, NumberItem.class),
-    CHANNEL1_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL1_AMPS, NumberItem.class),
-    CHANNEL2_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL2_AMPS, NumberItem.class),
-    CHANNEL3_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL3_AMPS, NumberItem.class),
-    STATUS(RFXComBindingConstants.CHANNEL_STATUS, StringItem.class),
-    MOTION(RFXComBindingConstants.CHANNEL_MOTION, SwitchItem.class),
-    CONTACT(RFXComBindingConstants.CHANNEL_CONTACT, ContactItem.class),
-    CONTACT_1(RFXComBindingConstants.CHANNEL_CONTACT_1, ContactItem.class),
-    CONTACT_2(RFXComBindingConstants.CHANNEL_CONTACT_2, ContactItem.class),
-    CONTACT_3(RFXComBindingConstants.CHANNEL_CONTACT_3, ContactItem.class),
-    VOLTAGE(RFXComBindingConstants.CHANNEL_VOLTAGE, NumberItem.class),
-    SET_POINT(RFXComBindingConstants.CHANNEL_SET_POINT, NumberItem.class),
-    DATE_TIME(RFXComBindingConstants.CHANNEL_DATE_TIME, DateTimeItem.class),
-    LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY, SwitchItem.class),
-    CHIME_SOUND(RFXComBindingConstants.CHANNEL_CHIME_SOUND, NumberItem.class);
+    RAW_MESSAGE(RFXComBindingConstants.CHANNEL_RAW_MESSAGE),
+    RAW_PAYLOAD(RFXComBindingConstants.CHANNEL_RAW_PAYLOAD),
+    SHUTTER(RFXComBindingConstants.CHANNEL_SHUTTER),
+    VENETIAN_BLIND(RFXComBindingConstants.CHANNEL_VENETIAN_BLIND),
+    SUN_WIND_DETECTOR(RFXComBindingConstants.CHANNEL_SUN_WIND_DETECTOR),
+    PROGRAM(RFXComBindingConstants.CHANNEL_PROGRAM),
+    COMMAND(RFXComBindingConstants.CHANNEL_COMMAND),
+    COMMAND_ID(RFXComBindingConstants.CHANNEL_COMMAND_ID),
+    MOOD(RFXComBindingConstants.CHANNEL_MOOD),
+    SIGNAL_LEVEL(RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL),
+    DIMMING_LEVEL(RFXComBindingConstants.CHANNEL_DIMMING_LEVEL),
+    UV(RFXComBindingConstants.CHANNEL_UV),
+    TEMPERATURE(RFXComBindingConstants.CHANNEL_TEMPERATURE),
+    HUMIDITY(RFXComBindingConstants.CHANNEL_HUMIDITY),
+    HUMIDITY_STATUS(RFXComBindingConstants.CHANNEL_HUMIDITY_STATUS),
+    BATTERY_LEVEL(RFXComBindingConstants.CHANNEL_BATTERY_LEVEL),
+    PRESSURE(RFXComBindingConstants.CHANNEL_PRESSURE),
+    FORECAST(RFXComBindingConstants.CHANNEL_FORECAST),
+    RAIN_RATE(RFXComBindingConstants.CHANNEL_RAIN_RATE),
+    RAIN_TOTAL(RFXComBindingConstants.CHANNEL_RAIN_TOTAL),
+    WIND_DIRECTION(RFXComBindingConstants.CHANNEL_WIND_DIRECTION),
+    AVG_WIND_SPEED(RFXComBindingConstants.CHANNEL_AVG_WIND_SPEED),
+    WIND_SPEED(RFXComBindingConstants.CHANNEL_WIND_SPEED),
+    CHILL_TEMPERATURE(RFXComBindingConstants.CHANNEL_CHILL_TEMPERATURE),
+    INSTANT_POWER(RFXComBindingConstants.CHANNEL_INSTANT_POWER),
+    TOTAL_USAGE(RFXComBindingConstants.CHANNEL_TOTAL_USAGE),
+    INSTANT_AMPS(RFXComBindingConstants.CHANNEL_INSTANT_AMPS),
+    TOTAL_AMP_HOUR(RFXComBindingConstants.CHANNEL_TOTAL_AMP_HOUR),
+    CHANNEL1_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL1_AMPS),
+    CHANNEL2_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL2_AMPS),
+    CHANNEL3_AMPS(RFXComBindingConstants.CHANNEL_CHANNEL3_AMPS),
+    STATUS(RFXComBindingConstants.CHANNEL_STATUS),
+    MOTION(RFXComBindingConstants.CHANNEL_MOTION),
+    CONTACT(RFXComBindingConstants.CHANNEL_CONTACT),
+    CONTACT_1(RFXComBindingConstants.CHANNEL_CONTACT_1),
+    CONTACT_2(RFXComBindingConstants.CHANNEL_CONTACT_2),
+    CONTACT_3(RFXComBindingConstants.CHANNEL_CONTACT_3),
+    VOLTAGE(RFXComBindingConstants.CHANNEL_VOLTAGE),
+    SET_POINT(RFXComBindingConstants.CHANNEL_SET_POINT),
+    DATE_TIME(RFXComBindingConstants.CHANNEL_DATE_TIME),
+    LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY),
+    CHIME_SOUND(RFXComBindingConstants.CHANNEL_CHIME_SOUND);
 
     private final String text;
-    private Class<? extends Item> itemClass;
 
-    private RFXComValueSelector(final String text, Class<? extends Item> itemClass) {
+    private RFXComValueSelector(final String text) {
         this.text = text;
-        this.itemClass = itemClass;
     }
 
     @Override
     public String toString() {
         return text;
-    }
-
-    public Class<? extends Item> getItemClass() {
-        return itemClass;
     }
 
     /**

@@ -216,29 +216,21 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        if (valueSelector.getItemClass() == SwitchItem.class) {
-            if (valueSelector == COMMAND || valueSelector == MOTION) {
-                return command.isOn() ? OnOffType.ON : OnOffType.OFF;
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem: not supported");
-            }
-        } else if (valueSelector.getItemClass() == ContactItem.class) {
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-                return command.isOn() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem: not supported");
-            }
-        } else if (valueSelector.getItemClass() == NumberItem.class) {
-            if (valueSelector == SIGNAL_LEVEL) {
-                return new DecimalType(signalLevel);
-            } else if (valueSelector == COMMAND_ID) {
-                return new DecimalType(commandId);
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-        }
+        if (valueSelector == COMMAND || valueSelector == MOTION) {
+            return command.isOn() ? OnOffType.ON : OnOffType.OFF;
 
-        throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+        } else if (valueSelector == RFXComValueSelector.CONTACT) {
+            return command.isOn() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+
+        } else if (valueSelector == SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
+
+        } else if (valueSelector == COMMAND_ID) {
+            return new DecimalType(commandId);
+
+        } else {
+            throw new RFXComException("Nothing relevant for " + valueSelector);
+        }
     }
 
     @Override

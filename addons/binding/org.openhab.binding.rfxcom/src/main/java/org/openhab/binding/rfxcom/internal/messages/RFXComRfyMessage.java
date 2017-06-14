@@ -167,40 +167,16 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
 
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-        State state = UnDefType.UNDEF;
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-                state = new DecimalType(signalLevel);
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        } else if (valueSelector.getItemClass() == RollershutterItem.class) {
-            if (valueSelector == RFXComValueSelector.COMMAND) {
-
-                switch (command) {
-                    case DOWN:
-                        state = OpenClosedType.CLOSED;
-                        break;
-
-                    case UP:
-                        state = OpenClosedType.OPEN;
-                        break;
-
-                    default:
-                        break;
-                }
-
-            } else {
-                throw new NumberFormatException("Can't convert " + valueSelector + " to RollershutterItem");
-            }
+        } else if (valueSelector == RFXComValueSelector.COMMAND) {
+            return (command == Commands.DOWN ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
 
         } else {
-            throw new NumberFormatException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
     }
 
     @Override

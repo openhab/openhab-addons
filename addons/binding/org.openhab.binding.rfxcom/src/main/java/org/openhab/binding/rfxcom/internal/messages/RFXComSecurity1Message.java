@@ -265,89 +265,42 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
-
-        if (valueSelector.getItemClass() == SwitchItem.class) {
-
-            if (valueSelector == RFXComValueSelector.MOTION) {
-
-                switch (status) {
-                    case MOTION:
-                        state = OnOffType.ON;
-                        break;
-                    case NO_MOTION:
-                        state = OnOffType.OFF;
-                        break;
-                    default:
-                        break;
-                }
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem");
+        if (valueSelector == RFXComValueSelector.MOTION) {
+            switch (status) {
+                case MOTION:
+                    return OnOffType.ON;
+                case NO_MOTION:
+                    return OnOffType.OFF;
+                default:
+                    throw new RFXComException("Can't convert " + status + " for " + valueSelector);
             }
 
-        } else if (valueSelector.getItemClass() == ContactItem.class) {
-
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-
-                switch (status) {
-
-                    case NORMAL:
-                        state = OpenClosedType.CLOSED;
-                        break;
-                    case NORMAL_DELAYED:
-                        state = OpenClosedType.CLOSED;
-                        break;
-                    case ALARM:
-                        state = OpenClosedType.OPEN;
-                        break;
-                    case ALARM_DELAYED:
-                        state = OpenClosedType.OPEN;
-                        break;
-                    default:
-                        break;
-
-                }
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to ContactItem");
+        } else if (valueSelector == RFXComValueSelector.CONTACT) {
+            switch (status) {
+                case NORMAL:
+                    return OpenClosedType.CLOSED;
+                case NORMAL_DELAYED:
+                    return OpenClosedType.CLOSED;
+                case ALARM:
+                    return OpenClosedType.OPEN;
+                case ALARM_DELAYED:
+                    return OpenClosedType.OPEN;
+                default:
+                    throw new RFXComException("Can't convert " + status + " for " + valueSelector);
             }
 
-        } else if (valueSelector.getItemClass() == StringItem.class) {
+        } else if (valueSelector == RFXComValueSelector.STATUS) {
+            return new StringType(status.toString());
 
-            if (valueSelector == RFXComValueSelector.STATUS) {
+        } else if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-                state = new StringType(status.toString());
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to StringItem");
-            }
-
-        } else if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-
-                state = new DecimalType(batteryLevel);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to StringItem");
-            }
-
-        } else if (valueSelector.getItemClass() == DateTimeItem.class) {
-
-            state = new DateTimeType();
+        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+            return new DecimalType(batteryLevel);
 
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
-
     }
 
     @Override

@@ -177,83 +177,50 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
+        } else if (valueSelector == RFXComValueSelector.COMMAND) {
+            switch (command) {
+                case OFF:
+                case GROUP_OFF:
+                case DIM:
+                    return OnOffType.OFF;
 
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+                case ON:
+                case GROUP_ON:
+                case BRIGHT:
+                    return OnOffType.ON;
 
-                state = new DecimalType(signalLevel);
+                case CHIME:
+                    return OnOffType.ON;
 
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
+                default:
+                    throw new RFXComException("Can't convert " + command + " for " + valueSelector);
             }
 
-        } else if (valueSelector.getItemClass() == SwitchItem.class) {
+        } else if (valueSelector == RFXComValueSelector.CONTACT) {
+            switch (command) {
+                case OFF:
+                case GROUP_OFF:
+                case DIM:
+                    return OpenClosedType.CLOSED;
 
-            if (valueSelector == RFXComValueSelector.COMMAND) {
+                case ON:
+                case GROUP_ON:
+                case BRIGHT:
+                    return OpenClosedType.OPEN;
 
-                switch (command) {
-                    case OFF:
-                    case GROUP_OFF:
-                    case DIM:
-                        state = OnOffType.OFF;
-                        break;
+                case CHIME:
+                    return OpenClosedType.OPEN;
 
-                    case ON:
-                    case GROUP_ON:
-                    case BRIGHT:
-                        state = OnOffType.ON;
-                        break;
-
-                    case CHIME:
-                        state = OnOffType.ON;
-                        break;
-
-                    default:
-                        throw new RFXComException("Can't convert " + command + " to SwitchItem");
-                }
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem");
-            }
-
-        } else if (valueSelector.getItemClass() == ContactItem.class) {
-
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-
-                switch (command) {
-                    case OFF:
-                    case GROUP_OFF:
-                    case DIM:
-                        state = OpenClosedType.CLOSED;
-                        break;
-
-                    case ON:
-                    case GROUP_ON:
-                    case BRIGHT:
-                        state = OpenClosedType.OPEN;
-                        break;
-
-                    case CHIME:
-                        state = OpenClosedType.OPEN;
-                        break;
-
-                    default:
-                        throw new RFXComException("Can't convert " + command + " to ContactItem");
-                }
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to ContactItem");
+                default:
+                    throw new RFXComException("Can't convert " + command + " for " + valueSelector);
             }
 
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
     }
 
     @Override

@@ -190,46 +190,28 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
+        } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
+            return new DecimalType(temperature);
 
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        } else if (valueSelector == RFXComValueSelector.SET_POINT) {
+            return new DecimalType(set);
 
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
-
-                state = new DecimalType(temperature);
-
-            } else if (valueSelector == RFXComValueSelector.SET_POINT) {
-
-                state = new DecimalType(set);
-
-            } else {
-                throw new NumberFormatException("Can't convert " + valueSelector + " to NumberItem");
+        } else if (valueSelector == RFXComValueSelector.CONTACT) {
+            switch (status) {
+                case DEMAND:
+                    return OpenClosedType.CLOSED;
+                case NO_DEMAND:
+                    return OpenClosedType.OPEN;
+                default:
+                    return UnDefType.UNDEF;
             }
 
-        } else if (valueSelector.getItemClass() == ContactItem.class) {
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-                switch (status) {
-                    case DEMAND:
-                        state = OpenClosedType.CLOSED;
-                        break;
-                    case NO_DEMAND:
-                        state = OpenClosedType.OPEN;
-                        break;
-                    default:
-                        break;
-                }
-            }
+        } else {
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        else {
-            throw new NumberFormatException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-        }
-
-        return state;
     }
 
     @Override

@@ -206,85 +206,47 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
+        } else if (valueSelector == RFXComValueSelector.DIMMING_LEVEL) {
+            return RFXComLighting2Message.getPercentTypeFromDimLevel(dimmingLevel);
 
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        } else if (valueSelector == RFXComValueSelector.COMMAND) {
+            switch (command) {
+                case OFF:
+                case GROUP_OFF:
+                    return OnOffType.OFF;
 
-                state = new DecimalType(signalLevel);
+                case ON:
+                case GROUP_ON:
+                    return OnOffType.ON;
 
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
+                case SET_GROUP_LEVEL:
+                case SET_LEVEL:
+                default:
+                    throw new RFXComException("Can't convert " + command + " for " + valueSelector);
             }
 
-        } else if (valueSelector.getItemClass() == DimmerItem.class
-                || valueSelector.getItemClass() == RollershutterItem.class) {
+        } else if (valueSelector == RFXComValueSelector.CONTACT) {
+            switch (command) {
+                case OFF:
+                case GROUP_OFF:
+                    return OpenClosedType.CLOSED;
 
-            if (valueSelector == RFXComValueSelector.DIMMING_LEVEL) {
-                state = RFXComLighting2Message.getPercentTypeFromDimLevel(dimmingLevel);
+                case ON:
+                case GROUP_ON:
+                    return OpenClosedType.OPEN;
 
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to DimmerItem/RollershutterItem");
-            }
-
-        } else if (valueSelector.getItemClass() == SwitchItem.class) {
-
-            if (valueSelector == RFXComValueSelector.COMMAND) {
-
-                switch (command) {
-                    case OFF:
-                    case GROUP_OFF:
-                        state = OnOffType.OFF;
-                        break;
-
-                    case ON:
-                    case GROUP_ON:
-                        state = OnOffType.ON;
-                        break;
-
-                    case SET_GROUP_LEVEL:
-                    case SET_LEVEL:
-                    default:
-                        throw new RFXComException("Can't convert " + command + " to SwitchItem");
-                }
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem");
-            }
-
-        } else if (valueSelector.getItemClass() == ContactItem.class) {
-
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-
-                switch (command) {
-                    case OFF:
-                    case GROUP_OFF:
-                        state = OpenClosedType.CLOSED;
-                        break;
-
-                    case ON:
-                    case GROUP_ON:
-                        state = OpenClosedType.OPEN;
-                        break;
-
-                    case SET_GROUP_LEVEL:
-                    case SET_LEVEL:
-                    default:
-                        throw new RFXComException("Can't convert " + command + " to ContactItem");
-                }
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to ContactItem");
+                case SET_GROUP_LEVEL:
+                case SET_LEVEL:
+                default:
+                    throw new RFXComException("Can't convert " + command + " for " + valueSelector);
             }
 
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
     }
 
     @Override

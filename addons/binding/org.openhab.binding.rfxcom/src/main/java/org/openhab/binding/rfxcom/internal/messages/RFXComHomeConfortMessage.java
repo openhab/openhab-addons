@@ -155,48 +155,15 @@ public class RFXComHomeConfortMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
-                state = new DecimalType(signalLevel);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-
-        } else if (valueSelector.getItemClass() == SwitchItem.class) {
-
-            if (valueSelector == RFXComValueSelector.COMMAND) {
-
-                switch (command) {
-                    case OFF:
-                    case GROUP_OFF:
-                        state = OnOffType.OFF;
-                        break;
-
-                    case ON:
-                    case GROUP_ON:
-                        state = OnOffType.ON;
-                        break;
-
-                    default:
-                        throw new RFXComException("Can't convert " + command + " to SwitchItem");
-                }
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem");
-            }
+        } else if (valueSelector == RFXComValueSelector.COMMAND) {
+            return (command == Commands.OFF || command == Commands.GROUP_OFF ? OnOffType.OFF : OnOffType.ON);
 
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
     }
 
     @Override

@@ -162,47 +162,27 @@ public class RFXComEnergyMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
+        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+            return new DecimalType(batteryLevel);
 
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        } else if (valueSelector == RFXComValueSelector.INSTANT_POWER) {
+            return new DecimalType(instantPower);
 
-                state = new DecimalType(signalLevel);
+        } else if (valueSelector == RFXComValueSelector.TOTAL_USAGE) {
+            return new DecimalType(totalUsage);
 
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+        } else if (valueSelector == RFXComValueSelector.INSTANT_AMPS) {
+            return new DecimalType(instantAmp);
 
-                state = new DecimalType(batteryLevel);
-
-            } else if (valueSelector == RFXComValueSelector.INSTANT_POWER) {
-
-                state = new DecimalType(instantPower);
-
-            } else if (valueSelector == RFXComValueSelector.TOTAL_USAGE) {
-
-                state = new DecimalType(totalUsage);
-
-            } else if (valueSelector == RFXComValueSelector.INSTANT_AMPS) {
-
-                state = new DecimalType(instantAmp);
-
-            } else if (valueSelector == RFXComValueSelector.TOTAL_AMP_HOUR) {
-
-                state = new DecimalType(totalAmpHour);
-
-            } else {
-
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-
-            }
+        } else if (valueSelector == RFXComValueSelector.TOTAL_AMP_HOUR) {
+            return new DecimalType(totalAmpHour);
 
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
     }
 
     @Override

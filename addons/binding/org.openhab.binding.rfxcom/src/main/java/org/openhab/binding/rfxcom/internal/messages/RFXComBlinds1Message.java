@@ -194,50 +194,19 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
+        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+            return new DecimalType(batteryLevel);
 
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-
-                state = new DecimalType(batteryLevel);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-
-        } else if (valueSelector.getItemClass() == RollershutterItem.class) {
-
-            if (valueSelector == RFXComValueSelector.COMMAND) {
-
-                switch (command) {
-                    case CLOSE:
-                        state = OpenClosedType.CLOSED;
-                        break;
-
-                    case OPEN:
-                        state = OpenClosedType.OPEN;
-                        break;
-
-                    default:
-                        break;
-                }
-
-            } else {
-                throw new NumberFormatException("Can't convert " + valueSelector + " to RollershutterItem");
-            }
+        } else if (valueSelector == RFXComValueSelector.COMMAND) {
+            return (command == Commands.CLOSE ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
 
         } else {
-
-            throw new NumberFormatException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+            throw new RFXComException("Nothing relevant for " + valueSelector);
 
         }
-
-        return state;
     }
 
     @Override

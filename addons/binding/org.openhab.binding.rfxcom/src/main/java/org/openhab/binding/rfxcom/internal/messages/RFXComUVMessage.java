@@ -140,41 +140,21 @@ public class RFXComUVMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
+        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+            return new DecimalType(batteryLevel);
 
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        } else if (valueSelector == RFXComValueSelector.UV) {
+            return new DecimalType(uv);
 
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-
-                state = new DecimalType(batteryLevel);
-
-            } else if (valueSelector == RFXComValueSelector.UV) {
-
-                state = new DecimalType(uv);
-
-            } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
-
-                if (subType == SubType.UV3) {
-                    state = new DecimalType(temperature);
-                } else {
-                    state = UnDefType.UNDEF;
-                }
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
+        } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
+            return (subType == SubType.UV3 ? new DecimalType(temperature) : UnDefType.UNDEF);
 
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
     }
 
     @Override

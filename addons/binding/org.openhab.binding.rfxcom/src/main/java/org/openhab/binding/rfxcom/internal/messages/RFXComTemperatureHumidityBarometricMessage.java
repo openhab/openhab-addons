@@ -214,33 +214,31 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
 
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-        State state;
-        if (valueSelector.getItemClass() == NumberItem.class) {
-            if (valueSelector == SIGNAL_LEVEL) {
-                state = new DecimalType(signalLevel);
-            } else if (valueSelector == BATTERY_LEVEL) {
-                state = new DecimalType(batteryLevel);
-            } else if (valueSelector == TEMPERATURE) {
-                state = new DecimalType(temperature);
-            } else if (valueSelector == HUMIDITY) {
-                state = new DecimalType(humidity);
-            } else if (valueSelector == PRESSURE) {
-                state = new DecimalType(pressure);
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-        } else if (valueSelector.getItemClass() == StringItem.class) {
-            if (valueSelector == HUMIDITY_STATUS) {
-                state = new StringType(humidityStatus.toString());
-            } else if (valueSelector == FORECAST) {
-                state = new StringType(forecastStatus.toString());
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to StringItem");
-            }
+
+        if (valueSelector == SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
+
+        } else if (valueSelector == BATTERY_LEVEL) {
+            return new DecimalType(batteryLevel);
+
+        } else if (valueSelector == TEMPERATURE) {
+            return new DecimalType(temperature);
+
+        } else if (valueSelector == HUMIDITY) {
+            return new DecimalType(humidity);
+
+        } else if (valueSelector == PRESSURE) {
+            return new DecimalType(pressure);
+
+        } else if (valueSelector == HUMIDITY_STATUS) {
+            return new StringType(humidityStatus.toString());
+
+        } else if (valueSelector == FORECAST) {
+            return new StringType(forecastStatus.toString());
+
         } else {
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-        return state;
     }
 
     @Override

@@ -150,31 +150,15 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.CHIME_SOUND) {
-
-                state = new DecimalType(chimeSound);
-
-            } else {
-
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-
-            }
+        } else if (valueSelector == RFXComValueSelector.CHIME_SOUND) {
+            return new DecimalType(chimeSound);
 
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
     }
 
     @Override

@@ -184,46 +184,24 @@ public class RFXComTemperatureHumidityMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state;
+        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-        if (valueSelector.getItemClass() == NumberItem.class) {
+        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+            return new DecimalType(batteryLevel);
 
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
+            return new DecimalType(temperature);
 
-                state = new DecimalType(signalLevel);
+        } else if (valueSelector == RFXComValueSelector.HUMIDITY) {
+            return new DecimalType(humidity);
 
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+        } else if (valueSelector == RFXComValueSelector.HUMIDITY_STATUS) {
+            return new StringType(humidityStatus.toString());
 
-                state = new DecimalType(batteryLevel);
-
-            } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
-
-                state = new DecimalType(temperature);
-
-            } else if (valueSelector == RFXComValueSelector.HUMIDITY) {
-
-                state = new DecimalType(humidity);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-
-        } else if (valueSelector.getItemClass() == StringItem.class) {
-
-            if (valueSelector == RFXComValueSelector.HUMIDITY_STATUS) {
-
-                state = new StringType(humidityStatus.toString());
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to StringItem");
-            }
         } else {
-
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
     }
 
     @Override

@@ -135,43 +135,27 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        State state = UnDefType.UNDEF;
+        if (valueSelector == RFXComValueSelector.CONTACT) {
+            return ((buttonStatus & BUTTON_0_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-        if (valueSelector.getItemClass() == ContactItem.class) {
+        } else if (valueSelector == RFXComValueSelector.CONTACT_1) {
+            return ((buttonStatus & BUTTON_1_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-            if (valueSelector == RFXComValueSelector.CONTACT) {
-                state = ((buttonStatus & BUTTON_0_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        } else if (valueSelector == RFXComValueSelector.CONTACT_2) {
+            return ((buttonStatus & BUTTON_2_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-            } else if (valueSelector == RFXComValueSelector.CONTACT_1) {
-                state = ((buttonStatus & BUTTON_1_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        } else if (valueSelector == RFXComValueSelector.CONTACT_3) {
+            return ((buttonStatus & BUTTON_3_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
-            } else if (valueSelector == RFXComValueSelector.CONTACT_2) {
-                state = ((buttonStatus & BUTTON_2_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        } else if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            return new DecimalType(signalLevel);
 
-            } else if (valueSelector == RFXComValueSelector.CONTACT_3) {
-                state = ((buttonStatus & BUTTON_3_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+            return new DecimalType(batteryLevel);
 
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to ContactItem");
-            }
-
-        } else if (valueSelector.getItemClass() == NumberItem.class) {
-
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-                state = new DecimalType(signalLevel);
-
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-                state = new DecimalType(batteryLevel);
-
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
         } else {
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+            throw new RFXComException("Nothing relevant for " + valueSelector);
         }
-
-        return state;
-
     }
 
     @Override

@@ -143,15 +143,15 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
 
-        if (valueSelector.getItemClass() == StringItem.class) {
-            if (valueSelector == RAW_MESSAGE) {
-                return new StringType(DatatypeConverter.printHexBinary(rawMessage));
-            } else if (valueSelector == RAW_PAYLOAD) {
-                return new StringType(DatatypeConverter.printHexBinary(rawPayload));
-            }
-        }
+        if (valueSelector == RAW_MESSAGE) {
+            return new StringType(DatatypeConverter.printHexBinary(rawMessage));
 
-        throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+        } else if (valueSelector == RAW_PAYLOAD) {
+            return new StringType(DatatypeConverter.printHexBinary(rawPayload));
+
+        } else {
+            throw new RFXComException("Nothing relevant for " + valueSelector);
+        }
     }
 
     @Override
