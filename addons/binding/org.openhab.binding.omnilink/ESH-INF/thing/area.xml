@@ -18,13 +18,34 @@
 			<channel id="alarm_duress" typeId="area_alarm_duress" />
 			<channel id="alarm_temperature" typeId="area_alarm_temperature" />
 			<channel id="mode" typeId="omni_area_mode" />
-			<channel id="disarm" typeId="area_command" />
-			<channel id="day" typeId="area_command" />
-			<channel id="night" typeId="area_command" />
-			<channel id="away" typeId="area_command" />
-			<channel id="vacation" typeId="area_command" />
-			<channel id="day_instant" typeId="area_command" />
-			<channel id="night_delayed" typeId="area_command" />
+			<channel id="disarm" typeId="area_command">
+				<label>Disarm Command</label>
+				<description>Send a 4 digit user code to disarm the system</description>
+			</channel>
+			<channel id="day" typeId="area_command">
+				<label>Arm Day Command</label>
+				<description>Send a 4 digit user code to arm the system to day</description>
+			</channel>
+			<channel id="night" typeId="area_command">
+				<label>Arm Night Command</label>
+				<description>Send a 4 digit user code to arm the system to night</description>
+			</channel>
+			<channel id="away" typeId="area_command">
+				<label>Arm Away Command</label>
+				<description>Send a 4 digit user code to arm the system to away</description>
+			</channel>
+			<channel id="vacation" typeId="area_command">
+				<label>Arm Vacation Command</label>
+				<description>Send a 4 digit user code to arm the system to vacation</description>
+			</channel>
+			<channel id="day_instant" typeId="area_command">
+				<label>Arm Day Instant Command</label>
+				<description>Send a 4 digit user code to arm the system to day instant</description>
+			</channel>
+			<channel id="night_delayed" typeId="area_command">
+				<label>Arm Night Delayed Command</label>
+				<description>Send a 4 digit user code to arm the system to night delayed</description>
+			</channel>
 		</channels>
 		<properties>
 			<property name="name" />
@@ -36,30 +57,48 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<thing-type id="lumina_area">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="controller" />
-        </supported-bridge-type-refs>
-        <label>Lumina Area</label>
-        <description>Lumina Area</description>
-        <channels>
-            <channel id="mode" typeId="lumina_area_mode" />
-            <channel id="home" typeId="lumina_area_command" />
-            <channel id="sleep" typeId="lumina_area_command" />
-            <channel id="away" typeId="lumina_area_command" />
-            <channel id="vacation" typeId="lumina_area_command" />
-            <channel id="party" typeId="lumina_area_command" />
-            <channel id="special" typeId="lumina_area_command" />
-        </channels>
-        <properties>
-            <property name="name" />
-        </properties>
-        <config-description>
-            <parameter name="number" type="integer" required="true">
-                <label>Zone Number</label>
-                <description>Zone Number</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+		<label>Lumina Area</label>
+		<description>Lumina Area</description>
+		<channels>
+			<channel id="mode" typeId="lumina_area_mode" />
+			<channel id="home" typeId="lumina_area_command">
+				<label>Set System to Home</label>
+				<description>Send a 4 digit user code to set the system to home</description>
+			</channel>
+			<channel id="sleep" typeId="lumina_area_command">
+				<label>Set System to Sleep</label>
+				<description>Send a 4 digit user code to set the system to sleep</description>
+			</channel>
+			<channel id="away" typeId="lumina_area_command">
+				<label>Set System to Away</label>
+				<description>Send a 4 digit user code to set the system to away</description>
+			</channel>
+			<channel id="vacation" typeId="lumina_area_command">
+				<label>Set System to Vacation</label>
+				<description>Send a 4 digit user code to set the system to vacation</description>
+			</channel>
+			<channel id="party" typeId="lumina_area_command">
+				<label>Set System to Party</label>
+				<description>Send a 4 digit user code to set the system to party</description>
+			</channel>
+			<channel id="special" typeId="lumina_area_command">
+				<label>Set System to Special</label>
+				<description>Send a 4 digit user code to set the system to special</description>
+			</channel>
+		</channels>
+		<properties>
+			<property name="name" />
+		</properties>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Zone Number</label>
+				<description>Zone Number</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 </thing:thing-descriptions>
