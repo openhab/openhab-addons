@@ -127,10 +127,10 @@ public class TadoACHandler extends BaseThingHandler {
                 }
                 if (setting.getMode() == TadoACMode.COOL && setting.getTemperature() == null) {
                     logger.error("No temperature setting");
+                    return;
                 }
             }
             TadoACConnector connector = new TadoACConnector(username, password);
-            ;
             connector.setSetting(homeid, zoneid, setting);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
@@ -155,8 +155,8 @@ public class TadoACHandler extends BaseThingHandler {
             }
             TadoACConnector connector = new TadoACConnector(username, password);
             TadoACSetting newSetting = connector.getSetting(homeid, zoneid);
-            // Check each part and copy them to the previous state (No loss of data)
 
+            // Check each part and copy them to the previous state (No loss of data)
             if (newSetting.getPower() != null) {
                 setting.setPower(newSetting.getPower());
                 updateState(CHANNEL_POWER, newSetting.getPower() == TadoACPower.ON ? OnOffType.ON : OnOffType.OFF);
@@ -202,7 +202,7 @@ public class TadoACHandler extends BaseThingHandler {
                 updateState(CHANNEL_TEMP, new DecimalType(newSetting.getTemperature().getCelsius()));
             }
         } catch (Exception e) {
-            logger.warn("Error while polling for new state. Maybe your AC is not in manual mode", e);
+            logger.error("error while polling for new state", e);
         }
     }
 
