@@ -276,26 +276,29 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComException {
 
-        switch (valueSelector) {
-            case COMMAND:
+        switch (channelId) {
+            case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {
                     if (group) {
                         command = (type == OnOffType.ON ? GROUP_ON : GROUP_OFF);
+
                     } else {
                         command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                     }
+
                     dimmingLevel = 0;
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case DIMMING_LEVEL:
+            case CHANNEL_DIMMING_LEVEL:
                 if (type instanceof OnOffType) {
                     command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                     dimmingLevel = 0;
+
                 } else if (type instanceof PercentType) {
                     command = Commands.SET_LEVEL;
                     dimmingLevel = (byte) getDimLevelFromPercentType((PercentType) type);
@@ -303,20 +306,18 @@ public class RFXComLighting2Message extends RFXComBaseMessage {
                     if (dimmingLevel == 0) {
                         command = Commands.OFF;
                     }
-
                 } else if (type instanceof IncreaseDecreaseType) {
                     command = Commands.SET_LEVEL;
                     // Evert: I do not know how to get previous object state...
                     dimmingLevel = 5;
 
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
-
+                throw new RFXComException("Channel " + channelId + " is not relevant here");
         }
     }
 

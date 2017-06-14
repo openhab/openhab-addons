@@ -72,19 +72,10 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
 
                     RFXComMessage msg = RFXComMessageFactory.createMessage(packetType);
 
-                    List<RFXComValueSelector> supportedValueSelectors = msg.getSupportedOutputValueSelectors();
+                    msg.setConfig(config);
+                    msg.convertFromState(channelUID.getId(), command);
 
-                    RFXComValueSelector valSelector = RFXComValueSelector.getValueSelector(channelUID.getId());
-
-                    if (supportedValueSelectors.contains(valSelector)) {
-                        msg.setConfig(config);
-                        msg.convertFromState(valSelector, command);
-
-                        bridgeHandler.sendMessage(msg);
-                    } else {
-                        logger.warn("RFXCOM doesn't support transmitting for channel '{}'", channelUID.getId());
-                    }
-
+                    bridgeHandler.sendMessage(msg);
                 } catch (RFXComMessageNotImplementedException e) {
                     logger.error("Message not supported", e);
                 } catch (RFXComException e) {

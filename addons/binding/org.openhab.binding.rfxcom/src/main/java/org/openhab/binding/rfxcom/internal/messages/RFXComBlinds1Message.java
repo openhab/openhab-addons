@@ -229,24 +229,26 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComException {
 
-        switch (valueSelector) {
-            case SHUTTER:
+        switch (channelId) {
+            case CHANNEL_SHUTTER:
                 if (type instanceof OpenClosedType) {
                     command = (type == OpenClosedType.CLOSED ? Commands.CLOSE : Commands.OPEN);
+
                 } else if (type instanceof UpDownType) {
                     command = (type == UpDownType.UP ? Commands.OPEN : Commands.CLOSE);
+
                 } else if (type instanceof StopMoveType) {
                     command = Commands.STOP;
 
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
+                throw new RFXComException("Channel " + channelId + " is not relevant here");
         }
     }
 

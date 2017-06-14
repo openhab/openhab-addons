@@ -59,7 +59,7 @@ public interface RFXComMessage {
      * Procedure for converting openHAB state to RFXCOM object.
      *
      */
-    void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException;
+    void convertFromState(String channelId, Type type) throws RFXComException;
 
     /**
      * Procedure to get device id.

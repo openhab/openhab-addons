@@ -172,59 +172,63 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComException {
 
-        switch (valueSelector) {
-            case CONTACT:
+        switch (channelId) {
+            case CHANNEL_CONTACT:
                 if (type instanceof OpenClosedType) {
                     if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_0_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_0_BIT;
                     }
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to OpenClosedType");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case CONTACT_1:
+            case CHANNEL_CONTACT_1:
                 if (type instanceof OpenClosedType) {
                     if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_1_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_1_BIT;
                     }
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to OpenClosedType");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case CONTACT_2:
+            case CHANNEL_CONTACT_2:
                 if (type instanceof OpenClosedType) {
                     if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_2_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_2_BIT;
                     }
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to OpenClosedType");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case CONTACT_3:
+            case CHANNEL_CONTACT_3:
                 if (type instanceof OpenClosedType) {
                     if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_3_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_3_BIT;
                     }
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to OpenClosedType");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
+                throw new RFXComException("Channel " + channelId + " is not relevant here");
         }
     }
 

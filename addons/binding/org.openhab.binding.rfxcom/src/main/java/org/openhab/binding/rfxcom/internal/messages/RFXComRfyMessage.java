@@ -199,10 +199,10 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComException {
 
-        switch (valueSelector) {
-            case SHUTTER:
+        switch (channelId) {
+            case CHANNEL_SHUTTER:
                 if (type instanceof OpenClosedType) {
                     this.command = (type == OpenClosedType.CLOSED ? Commands.DOWN : Commands.UP);
 
@@ -213,11 +213,11 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
                     this.command = RFXComRfyMessage.Commands.STOP;
 
                 } else {
-                    throw new NumberFormatException("Can't convert " + type + " to Command");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case PROGRAM:
+            case CHANNEL_PROGRAM:
                 if (type instanceof OnOffType && type == OnOffType.ON) {
                     this.command = Commands.PROGRAM;
 
@@ -226,7 +226,7 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
                 }
                 break;
 
-            case SUN_WIND_DETECTOR:
+            case CHANNEL_SUN_WIND_DETECTOR:
                 if (type instanceof OnOffType) {
                     this.command = (type == OnOffType.ON ? Commands.ENABLE_SUN_WIND_DETECTOR
                             : Commands.DISABLE_SUN_DETECTOR);
@@ -236,7 +236,7 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
                 }
                 break;
 
-            case VENETIAN_BLIND:
+            case CHANNEL_VENETIAN_BLIND:
                 if (type instanceof OpenClosedType) {
                     this.command = (type == OpenClosedType.CLOSED ? Commands.DOWN_SHORT : Commands.UP_SHORT);
 
@@ -252,7 +252,7 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
                 break;
 
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
+                throw new RFXComException("Channel " + channelId + " is not relevant here");
         }
     }
 

@@ -175,19 +175,19 @@ public class RFXComChimeMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComException {
 
-        switch (valueSelector) {
-            case CHIME_SOUND:
+        switch (channelId) {
+            case CHANNEL_CHIME_SOUND:
                 if (type instanceof DecimalType) {
                     chimeSound = ((DecimalType) type).intValue();
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
+                throw new RFXComException("Channel " + channelId + " is not relevant here");
         }
     }
 

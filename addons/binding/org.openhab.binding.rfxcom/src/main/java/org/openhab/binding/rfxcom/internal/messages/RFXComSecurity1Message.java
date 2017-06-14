@@ -317,27 +317,29 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
+    public void convertFromState(String channelId, Type type) throws RFXComException {
 
-        switch (valueSelector) {
-            case COMMAND:
+        switch (channelId) {
+            case CHANNEL_COMMAND:
                 if ((type instanceof OnOffType) && (subType == SubType.X10_SECURITY_REMOTE)) {
                     status = (type == OnOffType.ON ? Status.ARM_AWAY_DELAYED : Status.DISARM);
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
-            case STATUS:
+            case CHANNEL_STATUS:
                 if (type instanceof StringType) {
                     status = Status.valueOf(type.toString());
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Status");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
 
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
+                throw new RFXComException("Channel " + channelId + " is not relevant here");
         }
     }
 

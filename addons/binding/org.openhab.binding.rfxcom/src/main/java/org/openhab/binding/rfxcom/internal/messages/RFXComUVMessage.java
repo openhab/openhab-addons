@@ -171,8 +171,7 @@ public class RFXComUVMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-
+    public void convertFromState(String channelId, Type type) throws RFXComException {
         throw new RFXComException("Not supported");
     }
 

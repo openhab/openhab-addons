@@ -247,26 +247,30 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-        switch (valueSelector) {
-            case COMMAND:
+    public void convertFromState(String channelId, Type type) throws RFXComException {
+        switch (channelId) {
+            case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {
                     command = Commands.fromByte(type == OnOffType.ON ? onCommandId : offCommandId);
                     commandId = command.toByte();
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to Command");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
-            case COMMAND_ID:
+
+            case CHANNEL_COMMAND_ID:
                 if (type instanceof DecimalType) {
                     commandId = ((DecimalType) type).toBigDecimal().byteValue();
                     command = Commands.fromByte(commandId);
+
                 } else {
-                    throw new RFXComException("Can't convert " + type + " to CommandId");
+                    throw new RFXComException("Channel " + channelId + " does not accept " + type);
                 }
                 break;
+
             default:
-                throw new RFXComException("Can't convert " + type + " to " + valueSelector);
+                throw new RFXComException("Channel " + channelId + " is not relevant here");
         }
     }
 
