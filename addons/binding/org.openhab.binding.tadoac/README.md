@@ -19,7 +19,7 @@ First we need to login into the webinterface (https://my.tado.com). Then navigat
 
 `https://my.tado.com/webapp/#/home/zone/1`
 
-The last number is your zone id. Finding out the home id is a little bit tricky. We need to sniffer the API calls. We recommend the Google Chrome developer tools. Look for a call looking like this:
+The last number is your zone id. Finding out the home id is a little bit tricky. We need to sniff the API calls. We recommend the Google Chrome developer tools. Look for a call looking like this:
 
 `https://my.tado.com/api/v2/homes/1234/zones/1/state`
 
