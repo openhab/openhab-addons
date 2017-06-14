@@ -271,8 +271,4 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    protected static String cleanString(String string) {
-        return string.replaceAll("[^A-Za-z0-9_-]", "");
-    }
-
 }
