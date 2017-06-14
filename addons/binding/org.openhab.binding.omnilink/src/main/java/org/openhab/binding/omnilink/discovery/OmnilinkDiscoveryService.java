@@ -11,11 +11,11 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
+import org.openhab.binding.omnilink.handler.BridgeOfflineException;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digitaldan.jomnilinkII.Connection;
 import com.digitaldan.jomnilinkII.Message;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniNotConnectedException;
@@ -60,23 +60,21 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         logger.debug("Starting scan");
         areas = new LinkedList<>();
-        Connection c = bridgeHandler.getOmnilinkConnection();
         // OBJ_TYPE_BUTTON
         try {
-            SystemInformation info = c.reqSystemInformation();
+            SystemInformation info = bridgeHandler.reqSystemInformation();
             isLumina = info.getModel() == 36 || info.getModel() == 37;
-            generateAreas(c);
-            generateUnits(c);
-            generateZones(c);
-            generateButtons(c);
-        } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
-                | OmniUnknownMessageTypeException e) {
+            generateAreas();
+            generateUnits();
+            generateZones();
+            generateButtons();
+        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Received error during discovery", e);
         }
     }
 
-    private void generateButtons(Connection c) throws IOException, OmniNotConnectedException,
-            OmniInvalidResponseException, OmniUnknownMessageTypeException {
+    private void generateButtons()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
         for (AreaProperties areaProperties : areas) {
             int areaFilter = 0;
@@ -86,8 +84,9 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             int objnum = 0;
             Message m;
 
-            while ((m = c.reqObjectProperties(Message.OBJ_TYPE_BUTTON, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-                    areaFilter, ObjectProperties.FILTER_3_NONE)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
+            while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_BUTTON, objnum, 1,
+                    ObjectProperties.FILTER_1_NAMED, areaFilter, ObjectProperties.FILTER_3_NONE))
+                            .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
                 ButtonProperties o = ((ButtonProperties) m);
                 objnum = o.getNumber();
                 Map<String, Object> properties = new HashMap<>(0);
@@ -105,14 +104,14 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void generateAreas(Connection c) throws IOException, OmniNotConnectedException,
-            OmniInvalidResponseException, OmniUnknownMessageTypeException {
+    private void generateAreas()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
         int objnum = 0;
         Message m;
         // it seems that simple configurations of an omnilink have 1 area, without a name. So if there is no name for
         // the first area, we will call that Main. If other areas name is blank, we will not create a thing
-        while ((m = c.reqObjectProperties(Message.OBJ_TYPE_AREA, objnum, 1, ObjectProperties.FILTER_1_NONE,
+        while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_AREA, objnum, 1, ObjectProperties.FILTER_1_NONE,
                 ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE))
                         .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
             AreaProperties o = ((AreaProperties) m);
@@ -145,8 +144,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void generateUnits(Connection c) throws IOException, OmniNotConnectedException,
-            OmniInvalidResponseException, OmniUnknownMessageTypeException {
+    private void generateUnits()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
         // Group Lights_GreatRoom "Great Room" (Lights)
         // String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
@@ -166,8 +165,9 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             int currentRoom = 0;
             String currentRoomName = null;
 
-            while ((m = c.reqObjectProperties(Message.OBJ_TYPE_UNIT, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-                    areaFilter, ObjectProperties.FILTER_3_ANY_LOAD)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
+            while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_UNIT, objnum, 1,
+                    ObjectProperties.FILTER_1_NAMED, areaFilter, ObjectProperties.FILTER_3_ANY_LOAD))
+                            .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
                 UnitProperties o = ((UnitProperties) m);
                 objnum = o.getNumber();
 
@@ -229,9 +229,10 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
      * @throws OmniNotConnectedException
      * @throws OmniInvalidResponseException
      * @throws OmniUnknownMessageTypeException
+     * @throws BridgeOfflineException
      */
-    private void generateZones(Connection c) throws IOException, OmniNotConnectedException,
-            OmniInvalidResponseException, OmniUnknownMessageTypeException {
+    private void generateZones()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
         // String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
         // String itemString = "%s\t%s\t\"%s\"\t(%s)\t{omnilink=\"%s:%d\"}\n";
@@ -244,8 +245,9 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             // Area filter returns areas in each bit. So bit 0 is area 1, bit 2 is area 2 and so on.
             areaFilter |= 1 << (areaProperties.getNumber() - 1);
 
-            while ((m = c.reqObjectProperties(Message.OBJ_TYPE_ZONE, objnum, 1, ObjectProperties.FILTER_1_NAMED,
-                    areaFilter, ObjectProperties.FILTER_3_ANY_LOAD)).getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
+            while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_ZONE, objnum, 1,
+                    ObjectProperties.FILTER_1_NAMED, areaFilter, ObjectProperties.FILTER_3_ANY_LOAD))
+                            .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
                 ZoneProperties o = ((ZoneProperties) m);
                 objnum = o.getNumber();
 
