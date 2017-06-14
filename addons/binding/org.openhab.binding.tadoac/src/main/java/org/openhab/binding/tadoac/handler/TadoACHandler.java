@@ -209,7 +209,7 @@ public class TadoACHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         setting = new TadoACSetting();
-        refreshFuture = scheduler.scheduleAtFixedRate(() -> refreshSetting(), 3, 60, TimeUnit.SECONDS);
+        refreshFuture = scheduler.scheduleAtFixedRate(() -> refreshSetting(), 15, 60, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
 
     }
