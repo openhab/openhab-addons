@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 

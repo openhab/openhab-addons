@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.openhab.binding.rfxcom.RFXComValueSelector.*;
 import static org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration.*;
 
 import java.util.Arrays;
@@ -26,7 +25,6 @@ import org.eclipse.smarthome.core.types.Type;
 
 import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
