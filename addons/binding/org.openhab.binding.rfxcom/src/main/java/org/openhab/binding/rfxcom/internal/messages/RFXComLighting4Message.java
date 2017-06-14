@@ -133,9 +133,6 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(COMMAND, COMMAND_ID,
-            SIGNAL_LEVEL);
-
     private SubType subType;
     private int sensorId;
     private int pulse;
@@ -284,11 +281,6 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
         } catch (NumberFormatException e) {
             throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override

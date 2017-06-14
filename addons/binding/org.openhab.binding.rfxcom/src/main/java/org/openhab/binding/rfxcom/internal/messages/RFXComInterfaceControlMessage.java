@@ -117,9 +117,4 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
     public Object convertSubType(String subType) throws RFXComException {
         throw new RFXComException("Not supported");
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
 }

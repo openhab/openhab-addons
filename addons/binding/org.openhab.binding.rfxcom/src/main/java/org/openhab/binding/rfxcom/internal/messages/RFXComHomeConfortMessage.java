@@ -83,9 +83,6 @@ public class RFXComHomeConfortMessage extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Collections
-            .singletonList(RFXComValueSelector.COMMAND);
-
     public SubType subType;
     public int deviceId;
     public char houseCode;
@@ -222,10 +219,5 @@ public class RFXComHomeConfortMessage extends RFXComBaseMessage {
         } catch (NumberFormatException e) {
             throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 }

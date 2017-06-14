@@ -57,9 +57,6 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
-            .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.DATE_TIME);
-
     public SubType subType;
     public int sensorId;
     String dateTime;
@@ -171,11 +168,6 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
         throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override

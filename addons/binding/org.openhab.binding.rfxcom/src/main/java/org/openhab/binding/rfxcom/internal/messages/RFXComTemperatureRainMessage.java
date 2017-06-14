@@ -58,9 +58,6 @@ public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(SIGNAL_LEVEL,
-            BATTERY_LEVEL, TEMPERATURE, RAIN_TOTAL);
-
     public SubType subType;
     public int sensorId;
     public double temperature;
@@ -186,10 +183,5 @@ public class RFXComTemperatureRainMessage extends RFXComBaseMessage {
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
         throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 }

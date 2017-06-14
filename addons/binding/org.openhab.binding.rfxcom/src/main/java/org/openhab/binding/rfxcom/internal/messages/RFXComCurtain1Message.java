@@ -86,9 +86,6 @@ public class RFXComCurtain1Message extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays
-            .asList(RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.COMMAND);
-
     public SubType subType;
     public char sensorId;
     public byte unitCode;
@@ -228,10 +225,5 @@ public class RFXComCurtain1Message extends RFXComBaseMessage {
         } catch (NumberFormatException e) {
             throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 }

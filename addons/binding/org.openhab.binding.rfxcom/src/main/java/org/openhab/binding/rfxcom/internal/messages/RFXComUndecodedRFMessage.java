@@ -86,9 +86,6 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(RAW_MESSAGE,
-            RAW_PAYLOAD);
-
     public SubType subType = SubType.UNKNOWN;
     public byte[] rawPayload = new byte[0];
 
@@ -185,10 +182,5 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
         } catch (Exception e) {
             throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 }

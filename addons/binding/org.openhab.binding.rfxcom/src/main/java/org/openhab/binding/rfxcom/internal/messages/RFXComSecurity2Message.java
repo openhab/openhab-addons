@@ -60,10 +60,6 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.CONTACT,
-            RFXComValueSelector.CONTACT_1, RFXComValueSelector.CONTACT_2, RFXComValueSelector.CONTACT_3);
-
     public SubType subType;
     public int sensorId;
     public int buttonStatus;
@@ -242,10 +238,5 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
         } catch (NumberFormatException e) {
             throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 }

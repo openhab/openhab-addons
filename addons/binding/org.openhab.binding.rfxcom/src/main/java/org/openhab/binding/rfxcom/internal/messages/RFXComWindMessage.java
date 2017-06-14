@@ -62,11 +62,6 @@ public class RFXComWindMessage extends RFXComBaseMessage {
         }
     }
 
-    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.WIND_DIRECTION,
-            RFXComValueSelector.AVG_WIND_SPEED, RFXComValueSelector.WIND_SPEED, RFXComValueSelector.TEMPERATURE,
-            RFXComValueSelector.CHILL_TEMPERATURE);
-
     public SubType subType;
     public int sensorId;
     public double windDirection;
@@ -240,10 +235,5 @@ public class RFXComWindMessage extends RFXComBaseMessage {
         } catch (NumberFormatException e) {
             throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
-    }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 }

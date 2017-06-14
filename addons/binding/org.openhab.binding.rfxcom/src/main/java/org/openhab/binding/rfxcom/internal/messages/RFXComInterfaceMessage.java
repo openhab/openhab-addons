@@ -392,9 +392,4 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             throw new RFXComUnsupportedValueException(SubType.class, subType);
         }
     }
-
-    @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return null;
-    }
 }

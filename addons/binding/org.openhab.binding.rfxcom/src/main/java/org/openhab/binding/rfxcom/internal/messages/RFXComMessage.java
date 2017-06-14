@@ -69,13 +69,6 @@ public interface RFXComMessage {
     String getDeviceId() throws RFXComException;
 
     /**
-     * Procedure for get supported value selector list for input values.
-     *
-     * @return List of supported value selectors.
-     */
-    List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException;
-
-    /**
      * Procedure to pass configuration to a message
      *
      * @param deviceConfiguration configuration about the device
