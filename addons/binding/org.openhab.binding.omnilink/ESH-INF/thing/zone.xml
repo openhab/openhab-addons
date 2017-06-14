@@ -13,8 +13,14 @@
 			<channel id="current_condition" typeId="zone_current_condition" />
 			<channel id="latched_alarm_status" typeId="zone_latched_alarm_status" />
 			<channel id="arming_status" typeId="zone_arming_status" />
-			<channel id="bypass" typeId="zone_command" />
-			<channel id="restore" typeId="zone_command" />
+			<channel id="bypass" typeId="zone_command">
+				<label>Bypass Zone</label>
+				<description>Send a 4 digit user code to bypass the zone</description>
+			</channel>
+			<channel id="restore" typeId="zone_command">
+				<label>Restore Zone</label>
+				<description>Send a 4 digit user code to restore the zone</description>
+			</channel>
 		</channels>
 		<properties>
 			<property name="name" />
