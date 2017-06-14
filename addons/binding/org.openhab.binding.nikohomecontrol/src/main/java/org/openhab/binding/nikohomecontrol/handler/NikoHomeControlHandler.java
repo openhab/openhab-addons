@@ -37,8 +37,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlHandler.class);
 
-    private NhcAction nhcAction;
-
     public NikoHomeControlHandler(Thing thing) {
         super(thing);
     }
@@ -46,12 +44,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         Integer actionId = ((Number) this.getConfig().get(CONFIG_ACTION_ID)).intValue();
-
-        if (this.nhcAction == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: ACTIONID does not match an action in the controller " + actionId);
-            return;
-        }
 
         NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) getBridge().getHandler();
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
@@ -63,8 +55,15 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             return;
         }
 
+        NhcAction nhcAction = nhcComm.getActions().get(actionId);
+        if (nhcAction == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Niko Home Control: actionId does not match an action in the controller " + actionId);
+            return;
+        }
+
         if (nhcComm.communicationActive()) {
-            handleCommandSelection(channelUID, command);
+            handleCommandSelection(nhcAction, channelUID, command);
         } else {
             // We lost connection but the connection object is there, so was correctly started.
             // Try to restart communication.
@@ -84,28 +83,28 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                     nhcBridgeHandler.bridgeOnline();
 
                     // And finally handle the command
-                    handleCommandSelection(channelUID, command);
+                    handleCommandSelection(nhcAction, channelUID, command);
                 }
             });
         }
     }
 
-    private void handleCommandSelection(ChannelUID channelUID, Command command) {
+    private void handleCommandSelection(NhcAction nhcAction, ChannelUID channelUID, Command command) {
         logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
 
         switch (channelUID.getId()) {
             case CHANNEL_SWITCH:
-                handleSwitchCommand(command);
+                handleSwitchCommand(nhcAction, command);
                 updateStatus(ThingStatus.ONLINE);
                 break;
 
             case CHANNEL_BRIGHTNESS:
-                handleBrightnessCommand(command);
+                handleBrightnessCommand(nhcAction, command);
                 updateStatus(ThingStatus.ONLINE);
                 break;
 
             case CHANNEL_ROLLERSHUTTER:
-                handleRollershutterCommand(command);
+                handleRollershutterCommand(nhcAction, command);
                 updateStatus(ThingStatus.ONLINE);
                 break;
 
@@ -115,67 +114,67 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         }
     }
 
-    private void handleSwitchCommand(Command command) {
+    private void handleSwitchCommand(NhcAction nhcAction, Command command) {
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
             if (s == OnOffType.OFF) {
-                this.nhcAction.execute(0);
+                nhcAction.execute(0);
             } else {
-                this.nhcAction.execute(100);
+                nhcAction.execute(100);
             }
         }
     }
 
-    private void handleBrightnessCommand(Command command) {
+    private void handleBrightnessCommand(NhcAction nhcAction, Command command) {
         if (command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
             if (s == OnOffType.OFF) {
-                this.nhcAction.execute(255);
+                nhcAction.execute(255);
             } else {
-                this.nhcAction.execute(254);
+                nhcAction.execute(254);
             }
         } else if (command instanceof IncreaseDecreaseType) {
             IncreaseDecreaseType s = (IncreaseDecreaseType) command;
             int stepValue = ((Number) this.getConfig().get(CONFIG_STEP_VALUE)).intValue();
-            int currentValue = this.nhcAction.getState();
+            int currentValue = nhcAction.getState();
             int newValue;
             if (s == IncreaseDecreaseType.INCREASE) {
                 newValue = currentValue + stepValue;
                 // round down to step multiple
                 newValue = newValue - newValue % stepValue;
-                this.nhcAction.execute(newValue > 100 ? 100 : newValue);
+                nhcAction.execute(newValue > 100 ? 100 : newValue);
             } else {
                 newValue = currentValue - stepValue;
                 // round up to step multiple
                 newValue = newValue + newValue % stepValue;
-                this.nhcAction.execute(newValue < 0 ? 0 : newValue);
+                nhcAction.execute(newValue < 0 ? 0 : newValue);
             }
         } else if (command instanceof PercentType) {
             PercentType p = (PercentType) command;
-            this.nhcAction.execute(p.intValue());
+            nhcAction.execute(p.intValue());
         }
     }
 
-    private void handleRollershutterCommand(Command command) {
+    private void handleRollershutterCommand(NhcAction nhcAction, Command command) {
         if (command instanceof UpDownType) {
             UpDownType s = (UpDownType) command;
             if (s == UpDownType.UP) {
-                this.nhcAction.execute(255);
+                nhcAction.execute(255);
             } else {
-                this.nhcAction.execute(254);
+                nhcAction.execute(254);
             }
         } else if (command instanceof StopMoveType) {
             StopMoveType s = (StopMoveType) command;
             if (s == StopMoveType.STOP) {
-                this.nhcAction.execute(253);
+                nhcAction.execute(253);
             }
         } else if (command instanceof PercentType) {
             PercentType p = (PercentType) command;
             int currentState = nhcAction.getState();
             if (currentState < p.intValue()) {
-                this.nhcAction.execute(255);
+                nhcAction.execute(255);
             } else if (currentState > p.intValue()) {
-                this.nhcAction.execute(254);
+                nhcAction.execute(254);
             }
         }
     }
@@ -194,18 +193,18 @@ public class NikoHomeControlHandler extends BaseThingHandler {
             return;
         }
 
-        this.nhcAction = nhcComm.getActions().get(actionId);
-        if (this.nhcAction == null) {
+        NhcAction nhcAction = nhcComm.getActions().get(actionId);
+        if (nhcAction == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: ACTIONID does not match an action in the controller " + actionId);
+                    "Niko Home Control: actionId does not match an action in the controller " + actionId);
             return;
         }
 
-        int actionState = this.nhcAction.getState();
-        int actionType = this.nhcAction.getType();
-        String actionLocation = this.nhcAction.getLocation();
+        int actionState = nhcAction.getState();
+        int actionType = nhcAction.getType();
+        String actionLocation = nhcAction.getLocation();
 
-        this.nhcAction.setThingHandler(this);
+        nhcAction.setThingHandler(this);
 
         handleStateUpdate(actionType, actionState);
         logger.debug("Niko Home Control: action intialized {}", actionId);
@@ -213,14 +212,6 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         if (thing.getLocation() == null) {
             thing.setLocation(actionLocation);
         }
-    }
-
-    @Override
-    public void dispose() {
-        if (this.nhcAction != null) {
-            this.nhcAction.setThingHandler(null);
-        }
-        this.nhcAction = null;
     }
 
     public void handleStateUpdate(int actionType, int actionState) {

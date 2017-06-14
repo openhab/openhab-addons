@@ -46,9 +46,6 @@ public final class NikoHomeControlCommunication {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication.class);
 
-    private InetAddress nhcAddress;
-    private int nhcPort;
-
     private Socket nhcSocket;
     private PrintWriter nhcOut;
     private BufferedReader nhcIn;
@@ -86,7 +83,7 @@ public final class NikoHomeControlCommunication {
      * @param port port
      *
      */
-    public void startCommunication(InetAddress addr, int port) {
+    public synchronized void startCommunication() {
         try {
             for (int i = 1; nhcEventsRunning && (i <= 5); i++) {
                 // the events listener thread did not finish yet, so wait max 5000ms before restarting
@@ -99,12 +96,14 @@ public final class NikoHomeControlCommunication {
                 throw new IOException();
             }
 
-            this.nhcAddress = addr;
-            this.nhcPort = port;
+            InetAddress addr = bridgeCallBack.getAddr();
+            int port = bridgeCallBack.getPort();
+
             this.nhcSocket = new Socket(addr, port);
             this.nhcOut = new PrintWriter(this.nhcSocket.getOutputStream(), true);
             this.nhcIn = new BufferedReader(new InputStreamReader(this.nhcSocket.getInputStream()));
-            logger.debug("Niko Home Control: connected from thread {}", Thread.currentThread().getId());
+            logger.debug("Niko Home Control: connected via local port {} from thread {}", nhcSocket.getLocalPort(),
+                    Thread.currentThread().getId());
 
             // initialize all info in local fields
             initialize();
@@ -134,8 +133,9 @@ public final class NikoHomeControlCommunication {
             } catch (IOException ignore) {
                 // ignore IO Error when trying to close the socket if the intention is to close it anyway
             }
-            this.nhcSocket = null;
         }
+        this.nhcSocket = null;
+
         logger.debug("Niko Home Control: communication stopped from thread {}", Thread.currentThread().getId());
     }
 
@@ -143,12 +143,12 @@ public final class NikoHomeControlCommunication {
      * Close and restart communication with Niko Home Control IP-interface.
      *
      */
-    public void restartCommunication() {
+    public synchronized void restartCommunication() {
         stopCommunication();
 
         logger.debug("Niko Home Control: restart communication from thread {}", Thread.currentThread().getId());
 
-        startCommunication(this.nhcAddress, this.nhcPort);
+        startCommunication();
     }
 
     /**
@@ -373,35 +373,22 @@ public final class NikoHomeControlCommunication {
      *
      * @param nhcMessage
      */
-    void sendMessage(Object nhcMessage) {
+    synchronized void sendMessage(Object nhcMessage) {
         String json = gsonOut.toJson(nhcMessage);
-        logger.debug("Niko Home Control: send json {}", json);
+        logger.debug("Niko Home Control: send json {} from thread {}", json, Thread.currentThread().getId());
         this.nhcOut.println(json);
         if (this.nhcOut.checkError()) {
-            logger.warn("Niko Home Control: error sending message, trying to restart communication from thread {}",
+            logger.warn("Niko Home Control: error sending message, trying to restart communication",
                     Thread.currentThread().getId());
             restartCommunication();
             // retry sending after restart
+            logger.debug("Niko Home Control: resend json {} from thread {}", json, Thread.currentThread().getId());
             this.nhcOut.println(json);
+            if (this.nhcOut.checkError()) {
+                logger.warn("Niko Home Control: error resending message");
+
+            }
         }
-    }
-
-    /**
-     * Return IP address of Niko Home Control IP-interface.
-     *
-     * @return IP address
-     */
-    public InetAddress getAddr() {
-        return this.nhcAddress;
-    }
-
-    /**
-     * Return socket of Niko Home Control IP-interface.
-     *
-     * @return port
-     */
-    public int getPort() {
-        return this.nhcPort;
     }
 
     /**
