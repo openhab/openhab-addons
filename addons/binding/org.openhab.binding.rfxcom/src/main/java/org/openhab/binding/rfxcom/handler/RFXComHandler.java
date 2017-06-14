@@ -164,119 +164,123 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
 
                     if (supportedValueSelectors != null) {
                         for (RFXComValueSelector valueSelector : supportedValueSelectors) {
-                            switch (valueSelector) {
-                                case BATTERY_LEVEL:
-                                    updateState(CHANNEL_BATTERY_LEVEL, convertBatteryLevelToSystemWideLevel(
-                                            message.convertToState(valueSelector)));
-                                    break;
-                                case CHIME_SOUND:
-                                    updateState(CHANNEL_CHIME_SOUND, message.convertToState(valueSelector));
-                                    break;
-                                case COMMAND:
-                                    updateState(CHANNEL_COMMAND, message.convertToState(valueSelector));
-                                    break;
-                                case COMMAND_ID:
-                                    updateState(CHANNEL_COMMAND_ID, message.convertToState(valueSelector));
-                                    break;
-                                case CONTACT:
-                                    updateState(CHANNEL_CONTACT, message.convertToState(valueSelector));
-                                    break;
-                                case CONTACT_1:
-                                    updateState(CHANNEL_CONTACT_1, message.convertToState(valueSelector));
-                                    break;
-                                case CONTACT_2:
-                                    updateState(CHANNEL_CONTACT_2, message.convertToState(valueSelector));
-                                    break;
-                                case CONTACT_3:
-                                    updateState(CHANNEL_CONTACT_3, message.convertToState(valueSelector));
-                                    break;
-                                case DIMMING_LEVEL:
-                                    updateState(CHANNEL_DIMMING_LEVEL, message.convertToState(valueSelector));
-                                    break;
-                                case FORECAST:
-                                    updateState(CHANNEL_FORECAST, message.convertToState(valueSelector));
-                                    break;
-                                case HUMIDITY:
-                                    updateState(CHANNEL_HUMIDITY, message.convertToState(valueSelector));
-                                    break;
-                                case HUMIDITY_STATUS:
-                                    updateState(CHANNEL_HUMIDITY_STATUS, message.convertToState(valueSelector));
-                                    break;
-                                case INSTANT_AMPS:
-                                    updateState(CHANNEL_INSTANT_AMPS, message.convertToState(valueSelector));
-                                    break;
-                                case INSTANT_POWER:
-                                    updateState(CHANNEL_INSTANT_POWER, message.convertToState(valueSelector));
-                                    break;
-                                case LOW_BATTERY:
-                                    updateState(CHANNEL_BATTERY_LEVEL,
-                                            isLowBattery(message.convertToState(valueSelector)));
-                                    break;
+                            try {
+                                switch (valueSelector) {
+                                    case BATTERY_LEVEL:
+                                        updateState(CHANNEL_BATTERY_LEVEL, convertBatteryLevelToSystemWideLevel(
+                                                message.convertToState(valueSelector)));
+                                        break;
+                                    case CHIME_SOUND:
+                                        updateState(CHANNEL_CHIME_SOUND, message.convertToState(valueSelector));
+                                        break;
+                                    case COMMAND:
+                                        updateState(CHANNEL_COMMAND, message.convertToState(valueSelector));
+                                        break;
+                                    case COMMAND_ID:
+                                        updateState(CHANNEL_COMMAND_ID, message.convertToState(valueSelector));
+                                        break;
+                                    case CONTACT:
+                                        updateState(CHANNEL_CONTACT, message.convertToState(valueSelector));
+                                        break;
+                                    case CONTACT_1:
+                                        updateState(CHANNEL_CONTACT_1, message.convertToState(valueSelector));
+                                        break;
+                                    case CONTACT_2:
+                                        updateState(CHANNEL_CONTACT_2, message.convertToState(valueSelector));
+                                        break;
+                                    case CONTACT_3:
+                                        updateState(CHANNEL_CONTACT_3, message.convertToState(valueSelector));
+                                        break;
+                                    case DIMMING_LEVEL:
+                                        updateState(CHANNEL_DIMMING_LEVEL, message.convertToState(valueSelector));
+                                        break;
+                                    case FORECAST:
+                                        updateState(CHANNEL_FORECAST, message.convertToState(valueSelector));
+                                        break;
+                                    case HUMIDITY:
+                                        updateState(CHANNEL_HUMIDITY, message.convertToState(valueSelector));
+                                        break;
+                                    case HUMIDITY_STATUS:
+                                        updateState(CHANNEL_HUMIDITY_STATUS, message.convertToState(valueSelector));
+                                        break;
+                                    case INSTANT_AMPS:
+                                        updateState(CHANNEL_INSTANT_AMPS, message.convertToState(valueSelector));
+                                        break;
+                                    case INSTANT_POWER:
+                                        updateState(CHANNEL_INSTANT_POWER, message.convertToState(valueSelector));
+                                        break;
+                                    case LOW_BATTERY:
+                                        updateState(CHANNEL_BATTERY_LEVEL,
+                                                isLowBattery(message.convertToState(valueSelector)));
+                                        break;
 
-                                case MOOD:
-                                    updateState(CHANNEL_MOOD, message.convertToState(valueSelector));
-                                    break;
-                                case MOTION:
-                                    updateState(CHANNEL_MOTION, message.convertToState(valueSelector));
-                                    break;
-                                case PRESSURE:
-                                    updateState(CHANNEL_PRESSURE, message.convertToState(valueSelector));
-                                    break;
-                                case RAIN_RATE:
-                                    updateState(CHANNEL_RAIN_RATE, message.convertToState(valueSelector));
-                                    break;
-                                case RAIN_TOTAL:
-                                    updateState(CHANNEL_RAIN_TOTAL, message.convertToState(valueSelector));
-                                    break;
-                                case RAW_MESSAGE:
-                                    updateState(CHANNEL_RAW_MESSAGE, message.convertToState(valueSelector));
-                                    break;
-                                case RAW_PAYLOAD:
-                                    updateState(CHANNEL_RAW_PAYLOAD, message.convertToState(valueSelector));
-                                    break;
-                                case SET_POINT:
-                                    updateState(CHANNEL_SET_POINT, message.convertToState(valueSelector));
-                                    break;
-                                case SHUTTER:
-                                    updateState(CHANNEL_SHUTTER, message.convertToState(valueSelector));
-                                    break;
-                                case SIGNAL_LEVEL:
-                                    updateState(CHANNEL_SIGNAL_LEVEL,
-                                            convertSignalLevelToSystemWideLevel(message.convertToState(valueSelector)));
-                                    break;
-                                case STATUS:
-                                    updateState(CHANNEL_STATUS, message.convertToState(valueSelector));
-                                    break;
-                                case TEMPERATURE:
-                                    updateState(CHANNEL_TEMPERATURE, message.convertToState(valueSelector));
-                                    break;
-                                case CHILL_TEMPERATURE:
-                                    updateState(CHANNEL_CHILL_TEMPERATURE, message.convertToState(valueSelector));
-                                    break;
-                                case TOTAL_AMP_HOUR:
-                                    updateState(CHANNEL_TOTAL_AMP_HOUR, message.convertToState(valueSelector));
-                                    break;
-                                case TOTAL_USAGE:
-                                    updateState(CHANNEL_TOTAL_USAGE, message.convertToState(valueSelector));
-                                    break;
-                                case UV:
-                                    updateState(CHANNEL_UV, message.convertToState(valueSelector));
-                                    break;
-                                case VOLTAGE:
-                                    updateState(CHANNEL_VOLTAGE, message.convertToState(valueSelector));
-                                    break;
-                                case WIND_DIRECTION:
-                                    updateState(CHANNEL_WIND_DIRECTION, message.convertToState(valueSelector));
-                                    break;
-                                case AVG_WIND_SPEED:
-                                    updateState(CHANNEL_AVG_WIND_SPEED, message.convertToState(valueSelector));
-                                    break;
-                                case WIND_SPEED:
-                                    updateState(CHANNEL_WIND_SPEED, message.convertToState(valueSelector));
-                                    break;
-                                default:
-                                    logger.debug("Unsupported value selector '{}'", valueSelector);
-                                    break;
+                                    case MOOD:
+                                        updateState(CHANNEL_MOOD, message.convertToState(valueSelector));
+                                        break;
+                                    case MOTION:
+                                        updateState(CHANNEL_MOTION, message.convertToState(valueSelector));
+                                        break;
+                                    case PRESSURE:
+                                        updateState(CHANNEL_PRESSURE, message.convertToState(valueSelector));
+                                        break;
+                                    case RAIN_RATE:
+                                        updateState(CHANNEL_RAIN_RATE, message.convertToState(valueSelector));
+                                        break;
+                                    case RAIN_TOTAL:
+                                        updateState(CHANNEL_RAIN_TOTAL, message.convertToState(valueSelector));
+                                        break;
+                                    case RAW_MESSAGE:
+                                        updateState(CHANNEL_RAW_MESSAGE, message.convertToState(valueSelector));
+                                        break;
+                                    case RAW_PAYLOAD:
+                                        updateState(CHANNEL_RAW_PAYLOAD, message.convertToState(valueSelector));
+                                        break;
+                                    case SET_POINT:
+                                        updateState(CHANNEL_SET_POINT, message.convertToState(valueSelector));
+                                        break;
+                                    case SHUTTER:
+                                        updateState(CHANNEL_SHUTTER, message.convertToState(valueSelector));
+                                        break;
+                                    case SIGNAL_LEVEL:
+                                        updateState(CHANNEL_SIGNAL_LEVEL,
+                                                convertSignalLevelToSystemWideLevel(message.convertToState(valueSelector)));
+                                        break;
+                                    case STATUS:
+                                        updateState(CHANNEL_STATUS, message.convertToState(valueSelector));
+                                        break;
+                                    case TEMPERATURE:
+                                        updateState(CHANNEL_TEMPERATURE, message.convertToState(valueSelector));
+                                        break;
+                                    case CHILL_TEMPERATURE:
+                                        updateState(CHANNEL_CHILL_TEMPERATURE, message.convertToState(valueSelector));
+                                        break;
+                                    case TOTAL_AMP_HOUR:
+                                        updateState(CHANNEL_TOTAL_AMP_HOUR, message.convertToState(valueSelector));
+                                        break;
+                                    case TOTAL_USAGE:
+                                        updateState(CHANNEL_TOTAL_USAGE, message.convertToState(valueSelector));
+                                        break;
+                                    case UV:
+                                        updateState(CHANNEL_UV, message.convertToState(valueSelector));
+                                        break;
+                                    case VOLTAGE:
+                                        updateState(CHANNEL_VOLTAGE, message.convertToState(valueSelector));
+                                        break;
+                                    case WIND_DIRECTION:
+                                        updateState(CHANNEL_WIND_DIRECTION, message.convertToState(valueSelector));
+                                        break;
+                                    case AVG_WIND_SPEED:
+                                        updateState(CHANNEL_AVG_WIND_SPEED, message.convertToState(valueSelector));
+                                        break;
+                                    case WIND_SPEED:
+                                        updateState(CHANNEL_WIND_SPEED, message.convertToState(valueSelector));
+                                        break;
+                                    default:
+                                        logger.debug("Unsupported value selector '{}'", valueSelector);
+                                        break;
+                                }
+                            } catch (RFXComException e) {
+                                logger.trace("{} does not handle {}", valueSelector, message);
                             }
                         }
                     }
