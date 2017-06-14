@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Ubiquiti mPower strip binding. This transforms the raw mPower data into a
  * nice object
  *
- * @author magcode
+ * @author Marko Donke - Initial contribution
  */
 
 public class MpowerSocketState {

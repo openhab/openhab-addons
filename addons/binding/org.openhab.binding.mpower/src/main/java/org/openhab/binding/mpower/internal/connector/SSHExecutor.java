@@ -18,6 +18,12 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+/**
+ * handles raw SSH command execution
+ *
+ * @author Marko Donke - Initial contribution
+ *
+ */
 public class SSHExecutor {
     private Session session;
     private final static Logger logger = LoggerFactory.getLogger(SSHExecutor.class);

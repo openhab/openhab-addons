@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableSet;
  * The {@link mPowerBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author magcode - Initial contribution
+ * @author Marko Donke - Initial contribution
  */
 public class MpowerBindingConstants {
 

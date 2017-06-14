@@ -25,7 +25,7 @@ import com.jcraft.jsch.Session;
  * Core SSH connector for mPower devices.
  * Can read data and perform commands (such as switching outlets)
  *
- * @author magcode
+ * @author Marko Donke - Initial contribution
  *
  */
 public class MpowerSSHConnector {
@@ -113,7 +113,7 @@ public class MpowerSSHConnector {
 
     /**
      * enables energy measurement on mPower. This is not enabled by default.
-     * TODO: really needed each time we connect?
+     * Will be set on each connect.
      */
     private void enableEnergyMeasurement() {
         try {

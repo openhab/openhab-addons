@@ -20,7 +20,7 @@ import org.openhab.binding.mpower.internal.MpowerSocketState;
 /**
  * Handler for socket things. Forwards commands to bridge handler.
  *
- * @author magcode
+ * @author Marko Donke - Initial contribution
  *
  */
 public class MpowerSocketHandler extends BaseThingHandler {

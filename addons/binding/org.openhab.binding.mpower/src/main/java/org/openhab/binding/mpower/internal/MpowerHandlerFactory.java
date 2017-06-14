@@ -23,7 +23,7 @@ import org.openhab.binding.mpower.handler.MpowerSocketHandler;
  * The {@link MpowerHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author magcode - Initial contribution
+ * @author Marko Donke - Initial contribution
  */
 public class MpowerHandlerFactory extends BaseThingHandlerFactory {
 

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * An discovery service which allows to discover mPower sockets. Its only triggered manually once a new mPower has been
  * discovered.
  *
- * @author magcode
+ * @author Marko Donke - Initial contribution
  *
  */
 public class MpowerSocketDiscovery extends AbstractDiscoveryService {
@@ -46,14 +46,11 @@ public class MpowerSocketDiscovery extends AbstractDiscoveryService {
         String label = bridgeLabel + " Socket " + socketNumber;
         ThingUID socketUID = new ThingUID(MpowerBindingConstants.THING_TYPE_SOCKET,
                 bridge.getId() + "_" + socketNumber);
-
         Map<String, Object> properties = new HashMap<>(2, 1);
         properties.put(MpowerBindingConstants.SOCKET_NUMBER_PROP_NAME, socketNumber);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(socketUID).withBridge(bridge).withLabel(label)
                 .withProperties(properties).build();
-
         thingDiscovered(discoveryResult);
-
     }
 
     public void activate() {

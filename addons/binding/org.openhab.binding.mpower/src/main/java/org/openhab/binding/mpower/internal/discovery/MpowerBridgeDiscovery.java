@@ -30,7 +30,7 @@ import com.google.common.collect.Collections2;
 /**
  * An UpnpDiscoveryParticipant which allows to discover mPower devices.
  *
- * @author magcode
+ * @author Marko Donke - Initial contribution
  *
  */
 public class MpowerBridgeDiscovery implements UpnpDiscoveryParticipant {
@@ -97,10 +97,8 @@ public class MpowerBridgeDiscovery implements UpnpDiscoveryParticipant {
                     logger.debug("Found new mPower {}, device {}.", MpowerBindingConstants.MANUFACTURER, deviceModel);
                     result = new ThingUID(thingTypeUID, device.getDetails().getSerialNumber().replace(":", "_"));
                 }
-
             }
         }
-
         return result;
     }
 

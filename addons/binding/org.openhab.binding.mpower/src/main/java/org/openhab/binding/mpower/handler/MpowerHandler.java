@@ -39,7 +39,9 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link MpowerHandler}
  *
- * @author magcode - main class. Dispatches connection to mPower and sending/receiving commands and data
+ * @author Marko Donke - Initial contribution
+ *
+ *         main class. Dispatches connection to mPower and sending/receiving commands and data
  *
  *
  *         Some notes regarding timing:

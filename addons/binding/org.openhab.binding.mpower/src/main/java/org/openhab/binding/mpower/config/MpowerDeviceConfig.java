@@ -11,7 +11,7 @@ package org.openhab.binding.mpower.config;
 /**
  * Simple class which holds mpower connection configs
  *
- * @author magcode
+ * @author Marko Donke - Initial contribution
  *
  */
 public class MpowerDeviceConfig {
