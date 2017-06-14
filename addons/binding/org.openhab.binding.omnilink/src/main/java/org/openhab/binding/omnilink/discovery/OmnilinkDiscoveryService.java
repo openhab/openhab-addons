@@ -36,7 +36,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private LinkedList<AreaProperties> areas;
 
     /**
-     * Creates a IsyDiscoveryService.
+     * Creates an OmnilinkDiscoveryService.
      */
     public OmnilinkDiscoveryService(OmnilinkBridgeHandler bridgeHandler) {
         super(ImmutableSet.of(new ThingTypeUID(OmnilinkBindingConstants.BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS,
