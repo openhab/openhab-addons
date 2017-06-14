@@ -21,6 +21,9 @@ import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
@@ -141,16 +144,16 @@ public class RFXComUndecodedRFMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
 
-        if (valueSelector == RAW_MESSAGE) {
+        if (channelId == CHANNEL_RAW_MESSAGE) {
             return new StringType(DatatypeConverter.printHexBinary(rawMessage));
 
-        } else if (valueSelector == RAW_PAYLOAD) {
+        } else if (channelId == CHANNEL_RAW_PAYLOAD) {
             return new StringType(DatatypeConverter.printHexBinary(rawPayload));
 
         } else {
-            throw new RFXComException("Nothing relevant for " + valueSelector);
+            throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

@@ -23,6 +23,9 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -214,22 +217,22 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
 
-        if (valueSelector == COMMAND || valueSelector == MOTION) {
+        if (channelId == CHANNEL_COMMAND || channelId == CHANNEL_MOTION) {
             return command.isOn() ? OnOffType.ON : OnOffType.OFF;
 
-        } else if (valueSelector == RFXComValueSelector.CONTACT) {
+        } else if (channelId == CHANNEL_CONTACT) {
             return command.isOn() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
 
-        } else if (valueSelector == SIGNAL_LEVEL) {
+        } else if (channelId == CHANNEL_SIGNAL_LEVEL) {
             return new DecimalType(signalLevel);
 
-        } else if (valueSelector == COMMAND_ID) {
+        } else if (channelId == CHANNEL_COMMAND_ID) {
             return new DecimalType(commandId);
 
         } else {
-            throw new RFXComException("Nothing relevant for " + valueSelector);
+            throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

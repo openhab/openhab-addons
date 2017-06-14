@@ -20,6 +20,9 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -157,19 +160,19 @@ public class RFXComCurtain1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
 
-        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        if (channelId == CHANNEL_SIGNAL_LEVEL) {
             return new DecimalType(signalLevel);
 
-        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
             return new DecimalType(batteryLevel);
 
-        } else if (valueSelector == RFXComValueSelector.COMMAND) {
+        } else if (channelId == CHANNEL_COMMAND) {
             return (command == Commands.CLOSE ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
 
         } else {
-            throw new RFXComException("Nothing relevant for " + valueSelector);
+            throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

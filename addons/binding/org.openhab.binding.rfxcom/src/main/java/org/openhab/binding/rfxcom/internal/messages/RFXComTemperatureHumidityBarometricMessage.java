@@ -20,6 +20,9 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -213,31 +216,31 @@ public class RFXComTemperatureHumidityBarometricMessage extends RFXComBaseMessag
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
 
-        if (valueSelector == SIGNAL_LEVEL) {
+        if (channelId == CHANNEL_SIGNAL_LEVEL) {
             return new DecimalType(signalLevel);
 
-        } else if (valueSelector == BATTERY_LEVEL) {
+        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
             return new DecimalType(batteryLevel);
 
-        } else if (valueSelector == TEMPERATURE) {
+        } else if (channelId == CHANNEL_TEMPERATURE) {
             return new DecimalType(temperature);
 
-        } else if (valueSelector == HUMIDITY) {
+        } else if (channelId == CHANNEL_HUMIDITY) {
             return new DecimalType(humidity);
 
-        } else if (valueSelector == PRESSURE) {
+        } else if (channelId == CHANNEL_PRESSURE) {
             return new DecimalType(pressure);
 
-        } else if (valueSelector == HUMIDITY_STATUS) {
+        } else if (channelId == CHANNEL_HUMIDITY_STATUS) {
             return new StringType(humidityStatus.toString());
 
-        } else if (valueSelector == FORECAST) {
+        } else if (channelId == CHANNEL_FORECAST) {
             return new StringType(forecastStatus.toString());
 
         } else {
-            throw new RFXComException("Nothing relevant for " + valueSelector);
+            throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

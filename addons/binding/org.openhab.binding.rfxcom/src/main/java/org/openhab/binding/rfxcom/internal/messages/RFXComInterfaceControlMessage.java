@@ -94,7 +94,7 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
         throw new RFXComException("Not supported");
     }
 

@@ -18,6 +18,9 @@ import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -140,19 +143,19 @@ public class RFXComDateTimeMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
 
-        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        if (channelId == CHANNEL_SIGNAL_LEVEL) {
             return new DecimalType(signalLevel);
 
-        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
             return new DecimalType(batteryLevel);
 
-        } else if (valueSelector == RFXComValueSelector.DATE_TIME) {
+        } else if (channelId == CHANNEL_DATE_TIME) {
             return new DateTimeType(dateTime);
 
         } else {
-            throw new RFXComException("Nothing relevant for " + valueSelector);
+            throw new RFXComException("Nothing relevant for " + channelId);
         }
 
     }

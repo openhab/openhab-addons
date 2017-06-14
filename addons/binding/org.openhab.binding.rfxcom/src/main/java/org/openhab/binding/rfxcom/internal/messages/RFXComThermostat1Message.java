@@ -19,6 +19,9 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -188,18 +191,18 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
 
-        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        if (channelId == CHANNEL_SIGNAL_LEVEL) {
             return new DecimalType(signalLevel);
 
-        } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
+        } else if (channelId == CHANNEL_TEMPERATURE) {
             return new DecimalType(temperature);
 
-        } else if (valueSelector == RFXComValueSelector.SET_POINT) {
+        } else if (channelId == CHANNEL_SET_POINT) {
             return new DecimalType(set);
 
-        } else if (valueSelector == RFXComValueSelector.CONTACT) {
+        } else if (channelId == CHANNEL_CONTACT) {
             switch (status) {
                 case DEMAND:
                     return OpenClosedType.CLOSED;
@@ -210,7 +213,7 @@ public class RFXComThermostat1Message extends RFXComBaseMessage {
             }
 
         } else {
-            throw new RFXComException("Nothing relevant for " + valueSelector);
+            throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

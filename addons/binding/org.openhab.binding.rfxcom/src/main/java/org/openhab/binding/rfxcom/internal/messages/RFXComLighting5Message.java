@@ -26,6 +26,9 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -244,12 +247,12 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
 
-        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        if (channelId == CHANNEL_SIGNAL_LEVEL) {
             return new DecimalType(signalLevel);
 
-        } else if (valueSelector == RFXComValueSelector.MOOD) {
+        } else if (channelId == CHANNEL_MOOD) {
             switch (command) {
                 case GROUP_OFF:
                     return new DecimalType(0);
@@ -267,10 +270,10 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
                     throw new RFXComException("Unexpected mood: " + command);
             }
 
-        } else if (valueSelector == RFXComValueSelector.DIMMING_LEVEL) {
+        } else if (channelId == CHANNEL_DIMMING_LEVEL) {
             return RFXComLighting5Message.getPercentTypeFromDimLevel(dimmingLevel);
 
-        } else if (valueSelector == RFXComValueSelector.COMMAND) {
+        } else if (channelId == CHANNEL_COMMAND) {
             switch (command) {
                 case OFF:
                 case GROUP_OFF:
@@ -282,10 +285,10 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
 
                 case SET_LEVEL:
                 default:
-                    throw new RFXComException("Can't convert " + command + " for " + valueSelector);
+                    throw new RFXComException("Can't convert " + command + " for " + channelId);
             }
 
-        } else if (valueSelector == RFXComValueSelector.CONTACT) {
+        } else if (channelId == CHANNEL_CONTACT) {
             switch (command) {
                 case OFF:
                 case GROUP_OFF:
@@ -297,11 +300,11 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
 
                 case SET_LEVEL:
                 default:
-                    throw new RFXComException("Can't convert " + command + " for " + valueSelector);
+                    throw new RFXComException("Can't convert " + command + " for " + channelId);
             }
 
         } else {
-            throw new RFXComException("Nothing relevant for " + valueSelector);
+            throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

@@ -16,6 +16,9 @@ import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -182,31 +185,31 @@ public class RFXComWindMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
 
-        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        if (channelId == CHANNEL_SIGNAL_LEVEL) {
             return new DecimalType(signalLevel);
 
-        } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
+        } else if (channelId == CHANNEL_BATTERY_LEVEL) {
             return new DecimalType(batteryLevel);
 
-        } else if (valueSelector == RFXComValueSelector.WIND_DIRECTION) {
+        } else if (channelId == CHANNEL_WIND_DIRECTION) {
             return new DecimalType(windDirection);
 
-        } else if (valueSelector == RFXComValueSelector.AVG_WIND_SPEED) {
+        } else if (channelId == CHANNEL_AVG_WIND_SPEED) {
             return new DecimalType(avgWindSpeed);
 
-        } else if (valueSelector == RFXComValueSelector.WIND_SPEED) {
+        } else if (channelId == CHANNEL_WIND_SPEED) {
             return new DecimalType(windSpeed);
 
-        } else if (valueSelector == RFXComValueSelector.TEMPERATURE) {
+        } else if (channelId == CHANNEL_TEMPERATURE) {
             return new DecimalType(temperature);
 
-        } else if (valueSelector == RFXComValueSelector.CHILL_TEMPERATURE) {
+        } else if (channelId == CHANNEL_CHILL_TEMPERATURE) {
             return new DecimalType(chillTemperature);
 
         } else {
-            throw new RFXComException("Nothing relevant for " + valueSelector);
+            throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 

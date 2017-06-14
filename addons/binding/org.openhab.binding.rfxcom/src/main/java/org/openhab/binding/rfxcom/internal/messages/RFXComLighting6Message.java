@@ -19,6 +19,9 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+
 import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -159,12 +162,12 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+    public State convertToState(String channelId) throws RFXComException {
 
-        if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+        if (channelId == CHANNEL_SIGNAL_LEVEL) {
             return new DecimalType(signalLevel);
 
-        } else if (valueSelector == RFXComValueSelector.COMMAND) {
+        } else if (channelId == CHANNEL_COMMAND) {
             switch (command) {
                 case OFF:
                 case GROUP_OFF:
@@ -175,10 +178,10 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
                     return OnOffType.ON;
 
                 default:
-                    throw new RFXComException("Can't convert " + command + " for " + valueSelector);
+                    throw new RFXComException("Can't convert " + command + " for " + channelId);
             }
 
-        } else if (valueSelector == RFXComValueSelector.CONTACT) {
+        } else if (channelId == CHANNEL_CONTACT) {
             switch (command) {
                 case OFF:
                 case GROUP_OFF:
@@ -189,11 +192,11 @@ public class RFXComLighting6Message extends RFXComBaseMessage {
                     return OpenClosedType.OPEN;
 
                 default:
-                    throw new RFXComException("Can't convert " + command + " for " + valueSelector);
+                    throw new RFXComException("Can't convert " + command + " for " + channelId);
             }
 
         } else {
-            throw new RFXComException("Nothing relevant for " + valueSelector);
+            throw new RFXComException("Nothing relevant for " + channelId);
         }
     }
 
