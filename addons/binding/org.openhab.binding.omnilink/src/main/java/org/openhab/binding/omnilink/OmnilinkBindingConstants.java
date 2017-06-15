@@ -58,6 +58,22 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_BUTTON_PRESS = "press";
     public final static String CHANNEL_SYSTEMDATE = "sysdate";
 
+    // thermostats
+
+    public final static String CHANNEL_THERMO_FREEZE_ALARM = "thermostat_freeze_alarm";
+    public final static String CHANNEL_THERMO_COMM_FAILURE = "thermostat_comm_failure";
+    public final static String CHANNEL_THERMO_STATUS = "thermostat_status";
+    public final static String CHANNEL_THERMO_TEMP = "thermostat_temperature";
+    public final static String CHANNEL_THERMO_OUTDOOR_TEMP = "thermostat_outdoor_temperature";
+    public final static String CHANNEL_THERMO_HUMIDITY = "thermostat_humidity";
+    public final static String CHANNEL_THERMO_HUMIDITY_SETPOINT = "thermostat_humidity_setpoint";
+    public final static String CHANNEL_THERMO_DEHUMIDITY_SETPOINT = "thermostat_dehumidity_setpoint";
+    public final static String CHANNEL_THERMO_SYSTEM_MODE = "thermostat_system_mode";
+    public final static String CHANNEL_THERMO_FAN_MODE = "thermostat_fan_mode";
+    public final static String CHANNEL_THERMO_HOLD_STATUS = "thermostat_hold_status";
+    public final static String CHANNEL_THERMO_COOL_SETPOINT = "thermostat_cool_setpoint";
+    public final static String CHANNEL_THERMO_HEAT_SETPOINT = "thermostat_heat_setpoint";
+
     // thing configuration and properties keys
     public final static String THING_PROPERTIES_NAME = "name";
     public final static String THING_PROPERTIES_NUMBER = "number";
