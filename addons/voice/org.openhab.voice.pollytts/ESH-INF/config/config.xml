@@ -15,13 +15,25 @@
 			<description>The Secret Key to get access. You need to register to get a key.</description>
 		</parameter>
 		<parameter name="serviceRegion" type="text" required="true">
-			<label>Service Region</label>
-			<description>The Service Region is need to select which region is closest to you.</description>
-		</parameter>
+            <label>Service Region</label>
+            <description>The Service Region is need to select which region is closest to you.</description>
+            <options>
+                    <option value="us-east-2">US East (Ohio)</option>
+                    <option value="us-east-1">US East (N. Virginia)</option>
+                    <option value="us-west-2">US West (Oregon)</option>
+                    <option value="eu-west-1">EU (Ireland)</option>
+            </options>
+            <default>eu-west-1</default>
+        </parameter>
 		<parameter name="audioFormat" type="text" required="false">
             <label>Optional User specified audio format</label>
             <description>The user can override the system default audio format with their prefered option. 
             "mp3"" and "ogg" are the only audio formats that are supported</description>
+            <options>
+                    <option value="ogg"></option>
+                    <option value="mp3"></option>
+                    <option value="sys"></option>
+            </options>
         </parameter><parameter name="cacheExpiration" type="text" required="false">
             <label>Cache expiration life</label>
             <description>Optional value, determines the age in days that cache files will be purged. 
