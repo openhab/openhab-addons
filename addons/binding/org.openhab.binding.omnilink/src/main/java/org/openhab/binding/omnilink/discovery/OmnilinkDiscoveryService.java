@@ -24,6 +24,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ButtonProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.ConsoleProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
 import com.google.common.collect.ImmutableSet;
@@ -68,6 +69,9 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             generateUnits();
             generateZones();
             generateButtons();
+
+            // generate consoles is throwing and error
+            // generateConsoles();
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Received error during discovery", e);
         }
@@ -90,9 +94,42 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                 ButtonProperties o = ((ButtonProperties) m);
                 objnum = o.getNumber();
                 Map<String, Object> properties = new HashMap<>(0);
-                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_BUTTON, Integer.toString(objnum));
+                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_BUTTON,
+                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, o.getName());
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
+
+                DiscoveryResult discoveryResult;
+
+                discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(o.getName()).build();
+                thingDiscovered(discoveryResult);
+            }
+        }
+    }
+
+    private void generateConsoles()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+
+        for (AreaProperties areaProperties : areas) {
+            int areaFilter = 0;
+            // Area filter returns areas in each bit. So bit 0 is area 1, bit 2 is area 2 and so on.
+            areaFilter |= 1 << (areaProperties.getNumber() - 1);
+
+            int objnum = 0;
+            Message m;
+
+            while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_CONSOLE, objnum, 1,
+                    ObjectProperties.FILTER_1_NONE, areaFilter, ObjectProperties.FILTER_3_NONE))
+                            .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
+                ConsoleProperties o = ((ConsoleProperties) m);
+                objnum = o.getNumber();
+                Map<String, Object> properties = new HashMap<>(0);
+                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_CONSOLE,
+                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
+                // properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, o.getName());
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
 
                 DiscoveryResult discoveryResult;
@@ -127,9 +164,11 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             Map<String, Object> properties = new HashMap<>(0);
             ThingUID thingUID;
             if (isLumina) {
-                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_LUMINA_AREA, Integer.toString(objnum));
+                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_LUMINA_AREA,
+                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
             } else {
-                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA, Integer.toString(objnum));
+                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
+                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
             }
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, areaName);
@@ -197,16 +236,19 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                 DiscoveryResult discoveryResult;
                 if (isRoomController) {
                     discoveryResult = DiscoveryResultBuilder
-                            .create(new ThingUID(OmnilinkBindingConstants.THING_TYPE_ROOM, thingID))
+                            .create(new ThingUID(OmnilinkBindingConstants.THING_TYPE_ROOM,
+                                    bridgeHandler.getThing().getUID(), thingID))
                             .withProperties(properties).withBridge(bridgeUID).withLabel(thingLabel).build();
                 } else {
                     if (o.getUnitType() == UnitProperties.UNIT_TYPE_FLAG) {
-                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_FLAG, thingID);
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_FLAG,
+                                bridgeHandler.getThing().getUID(), thingID);
 
                     } else {
                         if (o.getUnitType() == UnitProperties.UNIT_TYPE_UPB
                                 || o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_LOAD) {
-                            thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB, thingID);
+                            thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB,
+                                    bridgeHandler.getThing().getUID(), thingID);
                         } else {
                             logger.debug("Unsupported unit type: {}", o.getUnitType());
                         }
@@ -257,7 +299,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                 thingID = Integer.toString(objnum);
 
                 Map<String, Object> properties = new HashMap<>(0);
-                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_ZONE, thingID);
+                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_ZONE, bridgeHandler.getThing().getUID(),
+                        thingID);
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, thingLabel);
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());

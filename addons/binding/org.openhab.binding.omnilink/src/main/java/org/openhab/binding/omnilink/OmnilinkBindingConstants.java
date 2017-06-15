@@ -58,6 +58,9 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_BUTTON_PRESS = "press";
     public final static String CHANNEL_SYSTEMDATE = "sysdate";
 
+    public final static String CHANNEL_CONSOLE_BEEP = "beep";
+    public final static String CHANNEL_CONSOLE_ENABLE_BEEPER = "enable_beeper";
+
     // thing configuration and properties keys
     public final static String THING_PROPERTIES_NAME = "name";
     public final static String THING_PROPERTIES_NUMBER = "number";
@@ -74,6 +77,7 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_FLAG = new ThingTypeUID(BINDING_ID, "flag");
     public final static ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
     public final static ThingTypeUID THING_TYPE_BUTTON = new ThingTypeUID(BINDING_ID, "button");
+    public final static ThingTypeUID THING_TYPE_CONSOLE = new ThingTypeUID(BINDING_ID, "console");
 
     public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
 

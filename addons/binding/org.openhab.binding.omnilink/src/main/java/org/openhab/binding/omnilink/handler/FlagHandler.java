@@ -45,7 +45,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
             }
             try {
                 getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((DecimalType) command).intValue(),
-                        Integer.parseInt(channelParts[2]));
+                        Integer.parseInt(channelParts[channelParts.length - 2]));
             } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
                     | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
@@ -54,7 +54,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
             try {
                 getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_SET_COUNTER.getNumber(),
-                        OnOffType.ON.equals(command) ? 1 : 0, Integer.parseInt(channelParts[2]));
+                        OnOffType.ON.equals(command) ? 1 : 0, Integer.parseInt(channelParts[channelParts.length - 2]));
             } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
                     | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
@@ -78,7 +78,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int unitId = Integer.parseInt(channelParts[2]);
+        int unitId = Integer.parseInt(channelParts[channelParts.length - 2]);
 
         ObjectStatus objStatus;
         try {

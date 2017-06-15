@@ -7,6 +7,14 @@
 		<description>A Omnilink enabled system</description>
 		<channels>
 			<channel id="sysdate" typeId="sysDate" />
+            <channel id="enable_beeper" typeId="console_enable_beeper">
+                <label>Enable All Console Beepers</label>
+                <description>Enable/Disable the beeper for all consoles</description>
+            </channel>
+            <channel id="beep" typeId="console_beep">
+                <label>ALL Console Beep</label>
+                <description>Send console beep command to all consoles</description>
+            </channel>
 		</channels>
 		<properties>
 			<property name="modelNumber" />

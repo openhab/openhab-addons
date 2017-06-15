@@ -28,7 +28,7 @@ public class ButtonHandler extends AbstractOmnilinkHandler {
         if (!(command instanceof RefreshType)) {
             try {
                 getOmnilinkBridgeHander().sendOmnilinkCommand(CommandMessage.CMD_BUTTON, 0,
-                        Integer.parseInt(channelParts[2]));
+                        Integer.parseInt(channelParts[channelParts.length - 2]));
             } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
                     | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
