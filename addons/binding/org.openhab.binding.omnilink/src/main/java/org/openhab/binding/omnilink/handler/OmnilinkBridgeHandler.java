@@ -15,12 +15,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -37,6 +38,7 @@ import com.digitaldan.jomnilinkII.NotificationListener;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.OtherEventNotifications;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
@@ -131,22 +133,50 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("handleCommand called); " + command);
-        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        if (OmnilinkBindingConstants.CHANNEL_SYSTEMDATE.equals(channelParts[3])) {
-            if (command instanceof DateTimeType) {
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(((DateTimeType) command).getCalendar().toInstant(),
-                        ZoneId.systemDefault());
-                boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
-                try {
-                    omniConnection.setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(), zdt.getDayOfMonth(),
-                            zdt.getDayOfWeek().getValue(), zdt.getHour(), zdt.getMinute(), inDaylightSavings);
-                } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
-                        | OmniUnknownMessageTypeException e) {
-                    logger.debug("Unable to set system date", e);
+        switch (channelUID.getId()) {
+            case OmnilinkBindingConstants.CHANNEL_SYSTEMDATE:
+                if (command instanceof DateTimeType) {
+                    ZonedDateTime zdt = ZonedDateTime.ofInstant(((DateTimeType) command).getCalendar().toInstant(),
+                            ZoneId.systemDefault());
+                    boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
+                    try {
+                        omniConnection.setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(), zdt.getDayOfMonth(),
+                                zdt.getDayOfWeek().getValue(), zdt.getHour(), zdt.getMinute(), inDaylightSavings);
+                    } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
+                            | OmniUnknownMessageTypeException e) {
+                        logger.debug("Unable to set system date", e);
+                    }
+                } else {
+                    logger.warn("Invalid command for system date, must be DateTimeType, instead was: {}", command);
                 }
-            } else {
-                logger.warn("Invalid command for system date, must be DateTimeType, instead was: {}", command);
-            }
+                break;
+            case OmnilinkBindingConstants.CHANNEL_CONSOLE_ENABLE_BEEPER:
+                if (command instanceof OnOffType) {
+                    try {
+                        sendOmnilinkCommand(CommandMessage.CMD_CONSOLE_ENABLE_DISABLE_BEEPER,
+                                command.equals(OnOffType.OFF) ? 0 : 1, 0);
+                    } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
+                            | BridgeOfflineException e) {
+                        logger.debug("Could not send console command to omnilink", e);
+                    }
+                } else {
+                    logger.warn("Invalid command {}, must be OnOffTYpe", command);
+                }
+                break;
+            case OmnilinkBindingConstants.CHANNEL_CONSOLE_BEEP:
+                if (command instanceof DecimalType) {
+                    try {
+                        sendOmnilinkCommand(CommandMessage.CMD_CONSOLE_BEEP, ((DecimalType) command).intValue(), 0);
+                    } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
+                            | BridgeOfflineException e) {
+                        logger.debug("Could not send console command to omnilink", e);
+                    }
+                } else {
+                    logger.warn("Invalid command {}, must be DecimalType", command);
+                }
+                break;
+            default:
+                logger.error("Unknown channel {}", channelUID.getAsString());
         }
     }
 
