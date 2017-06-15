@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,8 @@ import org.slf4j.LoggerFactory;
  * what content is in the audio file.
  *
  * @author Jochen Hiller - Initial contribution
- * @author Robert Hillman - converted to Polly API to utilize unique voice names,
+ * @author Robert Hillman - converted to Polly API to utilize unique voice names
+ * @author Robert Hillman - added cache management to delete aged entries
  */
 public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementation {
 
@@ -52,9 +54,10 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
         // check if in cache
         File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + audioFormat.toLowerCase());
         if (audioFileInCache.exists()) {
-            long timestamp = System.currentTimeMillis();
             // update use date
-            audioFileInCache.setLastModified(timestamp);
+            updateTimeStamp(audioFileInCache);
+            updateTimeStamp(new File(cacheFolder, fileNameInCache + ".txt"));
+            DeleteOldFiles();
             return audioFileInCache;
         }
 
@@ -79,7 +82,7 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
 
     /**
      * Gets a unique filename for a give text, by creating a MD5 hash of it. It
-     * will be preceded by the locale.
+     * will be preceded by the voice label.
      *
      * Sample: "Robert_00a2653ac5f77063bc4ea2fee87318d3"
      */
@@ -127,6 +130,36 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
         } finally {
             if (outputStream != null) {
                 outputStream.close();
+            }
+        }
+    }
+
+    private void updateTimeStamp(File file) throws IOException {
+        long timestamp = System.currentTimeMillis();
+        // update use date for cache management
+        file.setLastModified(timestamp);
+    }
+
+    public void DeleteOldFiles() throws IOException {
+        // just exit if expiration set to 0/disabled
+        if (PollyClientConfig.getExpireDate() == 0) {
+            return;
+        }
+        long now = new Date().getTime();
+        long diff = now - PollyClientConfig.getlastDelete();
+        // 1 day = 24 * 60 * 60 * 1000 =86,400,000
+        // only execute ~ once every 2 days if cache called
+        logger.debug("PollyTTS cache cleaner lastdelete {}", diff);
+        if (diff > 172800000) {
+            PollyClientConfig.setLastDelete(now);
+            logger.info("PollyTTS cache cleaner for aged files executed");
+            long xDaysAgo = PollyClientConfig.getExpireDate() * 86400000;
+            // Now search folders and delete old files
+            for (File f : cacheFolder.listFiles()) {
+                diff = now - f.lastModified();
+                if (diff > xDaysAgo) {
+                    f.delete();
+                }
             }
         }
     }

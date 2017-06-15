@@ -14,6 +14,9 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amazonaws.services.polly.model.OutputFormat;
 import com.amazonaws.services.polly.model.SynthesizeSpeechRequest;
 import com.amazonaws.services.polly.model.SynthesizeSpeechResult;
@@ -37,11 +40,12 @@ import com.amazonaws.services.polly.model.Voice;
 
 public class PollyTTSCloudImplementation {
 
+    private final Logger logger = LoggerFactory.getLogger(PollyTTSCloudImplementation.class);
+
     private static Set<String> supportedAudioFormats = new HashSet<String>();
     static {
         supportedAudioFormats.add("mp3");
-        supportedAudioFormats.add("ogg_vorbis");
-        supportedAudioFormats.add("pcm");
+        supportedAudioFormats.add("ogg");
     }
 
     /**
@@ -97,16 +101,22 @@ public class PollyTTSCloudImplementation {
      *             will be raised if the audio data can not be retrieved from
      *             cloud service
      */
-    public InputStream getTextToSpeech(String text, String label, String audioFormat) throws IOException {
+    public InputStream getTextToSpeech(String text, String label, String audioFormat) {
+        InputStream is = null;
+        try {
+            String voiceID = PollyClientConfig.labelToID.get(label);
+            if (audioFormat.equals("ogg")) {
+                audioFormat = "ogg_vorbis";
+            }
+            SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest().withText(text).withVoiceId(voiceID)
+                    .withOutputFormat(OutputFormat.fromValue(audioFormat));
+            SynthesizeSpeechResult synthRes = PollyClientConfig.polly.synthesizeSpeech(synthReq);
 
-        String voiceID = PollyClientConfig.labelToID.get(label);
-
-        SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest().withText(text).withVoiceId(voiceID)
-                .withOutputFormat(OutputFormat.fromValue(audioFormat));
-        SynthesizeSpeechResult synthRes = PollyClientConfig.polly.synthesizeSpeech(synthReq);
-
-        return synthRes.getAudioStream();
-
+            is = synthRes.getAudioStream();
+        } catch (Throwable t) {
+            logger.error("Failed to obtain audio stream from service:", t.getMessage(), t);
+        }
+        return is;
     }
 
 }

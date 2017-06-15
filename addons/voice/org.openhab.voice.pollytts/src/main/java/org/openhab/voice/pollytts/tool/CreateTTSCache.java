@@ -42,6 +42,14 @@ public class CreateTTSCache {
         System.exit(rc);
     }
 
+    public void ClientConfig(String accessKey, String secretKey, String regionVal) {
+        PollyClientConfig polly = new PollyClientConfig();
+        polly.setAccessKey(accessKey);
+        polly.setSecretKey(secretKey);
+        polly.setRegionVal(regionVal);
+        polly.PollyInit();
+    }
+
     public int doMain(String[] args) throws IOException, TTSException {
 
         if ((args == null) || (args.length != 9)) {
@@ -60,7 +68,7 @@ public class CreateTTSCache {
             usage();
             return RC_SERVER_REGION_MISSING;
         }
-        new PollyClientConfig(args[1], args[3], args[5]);
+        ClientConfig(args[1], args[3], args[5]);
         String cacheDir = args[6];
         String label = args[7];
         if (args[6].startsWith("@")) {
@@ -97,7 +105,7 @@ public class CreateTTSCache {
         System.out.println();
         System.out.println("Sample: java org.openhab.voice.pollytts.tool.CreateTTSCache --accessKey A1234567890");
         System.out.println("                                      --secretKey S1234567890 --regionVal us-east-1");
-        System.out.println("                                      cache en-US @messages.txt");
+        System.out.println("                                      cache Joey @messages.txt");
         System.out.println();
     }
 

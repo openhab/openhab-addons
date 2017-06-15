@@ -18,6 +18,15 @@
 			<label>Service Region</label>
 			<description>The Service Region is need to select which region is closest to you.</description>
 		</parameter>
+		<parameter name="audioFormat" type="text" required="false">
+            <label>Optional User specified audio format</label>
+            <description>The user can override the system default audio format with their prefered option. 
+            "mp3"" and "ogg" are the only audio formats that are supported</description>
+        </parameter><parameter name="cacheExpiration" type="text" required="false">
+            <label>Cache expiration life</label>
+            <description>Optional value, determines the age in days that cache files will be purged. 
+            If not specified, default value of 30 days used. if set to 0 functionality disabled.</description>
+        </parameter>
 	</config-description>
 
 </config-description:config-descriptions>

@@ -2,9 +2,9 @@ package org.openhab.voice.pollytts.internal.cloudapi;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.smarthome.core.voice.TTSException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -17,78 +17,126 @@ import com.amazonaws.services.polly.model.Voice;
 
 /**
  * This class implements a client interface to the amazon polly service. It is a
- * static class so the Credential setup and voice identification is only performed
- * on initialization
+ * static class so the service interface, Credential setup and voice identification
+ * is only performed on initialization
  *
- * @author Robert Hillman - initial interface,
+ * @author Robert Hillman - initial interface
  */
 public class PollyClientConfig {
 
-    // Keys come from ConfigAdmin
-    private static final String CONFIG_ACCESS_KEY = "accessKey";
-    private static final String CONFIG_SECRET_KEY = "secretKey";
-    private static final String CONFIG_REGION = "serviceRegion";
+    private final Logger logger = LoggerFactory.getLogger(PollyClientConfig.class);
+
     private static String accessKey = null;
     private static String secretKey = null;
     private static String regionVal = null;
+    private static int expireDate = 30;
+    private static String audioFormat = null;
+    private static long today = 0;
 
     public static AmazonPollyClient polly;
     public static List<Voice> pollyVoices;
     // translation function from unique voice label to voice id
     public static HashMap<String, String> labelToID = new HashMap<String, String>();
 
-    public PollyClientConfig(String accessKey, String secretKey, String regionVal) throws TTSException {
-        accessKey = PollyClientConfig.accessKey;
-        secretKey = PollyClientConfig.secretKey;
-        regionVal = PollyClientConfig.regionVal;
-        PollyInit();
+    public PollyClientConfig() {
+
     }
 
-    public PollyClientConfig(Map<String, Object> config) throws TTSException {
-        System.out.println(config);
-
-        if (config != null) {
-
-            PollyClientConfig.accessKey = config.containsKey(CONFIG_ACCESS_KEY)
-                    ? config.get(CONFIG_ACCESS_KEY).toString() : null;
-            PollyClientConfig.secretKey = config.containsKey(CONFIG_SECRET_KEY)
-                    ? config.get(CONFIG_SECRET_KEY).toString() : null;
-            PollyClientConfig.regionVal = config.containsKey(CONFIG_REGION) ? config.get(CONFIG_REGION).toString()
-                    : null;
-        }
-        System.out.println(PollyClientConfig.accessKey);
-        System.out.println(PollyClientConfig.secretKey);
-        System.out.println(PollyClientConfig.regionVal);
-        PollyInit();
+    public void setAccessKey(String key) {
+        PollyClientConfig.accessKey = key;
     }
 
-    private void PollyInit() throws TTSException {
+    public void setSecretKey(String key) {
+        PollyClientConfig.secretKey = key;
+    }
+
+    public void setRegionVal(String val) {
+        PollyClientConfig.regionVal = val;
+    }
+
+    public void setExpireDate(int days) {
+        PollyClientConfig.expireDate = days;
+    }
+
+    static public int getExpireDate() {
+        return PollyClientConfig.expireDate;
+    }
+
+    public void setAudioFormat(String format) {
+        PollyClientConfig.audioFormat = format;
+    }
+
+    static public String getAudioFormat() {
+        return PollyClientConfig.audioFormat;
+    }
+
+    static public long getlastDelete() {
+        return PollyClientConfig.today;
+    }
+
+    static public void setLastDelete(long today) {
+        PollyClientConfig.today = today;
+        ;
+    }
+
+    public boolean PollyInit() {
+        // config file correct n
+        boolean configOK = true;
+
         // Validate access key
         if (PollyClientConfig.accessKey == null) {
-            throw new TTSException("Missing access key, configure it first before using");
+            logger.error("Failed to activate PollyTTS: Missing access key, configure it first before using");
+            configOK = false;
         }
         // Validate secret key
         if (PollyClientConfig.secretKey == null) {
-            throw new TTSException("Missing secret key, configure it first before using");
+            logger.error("Failed to activate PollyTTS: Missing secret key, configure it first before using");
+            configOK = false;
         }
         // "us-east-1" ex.
         if (PollyClientConfig.regionVal == null) {
-            throw new TTSException("Missing user region, configure it first before using");
+            logger.error("Failed to activate PollyTTS: Missing user region, configure it first before using");
+            configOK = false;
+        }
+        if (!PollyClientConfig.audioFormat.equals("sys") && !PollyClientConfig.audioFormat.equals("mp3")
+                && !PollyClientConfig.audioFormat.equals("ogg")) {
+            logger.error("Failed to activate PollyTTS:  Invalid Audio Format override specified in cfg: {}",
+                    PollyClientConfig.audioFormat);
+            configOK = false;
+        }
+        if (!configOK) {
+            return false;
         }
 
-        AWSCredentials credentials = new BasicAWSCredentials(PollyClientConfig.accessKey, PollyClientConfig.secretKey);
+        // service interface not created
+        boolean initialized = false;
+        try {
+            AWSCredentials credentials = new BasicAWSCredentials(PollyClientConfig.accessKey,
+                    PollyClientConfig.secretKey);
 
-        polly = (AmazonPollyClient) AmazonPollyClientBuilder.standard().withRegion(regionVal)
-                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+            polly = (AmazonPollyClient) AmazonPollyClientBuilder.standard().withRegion(regionVal)
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
 
-        DescribeVoicesRequest describeVoicesRequest = new DescribeVoicesRequest();
-        // ask Amazon Polly to describe available TTS voices.
-        DescribeVoicesResult describeVoicesResult = polly.describeVoices(describeVoicesRequest);
-        pollyVoices = describeVoicesResult.getVoices();
+            DescribeVoicesRequest describeVoicesRequest = new DescribeVoicesRequest();
+            // ask Amazon Polly to describe available TTS voices.
+            DescribeVoicesResult describeVoicesResult = polly.describeVoices(describeVoicesRequest);
+            pollyVoices = describeVoicesResult.getVoices();
 
-        for (Voice voice : PollyClientConfig.pollyVoices) {
-            labelToID.put(voice.getName(), voice.getId());
+            // create voice to ID translation for service invocation
+            for (Voice voice : PollyClientConfig.pollyVoices) {
+                labelToID.put(voice.getName(), voice.getId());
+            }
+
+            // Initialize expired check date to 172800000 +1
+            // run today and ~ every 2 days if cache cleaner enabled
+            // 1 day = 24 * 60 * 60 * 1000 = 86,400,000
+            today = 172800001;
+
+            initialized = true;
+        } catch (Throwable t) {
+            logger.error("Failed to activate PollyTTS: {}", t.getMessage(), t);
         }
+        return initialized;
     }
 
 }

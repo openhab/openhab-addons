@@ -41,6 +41,17 @@ public class PollyTTSService implements TTSService {
 
     private final Logger logger = LoggerFactory.getLogger(PollyTTSService.class);
 
+    // temp fix to function under 2.0.0 and disable audio format selection
+    // to be removed
+    private static final String version = "2.0.0";
+
+    // Keys come from ConfigAdmin
+    private static final String CONFIG_ACCESS_KEY = "accessKey";
+    private static final String CONFIG_SECRET_KEY = "secretKey";
+    private static final String CONFIG_REGION = "serviceRegion";
+    private static final String CONFIG_EXPIRE = "cacheExpiration";
+    private static final String CONFIG_FORMAT = "audioFormat";
+
     /**
      * We need the cached implementation to allow for FixedLengthAudioStream.
      */
@@ -60,26 +71,44 @@ public class PollyTTSService implements TTSService {
      * DS activate, with access to ConfigAdmin
      */
     protected void activate(Map<String, Object> config) {
-        try {
-            modified(config);
-            pollyTssImpl = initVoiceImplementation();
-            voices = initVoices();
-            audioFormats = initAudioFormats();
+        modified(config);
+    }
 
-            logger.info("Using PollyTTS cache folder {}", getCacheFolderName());
+    protected void modified(Map<String, Object> config) {
+        try {
+            boolean successful = false;
+            if (config != null) {
+                PollyClientConfig polly = new PollyClientConfig();
+                String val = null;
+                val = config.containsKey(CONFIG_ACCESS_KEY) ? config.get(CONFIG_ACCESS_KEY).toString() : null;
+                polly.setAccessKey(val);
+                val = config.containsKey(CONFIG_SECRET_KEY) ? config.get(CONFIG_SECRET_KEY).toString() : null;
+                polly.setSecretKey(val);
+                val = config.containsKey(CONFIG_REGION) ? config.get(CONFIG_REGION).toString() : null;
+                polly.setRegionVal(val);
+                val = config.containsKey(CONFIG_FORMAT) ? config.get(CONFIG_FORMAT).toString() : "sys";
+                polly.setAudioFormat(val);
+                val = config.containsKey(CONFIG_EXPIRE) ? config.get(CONFIG_EXPIRE).toString() : "0";
+                polly.setExpireDate(Integer.parseInt(val));
+                successful = polly.PollyInit();
+            }
+            pollyTssImpl = initVoiceImplementation();
+            audioFormats = initAudioFormats();
+            voices = initVoices();
+            if (successful) {
+                logger.info("PollyTTS cfg data loaded and static elements (re)initialized");
+                logger.info("Using PollyTTS cache folder {}", getCacheFolderName());
+            }
         } catch (Throwable t) {
             logger.error("Failed to activate PollyTTS: {}", t.getMessage(), t);
         }
     }
 
-    protected void modified(Map<String, Object> config) throws TTSException {
-        if (config != null) {
-            new PollyClientConfig(config);
-        }
-    }
-
     @Override
     public Set<Voice> getAvailableVoices() {
+        if (this.voices == null) {
+            logger.error("PollyTTS interface never initalized, check congiguration elements");
+        }
         return this.voices;
     }
 
@@ -122,7 +151,16 @@ public class PollyTTSService implements TTSService {
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from PollyTTS service");
             }
-            AudioStream audioStream = new PollyTTSAudioStream(cacheAudioFile);
+
+            AudioStream audioStream = null;
+            /// adjust stream method based on version 2.0 old, 2.1+ new method
+            // String version = OpenHAB.getVersion();
+            String version = "2.0.0";
+            if (version.equals("2.0.0")) {
+                audioStream = new PollyTTSAudioStream(cacheAudioFile);
+            } else {
+                audioStream = new PollyTTSAudioStream(cacheAudioFile, requestedFormat);
+            }
             return audioStream;
         } catch (AudioException ex) {
             throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
@@ -174,28 +212,23 @@ public class PollyTTSService implements TTSService {
             bitRate = 64000;
             return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, bigEndian, bitDepth, bitRate,
                     frequency);
-        } else if ("ogg_vorbis".equals(apiFormat)) {
+        } else if ("ogg".equals(apiFormat)) {
             // use by default: OGG, 22khz_16bit_mono
             return new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, bigEndian, bitDepth, bitRate,
                     frequency);
-        } else if ("pcm".equals(apiFormat)) {
-            frequency = 16000L;
-            // use by default: PCM, 16khz_16bit_mono
-
-            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_UNSIGNED, bigEndian, bitDepth,
-                    bitRate, frequency);
         } else {
             throw new IllegalArgumentException("Audio format " + apiFormat + " not yet supported");
         }
     }
 
     private final String getApiAudioFormat(AudioFormat format) {
+        if (!PollyClientConfig.getAudioFormat().equals("sys") && !version.equals("2.0.0")) {
+            return PollyClientConfig.getAudioFormat();
+        }
         if (format.getCodec().equals(AudioFormat.CODEC_MP3)) {
             return "mp3";
         } else if (format.getCodec().equals(AudioFormat.CODEC_VORBIS)) {
-            return "ogg_vorbis";
-        } else if (format.getCodec().equals(AudioFormat.CODEC_AAC)) {
-            return "pcm";
+            return "ogg";
         } else {
             throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
         }

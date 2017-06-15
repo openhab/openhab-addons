@@ -11,6 +11,7 @@ package org.openhab.voice.pollytts.internal;
 import java.io.File;
 
 import org.eclipse.smarthome.core.audio.AudioException;
+import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.audio.FileAudioStream;
 
@@ -24,6 +25,10 @@ import org.eclipse.smarthome.core.audio.FileAudioStream;
  * @author Robert Hillman - Converted to Polly API
  */
 class PollyTTSAudioStream extends FileAudioStream {
+
+    public PollyTTSAudioStream(File audioFile, AudioFormat format) throws AudioException {
+        super(audioFile, format);
+    }
 
     public PollyTTSAudioStream(File audioFile) throws AudioException {
         super(audioFile);
