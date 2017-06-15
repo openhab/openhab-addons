@@ -44,6 +44,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
+import com.digitaldan.jomnilinkII.MessageTypes.statuses.ThermostatStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
 import com.github.rholder.retry.RetryException;
@@ -63,6 +64,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private Map<Integer, Thing> unitThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     private Map<Integer, Thing> zoneThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     private Map<Integer, Thing> buttonThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
+    private Map<Integer, Thing> thermostatThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
 
     private ScheduledFuture<?> scheduledRefresh;
     // private CacheHolder<Unit> nodes;
@@ -134,8 +136,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
-    public void registerDiscoveryService(OmnilinkDiscoveryService isyBridgeDiscoveryService) {
-        this.bridgeDiscoveryService = isyBridgeDiscoveryService;
+    public void registerDiscoveryService(OmnilinkDiscoveryService bridgeDiscoveryService) {
+        this.bridgeDiscoveryService = bridgeDiscoveryService;
 
     }
 
@@ -242,7 +244,15 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 if (theThing != null) {
                     ((AreaHandler) theThing.getHandler()).handleAreaEvent(areaStatus);
                 }
+            } else if (s instanceof ThermostatStatus) {
+                ThermostatStatus thermostatStatus = (ThermostatStatus) s;
+                Integer number = new Integer(thermostatStatus.getNumber());
+                Thing theThing = thermostatThings.get(number);
+                if (theThing != null) {
+                    ((ThermostatHandler) theThing.getHandler()).handleThermostatStatus(thermostatStatus);
+                }
             }
+
         }
     }
 
@@ -293,6 +303,19 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 buttonNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
             }
             buttonThings.put(buttonNumber, childThing);
+        } else if (childHandler instanceof ThermostatHandler) {
+            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
+                throw new IllegalArgumentException("childThing does not have required 'number' property");
+            }
+            int thermostatNumber;
+            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
+                thermostatNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number"))
+                        .intValue();
+            } else {
+                thermostatNumber = Integer
+                        .parseInt(childThing.getConfiguration().getProperties().get("number").toString());
+            }
+            thermostatThings.put(thermostatNumber, childThing);
         } else {
             logger.warn("Did not add childThing to a map: {}", childThing);
         }

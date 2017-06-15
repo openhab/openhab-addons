@@ -1,6 +1,7 @@
 package org.openhab.binding.omnilink.discovery;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -65,9 +66,10 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             SystemInformation info = bridgeHandler.reqSystemInformation();
             isLumina = info.getModel() == 36 || info.getModel() == 37;
             generateAreas();
-            generateUnits();
-            generateZones();
-            generateButtons();
+            // generateUnits();
+            // generateZones();
+            // generateButtons();
+            discoverThermostats();
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Received error during discovery", e);
         }
@@ -101,6 +103,45 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                         .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(o.getName()).build();
                 thingDiscovered(discoveryResult);
             }
+        }
+    }
+
+    /**
+     * Calculate the area filter the a supplied area
+     *
+     * @param area Area to calculate filter for.
+     * @return Calculated Bit Filter for the supplied area. Bit 0 is area 1, bit 2 is area 2 and so on.
+     */
+    private static int bitFilterForArea(AreaProperties areaProperties) {
+        return BigInteger.ZERO.setBit(areaProperties.getNumber() - 1).intValue();
+    }
+
+    private void discoverThermostats()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+
+        for (AreaProperties areaProperties : areas) {
+            int areaFilter = bitFilterForArea(areaProperties);
+
+            ObjectPropertyRequest objectPropertyRequest = new ObjectPropertyRequest(bridgeHandler,
+                    Message.OBJ_TYPE_THERMO, ObjectProperties.FILTER_1_NAMED, areaFilter,
+                    ObjectProperties.FILTER_3_NONE);
+
+            for (ObjectProperties objectProperties : objectPropertyRequest) {
+
+                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_THERMOSTAT,
+                        Integer.toString(objectProperties.getNumber()));
+
+                Map<String, Object> properties = new HashMap<>();
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
+
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
+                        .build();
+                thingDiscovered(discoveryResult);
+            }
+
         }
     }
 
