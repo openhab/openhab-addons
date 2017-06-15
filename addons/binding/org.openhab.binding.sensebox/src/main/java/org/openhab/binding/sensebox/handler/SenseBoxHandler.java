@@ -12,7 +12,6 @@ import static org.openhab.binding.sensebox.SenseBoxBindingConstants.*;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
