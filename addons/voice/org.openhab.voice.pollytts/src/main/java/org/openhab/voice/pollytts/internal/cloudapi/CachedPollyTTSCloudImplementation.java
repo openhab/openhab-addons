@@ -57,7 +57,7 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
             // update use date
             updateTimeStamp(audioFileInCache);
             updateTimeStamp(new File(cacheFolder, fileNameInCache + ".txt"));
-            DeleteOldFiles();
+            deleteOldFiles();
             return audioFileInCache;
         }
 
@@ -140,7 +140,7 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
         file.setLastModified(timestamp);
     }
 
-    public void DeleteOldFiles() throws IOException {
+    public void deleteOldFiles() throws IOException {
         // just exit if expiration set to 0/disabled
         if (PollyClientConfig.getExpireDate() == 0) {
             return;

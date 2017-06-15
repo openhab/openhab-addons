@@ -79,8 +79,8 @@ public class PollyClientConfig {
         ;
     }
 
-    public boolean PollyInit() {
-        // config file correct n
+    public boolean initPollyServiceInterface() {
+        // config file correct
         boolean configOK = true;
 
         // Validate access key

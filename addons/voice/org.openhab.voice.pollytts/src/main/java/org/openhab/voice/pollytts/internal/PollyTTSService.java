@@ -42,7 +42,7 @@ public class PollyTTSService implements TTSService {
     private final Logger logger = LoggerFactory.getLogger(PollyTTSService.class);
 
     // temp fix to function under 2.0.0 and disable audio format selection
-    // to be removed
+    // to be removed for 2.1
     // private static final String version = OpenHAB.getVersion();
     private static final String version = "2.0.0";
 
