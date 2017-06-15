@@ -31,13 +31,14 @@ This binding creates channels for controls that are [used in Loxone's user inter
 
 |[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[OpenHAB Item Type](http://docs.openhab.org/concepts/items.html)|Supported Commands|Channel Type|
 |----|----|----|----|----|
-|Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | Switch |`OnOffType.*`|`loxone:miniserver:<serial>:switch`|
-|Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | Switch | `OnOffType.ON` (generates Pulse command)|`loxone:miniserver:<serial>:switch`|
+|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |String|none (read-only value)|`loxone:miniserver:<serial>:infoonly`|
+|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |String|none (read-only value)|`loxone:miniserver:<serial>:infoonly`|
 |Jalousie| (Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated) | Rollershutter| `UpDown.*`<br>`StopMove.*`<br>`Percent`|`loxone:miniserver:<serial>:rollershutter`|
-|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/)|String|none (read-only value)|`loxone:miniserver:<serial>:infoonly`|
-|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/)|String|none (read-only value)|`loxone:miniserver:<serial>:infoonly`|
 |LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|Number|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|`loxone:miniserver:<serial>:lightcontroller:<uuid>`<br>This channel type is created dynamically for each controller, because it contains custom list of selectable values.|
+|Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | Switch | `OnOffType.ON` (generates Pulse command)|`loxone:miniserver:<serial>:switch`|
 |Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|Number|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|`loxone:miniserver:<serial>:radio:<uuid>`<br>This channel type is created dynamically for each radio button, because it contains custom list of selectable value.|
+|Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | Switch |`OnOffType.*`|`loxone:miniserver:<serial>:switch`|
+|TextState|[State](https://www.loxone.com/enen/kb/state/)|String|none (read-only value)|`loxone:miniserver:<serial>:infoonly`|
 
 If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/). application.
 

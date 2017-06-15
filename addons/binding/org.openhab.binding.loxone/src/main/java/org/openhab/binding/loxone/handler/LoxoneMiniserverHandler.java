@@ -55,6 +55,7 @@ import org.openhab.binding.loxone.core.LxControlLightController;
 import org.openhab.binding.loxone.core.LxControlPushbutton;
 import org.openhab.binding.loxone.core.LxControlRadio;
 import org.openhab.binding.loxone.core.LxControlSwitch;
+import org.openhab.binding.loxone.core.LxControlTextState;
 import org.openhab.binding.loxone.core.LxServer;
 import org.openhab.binding.loxone.core.LxServerListener;
 import org.openhab.binding.loxone.core.LxUuid;
@@ -389,6 +390,10 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             channelDescription = "Radio button";
             typeId = addNewChannelType(control.getTypeName(), itemType, channelLabel, channelDescription,
                     ((LxControlRadio) control).getOutputs(), LxControlRadio.MAX_RADIO_OUTPUTS, controlUuid);
+        } else if (control instanceof LxControlTextState) {
+            itemType = "String";
+            channelDescription = "Text state";
+            typeId = infoTypeId;
         }
 
         if (itemType != null && typeId != null && channelDescription != null) {
@@ -492,6 +497,11 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             int output = radio.getActiveOutput();
             if (output >= 0 && output <= LxControlRadio.MAX_RADIO_OUTPUTS) {
                 updateState(channelUID, new DecimalType(output));
+            }
+        } else if (control instanceof LxControlTextState) {
+            String value = ((LxControlTextState) control).getText();
+            if (value != null) {
+                updateState(channelUID, new StringType(value));
             }
         }
     }

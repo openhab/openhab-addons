@@ -55,6 +55,8 @@ public class LxControlRadio extends LxControl {
      *            JSON describing the control as received from the Miniserver
      * @param room
      *            room to which radio-button belongs
+     * @param category
+     *            category to which control belongs
      */
     LxControlRadio(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);

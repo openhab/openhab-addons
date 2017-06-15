@@ -34,7 +34,7 @@ public abstract class LxControl {
     private String typeName = null;
     private LxContainer room;
     private LxCategory category;
-    private Map<String, LxControlState> states = new HashMap<String, LxControlState>();;
+    private Map<String, LxControlState> states = new HashMap<String, LxControlState>();
     Logger logger = LoggerFactory.getLogger(LxControl.class);
 
     LxUuid uuid;
@@ -241,6 +241,8 @@ public abstract class LxControl {
 
         } else if (LxControlJalousie.accepts(type)) {
             ctrl = new LxControlJalousie(client, id, json, room, category);
+        } else if (LxControlTextState.accepts(type)) {
+            ctrl = new LxControlTextState(client, id, json, room, category);
 
         } else if (json.details != null) {
 
