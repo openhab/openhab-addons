@@ -38,14 +38,14 @@ secretKey - required credential provided by Amazon
 serviceRegion - Required value select region closest for best response. ServiceRegion is one of the following:
 ["us-east-2" in US East (Ohio)], ["us-east-1" in US East (N. Virginia)], ["us-west-2" in US West (Oregon)], ["eu-west-1" in EU (Ireland)]
 
+cacheExpiration - Cache expiration life in days (Optional value). As Cache files are used their timestamps are updated, files that are never used will be purged if their timestamp exceeds the specified age. If not specified, default value of 0 set to disable functionality.  Example, 365 not used in a year.
+
 audioFormat - Optional User specified audio format. (not enabled, only works under openhab 2.1 )
 The user can override the system default audio format with their prefered option. 
 "mp3" and "ogg" are the only audio formats that are supported.
 Once specified use "sys" to revert to system default since openhab caches cfg values.
             
-cacheExpiration - Cache expiration life
-Optional value,  this value determines the age in days that cache files will be purged. 
-If not specified, default value of 0 set to disable functionality
+
 
 Contents e.g. :
 ######################## Polly  Text-to-Speech Engine ########################
