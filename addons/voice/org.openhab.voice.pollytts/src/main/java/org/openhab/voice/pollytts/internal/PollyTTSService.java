@@ -43,6 +43,7 @@ public class PollyTTSService implements TTSService {
 
     // temp fix to function under 2.0.0 and disable audio format selection
     // to be removed
+    // private static final String version = OpenHAB.getVersion();
     private static final String version = "2.0.0";
 
     // Keys come from ConfigAdmin
@@ -154,8 +155,7 @@ public class PollyTTSService implements TTSService {
 
             AudioStream audioStream = null;
             /// adjust stream method based on version 2.0 old, 2.1+ new method
-            // String version = OpenHAB.getVersion();
-            String version = "2.0.0";
+
             if (version.equals("2.0.0")) {
                 audioStream = new PollyTTSAudioStream(cacheAudioFile);
             } else {
