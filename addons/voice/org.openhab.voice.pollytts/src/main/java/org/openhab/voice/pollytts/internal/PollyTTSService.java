@@ -91,7 +91,7 @@ public class PollyTTSService implements TTSService {
                 polly.setAudioFormat(val);
                 val = config.containsKey(CONFIG_EXPIRE) ? config.get(CONFIG_EXPIRE).toString() : "0";
                 polly.setExpireDate(Integer.parseInt(val));
-                successful = polly.PollyInit();
+                successful = polly.initPollyServiceInterface();
             }
             pollyTssImpl = initVoiceImplementation();
             audioFormats = initAudioFormats();

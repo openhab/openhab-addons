@@ -47,7 +47,7 @@ public class CreateTTSCache {
         polly.setAccessKey(accessKey);
         polly.setSecretKey(secretKey);
         polly.setRegionVal(regionVal);
-        polly.PollyInit();
+        polly.initPollyServiceInterface();
     }
 
     public int doMain(String[] args) throws IOException, TTSException {
