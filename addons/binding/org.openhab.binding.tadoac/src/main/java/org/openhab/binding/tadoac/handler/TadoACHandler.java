@@ -42,7 +42,6 @@ public class TadoACHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TadoACHandler.class);
     private TadoACSetting setting;
     private ScheduledFuture<?> sendFuture;
-    private ScheduledFuture<?> refreshFuture;
 
     public TadoACHandler(Thing thing) {
         super(thing);
@@ -209,7 +208,7 @@ public class TadoACHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         setting = new TadoACSetting();
-        refreshFuture = scheduler.scheduleAtFixedRate(() -> refreshSetting(), 15, 60, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> refreshSetting(), 15, 60, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
 
     }
