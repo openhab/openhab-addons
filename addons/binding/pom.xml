@@ -67,6 +67,7 @@
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
+    <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.synopanalyzer</module>
