@@ -1,9 +1,15 @@
 package org.openhab.binding.omnilink.handler;
 
+import java.math.BigInteger;
+
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,14 +17,30 @@ import com.digitaldan.jomnilinkII.Message;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
-import com.digitaldan.jomnilinkII.MessageTypes.statuses.ThermostatStatus;
+import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus;
 
 public class ThermostatHandler extends AbstractOmnilinkHandler {
+
+    private enum ThermostatStatus {
+        HEATING(0, 1),
+        COOLING(1, 2),
+        HUMIDIFYING(2, 3),
+        DEHUMIDIFYING(3, 4);
+
+        private final int bit;
+        private final int modeValue;
+
+        private ThermostatStatus(int bit, int modeValue) {
+            this.bit = bit;
+            this.modeValue = modeValue;
+        }
+    }
 
     private Logger logger = LoggerFactory.getLogger(ThermostatHandler.class);
 
     public ThermostatHandler(Thing thing) {
         super(thing);
+
     }
 
     @Override
@@ -26,21 +48,130 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
         // TODO Auto-generated method stub
     }
 
-    public void handleThermostatStatus(ThermostatStatus status) {
+    public void handleThermostatStatus(ExtendedThermostatStatus status) {
         logger.debug("Thermostat Status {}", status);
+        handleThermostatAlarms(status);
+        handleThermostatRunStatus(status);
+        handleTemperatureStatus(status);
+        handleHumidityStatus(status);
+        handleSystemModeStatus(status);
+        handleFanStatus(status);
+        handleHoldStatus(status);
+    }
 
+    private void handleFanStatus(ExtendedThermostatStatus status) {
+        /*
+         * The fan mode is as follows:
+         * 0 Auto
+         * 1 On
+         * 2 Cycle
+         */
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_FAN_MODE, new DecimalType(status.getFan()));
+    }
+
+    private void handleSystemModeStatus(ExtendedThermostatStatus status) {
+        /*
+         * The system mode is as follows:
+         * 0 Off
+         * 1 Heat
+         * 2 Cool
+         * 3 Auto
+         * 4 Emergency heat
+         */
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_SYSTEM_MODE, new DecimalType(status.getMode()));
+    }
+
+    private void handleHumidityStatus(ExtendedThermostatStatus status) {
+        // Humidity is reported in the Omni temperature format where Fahrenheit temperatures 0-100 correspond to 0-100%
+        // relative humidity
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_HUMIDITY,
+                new DecimalType(TemperatureFormat.FAHRENHEIT.omniToFormat(status.getHumidity())));
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_HUMIDIFY_SETPOINT,
+                new DecimalType(TemperatureFormat.FAHRENHEIT.omniToFormat(status.getHumiditySetpoint())));
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_DEHUMIDIFY_SETPOINT,
+                new DecimalType(TemperatureFormat.FAHRENHEIT.omniToFormat(status.getDehumiditySetpoint())));
+    }
+
+    private void handleTemperatureStatus(ExtendedThermostatStatus status) {
+        TemperatureFormat temperatureFormat = getOmnilinkBridgeHander().getTemperatureFormat();
+
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_TEMP,
+                new DecimalType(temperatureFormat.omniToFormat(status.getTemperature())));
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_OUTDOOR_TEMP,
+                new DecimalType(temperatureFormat.omniToFormat(status.getOutdoorTemp())));
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_COOL_SETPOINT,
+                new DecimalType(temperatureFormat.omniToFormat(status.getCoolSetpoint())));
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_HEAT_SETPOINT,
+                new DecimalType(temperatureFormat.omniToFormat(status.getHeatSetpotint())));
+    }
+
+    private void handleHoldStatus(ExtendedThermostatStatus status) {
+        /*
+         * The hold status is as follows:
+         * 0 Off
+         * 1 Hold
+         * 2 Vacation Hold
+         * Other Hold
+         */
+        int holdStatus = status.getHold();
+        if (holdStatus > 2) {
+            holdStatus = 1;
+        }
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_HOLD_MODE, new DecimalType(holdStatus));
+    }
+
+    private void handleThermostatRunStatus(ExtendedThermostatStatus status) {
+        /*
+         * The bits in the heating/cooling/humidifying/dehumidifying status byte are shown below. The corresponding bit
+         * is set if the
+         * thermostat is currently performing that action.
+         * Bit 0 Heating
+         * Bit 1 Cooling
+         * Bit 2 Humidifying
+         * Bit 3 Dehumidifying
+         */
+
+        BigInteger thermostatStatus = BigInteger.valueOf(status.getExtendedStatus());
+        if (thermostatStatus.testBit(ThermostatStatus.HEATING.bit)) {
+            updateState(OmnilinkBindingConstants.CHANNEL_THERMO_STATUS,
+                    new DecimalType(ThermostatStatus.HEATING.modeValue));
+        } else if (thermostatStatus.testBit(ThermostatStatus.COOLING.bit)) {
+            updateState(OmnilinkBindingConstants.CHANNEL_THERMO_STATUS,
+                    new DecimalType(ThermostatStatus.COOLING.modeValue));
+        } else if (thermostatStatus.testBit(ThermostatStatus.HUMIDIFYING.bit)) {
+            updateState(OmnilinkBindingConstants.CHANNEL_THERMO_STATUS,
+                    new DecimalType(ThermostatStatus.HUMIDIFYING.modeValue));
+        } else if (thermostatStatus.testBit(ThermostatStatus.DEHUMIDIFYING.bit)) {
+            updateState(OmnilinkBindingConstants.CHANNEL_THERMO_STATUS,
+                    new DecimalType(ThermostatStatus.DEHUMIDIFYING.modeValue));
+        } else {
+            updateState(OmnilinkBindingConstants.CHANNEL_THERMO_STATUS, new DecimalType(0));
+        }
+    }
+
+    private void handleThermostatAlarms(ExtendedThermostatStatus status) {
+        BigInteger thermostatAlarms = BigInteger.valueOf(status.getStatus());
+
+        // Communications Failure is bit 0
+        State communicationsFailure = thermostatAlarms.testBit(0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+
+        // Freeze Alarm is bit 1
+        State freezeAlarm = thermostatAlarms.testBit(1) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_COMM_FAILURE, communicationsFailure);
+        updateState(OmnilinkBindingConstants.CHANNEL_THERMO_FREEZE_ALARM, freezeAlarm);
     }
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int unitId = Integer.parseInt(channelParts[2]);
+        int thermostatID = Integer.parseInt(channelParts[2]);
 
         try {
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_THERMO, unitId,
-                    unitId, false);
-            handleThermostatStatus((ThermostatStatus) objStatus.getStatuses()[0]);
+            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_THERMO,
+                    thermostatID, thermostatID, true);
+            handleThermostatStatus((ExtendedThermostatStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing unit:", e);

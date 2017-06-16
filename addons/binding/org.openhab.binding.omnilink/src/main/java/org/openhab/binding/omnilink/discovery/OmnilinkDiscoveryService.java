@@ -61,7 +61,6 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         logger.debug("Starting scan");
         areas = new LinkedList<>();
-        // OBJ_TYPE_BUTTON
         try {
             SystemInformation info = bridgeHandler.reqSystemInformation();
             isLumina = info.getModel() == 36 || info.getModel() == 37;

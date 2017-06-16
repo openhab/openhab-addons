@@ -60,19 +60,19 @@ public class OmnilinkBindingConstants {
 
     // thermostats
 
-    public final static String CHANNEL_THERMO_FREEZE_ALARM = "thermostat_freeze_alarm";
-    public final static String CHANNEL_THERMO_COMM_FAILURE = "thermostat_comm_failure";
-    public final static String CHANNEL_THERMO_STATUS = "thermostat_status";
-    public final static String CHANNEL_THERMO_TEMP = "thermostat_temperature";
-    public final static String CHANNEL_THERMO_OUTDOOR_TEMP = "thermostat_outdoor_temperature";
-    public final static String CHANNEL_THERMO_HUMIDITY = "thermostat_humidity";
-    public final static String CHANNEL_THERMO_HUMIDITY_SETPOINT = "thermostat_humidity_setpoint";
-    public final static String CHANNEL_THERMO_DEHUMIDITY_SETPOINT = "thermostat_dehumidity_setpoint";
-    public final static String CHANNEL_THERMO_SYSTEM_MODE = "thermostat_system_mode";
-    public final static String CHANNEL_THERMO_FAN_MODE = "thermostat_fan_mode";
-    public final static String CHANNEL_THERMO_HOLD_STATUS = "thermostat_hold_status";
-    public final static String CHANNEL_THERMO_COOL_SETPOINT = "thermostat_cool_setpoint";
-    public final static String CHANNEL_THERMO_HEAT_SETPOINT = "thermostat_heat_setpoint";
+    public final static String CHANNEL_THERMO_FREEZE_ALARM = "freeze_alarm";
+    public final static String CHANNEL_THERMO_COMM_FAILURE = "comm_failure";
+    public final static String CHANNEL_THERMO_STATUS = "status";
+    public final static String CHANNEL_THERMO_TEMP = "temperature";
+    public final static String CHANNEL_THERMO_OUTDOOR_TEMP = "outdoor_temperature";
+    public final static String CHANNEL_THERMO_HUMIDITY = "humidity";
+    public final static String CHANNEL_THERMO_HUMIDIFY_SETPOINT = "humidify_setpoint";
+    public final static String CHANNEL_THERMO_DEHUMIDIFY_SETPOINT = "dehumidify_setpoint";
+    public final static String CHANNEL_THERMO_SYSTEM_MODE = "system_mode";
+    public final static String CHANNEL_THERMO_FAN_MODE = "fan_mode";
+    public final static String CHANNEL_THERMO_HOLD_MODE = "hold_mode";
+    public final static String CHANNEL_THERMO_COOL_SETPOINT = "cool_setpoint";
+    public final static String CHANNEL_THERMO_HEAT_SETPOINT = "heat_setpoint";
 
     // thing configuration and properties keys
     public final static String THING_PROPERTIES_NAME = "name";
