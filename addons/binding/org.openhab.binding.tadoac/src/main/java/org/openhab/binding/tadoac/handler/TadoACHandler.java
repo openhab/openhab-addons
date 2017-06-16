@@ -133,8 +133,8 @@ public class TadoACHandler extends BaseThingHandler {
             connector.setSetting(homeid, zoneid, setting);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("could not send state", e);
+            logger.info("could not send state", e);
+            updateStatus(ThingStatus.OFFLINE);
         } finally {
             sendFuture = null;
         }
@@ -204,8 +204,10 @@ public class TadoACHandler extends BaseThingHandler {
                 setting.setTemperature(newTemp);
                 updateState(CHANNEL_TEMP, new DecimalType(newTemp.getCelsius()));
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.error("error while polling for new state", e);
+            logger.info("error while polling for new state", e);
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
