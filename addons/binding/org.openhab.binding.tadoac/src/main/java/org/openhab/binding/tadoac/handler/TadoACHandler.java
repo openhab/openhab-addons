@@ -138,7 +138,6 @@ public class TadoACHandler extends BaseThingHandler {
         } finally {
             sendFuture = null;
         }
-
     }
 
     private synchronized void refreshSetting() {
@@ -215,7 +214,5 @@ public class TadoACHandler extends BaseThingHandler {
     public void initialize() {
         setting = new TadoACSetting();
         scheduler.scheduleAtFixedRate(() -> refreshSetting(), 15, 60, TimeUnit.SECONDS);
-        updateStatus(ThingStatus.ONLINE);
-
     }
 }
