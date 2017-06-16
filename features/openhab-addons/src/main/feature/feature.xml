@@ -279,6 +279,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.silvercrestwifisocket/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-sleepiq" description="SleepIQ Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sleepiq/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-smaenergymeter" description="SMA Energy Monitor Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.smaenergymeter/${project.version}</bundle>
