@@ -11,7 +11,6 @@ Bundle-ClassPath: .,
  lib/tadoac-1.0.jar
 Import-Package: 
  com.google.gson,
- com.google.gson.internal,
  org.apache.commons.logging,
  org.apache.commons.logging.impl,
  org.eclipse.smarthome.config.core,
