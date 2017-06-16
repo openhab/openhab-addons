@@ -27,7 +27,7 @@ public class TankerkoenigBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_TANKSTELLE = new ThingTypeUID(BINDING_ID, "station");
-    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "config");
+    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "webservice");
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_TANKSTELLE);
@@ -41,6 +41,6 @@ public class TankerkoenigBindingConstants {
     public static final String CONFIG_LOCATION_ID = "locationid";
     public static final String CONFIG_API_KEY = "apikey";
     public static final String CONFIG_REFRESH = "refresh";
-    public static final String CONFIG_USE_OPENINGTIME = "useOpeningTime";
+    public static final String CONFIG_MODE_OPENINGTIME = "modeOpeningTime";
 
 }

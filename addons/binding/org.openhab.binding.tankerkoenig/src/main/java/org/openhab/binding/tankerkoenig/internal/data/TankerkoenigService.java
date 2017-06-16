@@ -14,7 +14,6 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigDetailResult;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigDetailResultDeserializer;
@@ -33,29 +32,20 @@ import com.google.gson.GsonBuilder;
  */
 public class TankerkoenigService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final GsonBuilder GSON_BUILDER = new GsonBuilder().registerTypeAdapter(TankerkoenigListResult.class,
-            new CustomTankerkoenigListResultDeserializer());;
-    private final Gson GSON = GSON_BUILDER.create();
-    private final GsonBuilder GSON_BUILDER_DETAIL = new GsonBuilder()
+    private final GsonBuilder gson_Builder = new GsonBuilder().registerTypeAdapter(TankerkoenigListResult.class,
+            new CustomTankerkoenigListResultDeserializer());
+    private final Gson gson = gson_Builder.create();
+    private final GsonBuilder gson_Builder_Detail = new GsonBuilder()
             .registerTypeAdapter(TankerkoenigDetailResult.class, new CustomTankerkoenigDetailResultDeserializer());;
-    private final Gson GSON_DETAIL = GSON_BUILDER_DETAIL.create();
+    private final Gson gson_Detail = gson_Builder_Detail.create();
     private static final int REQUEST_TIMEOUT = 5000;
 
     public TankerkoenigListResult getStationListData(String apikey, String locationIDs, String userAgent) {
         return this.getTankerkoenigListResult(apikey, locationIDs, userAgent);
     }
 
-    public OpeningTimes getStationDetailData(String apikey, String locationID, String userAgent) {
-        TankerkoenigDetailResult detailresult = this.getTankerkoenigDetailResult(apikey, locationID, userAgent);
-        if (detailresult.isOk()) {
-            OpeningTimes openingtimes = new OpeningTimes(locationID, detailresult.iswholeDay(),
-                    detailresult.getOpeningtimes());
-            logger.debug("Found opening times for stationID: {}", locationID);
-            return openingtimes;
-        } else {
-            // no valid response for detail data
-            return null;
-        }
+    public TankerkoenigDetailResult getStationDetailData(String apikey, String locationID, String userAgent) {
+        return this.getTankerkoenigDetailResult(apikey, locationID, userAgent);
     }
 
     private String getResponseString(String apiKey, String locationIDs, String userAgent, boolean detail)
@@ -86,7 +76,7 @@ public class TankerkoenigService {
         try {
             jsonData = getResponseString(apikey, locationIDs, userAgent, false);
             logger.debug("json-String: {}", jsonData);
-            return GSON.fromJson(jsonData, TankerkoenigListResult.class);
+            return gson.fromJson(jsonData, TankerkoenigListResult.class);
         } catch (IOException e) {
             logger.debug("Error in getTankerkoenigListResult: ", e);
             // the return of an empty result will force the status-update OFFLINE!
@@ -99,7 +89,7 @@ public class TankerkoenigService {
         try {
             jsonData = getResponseString(apiKey, locationID, userAgent, true);
             logger.debug("getTankerkoenigDetailResult jsonData : {}", jsonData);
-            return GSON_DETAIL.fromJson(jsonData, TankerkoenigDetailResult.class);
+            return gson_Detail.fromJson(jsonData, TankerkoenigDetailResult.class);
         } catch (IOException e) {
             logger.debug("getTankerkoenigDetailResult IOException: ", e);
             // the return of an empty result will force the status-update OFFLINE!

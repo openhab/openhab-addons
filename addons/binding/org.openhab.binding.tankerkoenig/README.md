@@ -1,38 +1,88 @@
 # Tankerkönig Binding
 
-This binding uses the Tankerkönig API (https://www.tankerkoenig.de) for collecting gas price data of german gas stations.
-So special thanks at first to the creators of Tankerkönig providing an easy way getting data from the [MTS-K]  (Markttransparenzstelle für Kraftstoffe).
+The binding uses the Tankerkönig API (https://www.tankerkoenig.de) for collecting gas price data of german gas stations. 
+Special thanks to the creators of Tankerkönig for providing an easy way to get data from  the [MTS-K]  (Markttransparenzstelle für Kraftstoffe).
+
+Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-request. This binding incooperates those requests (minimum Refresh Intervall is 10 minutes, a webserver does handle maximum of 10 stations.
+The data will be updated for each Station individually after the initialisation and after each Refresh Intervall for all (open) stations (Note: changing the Webservice will cause the Refresh Intervall to restart).
+Additionally one may select the mode Opening-Times in which only those Stations get polled which are actually open.
+
 
 ## Preparation
 
-In order to use this binding you need to prepare two things:
-* Get your free Tankerkönig API key here: https://creativecommons.tankerkoenig.de/
-* Search for the gas station IDs of your favourite gas stations: https://creativecommons.tankerkoenig.de/configurator/index.html
-On this map you can drag the red marker to the location of your gas station. Select the gas stations and click "Tankstellen übernehmen" on the right. This will donwload a file where you can find the location IDs. For example:
-a7cdd9cf-b467-4aac-8eab-d662f082511e
+In order to use this binding one needs to prepare:
 
-## How it works
+-a personal API-Key
 
-The binding supports two types of things.
-First of all you need the Tankerkönig Webservice which is implemented as a bridge. This bridge holds information such as the API key and the Refresh Intervall. 
-To see some gas prices you need to add a Station thing, which needs to have the gas station ID you prepared in step "Preparation". Additionally you have to select the Tankerkönig Webservice (the bridge) you configured right before.
+Demand free Tankerkönig API key from: https://creativecommons.tankerkoenig.de/  Select the tab "API-Key".
 
-One Tankerkönig Webservice (the bridge) can hold up to 10 Station things.
+-LocationIDs of the selected gas stations
 
-When the Tankerkönig Webservice updates the data, it uses a single API request to fetch the data of all the gas stations.
+Search for the gas station IDs here: https://creativecommons.tankerkoenig.de/configurator/index.html 
+Drag the red marker on the map to the rough location of desired gas stations. Select the gas stations and click "Tankstellen übernehmen" on the right. This will donwload a file holding the location IDs. For example: a7cdd9cf-b467-4aac-8eab-d662f082511e
 
-## Available prices
+## Supported Things
 
-The prices itself are represented by Channels: Diesel, E5 and E10
+This binding supports:
+
+-Webservice (bridge)
+
+-Station (thing)
+
+## Discovery
+
+The binding provides no discovery. The desired Webservice and Stations must be configured manually or via a things file.
+
+## Binding configuration
+
+The binding has no configuration options itself, all configuration is done at 'Bridge' and 'Things' level.
+
+## Thing configuration
+
+The Webservice (bridge) needs to be configured with the personal API-Key, the desired Refresh Intervall (the time intervall between price-updates, default 60 minutes, minimum 10 minutes) and the Opening-Times mode selection (in this mode price-updates are only requested from stations that are actually open). 
+A single Webservice can handle up to 10 Stations.
+ 
+Each Station needs to be configured with a LocationID and the Webservice to which it is linked.
+
+## Channels
+
+The binding introduces the following channels:
+
+| Channel ID                                      | Channel Description                                          | Supported item type | Advanced |
+|-------------------------------------------------|--------------------------------------------------------------|---------------------|----------|
+| e10                                             | price of e10                                                 | Number              | False    |
+| e5                                              | price of e5                                                  | Number              | False    |
+| diesel                                          | price of diesel                                              | Number              | False    |
 
 
-## Best way to set up
+## Full example
 
-Since the binding should not claim the Tankerkönig API too much (and avoid a temporary ban), it's implemented that there are as few requests as possible.
-The data will be updated 30 seconds after the binding initialises, every time you change something at the Webservice (bridge) (changing the Webservice will also cause the refresh intervall to restart) and of course with the Refresh Intervall.
-Once setup with one Station the Webservice will continue to poll data using the selected Refresh Intervall. When adding additional Stations this schedule will be maintained, therefore it might take some time until the newly added Station gets updated.
+Note: All apikeys and locationids are only examples!
 
-Additionally you may select the mode Opening-Times in which only those Stations get polled which are actually open. 
+tankerkoenig.things:
+
+```
+Bridge tankerkoenig:webservice:WebserviceName "MyWebserviceName" [ apikey="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", refresh= 60, modeOpeningTime =false ] {
+        Thing station StationName1 "MyStationName1" @ "GasStations"[ locationid = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" ]
+        Thing station StationName2 "MyStationName2" @ "GasStations"[ locationid = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" ]
+}
+```
+
+
+tankerkoenig.items:
+
+```
+Number E10_1 "E10 [%.3f €]" { channel="tankerkoenig:station:StationName1:e10" }
+Number E5_1 "E5 [%.3f €]"  { channel="tankerkoenig:station:StationName1:e5" }
+Number Diesel_1 "Diesel [%.3f €]" { channel="tankerkoenig:station:StationName1:diesel"}
+Number E10_2 "E10 [%.3f €]" { channel="tankerkoenig:station:StationName2:e10"}
+Number E5_2 "E5 [%.3f €]" { channel="tankerkoenig:station:StationName2:e5"}
+Number Diesel_2 "Diesel [%.3f €]" { channel="tankerkoenig:station:StationName2:diesel"}
+```
+
+## Tankerkönig API
+
+*  https://creativecommons.tankerkoenig.de/  (sorry, only available in german)
 
    [MTS-K]: <https://www.bundeskartellamt.de/DE/Wirtschaftsbereiche/Mineral%C3%B6l/MTS-Kraftstoffe/Verbraucher/verbraucher_node.html>
 

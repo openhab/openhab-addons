@@ -25,30 +25,32 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
+import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigDetailResult;
 import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TankerkoenigHandler} is responsible for handling commands, which are
+ * The {@link StationHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Dennis Dollinger
  * @author Jürgen Baginski
  */
-public class TankerkoenigHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(TankerkoenigHandler.class);
+public class StationHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(StationHandler.class);
 
     private String apiKey;
-    private boolean useOpeningTime;
+    private boolean modeOpeningTime;
     private String locationID;
     private OpeningTimes openingTimes;
     private String userAgent;
     private final TankerkoenigService service = new TankerkoenigService();
+    private TankerkoenigDetailResult result;
 
     private ScheduledFuture<?> pollingJob;
 
-    public TankerkoenigHandler(Thing thing) {
+    public StationHandler(Thing thing) {
         super(thing);
     }
 
@@ -69,10 +71,10 @@ public class TankerkoenigHandler extends BaseThingHandler {
                     "Could not find bridge (tankerkoenig config). Did you select one?");
             return;
         }
-        BridgeHandler handler = (BridgeHandler) b.getHandler();
+        WebserviceHandler handler = (WebserviceHandler) b.getHandler();
         userAgent = handler.getUserAgent();
         setApiKey(handler.getApiKey());
-        setUseOpeningTime(handler.isUseOpeningTime());
+        setModeOpeningTime(handler.isModeOpeningTime());
         if (getBridge().getThings().size() > 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The limitation of station things for one tankerkoenig webservice (the bridge) is limited to 10");
@@ -128,12 +130,24 @@ public class TankerkoenigHandler extends BaseThingHandler {
      * Updates the detail-data from tankerkoenig api, actually only the opening times are used.
      */
     public void updateDetailData() {
-        setOpeningTimes(service.getStationDetailData(this.getApiKey(), locationID, userAgent));
-        if (!(openingTimes == null)) {
+        result = service.getStationDetailData(this.getApiKey(), locationID, userAgent);
+
+        if (result.isOk() == true) {
+            setOpeningTimes(result.getOpeningTimes());
+            StationHandler tkh = (StationHandler) this.getThing().getHandler();
+            LittleStation s = result.getLittleStation();
+            if (s == null) {
+                logger.debug("Station with id {}  is not updated!", tkh.getLocationID());
+            } else {
+                tkh.updateData(s);
+            }
             updateStatus(ThingStatus.ONLINE);
+            WebserviceHandler handler = (WebserviceHandler) getBridge().getHandler();
+            handler.updateStatus(ThingStatus.ONLINE);
             logger.debug("updateDetailData openingTimes: {}", this.openingTimes);
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Empty return or no internet connection");
         }
     }
 
@@ -153,12 +167,12 @@ public class TankerkoenigHandler extends BaseThingHandler {
         this.apiKey = apiKey;
     }
 
-    public boolean isUseOpeningTime() {
-        return useOpeningTime;
+    public boolean isModeOpeningTime() {
+        return modeOpeningTime;
     }
 
-    public void setUseOpeningTime(boolean use_OpeningTime) {
-        this.useOpeningTime = use_OpeningTime;
+    public void setModeOpeningTime(boolean modeOpeningTime) {
+        this.modeOpeningTime = modeOpeningTime;
     }
 
     public OpeningTimes getOpeningTimes() {

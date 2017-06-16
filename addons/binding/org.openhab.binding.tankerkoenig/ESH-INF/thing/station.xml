@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
         <thing-type id="station">
             <supported-bridge-type-refs>
-                <bridge-type-ref id="config" />
+                <bridge-type-ref id="webservice" />
             </supported-bridge-type-refs>
             <label>Gas-Station</label>
             <description>Provides the prices of gas types E5-, E10- and Diesel of that station.</description>

@@ -38,18 +38,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BridgeHandler} is responsible for handling the things (stations)
+ * The {@link WebserviceHandler} is responsible for handling the things (stations)
  *
  *
  * @author Dennis Dollinger
  * @author Jürgen Baginski
  */
-public class BridgeHandler extends BaseBridgeHandler {
+public class WebserviceHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private String apiKey;
     private int refreshInterval;
-    private boolean useOpeningTime;
+    private boolean modeOpeningTime;
     private String userAgent;
     private final TankerkoenigService service = new TankerkoenigService();
 
@@ -59,7 +59,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     private ScheduledFuture<?> pollingJob;
 
-    public BridgeHandler(Bridge bridge) {
+    public WebserviceHandler(Bridge bridge) {
         super(bridge);
         stationMap = new HashMap<String, LittleStation>();
     }
@@ -75,7 +75,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         Configuration config = getThing().getConfiguration();
         setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
         setRefreshInterval(((BigDecimal) config.get(TankerkoenigBindingConstants.CONFIG_REFRESH)).intValue());
-        setUseOpeningTime((boolean) config.get(TankerkoenigBindingConstants.CONFIG_USE_OPENINGTIME));
+        setModeOpeningTime((boolean) config.get(TankerkoenigBindingConstants.CONFIG_MODE_OPENINGTIME));
         // set the UserAgent, this string is used by TankerkoenigService
         // to set a custom UserAgent for the WebRequest as specifically requested by Tankerkoening.de!
         StringBuilder sb = new StringBuilder();
@@ -100,7 +100,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE);
                 }
             }
-        }, 30, pollingPeriod * 60, TimeUnit.SECONDS);
+        }, pollingPeriod, pollingPeriod, TimeUnit.MINUTES);
         logger.debug("Refresh job scheduled to run every {} min. for '{}'", pollingPeriod, getThing().getUID());
     }
 
@@ -111,6 +111,11 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    @Override
+    public void updateStatus(ThingStatus status) {
+        updateStatus(status, ThingStatusDetail.NONE, null);
+    }
+
     /***
      * Updates the data from tankerkoenig api (no update on things)
      */
@@ -118,7 +123,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         // Get data
         try {
             String locationIDsString = "";
-            if (useOpeningTime) {
+            if (modeOpeningTime) {
                 logger.debug("Opening times are used");
                 locationIDsString = generateOpenLocationIDsString();
             } else {
@@ -155,10 +160,10 @@ public class BridgeHandler extends BaseBridgeHandler {
     public void updateStationThings() {
         logger.debug("UpdateStationThings: getThing().getThings().size {}", getThing().getThings().size());
         for (Thing thing : getThing().getThings()) {
-            TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
+            StationHandler tkh = (StationHandler) thing.getHandler();
             LittleStation s = this.stationMap.get(tkh.getLocationID());
             if (s == null) {
-                logger.debug("Station with id {}  is not updated, because it is not open!", tkh.getLocationID());
+                logger.debug("Station with id {}  is not updated!", tkh.getLocationID());
             } else {
                 tkh.updateData(s);
             }
@@ -173,7 +178,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     private String generateLocationIDsString() {
         StringBuilder sb = new StringBuilder();
         for (Thing thing : getThing().getThings()) {
-            TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
+            StationHandler tkh = (StationHandler) thing.getHandler();
             if (sb.length() > 0) {
                 sb.append(",");
             }
@@ -196,7 +201,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         for (Thing thing : getThing().getThings()) {
             String start = "00:00";
             String ende = "00:00";
-            TankerkoenigHandler tkh = (TankerkoenigHandler) thing.getHandler();
+            StationHandler tkh = (StationHandler) thing.getHandler();
             Boolean foundIt = false;
             OpeningTimes oTimes = tkh.getOpeningTimes();
             // oTimes could be NULL, assume wholeDay open in this case!
@@ -330,12 +335,12 @@ public class BridgeHandler extends BaseBridgeHandler {
         this.tankerkoenigListResult = tankerkoenigListResult;
     }
 
-    public boolean isUseOpeningTime() {
-        return useOpeningTime;
+    public boolean isModeOpeningTime() {
+        return modeOpeningTime;
     }
 
-    public void setUseOpeningTime(boolean useOpeningTime) {
-        this.useOpeningTime = useOpeningTime;
+    public void setModeOpeningTime(boolean modeOpeningTime) {
+        this.modeOpeningTime = modeOpeningTime;
     }
 
     public String getUserAgent() {

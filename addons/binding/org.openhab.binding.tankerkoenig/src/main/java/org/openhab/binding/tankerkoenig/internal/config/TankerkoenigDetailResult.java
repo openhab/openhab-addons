@@ -22,7 +22,8 @@ public class TankerkoenigDetailResult {
 
     private boolean ok;
     private boolean wholeDay;
-    private OpeningTime[] openingtimes;
+    private OpeningTimes openingTimes;
+    private LittleStation littleStation;
 
     public boolean isOk() {
         return ok;
@@ -40,17 +41,25 @@ public class TankerkoenigDetailResult {
         this.wholeDay = WholeDay;
     }
 
-    public OpeningTime[] getOpeningtimes() {
-        return openingtimes;
-    }
-
-    public void setOpeningtimes(OpeningTime[] openingtimes) {
-        this.openingtimes = openingtimes;
-    }
-
     public static TankerkoenigDetailResult emptyResult() {
         TankerkoenigDetailResult emptyResult = new TankerkoenigDetailResult();
         emptyResult.setOk(false);
         return emptyResult;
+    }
+
+    public LittleStation getLittleStation() {
+        return littleStation;
+    }
+
+    public void setLittleStation(LittleStation littleStation) {
+        this.littleStation = littleStation;
+    }
+
+    public OpeningTimes getOpeningTimes() {
+        return openingTimes;
+    }
+
+    public void setOpeningTimes(OpeningTimes openingTimes) {
+        this.openingTimes = openingTimes;
     }
 }

@@ -18,8 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
-import org.openhab.binding.tankerkoenig.handler.BridgeHandler;
-import org.openhab.binding.tankerkoenig.handler.TankerkoenigHandler;
+import org.openhab.binding.tankerkoenig.handler.StationHandler;
+import org.openhab.binding.tankerkoenig.handler.WebserviceHandler;
 
 import com.google.common.collect.Sets;
 
@@ -42,10 +42,10 @@ public class TankerkoenigHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
-            BridgeHandler handler = new BridgeHandler((Bridge) thing);
+            WebserviceHandler handler = new WebserviceHandler((Bridge) thing);
             return handler;
         } else if (thingTypeUID.equals(THING_TYPE_TANKSTELLE)) {
-            return new TankerkoenigHandler(thing);
+            return new StationHandler(thing);
         }
         return null;
     }
