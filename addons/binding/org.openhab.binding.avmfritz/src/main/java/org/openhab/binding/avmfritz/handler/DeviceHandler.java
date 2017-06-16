@@ -39,7 +39,6 @@ import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.TemperatureModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,7 +184,6 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 break;
             case CHANNEL_RADIATOR_MODE:
                 if (command instanceof StringType) {
-                    String mode = command.toString();
                     if (command.equals(MODE_ON)) {
                         BigDecimal settemp = (BigDecimal) getThing().getConfiguration().get(THING_SETTEMP);
                         fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(settemp));
@@ -271,8 +269,7 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
             if (device.isTempSensor() && device.getTemperature() != null) {
                 Channel channelTemp = thing.getChannel(CHANNEL_TEMP);
-                updateState(channelTemp.getUID(),
-                        new DecimalType(TemperatureModel.toCelsius(device.getTemperature().getCelsius())));
+                updateState(channelTemp.getUID(), new DecimalType(device.getTemperature().getCelsius()));
             }
             if (device.isPowermeter() && device.getPowermeter() != null) {
                 Channel channelEnergy = thing.getChannel(CHANNEL_ENERGY);

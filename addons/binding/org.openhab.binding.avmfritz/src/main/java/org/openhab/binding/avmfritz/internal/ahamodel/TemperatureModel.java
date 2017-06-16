@@ -19,7 +19,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * See {@link DevicelistModel}.
  *
  * @author Robert Bausdorf - Initial contribution
- * @author Christoph Weitkamp - Added new channels `locked`, `mode` and `radiator_mode`
+ * @author Christoph Weitkamp - Refactoring of temperature conversion from celsius to FRITZ!Box values
  *
  */
 @XmlRootElement(name = "temperature")
@@ -31,7 +31,7 @@ public class TemperatureModel {
     private BigDecimal offset;
 
     public BigDecimal getCelsius() {
-        return celsius;
+        return celsius != null ? TEMP_FACTOR.multiply(celsius) : BigDecimal.ZERO;
     }
 
     public void setCelsius(BigDecimal celsius) {
@@ -39,18 +39,11 @@ public class TemperatureModel {
     }
 
     public BigDecimal getOffset() {
-        return offset;
+        return offset != null ? TEMP_FACTOR.multiply(offset) : BigDecimal.ZERO;
     }
 
     public void setOffset(BigDecimal offset) {
         this.offset = offset;
-    }
-
-    public static BigDecimal toCelsius(BigDecimal fritzValue) {
-        if (fritzValue == null) {
-            return BigDecimal.ZERO;
-        }
-        return TEMP_FACTOR.multiply(fritzValue);
     }
 
     @Override

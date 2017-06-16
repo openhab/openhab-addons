@@ -41,7 +41,6 @@ import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.TemperatureModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateXmlCallback;
 import org.slf4j.Logger;
@@ -175,8 +174,7 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
             if (device.isTempSensor() && device.getTemperature() != null) {
                 Channel channelTemp = thing.getChannel(CHANNEL_TEMP);
-                updateState(channelTemp.getUID(),
-                        new DecimalType(TemperatureModel.toCelsius(device.getTemperature().getCelsius())));
+                updateState(channelTemp.getUID(), new DecimalType(device.getTemperature().getCelsius()));
             }
             if (device.isPowermeter() && device.getPowermeter() != null) {
                 Channel channelEnergy = thing.getChannel(CHANNEL_ENERGY);

@@ -29,6 +29,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class SwitchModel {
     public static final BigDecimal ON = BigDecimal.ONE;
     public static final BigDecimal OFF = BigDecimal.ZERO;
+    public static final String MODE_FRITZ_AUTO = "auto";
+    public static final String MODE_FRITZ_MANUAL = "manuell";
 
     private BigDecimal state;
     private String mode;
@@ -43,7 +45,7 @@ public class SwitchModel {
     }
 
     public String getMode() {
-        if (mode.equals("auto")) {
+        if (MODE_FRITZ_AUTO.equals(mode)) {
             return MODE_AUTO;
         } else {
             return MODE_MANUAL;
