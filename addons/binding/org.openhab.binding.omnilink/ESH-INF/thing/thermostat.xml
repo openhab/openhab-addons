@@ -10,7 +10,7 @@
         <description>Thermostat</description>
         <channels>
             <channel id="freeze_alarm" typeId="thermostat_freeze_alarm" />
-            <channel id="comm_alarm" typeId="thermostat_comm_failure" />
+            <channel id="comm_failure" typeId="thermostat_comm_failure" />
             <channel id="status" typeId="thermostat_status" />
             <channel id="temperature" typeId="thermostat_temperature" />
             <channel id="outdoor_temperature" typeId="thermostat_outdoor_temperature" />
@@ -21,7 +21,7 @@
             <channel id="dehumidify_setpoint" typeId="thermostat_dehumidify_setpoint" />
             <channel id="system_mode" typeId="thermostat_system_mode" />
             <channel id="fan_mode" typeId="thermostat_fan_mode" />
-            <channel id="hold_status" typeId="thermostat_hold_status" />
+            <channel id="hold_mode" typeId="thermostat_hold_mode" />
         </channels>
         <properties>
             <property name="name" />
