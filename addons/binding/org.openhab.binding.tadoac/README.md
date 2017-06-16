@@ -39,16 +39,16 @@ In this case 1234 is your home ID
 .things file
 
 ```
-tadoac:airconditioner:seelab [username="foo@bar.de", password="foobar", homeid=1234, zoneid=1]
+tadoac:airconditioner:myAircon [username="foo@bar.de", password="foobar", homeid=1234, zoneid=1]
 ```
 
 .items file
 
 ```
-Switch ac_power "Power" {channel="tadoac:airconditioner:seelab:power"}
-Number ac_mode "Mode "{channel="tadoac:airconditioner:seelab:mode"}
-Number ac_temperature "Temperature [%d°C]" {channel="tadoac:airconditioner:seelab:temperature"}
-Number ac_fanspeed "Fanspeed" {channel="tadoac:airconditioner:seelab:fanspeed"}
+Switch ac_power "Power" {channel="tadoac:airconditioner:myAircon:power"}
+Number ac_mode "Mode "{channel="tadoac:airconditioner:myAircon:mode"}
+Number ac_temperature "Temperature [%d°C]" {channel="tadoac:airconditioner:myAircon:temperature"}
+Number ac_fanspeed "Fanspeed" {channel="tadoac:airconditioner:myAircon:fanspeed"}
 ```
 
 .sitemap file
