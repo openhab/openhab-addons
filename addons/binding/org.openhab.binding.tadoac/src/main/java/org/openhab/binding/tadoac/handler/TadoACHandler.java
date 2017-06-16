@@ -156,14 +156,16 @@ public class TadoACHandler extends BaseThingHandler {
             TadoACSetting newSetting = connector.getSetting(homeid, zoneid);
 
             // Check each part and copy them to the previous state (No loss of data)
-            if (newSetting.getPower() != null) {
-                setting.setPower(newSetting.getPower());
-                updateState(CHANNEL_POWER, newSetting.getPower() == TadoACPower.ON ? OnOffType.ON : OnOffType.OFF);
+            TadoACPower newPower = newSetting.getPower();
+            if (newPower != null) {
+                setting.setPower(newPower);
+                updateState(CHANNEL_POWER, newPower == TadoACPower.ON ? OnOffType.ON : OnOffType.OFF);
             }
-            if (newSetting.getFanSpeed() != null) {
-                setting.setFanSpeed(newSetting.getFanSpeed());
+            TadoACFanSpeed newFanSpeed = newSetting.getFanSpeed();
+            if (newFanSpeed != null) {
+                setting.setFanSpeed(newFanSpeed);
                 int fanSpeed = 1;
-                switch (newSetting.getFanSpeed()) {
+                switch (newFanSpeed) {
                     case LOW:
                         fanSpeed = 1;
                         break;
@@ -178,10 +180,11 @@ public class TadoACHandler extends BaseThingHandler {
                 }
                 updateState(CHANNEL_FANSPEED, new DecimalType(fanSpeed));
             }
-            if (newSetting.getMode() != null) {
-                setting.setMode(newSetting.getMode());
+            TadoACMode newMode = newSetting.getMode();
+            if (newMode != null) {
+                setting.setMode(newMode);
                 int mode = 1;
-                switch (newSetting.getMode()) {
+                switch (newMode) {
                     case COOL:
                         mode = 1;
                         break;
@@ -196,9 +199,10 @@ public class TadoACHandler extends BaseThingHandler {
                 }
                 updateState(CHANNEL_MODE, new DecimalType(mode));
             }
-            if (newSetting.getTemperature() != null) {
-                setting.setTemperature(newSetting.getTemperature());
-                updateState(CHANNEL_TEMP, new DecimalType(newSetting.getTemperature().getCelsius()));
+            TadoACTemperature newTemp = newSetting.getTemperature();
+            if (newTemp != null) {
+                setting.setTemperature(newTemp);
+                updateState(CHANNEL_TEMP, new DecimalType(newTemp.getCelsius()));
             }
         } catch (Exception e) {
             logger.error("error while polling for new state", e);
