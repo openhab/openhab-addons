@@ -9,6 +9,8 @@
 package org.openhab.binding.loxone.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -27,6 +29,10 @@ import org.openhab.binding.loxone.core.LxJsonApp3.LxJsonControl;
  *
  */
 public class LxControlLightController extends LxControl implements LxControlStateListener {
+    /**
+     * Number of scenes supported by the Miniserver. Indexing starts with 0 to NUM_OF_SCENES-1.
+     */
+    public static final int NUM_OF_SCENES = 10;
 
     /**
      * A name by which Miniserver refers to light controller controls
@@ -59,7 +65,6 @@ public class LxControlLightController extends LxControl implements LxControlStat
     private static final String CMD_PREVIOUS_SCENE = "minus";
     private static final int SCENE_ALL_ON = 9;
 
-    public static final int NUM_OF_SCENES = 10;
     private Map<String, String> sceneNames = new TreeMap<String, String>();
     private boolean newSceneNames = false;
     private int movementScene = -1;
@@ -80,23 +85,13 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     LxControlLightController(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
             LxCategory category) {
+
         super(client, uuid, json, room, category);
 
         if (json.details != null) {
             this.movementScene = json.details.movementScene;
         }
-
-        if (json.subControls != null) {
-            for (LxJsonControl subControl : json.subControls.values()) {
-                // recursively create a subcontrol as a new control
-                subControl.room = json.room;
-                subControl.cat = json.cat;
-                LxUuid subId = new LxUuid(subControl.uuidAction);
-                LxControl control = LxControl.createControl(client, subId, subControl, room, category);
-                subControls.put(control.uuid, control);
-            }
-        }
-
+        // sub-controls of this control have been created when update() method was called by super class constructor
         LxControlState sceneListState = getState(STATE_SCENE_LIST);
         if (sceneListState != null) {
             sceneListState.addListener(this);
@@ -115,6 +110,7 @@ public class LxControlLightController extends LxControl implements LxControlStat
      */
     @Override
     void update(LxJsonControl json, LxContainer room, LxCategory category) {
+
         super.update(json, room, category);
 
         if (json.subControls != null) {
@@ -127,14 +123,20 @@ public class LxControlLightController extends LxControl implements LxControlStat
                     subControls.get(uuid).update(json, room, category);
                 } else {
                     LxControl control = LxControl.createControl(socketClient, uuid, subControl, room, category);
-                    subControls.put(control.uuid, control);
+                    if (control != null) {
+                        subControls.put(control.uuid, control);
+                    }
                 }
             }
         }
+        List<LxUuid> toRemove = new ArrayList<LxUuid>(subControls.size());
         for (LxControl control : subControls.values()) {
             if (!control.uuid.getUpdate()) {
-                subControls.remove(control.uuid);
+                toRemove.add(control.uuid);
             }
+        }
+        for (LxUuid id : toRemove) {
+            subControls.remove(id);
         }
     }
 

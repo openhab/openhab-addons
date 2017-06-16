@@ -247,7 +247,7 @@ class LxWsClient {
      *         true if connection request initiated correctly, false if not
      */
     boolean connect() {
-
+        logger.trace("[{}] connect() websocket", debugId);
         if (state != ClientState.IDLE) {
             close("Attempt to connect a websocket in non-idle state: " + state.toString());
             return false;
@@ -281,6 +281,7 @@ class LxWsClient {
      * After calling this method, client is ready to perform a new connection request with {@link #connect()}.
      */
     void disconnect() {
+        logger.trace("[{}] disconnect() websocket", debugId);
         if (wsClient != null) {
             try {
                 close("Disconnecting websocket client");
@@ -290,7 +291,7 @@ class LxWsClient {
                 logger.debug("[{}] Failed to stop websocket client, message = {}", debugId, e.getMessage());
             }
         } else {
-            logger.debug("[{}] Attempt to disconnect websocket client, but wsClient = null", debugId);
+            logger.debug("[{}] Attempt to disconnect websocket client, but wsClient == null", debugId);
         }
     }
 
@@ -302,6 +303,7 @@ class LxWsClient {
      *            reason for closing the websocket
      */
     private void close(String reason) {
+        logger.trace("[{}] close() websocket", debugId);
         if (socket != null) {
             synchronized (socket) {
                 if (socket.session != null) {
@@ -379,35 +381,8 @@ class LxWsClient {
         private ScheduledFuture<?> keepAlive = null;
         private LxWsBinaryHeader header = null;
 
-        @OnWebSocketClose
-        public void onClose(int statusCode, String reason) {
-            logger.debug("[{}] Websocket connection in state {} closed with code {} reason : {}", debugId,
-                    state.toString(), statusCode, reason);
-            if (keepAlive != null) {
-                keepAlive.cancel(true);
-                keepAlive = null;
-            }
-            if (state == ClientState.CLOSING) {
-                synchronized (this) {
-                    session = null;
-                }
-            } else if (state != ClientState.IDLE) {
-                LxServer.OfflineReason reasonCode;
-                if (statusCode == 1001) {
-                    reasonCode = LxServer.OfflineReason.IDLE_TIMEOUT;
-                } else if (statusCode == 4003) {
-                    reasonCode = LxServer.OfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS;
-                } else {
-                    reasonCode = LxServer.OfflineReason.COMMUNICATION_ERROR;
-                }
-                notifyMaster(EventType.SERVER_OFFLINE, reasonCode, reason);
-            }
-            setClientState(ClientState.IDLE);
-        }
-
         @OnWebSocketConnect
         public void onConnect(Session session) {
-
             if (state != ClientState.CONNECTING) {
                 logger.debug("[{}] Unexpected connect received on websocket in state {}", debugId, state.toString());
                 return;
@@ -431,14 +406,41 @@ class LxWsClient {
             keepAlive = SCHEDULER.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        logger.debug("[{}] sending keepalive message", debugId);
-                        sendString(CMD_KEEPALIVE);
-                    } catch (IOException e) {
-                        logger.debug("[{}] error sending keepalive message", debugId);
+                    if (state == ClientState.CLOSING || state == ClientState.IDLE || state == ClientState.CONNECTING) {
+                        stopKeepAlive();
+                    } else {
+                        try {
+                            logger.debug("[{}] sending keepalive message", debugId);
+                            sendString(CMD_KEEPALIVE);
+                        } catch (IOException e) {
+                            logger.debug("[{}] error sending keepalive message", debugId);
+                        }
                     }
                 }
             }, keepAlivePeriod, keepAlivePeriod, TimeUnit.SECONDS);
+        }
+
+        @OnWebSocketClose
+        public void onClose(int statusCode, String reason) {
+            logger.debug("[{}] Websocket connection in state {} closed with code {} reason : {}", debugId,
+                    state.toString(), statusCode, reason);
+            stopKeepAlive();
+            if (state == ClientState.CLOSING) {
+                synchronized (this) {
+                    session = null;
+                }
+            } else if (state != ClientState.IDLE) {
+                LxServer.OfflineReason reasonCode;
+                if (statusCode == 1001) {
+                    reasonCode = LxServer.OfflineReason.IDLE_TIMEOUT;
+                } else if (statusCode == 4003) {
+                    reasonCode = LxServer.OfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS;
+                } else {
+                    reasonCode = LxServer.OfflineReason.COMMUNICATION_ERROR;
+                }
+                notifyMaster(EventType.SERVER_OFFLINE, reasonCode, reason);
+            }
+            setClientState(ClientState.IDLE);
         }
 
         @OnWebSocketError
@@ -578,6 +580,14 @@ class LxWsClient {
             } catch (IOException e) {
                 notifyMaster(EventType.SERVER_OFFLINE, LxServer.OfflineReason.COMMUNICATION_ERROR, null);
                 close("Communication error when processing message : " + e.getMessage());
+            }
+        }
+
+        private void stopKeepAlive() {
+            logger.trace("[{}] stopping keepalives in state {}", debugId, state.toString());
+            if (keepAlive != null) {
+                keepAlive.cancel(true);
+                keepAlive = null;
             }
         }
 

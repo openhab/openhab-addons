@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openhab.binding.loxone.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class LxServer {
     private final InetAddress host;
     private final int port;
     private final String user, password;
-    private String miniserverName, projectName, location, serial, cloudAddress;
+    private String miniserverName = "", projectName = "", location = "", serial = "", cloudAddress = "";
     @SuppressWarnings("unused")
     private String roomTitle, categoryTitle;
     private int firstConDelay = 1, connectErrDelay = 10, userErrorDelay = 60, comErrorDelay = 30;
@@ -75,7 +76,9 @@ public class LxServer {
     private BlockingQueue<LxServerEvent> queue = new LinkedBlockingQueue<LxServerEvent>();
 
     private Logger logger = LoggerFactory.getLogger(LxServer.class);
-    private static int debugId = 1;
+
+    private int debugId;
+    private static AtomicInteger staticDebugId = new AtomicInteger(1);
 
     /**
      * Reasons why Miniserver may be not reachable
@@ -135,7 +138,9 @@ public class LxServer {
         this.port = port;
         this.user = user;
         this.password = password;
-        socketClient = new LxWsClient(++debugId, queue, host, port, user, password);
+
+        debugId = staticDebugId.getAndIncrement();
+        socketClient = new LxWsClient(debugId, queue, host, port, user, password);
     }
 
     /**
@@ -200,7 +205,9 @@ public class LxServer {
      */
     public void update(int firstConDelay, int keepAlivePeriod, int connectErrDelay, int userErrorDelay,
             int comErrorDelay, int maxBinMsgSize, int maxTextMsgSize) {
+
         logger.debug("[{}] Server update configuration", debugId);
+
         if (firstConDelay >= 0) {
             this.firstConDelay = firstConDelay;
         }
@@ -397,6 +404,7 @@ public class LxServer {
                         LxServerEvent wsMsg = queue.take();
                         EventType event = wsMsg.getEvent();
                         logger.trace("[{}] Server received event: {}", debugId, event.toString());
+
                         switch (event) {
                             case RECEIVED_CONFIG:
                                 LxJsonApp3 config = (LxJsonApp3) wsMsg.getObject();
@@ -489,6 +497,7 @@ public class LxServer {
      *            parsed JSON LoxApp3.json file
      */
     private void updateConfig(LxJsonApp3 config) {
+        logger.trace("[{}] Updating configuration from Miniserver", debugId);
 
         for (LxUuid id : uuids) {
             id.setUpdate(false);
@@ -497,26 +506,45 @@ public class LxServer {
             id.setUpdate(false);
         }
 
-        miniserverName = buildName(config.msInfo.msName);
-        projectName = buildName(config.msInfo.projectName);
-        location = buildName(config.msInfo.location);
-        serial = buildName(config.msInfo.serialNr);
-        roomTitle = buildName(config.msInfo.roomTitle);
-        categoryTitle = buildName(config.msInfo.catTitle);
-        cloudAddress = buildName(config.msInfo.remoteUrl);
+        if (config.msInfo != null) {
+            logger.trace("[{}] updating global config", debugId);
+            miniserverName = buildName(config.msInfo.msName);
+            projectName = buildName(config.msInfo.projectName);
+            location = buildName(config.msInfo.location);
+            serial = buildName(config.msInfo.serialNr);
+            roomTitle = buildName(config.msInfo.roomTitle);
+            categoryTitle = buildName(config.msInfo.catTitle);
+            cloudAddress = buildName(config.msInfo.remoteUrl);
+        } else {
+            logger.warn("[{}] missing global configuration msInfo on Loxone", debugId);
+        }
 
         // create internal structures based on configuration file
-        for (LxJsonApp3.LxJsonRoom room : config.rooms.values()) {
-            addOrUpdateRoom(new LxUuid(room.uuid), room.name);
+        if (config.rooms != null) {
+            logger.trace("[{}] creating rooms", debugId);
+            for (LxJsonApp3.LxJsonRoom room : config.rooms.values()) {
+                addOrUpdateRoom(new LxUuid(room.uuid), room.name);
+            }
         }
-        for (LxJsonApp3.LxJsonCat cat : config.cats.values()) {
-            addOrUpdateCategory(new LxUuid(cat.uuid), cat.name, cat.type);
+        if (config.cats != null) {
+            logger.trace("[{}] creating categories", debugId);
+            for (LxJsonApp3.LxJsonCat cat : config.cats.values()) {
+                addOrUpdateCategory(new LxUuid(cat.uuid), cat.name, cat.type);
+            }
         }
-        for (LxJsonApp3.LxJsonControl ctrl : config.controls.values()) {
-            // create a new control or update existing one
-            addOrUpdateControl(ctrl);
+        if (config.controls != null) {
+            logger.trace("[{}] creating controls", debugId);
+            for (LxJsonApp3.LxJsonControl ctrl : config.controls.values()) {
+                // create a new control or update existing one
+                try {
+                    addOrUpdateControl(ctrl);
+                } catch (Exception e) {
+                    logger.error("[{}] exception creating control {}: {}", debugId, ctrl.name, e.toString());
+                }
+            }
         }
         // remove items that do not exist anymore in Miniserver
+        logger.trace("[{}] removing unused objects", debugId);
         removeUnusedFromMap(rooms);
         removeUnusedFromMap(categories);
         removeUnusedFromMap(controls);
@@ -697,7 +725,6 @@ public class LxServer {
      *            JSON original object of this control to get extra parameters
      */
     private void addOrUpdateControl(LxJsonApp3.LxJsonControl json) {
-
         if (json == null || json.uuidAction == null || json.name == null || json.type == null) {
             return;
         }
@@ -739,12 +766,12 @@ public class LxServer {
     }
 
     /**
-     * Check and converts null string to empty string.
+     * Check and convert null string to empty string.
      *
      * @param name
      *            string to check
      * @return
-     *         string guaranteed to not be null
+     *         string guaranteed to be not null
      */
     private String buildName(String name) {
         if (name == null) {

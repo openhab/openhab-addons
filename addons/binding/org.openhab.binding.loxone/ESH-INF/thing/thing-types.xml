@@ -85,7 +85,7 @@
                 <advanced>true</advanced>
                 <default>30</default>                
             </parameter>
-            <parameter name="maxBinaryMsgSize" type="integer" min="0" max="102400" required="true" groupName="sizes">
+            <parameter name="maxBinMsgSize" type="integer" min="0" max="102400" required="true" groupName="sizes">
                 <label>Maximum binary message size (kB)</label>
                 <description>Websocket client's maximum binary message size in kB</description>
                 <advanced>true</advanced>
