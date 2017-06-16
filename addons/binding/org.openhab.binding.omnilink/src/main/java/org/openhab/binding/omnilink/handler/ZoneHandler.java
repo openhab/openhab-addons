@@ -104,7 +104,7 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int zoneId = Integer.parseInt(channelParts[2]);
+        int zoneId = Integer.parseInt(channelParts[channelParts.length - 2]);
         ObjectStatus objStatus;
         try {
             objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_ZONE, zoneId, zoneId, false);

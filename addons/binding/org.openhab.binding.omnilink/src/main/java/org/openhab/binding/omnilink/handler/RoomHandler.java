@@ -28,7 +28,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand, channel id: {}, command: {}", channelUID, command);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int unitNum = Integer.parseInt(channelParts[2]);
+        int unitNum = Integer.parseInt(channelParts[channelParts.length - 2]);
 
         if (channelParts[3].startsWith("scene") && OnOffType.ON.equals(command)) {
 
@@ -159,7 +159,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int unitId = Integer.parseInt(channelParts[2]);
+        int unitId = Integer.parseInt(channelParts[channelParts.length - 2]);
 
         ObjectStatus objStatus;
         try {

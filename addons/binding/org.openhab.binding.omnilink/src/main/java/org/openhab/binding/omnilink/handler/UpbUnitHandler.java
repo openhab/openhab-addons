@@ -45,7 +45,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         logger.debug("handleCommand called");
         OmniLinkCmd omniCmd;
-        int unitId = Integer.parseInt(channelParts[2]);
+        int unitId = Integer.parseInt(channelParts[channelParts.length - 2]);
 
         if (command instanceof PercentType) {
             int lightLevel = ((PercentType) command).intValue();
@@ -99,7 +99,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int unitId = Integer.parseInt(channelParts[2]);
+        int unitId = Integer.parseInt(channelParts[channelParts.length - 2]);
 
         ObjectStatus objStatus;
         try {

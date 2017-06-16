@@ -30,14 +30,14 @@ public class OmnilinkBindingConstants {
 
     // areas
     public final static String CHANNEL_AREA_MODE = "mode";
-    public final static String CHANNEL_AREA_ALARM_BURGLARY = "area_alarm_burglary";
-    public final static String CHANNEL_AREA_ALARM_FIRE = "area_alarm_fire";
-    public final static String CHANNEL_AREA_ALARM_GAS = "area_alarm_gas";
-    public final static String CHANNEL_AREA_ALARM_AUXILARY = "area_alarm_auxiliary";
-    public final static String CHANNEL_AREA_ALARM_FREEZE = "area_alarm_freeze";
-    public final static String CHANNEL_AREA_ALARM_WATER = "area_alarm_water";
-    public final static String CHANNEL_AREA_ALARM_DURESS = "area_alarm_duress";
-    public final static String CHANNEL_AREA_ALARM_TEMPERATURE = "area_alarm_temperature";
+    public final static String CHANNEL_AREA_ALARM_BURGLARY = "alarm_burglary";
+    public final static String CHANNEL_AREA_ALARM_FIRE = "alarm_fire";
+    public final static String CHANNEL_AREA_ALARM_GAS = "alarm_gas";
+    public final static String CHANNEL_AREA_ALARM_AUXILARY = "alarm_auxiliary";
+    public final static String CHANNEL_AREA_ALARM_FREEZE = "alarm_freeze";
+    public final static String CHANNEL_AREA_ALARM_WATER = "alarm_water";
+    public final static String CHANNEL_AREA_ALARM_DURESS = "alarm_duress";
+    public final static String CHANNEL_AREA_ALARM_TEMPERATURE = "alarm_temperature";
     public final static String[] CHANNEL_AREA_ALARMS = { CHANNEL_AREA_ALARM_BURGLARY, CHANNEL_AREA_ALARM_FIRE,
             CHANNEL_AREA_ALARM_GAS, CHANNEL_AREA_ALARM_AUXILARY, CHANNEL_AREA_ALARM_FREEZE, CHANNEL_AREA_ALARM_WATER,
             CHANNEL_AREA_ALARM_DURESS, CHANNEL_AREA_ALARM_TEMPERATURE };
@@ -74,6 +74,9 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_THERMO_COOL_SETPOINT = "cool_setpoint";
     public final static String CHANNEL_THERMO_HEAT_SETPOINT = "heat_setpoint";
 
+    public final static String CHANNEL_CONSOLE_BEEP = "beep";
+    public final static String CHANNEL_CONSOLE_ENABLE_BEEPER = "enable_beeper";
+
     // thing configuration and properties keys
     public final static String THING_PROPERTIES_NAME = "name";
     public final static String THING_PROPERTIES_NUMBER = "number";
@@ -91,6 +94,7 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
     public final static ThingTypeUID THING_TYPE_BUTTON = new ThingTypeUID(BINDING_ID, "button");
     public final static ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+    public final static ThingTypeUID THING_TYPE_CONSOLE = new ThingTypeUID(BINDING_ID, "console");
 
     public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
 

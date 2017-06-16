@@ -138,7 +138,7 @@ public class AreaHandler extends AbstractOmnilinkHandler {
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int areaId = Integer.parseInt(channelParts[2]);
+        int areaId = Integer.parseInt(channelParts[channelParts.length - 2]);
         ObjectStatus objStatus;
         try {
             objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AREA, areaId, areaId, false);
