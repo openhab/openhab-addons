@@ -393,7 +393,7 @@
 
 	<channel-type id="thermostat_hold_mode">
 		<item-type>Number</item-type>
-		<label>Hold Status</label>
+		<label>Hold Mode</label>
 		<description>Hold Mode</description>
 		<category>Temperature</category>
 		<state pattern="%d">
