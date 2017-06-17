@@ -57,7 +57,7 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
             // update use date
             updateTimeStamp(audioFileInCache);
             updateTimeStamp(new File(cacheFolder, fileNameInCache + ".txt"));
-            deleteOldFiles();
+            purgeAgedFiles();
             return audioFileInCache;
         }
 
@@ -140,20 +140,20 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
         file.setLastModified(timestamp);
     }
 
-    public void deleteOldFiles() throws IOException {
+    public void purgeAgedFiles() throws IOException {
         // just exit if expiration set to 0/disabled
         if (PollyClientConfig.getExpireDate() == 0) {
             return;
         }
         long now = new Date().getTime();
         long diff = now - PollyClientConfig.getlastDelete();
-        // 1 day = 24 * 60 * 60 * 1000 =86,400,000
         // only execute ~ once every 2 days if cache called
+        int oneDay = 24 * 60 * 60 * 1000;
         logger.debug("PollyTTS cache cleaner lastdelete {}", diff);
-        if (diff > 172800000) {
+        if (diff > (2 * oneDay)) {
             PollyClientConfig.setLastDelete(now);
             logger.info("PollyTTS cache cleaner for aged files executed");
-            long xDaysAgo = PollyClientConfig.getExpireDate() * 86400000;
+            long xDaysAgo = PollyClientConfig.getExpireDate() * oneDay;
             // Now search folders and delete old files
             for (File f : cacheFolder.listFiles()) {
                 diff = now - f.lastModified();
