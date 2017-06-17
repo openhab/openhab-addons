@@ -1073,7 +1073,7 @@ public class TeslaHandler extends BaseThingHandler {
                     } else {
                         Thread.sleep(250);
                     }
-                } catch (IOException e) {
+                } catch (IOException | NumberFormatException e) {
                     if (logger.isErrorEnabled()) {
                         logger.error("Event Stream : An exception occurred while reading events : '{}'",
                                 e.getMessage());
