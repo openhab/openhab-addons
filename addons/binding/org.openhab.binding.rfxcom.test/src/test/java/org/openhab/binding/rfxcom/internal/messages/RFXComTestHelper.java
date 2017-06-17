@@ -15,7 +15,6 @@ import java.util.Map;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
@@ -52,7 +51,7 @@ public class RFXComTestHelper {
         assertEquals("Off command", offCommand, properties.get("offCommandId"));
     }
 
-    static int getActualIntValue(RFXComLighting4Message msg, RFXComValueSelector selector) throws RFXComException {
-        return ((DecimalType) msg.convertToState(selector)).intValue();
+    static int getActualIntValue(RFXComLighting4Message msg, String channelId) throws RFXComException {
+        return ((DecimalType) msg.convertToState(channelId)).intValue();
     }
 }

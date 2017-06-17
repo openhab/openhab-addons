@@ -9,7 +9,9 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.RFXComValueSelector.*;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_COMMAND_ID;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING4;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting4Message.Commands.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting4Message.SubType.PT2262;
@@ -39,7 +41,7 @@ public class RFXComLighting4MessageTest {
         RFXComDeviceConfiguration build = new RFXComDeviceConfigurationBuilder().withDeviceId("90000").withPulse(300)
                 .withSubType("PT2262").build();
         message.setConfig(build);
-        message.convertFromState(COMMAND, OnOffType.ON);
+        message.convertFromState(CHANNEL_COMMAND, OnOffType.ON);
 
         byte[] binaryMessage = message.decodeMessage();
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory.createMessage(binaryMessage);
@@ -60,11 +62,11 @@ public class RFXComLighting4MessageTest {
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory
                 .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
         assertEquals("Sensor Id", deviceId, msg.getDeviceId());
-        assertEquals("Command", commandByte, RFXComTestHelper.getActualIntValue(msg, COMMAND_ID));
+        assertEquals("Command", commandByte, RFXComTestHelper.getActualIntValue(msg, CHANNEL_COMMAND_ID));
         if (seqNbr != null) {
             assertEquals("Seq Number", seqNbr.shortValue(), (short) (msg.seqNbr & 0xFF));
         }
-        assertEquals("Signal Level", signalLevel, RFXComTestHelper.getActualIntValue(msg, SIGNAL_LEVEL));
+        assertEquals("Signal Level", signalLevel, RFXComTestHelper.getActualIntValue(msg, CHANNEL_SIGNAL_LEVEL));
 
         byte[] decoded = msg.decodeMessage();
 
