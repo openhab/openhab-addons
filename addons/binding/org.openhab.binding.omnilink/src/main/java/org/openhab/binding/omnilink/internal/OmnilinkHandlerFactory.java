@@ -27,6 +27,7 @@ import org.openhab.binding.omnilink.handler.ButtonHandler;
 import org.openhab.binding.omnilink.handler.FlagHandler;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
 import org.openhab.binding.omnilink.handler.RoomHandler;
+import org.openhab.binding.omnilink.handler.ThermostatHandler;
 import org.openhab.binding.omnilink.handler.UpbUnitHandler;
 import org.openhab.binding.omnilink.handler.ZoneHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -57,7 +58,7 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_OMNI_AREA,
             THING_TYPE_ZONE, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM, THING_TYPE_BUTTON,
-            THING_TYPE_UNIT_UPB, THING_TYPE_CONSOLE);
+            THING_TYPE_UNIT_UPB, THING_TYPE_THERMOSTAT, THING_TYPE_CONSOLE);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
@@ -85,6 +86,8 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
             return new RoomHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BUTTON)) {
             return new ButtonHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
+            return new ThermostatHandler(thing);
         }
 
         return null;

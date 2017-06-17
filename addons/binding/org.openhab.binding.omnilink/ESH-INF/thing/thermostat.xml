@@ -9,16 +9,19 @@
         <label>Thermostat</label>
         <description>Thermostat</description>
         <channels>
+            <channel id="freeze_alarm" typeId="thermostat_freeze_alarm" />
+            <channel id="comm_failure" typeId="thermostat_comm_failure" />
             <channel id="status" typeId="thermostat_status" />
-            <channel id="temperatureC" typeId="thermostat_temperature" />
-            <channel id="temperatureF" typeId="thermostat_temperature" />
-            <channel id="heat_setpointC" typeId="thermostat_heat_setpoint" />
-            <channel id="heat_setpointF" typeId="thermostat_heat_setpoint" />
-            <channel id="cool_setpointC" typeId="thermostat_cool_setpoint" />
-            <channel id="cool_setpointF" typeId="thermostat_cool_setpoint" />
+            <channel id="temperature" typeId="thermostat_temperature" />
+            <channel id="outdoor_temperature" typeId="thermostat_outdoor_temperature" />
+            <channel id="heat_setpoint" typeId="thermostat_heat_setpoint" />
+            <channel id="cool_setpoint" typeId="thermostat_cool_setpoint" />
+            <channel id="humidity" typeId="thermostat_humidity" />
+            <channel id="humidify_setpoint" typeId="thermostat_humidify_setpoint" />
+            <channel id="dehumidify_setpoint" typeId="thermostat_dehumidify_setpoint" />
             <channel id="system_mode" typeId="thermostat_system_mode" />
             <channel id="fan_mode" typeId="thermostat_fan_mode" />
-            <channel id="hold_status" typeId="hold_status" />
+            <channel id="hold_mode" typeId="thermostat_hold_mode" />
         </channels>
         <properties>
             <property name="name" />

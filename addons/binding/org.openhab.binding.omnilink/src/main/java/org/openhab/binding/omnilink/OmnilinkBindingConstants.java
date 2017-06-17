@@ -58,6 +58,22 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_BUTTON_PRESS = "press";
     public final static String CHANNEL_SYSTEMDATE = "sysdate";
 
+    // thermostats
+
+    public final static String CHANNEL_THERMO_FREEZE_ALARM = "freeze_alarm";
+    public final static String CHANNEL_THERMO_COMM_FAILURE = "comm_failure";
+    public final static String CHANNEL_THERMO_STATUS = "status";
+    public final static String CHANNEL_THERMO_TEMP = "temperature";
+    public final static String CHANNEL_THERMO_OUTDOOR_TEMP = "outdoor_temperature";
+    public final static String CHANNEL_THERMO_HUMIDITY = "humidity";
+    public final static String CHANNEL_THERMO_HUMIDIFY_SETPOINT = "humidify_setpoint";
+    public final static String CHANNEL_THERMO_DEHUMIDIFY_SETPOINT = "dehumidify_setpoint";
+    public final static String CHANNEL_THERMO_SYSTEM_MODE = "system_mode";
+    public final static String CHANNEL_THERMO_FAN_MODE = "fan_mode";
+    public final static String CHANNEL_THERMO_HOLD_MODE = "hold_mode";
+    public final static String CHANNEL_THERMO_COOL_SETPOINT = "cool_setpoint";
+    public final static String CHANNEL_THERMO_HEAT_SETPOINT = "heat_setpoint";
+
     public final static String CHANNEL_CONSOLE_BEEP = "beep";
     public final static String CHANNEL_CONSOLE_ENABLE_BEEPER = "enable_beeper";
 
@@ -77,6 +93,7 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_FLAG = new ThingTypeUID(BINDING_ID, "flag");
     public final static ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
     public final static ThingTypeUID THING_TYPE_BUTTON = new ThingTypeUID(BINDING_ID, "button");
+    public final static ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public final static ThingTypeUID THING_TYPE_CONSOLE = new ThingTypeUID(BINDING_ID, "console");
 
     public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
