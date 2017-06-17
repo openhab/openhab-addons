@@ -20,24 +20,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link JsonServerConnection} class is responsible for handling
+ * The {@link JsonTcpConnection} class is responsible for handling
  * the communication with the Hyperion json server.
  *
  * @author Daniel Walters - Initial contribution
  */
-public class JsonServerConnection {
+public class JsonTcpConnection {
 
-    private Logger logger = LoggerFactory.getLogger(JsonServerConnection.class);
+    private Logger logger = LoggerFactory.getLogger(JsonTcpConnection.class);
     private InetAddress address;
     private int port;
     private Socket hyperionServerSocket;
 
-    public JsonServerConnection(InetAddress address, int port) {
+    public JsonTcpConnection(InetAddress address, int port) {
         this.setAddress(address);
         this.port = port;
     }
 
-    public JsonServerConnection(String sAddress, int port) throws UnknownHostException {
+    public JsonTcpConnection(String sAddress, int port) throws UnknownHostException {
         this(InetAddress.getByName(sAddress), port);
     }
 

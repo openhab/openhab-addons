@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.hyperion.internal.connection.JsonServerConnection;
+import org.openhab.binding.hyperion.internal.connection.JsonTcpConnection;
 import org.openhab.binding.hyperion.internal.protocol.ColorCommand;
 import org.openhab.binding.hyperion.internal.protocol.CommandUnsuccessfulException;
 import org.openhab.binding.hyperion.internal.protocol.EffectCommand;
@@ -62,7 +62,7 @@ public class HyperionHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HyperionHandler.class);
 
-    private JsonServerConnection connection;
+    private JsonTcpConnection connection;
     private ScheduledFuture<?> refreshFuture;
     private ScheduledFuture<?> connectFuture;
     private Gson gson = new Gson();
@@ -187,7 +187,7 @@ public class HyperionHandler extends BaseThingHandler {
             refreshInterval = ((BigDecimal) config.get(PROP_POLL_FREQUENCY)).intValue();
             priority = ((BigDecimal) config.get(PROP_PRIORITY)).intValue();
 
-            connection = new JsonServerConnection(address, port);
+            connection = new JsonTcpConnection(address, port);
             connectFuture = scheduler.scheduleWithFixedDelay(connectionJob, 0, refreshInterval, TimeUnit.SECONDS);
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
 

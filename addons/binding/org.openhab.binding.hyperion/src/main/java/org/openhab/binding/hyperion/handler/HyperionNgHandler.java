@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.hyperion.internal.connection.JsonServerConnection;
+import org.openhab.binding.hyperion.internal.connection.JsonTcpConnection;
 import org.openhab.binding.hyperion.internal.protocol.ColorCommand;
 import org.openhab.binding.hyperion.internal.protocol.CommandUnsuccessfulException;
 import org.openhab.binding.hyperion.internal.protocol.EffectCommand;
@@ -72,7 +72,7 @@ public class HyperionNgHandler extends BaseThingHandler {
     private static final String DEFAULT_ADJUSTMENT = "default";
     private static final String COMPONENTS_ALL = "ALL";
 
-    private JsonServerConnection connection;
+    private JsonTcpConnection connection;
     private ScheduledFuture<?> refreshFuture;
     private ScheduledFuture<?> connectFuture;
     private Gson gson = new Gson();
@@ -134,7 +134,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             priority = ((BigDecimal) config.get(PROP_PRIORITY)).intValue();
             origin = (String) config.get(PROP_ORIGIN);
 
-            connection = new JsonServerConnection(address, port);
+            connection = new JsonTcpConnection(address, port);
             connectFuture = scheduler.scheduleWithFixedDelay(connectionJob, 0, refreshInterval, TimeUnit.SECONDS);
             refreshFuture = scheduler.scheduleWithFixedDelay(refreshJob, 0, refreshInterval, TimeUnit.SECONDS);
 
