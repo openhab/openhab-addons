@@ -23,6 +23,10 @@ public class ObaStopArrivalResponse {
     public Data data;
 
     public class Data {
+        public Entry entry;
+    }
+
+    public class Entry {
         public ArrivalAndDeparture[] arrivalsAndDepartures;
     }
 

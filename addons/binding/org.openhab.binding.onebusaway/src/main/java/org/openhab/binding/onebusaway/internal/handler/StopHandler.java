@@ -109,11 +109,7 @@ public class StopHandler extends BaseBridgeHandler {
             }
             gson = new Gson();
 
-            if (!fetchAndUpdateStopData()) {
-                return;
-            }
-
-            scheduleJob();
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.getInterval(), TimeUnit.SECONDS);
         });
     }
 
@@ -166,16 +162,10 @@ public class StopHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Forced an update to be scheduled immediately, and reschedules our normal task to run again on our normal interval
-     * starting now.
+     * Forced an update to be scheduled immediately.
      */
     protected void forceUpdate() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
         scheduler.execute(pollingRunnable);
-        scheduleJob();
     }
 
     private ApiHandler getApiHandler() {
@@ -195,11 +185,6 @@ public class StopHandler extends BaseBridgeHandler {
         return config;
     }
 
-    private void scheduleJob() {
-        pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, config.getInterval(), config.getInterval(),
-                TimeUnit.SECONDS);
-    }
-
     private boolean fetchAndUpdateStopData() {
         ApiHandler apiHandler = getApiHandler();
         if (apiHandler == null) {
@@ -210,6 +195,7 @@ public class StopHandler extends BaseBridgeHandler {
         if (alreadyFetching) {
             return false;
         }
+        logger.debug("Fetching data for stop ID {}", config.getStopId());
         String url = String.format("http://%s/api/where/arrivals-and-departures-for-stop/%s.json?key=%s",
                 apiHandler.getApiServer(), config.getStopId(), apiHandler.getApiKey());
         URI uri;
@@ -241,7 +227,7 @@ public class StopHandler extends BaseBridgeHandler {
                 .create();
         synchronized (routeData) {
             routeData = ArrayListMultimap.create();
-            for (ObaStopArrivalResponse.ArrivalAndDeparture d : data.data.arrivalsAndDepartures) {
+            for (ObaStopArrivalResponse.ArrivalAndDeparture d : data.data.entry.arrivalsAndDepartures) {
                 routeData.put(d.routeId, d);
             }
             for (String key : routeData.keySet()) {

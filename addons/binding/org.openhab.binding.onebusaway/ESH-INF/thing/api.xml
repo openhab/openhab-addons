@@ -5,8 +5,8 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <bridge-type id="api">
-        <label>OneBusAway API</label>
-        <description>The API settings to talk to OneBusAway, an open source platform for real time transit information.  See https://onebusaway.org/ for more information.</description>
+        <label>OneBusAway Service</label>
+        <description>The Service settings to talk to a OneBusAway deployment.</description>
         <config-description>
             <parameter name="apiKey" type="text" required="true">
                 <label>API Key</label>

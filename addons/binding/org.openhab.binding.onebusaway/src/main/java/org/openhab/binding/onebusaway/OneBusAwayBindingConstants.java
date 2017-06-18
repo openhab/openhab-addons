@@ -26,9 +26,9 @@ public class OneBusAwayBindingConstants {
     public static final ThingTypeUID THING_TYPE_STOP = new ThingTypeUID(BINDING_ID, "stop");
 
     // Channel IDs
-    public static final String CHANNEL_ID_ARRIVAL = "arrivalDeparture#arrival";
-    public static final String CHANNEL_ID_DEPARTURE = "arrivalDeparture#departure";
-    public static final String CHANNEL_ID_UPDATE = "arrivalDeparture#update";
+    public static final String CHANNEL_ID_ARRIVAL = "arrival";
+    public static final String CHANNEL_ID_DEPARTURE = "departure";
+    public static final String CHANNEL_ID_UPDATE = "update";
 
     // Events
     public static final String EVENT_ARRIVAL = "ARRIVAL";

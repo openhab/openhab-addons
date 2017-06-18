@@ -175,6 +175,11 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
      */
     private void publishChannel(ChannelUID channelUID, Calendar now, long lastUpdateTime,
             List<ArrivalAndDeparture> arrivalAndDepartures) {
+        if (channelUID.getId().equals(CHANNEL_ID_UPDATE)) {
+            updateState(channelUID, new DateTimeType((new Calendar.Builder()).setInstant(lastUpdateTime).build()));
+            return;
+        }
+
         ChannelConfig channelConfig = getThing().getChannel(channelUID.getId()).getConfiguration()
                 .as(ChannelConfig.class);
         long offsetMs = TimeUnit.SECONDS.toMillis(channelConfig.getOffset());
@@ -193,26 +198,15 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
                             (data.predicted ? data.predictedDepartureTime : data.scheduledDepartureTime) - offsetMs)
                             .build();
                     break;
-                case CHANNEL_ID_UPDATE:
-                    time = (new Calendar.Builder()).setInstant(lastUpdateTime - offsetMs).build();
-                    break;
                 default:
                     logger.warn("No code to handle publishing to {}", channelUID.getId());
                     return;
             }
 
             // Do not publish this if it's already passed.
-            switch (channelUID.getId()) {
-                case CHANNEL_ID_ARRIVAL:
-                case CHANNEL_ID_DEPARTURE:
-                    if (time.before(now)) {
-                        logger.debug("Not notifying {} because it is in the past.", channelUID.getId());
-                        continue;
-                    }
-                    break;
-                // This is always in the past, so no need to check.
-                case CHANNEL_ID_UPDATE:
-                    break;
+            if (time.before(now)) {
+                logger.debug("Not notifying {} because it is in the past.", channelUID.getId());
+                continue;
             }
             updateState(channelUID, new DateTimeType(time));
 
