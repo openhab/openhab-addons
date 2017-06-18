@@ -86,3 +86,4 @@ Number Diesel_2 "Diesel [%.3f €]" { channel="tankerkoenig:station:StationName2
 
    [MTS-K]: <https://www.bundeskartellamt.de/DE/Wirtschaftsbereiche/Mineral%C3%B6l/MTS-Kraftstoffe/Verbraucher/verbraucher_node.html>
 
+
