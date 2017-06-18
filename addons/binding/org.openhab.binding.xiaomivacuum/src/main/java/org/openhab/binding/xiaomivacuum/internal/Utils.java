@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.xiaomivacuum.internal;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Date;
 
 /**
@@ -180,6 +178,17 @@ public final class Utils {
             hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F))).append(" ");
         }
         hex.delete(hex.length() - 1, hex.length());
+        return hex.toString();
+    }
+
+    public static String getHexN(byte[] raw) {
+        if (raw == null) {
+            return null;
+        }
+        final StringBuilder hex = new StringBuilder(2 * raw.length);
+        for (final byte b : raw) {
+            hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F)));
+        }
         return hex.toString();
     }
 }

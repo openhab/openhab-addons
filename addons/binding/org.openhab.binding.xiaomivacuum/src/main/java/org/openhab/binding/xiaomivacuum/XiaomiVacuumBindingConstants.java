@@ -57,4 +57,5 @@ public final class XiaomiVacuumBindingConstants {
 
     public static final byte[] DISCOVER_STRING = org.openhab.binding.xiaomivacuum.internal.Utils
             .hexStringToByteArray("21310020ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    public static final int PORT = 54321;
 }

@@ -29,6 +29,7 @@ public class Message {
     private byte[] magic = Utils.hexStringToByteArray("2131");
     private int length = 0;
     private byte[] unknowns = new byte[4];
+
     private byte[] serialByte = new byte[4];
     private Date timeStamp;
     private byte[] tsByte = new byte[4];
@@ -96,7 +97,7 @@ public class Message {
         String formattedDate = sdf.format(date);
 
         String s = "Message:\r\nHeader  : " + Utils.getHex(header) + "\r\nchecksum: " + Utils.getHex(checksum);
-        if (getLenght() > 32) {
+        if (getLength() > 32) {
             s += "\r\ncontent : " + Utils.getHex(data);
         } else {
             s += "\r\ncontent : N/A";
@@ -135,17 +136,17 @@ public class Message {
     }
 
     /**
-     * @return the lenght
+     * @return the length
      */
-    public int getLenght() {
+    public int getLength() {
         return length;
     }
 
     /**
-     * @param lenght the lenght to set
+     * @param length the length to set
      */
-    public void setLenght(int lenght) {
-        this.length = lenght;
+    public void setLength(int length) {
+        this.length = length;
     }
 
     /**
@@ -195,5 +196,19 @@ public class Message {
      */
     public void setRaw(byte[] raw) {
         this.raw = raw;
+    }
+
+    /**
+     * @return the checksum
+     */
+    public byte[] getChecksum() {
+        return checksum;
+    }
+
+    /**
+     * @param checksum the checksum to set
+     */
+    public void setChecksum(byte[] checksum) {
+        this.checksum = checksum;
     }
 }

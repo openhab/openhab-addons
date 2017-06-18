@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 public class RoboCommunication {
 
     private static final int PORT = 54321;
+    private static final int TIMEOUT = 5000;
 
     private final static Logger logger = LoggerFactory.getLogger(RoboCommunication.class);
 
@@ -88,7 +89,7 @@ public class RoboCommunication {
 
         // InetSocketAddress address = new InetSocketAddress("0.0.0.0", PORT);
         // clientSocket.bind(address);
-        clientSocket.setSoTimeout(5000);
+        clientSocket.setSoTimeout(TIMEOUT);
         sendData = message;
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, PORT);
         clientSocket.send(sendPacket);
