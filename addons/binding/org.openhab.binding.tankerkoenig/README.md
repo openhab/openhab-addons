@@ -3,8 +3,8 @@
 The binding uses the Tankerkönig API (https://www.tankerkoenig.de) for collecting gas price data of german gas stations. 
 Special thanks to the creators of Tankerkönig for providing an easy way to get data from  the [MTS-K]  (Markttransparenzstelle für Kraftstoffe).
 
-Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-requests. This binding handles those requests (minimum Refresh Interval is 10 minutes, a Webserver does handle maximum of 10 stations.
-The data will be updated for each Station individually after the initialization and after each Refresh Interval for all (open) stations (Note: changing the Webservice will cause the Refresh Interval to restart).
+Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-request. This binding incooperates those requests (minimum Refresh Intervall is 10 minutes, a webserver does handle maximum of 10 stations.
+The data will be updated for each Station individually after the initialisation and after each Refresh Intervall for all (open) stations (Note: changing the Webservice will cause the Refresh Intervall to restart).
 Additionally one may select the mode Opening-Times in which only those Stations get polled which are actually open.
 
 
@@ -19,7 +19,7 @@ Demand free Tankerkönig API key from: https://creativecommons.tankerkoenig.de/ 
 -LocationIDs of the selected gas stations
 
 Search for the gas station IDs here: https://creativecommons.tankerkoenig.de/configurator/index.html 
-Drag the red marker on the map to the rough location of desired gas stations. Select the gas stations and click "Tankstellen übernehmen" on the right. This will download a file holding the location IDs. For example: a7cdd9cf-b467-4aac-8eab-d662f082511e
+Drag the red marker on the map to the rough location of desired gas stations. Select the gas stations and click "Tankstellen übernehmen" on the right. This will donwload a file holding the location IDs. For example: a7cdd9cf-b467-4aac-8eab-d662f082511e
 
 ## Supported Things
 
@@ -39,7 +39,7 @@ The binding has no configuration options itself, all configuration is done at 'B
 
 ## Thing configuration
 
-The Webservice (bridge) needs to be configured with the personal API-Key, the desired Refresh Interval (the time interval between price-updates, default 60 minutes, minimum 10 minutes) and the Opening-Times mode selection (in this mode price-updates are only requested from stations that are actually open). 
+The Webservice (bridge) needs to be configured with the personal API-Key, the desired Refresh Intervall (the time intervall between price-updates, default 60 minutes, minimum 10 minutes) and the Opening-Times mode selection (in this mode price-updates are only requested from stations that are actually open). 
 A single Webservice can handle up to 10 Stations.
  
 Each Station needs to be configured with a LocationID and the Webservice to which it is linked.

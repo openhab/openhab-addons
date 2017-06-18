@@ -132,7 +132,7 @@ public class StationHandler extends BaseThingHandler {
     public void updateDetailData() {
         result = service.getStationDetailData(this.getApiKey(), locationID, userAgent);
 
-        if (result.isOk()) {
+        if (result.isOk() == true) {
             setOpeningTimes(result.getOpeningTimes());
             StationHandler tkh = (StationHandler) this.getThing().getHandler();
             LittleStation s = result.getLittleStation();
