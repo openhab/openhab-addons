@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing-type id="console">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>Console</label>
+        <description>Console</description>
+        <channels>
+            <channel id="beeper_enabled" typeId="console_beeper_enabled"/>
+            <channel id="beep" typeId="console_beep"/>
+        </channels>
+        <properties>
+            <property name="area" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Console Number</label>
+                <description>Console Number</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+</thing:thing-descriptions>
