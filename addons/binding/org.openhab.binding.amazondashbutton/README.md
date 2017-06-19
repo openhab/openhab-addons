@@ -53,7 +53,7 @@ Setting up your Dash button is as simple as following the instructions provided 
 
 ## Block Internet access for the Dash Button
 
-Completely deny internet access for the Amazaon Dash Button in your router. You need to find out the Dash button's IP address first of all. This is not explained as this job depends on your environment.
+Completely deny internet access for the Amazon Dash Button in your router. You need to find out the Dash button's IP address first of all. This is not explained as this job depends on your environment.
 
 
 ## Supported Things
@@ -86,7 +86,7 @@ __ Caution:__  You have to be aware that other Amazon devices might pop up in yo
 ```
 rule "Dash button pressed"
     when
-        Channel "amazondashbutton:dashbutton:ac-63-be-xx-xx-xx:press" triggered
+        Channel "amazondashbutton:dashbutton:ac63bexxxxxx:press" triggered
     then
         println("The Dash button has been pressed")
 end
