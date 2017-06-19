@@ -24,11 +24,9 @@ public class ConsoleHandler extends AbstractOmnilinkHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
-        logger.debug("must handle command for console.  channel: {}, command: {}", channelUID, command);
+        logger.debug("handling command for console.  channel: {}, command: {}", channelUID, command);
         int cmd;
         int p1;
-
         if (OmnilinkBindingConstants.CHANNEL_CONSOLE_ENABLE_BEEPER.equals(channelUID.getId())
                 && command instanceof OnOffType) {
             cmd = CommandMessage.CMD_CONSOLE_ENABLE_DISABLE_BEEPER;
@@ -44,7 +42,6 @@ public class ConsoleHandler extends AbstractOmnilinkHandler {
 
         int consoleNumber = ((BigDecimal) getThing().getConfiguration()
                 .get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER)).intValue();
-
         try {
             getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, p1, consoleNumber);
         } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
