@@ -110,6 +110,17 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
+    public void activateKeypadEmergency(int area, int emergencyType)
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+        try {
+            omniConnection.activateKeypadEmergency(area, emergencyType);
+        } catch (IOException | OmniNotConnectedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            throw new BridgeOfflineException(e);
+        }
+
+    }
+
     public SystemInformation reqSystemInformation()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {

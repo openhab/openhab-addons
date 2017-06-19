@@ -9,6 +9,7 @@
 		<label>Omni Area</label>
 		<description>Omni Area</description>
 		<channels>
+			<channel id="activate_keypad_emergency" typeId="omni_activate_keypad_emergency" />
 			<channel id="alarm_burglary" typeId="area_alarm_burglary" />
 			<channel id="alarm_fire" typeId="area_alarm_fire" />
 			<channel id="alarm_gas" typeId="area_alarm_gas" />
