@@ -34,9 +34,6 @@ public class ChannelConfig {
         this.offset = offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this).append(CHANNEL_CONFIG_OFFSET, this.getOffset()).toString();

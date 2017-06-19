@@ -50,9 +50,6 @@ public class StopConfiguration {
         this.stopId = stopId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this).append(STOP_CONFIG_INTERVAL, this.getInterval())
