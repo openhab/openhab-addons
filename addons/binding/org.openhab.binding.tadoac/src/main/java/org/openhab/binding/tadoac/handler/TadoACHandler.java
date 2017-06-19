@@ -205,7 +205,7 @@ public class TadoACHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.info("error while polling for new state", e);
+            logger.debug("error while polling for new state", e);
             updateStatus(ThingStatus.OFFLINE);
         }
     }
