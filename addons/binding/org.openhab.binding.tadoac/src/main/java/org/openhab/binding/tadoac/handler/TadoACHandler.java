@@ -214,6 +214,11 @@ public class TadoACHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         setting = new TadoACSetting();
-        scheduler.scheduleAtFixedRate(() -> refreshSetting(), 15, 60, TimeUnit.SECONDS);
+        int interval = ((BigDecimal) getConfig().get("interval")).intValue();
+        if (interval < 30) {
+            logger.info("Minimum refresh interval is 30 seconds. We do not want to annoy Tado");
+            interval = 30;
+        }
+        scheduler.scheduleAtFixedRate(() -> refreshSetting(), 15, interval, TimeUnit.SECONDS);
     }
 }

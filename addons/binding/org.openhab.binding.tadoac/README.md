@@ -42,6 +42,8 @@ In this case 1234 is your home ID
 tadoac:airconditioner:myAircon [username="foo@bar.de", password="foobar", homeid=1234, zoneid=1]
 ```
 
+You can add the optional parameter `interval=<refresh interval in seconds>` to your thing to edit the refresh interval. The default value is 60 seconds.
+
 .items file
 
 ```
