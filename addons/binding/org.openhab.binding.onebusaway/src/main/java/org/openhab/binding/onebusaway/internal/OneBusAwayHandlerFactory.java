@@ -34,17 +34,11 @@ public class OneBusAwayHandlerFactory extends BaseThingHandlerFactory {
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ApiHandler.SUPPORTED_THING_TYPE,
             RouteHandler.SUPPORTED_THING_TYPE, StopHandler.SUPPORTED_THING_TYPE);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected ThingHandler createHandler(Thing thing) {
 

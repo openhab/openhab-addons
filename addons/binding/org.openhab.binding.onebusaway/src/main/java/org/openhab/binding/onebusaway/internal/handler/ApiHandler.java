@@ -36,17 +36,11 @@ public class ApiHandler extends BaseBridgeHandler {
         super(bridge);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.warn("The API bridge is a read-only and can not handle commands.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         logger.debug("Initializing OneBusAway bridge...");

@@ -11,6 +11,7 @@
             <parameter name="apiKey" type="text" required="true">
                 <label>API Key</label>
                 <description>The OneBusAway API key to use.</description>
+                <context>password</context>
             </parameter>
             <parameter name="apiServer" type="text" required="true">
                 <label>API Server</label>
