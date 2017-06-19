@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.atlona.internal.pro3;
 
+/**
+ *
+ * @author Tim Roberts - Initial contribution
+ */
 public class AtlonaPro3Utilities {
     /**
      * Helper method to create a channel id from a group with no port number attached

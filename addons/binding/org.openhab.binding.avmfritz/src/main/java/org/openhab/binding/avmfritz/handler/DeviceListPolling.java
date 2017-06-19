@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Polling worker class.
+ *
+ * @author Robert Bausdorf - Initial Contribution
  */
 public class DeviceListPolling implements Runnable {
     /**
