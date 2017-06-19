@@ -49,9 +49,6 @@ public class ApiConfiguration {
         this.apiServer = apiServer;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this).append(API_CONFIG_API_KEY, this.getApiKey())
