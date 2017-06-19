@@ -173,7 +173,7 @@
         <label>Activate Keypad Emergency</label>
         <description>Activate a burglary, fire, or auxiliary keypad emergency alarm on Omni based models. </description>
         <category>Alarm</category>
-        <state pattern="%d" readOnly="true">
+        <state pattern="%d">
             <options>
                 <option value="1">Burglary</option>
                 <option value="2">Fire</option>
