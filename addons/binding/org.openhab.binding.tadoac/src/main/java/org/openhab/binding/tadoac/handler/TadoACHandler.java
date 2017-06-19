@@ -133,7 +133,8 @@ public class TadoACHandler extends BaseThingHandler {
             connector.setSetting(homeid, zoneid, setting);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            logger.info("could not send state", e);
+            // Zone is not existing, credentials are wrong or the device is not connected
+            logger.error("could not send state", e);
             updateStatus(ThingStatus.OFFLINE);
         } finally {
             sendFuture = null;
