@@ -28,8 +28,9 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_ZONE_LATCHED_ALARM_STATUS = "latched_alarm_status";
     public final static String CHANNEL_ZONE_ARMING_STATUS = "arming_status";
 
-    // areas
+    // areas activate_keypad_emergency
     public final static String CHANNEL_AREA_MODE = "mode";
+    public final static String CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY = "activate_keypad_emergency";
     public final static String CHANNEL_AREA_ALARM_BURGLARY = "alarm_burglary";
     public final static String CHANNEL_AREA_ALARM_FIRE = "alarm_fire";
     public final static String CHANNEL_AREA_ALARM_GAS = "alarm_gas";
@@ -97,5 +98,4 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_CONSOLE = new ThingTypeUID(BINDING_ID, "console");
 
     public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
-
 }

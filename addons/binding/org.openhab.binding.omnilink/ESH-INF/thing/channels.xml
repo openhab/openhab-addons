@@ -168,6 +168,19 @@
 		<description>Sends a user code and command to the area.</description>
 		<category>Alarm</category>
 	</channel-type>
+	<channel-type id="omni_activate_keypad_emergency">
+        <item-type>Number</item-type>
+        <label>Activate Keypad Emergency</label>
+        <description>Activate a burglary, fire, or auxiliary keypad emergency alarm on Omni based models. </description>
+        <category>Alarm</category>
+        <state pattern="%d" readOnly="true">
+            <options>
+                <option value="1">Burglary</option>
+                <option value="2">Fire</option>
+                <option value="3">Auxiliary</option>
+            </options>
+        </state>
+    </channel-type>
 	<channel-type id="lumina_area_mode">
 		<item-type>Number</item-type>
 		<label>Security Mode</label>
