@@ -35,9 +35,6 @@ public class RouteConfiguration {
         this.routeId = routeId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString() {
         return new ToStringBuilder(this).append(ROUTE_CONFIG_ROUTE_ID, this.getRouteId()).toString();

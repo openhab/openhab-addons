@@ -56,11 +56,8 @@ public class StopHandler extends BaseBridgeHandler {
     private HttpClient httpClient;
     private Logger logger = LoggerFactory.getLogger(StopHandler.class);
     private ScheduledFuture<?> pollingJob;
-    private Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            fetchAndUpdateStopData();
-        }
+    private Runnable pollingRunnable = () -> {
+        fetchAndUpdateStopData();
     };
     private AtomicBoolean fetchInProgress = new AtomicBoolean(false);
     private long routeDataLastUpdateMs = 0;
@@ -71,9 +68,6 @@ public class StopHandler extends BaseBridgeHandler {
         super(bridge);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
@@ -84,9 +78,6 @@ public class StopHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize() {
         logger.debug("Initializing OneBusAway stop bridge...");
@@ -113,9 +104,6 @@ public class StopHandler extends BaseBridgeHandler {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose() {
         if (pollingJob != null && !pollingJob.isCancelled()) {
