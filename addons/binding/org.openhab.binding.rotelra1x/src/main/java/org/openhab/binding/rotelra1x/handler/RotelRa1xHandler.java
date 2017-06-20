@@ -46,7 +46,6 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
     private int maximumVolume = 0;
     private RXTXPort serialPort;
 
-    private boolean connected;
     private boolean exit = false;
     private volatile boolean power = false;
 
@@ -74,10 +73,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
     }
 
     private void connect() throws IOException {
-        if (!connected) {
-            if (serialPort != null) {
-                disconnect();
-            }
+        if (serialPort == null) {
             String portName = (String) getThing().getConfiguration().get("port");
             if (portName == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -100,7 +96,6 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 throw new IOException(e);
             }
-            connected = true;
             try {
                 // Don't need continuous updates of the display, we still get updates when
                 // the volume, etc., changes
@@ -113,18 +108,19 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 // be ready to accept updates, so deferring input loop by 1 sec.
                 scheduler.schedule(this, 1, TimeUnit.SECONDS);
             } catch (IOException e) {
-                disconnect();
-                throw e;
+                serialPort.close();
+                serialPort = null;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                throw new IOException("Error encountered while initiating communication with the device", e);
             }
         }
     }
 
     private void disconnect() {
-        if (connected && serialPort != null) {
+        if (serialPort != null) {
             serialPort.close();
         }
         serialPort = null;
-        connected = false;
         if (!exit) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -202,7 +198,7 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
 
     @Override
     public void run() {
-        while (connected && !exit) {
+        while (serialPort != null && !exit) {
             try {
                 String command = readCommand();
                 if ("volume".equals(command)) {
@@ -258,8 +254,16 @@ public class RotelRa1xHandler extends BaseThingHandler implements Runnable {
                 }
 
             } catch (IOException e) {
-                logger.error("Input error while receiving data from amplifier", e);
-                disconnect();
+                if (serialPort != null) {
+                    logger.error("Input error while receiving data from amplifier", e);
+                    disconnect();
+                }
+            } catch (NullPointerException e) {
+                if (serialPort != null) { // If serial port is closed, it's set to null,
+                                          // there is no message here,
+                    logger.error("Unexpected error", e);
+                    disconnect();
+                }
             }
         }
     }
