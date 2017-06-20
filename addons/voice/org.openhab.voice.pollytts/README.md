@@ -2,16 +2,15 @@
 
 ## Overview
 
-Polly is a Internet based TTS service hosted by Amazon
-It requires authorization Keys to get access to this service. 
+PollyTTS is a TTS voice service for Openhab 2.x utilizing a Internet based TTS service provided by amazon called Polly. There are five servers set in various geographic locations. It requires a set of API keys provided by Amazon to get access to the service. Provides multiple languages and multiple voices for each language. The free tier includes 5 million characters per month for the first 12 months. Then it's $4 for a million characters after the one year.
 
 ## Samples
+```
+say("Hello there")  
+say("Hello there", "pollytts:Joanne", "enhancedjavasound")  
+say("" + item.state,"pollytts:Joey", "enhancedjavasound")  
+```
 
-say("Hello there")
-say("Hello there", "pollytts:Joanne", "enhancedjavasound")
-say("" + item.state,"pollytts:Joey", "enhancedjavasound")
-```
-```
 
 ## Configuration
 
@@ -29,38 +28,39 @@ Services in AWS, such as Amazon Polly, require that you provide credentials when
 
 Directions are Here: http://docs.aws.amazon.com/polly/latest/dg/setting-up.html
 
-Config values:
+## Config values:
 
 accessKey - required credential provided by Amazon 
 
 secretKey - required credential provided by Amazon
 
-serviceRegion - Required value select region closest for best response. ServiceRegion is one of the following:
-["us-east-2" in US East (Ohio)], ["us-east-1" in US East (N. Virginia)], ["us-west-2" in US West (Oregon)], ["eu-west-1" in EU (Ireland)]
+serviceRegion - Required value select region closest for best response. ServiceRegion is one of the following:  
+["us-east-2" in US East (Ohio)]  
+["us-east-1" in US East (N. Virginia)]  
+["us-west-2" in US West (Oregon)]  
+["eu-west-1" in EU (Ireland)]
 
-cacheExpiration - Cache expiration life in days (Optional value). As Cache files are used their timestamps are updated, files that are never used will be purged if their timestamp exceeds the specified age. If not specified, default value of 0 set to disable functionality.  Example, 365 not used in a year.
+cacheExpiration - Cache expiration life in days (Optional value). As Cache files are used their timestamps are updated, files that are never used will be purged if their timestamp exceeds the specified age. If not specified, default value of 0 set to disable functionality.  
+Example, 365 not used in a year.
 
-audioFormat - Optional User specified audio format. (not enabled, only works under openhab 2.1 )
+audioFormat - (only works under openhab 2.1) Optional User specified audio format. 
 The user can override the system default audio format with their prefered option. 
 "mp3" and "ogg" are the only audio formats that are supported.
 Once specified use "sys" to revert to system default since openhab caches cfg values.
             
 
 
-Contents e.g. :
-######################## Polly  Text-to-Speech Engine ########################
-#configuration data from Amazon Polly Service when registering
-
-accessKey=BKIAJIBOBQWL35PUIQLZ
-
-secretKey=1zv5TS96WiJa/zBobbyeVPdeKrNkui7GwkYD8x
-
-serviceRegion=us-east-1
-
-audioFormat=mp3
-
+### Contents e.g. :  
+```
+######################## Polly  Text-to-Speech Engine ########################  
+#configuration data from Amazon Polly Service when registering  
+accessKey=BKIAJIBOBQWL35PUIQLZ  
+secretKey=1zv5TS96WiJa/zBobbyeVPdeKrNkui7GwkYD8x  
+serviceRegion=us-east-1  
 cacheExpiration=40
-
+audioFormat=mp3  
+###################################
+```
 
 ## Caching
 
