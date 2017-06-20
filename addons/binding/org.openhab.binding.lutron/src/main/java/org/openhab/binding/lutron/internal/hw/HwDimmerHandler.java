@@ -12,12 +12,18 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 
+/**
+ * This class extends the BaseThingHandler to support HomeWorks Dimmer modules.
+ *
+ * @author Andrew Shilliday
+ *
+ */
 public class HwDimmerHandler extends BaseThingHandler {
     // private Logger logger = LoggerFactory.getLogger(HwDimmerHandler.class);
 
-    String address;
-    Integer fadeTime = 1;
-    Integer defaultLevel = 100;
+    private String address;
+    private Integer fadeTime = 1;
+    private Integer defaultLevel = 100;
 
     public HwDimmerHandler(Thing thing) {
         super(thing);

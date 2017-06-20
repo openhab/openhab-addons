@@ -11,6 +11,16 @@ import org.openhab.binding.lutron.internal.LutronHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * The Discovery Service for Lutron HomeWorks processors. There is no great way to automatically
+ * discovery modules in the legacy HomeWorks processor (that I know of) so this service simply iterates
+ * through possible addresses and asks for status on that address. If it's a valid module, the processor will return
+ * with the dimmer status and it will be discovered.
+ *
+ * @author Andrew Shilliday
+ *
+ */
 public class HwDiscoveryService extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(HwDiscoveryService.class);
 
@@ -23,18 +33,20 @@ public class HwDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        // Scan for dimmers
-        try {
-            for (int m = 1; m <= 8; m++) { // Modules
-                for (int o = 1; o <= 4; o++) { // Outputs
-                    String address = String.format("[01:01:00:%02d:%02d]", m, o);
-                    handler.sendCommand("RDL, " + address);
-                    Thread.sleep(5);
+        new Thread(() -> {
+            try {
+                logger.debug("Starting scan for HW Dimmers");
+                for (int m = 1; m <= 8; m++) { // Modules
+                    for (int o = 1; o <= 4; o++) { // Outputs
+                        String address = String.format("[01:01:00:%02d:%02d]", m, o);
+                        handler.sendCommand("RDL, " + address);
+                        Thread.sleep(5);
+                    }
                 }
+            } catch (InterruptedException e) {
+                logger.warn("Scan interrupted");
             }
-        } catch (InterruptedException e) {
-            logger.warn("Scan interrupted");
-        }
+        }).start();
     }
 
     /**

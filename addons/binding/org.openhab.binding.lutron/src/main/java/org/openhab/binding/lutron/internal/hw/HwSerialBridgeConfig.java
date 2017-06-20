@@ -10,7 +10,32 @@ public class HwSerialBridgeConfig {
     public static final String BAUD = "baudRate";
     public static final String UPDATE_TIME = "updateTime";
 
-    public String serialPort;
-    public Integer baudRate;
-    public Boolean updateTime;
+    private String serialPort;
+    private Integer baudRate;
+    private Boolean updateTime;
+
+    public String getSerialPort() {
+        return serialPort;
+    }
+
+    public void setSerialPort(String serialPort) {
+        this.serialPort = serialPort;
+    }
+
+    public Integer getBaudRate() {
+        return baudRate;
+    }
+
+    public void setBaudRate(Integer baudRate) {
+        this.baudRate = baudRate;
+    }
+
+    public Boolean getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Boolean updateTime) {
+        this.updateTime = updateTime;
+    }
+
 }

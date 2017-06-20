@@ -120,7 +120,7 @@ lutron:hwserialbridge:home [serialPort="/dev/ttyUSB1", baudRate="9600]
 Dimmers have one required parameter ``address`` that specifies the device address (e.g., [01:01:03:02:04]) and two optional parameters: ``fadeTime`` which sets the time it takes to set the light level when changed, and ``defaultLevel`` which sets the level to use for the dimmer when turning it on (with a switch rather than a slider).
 
 ```
-lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel="1"] 
+lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel="75"] 
 ```
 
 ## Channels

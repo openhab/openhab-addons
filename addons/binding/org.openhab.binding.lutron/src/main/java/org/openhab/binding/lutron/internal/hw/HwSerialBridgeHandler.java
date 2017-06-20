@@ -36,7 +36,10 @@ import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 
 /**
- * @author andrew
+ *
+ * This is the main handles for HomeWorks RS232 Processors.
+ *
+ * @author Andrew Shilliday
  *
  */
 public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
@@ -64,9 +67,9 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
     public void initialize() {
         logger.debug("Initializing the Lutron HomeWorks RS232 bridge handler");
         HwSerialBridgeConfig configuration = getConfigAs(HwSerialBridgeConfig.class);
-        serialPortName = configuration.serialPort;
-        baudRate = configuration.baudRate.intValue();
-        updateTime = configuration.updateTime;
+        serialPortName = configuration.getSerialPort();
+        baudRate = configuration.getBaudRate().intValue();
+        updateTime = configuration.getUpdateTime();
 
         this.discService = new HwDiscoveryService(this);
         this.discReg = bundleContext.registerService(DiscoveryService.class, discService, null);
@@ -96,7 +99,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             serialPort.enableReceiveThreshold(1);
             serialPort.disableReceiveTimeout();
             serialOutput = new OutputStreamWriter(serialPort.getOutputStream(), "US-ASCII");
-            serialInput = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
+            serialInput = new BufferedReader(new InputStreamReader(serialPort.getInputStream(), "US-ASCII"));
 
             serialPort.addEventListener(this);
             serialPort.notifyOnDataAvailable(true);
