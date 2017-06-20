@@ -96,4 +96,4 @@ Sample: java org.openhab.voice.pollytts.tool.CreateTTSCache --accessKey A1234567
 
 ## Open Issues
 
-* enable ogg format under openhab 2.1 when released
+* tbd
