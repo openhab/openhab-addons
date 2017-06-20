@@ -35,10 +35,10 @@ accessKey - required credential provided by Amazon
 secretKey - required credential provided by Amazon
 
 serviceRegion - Required value select region closest for best response. ServiceRegion is one of the following:  
-["us-east-2" in US East (Ohio)]  
-["us-east-1" in US East (N. Virginia)]  
-["us-west-2" in US West (Oregon)]  
-["eu-west-1" in EU (Ireland)]
+["us-east-2"] in US East (Ohio)  
+["us-east-1"] in US East (N. Virginia)  
+["us-west-2"] in US West (Oregon)  
+["eu-west-1"] in EU (Ireland)
 
 cacheExpiration - Cache expiration life in days (Optional value). As Cache files are used their timestamps are updated, files that are never used will be purged if their timestamp exceeds the specified age. If not specified, default value of 0 set to disable functionality.  
 Example, 365 not used in a year.
