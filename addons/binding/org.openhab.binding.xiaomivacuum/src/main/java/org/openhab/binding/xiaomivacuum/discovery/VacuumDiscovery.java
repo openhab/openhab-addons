@@ -2,8 +2,7 @@
  * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Ecl
- * ipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
@@ -44,15 +43,9 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
     /** The refresh interval for background discovery */
     private static final long SEARCH_INTERVAL = 600;
     private static final int TIMEOUT = 2000;
-    private static final int PORT = 54321;
     private ScheduledFuture<?> roboDiscoveryJob;
-    private Runnable roboDiscoveryRunnable = new Runnable() {
-        @Override
-        public void run() {
-            discover();
-        }
-    };
-    private final static Logger logger = LoggerFactory.getLogger(VacuumDiscovery.class);
+
+    private final Logger logger = LoggerFactory.getLogger(VacuumDiscovery.class);
 
     public VacuumDiscovery() throws IllegalArgumentException {
         super(15);
@@ -62,8 +55,7 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         logger.debug("Start Xiaomi Robot Vacuum background discovery");
         if (roboDiscoveryJob == null || roboDiscoveryJob.isCancelled()) {
-            roboDiscoveryJob = scheduler.scheduleWithFixedDelay(roboDiscoveryRunnable, 0, SEARCH_INTERVAL,
-                    TimeUnit.SECONDS);
+            roboDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> discover(), 0, SEARCH_INTERVAL, TimeUnit.SECONDS);
         }
     }
 
@@ -83,15 +75,16 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
             responses.putAll(sendDiscoveryRequest(broadcastAdress));
         }
         for (Entry<String, byte[]> i : responses.entrySet()) {
-            logger.debug("Discovery responses from : {}:{}", i.getKey(), Utils.getHex(i.getValue()));
+            logger.trace("Discovery responses from : {}:{}", i.getKey(), Utils.getHex(i.getValue()));
             Message msg = new Message(i.getValue());
-            String token = Utils.getHexN(msg.getSerialByte());
+            String token = Utils.getHexN(msg.getChecksum());
             String id = Utils.getHexN(msg.getSerialByte());
             ThingUID uid = new ThingUID(XiaomiVacuumBindingConstants.THING_TYPE_VACUUM, id);
             logger.debug("Discovered Xiaomi Robot Vacuum {} at {}", id, i.getKey());
             if (token.equals("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")) {
                 logger.debug(
-                        "No token discovered for device {}. To discover token reset the vacuum & connect to it's wireless network and re-run discovery");
+                        "No token discovered for device {}. To discover token reset the vacuum & connect to it's wireless network and re-run discovery",
+                        id);
                 thingDiscovered(DiscoveryResultBuilder.create(uid)
                         .withProperty(XiaomiVacuumBindingConstants.PROPERTY_HOST_IP, i.getKey())
                         .withLabel("Xiaomi Robot Vacuum").build());
@@ -108,7 +101,7 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
     /**
      * @return broadcast addresses for all interfaces
      */
-    private static TreeSet<String> getBroadcastAddresses() {
+    private TreeSet<String> getBroadcastAddresses() {
         TreeSet<String> broadcastAddresses = new TreeSet<String>();
         try {
             broadcastAddresses.add("224.0.0.1");
@@ -130,12 +123,12 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
                 }
             }
         } catch (Exception e) {
-            logger.debug("Error collecting broadcast addresses: {}", e.getMessage(), e);
+            logger.trace("Error collecting broadcast addresses: {}", e.getMessage(), e);
         }
         return broadcastAddresses;
     }
 
-    public static HashMap<String, byte[]> sendDiscoveryRequest(String ipAddress) {
+    public HashMap<String, byte[]> sendDiscoveryRequest(String ipAddress) {
         HashMap<String, byte[]> responses = new HashMap<String, byte[]>();
 
         try (DatagramSocket clientSocket = new DatagramSocket()) {
@@ -144,8 +137,8 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
             clientSocket.setSoTimeout(TIMEOUT);
             byte[] sendData = XiaomiVacuumBindingConstants.DISCOVER_STRING;
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(ipAddress),
-                    PORT);
-            for (int i = 1; i < 3; i++) {
+                    XiaomiVacuumBindingConstants.PORT);
+            for (int i = 1; i <= 2; i++) {
                 clientSocket.send(sendPacket);
             }
             sendPacket.setData(new byte[1024]);

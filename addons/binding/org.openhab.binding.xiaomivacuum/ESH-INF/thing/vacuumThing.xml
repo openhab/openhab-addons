@@ -7,24 +7,32 @@
 		<label>Xiaomi Robot Vacuum</label>
 
 		<channel-groups>
-            <channel-group id="actions" typeId="actions" />
+			<channel-group id="actions" typeId="actions" />
 			<channel-group id="status" typeId="status" />
-			<channel-group id="consumables" typeId="consumables" />		
-			<!-- <channel-group id="dnd" typeId="dnd" /> <channel-group id="history" typeId="history" /> -->
+			<channel-group id="consumables" typeId="consumables" />
+			<channel-group id="dnd" typeId="dnd" />
+			<channel-group id="history" typeId="history" />
 		</channel-groups>
 
 		<properties>
 			<property name="vendor">Xiaomi</property>
+			<property name="modelId">rockrobo</property>
 		</properties>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
 				<label>IP address Vacuum</label>
 			</parameter>
-			<parameter name="token" type="text" required="true">
+			<parameter name="token" type="text" pattern="^([A-Fa-f0-9]{32}|.{16})$" required="true">
 				<label>Token</label>
 				<description>Token for communication (in Hex)</description>
 				<default>FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</default>
+			</parameter>
+			<parameter name="serial" type="text" required="false">
+				<label>Serial</label>
+				<description>Serial number for communication (in Hex)</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" max="9999" required="false">
 				<label>Refresh interval</label>
@@ -50,7 +58,6 @@
 			<channel id="battery" typeId="system.battery-level" />
 			<channel id="clean_area" typeId="clean_area" />
 			<channel id="clean_time" typeId="clean_time" />
-			<channel id="dnd_enabled" typeId="dnd_enabled" />
 			<channel id="error_code" typeId="error_code" />
 			<channel id="fan_power" typeId="fan_power" />
 			<channel id="in_cleaning" typeId="in_cleaning" />
@@ -67,6 +74,19 @@
 			<channel id="side_brush_time" typeId="side_brush_time" />
 			<channel id="filter_time" typeId="filter_time" />
 			<channel id="sensor_dirt_time" typeId="sensor_dirt_time" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="dnd">
+		<label>Do not Disturb</label>
+		<channels>
+			<channel id="dnd_enabled" typeId="dnd_enabled" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="history">
+		<label>History</label>
+		<channels>
+			<channel id="clean_area" typeId="clean_area" />
+			<channel id="clean_time" typeId="clean_time" />
 		</channels>
 	</channel-group-type>
 
@@ -98,20 +118,20 @@
 	<channel-type id="in_cleaning">
 		<item-type>Number</item-type>
 		<label>in_cleaning</label>
-		<state pattern="%.0f" readOnly="true" />
+		<state pattern="%.0d" readOnly="true" />
 	</channel-type>
-	<channel-type id="map_present">
+	<channel-type id="map_present" advanced="true">
 		<item-type>Number</item-type>
 		<label>map_present</label>
 		<category>Energy</category>
-		<state pattern="%.0f" readOnly="true" />
+		<state pattern="%.0d" readOnly="true" />
 	</channel-type>
-	<channel-type id="msg_seq">
+	<channel-type id="msg_seq" advanced="true">
 		<item-type>Number</item-type>
 		<label>msg_seq</label>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="msg_ver">
+	<channel-type id="msg_ver" advanced="true">
 		<item-type>Number</item-type>
 		<label>msg_ver</label>
 		<state readOnly="true" />

@@ -8,10 +8,14 @@
  */
 package org.openhab.binding.xiaomivacuum.internal;
 
+import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -35,10 +39,9 @@ public class RoboCrypto {
         return m.digest(ivbuf);
     }
 
-    public static byte[] encrypt(byte[] cipherText, byte[] key, byte[] iv) throws Exception {
+    public static byte[] encrypt(byte[] cipherText, byte[] key, byte[] iv) throws InvalidKeyException,
+            InvalidAlgorithmParameterException, GeneralSecurityException, NoSuchPaddingException {
         IvParameterSpec vector = new IvParameterSpec(iv);
-        // Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        // Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, vector);
@@ -50,8 +53,8 @@ public class RoboCrypto {
         return encrypt(text, md5(token), iv(token));
     }
 
-    public static byte[] decrypt(byte[] cipherText, byte[] key, byte[] iv) throws Exception {
-        // Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    public static byte[] decrypt(byte[] cipherText, byte[] key, byte[] iv) throws InvalidKeyException,
+            InvalidAlgorithmParameterException, GeneralSecurityException, NoSuchPaddingException {
         IvParameterSpec vector = new IvParameterSpec(iv);
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
@@ -60,7 +63,8 @@ public class RoboCrypto {
         return (encrypted);
     }
 
-    public static byte[] decrypt(byte[] cipherText, byte[] token) throws Exception {
+    public static byte[] decrypt(byte[] cipherText, byte[] token) throws InvalidKeyException,
+            InvalidAlgorithmParameterException, GeneralSecurityException, NoSuchPaddingException {
         return decrypt(cipherText, md5(token), iv(token));
     }
 

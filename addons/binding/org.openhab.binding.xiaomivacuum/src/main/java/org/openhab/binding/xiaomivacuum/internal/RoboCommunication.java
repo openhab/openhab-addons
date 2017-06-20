@@ -9,6 +9,7 @@
 
 package org.openhab.binding.xiaomivacuum.internal;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -24,17 +25,16 @@ import org.slf4j.LoggerFactory;
  */
 public class RoboCommunication {
 
-    private static final int PORT = 54321;
     private static final int TIMEOUT = 5000;
 
-    private final static Logger logger = LoggerFactory.getLogger(RoboCommunication.class);
+    private final Logger logger = LoggerFactory.getLogger(RoboCommunication.class);
 
-    private String ip;
-    private byte[] token;
+    private final String ip;
+    private final byte[] token;
     private byte[] serial;
-    private int id;
+    private volatile int id;
 
-    public RoboCommunication(String ip, byte[] token) throws Exception {
+    public RoboCommunication(String ip, byte[] token) throws IOException {
         this.ip = ip;
         this.token = token;
         byte[] response = comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, ip);
@@ -42,59 +42,59 @@ public class RoboCommunication {
         setSerial(roboResponse.getSerialByte());
     }
 
+    public RoboCommunication(String ip, byte[] token, byte[] serial) throws IOException {
+        this.ip = ip;
+        this.token = token;
+        this.serial = serial;
+    }
+
     public String sendCommand(VacuumCommand command) {
-        id += 1;
-        return sendCommand("{'method': '" + command.getCommand() + "', 'id': " + Integer.toString(id) + "}", token, ip,
-                serial);
+        return sendCommand(command, "");
     }
 
     public String sendCommand(VacuumCommand command, String params) {
         id += 1;
-        return sendCommand("{'method': '" + command.getCommand() + "', 'params': [" + params + "], 'id': "
-                + Integer.toString(id) + "}", token, ip, serial);
-    }
-
-    public final static String sendCommand(VacuumCommand command, int id, byte[] token, String ip, byte[] serial) {
-        return sendCommand("{'method': '" + command.getCommand() + "', 'id': " + Integer.toString(id) + "}", token, ip,
-                serial);
-    }
-
-    public final static String sendCommand(String command, byte[] token, String IP, byte[] serial) {
-
-        byte[] encr;
+        if (params.length() > 0) {
+            params = "'params': [" + params + "],";
+        }
+        String fullCommand = "{'method': '" + command.getCommand() + "', " + params + "'id': " + Integer.toString(id)
+                + "}";
+        logger.debug("Send command: {} -> {} (token: {})", fullCommand, ip, new String(token));
+        String response;
         try {
-            encr = RoboCrypto.encrypt(command.concat("\0").getBytes(), token);
-            logger.debug("Send command: {} -> {} (token: {})", command, IP, new String(token));
-            byte[] response = comms(Message.createMsgData(encr, token, serial), IP);
-            Message roboResponse = new Message(response);
-            String decryptedResponse = new String(RoboCrypto.decrypt(roboResponse.getData(), token)).trim();
-            logger.debug("respone {}", decryptedResponse);
-            return decryptedResponse;
-
+            response = sendCommand(fullCommand, token, ip, serial);
+            logger.debug("respone {}", response);
+            return response;
         } catch (Exception e) {
-            logger.debug("Failed to process data {}", e);
-
+            logger.debug("Error while sending command: {}", e.getMessage());
         }
         return null;
     }
 
-    public static byte[] comms(byte[] message, String IP) throws Exception {
+    public static final String sendCommand(VacuumCommand command, int id, byte[] token, String ip, byte[] serial)
+            throws Exception {
+        return sendCommand("{'method': '" + command.getCommand() + "', 'id': " + Integer.toString(id) + "}", token, ip,
+                serial);
+    }
 
-        // DatagramSocket clientSocket = new DatagramSocket(PORT);
+    public static final String sendCommand(String command, byte[] token, String ip, byte[] serial) throws Exception {
+        byte[] encr;
+        encr = RoboCrypto.encrypt(command.concat("\0").getBytes(), token);
+        byte[] response = comms(Message.createMsgData(encr, token, serial), ip);
+        Message roboResponse = new Message(response);
+        String decryptedResponse = new String(RoboCrypto.decrypt(roboResponse.getData(), token)).trim();
+        return decryptedResponse;
+    }
+
+    public static byte[] comms(byte[] message, String ip) throws IOException {
         DatagramSocket clientSocket = new DatagramSocket();
-
-        InetAddress IPAddress = InetAddress.getByName(IP);
+        InetAddress ipAddress = InetAddress.getByName(ip);
         byte[] sendData = new byte[1024];
-        // byte[] receiveData = new byte[1024];
-
-        // InetSocketAddress address = new InetSocketAddress("0.0.0.0", PORT);
-        // clientSocket.bind(address);
         clientSocket.setSoTimeout(TIMEOUT);
         sendData = message;
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, PORT);
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress,
+                XiaomiVacuumBindingConstants.PORT);
         clientSocket.send(sendPacket);
-        // DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-        // clientSocket.receive(receivePacket);
         sendPacket.setData(new byte[1024]);
         clientSocket.receive(sendPacket);
         byte[] response = sendPacket.getData();

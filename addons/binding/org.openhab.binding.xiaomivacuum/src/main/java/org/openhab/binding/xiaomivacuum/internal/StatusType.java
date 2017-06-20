@@ -34,7 +34,7 @@ public enum StatusType {
     FULL(100, "Full");
 
     private final int id;
-    private String description;
+    private final String description;
 
     StatusType(int id, String description) {
         this.id = id;

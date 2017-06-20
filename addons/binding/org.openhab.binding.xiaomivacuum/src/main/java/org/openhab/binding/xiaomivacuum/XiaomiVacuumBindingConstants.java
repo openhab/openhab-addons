@@ -14,12 +14,12 @@ import java.util.Set;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link XiaomiVacuumBindingConstants} class defines common constants, which are
+ * The {@link XiaomiVacuumBindingConfiguration} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public final class XiaomiVacuumBindingConstants {
+public final class XiaomiVacuumBindingConstants{
 
     public static final String BINDING_ID = "xiaomivacuum";
 
@@ -31,7 +31,7 @@ public final class XiaomiVacuumBindingConstants {
     // List of all Channel IDs
     public static final String CHANNEL_BATTERY = "status#battery";
     public static final String CHANNEL_CLEAN_AREA = "status#clean_area";
-    public static final String CHANNEL_CLEAN_TIME_ = "status#clean_time";
+    public static final String CHANNEL_CLEAN_TIME = "status#clean_time";
     public static final String CHANNEL_DND_ENABLED = "status#dnd_enabled";
     public static final String CHANNEL_ERROR_CODE = "status#error_code";
     public static final String CHANNEL_FAN_POWER = "status#fan_power";
@@ -52,6 +52,7 @@ public final class XiaomiVacuumBindingConstants {
     public static final String CHANNEL_CONSUMABLE_SENSOR = "consumables#sensor_dirt_time";
 
     public static final String PROPERTY_HOST_IP = "host";
+    public static final String PROPERTY_SERIAL = "serial";
     public static final String PROPERTY_TOKEN = "token";
     public static final String PROPERTY_REFRESH_INTERVAL = "refreshInterval";
 

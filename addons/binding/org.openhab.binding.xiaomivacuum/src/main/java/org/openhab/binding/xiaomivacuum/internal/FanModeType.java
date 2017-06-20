@@ -22,7 +22,7 @@ public enum FanModeType {
     UNKNOWN(-1, "Unknown");
 
     private final int id;
-    private String description;
+    private final String description;
 
     FanModeType(int id, String description) {
         this.id = id;

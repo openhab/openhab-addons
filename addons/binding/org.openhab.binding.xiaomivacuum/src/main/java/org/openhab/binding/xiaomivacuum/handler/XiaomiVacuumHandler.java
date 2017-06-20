@@ -10,11 +10,13 @@ package org.openhab.binding.xiaomivacuum.handler;
 
 import static org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -26,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConfiguration;
 import org.openhab.binding.xiaomivacuum.internal.RoboCommunication;
 import org.openhab.binding.xiaomivacuum.internal.StatusType;
 import org.openhab.binding.xiaomivacuum.internal.Utils;
@@ -49,14 +52,11 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     private ScheduledFuture<?> pollingJob;
 
     private JsonParser parser;
-    private String ip;
     private byte[] token;
 
-    private final int CACHE_EXPIRY = 5 * 1000; // 5s
+    private final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
     private ExpiringCache<String> status;
-
     private ExpiringCache<String> consumables;
-
     private RoboCommunication roboCom;
 
     public XiaomiVacuumHandler(Thing thing) {
@@ -66,6 +66,10 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (roboCom == null) {
+            logger.debug("Vacuum {} not online. Command {} ignored", getThing().getUID(), command.toString());
+            return;
+        }
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing {}", channelUID);
             updateData();
@@ -102,54 +106,32 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Xiaomi Robot Vacuum handler '{}'", getThing().getUID());
 
-        Object param;
+        XiaomiVacuumBindingConfiguration configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
+        boolean tokenFailed = false;
+        String tokenSting = configuration.token;
+        switch (tokenSting.length()) {
+            case 32:
+                if (tokenSting.equals("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")) {
+                    tokenFailed = true;
+                } else {
+                    token = Utils.hexStringToByteArray(tokenSting);
 
-        param = getConfig().get(PROPERTY_HOST_IP);
-        if (param instanceof String) {
-            ip = ((String) param);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing IP");
-        }
-
-        param = getConfig().get(PROPERTY_TOKEN);
-        if (param instanceof String) {
-            String tokenSting = (String) param;
-            if (tokenSting.length() == 32) {
-                token = Utils.hexStringToByteArray(tokenSting);
-            } else if (tokenSting.length() == 16) {
+                }
+                break;
+            case 16:
                 token = tokenSting.getBytes();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "token length error token");
-            }
-            logger.debug("Initializing Xiaomi Robot Vacuum token  '{}'", param);
-
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "token error");
+                break;
+            default:
+                tokenFailed = true;
         }
-
-        int pollingPeriod = 30;
-        param = getConfig().get(PROPERTY_REFRESH_INTERVAL);
-        if (param instanceof BigDecimal) {
-            pollingPeriod = ((BigDecimal) param).intValue();
-        }
-
-        try {
-            roboCom = new RoboCommunication(ip, token);
-            updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getHex(roboCom.getSerial()));
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        if (tokenFailed) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
         }
-        updateProperty(Thing.PROPERTY_VENDOR, "Xiaomi");
-        updateProperty(Thing.PROPERTY_MODEL_ID, "rockrobo");
 
-        status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            return roboCom.sendCommand(VacuumCommand.GET_STATUS);
-        });
-        consumables = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            return roboCom.sendCommand(VacuumCommand.CONSUMABLES_GET);
-        });
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, pollingPeriod, TimeUnit.SECONDS);
+        scheduler.schedule(this::updateConnection, 0, TimeUnit.SECONDS);
+        int pollingPeriod = configuration.refreshInterval;
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 5, pollingPeriod, TimeUnit.SECONDS);
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
     }
 
@@ -160,6 +142,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
+        roboCom = null;
     }
 
     private JsonObject getResult(String res) {
@@ -171,94 +154,126 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         return result;
     }
 
-    private String updateVacuumStatus() {
-        String err = null;
-        try {
-            JsonObject statusData = getResult(status.getValue());
-            if (statusData == null) {
-                err = "no response";
-                return err;
-            }
-            updateState(CHANNEL_BATTERY, new DecimalType(statusData.get("battery").getAsBigDecimal()));
-            updateState(CHANNEL_CLEAN_AREA, new DecimalType(statusData.get("clean_area").getAsDouble() / 1000000.0));
-            updateState(CHANNEL_CLEAN_TIME_, new DecimalType(statusData.get("clean_time").getAsBigDecimal()
-                    .divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
-            updateState(CHANNEL_DND_ENABLED, new DecimalType(statusData.get("dnd_enabled").getAsBigDecimal()));
-            updateState(CHANNEL_ERROR_CODE,
-                    new StringType(VacuumErrorType.getType(statusData.get("error_code").getAsInt()).getDescription()));
-            updateState(CHANNEL_FAN_POWER, new DecimalType(statusData.get("fan_power").getAsBigDecimal()));
-            updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsBigDecimal()));
-            updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
-            updateState(CHANNEL_MSG_SEQ, new DecimalType(statusData.get("msg_seq").getAsBigDecimal()));
-            updateState(CHANNEL_MSG_VER, new DecimalType(statusData.get("msg_ver").getAsBigDecimal()));
-            StatusType state = StatusType.getType(statusData.get("state").getAsInt());
-            updateState(CHANNEL_STATE, new StringType(state.getDescription()));
-            if (state.equals(StatusType.CLEANING)) {
-                updateState(CHANNEL_VACUUM, OnOffType.ON);
-            } else {
-                updateState(CHANNEL_VACUUM, OnOffType.OFF);
-            }
-            if (state.equals(StatusType.RETURNING)) {
-                updateState(CHANNEL_RETURN, OnOffType.ON);
-            } else {
-                updateState(CHANNEL_RETURN, OnOffType.OFF);
-            }
-            if (state.equals(StatusType.SPOTCLEAN)) {
-                updateState(CHANNEL_SPOT, OnOffType.ON);
-            } else {
-                updateState(CHANNEL_SPOT, OnOffType.OFF);
-            }
-            if (state.equals(StatusType.PAUSED)) {
-                updateState(CHANNEL_PAUSE, OnOffType.ON);
-            } else {
-                updateState(CHANNEL_PAUSE, OnOffType.OFF);
-            }
-        } catch (Exception e) {
-            err = "Failed to process vacuum data";
-            logger.debug(err, e);
-            return err;
+    private boolean updateVacuumStatus() {
+        JsonObject statusData = getResult(status.getValue());
+        if (statusData == null) {
+            disconnected("No valid status response");
+            return false;
         }
-
-        return err;
+        updateState(CHANNEL_BATTERY, new DecimalType(statusData.get("battery").getAsBigDecimal()));
+        updateState(CHANNEL_CLEAN_AREA, new DecimalType(statusData.get("clean_area").getAsDouble() / 1000000.0));
+        updateState(CHANNEL_CLEAN_TIME, new DecimalType(
+                statusData.get("clean_time").getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
+        updateState(CHANNEL_DND_ENABLED, new DecimalType(statusData.get("dnd_enabled").getAsBigDecimal()));
+        updateState(CHANNEL_ERROR_CODE,
+                new StringType(VacuumErrorType.getType(statusData.get("error_code").getAsInt()).getDescription()));
+        updateState(CHANNEL_FAN_POWER, new DecimalType(statusData.get("fan_power").getAsBigDecimal()));
+        updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsBigDecimal()));
+        updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
+        updateState(CHANNEL_MSG_SEQ, new DecimalType(statusData.get("msg_seq").getAsBigDecimal()));
+        updateState(CHANNEL_MSG_VER, new DecimalType(statusData.get("msg_ver").getAsBigDecimal()));
+        StatusType state = StatusType.getType(statusData.get("state").getAsInt());
+        updateState(CHANNEL_STATE, new StringType(state.getDescription()));
+        if (state.equals(StatusType.CLEANING)) {
+            updateState(CHANNEL_VACUUM, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_VACUUM, OnOffType.OFF);
+        }
+        if (state.equals(StatusType.RETURNING)) {
+            updateState(CHANNEL_RETURN, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_RETURN, OnOffType.OFF);
+        }
+        if (state.equals(StatusType.SPOTCLEAN)) {
+            updateState(CHANNEL_SPOT, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_SPOT, OnOffType.OFF);
+        }
+        if (state.equals(StatusType.PAUSED)) {
+            updateState(CHANNEL_PAUSE, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_PAUSE, OnOffType.OFF);
+        }
+        return true;
     }
 
-    private String updateConsumables() {
-        String err = null;
-        try {
-            JsonObject statusData = getResult(consumables.getValue());
-            if (statusData == null) {
-                err = "no response";
-                return err;
-            }
-            logger.debug("consumable {}", statusData);
-            updateState(CHANNEL_CONSUMABLE_MAIN, new DecimalType(statusData.get("main_brush_work_time")
-                    .getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
-            updateState(CHANNEL_CONSUMABLE_SIDE, new DecimalType(statusData.get("side_brush_work_time")
-                    .getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
-            updateState(CHANNEL_CONSUMABLE_FILTER, new DecimalType(statusData.get("filter_work_time").getAsBigDecimal()
-                    .divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
-            updateState(CHANNEL_CONSUMABLE_SENSOR, new DecimalType(statusData.get("sensor_dirty_time").getAsBigDecimal()
-                    .divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
-        } catch (Exception e) {
-            err = "Failed to process vacuum data";
-            logger.debug(err, e);
-            return err;
+    private boolean updateConsumables() {
+        JsonObject consumablesData = getResult(consumables.getValue());
+        if (consumablesData == null) {
+            disconnected("No valid consumables response");
+            return false;
         }
-
-        return err;
+        updateState(CHANNEL_CONSUMABLE_MAIN, new DecimalType(consumablesData.get("main_brush_work_time")
+                .getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
+        updateState(CHANNEL_CONSUMABLE_SIDE, new DecimalType(consumablesData.get("side_brush_work_time")
+                .getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
+        updateState(CHANNEL_CONSUMABLE_FILTER, new DecimalType(consumablesData.get("filter_work_time").getAsBigDecimal()
+                .divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
+        updateState(CHANNEL_CONSUMABLE_SENSOR, new DecimalType(consumablesData.get("sensor_dirty_time")
+                .getAsBigDecimal().divide(new BigDecimal(60), 2, RoundingMode.HALF_EVEN)));
+        return true;
     }
 
     private synchronized void updateData() {
         logger.debug("Update vacuum status'{}'", getThing().getUID());
-
-        String res = updateVacuumStatus();
-        res += updateConsumables();
-        if (res != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, res);
+        if (!hasConnection()) {
+            return;
         }
-
-        if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+        if (updateVacuumStatus() && updateConsumables()) {
             updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    private void disconnected(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
+        roboCom = null;
+    }
+
+    private boolean hasConnection() {
+        if (roboCom != null) {
+            return true;
+        }
+        return updateConnection();
+    }
+
+    private boolean updateConnection() {
+        this.roboCom = getConnection();
+        if (roboCom == null) {
+            return false;
+        }
+        status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            return roboCom.sendCommand(VacuumCommand.GET_STATUS);
+        });
+        consumables = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            return roboCom.sendCommand(VacuumCommand.CONSUMABLES_GET);
+        });
+        updateStatus(ThingStatus.ONLINE);
+        return true;
+    }
+
+    private RoboCommunication getConnection() {
+        if (roboCom != null) {
+            return roboCom;
+        }
+        XiaomiVacuumBindingConfiguration configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
+        String serial = configuration.serial;
+        try {
+            if (serial != null && serial.length() == 8) {
+                logger.debug("Using vacuum serial {}", serial);
+                roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(serial));
+                return roboCom;
+            } else {
+                logger.debug("Getting vacuum serial");
+                roboCom = new RoboCommunication(configuration.host, token);
+                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getHex(roboCom.getSerial()));
+                Configuration config = editConfiguration();
+                config.put(PROPERTY_SERIAL, Utils.getHexN(roboCom.getSerial()));
+                updateConfiguration(config);
+                return roboCom;
+            }
+        } catch (IOException e) {
+            disconnected(e.getMessage());
+            return null;
         }
     }
 }

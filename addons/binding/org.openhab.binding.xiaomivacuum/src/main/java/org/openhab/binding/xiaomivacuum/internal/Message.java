@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The {@link Message} is responsible for creating Xiaomi messages.
@@ -26,7 +27,7 @@ public class Message {
 
     private byte[] data;
     private byte[] header;
-    private byte[] magic = Utils.hexStringToByteArray("2131");
+    private byte[] magic;
     private int length = 0;
     private byte[] unknowns = new byte[4];
 
@@ -81,7 +82,7 @@ public class Message {
     private static int nowtimestamp() {
         Date now = new Date();
         now = Calendar.getInstance().getTime();
-        Long longTime = new Long(now.getTime() / 1000);
+        Long longTime = TimeUnit.MILLISECONDS.toSeconds(now.getTime());
         return longTime.intValue();
     }
 
