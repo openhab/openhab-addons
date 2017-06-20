@@ -30,8 +30,4 @@ class PollyTTSAudioStream extends FileAudioStream {
         super(audioFile, format);
     }
 
-    public PollyTTSAudioStream(File audioFile) throws AudioException {
-        super(audioFile);
-    }
-
 }

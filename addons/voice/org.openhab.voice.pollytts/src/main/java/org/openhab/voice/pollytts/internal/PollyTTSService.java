@@ -41,11 +41,6 @@ public class PollyTTSService implements TTSService {
 
     private final Logger logger = LoggerFactory.getLogger(PollyTTSService.class);
 
-    // temp fix to function under 2.0.0 and disable audio format selection
-    // to be removed for 2.1
-    // private static final String version = OpenHAB.getVersion();
-    private static final String version = "2.0.0";
-
     // Keys come from ConfigAdmin
     private static final String CONFIG_ACCESS_KEY = "accessKey";
     private static final String CONFIG_SECRET_KEY = "secretKey";
@@ -153,14 +148,7 @@ public class PollyTTSService implements TTSService {
                 throw new TTSException("Could not read from PollyTTS service");
             }
 
-            AudioStream audioStream = null;
-            /// adjust stream method based on version 2.0 old, 2.1+ new method
-
-            if (version.equals("2.0.0")) {
-                audioStream = new PollyTTSAudioStream(cacheAudioFile);
-            } else {
-                audioStream = new PollyTTSAudioStream(cacheAudioFile, requestedFormat);
-            }
+            AudioStream audioStream = new PollyTTSAudioStream(cacheAudioFile, requestedFormat);
             return audioStream;
         } catch (AudioException ex) {
             throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
@@ -222,7 +210,8 @@ public class PollyTTSService implements TTSService {
     }
 
     private final String getApiAudioFormat(AudioFormat format) {
-        if (!PollyClientConfig.getAudioFormat().equals("sys") && !version.equals("2.0.0")) {
+        if (!PollyClientConfig.getAudioFormat().equals("sys")) {
+            // Override system specified with user prefered value
             return PollyClientConfig.getAudioFormat();
         }
         if (format.getCodec().equals(AudioFormat.CODEC_MP3)) {
