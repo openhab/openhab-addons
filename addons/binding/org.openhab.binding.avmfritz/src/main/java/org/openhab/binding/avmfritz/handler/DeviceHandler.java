@@ -187,27 +187,22 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                     if (command.equals(MODE_ON)) {
                         BigDecimal settemp = (BigDecimal) getThing().getConfiguration().get(THING_SETTEMP);
                         fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(settemp));
-                        Channel channelSetTemp = getThing().getChannel(CHANNEL_SETTEMP);
-                        updateState(channelSetTemp.getUID(), new DecimalType(settemp));
+                        updateState(CHANNEL_SETTEMP, new DecimalType(settemp));
                     } else if (command.equals(MODE_OFF)) {
                         fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_OFF);
-                        Channel channelSetTemp = getThing().getChannel(CHANNEL_SETTEMP);
-                        updateState(channelSetTemp.getUID(),
+                        updateState(CHANNEL_SETTEMP,
                                 new DecimalType(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_OFF)));
                     } else if (command.equals(MODE_COMFORT)) {
                         BigDecimal comfort_temp = (BigDecimal) getThing().getConfiguration().get(THING_COMFORTTEMP);
                         fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(comfort_temp));
-                        Channel channelSetTemp = getThing().getChannel(CHANNEL_SETTEMP);
-                        updateState(channelSetTemp.getUID(), new DecimalType(comfort_temp));
+                        updateState(CHANNEL_SETTEMP, new DecimalType(comfort_temp));
                     } else if (command.equals(MODE_ECO)) {
                         BigDecimal eco_temp = (BigDecimal) getThing().getConfiguration().get(THING_ECOTEMP);
                         fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(eco_temp));
-                        Channel channelSetTemp = getThing().getChannel(CHANNEL_SETTEMP);
-                        updateState(channelSetTemp.getUID(), new DecimalType(eco_temp));
+                        updateState(CHANNEL_SETTEMP, new DecimalType(eco_temp));
                     } else if (command.equals(MODE_BOOST)) {
                         fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_MAX);
-                        Channel channelSetTemp = getThing().getChannel(CHANNEL_SETTEMP);
-                        updateState(channelSetTemp.getUID(),
+                        updateState(CHANNEL_SETTEMP,
                                 new DecimalType(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_MAX)));
                     } else {
                         logger.warn("Received unknown command {} for channel {}", command.toString(),
@@ -268,101 +263,57 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
         if (device.getPresent() == 1) {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
             if (device.isTempSensor() && device.getTemperature() != null) {
-                Channel channelTemp = thing.getChannel(CHANNEL_TEMP);
-                updateState(channelTemp.getUID(), new DecimalType(device.getTemperature().getCelsius()));
+                updateState(CHANNEL_TEMP, new DecimalType(device.getTemperature().getCelsius()));
             }
             if (device.isPowermeter() && device.getPowermeter() != null) {
-                Channel channelEnergy = thing.getChannel(CHANNEL_ENERGY);
-                updateState(channelEnergy.getUID(), new DecimalType(device.getPowermeter().getEnergy()));
-                Channel channelPower = thing.getChannel(CHANNEL_POWER);
-                updateState(channelPower.getUID(), new DecimalType(device.getPowermeter().getPower()));
+                updateState(CHANNEL_ENERGY, new DecimalType(device.getPowermeter().getEnergy()));
+                updateState(CHANNEL_POWER, new DecimalType(device.getPowermeter().getPower()));
             }
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
-                Channel channelMode = thing.getChannel(CHANNEL_MODE);
-                if (channelMode != null) {
-                    updateState(channelMode.getUID(), new StringType(device.getSwitch().getMode()));
-                } else {
-                    logger.warn("Channel {} in thing {} does not exist, please recreate the thing", CHANNEL_MODE,
-                            thing.getUID());
-                }
-                Channel channelLocked = thing.getChannel(CHANNEL_LOCKED);
-                if (channelLocked != null) {
-                    updateState(channelLocked.getUID(), device.getSwitch().getLock().equals(BigDecimal.ONE)
-                            ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-                } else {
-                    logger.warn("Channel {} in thing {} does not exist, please recreate the thing", CHANNEL_LOCKED,
-                            thing.getUID());
-                }
+                updateState(CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
+                updateState(CHANNEL_LOCKED, device.getSwitch().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
+                        : OpenClosedType.OPEN);
                 Channel channelSwitch = thing.getChannel(CHANNEL_SWITCH);
                 if (device.getSwitch().getState() == null) {
-                    updateState(channelSwitch.getUID(), UnDefType.UNDEF);
-                } else if (device.getSwitch().getState().equals(SwitchModel.ON)) {
-                    updateState(channelSwitch.getUID(), OnOffType.ON);
-                } else if (device.getSwitch().getState().equals(SwitchModel.OFF)) {
-                    updateState(channelSwitch.getUID(), OnOffType.OFF);
+                    updateState(CHANNEL_SWITCH, UnDefType.UNDEF);
                 } else {
-                    logger.warn("Received unknown value {} for channel {}", device.getSwitch().getState(),
-                            channelSwitch.getUID());
+                    updateState(CHANNEL_SWITCH,
+                            device.getSwitch().getState().equals(SwitchModel.ON) ? OnOffType.ON : OnOffType.OFF);
                 }
             }
             if (device.isHeatingThermostat() && device.getHkr() != null) {
-                Channel channelMode = thing.getChannel(CHANNEL_MODE);
-                if (channelMode != null) {
-                    updateState(channelMode.getUID(), new StringType(device.getHkr().getMode()));
-                } else {
-                    logger.warn("Channel {} in thing {} does not exist, please recreate the thing", CHANNEL_MODE,
-                            thing.getUID());
-                }
-                Channel channelLocked = thing.getChannel(CHANNEL_LOCKED);
-                if (channelLocked != null) {
-                    updateState(channelLocked.getUID(), device.getHkr().getLock().equals(BigDecimal.ONE)
-                            ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-                } else {
-                    logger.warn("Channel {} in thing {} does not exist, please recreate the thing", CHANNEL_LOCKED,
-                            thing.getUID());
-                }
-                Channel channelActualTemp = thing.getChannel(CHANNEL_ACTUALTEMP);
-                updateState(channelActualTemp.getUID(),
-                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
+                updateState(CHANNEL_MODE, new StringType(device.getHkr().getMode()));
+                updateState(CHANNEL_LOCKED,
+                        device.getHkr().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+                updateState(CHANNEL_ACTUALTEMP, new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
                 BigDecimal settemp = HeatingModel.toCelsius(device.getHkr().getTsoll());
                 if (HeatingModel.inCelsiusRange(settemp)) {
                     thing.getConfiguration().put(THING_SETTEMP, settemp);
                 }
-                Channel channelSetTemp = thing.getChannel(CHANNEL_SETTEMP);
-                updateState(channelSetTemp.getUID(), new DecimalType(settemp));
+                updateState(CHANNEL_SETTEMP, new DecimalType(settemp));
                 BigDecimal ecotemp = HeatingModel.toCelsius(device.getHkr().getAbsenk());
                 thing.getConfiguration().put(THING_ECOTEMP, ecotemp);
-                Channel channelEcoTemp = thing.getChannel(CHANNEL_ECOTEMP);
-                updateState(channelEcoTemp.getUID(), new DecimalType(ecotemp));
+                updateState(CHANNEL_ECOTEMP, new DecimalType(ecotemp));
                 BigDecimal comforttemp = HeatingModel.toCelsius(device.getHkr().getKomfort());
                 thing.getConfiguration().put(THING_COMFORTTEMP, comforttemp);
-                Channel channelComfortTemp = thing.getChannel(CHANNEL_COMFORTTEMP);
-                updateState(channelComfortTemp.getUID(), new DecimalType(comforttemp));
-                Channel channelRadiatorMode = thing.getChannel(CHANNEL_RADIATOR_MODE);
-                updateState(channelRadiatorMode.getUID(), new StringType(device.getHkr().getRadiatorMode()));
+                updateState(CHANNEL_COMFORTTEMP, new DecimalType(comforttemp));
+                updateState(CHANNEL_RADIATOR_MODE, new StringType(device.getHkr().getRadiatorMode()));
                 if (device.getHkr().getNextchange() != null) {
-                    Channel channelNextChange = thing.getChannel(CHANNEL_NEXTCHANGE);
                     if (device.getHkr().getNextchange().getEndperiod() == 0) {
-                        updateState(channelNextChange.getUID(), UnDefType.UNDEF);
+                        updateState(CHANNEL_NEXTCHANGE, UnDefType.UNDEF);
                     } else {
                         Calendar calendar = Calendar.getInstance();
                         calendar.setTime(new Date(device.getHkr().getNextchange().getEndperiod() * 1000L));
-                        updateState(channelNextChange.getUID(), new DateTimeType(calendar));
+                        updateState(CHANNEL_NEXTCHANGE, new DateTimeType(calendar));
                     }
-                    Channel channelNextTemp = thing.getChannel(CHANNEL_NEXTTEMP);
-                    updateState(channelNextTemp.getUID(),
+                    updateState(CHANNEL_NEXTTEMP,
                             new DecimalType(HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange())));
                 }
-                Channel channelBattery = thing.getChannel(CHANNEL_BATTERY);
                 if (device.getHkr().getBatterylow() == null) {
-                    updateState(channelBattery.getUID(), UnDefType.UNDEF);
-                } else if (device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_ON)) {
-                    updateState(channelBattery.getUID(), OnOffType.ON);
-                } else if (device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_OFF)) {
-                    updateState(channelBattery.getUID(), OnOffType.OFF);
+                    updateState(CHANNEL_BATTERY, UnDefType.UNDEF);
                 } else {
-                    logger.warn("Received unknown value {} for channel {}", device.getHkr().getBatterylow(),
-                            channelBattery.getUID());
+                    updateState(CHANNEL_BATTERY, device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_ON)
+                            ? OnOffType.ON : OnOffType.OFF);
                 }
             }
             // save AIN to config for PL546E standalone
