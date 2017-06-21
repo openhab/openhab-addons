@@ -11,7 +11,7 @@ package org.openhab.binding.xiaomivacuum.internal;
 /**
  * List of Errors
  * derived from vacuum_cleaner-EN.pdf
- * 
+ *
  * @author Marcel Verpaalen - Initial contribution
  */
 public enum VacuumErrorType {
@@ -36,10 +36,10 @@ public enum VacuumErrorType {
     ERROR017(17, "Side brushes problem, reboot me"),
     ERROR018(18, "Suction fan problem"),
     ERROR019(19, "Unpowered charging station"),
-    UNKNOWN(-1, "Unknown Errpr");
+    UNKNOWN(-1, "Unknown Error");
 
     private final int id;
-    private String description;
+    private final String description;
 
     VacuumErrorType(int id, String description) {
         this.id = id;
@@ -65,6 +65,6 @@ public enum VacuumErrorType {
 
     @Override
     public String toString() {
-        return "Error " + Integer.toString(id) + " - " + description;
+        return "Error " + Integer.toString(id) + ": " + description;
     }
 }

@@ -9,7 +9,6 @@
 package org.openhab.binding.xiaomivacuum.internal;
 
 import java.nio.ByteBuffer;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -51,11 +50,11 @@ public class Message {
         this.data = java.util.Arrays.copyOfRange(raw, 32, length);
     }
 
-    public static Message createMsg(byte[] data, byte[] token, byte[] serial) throws NoSuchAlgorithmException {
+    public static Message createMsg(byte[] data, byte[] token, byte[] serial) throws RoboCryptoException {
         return new Message(createMsgData(data, token, serial));
     }
 
-    public static byte[] createMsgData(byte[] data, byte[] token, byte[] serial) throws NoSuchAlgorithmException {
+    public static byte[] createMsgData(byte[] data, byte[] token, byte[] serial) throws RoboCryptoException {
         short msgLength = (short) (data.length + 32);
         ByteBuffer header = ByteBuffer.allocate(16);
         header.put(MAGIC);
@@ -71,7 +70,7 @@ public class Message {
         return msg.array();
     }
 
-    public static byte[] getChecksum(byte[] header, byte[] token, byte[] data) throws NoSuchAlgorithmException {
+    public static byte[] getChecksum(byte[] header, byte[] token, byte[] data) throws RoboCryptoException {
         ByteBuffer msg = ByteBuffer.allocate(header.length + token.length + data.length);
         msg.put(header);
         msg.put(token);
@@ -80,36 +79,32 @@ public class Message {
     }
 
     private static int nowtimestamp() {
-        Date now = new Date();
-        now = Calendar.getInstance().getTime();
-        Long longTime = TimeUnit.MILLISECONDS.toSeconds(now.getTime());
+        Long longTime = TimeUnit.MILLISECONDS.toSeconds(Calendar.getInstance().getTime().getTime());
         return longTime.intValue();
     }
 
     public String toSting() {
 
         long ts = ByteBuffer.wrap(tsByte).getInt();
-        Date date = new Date(ts * 1000L);
-
+        Date date = new Date(TimeUnit.SECONDS.toMillis(ts));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-
         sdf.setTimeZone(TimeZone.getDefault());
-
         String formattedDate = sdf.format(date);
 
-        String s = "Message:\r\nHeader  : " + Utils.getHex(header) + "\r\nchecksum: " + Utils.getHex(checksum);
+        String s = "Message:\r\nHeader  : " + Utils.getSpacedHex(header) + "\r\nchecksum: "
+                + Utils.getSpacedHex(checksum);
         if (getLength() > 32) {
-            s += "\r\ncontent : " + Utils.getHex(data);
+            s += "\r\ncontent : " + Utils.getSpacedHex(data);
         } else {
             s += "\r\ncontent : N/A";
         }
-        s += "\r\nHeader Details: Magic:" + Utils.getHex(magic) + "\r\nLength:   " + Integer.toString(length);
-        s += "\r\nSerial:   " + Utils.getHex(serialByte) + "\r\nTS:" + formattedDate;
+        s += "\r\nHeader Details: Magic:" + Utils.getSpacedHex(magic) + "\r\nLength:   " + Integer.toString(length);
+        s += "\r\nSerial:   " + Utils.getSpacedHex(serialByte) + "\r\nTS:" + formattedDate;
         return s;
     }
 
     /**
-     * @return the data
+     * @return the data block
      */
     public byte[] getData() {
         return data;
@@ -179,21 +174,21 @@ public class Message {
     }
 
     /**
-     * @return the tsByte
+     * @return the timestamp
      */
     public Date getTimestamp() {
         return timeStamp;
     }
 
     /**
-     * @return the raw
+     * @return the raw message
      */
     public byte[] getRaw() {
         return raw;
     }
 
     /**
-     * @param raw the raw to set
+     * @param bytearray message
      */
     public void setRaw(byte[] raw) {
         this.raw = raw;

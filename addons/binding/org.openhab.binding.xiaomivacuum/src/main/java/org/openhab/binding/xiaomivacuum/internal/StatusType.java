@@ -60,6 +60,6 @@ public enum StatusType {
 
     @Override
     public String toString() {
-        return "Status " + Integer.toString(id) + " - " + description;
+        return "Status " + Integer.toString(id) + ": " + description;
     }
 }

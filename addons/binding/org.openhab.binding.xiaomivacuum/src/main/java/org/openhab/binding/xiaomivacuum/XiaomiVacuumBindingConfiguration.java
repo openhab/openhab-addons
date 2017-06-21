@@ -9,7 +9,7 @@
 package org.openhab.binding.xiaomivacuum;
 
 /**
- * The {@link XiaomiVacuumBindingConstants} class defines variables which are
+ * The {@link XiaomiVacuumBindingConfiguration} class defines variables which are
  * used for the binding configuration.
  *
  * @author Marcel Verpaalen - Initial contribution

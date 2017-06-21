@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
 import org.slf4j.Logger;
@@ -31,57 +32,39 @@ public class RoboCommunication {
 
     private final String ip;
     private final byte[] token;
-    private byte[] serial;
-    private volatile int id;
+    private final byte[] serial;
+    private AtomicInteger id = new AtomicInteger();
 
-    public RoboCommunication(String ip, byte[] token) throws IOException {
-        this.ip = ip;
-        this.token = token;
-        byte[] response = comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, ip);
-        Message roboResponse = new Message(response);
-        setSerial(roboResponse.getSerialByte());
-    }
-
-    public RoboCommunication(String ip, byte[] token, byte[] serial) throws IOException {
+    public RoboCommunication(String ip, byte[] token, byte[] serial) {
         this.ip = ip;
         this.token = token;
         this.serial = serial;
     }
 
-    public String sendCommand(VacuumCommand command) {
+    public String sendCommand(VacuumCommand command) throws RoboCryptoException, IOException {
         return sendCommand(command, "");
     }
 
-    public String sendCommand(VacuumCommand command, String params) {
-        id += 1;
+    public String sendCommand(VacuumCommand command, String params) throws RoboCryptoException, IOException {
         if (params.length() > 0) {
             params = "'params': [" + params + "],";
         }
-        String fullCommand = "{'method': '" + command.getCommand() + "', " + params + "'id': " + Integer.toString(id)
-                + "}";
+        String idString = "'id': " + Integer.toString(id.incrementAndGet());
+        String fullCommand = "{'method': '" + command.getCommand() + "', " + params + idString + "}";
         logger.debug("Send command: {} -> {} (token: {})", fullCommand, ip, new String(token));
-        String response;
-        try {
-            response = sendCommand(fullCommand, token, ip, serial);
-            logger.debug("respone {}", response);
-            return response;
-        } catch (Exception e) {
-            logger.debug("Error while sending command: {}", e.getMessage());
-        }
-        return null;
+        String response = sendCommand(fullCommand, token, ip, serial);
+        //TODO: Change this to trace level later onwards
+        logger.debug("Received response from {}: {}", ip, response);
+        return response;
     }
 
-    public static final String sendCommand(VacuumCommand command, int id, byte[] token, String ip, byte[] serial)
-            throws Exception {
-        return sendCommand("{'method': '" + command.getCommand() + "', 'id': " + Integer.toString(id) + "}", token, ip,
-                serial);
-    }
-
-    public static final String sendCommand(String command, byte[] token, String ip, byte[] serial) throws Exception {
+    private String sendCommand(String command, byte[] token, String ip, byte[] serial)
+            throws RoboCryptoException, IOException {
         byte[] encr;
         encr = RoboCrypto.encrypt(command.concat("\0").getBytes(), token);
         byte[] response = comms(Message.createMsgData(encr, token, serial), ip);
         Message roboResponse = new Message(response);
+        logger.trace("Message Details:{} ", roboResponse.toSting());
         String decryptedResponse = new String(RoboCrypto.decrypt(roboResponse.getData(), token)).trim();
         return decryptedResponse;
     }
@@ -101,13 +84,4 @@ public class RoboCommunication {
         clientSocket.close();
         return response;
     }
-
-    public byte[] getSerial() {
-        return serial;
-    }
-
-    public void setSerial(byte[] serial) {
-        this.serial = serial;
-    }
-
 }

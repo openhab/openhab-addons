@@ -8,13 +8,14 @@
  */
 package org.openhab.binding.xiaomivacuum.internal;
 
-import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -26,46 +27,61 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class RoboCrypto {
 
-    public static byte[] md5(byte[] source) throws NoSuchAlgorithmException {
-        MessageDigest m = MessageDigest.getInstance("MD5");
-        return m.digest(source);
+    public static byte[] md5(byte[] source) throws RoboCryptoException {
+        try {
+            MessageDigest m = MessageDigest.getInstance("MD5");
+            return m.digest(source);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RoboCryptoException(e.getMessage());
+        }
     }
 
-    public static byte[] iv(byte[] token) throws NoSuchAlgorithmException {
-        MessageDigest m = MessageDigest.getInstance("MD5");
-        byte[] ivbuf = new byte[32];
-        System.arraycopy(m.digest(token), 0, ivbuf, 0, 16);
-        System.arraycopy(token, 0, ivbuf, 16, 16);
-        return m.digest(ivbuf);
+    public static byte[] iv(byte[] token) throws RoboCryptoException {
+        try {
+            MessageDigest m = MessageDigest.getInstance("MD5");
+            byte[] ivbuf = new byte[32];
+            System.arraycopy(m.digest(token), 0, ivbuf, 0, 16);
+            System.arraycopy(token, 0, ivbuf, 16, 16);
+            return m.digest(ivbuf);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RoboCryptoException(e.getMessage());
+        }
     }
 
-    public static byte[] encrypt(byte[] cipherText, byte[] key, byte[] iv) throws InvalidKeyException,
-            InvalidAlgorithmParameterException, GeneralSecurityException, NoSuchPaddingException {
-        IvParameterSpec vector = new IvParameterSpec(iv);
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, vector);
-        byte[] encrypted = cipher.doFinal(cipherText);
-        return encrypted;
+    public static byte[] encrypt(byte[] cipherText, byte[] key, byte[] iv) throws RoboCryptoException {
+        try {
+            IvParameterSpec vector = new IvParameterSpec(iv);
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, vector);
+            byte[] encrypted = cipher.doFinal(cipherText);
+            return encrypted;
+        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            throw new RoboCryptoException(e.getMessage());
+        }
+
     }
 
-    public static byte[] encrypt(byte[] text, byte[] token) throws Exception {
+    public static byte[] encrypt(byte[] text, byte[] token) throws RoboCryptoException {
         return encrypt(text, md5(token), iv(token));
     }
 
-    public static byte[] decrypt(byte[] cipherText, byte[] key, byte[] iv) throws InvalidKeyException,
-            InvalidAlgorithmParameterException, GeneralSecurityException, NoSuchPaddingException {
-        IvParameterSpec vector = new IvParameterSpec(iv);
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, vector);
-        byte[] encrypted = cipher.doFinal(cipherText);
-        return (encrypted);
+    public static byte[] decrypt(byte[] cipherText, byte[] key, byte[] iv) throws RoboCryptoException {
+        try {
+            IvParameterSpec vector = new IvParameterSpec(iv);
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, vector);
+            byte[] encrypted = cipher.doFinal(cipherText);
+            return (encrypted);
+        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            throw new RoboCryptoException(e.getMessage());
+        }
     }
 
-    public static byte[] decrypt(byte[] cipherText, byte[] token) throws InvalidKeyException,
-            InvalidAlgorithmParameterException, GeneralSecurityException, NoSuchPaddingException {
+    public static byte[] decrypt(byte[] cipherText, byte[] token) throws RoboCryptoException {
         return decrypt(cipherText, md5(token), iv(token));
     }
-
 }

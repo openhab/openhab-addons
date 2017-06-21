@@ -29,7 +29,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConfiguration;
+import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
+import org.openhab.binding.xiaomivacuum.internal.Message;
 import org.openhab.binding.xiaomivacuum.internal.RoboCommunication;
+import org.openhab.binding.xiaomivacuum.internal.RoboCryptoException;
 import org.openhab.binding.xiaomivacuum.internal.StatusType;
 import org.openhab.binding.xiaomivacuum.internal.Utils;
 import org.openhab.binding.xiaomivacuum.internal.VacuumCommand;
@@ -57,6 +60,9 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     private final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
     private ExpiringCache<String> status;
     private ExpiringCache<String> consumables;
+    private ExpiringCache<String> dnd;
+    private ExpiringCache<String> history;
+
     private RoboCommunication roboCom;
 
     public XiaomiVacuumHandler(Thing thing) {
@@ -77,28 +83,28 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         }
         if (channelUID.getId().equals(CHANNEL_VACUUM)) {
             if (command instanceof OnOffType && command == OnOffType.ON) {
-                roboCom.sendCommand(VacuumCommand.START_VACUUM);
+                sendCommand(VacuumCommand.START_VACUUM);
             } else if (channelUID.getId().equals(CHANNEL_VACUUM)) {
                 if (command instanceof OnOffType && command == OnOffType.OFF) {
-                    roboCom.sendCommand(VacuumCommand.STOP_VACUUM);
+                    sendCommand(VacuumCommand.STOP_VACUUM);
                 }
             }
         }
         if (channelUID.getId().equals(CHANNEL_SPOT)) {
             if (command instanceof OnOffType && command == OnOffType.ON) {
-                roboCom.sendCommand(VacuumCommand.START_SPOT);
+                sendCommand(VacuumCommand.START_SPOT);
             } else if (channelUID.getId().equals(CHANNEL_VACUUM)) {
                 if (command instanceof OnOffType && command == OnOffType.OFF) {
-                    roboCom.sendCommand(VacuumCommand.STOP_VACUUM);
+                    sendCommand(VacuumCommand.STOP_VACUUM);
                 }
             }
         }
         if (channelUID.getId().equals(CHANNEL_PAUSE) && command instanceof OnOffType && command == OnOffType.ON) {
-            roboCom.sendCommand(VacuumCommand.PAUSE);
+            sendCommand(VacuumCommand.PAUSE);
         }
         if (channelUID.getId().equals(CHANNEL_RETURN) && command instanceof OnOffType && command == OnOffType.ON) {
-            roboCom.sendCommand(VacuumCommand.STOP_VACUUM);
-            roboCom.sendCommand(VacuumCommand.CHARGE);
+            sendCommand(VacuumCommand.STOP_VACUUM);
+            sendCommand(VacuumCommand.CHARGE);
         }
     }
 
@@ -115,7 +121,6 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
                     tokenFailed = true;
                 } else {
                     token = Utils.hexStringToByteArray(tokenSting);
-
                 }
                 break;
             case 16:
@@ -145,8 +150,16 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         roboCom = null;
     }
 
+    String sendCommand(VacuumCommand command) {
+        try {
+            return roboCom.sendCommand(command);
+        } catch (RoboCryptoException | IOException e) {
+            disconnected(e.getMessage());
+        }
+        return null;
+    }
+
     private JsonObject getResult(String res) {
-        logger.debug("RAW vacuum response'{}'", res);
         JsonObject vacuumStatus = (JsonObject) parser.parse(res);
         JsonObject result = vacuumStatus.getAsJsonArray("result").get(0).getAsJsonObject();
         logger.debug("Response ID:     '{}'", vacuumStatus.get("id").getAsString());
@@ -214,12 +227,33 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         return true;
     }
 
+    private boolean updateDnD() {
+        JsonObject dndData = getResult(dnd.getValue());
+        if (dndData == null) {
+            disconnected("No valid Do not Disturb response");
+            return false;
+        }
+        logger.debug("Do not disturb data: {}", dndData.toString());
+        return true;
+    }
+
+    private boolean cleanHistory() {
+        logger.debug("Cleaning history data: {}", getResult(history.getValue()));
+        //        JsonObject historyData = getResult(history.getValue());
+        //        if (historyData == null) {
+        //            disconnected("No valid Clean History response");
+        //            return false;
+        //        }
+        //        logger.debug("Cleaning history data: {}", historyData.toString());
+        return true;
+    }
+
     private synchronized void updateData() {
         logger.debug("Update vacuum status'{}'", getThing().getUID());
         if (!hasConnection()) {
             return;
         }
-        if (updateVacuumStatus() && updateConsumables()) {
+        if (updateVacuumStatus() && updateConsumables() && updateDnD() && cleanHistory()) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -242,11 +276,18 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             return false;
         }
         status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            return roboCom.sendCommand(VacuumCommand.GET_STATUS);
+            return sendCommand(VacuumCommand.GET_STATUS);
         });
         consumables = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            return roboCom.sendCommand(VacuumCommand.CONSUMABLES_GET);
+            return sendCommand(VacuumCommand.CONSUMABLES_GET);
         });
+        dnd = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            return sendCommand(VacuumCommand.DND_GET);
+        });
+        history = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+            return sendCommand(VacuumCommand.CLEAN_SUMMARY_GET);
+        });
+
         updateStatus(ThingStatus.ONLINE);
         return true;
     }
@@ -264,11 +305,14 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
                 return roboCom;
             } else {
                 logger.debug("Getting vacuum serial");
-                roboCom = new RoboCommunication(configuration.host, token);
-                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getHex(roboCom.getSerial()));
+                byte[] response = RoboCommunication.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING,
+                        configuration.host);
+                Message roboResponse = new Message(response);
+                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getSpacedHex(roboResponse.getSerialByte()));
                 Configuration config = editConfiguration();
-                config.put(PROPERTY_SERIAL, Utils.getHexN(roboCom.getSerial()));
+                config.put(PROPERTY_SERIAL, Utils.getHex(roboResponse.getSerialByte()));
                 updateConfiguration(config);
+                roboCom = new RoboCommunication(configuration.host, token, roboResponse.getSerialByte());
                 return roboCom;
             }
         } catch (IOException e) {

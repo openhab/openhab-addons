@@ -75,10 +75,10 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
             responses.putAll(sendDiscoveryRequest(broadcastAdress));
         }
         for (Entry<String, byte[]> i : responses.entrySet()) {
-            logger.trace("Discovery responses from : {}:{}", i.getKey(), Utils.getHex(i.getValue()));
+            logger.trace("Discovery responses from : {}:{}", i.getKey(), Utils.getSpacedHex(i.getValue()));
             Message msg = new Message(i.getValue());
-            String token = Utils.getHexN(msg.getChecksum());
-            String id = Utils.getHexN(msg.getSerialByte());
+            String token = Utils.getHex(msg.getChecksum());
+            String id = Utils.getHex(msg.getSerialByte());
             ThingUID uid = new ThingUID(XiaomiVacuumBindingConstants.THING_TYPE_VACUUM, id);
             logger.debug("Discovered Xiaomi Robot Vacuum {} at {}", id, i.getKey());
             if (token.equals("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")) {

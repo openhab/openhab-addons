@@ -14,7 +14,7 @@ import java.util.Set;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link XiaomiVacuumBindingConfiguration} class defines common constants, which are
+ * The {@link XiaomiVacuumBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Marcel Verpaalen - Initial contribution

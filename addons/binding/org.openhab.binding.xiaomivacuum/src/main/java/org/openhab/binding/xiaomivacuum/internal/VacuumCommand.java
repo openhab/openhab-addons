@@ -49,8 +49,7 @@ public enum VacuumCommand {
     SET_MODE("set_custom_mode"),
     GET_MODE("get_custom_mode");
 
-    // app_charge
-    private String command;
+    private final String command;
 
     private VacuumCommand(String command) {
         this.command = command;
