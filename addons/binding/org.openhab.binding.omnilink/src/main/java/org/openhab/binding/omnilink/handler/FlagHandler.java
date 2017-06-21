@@ -4,7 +4,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
@@ -33,7 +32,8 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand called for channel:{}, command:{}", channelUID, command);
-        final String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
+        // final String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
+        int flagID = getThingID();
         if (command instanceof DecimalType) {
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
             OmniLinkCmd omniCmd;
@@ -45,7 +45,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
             }
             try {
                 getOmnilinkBridgeHander().sendOmnilinkCommand(omniCmd.getNumber(), ((DecimalType) command).intValue(),
-                        Integer.parseInt(channelParts[channelParts.length - 2]));
+                        flagID);
             } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
                     | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
@@ -54,7 +54,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
             try {
                 getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_SET_COUNTER.getNumber(),
-                        OnOffType.ON.equals(command) ? 1 : 0, Integer.parseInt(channelParts[channelParts.length - 2]));
+                        OnOffType.ON.equals(command) ? 1 : 0, flagID);
             } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
                     | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
@@ -77,12 +77,10 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
     @Override
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
-        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int unitId = Integer.parseInt(channelParts[channelParts.length - 2]);
-
-        ObjectStatus objStatus;
         try {
-            objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
+            int flagId = getThingID();
+            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, flagId,
+                    flagId, false);
             handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

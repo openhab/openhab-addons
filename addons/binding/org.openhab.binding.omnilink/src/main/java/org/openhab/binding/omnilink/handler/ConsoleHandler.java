@@ -1,7 +1,5 @@
 package org.openhab.binding.omnilink.handler;
 
-import java.math.BigDecimal;
-
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -40,8 +38,7 @@ public class ConsoleHandler extends AbstractOmnilinkHandler {
             return;
         }
 
-        int consoleNumber = ((BigDecimal) getThing().getConfiguration()
-                .get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER)).intValue();
+        int consoleNumber = getThingID();
         try {
             getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, p1, consoleNumber);
         } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
