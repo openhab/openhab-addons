@@ -70,7 +70,6 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             generateZones();
             generateButtons();
             discoverThermostats();
-
             // generate consoles is throwing and error
             // generateConsoles();
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
@@ -176,10 +175,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                         .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
                         .build();
                 thingDiscovered(discoveryResult);
-            }
-
-        }
-    }
+            }}
+	}
 
     private void generateAreas()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {

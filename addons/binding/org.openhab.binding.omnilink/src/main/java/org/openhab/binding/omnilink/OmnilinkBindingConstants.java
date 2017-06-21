@@ -74,8 +74,8 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_THERMO_HOLD_MODE = "hold_mode";
     public final static String CHANNEL_THERMO_COOL_SETPOINT = "cool_setpoint";
     public final static String CHANNEL_THERMO_HEAT_SETPOINT = "heat_setpoint";
-
-    public final static String CHANNEL_CONSOLE_BEEP = "beep";
+    
+	public final static String CHANNEL_CONSOLE_BEEP = "beep";
     public final static String CHANNEL_CONSOLE_ENABLE_BEEPER = "enable_beeper";
 
     // thing configuration and properties keys
