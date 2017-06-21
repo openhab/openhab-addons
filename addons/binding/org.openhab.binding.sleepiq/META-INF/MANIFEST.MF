@@ -6,15 +6,16 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
+ lib/provider-gson.jar,
  lib/sleepiq-api.jar
 Import-Package: 
- com.eclipsesource.jaxrs.provider.gson,
  com.google.common.base,
  com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
  com.google.gson.reflect,
  com.google.gson.stream,
+ javax.ws.rs.ext,
  javax.ws.rs.client,
  javax.ws.rs.core,
  org.apache.commons.lang,
