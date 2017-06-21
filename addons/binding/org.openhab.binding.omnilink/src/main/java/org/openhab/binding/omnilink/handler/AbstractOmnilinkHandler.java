@@ -4,6 +4,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 
 public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
 
@@ -31,5 +32,10 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
                 return null;
             }
         }
+    }
+
+    protected int getThingID() {
+        return ((Number) getThing().getConfiguration().get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER))
+                .intValue();
     }
 }

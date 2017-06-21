@@ -98,12 +98,11 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
     @Override
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
-        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int unitId = Integer.parseInt(channelParts[channelParts.length - 2]);
 
-        ObjectStatus objStatus;
         try {
-            objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
+            int unitId = getThingID();
+            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId,
+                    unitId, false);
             handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

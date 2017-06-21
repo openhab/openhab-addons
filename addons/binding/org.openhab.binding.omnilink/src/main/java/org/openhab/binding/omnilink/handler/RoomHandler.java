@@ -28,7 +28,8 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand, channel id: {}, command: {}", channelUID, command);
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int unitNum = Integer.parseInt(channelParts[channelParts.length - 2]);
+
+        int unitNum = getThingID();
 
         if (channelParts[3].startsWith("scene") && OnOffType.ON.equals(command)) {
 
@@ -158,12 +159,11 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     @Override
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
-        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int unitId = Integer.parseInt(channelParts[channelParts.length - 2]);
 
-        ObjectStatus objStatus;
         try {
-            objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId, unitId, false);
+            int unitId = getThingID();
+            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId,
+                    unitId, false);
             handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);
 
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

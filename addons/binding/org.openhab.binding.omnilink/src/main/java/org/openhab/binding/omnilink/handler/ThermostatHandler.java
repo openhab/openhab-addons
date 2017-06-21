@@ -47,7 +47,7 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         logger.debug("Channel Parts {}", (Object[]) channelParts);
-        int thermostatID = ((Number) getThing().getConfiguration().get("number")).intValue();
+        int thermostatID = getThingID();
         String channelID = channelParts[3];
 
         try {
@@ -231,7 +231,7 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         try {
-            int thermostatID = ((Number) getThing().getConfiguration().get("number")).intValue();
+            int thermostatID = getThingID();
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_THERMO,
                     thermostatID, thermostatID, true);
             handleThermostatStatus((ExtendedThermostatStatus) objStatus.getStatuses()[0]);

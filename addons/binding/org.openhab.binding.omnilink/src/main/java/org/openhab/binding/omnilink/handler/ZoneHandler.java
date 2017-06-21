@@ -7,7 +7,6 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -103,11 +102,10 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
-        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        int zoneId = Integer.parseInt(channelParts[channelParts.length - 2]);
-        ObjectStatus objStatus;
         try {
-            objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_ZONE, zoneId, zoneId, false);
+            int zoneId = getThingID();
+            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_ZONE, zoneId,
+                    zoneId, false);
             handleZoneStatus((ZoneStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing zone:", e);
