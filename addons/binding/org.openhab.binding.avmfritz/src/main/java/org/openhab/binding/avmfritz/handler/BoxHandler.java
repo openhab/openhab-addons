@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.BindingConstants;
 import org.openhab.binding.avmfritz.config.AvmFritzConfiguration;
@@ -125,25 +126,16 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description) {
         super.updateStatus(status, statusDetail, description);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public FritzahaWebInterface getWebInterface() {
         return this.connection;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addDeviceList(DeviceModel device) {
         try {
@@ -173,60 +165,79 @@ public class BoxHandler extends BaseBridgeHandler implements IFritzHandler {
         if (device.getPresent() == 1) {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
             if (device.isTempSensor() && device.getTemperature() != null) {
-                updateState(CHANNEL_TEMP, new DecimalType(device.getTemperature().getCelsius()));
+                updateThingChannelState(thing, CHANNEL_TEMP, new DecimalType(device.getTemperature().getCelsius()));
             }
             if (device.isPowermeter() && device.getPowermeter() != null) {
-                updateState(CHANNEL_ENERGY, new DecimalType(device.getPowermeter().getEnergy()));
-                updateState(CHANNEL_POWER, new DecimalType(device.getPowermeter().getPower()));
+                updateThingChannelState(thing, CHANNEL_ENERGY, new DecimalType(device.getPowermeter().getEnergy()));
+                updateThingChannelState(thing, CHANNEL_POWER, new DecimalType(device.getPowermeter().getPower()));
             }
             if (device.isSwitchableOutlet() && device.getSwitch() != null) {
-                updateState(CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
-                updateState(CHANNEL_LOCKED, device.getSwitch().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED
-                        : OpenClosedType.OPEN);
+                updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getSwitch().getMode()));
+                updateThingChannelState(thing, CHANNEL_LOCKED, device.getSwitch().getLock().equals(BigDecimal.ONE)
+                        ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                 if (device.getSwitch().getState() == null) {
-                    updateState(CHANNEL_SWITCH, UnDefType.UNDEF);
+                    updateThingChannelState(thing, CHANNEL_SWITCH, UnDefType.UNDEF);
                 } else {
-                    updateState(CHANNEL_SWITCH,
+                    updateThingChannelState(thing, CHANNEL_SWITCH,
                             device.getSwitch().getState().equals(SwitchModel.ON) ? OnOffType.ON : OnOffType.OFF);
                 }
             }
             if (device.isHeatingThermostat() && device.getHkr() != null) {
-                updateState(CHANNEL_MODE, new StringType(device.getHkr().getMode()));
-                updateState(CHANNEL_LOCKED,
+                updateThingChannelState(thing, CHANNEL_MODE, new StringType(device.getHkr().getMode()));
+                updateThingChannelState(thing, CHANNEL_LOCKED,
                         device.getHkr().getLock().equals(BigDecimal.ONE) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-                updateState(CHANNEL_ACTUALTEMP, new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
-                BigDecimal settemp = HeatingModel.toCelsius(device.getHkr().getTsoll());
+                updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
+                        new DecimalType(HeatingModel.toCelsius(device.getHkr().getTist())));
+                final BigDecimal settemp = HeatingModel.toCelsius(device.getHkr().getTsoll());
                 if (HeatingModel.inCelsiusRange(settemp)) {
                     thing.getConfiguration().put(THING_SETTEMP, settemp);
                 }
-                updateState(CHANNEL_SETTEMP, new DecimalType(settemp));
-                BigDecimal ecotemp = HeatingModel.toCelsius(device.getHkr().getAbsenk());
+                updateThingChannelState(thing, CHANNEL_SETTEMP, new DecimalType(settemp));
+                final BigDecimal ecotemp = HeatingModel.toCelsius(device.getHkr().getAbsenk());
                 thing.getConfiguration().put(THING_ECOTEMP, ecotemp);
-                updateState(CHANNEL_ECOTEMP, new DecimalType(ecotemp));
-                BigDecimal comforttemp = HeatingModel.toCelsius(device.getHkr().getKomfort());
+                updateThingChannelState(thing, CHANNEL_ECOTEMP, new DecimalType(ecotemp));
+                final BigDecimal comforttemp = HeatingModel.toCelsius(device.getHkr().getKomfort());
                 thing.getConfiguration().put(THING_COMFORTTEMP, comforttemp);
-                updateState(CHANNEL_COMFORTTEMP, new DecimalType(comforttemp));
-                updateState(CHANNEL_RADIATOR_MODE, new StringType(device.getHkr().getRadiatorMode()));
+                updateThingChannelState(thing, CHANNEL_COMFORTTEMP, new DecimalType(comforttemp));
+                updateThingChannelState(thing, CHANNEL_RADIATOR_MODE,
+                        new StringType(device.getHkr().getRadiatorMode()));
                 if (device.getHkr().getNextchange() != null) {
                     if (device.getHkr().getNextchange().getEndperiod() == 0) {
-                        updateState(CHANNEL_NEXTCHANGE, UnDefType.UNDEF);
+                        updateThingChannelState(thing, CHANNEL_NEXTCHANGE, UnDefType.UNDEF);
                     } else {
-                        Calendar calendar = Calendar.getInstance();
+                        final Calendar calendar = Calendar.getInstance();
                         calendar.setTime(new Date(device.getHkr().getNextchange().getEndperiod() * 1000L));
-                        updateState(CHANNEL_NEXTCHANGE, new DateTimeType(calendar));
+                        updateThingChannelState(thing, CHANNEL_NEXTCHANGE, new DateTimeType(calendar));
                     }
-                    updateState(CHANNEL_NEXTTEMP,
+                    updateThingChannelState(thing, CHANNEL_NEXTTEMP,
                             new DecimalType(HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange())));
                 }
                 if (device.getHkr().getBatterylow() == null) {
-                    updateState(CHANNEL_BATTERY, UnDefType.UNDEF);
+                    updateThingChannelState(thing, CHANNEL_BATTERY, UnDefType.UNDEF);
                 } else {
-                    updateState(CHANNEL_BATTERY, device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_ON)
-                            ? OnOffType.ON : OnOffType.OFF);
+                    updateThingChannelState(thing, CHANNEL_BATTERY,
+                            device.getHkr().getBatterylow().equals(HeatingModel.BATTERY_ON) ? OnOffType.ON
+                                    : OnOffType.OFF);
                 }
             }
         } else {
             thing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present"));
+        }
+    }
+
+    /**
+     * Updates thing channels.
+     *
+     * @param thing Thing to be updated.
+     * @param channelId ID of the channel to be updated.
+     * @param state State to be set.
+     */
+    private void updateThingChannelState(Thing thing, String channelId, State state) {
+        final Channel channel = thing.getChannel(channelId);
+        if (channel != null) {
+            updateState(channel.getUID(), state);
+        } else {
+            logger.warn("Channel {} in thing {} does not exist, please recreate the thing", channelId, thing.getUID());
         }
     }
 

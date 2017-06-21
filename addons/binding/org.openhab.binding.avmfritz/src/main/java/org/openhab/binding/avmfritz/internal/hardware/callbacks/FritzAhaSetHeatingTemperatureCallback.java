@@ -42,9 +42,6 @@ public class FritzAhaSetHeatingTemperatureCallback extends FritzAhaReauthCallbac
         itemName = ain;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);

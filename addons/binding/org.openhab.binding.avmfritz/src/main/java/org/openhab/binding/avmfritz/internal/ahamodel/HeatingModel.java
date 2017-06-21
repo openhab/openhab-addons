@@ -38,15 +38,15 @@ public class HeatingModel {
     public static final BigDecimal BATTERY_OFF = BigDecimal.ZERO;
     public static final BigDecimal BATTERY_ON = BigDecimal.ONE;
 
-    protected BigDecimal tist;
-    protected BigDecimal tsoll;
-    protected BigDecimal absenk;
-    protected BigDecimal komfort;
-    protected BigDecimal lock;
-    protected BigDecimal devicelock;
-    protected String errorcode;
-    protected BigDecimal batterylow;
-    protected Nextchange nextchange;
+    private BigDecimal tist;
+    private BigDecimal tsoll;
+    private BigDecimal absenk;
+    private BigDecimal komfort;
+    private BigDecimal lock;
+    private BigDecimal devicelock;
+    private String errorcode;
+    private BigDecimal batterylow;
+    private Nextchange nextchange;
 
     public BigDecimal getTist() {
         return tist;
@@ -154,15 +154,15 @@ public class HeatingModel {
     }
 
     public static boolean inCelsiusRange(BigDecimal celsiusValue) {
-        return (celsiusValue.compareTo(TEMP_CELSIUS_MIN) >= 0) && (celsiusValue.compareTo(TEMP_CELSIUS_MAX) <= 0);
+        return (TEMP_CELSIUS_MIN.compareTo(celsiusValue) <= 0) && (TEMP_CELSIUS_MAX.compareTo(celsiusValue) >= 0);
     }
 
     public static BigDecimal fromCelsius(BigDecimal celsiusValue) {
         if (celsiusValue == null) {
             return BigDecimal.ZERO;
-        } else if (HeatingModel.TEMP_CELSIUS_MIN.compareTo(celsiusValue) == -1) {
+        } else if (TEMP_CELSIUS_MIN.compareTo(celsiusValue) == 1) {
             return TEMP_FRITZ_MIN;
-        } else if (HeatingModel.TEMP_CELSIUS_MAX.compareTo(celsiusValue) == 1) {
+        } else if (TEMP_CELSIUS_MAX.compareTo(celsiusValue) == -1) {
             return TEMP_FRITZ_MAX;
         }
         return celsiusValue.divide(TEMP_FACTOR);
@@ -182,8 +182,8 @@ public class HeatingModel {
     @XmlType(name = "", propOrder = { "endperiod", "tchange" })
     public static class Nextchange {
 
-        protected int endperiod;
-        protected BigDecimal tchange;
+        private int endperiod;
+        private BigDecimal tchange;
 
         public int getEndperiod() {
             return endperiod;
