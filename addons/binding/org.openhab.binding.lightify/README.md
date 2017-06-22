@@ -1,10 +1,10 @@
 # OSRAM Lightify Binding
 
-This binding integrates the OSRAM Lightify lightning system. This integration uses the standard OSRAM Lightify gateway to integrate Zigbee devices (for now only light bulbs). 
+This binding integrates the OSRAM Lightify lighting system. This integration uses the standard OSRAM Lightify gateway to integrate Zigbee devices (for now only light bulbs). 
 
 ## Introduction
 
-Binding works with the standard OSRAM Lightify gateway and uses the OSRAM internal binary protocol for communication between the gateway and OpenHAB. This plugin does not work using the cloud hosted REST API.
+Binding works with the standard OSRAM Lightify gateway and uses the OSRAM internal binary protocol for communication between the gateway and openHAB. This plugin does not work using the cloud hosted REST API.
 
 ## Supported Things
 

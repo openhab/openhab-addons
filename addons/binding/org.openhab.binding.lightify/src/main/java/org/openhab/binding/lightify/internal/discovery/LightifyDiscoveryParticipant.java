@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ADDRESS;
-import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ID;
-import static org.openhab.binding.lightify.internal.LightifyConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_GATEWAY;
-import static org.openhab.binding.lightify.internal.LightifyUtils.extractLightifyUID;
-import static org.openhab.binding.lightify.internal.LightifyUtils.isLightifyGateway;
+import static com.noctarius.lightify.protocol.LightifyUtils.extractLightifyUID;
+import static com.noctarius.lightify.protocol.LightifyUtils.isLightifyGateway;
+import static org.openhab.binding.lightify.LightifyConstants.PROPERTY_ADDRESS;
+import static org.openhab.binding.lightify.LightifyConstants.PROPERTY_ID;
+import static org.openhab.binding.lightify.LightifyConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.lightify.LightifyConstants.THING_TYPE_LIGHTIFY_GATEWAY;
 
 /**
  * The auto-discovery implementation to find Lightify gateway devices on the local network.
@@ -34,7 +34,8 @@ import static org.openhab.binding.lightify.internal.LightifyUtils.isLightifyGate
  *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
-public class LightifyDiscoveryParticipant implements MDNSDiscoveryParticipant {
+public class LightifyDiscoveryParticipant
+        implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_http._tcp.local.";
 

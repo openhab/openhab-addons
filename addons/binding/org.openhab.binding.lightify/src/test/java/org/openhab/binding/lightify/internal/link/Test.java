@@ -8,8 +8,7 @@
  */
 package org.openhab.binding.lightify.internal.link;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import com.noctarius.lightify.LightifyLink;
 
 /**
  * Not used in production code, simple class to quickly test / play around
@@ -20,14 +19,15 @@ import java.util.concurrent.ScheduledExecutorService;
 public class Test {
 
     public static void main(String[] args) {
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        LightifyLink link = new LightifyLink("172.25.100.141", scheduler);
+        LightifyLink link = new LightifyLink("172.25.100.141", null);
         link.performSearch(l -> {
             //link.disconnect();
-            if (l instanceof LightifyLight && !l.getName().contains("Wohnzimmer")) {
+            /*if (l instanceof LightifyLight && l.getName().contains("Flur")) {
                 //link.performSwitch(l, !l.isPowered(), System.out::println);
-                link.performLuminance(l, (byte) 85, (short) 0, System.out::println);
-            }
+                link.performSwitch(l, false, System.out::println);
+            }*/
+
+            System.out.println(l);
         });
     }
 

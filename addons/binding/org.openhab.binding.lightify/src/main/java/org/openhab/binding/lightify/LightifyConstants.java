@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lightify.internal;
+package org.openhab.binding.lightify;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -27,6 +27,7 @@ public final class LightifyConstants {
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB_SB = new ThingTypeUID(BINDING_ID, "bulb-sb");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB_TW = new ThingTypeUID(BINDING_ID, "bulb-tw");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_BULB_RGBW = new ThingTypeUID(BINDING_ID, "bulb-rgbw");
+    public static final ThingTypeUID THING_TYPE_LIGHTIFY_POWERSOCKET = new ThingTypeUID(BINDING_ID, "powersocket");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_ZONE = new ThingTypeUID(BINDING_ID, "zone");
 
     public static final String PROPERTY_ADDRESS = "ipAddress";
@@ -47,6 +48,8 @@ public final class LightifyConstants {
     public static final String RGBW_CHANNEL_ID_DIMMER = "rgbw#dimmer";
     public static final String RGBW_CHANNEL_ID_COLOR = "rgbw#color";
 
+    public static final String SOCKET_CHANNEL_ID_POWER = "ps#power";
+
     public static final int BITMASK_DIMMING = 1 << 0;
     public static final int BITMASK_TUNABLE_WHITE = 1 << 1;
     public static final int BITMASK_PURE_WHITE = 1 << 2;
@@ -65,6 +68,7 @@ public final class LightifyConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_BULB_SB);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_BULB_TW);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_BULB_RGBW);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_POWERSOCKET);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_LIGHTIFY_ZONE);
     }
 

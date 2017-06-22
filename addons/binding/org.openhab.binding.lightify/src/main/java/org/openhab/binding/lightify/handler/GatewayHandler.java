@@ -8,25 +8,23 @@
  */
 package org.openhab.binding.lightify.handler;
 
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import com.noctarius.lightify.LightifyLink;
+import com.noctarius.lightify.StatusListener;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.lightify.internal.discovery.LightifyDeviceDiscoveryService;
-import org.openhab.binding.lightify.internal.link.LightifyLink;
-import org.osgi.framework.ServiceRegistration;
+import org.eclipse.smarthome.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ADDRESS;
-import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_GATEWAY;
+import static org.openhab.binding.lightify.LightifyConstants.PROPERTY_ADDRESS;
+import static org.openhab.binding.lightify.LightifyConstants.THING_TYPE_LIGHTIFY_GATEWAY;
 
 /**
  * The {@link org.eclipse.smarthome.core.thing.binding.BridgeHandler} implementation to handle commands
@@ -36,19 +34,19 @@ import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE
  *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
-public class GatewayHandler extends BaseBridgeHandler {
+public class GatewayHandler
+        extends BaseBridgeHandler
+        implements StatusListener {
 
     /**
      * Supported {@link ThingTypeUID}s for this handler
      */
     public static final Set<ThingTypeUID> SUPPORTED_TYPES = Collections.singleton(THING_TYPE_LIGHTIFY_GATEWAY);
 
-    private LightifyDeviceDiscoveryService discoveryService;
-    private ServiceRegistration<?> serviceRegistration;
+    private final Logger logger = LoggerFactory.getLogger(LightifyLink.class);
 
     private String address;
     private LightifyLink lightifyLink;
-    private ScheduledFuture<?> futureConnect;
 
     public GatewayHandler(Bridge bridge) {
         super(bridge);
@@ -56,29 +54,26 @@ public class GatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.OFFLINE);
         address = getConfig().get(PROPERTY_ADDRESS).toString();
-        scheduleConnect(true);
-        serviceRegistration = registerDeviceDiscoveryService();
+        lightifyLink = new LightifyLink(address, this);
+
+        // Build internal device / zone lookup
+        lightifyLink.performSearch(null);
+    }
+
+    @Override
+    public void handleUpdate(ChannelUID channelUID, State newState) {
     }
 
     @Override
     public void dispose() {
-        futureConnect.cancel(true);
         if (lightifyLink != null) {
             lightifyLink.disconnect();
-        }
-        if (serviceRegistration != null) {
-            if (discoveryService != null) {
-                discoveryService.deactivate();
-                discoveryService = null;
-            }
-            serviceRegistration.unregister();
-            serviceRegistration = null;
         }
     }
 
@@ -91,31 +86,27 @@ public class GatewayHandler extends BaseBridgeHandler {
         return lightifyLink;
     }
 
-    private ServiceRegistration<?> registerDeviceDiscoveryService() {
-        discoveryService = new LightifyDeviceDiscoveryService(this);
-        discoveryService.activate();
-        return registerService(DiscoveryService.class, discoveryService);
+    @Override
+    public void onConnect() {
+        logger.info("Connecting to lightify gateway: {}:4000", address);
     }
 
-    private void scheduleConnect(boolean immediate) {
-        final long delay = immediate ? 0 : 10;
-        if (futureConnect != null) {
-            futureConnect.cancel(true);
-            futureConnect = null;
+    @Override
+    public void onConnectionFailed() {
+        logger.info("Reconnection failed, retrying...");
+    }
+
+    @Override
+    public void onConnectionEstablished() {
+        logger.info("Connection established...");
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void onConnectionLost() {
+        if (isInitialized()) {
+            logger.info("Connection lost...");
+            updateStatus(ThingStatus.OFFLINE);
         }
-        futureConnect = scheduler.schedule(() -> {
-            lightifyLink = new LightifyLink(address, scheduler);
-            updateStatus(ThingStatus.ONLINE);
-            searchDevices();
-        }, delay, TimeUnit.SECONDS);
-
-    }
-
-    private void searchDevices() {
-        discoveryService.startScan(null);
-    }
-
-    private <S> ServiceRegistration<S> registerService(Class<S> serviceType, S service) {
-        return bundleContext.registerService(serviceType, service, new Hashtable<>());
     }
 }

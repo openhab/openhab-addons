@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.lightify.internal.discovery;
 
+import com.noctarius.lightify.LightifyLink;
+import com.noctarius.lightify.model.Device;
+import com.noctarius.lightify.model.Zone;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -15,27 +18,19 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.lightify.handler.DeviceHandler;
 import org.openhab.binding.lightify.handler.GatewayHandler;
-import org.openhab.binding.lightify.internal.link.Capability;
-import org.openhab.binding.lightify.internal.link.LightifyLink;
-import org.openhab.binding.lightify.internal.link.LightifyLuminary;
-import org.openhab.binding.lightify.internal.link.LightifyZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.DatatypeConverter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_DEVICE_ADDRESS;
-import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_DEVICE_NAME;
-import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ID;
-import static org.openhab.binding.lightify.internal.LightifyConstants.PROPERTY_ZONE_ID;
-import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_RGBW;
-import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_SB;
-import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_BULB_TW;
-import static org.openhab.binding.lightify.internal.LightifyConstants.THING_TYPE_LIGHTIFY_ZONE;
-import static org.openhab.binding.lightify.internal.LightifyUtils.exceptional;
+import static com.noctarius.lightify.protocol.LightifyUtils.exceptional;
+import static org.openhab.binding.lightify.LightifyConstants.PROPERTY_DEVICE_ADDRESS;
+import static org.openhab.binding.lightify.LightifyConstants.PROPERTY_DEVICE_NAME;
+import static org.openhab.binding.lightify.LightifyConstants.PROPERTY_ID;
+import static org.openhab.binding.lightify.LightifyConstants.PROPERTY_ZONE_ID;
+import static org.openhab.binding.lightify.internal.LightifyHandlerFactory.getThingTypeUID;
 
 /**
  * The {@link org.eclipse.smarthome.config.discovery.DiscoveryService} implementation used by the
@@ -44,7 +39,7 @@ import static org.openhab.binding.lightify.internal.LightifyUtils.exceptional;
  *
  * @author Christoph Engelbert (@noctarius2k) - Initial contribution
  */
-public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService implements Consumer<LightifyLuminary> {
+public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService implements Consumer<Device> {
 
     private final Logger logger = LoggerFactory.getLogger(LightifyDeviceDiscoveryService.class);
 
@@ -60,19 +55,24 @@ public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService imp
     @Override
     protected void startScan() {
         exceptional(() -> {
-            logger.debug("Start scanning for paired devices");
+            logger.info("Start scanning for paired devices");
             LightifyLink lightifyLink = gatewayHandler.getLightifyLink();
-            lightifyLink.performSearch(this);
+            if (lightifyLink != null) {
+                lightifyLink.performSearch(this);
+            }
         });
     }
 
     @Override
-    public void accept(LightifyLuminary luminary) {
-        exceptional(() -> {
-            logger.debug("Found device: {}", luminary);
-            DiscoveryResult discoveryResult = discoveryResult(luminary);
+    public void accept(Device device) {
+        try {
+            logger.debug("Found device: {}", device);
+            DiscoveryResult discoveryResult = discoveryResult(device);
+            logger.debug("Thing discovered: {}", discoveryResult);
             thingDiscovered(discoveryResult);
-        });
+        } catch (Exception e) {
+            logger.error("Error while discovering", e);
+        }
     }
 
     public void activate() {
@@ -82,55 +82,41 @@ public class LightifyDeviceDiscoveryService extends AbstractDiscoveryService imp
     }
 
     /**
-     * Returns a {@link DiscoveryResult} based on the type of the {@link LightifyLuminary}
+     * Returns a {@link DiscoveryResult} based on the type of the {@link com.noctarius.lightify.model.Luminary}
      * passed. The discovery result instance contains properties like the device name as
      * known to the Lightify app, the internal address of the bulb or zone and the unique
      * device id generated as hex representation of the internal address.
      *
-     * @param luminary the discovered luminary device
-     * @return the DiscoveryResult instance to represent the Lightify device to OpenHAB2
+     * @param device the discovered device
+     * @return the DiscoveryResult instance to represent the Lightify device
      */
-    private DiscoveryResult discoveryResult(LightifyLuminary luminary) {
-        ThingTypeUID thingTypeUID = getThingTypeUID(luminary);
-        String deviceName = getDeviceName(luminary);
+    private DiscoveryResult discoveryResult(Device device) {
+        ThingTypeUID thingTypeUID = getThingTypeUID(device);
+        String deviceName = getDeviceName(device);
 
-        String deviceAddress = getDeviceAddress(luminary);
+        String deviceAddress = getDeviceAddress(device);
         ThingUID bridgeUID = gatewayHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceAddress);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(PROPERTY_ID, thingUID.getId());
         properties.put(PROPERTY_DEVICE_NAME, deviceName);
-        properties.put(PROPERTY_DEVICE_ADDRESS, luminary.address());
+        properties.put(PROPERTY_DEVICE_ADDRESS, device.getAddress());
 
-        if (luminary instanceof LightifyZone) {
-            properties.put(PROPERTY_ZONE_ID, ((LightifyZone) luminary).getZoneId());
+        if (device instanceof Zone) {
+            properties.put(PROPERTY_ZONE_ID, ((Zone) device).getZoneId());
         }
 
-        return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(luminary.getName())
+        return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(deviceName)
                                      .withThingType(thingTypeUID).withRepresentationProperty(PROPERTY_DEVICE_NAME)
                                      .withProperties(properties).build();
     }
 
-    private String getDeviceName(LightifyLuminary luminary) {
-        return luminary.getName();
+    private String getDeviceName(Device device) {
+        return device.getName();
     }
 
-    private String getDeviceAddress(LightifyLuminary luminary) {
-        return DatatypeConverter.printHexBinary(luminary.address());
-    }
-
-    private ThingTypeUID getThingTypeUID(LightifyLuminary luminary) {
-        if (luminary instanceof LightifyZone) {
-            return THING_TYPE_LIGHTIFY_ZONE;
-        }
-
-        if (luminary.supports(Capability.PureWhite)) {
-            return THING_TYPE_LIGHTIFY_BULB_SB;
-        }
-        else if (luminary.supports(Capability.TunableWhite) & !luminary.supports(Capability.RGB)) {
-            return THING_TYPE_LIGHTIFY_BULB_TW;
-        }
-        return THING_TYPE_LIGHTIFY_BULB_RGBW;
+    private String getDeviceAddress(Device device) {
+        return device.getAddress().toAddressCode();
     }
 }
