@@ -102,9 +102,7 @@ public class RestClientImpl implements RestClient {
             sslContext.withTrustedCertificate(relativePath, file);
             logger.info("Certificate successfully loaded from bundle");
         } catch (CertificateExpiredException e) {
-            logger.warn("Certificate has expired. Trying to load from URL {}", ENERGENIE_REST_API_URL);
-            sslContext.withTrustedCertificates(ENERGENIE_REST_API_URL);
-            logger.info("Certificate successfully loaded from URL {}", ENERGENIE_REST_API_URL);
+            logger.error("Root certificate has expired {}", file);
         } finally {
             httpClient.getSslContextFactory().setSslContext(sslContext.build());
         }

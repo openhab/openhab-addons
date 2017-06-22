@@ -23,7 +23,7 @@ import org.eclipse.jetty.http.HttpMethod;
 public interface RestClient {
 
     public static final String CERTIFICATE_DIR = "SSL";
-    public static final String CERTIFICATE_FILE_NAME = "mihome.crt";
+    public static final String CERTIFICATE_FILE_NAME = "addtrustexternalcaroot.crt";
 
     /**
      * The recommended method from the API documentation

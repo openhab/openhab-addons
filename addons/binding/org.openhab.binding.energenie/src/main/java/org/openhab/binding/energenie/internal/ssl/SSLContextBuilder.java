@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -181,26 +180,7 @@ public class SSLContextBuilder {
         certificate.checkValidity();
         trustStore.setCertificateEntry("mihome", certificate);
         is.close();
-        logger.debug("Trusted certificate {} loaded from directory{}", certificateName, directory);
-        return this;
-    }
-
-    /**
-     * Loads {@link Certificate}s from a server
-     *
-     * @param url - the URL of the server, where the certificates are stored
-     * @return SSLContextBuilder
-     * @throws KeyStoreException - if the keystore has not been initialized
-     * @throws IOException - if an I/O exception occurs.
-     */
-    public SSLContextBuilder withTrustedCertificates(String url) throws KeyStoreException, IOException {
-        Certificate[] certificates = loadFromURL(url);
-
-        for (Certificate cert : certificates) {
-            // The cert alias has to be unique
-            trustStore.setCertificateEntry(cert.toString(), cert);
-        }
-        logger.debug("Trusted certificates {} loaded from URL {}", url);
+        logger.debug("Trusted certificate {} loaded from directory {}", certificateName, directory);
         return this;
     }
 
@@ -216,12 +196,5 @@ public class SSLContextBuilder {
 
         throw new FileNotFoundException(MessageFormat.format("File {0}/{1} not found in bundle {2}", directory, file,
                 bundleContext.getBundle().getSymbolicName()));
-    }
-
-    private Certificate[] loadFromURL(String url) throws IOException {
-        URL destinationURL = new URL(url);
-        HttpsURLConnection conn = (HttpsURLConnection) destinationURL.openConnection();
-        conn.connect();
-        return conn.getServerCertificates();
     }
 }
