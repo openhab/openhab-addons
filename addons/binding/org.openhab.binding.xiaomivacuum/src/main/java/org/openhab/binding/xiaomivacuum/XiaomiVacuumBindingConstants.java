@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-public final class XiaomiVacuumBindingConstants{
+public final class XiaomiVacuumBindingConstants {
 
     public static final String BINDING_ID = "xiaomivacuum";
 
@@ -45,11 +45,20 @@ public final class XiaomiVacuumBindingConstants{
     public static final String CHANNEL_SPOT = "actions#spot_clean";
     public static final String CHANNEL_RETURN = "actions#return";
     public static final String CHANNEL_PAUSE = "actions#pause";
+    public static final String CHANNEL_COMMAND = "actions#commands";
 
     public static final String CHANNEL_CONSUMABLE_MAIN = "consumables#main_brush_time";
     public static final String CHANNEL_CONSUMABLE_SIDE = "consumables#side_brush_time";
     public static final String CHANNEL_CONSUMABLE_FILTER = "consumables#filter_time";
     public static final String CHANNEL_CONSUMABLE_SENSOR = "consumables#sensor_dirt_time";
+
+    public static final String CHANNEL_DND_FUNCTION = "dnd#dnd_function";
+    public static final String CHANNEL_DND_START = "dnd#dnd_start";
+    public static final String CHANNEL_DND_END = "dnd#dnd_end";
+
+    public static final String CHANNEL_HISTORY_TOTALTIME = "history#total_clean_time";
+    public static final String CHANNEL_HISTORY_TOTALAREA = "history#total_clean_area";
+    public static final String CHANNEL_HISTORY_COUNT = "history#total_clean_count";
 
     public static final String PROPERTY_HOST_IP = "host";
     public static final String PROPERTY_SERIAL = "serial";

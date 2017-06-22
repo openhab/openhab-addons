@@ -46,14 +46,18 @@ public class RoboCommunication {
     }
 
     public String sendCommand(VacuumCommand command, String params) throws RoboCryptoException, IOException {
+        return sendCommand(command.getCommand(), params);
+    }
+
+    public String sendCommand(String command, String params) throws RoboCryptoException, IOException {
         if (params.length() > 0) {
             params = "'params': [" + params + "],";
         }
         String idString = "'id': " + Integer.toString(id.incrementAndGet());
-        String fullCommand = "{'method': '" + command.getCommand() + "', " + params + idString + "}";
+        String fullCommand = "{'method': '" + command + "', " + params + idString + "}";
         logger.debug("Send command: {} -> {} (token: {})", fullCommand, ip, new String(token));
         String response = sendCommand(fullCommand, token, ip, serial);
-        //TODO: Change this to trace level later onwards
+        // TODO: Change this to trace level later onwards
         logger.debug("Received response from {}: {}", ip, response);
         return response;
     }

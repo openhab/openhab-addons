@@ -13,6 +13,8 @@ import static org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +42,7 @@ import org.openhab.binding.xiaomivacuum.internal.VacuumErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -106,6 +109,9 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             sendCommand(VacuumCommand.STOP_VACUUM);
             sendCommand(VacuumCommand.CHARGE);
         }
+        if (channelUID.getId().equals(CHANNEL_COMMAND)) {
+            updateState(CHANNEL_COMMAND, new StringType(sendCommand(command.toString())));
+        }
     }
 
     @Override
@@ -136,7 +142,9 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
 
         scheduler.schedule(this::updateConnection, 0, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 5, pollingPeriod, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            updateData();
+        } , 5, pollingPeriod, TimeUnit.SECONDS);
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
     }
 
@@ -159,16 +167,33 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         return null;
     }
 
-    private JsonObject getResult(String res) {
-        JsonObject vacuumStatus = (JsonObject) parser.parse(res);
-        JsonObject result = vacuumStatus.getAsJsonArray("result").get(0).getAsJsonObject();
-        logger.debug("Response ID:     '{}'", vacuumStatus.get("id").getAsString());
-        logger.debug("Response Result: '{}'", result);
-        return result;
+    /**
+     * This is used to execute arbitrary commands by sending to the commands channel. Command parameters to be added
+     * between
+     * [] brackets. This to allow for unimplemented commands to be executed (e.g. get detailed historical cleaning
+     * records)
+     *
+     * @param command to be executed
+     * @return vacuum response
+     */
+    private String sendCommand(String command) {
+        try {
+            command = command.trim();
+            String param = "";
+            int loc = command.indexOf("[");
+            if (loc > 0) {
+                param = command.substring(loc + 1, command.length() - 1).trim();
+                command = command.substring(0, loc).trim();
+            }
+            return roboCom.sendCommand(command, param);
+        } catch (RoboCryptoException | IOException e) {
+            disconnected(e.getMessage());
+        }
+        return null;
     }
 
     private boolean updateVacuumStatus() {
-        JsonObject statusData = getResult(status.getValue());
+        JsonObject statusData = getResultHelper(status.getValue());
         if (statusData == null) {
             disconnected("No valid status response");
             return false;
@@ -211,7 +236,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     }
 
     private boolean updateConsumables() {
-        JsonObject consumablesData = getResult(consumables.getValue());
+        JsonObject consumablesData = getResultHelper(consumables.getValue());
         if (consumablesData == null) {
             disconnected("No valid consumables response");
             return false;
@@ -228,33 +253,47 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     }
 
     private boolean updateDnD() {
-        JsonObject dndData = getResult(dnd.getValue());
+        JsonObject dndData = getResultHelper(dnd.getValue());
         if (dndData == null) {
             disconnected("No valid Do not Disturb response");
             return false;
         }
         logger.debug("Do not disturb data: {}", dndData.toString());
+        updateState(CHANNEL_DND_FUNCTION, new DecimalType(dndData.get("enabled").getAsBigDecimal()));
+        //TODO: format with leading 0
+        updateState(CHANNEL_DND_START, new StringType(
+                dndData.get("start_hour").getAsString() + ":" + dndData.get("start_minute").getAsString()));
+
+        updateState(CHANNEL_DND_END,
+                new StringType(dndData.get("end_hour").getAsString() + ":" + dndData.get("end_minute").getAsString()));
         return true;
     }
 
-    private boolean cleanHistory() {
-        logger.debug("Cleaning history data: {}", getResult(history.getValue()));
-        //        JsonObject historyData = getResult(history.getValue());
-        //        if (historyData == null) {
-        //            disconnected("No valid Clean History response");
-        //            return false;
-        //        }
-        //        logger.debug("Cleaning history data: {}", historyData.toString());
+    private boolean updateHistory() {
+        JsonArray historyData = ((JsonObject) parser.parse(history.getValue())).getAsJsonArray("result");
+        if (historyData == null) {
+            disconnected("No valid Clean History response");
+            return false;
+        }
+        logger.trace("Cleaning history data: {},{}", historyData.toString());
+        updateState(CHANNEL_HISTORY_TOTALTIME,
+                new StringType(LocalTime.MIN.plus(Duration.ofMinutes(historyData.get(1).getAsLong())).toString()));
+        updateState(CHANNEL_HISTORY_TOTALAREA, new DecimalType(historyData.get(1).getAsDouble() / 1000000D));
+        updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
         return true;
     }
 
     private synchronized void updateData() {
-        logger.debug("Update vacuum status'{}'", getThing().getUID());
+        logger.debug("Update vacuum status '{}'", getThing().getUID().toString());
         if (!hasConnection()) {
             return;
         }
-        if (updateVacuumStatus() && updateConsumables() && updateDnD() && cleanHistory()) {
-            updateStatus(ThingStatus.ONLINE);
+        try {
+            if (updateVacuumStatus() && updateConsumables() && updateDnD() && updateHistory()) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } catch (Exception e) {
+            logger.debug("Error while updating '{}'", getThing().getUID().toString(), e);
         }
     }
 
@@ -287,7 +326,6 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         history = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
             return sendCommand(VacuumCommand.CLEAN_SUMMARY_GET);
         });
-
         updateStatus(ThingStatus.ONLINE);
         return true;
     }
@@ -319,5 +357,13 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             disconnected(e.getMessage());
             return null;
         }
+    }
+
+    private JsonObject getResultHelper(String res) {
+        JsonObject vacuumResponse = (JsonObject) parser.parse(res);
+        JsonObject result = vacuumResponse.getAsJsonArray("result").get(0).getAsJsonObject();
+        logger.debug("Response ID:     '{}'", vacuumResponse.get("id").getAsString());
+        logger.debug("Response Result: '{}'", result);
+        return result;
     }
 }

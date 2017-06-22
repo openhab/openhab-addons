@@ -49,6 +49,8 @@
 			<channel id="spot_clean" typeId="spot_clean" />
 			<channel id="return" typeId="return" />
 			<channel id="pause" typeId="pause" />
+			<channel id="commands" typeId="commands" />
+
 		</channels>
 	</channel-group-type>
 
@@ -61,6 +63,7 @@
 			<channel id="error_code" typeId="error_code" />
 			<channel id="fan_power" typeId="fan_power" />
 			<channel id="in_cleaning" typeId="in_cleaning" />
+			<channel id="dnd_enabled" typeId="dnd_enabled" />
 			<channel id="map_present" typeId="map_present" />
 			<channel id="msg_seq" typeId="msg_seq" />
 			<channel id="msg_ver" typeId="msg_ver" />
@@ -79,14 +82,17 @@
 	<channel-group-type id="dnd">
 		<label>Do not Disturb</label>
 		<channels>
-			<channel id="dnd_enabled" typeId="dnd_enabled" />
+			<channel id="dnd_function" typeId="dnd_function" />
+			<channel id="dnd_start" typeId="dnd_start" />
+			<channel id="dnd_end" typeId="dnd_end" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="history">
 		<label>History</label>
 		<channels>
-			<channel id="clean_area" typeId="clean_area" />
-			<channel id="clean_time" typeId="clean_time" />
+			<channel id="total_clean_area" typeId="total_clean_area" />
+			<channel id="total_clean_time" typeId="total_clean_time" />
+			<channel id="total_clean_count" typeId="total_clean_count" />
 		</channels>
 	</channel-group-type>
 
@@ -181,5 +187,39 @@
 		<item-type>Switch</item-type>
 		<label>Pause Cleaning</label>
 	</channel-type>
+	<channel-type id="commands" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute Command</label>
+	</channel-type>
 
+	<!-- DND Setting -->
+	<channel-type id="dnd_function">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb functionality</label>
+	</channel-type>
+	<channel-type id="dnd_start">
+		<item-type>String</item-type>
+		<label>Start Time DND</label>
+	</channel-type>
+	<channel-type id="dnd_end">
+		<item-type>String</item-type>
+		<label>End Time DND</label>
+	</channel-type>
+
+	<!-- Clean History -->
+	<channel-type id="total_clean_time">
+		<item-type>String</item-type>
+		<label>Total Cleaning Time</label>
+		<state pattern="%s" readOnly="true" />
+	</channel-type>
+	<channel-type id="total_clean_area">
+		<item-type>Number</item-type>
+		<label>Total Cleaning Area</label>
+		<state pattern="%.2d m2" readOnly="true" />
+	</channel-type>
+	<channel-type id="total_clean_count">
+		<item-type>Number</item-type>
+		<label>Total Cleanings</label>
+		<state pattern="%.0d" readOnly="true" />
+	</channel-type>
 </thing:thing-descriptions>
