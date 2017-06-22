@@ -107,7 +107,7 @@ public class MilightBridgeV3Handler extends AbstractMilightBridgeHandler impleme
     @Override
     public void dispose() {
         if (discover != null) {
-            discover.dispose();
+            discover.release();
         }
         super.dispose();
     }
