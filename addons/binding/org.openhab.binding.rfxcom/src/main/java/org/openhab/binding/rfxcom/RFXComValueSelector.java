@@ -42,7 +42,7 @@ public enum RFXComValueSelector {
     HUMIDITY_STATUS(RFXComBindingConstants.CHANNEL_HUMIDITY_STATUS, StringItem.class),
     BATTERY_LEVEL(RFXComBindingConstants.CHANNEL_BATTERY_LEVEL, NumberItem.class),
     PRESSURE(RFXComBindingConstants.CHANNEL_PRESSURE, NumberItem.class),
-    FORECAST(RFXComBindingConstants.CHANNEL_FORECAST, NumberItem.class),
+    FORECAST(RFXComBindingConstants.CHANNEL_FORECAST, StringItem.class),
     RAIN_RATE(RFXComBindingConstants.CHANNEL_RAIN_RATE, NumberItem.class),
     RAIN_TOTAL(RFXComBindingConstants.CHANNEL_RAIN_TOTAL, NumberItem.class),
     WIND_DIRECTION(RFXComBindingConstants.CHANNEL_WIND_DIRECTION, NumberItem.class),
