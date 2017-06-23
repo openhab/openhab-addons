@@ -9,9 +9,9 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.smaenergymeter.discovery.SMAEnergyMeterDiscoveryService">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.smaenergymeter.internal.discovery.SMAEnergyMeterDiscoveryService">
 
-   <implementation class="org.openhab.binding.smaenergymeter.discovery.SMAEnergyMeterDiscoveryService"/>
+   <implementation class="org.openhab.binding.smaenergymeter.internal.discovery.SMAEnergyMeterDiscoveryService"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>

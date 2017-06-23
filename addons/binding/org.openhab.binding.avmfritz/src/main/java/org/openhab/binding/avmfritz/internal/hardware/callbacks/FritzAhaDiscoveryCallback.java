@@ -17,7 +17,7 @@ import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.discovery.AvmDiscoveryService;
 import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
-import org.openhab.binding.avmfritz.util.JAXBtUtils;
+import org.openhab.binding.avmfritz.internal.util.JAXBtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

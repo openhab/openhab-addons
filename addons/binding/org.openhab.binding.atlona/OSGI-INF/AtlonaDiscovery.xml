@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.atlona.discovery">
-   <implementation class="org.openhab.binding.atlona.discovery.AtlonaDiscovery"/>
+   <implementation class="org.openhab.binding.atlona.internal.discovery.AtlonaDiscovery"/>
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
    </service>

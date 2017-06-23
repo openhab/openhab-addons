@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.freebox.discovery.freeboxServer">
- <implementation class="org.openhab.binding.freebox.discovery.FreeboxServerDiscoveryParticipant"/>
+ <implementation class="org.openhab.binding.freebox.internal.discovery.FreeboxServerDiscoveryParticipant"/>
  <service>
     <provide interface="org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant"/>
  </service>

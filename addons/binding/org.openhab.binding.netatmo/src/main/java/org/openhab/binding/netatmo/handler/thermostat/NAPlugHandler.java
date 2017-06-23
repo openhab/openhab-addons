@@ -9,10 +9,10 @@
 package org.openhab.binding.netatmo.handler.thermostat;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.netatmo.config.NetatmoDeviceConfiguration;
 import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.NADeviceAdapter;
 import org.openhab.binding.netatmo.internal.NAPlugAdapter;
+import org.openhab.binding.netatmo.internal.config.NetatmoDeviceConfiguration;
 
 import io.swagger.client.model.NAThermostatDataBody;
 

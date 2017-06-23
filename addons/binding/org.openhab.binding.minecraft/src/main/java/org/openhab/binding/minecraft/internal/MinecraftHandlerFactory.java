@@ -19,10 +19,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.minecraft.MinecraftBindingConstants;
-import org.openhab.binding.minecraft.discovery.MinecraftDiscoveryService;
 import org.openhab.binding.minecraft.handler.MinecraftPlayerHandler;
 import org.openhab.binding.minecraft.handler.MinecraftServerHandler;
 import org.openhab.binding.minecraft.handler.MinecraftSignHandler;
+import org.openhab.binding.minecraft.internal.discovery.MinecraftDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

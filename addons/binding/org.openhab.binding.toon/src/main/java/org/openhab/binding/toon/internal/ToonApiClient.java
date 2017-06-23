@@ -22,10 +22,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.toon.config.ToonBridgeConfiguration;
 import org.openhab.binding.toon.internal.api.Agreement;
 import org.openhab.binding.toon.internal.api.ToonConnectionException;
 import org.openhab.binding.toon.internal.api.ToonState;
+import org.openhab.binding.toon.internal.config.ToonBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

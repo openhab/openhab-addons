@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.folding.FoldingSlotDiscoveryService">
-    <implementation class="org.openhab.binding.folding.discovery.FoldingSlotDiscoveryService"/>
+    <implementation class="org.openhab.binding.folding.internal.discovery.FoldingSlotDiscoveryService"/>
     <service>
         <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
     </service>

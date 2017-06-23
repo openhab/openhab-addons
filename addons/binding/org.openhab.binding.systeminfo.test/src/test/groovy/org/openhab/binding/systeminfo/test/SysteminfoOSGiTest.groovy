@@ -49,9 +49,9 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.experimental.categories.Category
 import org.openhab.binding.systeminfo.SysteminfoBindingConstants
-import org.openhab.binding.systeminfo.discovery.SysteminfoDiscoveryService
 import org.openhab.binding.systeminfo.handler.SysteminfoHandler
 import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory
+import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService
 /**
  * OSGi tests for the {@link SysteminfoHandler}
  *

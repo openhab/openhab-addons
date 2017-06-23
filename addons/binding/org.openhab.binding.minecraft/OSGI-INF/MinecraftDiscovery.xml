@@ -10,7 +10,7 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" modified="modified" name="org.openhab.binding.minecraft.discovery.MinecraftDiscoveryService">
-   <implementation class="org.openhab.binding.minecraft.discovery.MinecraftDiscoveryService"/>
+   <implementation class="org.openhab.binding.minecraft.internal.discovery.MinecraftDiscoveryService"/>
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
    </service>
