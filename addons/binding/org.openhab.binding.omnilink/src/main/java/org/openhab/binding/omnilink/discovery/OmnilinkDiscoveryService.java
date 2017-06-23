@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -35,7 +37,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     private OmnilinkBridgeHandler bridgeHandler;
     private boolean isLumina = false;
-    private LinkedList<AreaProperties> areas;
+    private List<AreaProperties> areas;
 
     /**
      * Creates an OmnilinkDiscoveryService.
@@ -61,83 +63,18 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting scan");
-        areas = new LinkedList<>();
         try {
             SystemInformation info = bridgeHandler.reqSystemInformation();
             isLumina = info.getModel() == 36 || info.getModel() == 37;
-            generateAreas();
-            generateUnits();
-            generateZones();
-            generateButtons();
+            areas = discoverAreas();
+            discoverUnits();
+            discoverZones();
+            discoverButtons();
             discoverThermostats();
             // generate consoles is throwing and error
             // generateConsoles();
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Received error during discovery", e);
-        }
-    }
-
-    private void generateButtons()
-            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
-
-        for (AreaProperties areaProperties : areas) {
-            int areaFilter = 0;
-            // Area filter returns areas in each bit. So bit 0 is area 1, bit 2 is area 2 and so on.
-            areaFilter |= 1 << (areaProperties.getNumber() - 1);
-
-            int objnum = 0;
-            Message m;
-
-            while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_BUTTON, objnum, 1,
-                    ObjectProperties.FILTER_1_NAMED, areaFilter, ObjectProperties.FILTER_3_NONE))
-                            .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-                ButtonProperties o = ((ButtonProperties) m);
-                objnum = o.getNumber();
-                Map<String, Object> properties = new HashMap<>(0);
-                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_BUTTON,
-                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, o.getName());
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
-
-                DiscoveryResult discoveryResult;
-
-                discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(o.getName()).build();
-                thingDiscovered(discoveryResult);
-            }
-        }
-    }
-
-    private void generateConsoles()
-            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
-
-        for (AreaProperties areaProperties : areas) {
-            int areaFilter = 0;
-            // Area filter returns areas in each bit. So bit 0 is area 1, bit 2 is area 2 and so on.
-            areaFilter |= 1 << (areaProperties.getNumber() - 1);
-
-            int objnum = 0;
-            Message m;
-
-            while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_CONSOLE, objnum, 1,
-                    ObjectProperties.FILTER_1_NONE, areaFilter, ObjectProperties.FILTER_3_NONE))
-                            .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-                ConsoleProperties o = ((ConsoleProperties) m);
-                objnum = o.getNumber();
-                Map<String, Object> properties = new HashMap<>(0);
-                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_CONSOLE,
-                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
-                // properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, o.getName());
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
-
-                DiscoveryResult discoveryResult;
-
-                discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(o.getName()).build();
-                thingDiscovered(discoveryResult);
-            }
         }
     }
 
@@ -151,15 +88,70 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         return BigInteger.ZERO.setBit(areaProperties.getNumber() - 1).intValue();
     }
 
+    private void discoverButtons()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+
+        for (AreaProperties areaProperties : areas) {
+
+            int areaFilter = bitFilterForArea(areaProperties);
+
+            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, Message.OBJ_TYPE_BUTTON).selectNamed().areaFilter(areaFilter).build();
+
+            for (ObjectProperties objectProperties : objectPropertyRequest) {
+
+                ButtonProperties buttonProperties = ((ButtonProperties) objectProperties);
+                int objnum = buttonProperties.getNumber();
+                Map<String, Object> properties = new HashMap<>();
+                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_BUTTON,
+                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, buttonProperties.getName());
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
+
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(buttonProperties.getName())
+                        .build();
+                thingDiscovered(discoveryResult);
+            }
+        }
+    }
+
+    private void generateConsoles()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+
+        for (AreaProperties areaProperties : areas) {
+            int areaFilter = bitFilterForArea(areaProperties);
+
+            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, Message.OBJ_TYPE_CONSOLE).areaFilter(areaFilter).build();
+
+            for (ObjectProperties objectProperties : objectPropertyRequest) {
+
+                ConsoleProperties consoleProperties = ((ConsoleProperties) objectProperties);
+                int objnum = consoleProperties.getNumber();
+                Map<String, Object> properties = new HashMap<>();
+                ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_CONSOLE,
+                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
+
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(consoleProperties.getName())
+                        .build();
+                thingDiscovered(discoveryResult);
+            }
+        }
+    }
+
     private void discoverThermostats()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
         for (AreaProperties areaProperties : areas) {
             int areaFilter = bitFilterForArea(areaProperties);
 
-            ObjectPropertyRequest objectPropertyRequest = new ObjectPropertyRequest(bridgeHandler,
-                    Message.OBJ_TYPE_THERMO, ObjectProperties.FILTER_1_NAMED, areaFilter,
-                    ObjectProperties.FILTER_3_NONE);
+            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, Message.OBJ_TYPE_THERMO).selectNamed().areaFilter(areaFilter).build();
 
             for (ObjectProperties objectProperties : objectPropertyRequest) {
 
@@ -175,30 +167,34 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                         .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
                         .build();
                 thingDiscovered(discoveryResult);
-            }}
-	}
+            }
+        }
+    }
 
-    private void generateAreas()
+    private List<AreaProperties> discoverAreas()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
-        int objnum = 0;
-        Message m;
-        // it seems that simple configurations of an omnilink have 1 area, without a name. So if there is no name for
-        // the first area, we will call that Main. If other areas name is blank, we will not create a thing
-        while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_AREA, objnum, 1, ObjectProperties.FILTER_1_NONE,
-                ObjectProperties.FILTER_2_NONE, ObjectProperties.FILTER_3_NONE))
-                        .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-            AreaProperties o = ((AreaProperties) m);
-            objnum = o.getNumber();
+        ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
+                .builder(bridgeHandler, Message.OBJ_TYPE_AREA).build();
 
-            String areaName = o.getName();
-            if (o.getNumber() == 1 && "".equals(areaName)) {
+        List<AreaProperties> areas = new LinkedList<>();
+
+        for (ObjectProperties objectProperties : objectPropertyRequest) {
+
+            AreaProperties areaProperties = ((AreaProperties) objectProperties);
+            int objnum = areaProperties.getNumber();
+
+            // it seems that simple configurations of an omnilink have 1 area, without a name. So if there is no name
+            // for
+            // the first area, we will call that Main. If other areas name is blank, we will not create a thing
+            String areaName = areaProperties.getName();
+            if (areaProperties.getNumber() == 1 && "".equals(areaName)) {
                 areaName = "Main Area";
             } else if ("".equals(areaName)) {
                 break;
             }
 
-            Map<String, Object> properties = new HashMap<>(0);
+            Map<String, Object> properties = new HashMap<>();
             ThingUID thingUID;
             if (isLumina) {
                 thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_LUMINA_AREA,
@@ -210,17 +206,15 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, areaName);
 
-            DiscoveryResult discoveryResult;
-
-            discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(areaName).build();
             thingDiscovered(discoveryResult);
-            areas.add(o);
-
+            areas.add(areaProperties);
         }
+        return areas;
     }
 
-    private void generateUnits()
+    private void discoverUnits()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
         // Group Lights_GreatRoom "Great Room" (Lights)
@@ -232,71 +226,72 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         // String groupName = "Lights";
 
         for (AreaProperties areaProperties : areas) {
-            int areaFilter = 0;
-            // Area filter returns areas in each bit. So bit 0 is area 1, bit 2 is area 2 and so on.
-            areaFilter |= 1 << (areaProperties.getNumber() - 1);
+            int areaFilter = bitFilterForArea(areaProperties);
 
-            int objnum = 0;
-            Message m;
-            int currentRoom = 0;
-            String currentRoomName = null;
+            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, Message.OBJ_TYPE_UNIT).selectNamed().areaFilter(areaFilter).selectAnyLoad()
+                    .build();
 
-            while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_UNIT, objnum, 1,
-                    ObjectProperties.FILTER_1_NAMED, areaFilter, ObjectProperties.FILTER_3_ANY_LOAD))
-                            .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-                UnitProperties o = ((UnitProperties) m);
-                objnum = o.getNumber();
+            for (ObjectProperties objectProperties : objectPropertyRequest) {
+
+                UnitProperties unitProperties = ((UnitProperties) objectProperties);
+                int objnum = unitProperties.getNumber();
+                int currentRoom = 0;
+                String currentRoomName = "";
 
                 // boolean isInRoom = false;
                 boolean isRoomController = false;
-                logger.debug("Unit type: {}", o.getUnitType());
-                if (o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM
-                        || o.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM) {
+                logger.debug("Unit type: {}", unitProperties.getUnitType());
+                if (unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM
+                        || unitProperties.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM) {
                     currentRoom = objnum;
-                    currentRoomName = o.getName();
+                    currentRoomName = unitProperties.getName();
                     isRoomController = true;
                 } else if (objnum < currentRoom + 8) {
                     // isInRoom = true;
                 }
 
-                ThingUID thingUID = null;
-                String thingID = "";
-                String thingLabel = o.getName();
-                thingID = Integer.toString(objnum);
+                String thingLabel = unitProperties.getName();
+                String thingID = Integer.toString(objnum);
 
-                Map<String, Object> properties = new HashMap<>(0);
+                Map<String, Object> properties = new HashMap<>();
 
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, o.getName());
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, unitProperties.getName());
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
 
-                DiscoveryResult discoveryResult;
+                Optional<DiscoveryResult> discoveryResult = Optional.empty();
                 if (isRoomController) {
-                    discoveryResult = DiscoveryResultBuilder
+                    discoveryResult = Optional.of(DiscoveryResultBuilder
                             .create(new ThingUID(OmnilinkBindingConstants.THING_TYPE_ROOM,
                                     bridgeHandler.getThing().getUID(), thingID))
-                            .withProperties(properties).withBridge(bridgeUID).withLabel(thingLabel).build();
+                            .withProperties(properties).withBridge(bridgeUID).withLabel(thingLabel).build());
                 } else {
-                    if (o.getUnitType() == UnitProperties.UNIT_TYPE_FLAG) {
+                    ThingUID thingUID = null;
+                    if (unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_FLAG) {
                         thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_FLAG,
                                 bridgeHandler.getThing().getUID(), thingID);
 
                     } else {
-                        if (o.getUnitType() == UnitProperties.UNIT_TYPE_UPB
-                                || o.getUnitType() == UnitProperties.UNIT_TYPE_HLC_LOAD) {
+                        if (unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_UPB
+                                || unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_HLC_LOAD) {
                             thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB,
                                     bridgeHandler.getThing().getUID(), thingID);
                         } else {
-                            logger.debug("Unsupported unit type: {}", o.getUnitType());
+                            logger.debug("Unsupported unit type: {}", unitProperties.getUnitType());
                         }
                         // let's prepend room name to unit name for label
                         // TODO could make this configurable
-                        thingLabel = currentRoomName + ": " + o.getName();
+                        thingLabel = currentRoomName + ": " + unitProperties.getName();
                     }
-                    discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                            .withBridge(bridgeUID).withLabel(thingLabel).build();
+                    if (thingUID != null) {
+                        discoveryResult = Optional.of(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                                .withBridge(bridgeUID).withLabel(thingLabel).build());
+                    }
                 }
-                thingDiscovered(discoveryResult);
+                if (discoveryResult.isPresent()) {
+                    thingDiscovered(discoveryResult.get());
+                }
             }
         }
     }
@@ -310,7 +305,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
      * @throws OmniUnknownMessageTypeException
      * @throws BridgeOfflineException
      */
-    private void generateZones()
+    private void discoverZones()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
         // String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
@@ -318,33 +313,29 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         // String groupName = "Zones";
 
         for (AreaProperties areaProperties : areas) {
-            int objnum = 0;
-            Message m;
-            int areaFilter = 0;
-            // Area filter returns areas in each bit. So bit 0 is area 1, bit 2 is area 2 and so on.
-            areaFilter |= 1 << (areaProperties.getNumber() - 1);
 
-            while ((m = bridgeHandler.reqObjectProperties(Message.OBJ_TYPE_ZONE, objnum, 1,
-                    ObjectProperties.FILTER_1_NAMED, areaFilter, ObjectProperties.FILTER_3_ANY_LOAD))
-                            .getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-                ZoneProperties o = ((ZoneProperties) m);
-                objnum = o.getNumber();
+            int areaFilter = bitFilterForArea(areaProperties);
+
+            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, Message.OBJ_TYPE_ZONE).selectNamed().areaFilter(areaFilter).build();
+
+            for (ObjectProperties objectProperties : objectPropertyRequest) {
+
+                ZoneProperties zoneProperties = ((ZoneProperties) objectProperties);
+                int objnum = zoneProperties.getNumber();
 
                 ThingUID thingUID = null;
-                String thingID = "";
-                String thingLabel = o.getName();
-                thingID = Integer.toString(objnum);
+                String thingID = Integer.toString(objnum);
+                String thingLabel = zoneProperties.getName();
 
-                Map<String, Object> properties = new HashMap<>(0);
+                Map<String, Object> properties = new HashMap<>();
                 thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_ZONE, bridgeHandler.getThing().getUID(),
                         thingID);
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, thingLabel);
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
 
-                DiscoveryResult discoveryResult;
-
-                discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withBridge(bridgeUID).withLabel(thingLabel).build();
                 thingDiscovered(discoveryResult);
             }
