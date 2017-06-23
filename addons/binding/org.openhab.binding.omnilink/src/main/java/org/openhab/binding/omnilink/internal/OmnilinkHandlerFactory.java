@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.handler.AreaHandler;
+import org.openhab.binding.omnilink.handler.AudioZoneHandler;
 import org.openhab.binding.omnilink.handler.ButtonHandler;
 import org.openhab.binding.omnilink.handler.FlagHandler;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
@@ -88,6 +89,8 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
             return new ButtonHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
             return new ThermostatHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_AUDIO_ZONE)) {
+            return new AudioZoneHandler(thing);
         }
 
         return null;

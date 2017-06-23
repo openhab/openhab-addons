@@ -71,6 +71,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             discoverZones();
             discoverButtons();
             discoverThermostats();
+            discoverAudioZones();
             // generate consoles is throwing and error
             // generateConsoles();
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
@@ -141,6 +142,27 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                         .build();
                 thingDiscovered(discoveryResult);
             }
+        }
+    }
+
+    private void discoverAudioZones()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+
+        ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
+                .builder(bridgeHandler, Message.OBJ_TYPE_AUDIO_ZONE).selectNamed().build();
+
+        for (ObjectProperties objectProperties : objectPropertyRequest) {
+
+            ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_AUDIO_ZONE,
+                    Integer.toString(objectProperties.getNumber()));
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
+            properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName()).build();
+            thingDiscovered(discoveryResult);
         }
     }
 

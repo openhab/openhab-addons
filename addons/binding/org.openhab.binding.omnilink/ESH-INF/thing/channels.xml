@@ -444,6 +444,16 @@
 			</options>
 		</state>
 	</channel-type>
+	
+	<!-- Audio Zone Channels -->
+	
+	<channel-type id="audio_zone_power">
+        <item-type>Number</item-type>
+        <label>Audio Zone Power</label>
+        <description>Power status of Audio Zone</description>
+        <category>Contact</category>
+        <state pattern="%s" readOnly="true" />
+    </channel-type>
 
 	<!-- Controller Channels -->
 
