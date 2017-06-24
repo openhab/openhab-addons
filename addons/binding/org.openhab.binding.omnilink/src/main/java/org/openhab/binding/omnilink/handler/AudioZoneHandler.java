@@ -23,7 +23,6 @@ public class AudioZoneHandler extends AbstractOmnilinkHandler implements ThingHa
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
 
     }
 

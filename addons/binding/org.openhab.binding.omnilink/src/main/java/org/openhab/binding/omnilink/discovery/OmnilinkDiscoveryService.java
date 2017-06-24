@@ -25,6 +25,7 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ButtonProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ConsoleProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ThermostatProperties;
@@ -147,10 +148,10 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private void discoverAudioZones()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
-        ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
-                .builder(bridgeHandler, Message.OBJ_TYPE_AUDIO_ZONE).selectNamed().build();
+        ObjectPropertyRequest<AudioZoneProperties> objectPropertyRequest = ObjectPropertyRequest
+                .builder(bridgeHandler, ObjectPropertyRequests.AUDIO_ZONE).selectNamed().build();
 
-        for (ObjectProperties objectProperties : objectPropertyRequest) {
+        for (AudioZoneProperties objectProperties : objectPropertyRequest) {
 
             ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_AUDIO_ZONE,
                     Integer.toString(objectProperties.getNumber()));
