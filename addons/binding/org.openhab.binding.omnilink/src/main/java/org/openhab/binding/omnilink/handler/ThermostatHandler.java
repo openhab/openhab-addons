@@ -6,7 +6,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
@@ -44,10 +43,9 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
-        logger.debug("Channel Parts {}", (Object[]) channelParts);
+
         int thermostatID = getThingID();
-        String channelID = channelParts[3];
+        String channelID = channelUID.getId();
 
         try {
             switch (channelID) {
