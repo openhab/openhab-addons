@@ -230,7 +230,6 @@ public class LxControlJalousie extends LxControl implements LxControlStateListen
                     } catch (IOException e) {
                         logger.debug("Error stopping jalousie when meeting target position.");
                     }
-
                 }
             }
         }

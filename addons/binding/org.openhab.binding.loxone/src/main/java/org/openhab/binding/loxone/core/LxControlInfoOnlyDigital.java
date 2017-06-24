@@ -50,8 +50,8 @@ public class LxControlInfoOnlyDigital extends LxControl {
             LxCategory category) {
         super(client, uuid, json, room, category);
         if (json.details != null && json.details.text != null) {
-            this.textOn = json.details.text.on;
-            this.textOff = json.details.text.off;
+            textOn = json.details.text.on;
+            textOff = json.details.text.off;
         }
     }
 
@@ -83,5 +83,19 @@ public class LxControlInfoOnlyDigital extends LxControl {
             }
         }
         return null;
+    }
+
+    /**
+     * Obtain current value of an analog virtual state, expressed as a number
+     *
+     * @return
+     *         value of the state or zero if current value is not compatible with this control
+     */
+    public double getValue() {
+        LxControlState state = getState(STATE_ACTIVE);
+        if (state != null) {
+            return state.getValue();
+        }
+        return 0;
     }
 }

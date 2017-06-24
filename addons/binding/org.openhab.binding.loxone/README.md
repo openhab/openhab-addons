@@ -27,22 +27,25 @@ Before a Miniserver Thing can go online, it must be configured with a user name 
 
 ## Channels
 
-This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/). Currently supported controls are presented in the table below.
+This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/). Each control may have one of more channels, depending on various states it has. Currently supported controls are presented in the table below.
 
-|[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[OpenHAB Item Type](http://docs.openhab.org/concepts/items.html)|Supported Commands|Channel Type|
-|----|----|----|----|----|
-|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |String|none (read-only value)|`loxone:miniserver:<serial>:infoonly`|
-|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |String|none (read-only value)|`loxone:miniserver:<serial>:infoonly`|
-|Jalousie| (Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated) | Rollershutter| `UpDown.*`<br>`StopMove.*`<br>`Percent`|`loxone:miniserver:<serial>:rollershutter`|
-|LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|Number|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|`loxone:miniserver:<serial>:lightcontroller:<uuid>`<br>This channel type is created dynamically for each controller, because it contains custom list of selectable values.|
-|Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | Switch | `OnOffType.ON` (generates Pulse command)|`loxone:miniserver:<serial>:switch`|
-|Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|Number|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|`loxone:miniserver:<serial>:radio:<uuid>`<br>This channel type is created dynamically for each radio button, because it contains custom list of selectable value.|
-|Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | Switch |`OnOffType.*`|`loxone:miniserver:<serial>:switch`|
-|TextState|[State](https://www.loxone.com/enen/kb/state/)|String|none (read-only value)|`loxone:miniserver:<serial>:infoonly`|
+|[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[Item Types](http://docs.openhab.org/concepts/items.html)|Supported Commands|Channel Types|Channel IDs|
+|----|----|----|----|----|----|
+|InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`Number`|none (read-only value)|`loxone:miniserver:<serial>:infoonlyanalog:<uuid>`<br> This channel type is created dynamically for each control, because control contains custom display format string|`loxone:miniserver:<serial>:<uuid>`|
+|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`String`<br>`Number`|none (read-only value)|`loxone:miniserver:<serial>:infoonlydigital`| `loxone:miniserver:<serial>:<uuid>`|
+|Jalousie| Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated| `Rollershutter`| `UpDown.*`<br>`StopMove.*`<br>`Percent`|`loxone:miniserver:<serial>:rollershutter`|`loxone:miniserver:<serial>:<uuid>`
+|LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|`loxone:miniserver:<serial>:lightcontroller:<uuid>`<br>This channel type is created dynamically for each controller, because it contains custom list of selectable values.|`loxone:miniserver:<serial>:<uuid>`|
+|Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | `Switch` | `OnOffType.ON` (generates Pulse command)|`loxone:miniserver:<serial>:switch`|`loxone:miniserver:<serial>:<uuid>`
+|Radio|[Radio button 8x and 16x](https://www.loxone.com/enen/kb/radio-buttons/)|`Number`|`Decimal` (select output number 1-8/16 or 0 for all outputs off)<br>`OnOffType.OFF` (all outputs off)|`loxone:miniserver:<serial>:radio:<uuid>`<br>This channel type is created dynamically for each radio button, because it contains custom list of selectable value.|`loxone:miniserver:<serial>:<uuid>`
+|Switch | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of switch type<br>[Push-button](https://www.loxone.com/enen/kb/push-button/) | `Switch` |`OnOffType.*`|`loxone:miniserver:<serial>:switch`|`loxone:miniserver:<serial>:<uuid>`
+|TextState|[State](https://www.loxone.com/enen/kb/state/)|`String`|none (read-only value)|`loxone:miniserver:<serial>:text`|`loxone:miniserver:<serial>:<uuid>`|
 
 If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/). application.
 
-Channel ID is defined in the following way: `loxone:miniserver:<serial>:<control-UUID>`.
+Channel ID is defined in the following way: 
+
+  * For primary control's channel: `loxone:miniserver:<serial>:<control-UUID>`
+  * For other control's channels (currently no such controls): `loxone:miniserver:<serial>:<control-UUID>-<channel-index>`, where `channel-index >=1`
 
 
 ### Loxone and Amazon Alexa

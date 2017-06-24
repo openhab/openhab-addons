@@ -73,18 +73,4 @@ public class LxControlTextState extends LxControl {
         }
         return null;
     }
-
-    /**
-     * Return current number value of the state
-     *
-     * @return
-     *         number with current value, if no current value zero is returned
-     */
-    public double getValue() {
-        LxControlState textState = getState(STATE_TEXT_AND_ICON);
-        if (textState != null) {
-            return textState.getValue();
-        }
-        return 0;
-    }
 }
