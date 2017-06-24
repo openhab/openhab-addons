@@ -46,6 +46,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.SystemFormats;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
+import com.digitaldan.jomnilinkII.MessageTypes.statuses.AudioZoneStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
@@ -69,6 +70,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private Map<Integer, Thing> zoneThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     private Map<Integer, Thing> buttonThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
     private Map<Integer, Thing> thermostatThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
+    private Map<Integer, Thing> audioZoneThings = Collections.synchronizedMap(new HashMap<Integer, Thing>());
 
     private TemperatureFormat temperatureFormat;
 
@@ -278,21 +280,21 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     @Override
-    public void objectStausNotification(ObjectStatus status) {
-        Status[] statuses = status.getStatuses();
-        for (Status s : statuses) {
-            if (s instanceof UnitStatus) {
-                handleUnitStatus((UnitStatus) s);
-            } else if (s instanceof ZoneStatus) {
-                ZoneStatus stat = (ZoneStatus) s;
+    public void objectStausNotification(ObjectStatus objectStatus) {
+        Status[] statuses = objectStatus.getStatuses();
+        for (Status status : statuses) {
+            if (status instanceof UnitStatus) {
+                handleUnitStatus((UnitStatus) status);
+            } else if (status instanceof ZoneStatus) {
+                ZoneStatus stat = (ZoneStatus) status;
                 Integer number = new Integer(stat.getNumber());
                 Thing theThing = zoneThings.get(number);
                 logger.debug("received status update for zone: " + number + ",status: " + stat.getStatus());
                 if (theThing != null) {
                     ((ZoneHandler) theThing.getHandler()).handleZoneStatus(stat);
                 }
-            } else if (s instanceof AreaStatus) {
-                AreaStatus areaStatus = (AreaStatus) s;
+            } else if (status instanceof AreaStatus) {
+                AreaStatus areaStatus = (AreaStatus) status;
                 Integer number = new Integer(areaStatus.getNumber());
                 Thing theThing = areaThings.get(number);
                 // logger.debug("AreaStatus: Mode={}, text={}", areaStatus.getMode(),
@@ -300,15 +302,22 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 if (theThing != null) {
                     ((AreaHandler) theThing.getHandler()).handleAreaEvent(areaStatus);
                 }
-            } else if (s instanceof ExtendedThermostatStatus) {
-                ExtendedThermostatStatus thermostatStatus = (ExtendedThermostatStatus) s;
+            } else if (status instanceof ExtendedThermostatStatus) {
+                ExtendedThermostatStatus thermostatStatus = (ExtendedThermostatStatus) status;
                 Integer number = new Integer(thermostatStatus.getNumber());
                 Thing theThing = thermostatThings.get(number);
                 if (theThing != null) {
                     ((ThermostatHandler) theThing.getHandler()).handleThermostatStatus(thermostatStatus);
                 }
+            } else if (status instanceof AudioZoneStatus) {
+                AudioZoneStatus audioZoneStatus = (AudioZoneStatus) status;
+                Integer number = new Integer(audioZoneStatus.getNumber());
+                Thing theThing = audioZoneThings.get(number);
+                if (theThing != null) {
+                    ((AudioZoneHandler) theThing.getHandler()).handleAudioZoneStatus(audioZoneStatus);
+                }
             } else {
-                logger.debug("Received Object Status Notification that was not processed: {}", status);
+                logger.debug("Received Object Status Notification that was not processed: {}", objectStatus);
             }
 
         }
@@ -374,6 +383,18 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         .parseInt(childThing.getConfiguration().getProperties().get("number").toString());
             }
             thermostatThings.put(thermostatNumber, childThing);
+        } else if (childHandler instanceof AudioZoneHandler) {
+            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
+                throw new IllegalArgumentException("childThing does not have required 'number' property");
+            }
+            int audioZoneNumber;
+            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
+                audioZoneNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
+            } else {
+                audioZoneNumber = Integer
+                        .parseInt(childThing.getConfiguration().getProperties().get("number").toString());
+            }
+            audioZoneThings.put(audioZoneNumber, childThing);
         } else {
             logger.warn("Did not add childThing to a map: {}", childThing);
         }

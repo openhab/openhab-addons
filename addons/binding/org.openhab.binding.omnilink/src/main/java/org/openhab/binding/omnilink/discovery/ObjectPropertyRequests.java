@@ -1,0 +1,52 @@
+package org.openhab.binding.omnilink.discovery;
+
+import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.ButtonProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.ConsoleProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.ThermostatProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
+
+public class ObjectPropertyRequests<T extends ObjectProperties> {
+
+    public final static ObjectPropertyRequests<ThermostatProperties> THERMOSTAT = new ObjectPropertyRequests<>(
+            Message.OBJ_TYPE_THERMO, ThermostatProperties.class);
+
+    public final static ObjectPropertyRequests<ButtonProperties> BUTTONS = new ObjectPropertyRequests<>(
+            Message.OBJ_TYPE_BUTTON, ButtonProperties.class);
+
+    public final static ObjectPropertyRequests<ConsoleProperties> CONSOLE = new ObjectPropertyRequests<>(
+            Message.OBJ_TYPE_CONSOLE, ConsoleProperties.class);
+
+    public final static ObjectPropertyRequests<AreaProperties> AREA = new ObjectPropertyRequests<>(
+            Message.OBJ_TYPE_CONSOLE, AreaProperties.class);
+
+    public final static ObjectPropertyRequests<ZoneProperties> ZONE = new ObjectPropertyRequests<>(
+            Message.OBJ_TYPE_CONSOLE, ZoneProperties.class);
+
+    public final static ObjectPropertyRequests<UnitProperties> UNIT = new ObjectPropertyRequests<>(
+            Message.OBJ_TYPE_CONSOLE, UnitProperties.class);
+
+    public final static ObjectPropertyRequests<AudioZoneProperties> AUDIO_ZONE = new ObjectPropertyRequests<>(
+            Message.OBJ_TYPE_CONSOLE, AudioZoneProperties.class);
+
+    private final int propertyRequest;
+    private final Class<T> responseType;
+
+    private ObjectPropertyRequests(int propertyRequest, Class<T> type) {
+        this.propertyRequest = propertyRequest;
+        this.responseType = type;
+    }
+
+    public int getPropertyRequest() {
+        return propertyRequest;
+    }
+
+    public Class<T> getResponseType() {
+        return responseType;
+    }
+
+}

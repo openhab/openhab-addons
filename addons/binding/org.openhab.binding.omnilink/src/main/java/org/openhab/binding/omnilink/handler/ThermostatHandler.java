@@ -40,7 +40,6 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
 
     public ThermostatHandler(Thing thing) {
         super(thing);
-
     }
 
     @Override
@@ -239,7 +238,6 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing unit:", e);
         }
-
     }
 
 }
