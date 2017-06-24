@@ -51,7 +51,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     private String localSource;
     private int port;
     private InetSocketAddress localEndPoint;
-    private Boolean useNAT;
+    private Boolean useNAT = false;
 
     public IPBridgeThingHandler(Bridge bridge) {
         super(bridge);
