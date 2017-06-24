@@ -1,6 +1,6 @@
 # HAI/Leviton Omnilink Binding
 
-This binding integrates the [Omni and Lumina](http://www.leviton.com/en/products/security-automation/automation-av-controllers/omni-security-systems) line of home automation controller. At Its core the Omni is a hardware board that provides security and access features.  It connects to many other devices through serial ports or relays and exposes them through a single TCP based API.
+This binding integrates the [Omni and Lumina](http://www.leviton.com/en/products/security-automation/automation-av-controllers/omni-security-systems) line of home automation systems. At Its core the Omni is a hardware board that provides security and access features.  It connects to many other devices through serial ports or wired contacts and exposes them through a single TCP based API.
 
 ## Supported Things
 
@@ -37,7 +37,7 @@ A Omni or Lumina controller requires the IP address, optional port (defaults to 
 In the thing file, this looks e.g. like
 
 ```
-Bridge omnilink:controller:1 [ ipAddress="192.168.0.64", key1="00:11:22:33:0A:0B:0C:0D", key2="00:11:22:33:1A:1B:1C:1D" ]
+Bridge omnilink:controller:1 [ ipAddress="192.168.1.10", key1="00:11:22:33:0A:0B:0C:0D", key2="00:11:22:33:1A:1B:1C:1D" ]
 ```
 
 The devices are identified by device number that the Omni bridge assigns to them, for manual configuration this looks like:
@@ -70,45 +70,53 @@ zone 14 [ number="14" ]
 
 ### demo.things
 
+
+```
+Bridge omnilink:controller:home [ ipAddress="192.168.1.10", key1="00:11:22:33:0A:0B:0C:0D", key2="00:11:22:33:1A:1B:1C:1D" ] {
+  area 1 [ number="1"]
+  zone 1 [ number="1" ]  
+}
+```
+
 ### demo.items
 ```
 Group:Contact:OR(OPEN, CLOSED) Zones "All Zones [%s]"
 Group:Switch:OR(ON, OFF) Alarms "All Alarms [%s]"
 
-Number 		AlarmMode				"Alarm [MAP(area-modes.map):%s]" 			{channel="omnilink:area:home:1:mode"}
-Number 		ConsoleBeep														{channel="omnilink:controller:home:beep"}
-Contact		ZoneFrontDoor 			"Front Door [%s]"  		(Zones)			{channel="omnilink:zone:home:1:contact"}
-String		ZoneFrontDoorBypass 										{channel="omnilink:zone:home:1:bypass"}
-String		ZoneFrontDoorRestore 										{channel="omnilink:zone:home:1:restore"}
+Number    AlarmMode                 "Alarm [MAP(area-modes.map):%s]"      {channel="omnilink:area:home:1:mode"}
+Number    ConsoleBeep                                                     {channel="omnilink:controller:home:beep"}
+Contact   ZoneFrontDoor             "Front Door [%s]"       (Zones)       {channel="omnilink:zone:home:1:contact"}
+String    ZoneFrontDoorBypass                                             {channel="omnilink:zone:home:1:bypass"}
+String    ZoneFrontDoorRestore                                            {channel="omnilink:zone:home:1:restore"}
 
 
-Contact		ZoneGarageDoor 			"Garage Door [%s]"  		(Zones) 		{channel="omnilink:zone:home:2:contact"}
-Contact		ZoneExtGarageDoor 		"Ext Garage Door [%s]"  	(Zones) 		{channel="omnilink:zone:home:4:contact"}
-Contact		ZoneKitchenDoor 		"Kitchen Door [%s]"  		(Zones) 		{channel="omnilink:zone:home:5:contact"}
-Contact		ZoneMotion 				"Motion [%s]"  				(Zones) 		{channel="omnilink:zone:home:6:contact"}
-Contact		ZoneGreatRoom 			"Great Room [%s]"  			(Zones) 		{channel="omnilink:zone:home:7:contact"}
-Contact		ZoneDinningRoom 		"Dinning Room [%s]"  		(Zones) 		{channel="omnilink:zone:home:8:contact"}
-Contact		ZoneKitchenOffice 		"Kitchen/Office [%s]"  		(Zones) 		{channel="omnilink:zone:home:9:contact"}
-Contact		ZoneLivingRoom 			"Living Room [%s]"  		(Zones) 		{channel="omnilink:zone:home:10:contact"}
-Contact		ZoneMaster 				"Master [%s]"  				(Zones) 		{channel="omnilink:zone:home:11:contact"}
-Contact		ZoneBed2 				"Bed 2 [%s]"  				(Zones) 		{channel="omnilink:zone:home:12:contact"}
-Contact		ZoneBed3 				"Bed 3 [%s]"  				(Zones) 		{channel="omnilink:zone:home:13:contact"}
-Contact		ZoneBed4 				"Bed 4 [%s]"  				(Zones) 		{channel="omnilink:zone:home:14:contact"}
+Contact   ZoneGarageDoor            "Garage Door [%s]"        (Zones)     {channel="omnilink:zone:home:2:contact"}
+Contact   ZoneExtGarageDoor         "Ext Garage Door [%s]"    (Zones)     {channel="omnilink:zone:home:4:contact"}
+Contact   ZoneKitchenDoor           "Kitchen Door [%s]"       (Zones)     {channel="omnilink:zone:home:5:contact"}
+Contact   ZoneMotion                "Motion [%s]"             (Zones)     {channel="omnilink:zone:home:6:contact"}
+Contact   ZoneGreatRoom             "Great Room [%s]"         (Zones)     {channel="omnilink:zone:home:7:contact"}
+Contact   ZoneDinningRoom           "Dinning Room [%s]"       (Zones)     {channel="omnilink:zone:home:8:contact"}
+Contact   ZoneKitchenOffice         "Kitchen/Office [%s]"     (Zones)     {channel="omnilink:zone:home:9:contact"}
+Contact   ZoneLivingRoom            "Living Room [%s]"        (Zones)     {channel="omnilink:zone:home:10:contact"}
+Contact   ZoneMaster                "Master [%s]"             (Zones)     {channel="omnilink:zone:home:11:contact"}
+Contact   ZoneBed2                  "Bed 2 [%s]"              (Zones)     {channel="omnilink:zone:home:12:contact"}
+Contact   ZoneBed3                  "Bed 3 [%s]"              (Zones)     {channel="omnilink:zone:home:13:contact"}
+Contact   ZoneBed4                  "Bed 4 [%s]"              (Zones)     {channel="omnilink:zone:home:14:contact"}
 
-Switch		AlarmBurglary			"Burglary Alarm [%s]"		(Alarms)		{channel="omnilink:area:home:1:alarm_burglary"}
-Switch		AlarmFire				"Fire Alarm [%s]"			(Alarms)		{channel="omnilink:area:home:1:alarm_fire"}
-Switch		AlarmGas				"Gas Alarm [%s]"			(Alarms)		{channel="omnilink:area:home:1:alarm_gas"}
-Switch		AlarmAuxiliary			"Auxiliary Alarm [%s]"		(Alarms)		{channel="omnilink:area:home:1:alarm_auxiliary"}
-Switch		AlarmFreeze				"Freeze Alarm [%s]"			(Alarms)		{channel="omnilink:area:home:1:alarm_freeze"}
-Switch		AlarmWater				"Water Alarm [%s]"			(Alarms)		{channel="omnilink:area:home:1:alarm_water"}
-Switch		AlarmDuress				"Duress Alarm [%s]"			(Alarms)		{channel="omnilink:area:home:1:alarm_duress"}
-Switch		AlarmTemperature		"Temperature Alarm [%s]"	(Alarms)		{channel="omnilink:area:home:1:alarm_temperature"}
+Switch    AlarmBurglary             "Burglary Alarm [%s]"     (Alarms)    {channel="omnilink:area:home:1:alarm_burglary"}
+Switch    AlarmFire                 "Fire Alarm [%s]"         (Alarms)    {channel="omnilink:area:home:1:alarm_fire"}
+Switch    alarm_gas                 "Gas Alarm [%s]"          (Alarms)    {channel="omnilink:area:home:1:alarm_gas"}
+Switch    AlarmAuxiliary            "Auxiliary Alarm [%s]"    (Alarms)    {channel="omnilink:area:home:1:alarm_auxiliary"}
+Switch    AlarmFreeze               "Freeze Alarm [%s]"       (Alarms)    {channel="omnilink:area:home:1:alarm_freeze"}
+Switch    AlarmWater                "Water Alarm [%s]"        (Alarms)    {channel="omnilink:area:home:1:alarm_water"}
+Switch    AlarmDuress               "Duress Alarm [%s]"       (Alarms)    {channel="omnilink:area:home:1:alarm_duress"}
+Switch    AlarmTemperature          "Temperature Alarm [%s]"  (Alarms)    {channel="omnilink:area:home:1:alarm_temperature"}
 
-String 		AlarmModeDisarm			{channel="omnilink:area:home:1:disarm"}
-String 		AlarmModeDay			{channel="omnilink:area:home:1:day"}
-String 		AlarmModeNight			{channel="omnilink:area:home:1:night"}
-String 		AlarmModeAway			{channel="omnilink:area:home:1:away"}
-String 		AlarmModeVacation		{channel="omnilink:area:home:1:vacation"}
-String 		AlarmModeDayInstant		{channel="omnilink:area:home:1:day_instant"}
-String 		AlarmModeNightDelayed	{channel="omnilink:area:home:1:night_delayed"}
+String    AlarmModeDisarm                                                 {channel="omnilink:area:home:1:disarm"}
+String    AlarmModeDay                                                    {channel="omnilink:area:home:1:day"}
+String    AlarmModeNight                                                  {channel="omnilink:area:home:1:night"}
+String    AlarmModeAway                                                   {channel="omnilink:area:home:1:away"}
+String    AlarmModeVacation                                               {channel="omnilink:area:home:1:vacation"}
+String    AlarmModeDayInstant                                             {channel="omnilink:area:home:1:day_instant"}
+String    AlarmModeNightDelayed                                           {channel="omnilink:area:home:1:night_delayed"}
 ```
