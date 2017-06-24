@@ -75,8 +75,15 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_THERMO_COOL_SETPOINT = "cool_setpoint";
     public final static String CHANNEL_THERMO_HEAT_SETPOINT = "heat_setpoint";
 
+    // consoles
     public final static String CHANNEL_CONSOLE_BEEP = "beep";
     public final static String CHANNEL_CONSOLE_ENABLE_BEEPER = "enable_beeper";
+
+    // audio zones
+    public static final String CHANNEL_AUDIO_ZONE_POWER = "zone_power";
+    public static final String CHANNEL_AUDIO_ZONE_MUTE = "zone_mute";
+    public static final String CHANNEL_AUDIO_ZONE_VOLUME = "zone_volume";
+    public static final String CHANNEL_AUDIO_ZONE_SOURCE = "zone_source";
 
     // thing configuration and properties keys
     public final static String THING_PROPERTIES_NAME = "name";
@@ -99,4 +106,5 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_CONSOLE = new ThingTypeUID(BINDING_ID, "console");
 
     public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
+
 }

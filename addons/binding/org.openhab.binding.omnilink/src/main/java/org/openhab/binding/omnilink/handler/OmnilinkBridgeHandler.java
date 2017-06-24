@@ -394,7 +394,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 audioZoneNumber = Integer
                         .parseInt(childThing.getConfiguration().getProperties().get("number").toString());
             }
-            thermostatThings.put(audioZoneNumber, childThing);
+            audioZoneThings.put(audioZoneNumber, childThing);
         } else {
             logger.warn("Did not add childThing to a map: {}", childThing);
         }

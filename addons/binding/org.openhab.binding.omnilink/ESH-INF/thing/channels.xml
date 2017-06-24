@@ -448,13 +448,31 @@
 	<!-- Audio Zone Channels -->
 	
 	<channel-type id="audio_zone_power">
-        <item-type>Number</item-type>
+        <item-type>Switch</item-type>
         <label>Audio Zone Power</label>
-        <description>Power status of Audio Zone</description>
-        <category>Contact</category>
-        <state pattern="%s" readOnly="true" />
+        <description>Power status of audio zone</description>
+    </channel-type>
+    
+    <channel-type id="audio_zone_mute">
+        <item-type>Switch</item-type>
+        <label>Audio Zone Mute</label>
+        <description>Mute status of audio zone</description>
+    </channel-type>
+    
+   <channel-type id="audio_zone_volume">
+        <item-type>Dimmer</item-type>
+        <label>Audio Zone Volume</label>
+        <description>Volume level of audio zone</description>
+        <state min="0" max="100"/>
     </channel-type>
 
+  <channel-type id="audio_zone_source">
+        <item-type>Number</item-type>
+        <label>Source</label>
+        <description>Source for audio zone</description>
+        <state min="1" max="100"/>
+    </channel-type>
+    
 	<!-- Controller Channels -->
 
 	<channel-type id="sysDate">
