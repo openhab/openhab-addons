@@ -4,7 +4,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
@@ -27,15 +26,16 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand, channel id: {}, command: {}", channelUID, command);
-        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
+
+        String channelID = channelUID.getId();
 
         int unitNum = getThingID();
 
-        if (channelParts[3].startsWith("scene") && OnOffType.ON.equals(command)) {
+        if (channelID.startsWith("scene") && OnOffType.ON.equals(command)) {
 
             int param1 = 0;
             int linkNum = -1;
-            switch (channelParts[3]) {
+            switch (channelID) {
                 case "scenea":
                     linkNum = 0;
                     break;
@@ -61,7 +61,7 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
                     logger.debug("Could not send command to omnilink: {}", e);
                 }
             }
-        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH.equals(channelParts[3])) {
+        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH.equals(channelID)) {
             int cmd;
             if (OnOffType.ON.equals(command)) {
                 cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
@@ -73,20 +73,20 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
             } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
             }
-        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_ON.equals(channelParts[3]) && OnOffType.ON.equals(command)) {
+        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_ON.equals(channelID) && OnOffType.ON.equals(command)) {
             int cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
             try {
                 getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, unitNum);
             } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
             }
-        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_OFF.equals(channelParts[3]) && OnOffType.ON.equals(command)) {
+        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_OFF.equals(channelID) && OnOffType.ON.equals(command)) {
             try {
                 getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_OFF.getNumber(), 0, unitNum);
             } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
             }
-        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_STATE.equals(channelParts[3])) {
+        } else if (OmnilinkBindingConstants.CHANNEL_ROOM_STATE.equals(channelID)) {
             int cmd = -1;
             int param2 = -1;
             if (command instanceof DecimalType) {

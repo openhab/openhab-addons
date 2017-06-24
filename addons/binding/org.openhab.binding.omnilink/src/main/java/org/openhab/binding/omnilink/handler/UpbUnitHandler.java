@@ -8,7 +8,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
@@ -42,10 +41,9 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
-        String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
         logger.debug("handleCommand called");
         OmniLinkCmd omniCmd;
-        int unitId = Integer.parseInt(channelParts[channelParts.length - 2]);
+        int unitId = getThingID();
 
         if (command instanceof PercentType) {
             int lightLevel = ((PercentType) command).intValue();

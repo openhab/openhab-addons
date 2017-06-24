@@ -32,7 +32,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand called for channel:{}, command:{}", channelUID, command);
-        // final String[] channelParts = channelUID.getAsString().split(UID.SEPARATOR);
+
         int flagID = getThingID();
         if (command instanceof DecimalType) {
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
