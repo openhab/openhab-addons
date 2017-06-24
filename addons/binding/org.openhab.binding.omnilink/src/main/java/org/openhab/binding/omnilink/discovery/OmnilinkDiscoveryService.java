@@ -19,7 +19,6 @@ import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digitaldan.jomnilinkII.Message;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
@@ -28,6 +27,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ButtonProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ConsoleProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.ThermostatProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
 import com.google.common.collect.ImmutableSet;
@@ -96,12 +96,12 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
             int areaFilter = bitFilterForArea(areaProperties);
 
-            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
-                    .builder(bridgeHandler, Message.OBJ_TYPE_BUTTON).selectNamed().areaFilter(areaFilter).build();
+            ObjectPropertyRequest<ButtonProperties> objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, ObjectPropertyRequests.BUTTONS).selectNamed().areaFilter(areaFilter)
+                    .build();
 
-            for (ObjectProperties objectProperties : objectPropertyRequest) {
+            for (ButtonProperties buttonProperties : objectPropertyRequest) {
 
-                ButtonProperties buttonProperties = ((ButtonProperties) objectProperties);
                 int objnum = buttonProperties.getNumber();
                 Map<String, Object> properties = new HashMap<>();
                 ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_BUTTON,
@@ -124,12 +124,11 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         for (AreaProperties areaProperties : areas) {
             int areaFilter = bitFilterForArea(areaProperties);
 
-            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
-                    .builder(bridgeHandler, Message.OBJ_TYPE_CONSOLE).areaFilter(areaFilter).build();
+            ObjectPropertyRequest<ConsoleProperties> objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, ObjectPropertyRequests.CONSOLE).areaFilter(areaFilter).build();
 
-            for (ObjectProperties objectProperties : objectPropertyRequest) {
+            for (ConsoleProperties consoleProperties : objectPropertyRequest) {
 
-                ConsoleProperties consoleProperties = ((ConsoleProperties) objectProperties);
                 int objnum = consoleProperties.getNumber();
                 Map<String, Object> properties = new HashMap<>();
                 ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_CONSOLE,
@@ -172,21 +171,22 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         for (AreaProperties areaProperties : areas) {
             int areaFilter = bitFilterForArea(areaProperties);
 
-            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
-                    .builder(bridgeHandler, Message.OBJ_TYPE_THERMO).selectNamed().areaFilter(areaFilter).build();
+            ObjectPropertyRequest<ThermostatProperties> objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, ObjectPropertyRequests.THERMOSTAT).selectNamed().areaFilter(areaFilter)
+                    .build();
 
-            for (ObjectProperties objectProperties : objectPropertyRequest) {
+            for (ThermostatProperties thermostatProperties : objectPropertyRequest) {
 
                 ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_THERMOSTAT,
-                        Integer.toString(objectProperties.getNumber()));
+                        Integer.toString(thermostatProperties.getNumber()));
 
                 Map<String, Object> properties = new HashMap<>();
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
-                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, thermostatProperties.getNumber());
+                properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, thermostatProperties.getName());
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName())
+                        .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(thermostatProperties.getName())
                         .build();
                 thingDiscovered(discoveryResult);
             }
@@ -196,14 +196,13 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
     private List<AreaProperties> discoverAreas()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
 
-        ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
-                .builder(bridgeHandler, Message.OBJ_TYPE_AREA).build();
+        ObjectPropertyRequest<AreaProperties> objectPropertyRequest = ObjectPropertyRequest
+                .builder(bridgeHandler, ObjectPropertyRequests.AREA).build();
 
         List<AreaProperties> areas = new LinkedList<>();
 
-        for (ObjectProperties objectProperties : objectPropertyRequest) {
+        for (AreaProperties areaProperties : objectPropertyRequest) {
 
-            AreaProperties areaProperties = ((AreaProperties) objectProperties);
             int objnum = areaProperties.getNumber();
 
             // it seems that simple configurations of an omnilink have 1 area, without a name. So if there is no name
@@ -250,13 +249,12 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         for (AreaProperties areaProperties : areas) {
             int areaFilter = bitFilterForArea(areaProperties);
 
-            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
-                    .builder(bridgeHandler, Message.OBJ_TYPE_UNIT).selectNamed().areaFilter(areaFilter).selectAnyLoad()
-                    .build();
+            ObjectPropertyRequest<UnitProperties> objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, ObjectPropertyRequests.UNIT).selectNamed().areaFilter(areaFilter)
+                    .selectAnyLoad().build();
 
-            for (ObjectProperties objectProperties : objectPropertyRequest) {
+            for (UnitProperties unitProperties : objectPropertyRequest) {
 
-                UnitProperties unitProperties = ((UnitProperties) objectProperties);
                 int objnum = unitProperties.getNumber();
                 int currentRoom = 0;
                 String currentRoomName = "";
@@ -338,12 +336,11 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
             int areaFilter = bitFilterForArea(areaProperties);
 
-            ObjectPropertyRequest objectPropertyRequest = ObjectPropertyRequest
-                    .builder(bridgeHandler, Message.OBJ_TYPE_ZONE).selectNamed().areaFilter(areaFilter).build();
+            ObjectPropertyRequest<ZoneProperties> objectPropertyRequest = ObjectPropertyRequest
+                    .builder(bridgeHandler, ObjectPropertyRequests.ZONE).selectNamed().areaFilter(areaFilter).build();
 
-            for (ObjectProperties objectProperties : objectPropertyRequest) {
+            for (ObjectProperties zoneProperties : objectPropertyRequest) {
 
-                ZoneProperties zoneProperties = ((ZoneProperties) objectProperties);
                 int objnum = zoneProperties.getNumber();
 
                 ThingUID thingUID = null;
