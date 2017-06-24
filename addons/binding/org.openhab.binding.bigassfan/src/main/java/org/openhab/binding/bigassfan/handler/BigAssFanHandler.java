@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -520,7 +521,7 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         public void stopFanListener() {
             if (listenerJob != null) {
-                logger.debug("Stopping fan listener for {} at {}", FAN_LISTENER_DELAY, thingID(), ipAddress);
+                logger.debug("Stopping fan listener for {} at {}", thingID(), ipAddress);
                 terminate = true;
                 listenerJob.cancel(true);
                 listenerJob = null;
@@ -586,7 +587,9 @@ public class BigAssFanHandler extends BaseThingHandler {
         private String readMessage() {
             logger.debug("Waiting for message from fan at {}", ipAddress);
             String message = conn.read();
-            logger.debug("FanListener received message of length {}: {}", message.length(), message);
+            if (message != null) {
+                logger.debug("FanListener received message of length {}: {}", message.length(), message);
+            }
             return message;
         }
 
@@ -801,23 +804,23 @@ public class BigAssFanHandler extends BaseThingHandler {
         }
 
         private void updateLightLevelMin(String[] messageParts) {
-            logger.debug("Process fan speed min update");
+            logger.debug("Process light level min update");
             if (messageParts.length != 5) {
                 logger.debug("LightLevelMin has unexpected number of parameters: {}", Arrays.toString(messageParts));
                 return;
             }
-            PercentType state = convertSpeedToPercent(messageParts[4]);
+            PercentType state = convertLevelToPercent(messageParts[4]);
             updateChannel(CHANNEL_LIGHT_LEVEL_MIN, state);
             fanStateMap.put(CHANNEL_LIGHT_LEVEL_MIN, state);
         }
 
         private void updateLightLevelMax(String[] messageParts) {
-            logger.debug("Process fan speed max update");
+            logger.debug("Process light level max update");
             if (messageParts.length != 5) {
                 logger.debug("LightLevelMax has unexpected number of parameters: {}", Arrays.toString(messageParts));
                 return;
             }
-            PercentType state = convertSpeedToPercent(messageParts[4]);
+            PercentType state = convertLevelToPercent(messageParts[4]);
             updateChannel(CHANNEL_LIGHT_LEVEL_MAX, state);
             fanStateMap.put(CHANNEL_LIGHT_LEVEL_MAX, state);
         }
@@ -968,7 +971,18 @@ public class BigAssFanHandler extends BaseThingHandler {
                 logger.warn("fanScanner is null when trying to scan from {}!!!", ipAddress);
                 return null;
             }
-            return fanScanner.next();
+
+            String nextToken;
+            try {
+                nextToken = fanScanner.next();
+            } catch (NoSuchElementException e) {
+                logger.debug("Scanner threw NoSuchElementException; stream possibly closed");
+                nextToken = null;
+            } catch (IllegalStateException e) {
+                logger.debug("Scanner threw IllegalStateException; scanner possibly closed");
+                nextToken = null;
+            }
+            return nextToken;
         }
 
         public void write(byte[] buffer) throws IOException {
