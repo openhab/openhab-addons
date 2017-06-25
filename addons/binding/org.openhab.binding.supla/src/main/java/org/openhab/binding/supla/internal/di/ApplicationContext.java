@@ -2,7 +2,7 @@ package org.openhab.binding.supla.internal.di;
 
 import org.openhab.binding.supla.internal.server.SuplaCloudServer;
 import org.openhab.binding.supla.internal.api.TokenManager;
-import org.openhab.binding.supla.internal.api.TokenManagerImpl;
+import org.openhab.binding.supla.internal.api.SuplaTokenManager;
 import org.openhab.binding.supla.internal.server.http.HttpExecutorFactory;
 import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutorFactory;
 import org.openhab.binding.supla.internal.server.mappers.JsonMapper;
@@ -47,7 +47,7 @@ public class ApplicationContext {
     }
 
     public TokenManager getTokenManager(SuplaCloudServer server) {
-        return get(tokenManager,  ()-> new TokenManagerImpl(new JsonMapper(), getHttpExecutorFactory(), server));
+        return get(tokenManager,  ()-> new SuplaTokenManager(new JsonMapper(), getHttpExecutorFactory(), server));
     }
 
     public void setTokenManager(TokenManager tokenManager) {

@@ -18,14 +18,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
-public final class TokenManagerImpl implements TokenManager {
-    private final Logger logger = LoggerFactory.getLogger(TokenManagerImpl.class);
+public final class SuplaTokenManager implements TokenManager {
+    private final Logger logger = LoggerFactory.getLogger(SuplaTokenManager.class);
     private final JsonMapper jsonMapper;
     private final HttpExecutor httpExecutor;
     private final SuplaCloudServer server;
     private final Body body;
 
-    public TokenManagerImpl(JsonMapper jsonMapper, HttpExecutorFactory httpExecutorFactory, SuplaCloudServer server) {
+    public SuplaTokenManager(JsonMapper jsonMapper, HttpExecutorFactory httpExecutorFactory, SuplaCloudServer server) {
         this.jsonMapper = checkNotNull(jsonMapper);
         this.httpExecutor = httpExecutorFactory.get(server);
         this.server = checkNotNull(server);
