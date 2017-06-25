@@ -32,13 +32,12 @@ public final class SuplaTokenManager implements TokenManager {
     }
 
     @Override
-    public Optional<SuplaToken> obtainToken() {
+    public SuplaToken obtainToken() {
         final Response response = httpExecutor.post(new Request("/oauth/v2/token", CONTENT_TYPE_JSON), body);
         if (response.success()) {
-            return Optional.of(jsonMapper.to(SuplaToken.class, response.getResponse()));
+            return jsonMapper.to(SuplaToken.class, response.getResponse());
         } else {
-            logger.warn("Got error {} while obtaining token for server {}!", response.getStatusCode(), server);
-            return Optional.empty();
+            throw new RuntimeException("Got error " + response.getStatusCode() + " while obtaining token for server " + server + "!");
         }
     }
 }

@@ -34,9 +34,9 @@ public final class SuplaIoDevicesManager implements IoDevicesManager {
 
     @Override
     public List<SuplaIoDevice> obtainIoDevices() {
-        final Optional<SuplaToken> token = tokenManager.obtainToken();
+        final SuplaToken token = tokenManager.obtainToken();
 
-        final Response response = httpExecutor.get(new Request("/api/iodevices", CommonHeaders.AUTHORIZATION_HEADER(token.get())));
+        final Response response = httpExecutor.get(new Request("/api/iodevices", CommonHeaders.AUTHORIZATION_HEADER(token)));
         final Map<String, List<SuplaIoDevice>> map = jsonMapper.to(MAP_TYPE, response.getResponse());
 
         return map.get(KEY_FOR_IO_DEVICES);
