@@ -3,8 +3,8 @@ package org.openhab.binding.supla.internal.di;
 import org.openhab.binding.supla.internal.server.SuplaCloudServer;
 import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.api.SuplaTokenManager;
-import org.openhab.binding.supla.internal.server.http.HttpExecutorFactory;
-import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutorFactory;
+import org.openhab.binding.supla.internal.server.http.HttpExecutor;
+import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutor;
 import org.openhab.binding.supla.internal.server.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.server.mappers.Mapper;
 
@@ -16,7 +16,7 @@ public class ApplicationContext {
     private Mapper mapper;
 
     // http
-    private HttpExecutorFactory httpExecutorFactory;
+    private HttpExecutor httpExecutor;
 
     // API
     private TokenManager tokenManager;
@@ -37,16 +37,20 @@ public class ApplicationContext {
         this.mapper = mapper;
     }
 
-    public HttpExecutorFactory getHttpExecutorFactory() {
-        return get(httpExecutorFactory, () -> new SuplaHttpExecutorFactory(getMapper()));
+    public HttpExecutor getHttpExecutor(SuplaCloudServer server) {
+        return get(httpExecutor, () -> new SuplaHttpExecutor(server));
     }
 
-    public void setHttpExecutorFactory(HttpExecutorFactory httpExecutorFactory) {
-        this.httpExecutorFactory = httpExecutorFactory;
+    public void setHttpExecutor(HttpExecutor httpExecutor) {
+        this.httpExecutor = httpExecutor;
+    }
+
+    public TokenManager getTokenManager() {
+        return tokenManager;
     }
 
     public TokenManager getTokenManager(SuplaCloudServer server) {
-        return get(tokenManager,  ()-> new SuplaTokenManager(new JsonMapper(), getHttpExecutorFactory(), server));
+        return get(tokenManager,  ()-> new SuplaTokenManager(new JsonMapper(), getHttpExecutor(server), server));
     }
 
     public void setTokenManager(TokenManager tokenManager) {

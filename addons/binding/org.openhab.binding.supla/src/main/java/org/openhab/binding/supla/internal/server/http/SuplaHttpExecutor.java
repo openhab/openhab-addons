@@ -12,11 +12,9 @@ import org.slf4j.LoggerFactory;
 
 public final class SuplaHttpExecutor implements HttpExecutor {
     private final Logger logger = LoggerFactory.getLogger(SuplaHttpExecutor.class);
-    private final Mapper mapper;
     private final SuplaCloudServer server;
 
-    public SuplaHttpExecutor(SuplaCloudServer server, Mapper mapper) {
-        this.mapper = checkNotNull(mapper);
+    public SuplaHttpExecutor(SuplaCloudServer server) {
         this.server = checkNotNull(server);
     }
 
@@ -29,14 +27,14 @@ public final class SuplaHttpExecutor implements HttpExecutor {
     }
 
     @Override
-    public Response postJson(Request request, Body body) {
+    public Response post(Request request, Body body) {
         final HttpURLConnection connection = buildConnection(request);
         setPostRequestMethod(connection);
         setHeaders(request, connection);
 
         // only for POST
         connection.setDoOutput(true);
-        final byte[] json = buildBytesToSend(body, mapper);
+        final byte[] json = body.buildBytesToSend();
         connection.setFixedLengthStreamingMode(json.length);
         connect(connection);
         writeRequest(json, connection);
