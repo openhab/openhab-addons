@@ -61,6 +61,7 @@
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.rf24</module>
+    <module>org.openhab.binding.supla</module>
   </modules>
 
 </project>
