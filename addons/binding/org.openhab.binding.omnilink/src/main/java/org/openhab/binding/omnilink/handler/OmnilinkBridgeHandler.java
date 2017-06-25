@@ -327,76 +327,42 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         logger.debug("childHandlerInitialized called with '{}', childThing '{}'", childHandler, childThing);
         if (childHandler instanceof AreaHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int areaNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                areaNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                areaNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int areaNumber = getNumberProperty(childThing);
             areaThings.put(areaNumber, childThing);
         } else if (childHandler instanceof UnitHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int unitNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                unitNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                unitNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int unitNumber = getNumberProperty(childThing);
             unitThings.put(unitNumber, childThing);
         } else if (childHandler instanceof ZoneHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int zoneNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                zoneNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                zoneNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int zoneNumber = getNumberProperty(childThing);
             zoneThings.put(zoneNumber, childThing);
         } else if (childHandler instanceof ButtonHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int buttonNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                buttonNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                buttonNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int buttonNumber = getNumberProperty(childThing);
             buttonThings.put(buttonNumber, childThing);
         } else if (childHandler instanceof ThermostatHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int thermostatNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                thermostatNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number"))
-                        .intValue();
-            } else {
-                thermostatNumber = Integer
-                        .parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int thermostatNumber = getNumberProperty(childThing);
             thermostatThings.put(thermostatNumber, childThing);
         } else if (childHandler instanceof AudioZoneHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int audioZoneNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                audioZoneNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                audioZoneNumber = Integer
-                        .parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int audioZoneNumber = getNumberProperty(childThing);
             audioZoneThings.put(audioZoneNumber, childThing);
         } else {
             logger.warn("Did not add childThing to a map: {}", childThing);
+        }
+    }
+
+    /**
+     * Get the number property as an integer for the supplied childThing
+     *
+     * @param childThing item to extract the number property from.
+     * @return Number of the item.
+     */
+    private int getNumberProperty(Thing childThing) {
+        if (!childThing.getConfiguration().getProperties().containsKey("number")) {
+            throw new IllegalArgumentException("childThing does not have required 'number' property");
+        }
+        if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
+            return ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
+        } else {
+            return Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
         }
     }
 
