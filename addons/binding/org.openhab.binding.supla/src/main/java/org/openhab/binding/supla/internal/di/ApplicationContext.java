@@ -7,8 +7,8 @@ import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.supla.api.SuplaTokenManager;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
 import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutor;
-import org.openhab.binding.supla.internal.server.mappers.JsonMapper;
-import org.openhab.binding.supla.internal.server.mappers.Mapper;
+import org.openhab.binding.supla.internal.mappers.JsonMapper;
+import org.openhab.binding.supla.internal.mappers.Mapper;
 
 import java.util.function.Supplier;
 

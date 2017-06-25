@@ -1,4 +1,4 @@
-package org.openhab.binding.supla.internal.server.mappers;
+package org.openhab.binding.supla.internal.mappers;
 
 
 import java.lang.reflect.Type;

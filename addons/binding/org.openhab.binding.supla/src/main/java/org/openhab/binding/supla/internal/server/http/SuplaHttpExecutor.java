@@ -6,7 +6,7 @@ import java.io.*;
 import java.net.*;
 
 import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
-import org.openhab.binding.supla.internal.server.mappers.Mapper;
+import org.openhab.binding.supla.internal.mappers.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

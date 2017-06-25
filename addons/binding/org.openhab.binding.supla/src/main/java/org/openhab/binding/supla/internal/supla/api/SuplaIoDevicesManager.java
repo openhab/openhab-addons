@@ -9,12 +9,11 @@ import org.openhab.binding.supla.internal.server.http.CommonHeaders;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
 import org.openhab.binding.supla.internal.server.http.Request;
 import org.openhab.binding.supla.internal.server.http.Response;
-import org.openhab.binding.supla.internal.server.mappers.JsonMapper;
+import org.openhab.binding.supla.internal.mappers.JsonMapper;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

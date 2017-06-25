@@ -1,7 +1,6 @@
 package org.openhab.binding.supla.internal.server.http;
 
-import org.openhab.binding.supla.internal.server.mappers.JsonMapper;
-import org.openhab.binding.supla.internal.server.mappers.Mapper;
+import org.openhab.binding.supla.internal.mappers.JsonMapper;
 
 import java.nio.charset.Charset;
 import java.util.Map;

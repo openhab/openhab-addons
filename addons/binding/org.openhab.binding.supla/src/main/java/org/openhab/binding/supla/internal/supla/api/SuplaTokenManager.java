@@ -3,13 +3,11 @@ package org.openhab.binding.supla.internal.supla.api;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.openhab.binding.supla.internal.server.http.CommonHeaders.CONTENT_TYPE_JSON;
 
-import java.util.Optional;
-
 import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
 import org.openhab.binding.supla.internal.server.http.*;
-import org.openhab.binding.supla.internal.server.mappers.JsonMapper;
+import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
