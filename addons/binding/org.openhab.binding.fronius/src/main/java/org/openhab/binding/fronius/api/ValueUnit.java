@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.fronius.api;
 
+import org.openhab.binding.fronius.math.KilowattConverter;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -26,7 +28,7 @@ public class ValueUnit {
         return value;
     }
 
-    public void setValue(float value) {
+    public void setValue(double value) {
         this.value = value;
     }
 
@@ -35,6 +37,7 @@ public class ValueUnit {
     }
 
     public void setUnit(String unit) {
+        this.setValue(KilowattConverter.convertTo(this.getValue(), this.getUnit(), unit));
         this.unit = unit;
     }
 

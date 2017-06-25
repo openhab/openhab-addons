@@ -204,13 +204,19 @@ public class FroniusHandler extends BaseThingHandler {
 
         switch (fieldName) {
             case FroniusBindingConstants.InverterDataChannelDayEnergy:
-                return inverterRealtimeResponse.getBody().getData().getDayEnergy();
+                ValueUnit day = inverterRealtimeResponse.getBody().getData().getDayEnergy();
+                day.setUnit("kWh");
+                return day;
             case FroniusBindingConstants.InverterDataChannelPac:
                 return inverterRealtimeResponse.getBody().getData().getPac();
             case FroniusBindingConstants.InverterDataChannelTotal:
-                return inverterRealtimeResponse.getBody().getData().getTotalEnergy();
+                ValueUnit total = inverterRealtimeResponse.getBody().getData().getTotalEnergy();
+                total.setUnit("MWh");
+                return total;
             case FroniusBindingConstants.InverterDataChannelYear:
-                return inverterRealtimeResponse.getBody().getData().getYearEnergy();
+                ValueUnit year = inverterRealtimeResponse.getBody().getData().getYearEnergy();
+                year.setUnit("MWh");
+                return year;
             case FroniusBindingConstants.InverterDataChannelFac:
                 return inverterRealtimeResponse.getBody().getData().getFac();
             case FroniusBindingConstants.InverterDataChannelIac:
