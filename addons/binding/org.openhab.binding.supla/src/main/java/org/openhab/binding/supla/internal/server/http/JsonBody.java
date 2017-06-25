@@ -7,7 +7,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class JsonBody extends Body {
+public final class JsonBody extends Body {
     private final JsonMapper mapper;
 
     public JsonBody(Map<String, String> body, JsonMapper mapper) {
