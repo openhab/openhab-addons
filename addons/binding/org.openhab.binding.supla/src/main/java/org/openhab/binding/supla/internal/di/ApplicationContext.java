@@ -11,7 +11,6 @@ import org.openhab.binding.supla.internal.server.mappers.Mapper;
 import java.util.function.Supplier;
 
 public class ApplicationContext {
-    public static final ApplicationContext INSTANCE = new ApplicationContext();
 
     // mappers
     private Mapper mapper;
