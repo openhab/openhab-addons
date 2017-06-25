@@ -1,9 +1,12 @@
 package org.openhab.binding.supla.internal.server.mappers;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.google.gson.reflect.TypeToken;
 import org.openhab.binding.supla.internal.server.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +40,11 @@ public final class JsonMapper implements Mapper {
     @Override
     public <T> T to(Class<T> clazz, String string) {
         return gson.fromJson(string, clazz);
+    }
+
+    @Override
+    public <T> T to(Type type, String string) {
+        return gson.fromJson(string, type);
     }
 
     private static final class TokenAdapter extends TypeAdapter<Token> {

@@ -1,5 +1,7 @@
 package org.openhab.binding.supla.internal.di;
 
+import org.openhab.binding.supla.internal.api.IoDevicesManager;
+import org.openhab.binding.supla.internal.api.SuplaIoDevicesManager;
 import org.openhab.binding.supla.internal.server.SuplaCloudServer;
 import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.api.SuplaTokenManager;
@@ -24,13 +26,14 @@ public class ApplicationContext {
 
     // API
     private TokenManager tokenManager;
+    private IoDevicesManager ioDevicesManager;
 
     public ApplicationContext(SuplaCloudServer suplaCloudServer) {
         this.suplaCloudServer = checkNotNull(suplaCloudServer);
     }
 
     private <T> T get(T instance, Supplier<T> supplier) {
-        if(instance != null) {
+        if (instance != null) {
             return instance;
         } else {
             return supplier.get();
@@ -54,10 +57,18 @@ public class ApplicationContext {
     }
 
     public TokenManager getTokenManager() {
-        return get(tokenManager,  ()-> new SuplaTokenManager(new JsonMapper(), getHttpExecutor(), suplaCloudServer));
+        return get(tokenManager, () -> new SuplaTokenManager(new JsonMapper(), getHttpExecutor(), suplaCloudServer));
     }
 
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
+    }
+
+    public IoDevicesManager getIoDevicesManager() {
+        return get(ioDevicesManager, () -> new SuplaIoDevicesManager(getTokenManager(), getHttpExecutor(), new JsonMapper()));
+    }
+
+    public void setIoDevicesManager(IoDevicesManager ioDevicesManager) {
+        this.ioDevicesManager = ioDevicesManager;
     }
 }
