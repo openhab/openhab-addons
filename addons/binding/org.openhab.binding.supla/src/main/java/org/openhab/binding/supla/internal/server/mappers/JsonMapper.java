@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 
-import com.google.gson.reflect.TypeToken;
-import org.openhab.binding.supla.internal.server.Token;
+import org.openhab.binding.supla.internal.server.SuplaToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +19,7 @@ public final class JsonMapper implements Mapper {
     private final Gson gson;
 
     private static Gson buildGson() {
-        return new GsonBuilder().registerTypeAdapter(Token.class, new TokenAdapter()).create();
+        return new GsonBuilder().registerTypeAdapter(SuplaToken.class, new TokenAdapter()).create();
     }
 
     JsonMapper(Gson gson) {
@@ -47,13 +45,13 @@ public final class JsonMapper implements Mapper {
         return gson.fromJson(string, type);
     }
 
-    private static final class TokenAdapter extends TypeAdapter<Token> {
+    private static final class TokenAdapter extends TypeAdapter<SuplaToken> {
         private final Logger logger = LoggerFactory.getLogger(TokenAdapter.class);
 
         @Override
-        public void write(JsonWriter jsonWriter, Token token) throws IOException {
-            jsonWriter.name("token").value(token.getToken()).name("expires_in").value(token.getValidTimeInSeconds())
-                    .name("create_timestamp").value(Timestamp.valueOf(token.getCreateDate()).getTime());
+        public void write(JsonWriter jsonWriter, SuplaToken suplaToken) throws IOException {
+            jsonWriter.name("suplaToken").value(suplaToken.getToken()).name("expires_in").value(suplaToken.getValidTimeInSeconds())
+                    .name("create_timestamp").value(Timestamp.valueOf(suplaToken.getCreateDate()).getTime());
             jsonWriter.close();
         }
 
@@ -65,7 +63,7 @@ public final class JsonMapper implements Mapper {
         // "refresh_token": "ZDYyOTM5MTk3NmFlMDU1MDdmMjdiOTAwOTM4MWIwZjlkMzVmNWIzN2I0YTYzMjU3ZWM5NzFkZTQxYzQ0YzQ2NA"
         // }
         @Override
-        public Token read(JsonReader jsonReader) throws IOException {
+        public SuplaToken read(JsonReader jsonReader) throws IOException {
             jsonReader.beginObject();
             String token = null;
             int validTimeInSeconds = -1;
@@ -85,7 +83,7 @@ public final class JsonMapper implements Mapper {
             }
             jsonReader.endObject();
 
-            return new Token(token, validTimeInSeconds, LocalDateTime.now());
+            return new SuplaToken(token, validTimeInSeconds, LocalDateTime.now());
         }
     }
 }

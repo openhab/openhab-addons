@@ -3,7 +3,7 @@ package org.openhab.binding.supla.internal.api;
 import com.google.gson.reflect.TypeToken;
 import org.openhab.binding.supla.internal.server.SuplaIoDevice;
 import org.openhab.binding.supla.internal.server.SuplaIoDevices;
-import org.openhab.binding.supla.internal.server.Token;
+import org.openhab.binding.supla.internal.server.SuplaToken;
 import org.openhab.binding.supla.internal.server.http.CommonHeaders;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
 import org.openhab.binding.supla.internal.server.http.Request;
@@ -34,7 +34,7 @@ public final class SuplaIoDevicesManager implements IoDevicesManager {
 
     @Override
     public List<SuplaIoDevice> obtainIoDevices() {
-        final Optional<Token> token = tokenManager.obtainToken();
+        final Optional<SuplaToken> token = tokenManager.obtainToken();
 
         final Response response = httpExecutor.get(new Request("/api/iodevices", CommonHeaders.AUTHORIZATION_HEADER(token.get())));
 

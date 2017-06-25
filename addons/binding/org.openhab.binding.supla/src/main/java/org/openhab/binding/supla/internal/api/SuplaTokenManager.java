@@ -6,7 +6,7 @@ import static org.openhab.binding.supla.internal.server.http.CommonHeaders.CONTE
 import java.util.Optional;
 
 import org.openhab.binding.supla.internal.server.SuplaCloudServer;
-import org.openhab.binding.supla.internal.server.Token;
+import org.openhab.binding.supla.internal.server.SuplaToken;
 import org.openhab.binding.supla.internal.server.http.*;
 import org.openhab.binding.supla.internal.server.mappers.JsonMapper;
 import org.slf4j.Logger;
@@ -31,10 +31,10 @@ public final class SuplaTokenManager implements TokenManager {
     }
 
     @Override
-    public Optional<Token> obtainToken() {
+    public Optional<SuplaToken> obtainToken() {
         final Response response = httpExecutor.post(new Request("/oauth/v2/token", CONTENT_TYPE_JSON), body);
         if (response.success()) {
-            return Optional.of(jsonMapper.to(Token.class, response.getResponse()));
+            return Optional.of(jsonMapper.to(SuplaToken.class, response.getResponse()));
         } else {
             logger.warn("Got error {} while obtaining token for server {}!", response.getStatusCode(), server);
             return Optional.empty();

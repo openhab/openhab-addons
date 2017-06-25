@@ -6,12 +6,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @SuppressWarnings("ALL")
-public final class Token {
+public final class SuplaToken {
     private final String token;
     private final int validTimeInSeconds;
     private final LocalDateTime createDate;
 
-    public Token(String token, int validTimeInSeconds, LocalDateTime createDate) {
+    public SuplaToken(String token, int validTimeInSeconds, LocalDateTime createDate) {
         checkNotNull(token);
         checkArgument(!token.isEmpty());
         checkArgument(validTimeInSeconds > 0, validTimeInSeconds);
@@ -43,13 +43,13 @@ public final class Token {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Token)) return false;
+        if (!(o instanceof SuplaToken)) return false;
 
-        Token token1 = (Token) o;
+        SuplaToken suplaToken1 = (SuplaToken) o;
 
-        if (validTimeInSeconds != token1.validTimeInSeconds) return false;
-        if (!token.equals(token1.token)) return false;
-        if (!createDate.equals(token1.createDate)) return false;
+        if (validTimeInSeconds != suplaToken1.validTimeInSeconds) return false;
+        if (!token.equals(suplaToken1.token)) return false;
+        if (!createDate.equals(suplaToken1.createDate)) return false;
 
         return true;
     }
@@ -61,7 +61,7 @@ public final class Token {
 
     @Override
     public String toString() {
-        return "Token{" +
+        return "SuplaToken{" +
                 "token='" + token + '\'' +
                 ", validTimeInSeconds=" + validTimeInSeconds +
                 ", createDate=" + createDate +
