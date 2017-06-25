@@ -1,9 +1,8 @@
 package org.openhab.binding.supla.internal.di;
 
 import org.openhab.binding.supla.internal.server.SuplaCloudServer;
-import org.openhab.binding.supla.internal.server.TokenManager;
-import org.openhab.binding.supla.internal.server.TokenManagerImpl;
-import org.openhab.binding.supla.internal.server.http.HttpExecutor;
+import org.openhab.binding.supla.internal.api.TokenManager;
+import org.openhab.binding.supla.internal.api.TokenManagerImpl;
 import org.openhab.binding.supla.internal.server.http.HttpExecutorFactory;
 import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutorFactory;
 import org.openhab.binding.supla.internal.server.mappers.JsonMapper;

@@ -1,10 +1,12 @@
-package org.openhab.binding.supla.internal.server;
+package org.openhab.binding.supla.internal.api;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.openhab.binding.supla.internal.server.http.CommonHeaders.CONTENT_TYPE_JSON;
 
 import java.util.Optional;
 
+import org.openhab.binding.supla.internal.server.SuplaCloudServer;
+import org.openhab.binding.supla.internal.server.Token;
 import org.openhab.binding.supla.internal.server.http.Body;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
 import org.openhab.binding.supla.internal.server.http.HttpExecutorFactory;
