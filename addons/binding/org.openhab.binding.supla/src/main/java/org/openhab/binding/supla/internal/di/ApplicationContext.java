@@ -1,6 +1,7 @@
 package org.openhab.binding.supla.internal.di;
 
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
+import org.openhab.binding.supla.internal.server.http.OAuthApiHttpExecutor;
 import org.openhab.binding.supla.internal.supla.api.SuplaIoDevicesManager;
 import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 import org.openhab.binding.supla.internal.api.TokenManager;
@@ -10,6 +11,7 @@ import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutor;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.mappers.Mapper;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -32,16 +34,18 @@ public final class ApplicationContext {
         this.suplaCloudServer = checkNotNull(suplaCloudServer);
     }
 
-    private <T> T get(T instance, Supplier<T> supplier) {
+    private <T> T get(T instance, Supplier<T> supplier, Consumer<T> setter) {
         if (instance != null) {
             return instance;
         } else {
-            return supplier.get();
+            final T t = supplier.get();
+            setter.accept(t);
+            return t;
         }
     }
 
     public Mapper getMapper() {
-        return get(mapper, JsonMapper::new);
+        return get(mapper, JsonMapper::new, x -> this.mapper = x);
     }
 
     public void setMapper(Mapper mapper) {
@@ -49,7 +53,7 @@ public final class ApplicationContext {
     }
 
     public HttpExecutor getHttpExecutor() {
-        return get(httpExecutor, () -> new SuplaHttpExecutor(suplaCloudServer));
+        return get(httpExecutor, () -> new SuplaHttpExecutor(suplaCloudServer), x -> this.httpExecutor = x);
     }
 
     public void setHttpExecutor(HttpExecutor httpExecutor) {
@@ -57,7 +61,7 @@ public final class ApplicationContext {
     }
 
     public TokenManager getTokenManager() {
-        return get(tokenManager, () -> new SuplaTokenManager(new JsonMapper(), getHttpExecutor(), suplaCloudServer));
+        return get(tokenManager, () -> new SuplaTokenManager(new JsonMapper(), getHttpExecutor(), suplaCloudServer), x -> this.tokenManager = x);
     }
 
     public void setTokenManager(TokenManager tokenManager) {
@@ -65,7 +69,7 @@ public final class ApplicationContext {
     }
 
     public IoDevicesManager getIoDevicesManager() {
-        return get(ioDevicesManager, () -> new SuplaIoDevicesManager(getTokenManager(), getHttpExecutor(), new JsonMapper()));
+        return get(ioDevicesManager, () -> new SuplaIoDevicesManager(getTokenManager(), getHttpExecutor(), new JsonMapper()), x -> this.ioDevicesManager = x);
     }
 
     public void setIoDevicesManager(IoDevicesManager ioDevicesManager) {
