@@ -1,4 +1,4 @@
-package org.openhab.binding.supla.internal.server;
+package org.openhab.binding.supla.internal.supla.entities;
 
 public final class SuplaFunction {
     private final long id;

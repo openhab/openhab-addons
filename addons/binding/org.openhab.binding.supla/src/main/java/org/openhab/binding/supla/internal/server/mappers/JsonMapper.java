@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import org.openhab.binding.supla.internal.server.SuplaToken;
+import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

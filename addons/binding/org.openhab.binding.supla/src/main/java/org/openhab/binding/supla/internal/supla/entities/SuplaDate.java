@@ -1,6 +1,4 @@
-package org.openhab.binding.supla.internal.server;
-
-import java.time.LocalDateTime;
+package org.openhab.binding.supla.internal.supla.entities;
 
 public final class SuplaDate {
     private final long date;

@@ -3,6 +3,7 @@ package org.openhab.binding.supla.internal.server;
 import java.time.LocalDateTime;
 
 import org.junit.Test;
+import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;;

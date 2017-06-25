@@ -1,4 +1,4 @@
-package org.openhab.binding.supla.internal.server;
+package org.openhab.binding.supla.internal.supla.entities;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;

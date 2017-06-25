@@ -1,4 +1,4 @@
-package org.openhab.binding.supla.internal.server;
+package org.openhab.binding.supla.internal.supla.entities;
 
 import java.time.LocalDateTime;
 
