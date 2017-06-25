@@ -1,10 +1,10 @@
 package org.openhab.binding.supla.internal.di;
 
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
-import org.openhab.binding.supla.internal.api.SuplaIoDevicesManager;
+import org.openhab.binding.supla.internal.supla.api.SuplaIoDevicesManager;
 import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 import org.openhab.binding.supla.internal.api.TokenManager;
-import org.openhab.binding.supla.internal.api.SuplaTokenManager;
+import org.openhab.binding.supla.internal.supla.api.SuplaTokenManager;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
 import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutor;
 import org.openhab.binding.supla.internal.server.mappers.JsonMapper;

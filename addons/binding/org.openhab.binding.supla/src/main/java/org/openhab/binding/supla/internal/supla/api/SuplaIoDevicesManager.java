@@ -1,6 +1,8 @@
-package org.openhab.binding.supla.internal.api;
+package org.openhab.binding.supla.internal.supla.api;
 
 import com.google.gson.reflect.TypeToken;
+import org.openhab.binding.supla.internal.api.IoDevicesManager;
+import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.openhab.binding.supla.internal.server.SuplaIoDevices;
 import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
