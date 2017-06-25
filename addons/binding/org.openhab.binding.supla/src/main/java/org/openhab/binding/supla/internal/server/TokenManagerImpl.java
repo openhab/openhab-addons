@@ -23,7 +23,7 @@ public final class TokenManagerImpl implements TokenManager {
     private final SuplaCloudServer server;
     private final Body body;
 
-    TokenManagerImpl(JsonMapper jsonMapper, HttpExecutorFactory httpExecutorFactory, SuplaCloudServer server) {
+    public TokenManagerImpl(JsonMapper jsonMapper, HttpExecutorFactory httpExecutorFactory, SuplaCloudServer server) {
         this.jsonMapper = checkNotNull(jsonMapper);
         this.httpExecutor = httpExecutorFactory.get(server);
         this.server = checkNotNull(server);
