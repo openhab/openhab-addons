@@ -4,7 +4,6 @@ import com.google.gson.reflect.TypeToken;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
-import org.openhab.binding.supla.internal.server.SuplaIoDevices;
 import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
 import org.openhab.binding.supla.internal.server.http.CommonHeaders;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
@@ -21,7 +20,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class SuplaIoDevicesManager implements IoDevicesManager {
     private static final Type MAP_TYPE = new TypeToken<Map<String, List<SuplaIoDevice>>>(){}.getType();
-    private static final Type IO_DEVICES_TYPE = new TypeToken<List<SuplaIoDevice>>(){}.getType();
     private static final String KEY_FOR_IO_DEVICES = "iodevices";
 
     private final TokenManager tokenManager;
@@ -39,9 +37,6 @@ public final class SuplaIoDevicesManager implements IoDevicesManager {
         final Optional<SuplaToken> token = tokenManager.obtainToken();
 
         final Response response = httpExecutor.get(new Request("/api/iodevices", CommonHeaders.AUTHORIZATION_HEADER(token.get())));
-
-        System.out.println("response:\n" + response.getResponse());
-
         final Map<String, List<SuplaIoDevice>> map = jsonMapper.to(MAP_TYPE, response.getResponse());
 
         return map.get(KEY_FOR_IO_DEVICES);
