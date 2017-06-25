@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ApplicationContext {
+public final class ApplicationContext {
 
     private final SuplaCloudServer suplaCloudServer;
 
