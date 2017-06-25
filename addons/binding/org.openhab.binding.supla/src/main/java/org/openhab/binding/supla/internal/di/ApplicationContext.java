@@ -10,7 +10,11 @@ import org.openhab.binding.supla.internal.server.mappers.Mapper;
 
 import java.util.function.Supplier;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class ApplicationContext {
+
+    private final SuplaCloudServer suplaCloudServer;
 
     // mappers
     private Mapper mapper;
@@ -20,6 +24,10 @@ public class ApplicationContext {
 
     // API
     private TokenManager tokenManager;
+
+    public ApplicationContext(SuplaCloudServer suplaCloudServer) {
+        this.suplaCloudServer = checkNotNull(suplaCloudServer);
+    }
 
     private <T> T get(T instance, Supplier<T> supplier) {
         if(instance != null) {
@@ -37,8 +45,8 @@ public class ApplicationContext {
         this.mapper = mapper;
     }
 
-    public HttpExecutor getHttpExecutor(SuplaCloudServer server) {
-        return get(httpExecutor, () -> new SuplaHttpExecutor(server));
+    public HttpExecutor getHttpExecutor() {
+        return get(httpExecutor, () -> new SuplaHttpExecutor(suplaCloudServer));
     }
 
     public void setHttpExecutor(HttpExecutor httpExecutor) {
@@ -46,11 +54,7 @@ public class ApplicationContext {
     }
 
     public TokenManager getTokenManager() {
-        return tokenManager;
-    }
-
-    public TokenManager getTokenManager(SuplaCloudServer server) {
-        return get(tokenManager,  ()-> new SuplaTokenManager(new JsonMapper(), getHttpExecutor(server), server));
+        return get(tokenManager,  ()-> new SuplaTokenManager(new JsonMapper(), getHttpExecutor(), suplaCloudServer));
     }
 
     public void setTokenManager(TokenManager tokenManager) {
