@@ -131,7 +131,7 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
 
     private void updateChannels() {
         if (zoneStatus == null) {
-            logger.debug("cannot update zone channles without current a ZoneStatus object");
+            logger.debug("cannot update zone channles with undefined ZoneStatus object");
             return;
         }
 
