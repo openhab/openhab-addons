@@ -14,6 +14,12 @@ import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.roku.internal.protocol.RokuCommunication;
 
+/**
+ * The {@link RokuState} class defines various pieces of state a Roku device may have that will be translated to
+ * functionality the binding offers.
+ *
+ * @author Jarod Peters - Initial contribution
+ */
 public class RokuState {
     public StringType udn;
     public StringType serial_number;

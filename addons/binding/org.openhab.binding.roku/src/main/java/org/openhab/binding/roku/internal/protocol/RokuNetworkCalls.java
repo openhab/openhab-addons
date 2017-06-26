@@ -20,8 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RokuBindingDiscovery} class wraps network calls to each individual roku
- * device on your network
+ * The {@link RokuNetworkCalls} class performs the actual network requests for any communication to a Roku device.
  *
  * @author Jarod Peters - Initial contribution
  */

@@ -35,6 +35,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+/**
+ * The {@link RokuCommunication} class is what communicates directly with a Roku device (sending commands to it,
+ * updating state, etc).
+ *
+ * @author Jarod Peters - Initial contribution
+ */
 public class RokuCommunication {
     private final Logger logger = LoggerFactory.getLogger(RokuCommunication.class);
     private final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

@@ -17,8 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RokuInternalProtocol} is responsible for creating things and thing
- * handlers.
+ * The {@link RokuCommands} is responsible sending a command to a Roku device via {@link RokueNetworkCalls}.
  *
  * @author Jarod Peters - Initial contribution
  */
