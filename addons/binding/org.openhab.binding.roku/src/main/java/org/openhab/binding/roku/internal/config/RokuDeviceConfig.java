@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.roku.configuration;
+package org.openhab.binding.roku.internal.config;
 
 import org.eclipse.smarthome.core.thing.Thing;
 
