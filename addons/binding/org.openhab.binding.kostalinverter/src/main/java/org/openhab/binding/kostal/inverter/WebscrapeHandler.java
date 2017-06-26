@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -57,10 +57,11 @@ public class WebscrapeHandler extends BaseThingHandler {
             public void run() {
                 try {
                     refresh();
-                   updateStatus(ThingStatus.ONLINE);
+                    updateStatus(ThingStatus.ONLINE);
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getClass().getName() + ":" + e.getMessage());
-                    logger.debug("Error refreshing source " + getThing().getUID(), e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            e.getClass().getName() + ":" + e.getMessage());
+                    logger.debug("Error refreshing source {} ", getThing().getUID(), e);
                 }
             }
 

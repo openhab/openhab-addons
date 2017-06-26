@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -109,8 +110,6 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Initialized MAX! device missing serialNumber configuration");
             }
-            // until we get an update put the Thing offline
-            updateStatus(ThingStatus.OFFLINE);
             propertiesSet = false;
             configSet = false;
             forceRefresh = true;
@@ -552,12 +551,26 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.smarthome.core.thing.binding.BaseThingHandler#bridgeStatusChanged(org.eclipse.smarthome.core.thing.ThingStatusInfo)
+     */
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus().toString(),
+                getThing().getUID().toString());
+        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
+            // No action
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            forceRefresh = true;
+        }
+    }
+
     /**
      * Set the Configurable properties for this device
      *
      * @param device
      */
-
     private void setDeviceConfiguration(Device device) {
         try {
             logger.debug("MAX! {} {} configuration update", device.getType().toString(), device.getSerialNumber());

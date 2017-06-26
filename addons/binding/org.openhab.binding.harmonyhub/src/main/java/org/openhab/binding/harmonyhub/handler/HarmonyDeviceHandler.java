@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
@@ -56,7 +57,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(HarmonyDeviceHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
 
     HarmonyHubHandler bridge;
     HarmonyHubHandlerFactory factory;
@@ -93,9 +94,9 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         logger.debug("Pressing button {} on {}", command, id > 0 ? 0 : name);
 
         if (id > 0) {
-            bridge.getClient().pressButton(id, command.toString());
+            bridge.pressButton(id, command.toString());
         } else {
-            bridge.getClient().pressButton(name, command.toString());
+            bridge.pressButton(name, command.toString());
         }
 
         // may need to ask the list if this can be set here?
@@ -112,28 +113,18 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         } else {
             logName = id > 0 ? String.valueOf(id) : name;
             logger.debug("initializing {}", logName);
-            if (getBridge() != null) {
-                updateDeviceStatus(getBridge().getStatus());
-            }
+            updateBridgeStatus();
         }
     };
 
     @Override
-    public void dispose() {
-        factory.removeChannelTypesForThing(getThing().getUID());
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        updateBridgeStatus();
     }
 
-    /**
-     * updates our local status to online if our bridge is online and we
-     * have a valid configuration.
-     *
-     * @param status
-     */
-    private void updateDeviceStatus(ThingStatus status) {
-        if (checkConfig() && status.equals(ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.ONLINE);
-            updateChannel();
-        }
+    @Override
+    public void dispose() {
+        factory.removeChannelTypesForThing(getThing().getUID());
     }
 
     /**
@@ -146,15 +137,25 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
     }
 
     /**
+     * Updates our state based on the bridge/hub
+     */
+    private void updateBridgeStatus() {
+        ThingStatus bridgeStatus = getBridge().getStatus();
+        if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
+            bridge = (HarmonyHubHandler) getBridge().getHandler();
+            updateStatus(ThingStatus.ONLINE);
+            updateChannel();
+        } else if (bridgeStatus != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    /**
      * Updates our channel with the available buttons as option states
      */
     private void updateChannel() {
         try {
             logger.debug("updateChannel for device {}", logName);
-            if (bridge == null) {
-                logger.debug("updateChannel: no bridge for device {}", logName);
-                return;
-            }
 
             HarmonyConfig config = bridge.getCachedConfig();
             if (config == null) {
@@ -209,7 +210,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
             updateThing(thingBuilder.build());
         } catch (Exception e) {
-            logger.debug("Could not add button channels to device " + logName, e);
+            logger.debug("Could not add button channels to device {}", logName, e);
         }
     }
 }

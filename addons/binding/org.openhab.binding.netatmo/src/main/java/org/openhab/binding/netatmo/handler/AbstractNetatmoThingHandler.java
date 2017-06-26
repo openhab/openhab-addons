@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,8 +39,8 @@ import io.swagger.client.model.NAMeasureResponse;
  *
  */
 abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> extends BaseThingHandler {
-    private static Logger logger = LoggerFactory.getLogger(AbstractNetatmoThingHandler.class);
-    private final List<Integer> signalThresholds = new ArrayList<Integer>();
+    private Logger logger = LoggerFactory.getLogger(AbstractNetatmoThingHandler.class);
+    private List<Integer> signalThresholds = null;
     protected List<String> measuredChannels = new ArrayList<String>();
     protected NAMeasureResponse measures = null;
 
@@ -55,16 +55,8 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
     @Override
     public void initialize() {
 
-        String signalLevels = getProperty(PROPERTY_SIGNAL_LEVELS);
-        if (signalLevels != null) {
-            List<String> thresholds = Arrays.asList(signalLevels.split(","));
-            for (String threshold : thresholds) {
-                signalThresholds.add(Integer.parseInt(threshold));
-            }
-        }
-
         buildMeasurableChannelList();
-        configuration = this.getConfigAs(configurationClass);
+        configuration = getConfigAs(configurationClass);
 
         super.initialize();
     }
@@ -87,8 +79,25 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
         }
     }
 
+    private void initializeThresholds() {
+        signalThresholds = new ArrayList<Integer>();
+        String signalLevels = getProperty(PROPERTY_SIGNAL_LEVELS);
+        if (signalLevels != null) {
+            List<String> thresholds = Arrays.asList(signalLevels.split(","));
+            for (String threshold : thresholds) {
+                signalThresholds.add(Integer.parseInt(threshold));
+            }
+        }
+
+    }
+
     int getSignalStrength(int signalLevel) {
         // Take in account #3995
+
+        if (signalThresholds == null) {
+            initializeThresholds();
+        }
+
         int level;
         for (level = 0; level < signalThresholds.size(); level++) {
             if (signalLevel > signalThresholds.get(level)) {
@@ -160,6 +169,10 @@ abstract class AbstractNetatmoThingHandler<X extends NetatmoThingConfiguration> 
 
     protected NetatmoBridgeHandler getBridgeHandler() {
         return (NetatmoBridgeHandler) this.getBridge().getHandler();
+    }
+
+    public X getConfiguration() {
+        return configuration;
     }
 
 }

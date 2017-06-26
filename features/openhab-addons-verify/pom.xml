@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.openhab</groupId>
         <artifactId>features</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>2.1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.openhab.addons</groupId>
@@ -25,14 +25,21 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.smarthome</groupId>
-            <artifactId>karaf</artifactId>
+            <artifactId>esh-core</artifactId>
             <version>${esh.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.eclipse.smarthome</groupId>
-            <artifactId>karaf-tp</artifactId>
+            <artifactId>esh-tp</artifactId>
+            <version>${esh.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.smarthome</groupId>
+            <artifactId>esh-ext</artifactId>
             <version>${esh.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
@@ -53,43 +60,49 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.karaf.tooling</groupId>
-                <artifactId>karaf-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>verify</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
-                                <descriptor>mvn:org.eclipse.smarthome/karaf/${esh.version}/xml/features</descriptor>
-                                <descriptor>mvn:org.eclipse.smarthome/karaf-tp/${esh.version}/xml/features</descriptor>
-                                <descriptor>mvn:org.openhab.core/openhab-core/${ohc.version}/xml/features</descriptor>
-                                <descriptor>mvn:org.openhab.addons/openhab2-addons/${project.version}/xml/features</descriptor>
-                            </descriptors>
-                            <distribution>org.apache.karaf.features:framework</distribution>
-                            <javase>1.8</javase>
-                            <framework>
-                                <feature>framework</feature>
-                            </framework>
-                            <features>
-                                <feature>openhab-*</feature>
-                            </features>
-                            <verifyTransitive>false</verifyTransitive>
-                            <ignoreMissingConditions>true</ignoreMissingConditions>
-                            <fail>first</fail>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <profiles>
+        <profile>
+            <id>verify-features</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.karaf.tooling</groupId>
+						<artifactId>karaf-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>verify</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<descriptors>
+										<descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
+										<descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
+										<descriptor>mvn:org.eclipse.smarthome/esh-core/${esh.version}/xml/features</descriptor>
+										<descriptor>mvn:org.eclipse.smarthome/esh-tp/${esh.version}/xml/features</descriptor>
+										<descriptor>mvn:org.eclipse.smarthome/esh-ext/${esh.version}/xml/features</descriptor>
+										<descriptor>mvn:org.openhab.core/openhab-core/${ohc.version}/xml/features</descriptor>
+										<descriptor>mvn:org.openhab.addons/openhab2-addons/${project.version}/xml/features</descriptor>
+									</descriptors>
+									<distribution>org.apache.karaf.features:framework</distribution>
+									<javase>1.8</javase>
+									<framework>
+										<feature>framework</feature>
+									</framework>
+									<features>
+										<feature>openhab-*</feature>
+									</features>
+									<verifyTransitive>false</verifyTransitive>
+									<ignoreMissingConditions>true</ignoreMissingConditions>
+									<fail>first</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+      </profile>
+    </profiles>
 
 </project>

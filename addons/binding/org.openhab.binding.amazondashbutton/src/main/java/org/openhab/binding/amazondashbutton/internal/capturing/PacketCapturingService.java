@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PacketCapturingService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PacketCapturingService.class);
+    private final Logger logger = LoggerFactory.getLogger(PacketCapturingService.class);
 
     private static final int READ_TIMEOUT = 10; // [ms]
     private static final int SNAPLEN = 65536; // [bytes]
@@ -90,7 +90,7 @@ public class PacketCapturingService {
             }
             pcapHandle.setFilter(filterBuilder.toString(), BpfCompileMode.OPTIMIZE);
         } catch (Exception e) {
-            logger.error("Capturing packets on device " + pcapNetworkInterface.getName() + " failed.", e);
+            logger.error("Capturing packets on device {} failed.", pcapNetworkInterface.getName(), e);
             return false;
         }
         ExecutorService executorService = Executors.newSingleThreadExecutor();

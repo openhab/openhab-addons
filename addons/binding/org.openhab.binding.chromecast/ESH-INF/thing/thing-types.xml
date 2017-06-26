@@ -4,14 +4,15 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Chromecast Audio Thing Type -->
-    <thing-type id="audio">
-        <label>Chromecast Audio</label>
-        <description>A Google Chromecast Audio device</description>
+    <!-- Chromecast Audio Group Thing Type -->
+    <thing-type id="audiogroup">
+        <label>Chromecast Audio Group</label>
+        <description>A Google Chromecast Audio Group device</description>
 
         <channels>
             <channel id="control" typeId="control"/>
             <channel id="volume" typeId="volume"/>
+            <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
         </channels>
 
@@ -22,17 +23,24 @@
                 <description>Network address of the Chromecast device.</description>
                 <required>true</required>
             </parameter>
+            <parameter name="port" type="integer">
+                <label>Network Port</label>
+                <description>Network port of the Chromecast device.</description>
+                <advanced>true</advanced>
+                <default>8009</default>
+            </parameter>
         </config-description>
     </thing-type>
-
-    <!-- Chromecast HDMI dongle Thing Type -->
-    <thing-type id="chromecast">
-        <label>Chromecast</label>
-        <description>A Google Chromecast streaming device</description>
+    
+    <!-- Chromecast Audio Thing Type -->
+    <thing-type id="audio">
+        <label>Chromecast Audio</label>
+        <description>A Google Chromecast Audio device</description>
 
         <channels>
             <channel id="control" typeId="control"/>
             <channel id="volume" typeId="volume"/>
+            <channel id="mute" typeId="mute"/>
             <channel id="playuri" typeId="playuri"/>
         </channels>
 
@@ -42,6 +50,39 @@
                 <label>Network Address</label>
                 <description>Network address of the Chromecast device.</description>
                 <required>true</required>
+            </parameter>
+            <parameter name="port" type="integer">
+                <label>Network Port</label>
+                <description>Network port of the Chromecast device.</description>
+                <advanced>true</advanced>
+                <default>8009</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    <!-- Chromecast HDMI dongle Thing Type -->
+    <thing-type id="chromecast">
+        <label>Chromecast</label>
+        <description>A Google Chromecast streaming device</description>
+
+        <channels>
+            <channel id="control" typeId="control"/>
+            <channel id="volume" typeId="volume"/>
+            <channel id="mute" typeId="mute"/>
+            <channel id="playuri" typeId="playuri"/>
+        </channels>
+
+        <config-description>
+            <parameter name="ipAddress" type="text">
+                <context>network-address</context>
+                <label>Network Address</label>
+                <description>Network address of the Chromecast device.</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="port" type="integer">
+                <label>Network Port</label>
+                <description>Network port of the Chromecast device.</description>
+                <advanced>true</advanced>
+                <default>8009</default>
             </parameter>
         </config-description>
     </thing-type>
@@ -51,6 +92,12 @@
         <label>Volume</label>
         <description>the sound volume of the device</description>
         <category>SoundVolume</category>
+    </channel-type>
+
+    <channel-type id="mute" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Set or get the mute state of the device</description>
     </channel-type>
 
     <channel-type id="playuri" advanced="true">

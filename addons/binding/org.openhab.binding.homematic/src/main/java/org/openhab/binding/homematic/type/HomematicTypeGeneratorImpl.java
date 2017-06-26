@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
-    private static final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
     private static URI configDescriptionUriChannel;
 
     private HomematicThingTypeProvider thingTypeProvider;
@@ -67,8 +67,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     private static final String[] STATUS_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_UNREACH,
             DATAPOINT_NAME_CONFIG_PENDING, DATAPOINT_NAME_DEVICE_IN_BOOTLOADER, DATAPOINT_NAME_UPDATE_PENDING };
 
-    private static final String[] IGNORE_DATAPOINT_NAMES = new String[] { VIRTUAL_DATAPOINT_NAME_BATTERY_TYPE,
-            VIRTUAL_DATAPOINT_NAME_FIRMWARE, VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY, DATAPOINT_NAME_AES_KEY };
+    private static final String[] IGNORE_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_AES_KEY,
+            VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY };
 
     public HomematicTypeGeneratorImpl() {
         try {
@@ -107,20 +107,28 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * {@inheritDoc}
      */
     @Override
-    public void generate(HmDevice device) {
-        ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
-        ThingType tt = thingTypeProvider.getThingType(thingTypeUID, Locale.getDefault());
-        if (tt == null || device.isGatewayExtras()) {
-            logger.debug("Generating ThingType for device '{}' with {} datapoints", device.getType(),
-                    device.getDatapointCount());
+    public void initialize() {
+        MetadataUtils.initialize();
+    }
 
-            List<ChannelGroupType> groupTypes = new ArrayList<ChannelGroupType>();
-            for (HmChannel channel : device.getChannels()) {
-                List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>();
-                // generate channel
-                for (HmDatapoint dp : channel.getDatapoints().values()) {
-                    if (!isStatusDatapoint(dp) && !isIgnoredDatapoint(dp)) {
-                        if (dp.getParamsetType() == HmParamsetType.VALUES) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void generate(HmDevice device) {
+        if (thingTypeProvider != null) {
+            ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
+            ThingType tt = thingTypeProvider.getThingType(thingTypeUID, Locale.getDefault());
+            if (tt == null || device.isGatewayExtras()) {
+                logger.debug("Generating ThingType for device '{}' with {} datapoints", device.getType(),
+                        device.getDatapointCount());
+
+                List<ChannelGroupType> groupTypes = new ArrayList<ChannelGroupType>();
+                for (HmChannel channel : device.getChannels()) {
+                    List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>();
+                    // generate channel
+                    for (HmDatapoint dp : channel.getDatapoints().values()) {
+                        if (!isIgnoredDatapoint(dp) && dp.getParamsetType() == HmParamsetType.VALUES) {
                             ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
                             ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
                                     Locale.getDefault());
@@ -133,24 +141,25 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                             channelDefinitions.add(channelDef);
                         }
                     }
-                }
 
-                // generate group
-                ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
-                ChannelGroupType groupType = channelTypeProvider.getChannelGroupType(groupTypeUID, Locale.getDefault());
-                if (groupType == null || device.isGatewayExtras()) {
-                    String groupLabel = String.format("%s",
-                            WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
-                    groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, channelDefinitions);
-                    channelTypeProvider.addChannelGroupType(groupType);
-                    groupTypes.add(groupType);
-                }
+                    // generate group
+                    ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
+                    ChannelGroupType groupType = channelTypeProvider.getChannelGroupType(groupTypeUID,
+                            Locale.getDefault());
+                    if (groupType == null || device.isGatewayExtras()) {
+                        String groupLabel = String.format("%s",
+                                WordUtils.capitalizeFully(StringUtils.replace(channel.getType(), "_", " ")));
+                        groupType = new ChannelGroupType(groupTypeUID, false, groupLabel, null, channelDefinitions);
+                        channelTypeProvider.addChannelGroupType(groupType);
+                        groupTypes.add(groupType);
+                    }
 
+                }
+                tt = createThingType(device, groupTypes);
+                thingTypeProvider.addThingType(tt);
             }
-            tt = createThingType(device, groupTypes);
-            thingTypeProvider.addThingType(tt);
+            addFirmware(device);
         }
-        addFirmware(device);
     }
 
     /**
@@ -222,7 +231,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         ChannelType channelType;
         if (dp.getName().equals(DATAPOINT_NAME_LOWBAT)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY;
-        } else if (dp.getName().equals(DATAPOINT_NAME_RSSI_DEVICE)) {
+        } else if (dp.getName().equals(VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_SIGNAL_STRENGTH;
         } else {
             String itemType = MetadataUtils.getItemType(dp);
@@ -241,7 +250,11 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             if (dp.isNumberType()) {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-                BigDecimal step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
+
+                BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
+                if (step == null) {
+                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
+                }
                 state = new StateDescription(min, max, step, MetadataUtils.getStatePattern(dp), dp.isReadOnly(),
                         options);
             } else {
@@ -293,7 +306,6 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 
-                    builder.withPattern(MetadataUtils.getPattern(dp));
                     builder.withGroupName(groupName);
                     parms.add(builder.build());
                 }
@@ -325,7 +337,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
      * Returns true, if the given datapoint can be ignored for metadata generation.
      */
     public static boolean isIgnoredDatapoint(HmDatapoint dp) {
-        return StringUtils.indexOfAny(dp.getName(), IGNORE_DATAPOINT_NAMES) != -1 || isStatusDatapoint(dp);
+        return StringUtils.indexOfAny(dp.getName(), IGNORE_DATAPOINT_NAMES) != -1;
     }
 
 }

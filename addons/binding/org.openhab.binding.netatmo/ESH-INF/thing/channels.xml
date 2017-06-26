@@ -27,6 +27,15 @@
         </state>
     </channel-type>
     
+    <channel-type id="temperatureTrend" advanced="true">
+        <item-type>String</item-type>
+        <label>Temp Trend</label>
+        <description>Temperature Evolution Trend</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%s">
+        </state>
+    </channel-type>
+    
     <channel-type id="setpointTemp">
         <item-type>Number</item-type>
         <label>Setpoint</label>
@@ -142,6 +151,14 @@
         <state readOnly="true" pattern="%.1f hPa"></state>                
     </channel-type>
     
+    <channel-type id="pressureTrend" advanced="true">
+        <item-type>String</item-type>
+        <label>Pressure Trend</label>
+        <description>Pressure evolution trend for last 12h (up, down, stable)</description>
+        <category>Pressure</category>
+        <state readOnly="true" pattern="%s"></state>                
+    </channel-type>
+    
     <channel-type id="absolutePressure" advanced="true">
         <item-type>Number</item-type>
         <label>Abs Pressure</label>
@@ -200,6 +217,22 @@
         <description>Quantity of water</description>
         <category>Rain</category>
         <state readOnly="true" pattern="%d mm"/>
+    </channel-type>
+    
+    <channel-type id="rain1" advanced="true">
+        <item-type>Number</item-type>
+        <label>Rain 1h</label>
+        <description>Quantity of water on last hour</description>
+        <category>Rain</category>
+        <state readOnly="true" pattern="%d mm / 1h"/>
+    </channel-type>
+    
+    <channel-type id="rain24" advanced="true">
+        <item-type>Number</item-type>
+        <label>Rain 24h</label>
+        <description>Quantity of water on last day</description>
+        <category>Rain</category>
+        <state readOnly="true" pattern="%d mm / 24h"/>
     </channel-type>
     
     <channel-type id="WindAngle">

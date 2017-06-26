@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,16 +26,16 @@ public class IppBindingConstants {
     public static final String BINDING_ID = "ipp";
     
     // List of all Thing Type UIDs
-    public final static ThingTypeUID PRINTER_THING_TYPE = new ThingTypeUID(BINDING_ID, "printer");
+    public static final ThingTypeUID PRINTER_THING_TYPE = new ThingTypeUID(BINDING_ID, "printer");
 
     // List of all Channel ids
-    public final static String JOBS_CHANNEL = "jobs";
-    public final static String WAITING_JOBS_CHANNEL = "waitingJobs";
-    public final static String DONE_JOBS_CHANNEL = "doneJobs";
+    public static final String JOBS_CHANNEL = "jobs";
+    public static final String WAITING_JOBS_CHANNEL = "waitingJobs";
+    public static final String DONE_JOBS_CHANNEL = "doneJobs";
 
-    public final static String PRINTER_PARAMETER_URL = "url";
-    public final static String PRINTER_PARAMETER_NAME = "name";
-    public final static String PRINTER_PARAMETER_REFRESH_INTERVAL = "refresh";
+    public static final String PRINTER_PARAMETER_URL = "url";
+    public static final String PRINTER_PARAMETER_NAME = "name";
+    public static final String PRINTER_PARAMETER_REFRESH_INTERVAL = "refresh";
     
-    public final static Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(IppBindingConstants.PRINTER_THING_TYPE);
+    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(IppBindingConstants.PRINTER_THING_TYPE);
 }

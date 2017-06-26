@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,7 +34,7 @@ public interface VirtualGateway extends HomematicGateway {
     /**
      * Returns the rpc client.
      */
-    public RpcClient getRpcClient(HmInterface hmInterface) throws IOException;
+    public RpcClient<?> getRpcClient(HmInterface hmInterface) throws IOException;
 
     /**
      * Disables a boolean datapoint by setting the value to false after a given delay.

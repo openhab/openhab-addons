@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -319,7 +319,7 @@ public class AutelisHandler extends BaseThingHandler {
         String[] statuses = { "status", "chem", "pumps" };
         for (String status : statuses) {
             String response = getUrl(baseURL + "/" + status + ".xml", TIMEOUT);
-            logger.trace(baseURL + "/" + status + ".xml \n {}", response);
+            logger.trace("{}/{}.xml \n {}", baseURL, status, response);
             if (response == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
                 return;

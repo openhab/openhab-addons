@@ -2,11 +2,11 @@
 
 The Harmony Hub binding is used to enable communication between openHAB2 and multiple Logitech Harmony Hub devices. The API exposed by the Harmony Hub is relatively limited, but it does allow for reading the current activity as well as setting the activity and sending device commands.
 
-##Overview
+## Overview
 
 The Harmony binding represents a "Hub" as a bridge thing type and "Devices" as things connected to the bridge.  
 
-###Hub
+### Hub
 
 A hub (bridge thing) represents a physical Harmony Hub.  The hub possesses a single channel with the id "activity" which is a StringType set to the name of the current activity.  This channel is dynamically generated with the possible activity strings listed as channel state options. 
 
@@ -25,12 +25,12 @@ The binding requires no special configuration
 ## Thing Configuration
 This is optional, it is recommended to let the binding discover and add hubs and devices.
  
-To manually configure a Harmony Hub thing you may specify its name ("name") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heart beat interval (heartBeatInterval) in seconds. 
+To manually configure a Harmony Hub thing you may specify its host name  ("host") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heart beat interval (heartBeatInterval) in seconds. 
  
 In the thing file, this looks e.g. like
 
 ```
-Bridge harmonyhub:hub:GreatRoom [ name="Great Room"]
+Bridge harmonyhub:hub:GreatRoom [ host="192.168.1.100"]
 ```
 
 To manually configure a Harmony device thing you may specify its numeric id ("id") or its name ("name"), but not both. Note that this is prefixed by the hub the device is controlled from.
@@ -49,6 +49,7 @@ Bridge harmonyhub:hub:great [ name="Great Room"] {
     device denon [ id=176254]
 }
 ```
+
 ## Channels
 
 Hubs can report and change the current activity:
@@ -77,3 +78,4 @@ sitemap demo label="Main Menu" {
         }
 }
 ```
+Possible values for the "buttonPress" channel can be determined via the REST API for channel-types, http://YourServer:8080/rest/channel-types. Search the JSON for "harmonyhub:device".

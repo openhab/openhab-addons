@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,13 +8,15 @@
  */
 package org.openhab.binding.netatmo.handler.station;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_RAIN;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.config.NetatmoModuleConfiguration;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
+
+import io.swagger.client.model.NADashboardData;
 
 /**
  * {@link NAModule3Handler} is the class used to handle the Rain Gauge
@@ -31,12 +33,19 @@ public class NAModule3Handler extends NetatmoModuleHandler<NetatmoModuleConfigur
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        switch (channelId) {
-            case CHANNEL_RAIN:
-                return ChannelTypeUtils.toDecimalType(module.getDashboardData().getRain());
-            default:
-                return super.getNAThingProperty(channelId);
+        if (module != null) {
+            NADashboardData dashboardData = module.getDashboardData();
+            switch (channelId) {
+                case CHANNEL_RAIN:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getRain());
+                case CHANNEL_SUM_RAIN1:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getSumRain1());
+                case CHANNEL_SUM_RAIN24:
+                    return ChannelTypeUtils.toDecimalType(dashboardData.getSumRain24());
+
+            }
         }
+        return super.getNAThingProperty(channelId);
     }
 
 }

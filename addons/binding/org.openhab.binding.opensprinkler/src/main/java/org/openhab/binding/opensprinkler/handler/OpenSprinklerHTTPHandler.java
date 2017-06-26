@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,6 +21,8 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.Station;
 import org.openhab.binding.opensprinkler.config.OpenSprinklerConfig;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenSprinklerHTTPHandler} is responsible for handling commands, which are
@@ -29,6 +31,8 @@ import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
  * @author Chris Graham - Initial contribution
  */
 public class OpenSprinklerHTTPHandler extends OpenSprinklerHandler {
+    private final Logger logger = LoggerFactory.getLogger(OpenSprinklerHTTPHandler.class);
+
     private OpenSprinklerConfig openSprinklerConfig = null;
 
     public OpenSprinklerHTTPHandler(Thing thing) {
@@ -39,16 +43,15 @@ public class OpenSprinklerHTTPHandler extends OpenSprinklerHandler {
     public void initialize() {
         openSprinklerConfig = getConfig().as(OpenSprinklerConfig.class);
 
-        logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Password: {}, Refresh: {}).",
-                openSprinklerConfig.hostname, openSprinklerConfig.port, openSprinklerConfig.password,
-                openSprinklerConfig.refresh);
-
         if (openSprinklerConfig == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Could not parse the config for the OpenSprinkler.");
-
             return;
         }
+
+        logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Password: {}, Refresh: {}).",
+                openSprinklerConfig.hostname, openSprinklerConfig.port, openSprinklerConfig.password,
+                openSprinklerConfig.refresh);
 
         try {
             openSprinklerDevice = OpenSprinklerApiFactory.getHttpApi(openSprinklerConfig.hostname,

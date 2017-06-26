@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -108,7 +108,7 @@ public class HueEmulationServlet extends HttpServlet {
                     IOUtils.closeQuietly(fis);
                 }
             }
-            logger.info("Started Hue Emulation service at " + PATH);
+            logger.info("Started Hue Emulation service at {}", PATH);
         } catch (Exception e) {
             logger.error("Could not start Hue Emulation service: {}", e.getMessage(), e);
         }
@@ -294,8 +294,8 @@ public class HueEmulationServlet extends HttpServlet {
             Item item = itemRegistry.getItem(id);
             HueState state = gson.fromJson(req.getReader(), HueState.class);
             HSBType hsb = state.toHSBType();
-            logger.debug("HuState " + state);
-            logger.debug("HSBType " + hsb);
+            logger.debug("HuState {}", state);
+            logger.debug("HSBType {}", hsb);
             Command command = null;
             if (hsb.getBrightness().intValue() > 0) {
                 // if state is on then send HSB, Brightness or ON
@@ -349,7 +349,7 @@ public class HueEmulationServlet extends HttpServlet {
             out.write(gson.toJson(itemToDevice(item)));
             out.close();
         } catch (ItemNotFoundException e) {
-            logger.debug("Item not found: " + id);
+            logger.debug("Item not found: {}", id);
             apiServerError(req, resp, HueErrorResponse.NOT_AVAILABLE, "Item not found " + id);
         }
     }
@@ -411,7 +411,7 @@ public class HueEmulationServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         HueCreateUser user = gson.fromJson(req.getReader(), HueCreateUser.class);
-        logger.debug("Create user: " + user.devicetype);
+        logger.debug("Create user: {}", user.devicetype);
         if (user.username == null || user.username.length() == 0) {
             user.username = UUID.randomUUID().toString();
         }

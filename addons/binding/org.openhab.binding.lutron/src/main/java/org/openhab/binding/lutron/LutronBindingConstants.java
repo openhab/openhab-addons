@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,36 +21,36 @@ public class LutronBindingConstants {
     public static final String BINDING_ID = "lutron";
 
     // Bridge Type UIDs
-    public final static ThingTypeUID THING_TYPE_IPBRIDGE = new ThingTypeUID(BINDING_ID, "ipbridge");
+    public static final ThingTypeUID THING_TYPE_IPBRIDGE = new ThingTypeUID(BINDING_ID, "ipbridge");
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
-    public final static ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
-    public final static ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
-    public final static ThingTypeUID THING_TYPE_KEYPAD = new ThingTypeUID(BINDING_ID, "keypad");
+    public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
+    public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
+    public static final ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancysensor");
+    public static final ThingTypeUID THING_TYPE_KEYPAD = new ThingTypeUID(BINDING_ID, "keypad");
 
     // List of all Channel ids
-    public final static String CHANNEL_LIGHTLEVEL = "lightlevel";
-    public final static String CHANNEL_SWITCH = "switchstatus";
-    public final static String CHANNEL_OCCUPANCYSTATUS = "occupancystatus";
-    public final static String CHANNEL_BUTTON1 = "button1";
-    public final static String CHANNEL_BUTTON2 = "button2";
-    public final static String CHANNEL_BUTTON3 = "button3";
-    public final static String CHANNEL_BUTTON4 = "button4";
-    public final static String CHANNEL_BUTTON5 = "button5";
-    public final static String CHANNEL_BUTTON6 = "button6";
-    public final static String CHANNEL_BUTTON7 = "button7";
-    public final static String CHANNEL_BUTTONTOPRAISE = "buttontopraise";
-    public final static String CHANNEL_BUTTONTOPLOWER = "buttontoplower";
-    public final static String CHANNEL_BUTTONBOTTOMRAISE = "buttonbottomraise";
-    public final static String CHANNEL_BUTTONBOTTOMLOWER = "buttonbottomlower";
-    public final static String CHANNEL_LED1 = "led1";
-    public final static String CHANNEL_LED2 = "led2";
-    public final static String CHANNEL_LED3 = "led3";
-    public final static String CHANNEL_LED4 = "led4";
-    public final static String CHANNEL_LED5 = "led5";
-    public final static String CHANNEL_LED6 = "led6";
-    public final static String CHANNEL_LED7 = "led7";
+    public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
+    public static final String CHANNEL_SWITCH = "switchstatus";
+    public static final String CHANNEL_OCCUPANCYSTATUS = "occupancystatus";
+    public static final String CHANNEL_BUTTON1 = "button1";
+    public static final String CHANNEL_BUTTON2 = "button2";
+    public static final String CHANNEL_BUTTON3 = "button3";
+    public static final String CHANNEL_BUTTON4 = "button4";
+    public static final String CHANNEL_BUTTON5 = "button5";
+    public static final String CHANNEL_BUTTON6 = "button6";
+    public static final String CHANNEL_BUTTON7 = "button7";
+    public static final String CHANNEL_BUTTONTOPRAISE = "buttontopraise";
+    public static final String CHANNEL_BUTTONTOPLOWER = "buttontoplower";
+    public static final String CHANNEL_BUTTONBOTTOMRAISE = "buttonbottomraise";
+    public static final String CHANNEL_BUTTONBOTTOMLOWER = "buttonbottomlower";
+    public static final String CHANNEL_LED1 = "led1";
+    public static final String CHANNEL_LED2 = "led2";
+    public static final String CHANNEL_LED3 = "led3";
+    public static final String CHANNEL_LED4 = "led4";
+    public static final String CHANNEL_LED5 = "led5";
+    public static final String CHANNEL_LED6 = "led6";
+    public static final String CHANNEL_LED7 = "led7";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -44,7 +44,7 @@ class HomekitAccessoryRegistry {
         while (i.hasNext()) {
             HomekitAccessory accessory = i.next();
             if (accessory.getId() == taggedItem.getId()) {
-                logger.debug("Removed accessory " + accessory.getId());
+                logger.debug("Removed accessory {}", accessory.getId());
                 bridge.removeAccessory(accessory);
                 i.remove();
             }
@@ -81,12 +81,12 @@ class HomekitAccessoryRegistry {
         for (String group : item.getItem().getGroupNames()) {
             if (pendingGroupedAccessories.containsKey(group)) {
                 addCharacteristicToGroup(group, item);
-                logger.debug("Added " + item.getItem().getName() + " to " + group);
+                logger.debug("Added {} to {}", item.getItem().getName(), group);
                 return;
             }
         }
         pendingCharacteristics.add(item);
-        logger.debug("Stored " + item.getItem().getName() + " until group is ready");
+        logger.debug("Stored {} until group is ready", item.getItem().getName());
     }
 
     private void addCharacteristicToGroup(String group, HomekitTaggedItem item) {
@@ -104,7 +104,7 @@ class HomekitAccessoryRegistry {
         if (bridge != null) {
             bridge.addAccessory(accessory);
         }
-        logger.debug("Added accessory " + accessory.getId());
+        logger.debug("Added accessory {}", accessory.getId());
     }
 
 }

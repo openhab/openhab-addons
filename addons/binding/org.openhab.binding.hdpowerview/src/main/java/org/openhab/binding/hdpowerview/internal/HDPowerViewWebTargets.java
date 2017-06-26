@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -89,11 +89,11 @@ public class HDPowerViewWebTargets {
         }
 
         if (response.getStatus() != 200) {
-            logger.error("Bridge returned " + response.getStatus() + " while invoking " + target.getUri() + " : "
-                    + response.readEntity(String.class));
+            logger.error("Bridge returned {} while invoking {} : {}", response.getStatus(), target.getUri(),
+                    response.readEntity(String.class));
             return null;
         } else if (!response.hasEntity()) {
-            logger.error("Bridge returned null response" + " while invoking " + target.getUri());
+            logger.error("Bridge returned null response while invoking {}", target.getUri());
             return null;
         }
 
