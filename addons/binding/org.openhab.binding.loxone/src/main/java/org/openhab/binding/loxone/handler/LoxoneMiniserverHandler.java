@@ -211,16 +211,16 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
             // check if server does not need to be created from scratch
             if (server != null && !server.isChanged(ip, cfg.port, cfg.user, cfg.password)) {
-                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.userErrorDelay,
-                        cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
+                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.connectTimeout,
+                        cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
             } else {
                 if (server != null) {
                     server.stop();
                 }
                 server = new LxServer(ip, cfg.port, cfg.user, cfg.password);
                 server.addListener(this);
-                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.userErrorDelay,
-                        cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
+                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.connectTimeout,
+                        cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
                 server.start();
             }
         } catch (UnknownHostException e) {

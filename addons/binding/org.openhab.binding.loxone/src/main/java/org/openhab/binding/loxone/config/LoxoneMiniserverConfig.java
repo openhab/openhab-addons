@@ -46,6 +46,10 @@ public class LoxoneMiniserverConfig {
      */
     public int connectErrDelay;
     /**
+     * Time to wait for websocket connect response from the Miniserver
+     */
+    public int connectTimeout;
+    /**
      * Time in seconds between user login error as a result of wrong name/password or no authority and next connection
      * attempt
      */

@@ -163,8 +163,7 @@ public class LxServer {
             logger.debug("[{}] Server stop", debugId);
             synchronized (monitorThread) {
                 if (queue != null) {
-                    LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxServer.OfflineReason.NONE,
-                            null);
+                    LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, OfflineReason.NONE, null);
                     try {
                         queue.put(event);
                         monitorThread.notify();
@@ -192,6 +191,8 @@ public class LxServer {
      *            Time in seconds between sending two consecutive keep-alive messages
      * @param connectErrDelay
      *            Time in seconds between failed websocket connect attempts
+     * @param connectTimeout
+     *            Time to wait for websocket connect response from the Miniserver
      * @param userErrorDelay
      *            Time in seconds between user login error as a result of wrong name/password or no authority and next
      *            connection attempt
@@ -203,25 +204,29 @@ public class LxServer {
      * @param maxTextMsgSize
      *            maximum text message size of websocket client (in kB)
      */
-    public void update(int firstConDelay, int keepAlivePeriod, int connectErrDelay, int userErrorDelay,
-            int comErrorDelay, int maxBinMsgSize, int maxTextMsgSize) {
+    public void update(int firstConDelay, int keepAlivePeriod, int connectErrDelay, int connectTimeout,
+            int userErrorDelay, int comErrorDelay, int maxBinMsgSize, int maxTextMsgSize) {
 
         logger.debug("[{}] Server update configuration", debugId);
 
-        if (firstConDelay >= 0) {
+        if (firstConDelay >= 0 && this.firstConDelay != firstConDelay) {
+            logger.debug("[{}] Changing firstConDelay to {}", debugId, firstConDelay);
             this.firstConDelay = firstConDelay;
         }
-        if (connectErrDelay >= 0) {
+        if (connectErrDelay >= 0 && this.connectErrDelay != connectErrDelay) {
+            logger.debug("[{}] Changing connectErrDelay to {}", debugId, connectErrDelay);
             this.connectErrDelay = connectErrDelay;
         }
-        if (userErrorDelay >= 0) {
+        if (userErrorDelay >= 0 && this.userErrorDelay != userErrorDelay) {
+            logger.debug("[{}] Changing userErrorDelay to {}", debugId, userErrorDelay);
             this.userErrorDelay = userErrorDelay;
         }
-        if (comErrorDelay >= 0) {
+        if (comErrorDelay >= 0 && this.comErrorDelay != comErrorDelay) {
+            logger.debug("[{}] Changing comErrorDelay to {}", debugId, comErrorDelay);
             this.comErrorDelay = comErrorDelay;
         }
         if (socketClient != null) {
-            socketClient.update(keepAlivePeriod, maxBinMsgSize, maxTextMsgSize);
+            socketClient.update(keepAlivePeriod, connectTimeout, maxBinMsgSize, maxTextMsgSize);
         }
     }
 
@@ -442,10 +447,14 @@ public class LxServer {
                                 }
                                 break;
                             case SERVER_OFFLINE:
-                                logger.debug("[{}] Websocket goes OFFLINE, reason {}.", debugId,
-                                        wsMsg.getOfflineReason().toString());
-
                                 OfflineReason reason = wsMsg.getOfflineReason();
+                                String details = null;
+                                if (wsMsg.getObject() instanceof String) {
+                                    details = (String) wsMsg.getObject();
+                                }
+                                logger.debug("[{}] Websocket goes OFFLINE, reason {} : {}.", debugId, reason.toString(),
+                                        details);
+
                                 if (reason == OfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS) {
                                     // assume credentials are wrong, do not re-attempt connections
                                     // close thread and expect a new LxServer object will have to be re-created
@@ -458,10 +467,6 @@ public class LxServer {
                                         waitTime = comErrorDelay * 1000;
                                     }
                                     socketClient.disconnect();
-                                }
-                                String details = null;
-                                if (wsMsg.getObject() instanceof String) {
-                                    details = (String) wsMsg.getObject();
                                 }
                                 connected = false;
                                 for (LxServerListener listener : listeners) {
@@ -753,6 +758,12 @@ public class LxServer {
         }
     }
 
+    /**
+     * Updates server structures with a new or updated control and its states and subcontrols
+     *
+     * @param control
+     *            control to update in server structures
+     */
     private void updateControls(LxControl control) {
         for (LxControlState state : control.getStates().values()) {
             state.getUuid().setUpdate(true);

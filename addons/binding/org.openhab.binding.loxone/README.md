@@ -32,7 +32,7 @@ This binding creates channels for controls that are [used in Loxone's user inter
 |[Loxone API Control](https://www.loxone.com/enen/kb/api/)|Loxone Block-Functions|[Item Types](http://docs.openhab.org/concepts/items.html)|Supported Commands|Channel Types|Channel IDs|
 |----|----|----|----|----|----|
 |InfoOnlyAnalog|Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`Number`|none (read-only value)|`loxone:miniserver:<serial>:infoonlyanalog:<uuid>`<br> This channel type is created dynamically for each control, because control contains custom display format string|`loxone:miniserver:<serial>:<uuid>`|
-|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`String`<br>`Number`|none (read-only value)|`loxone:miniserver:<serial>:infoonlydigital`| `loxone:miniserver:<serial>:<uuid>`|
+|InfoOnlyDigital|Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state) |`String`|none (read-only value)|`loxone:miniserver:<serial>:infoonlydigital`| `loxone:miniserver:<serial>:<uuid>`|
 |Jalousie| Blinds, [Automatic Blinds](https://www.loxone.com/enen/kb/automatic-blinds/), Automatic Blinds Integrated| `Rollershutter`| `UpDown.*`<br>`StopMove.*`<br>`Percent`|`loxone:miniserver:<serial>:rollershutter`|`loxone:miniserver:<serial>:<uuid>`
 |LightController|[Lighting controller](https://www.loxone.com/enen/kb/lighting-controller/), [Hotel lighting controller](https://www.loxone.com/enen/kb/hotel-lighting-controller/)<br>Additionally, for each configured output of a lighting controller, a new independent control (with own channel/item) will be created.|`Number`|`Decimal` (select lighting scene)<br>`OnOffType.*` (select all off or all on scene)|`loxone:miniserver:<serial>:lightcontroller:<uuid>`<br>This channel type is created dynamically for each controller, because it contains custom list of selectable values.|`loxone:miniserver:<serial>:<uuid>`|
 |Pushbutton | [Virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) of pushbutton type | `Switch` | `OnOffType.ON` (generates Pulse command)|`loxone:miniserver:<serial>:switch`|`loxone:miniserver:<serial>:<uuid>`
@@ -101,6 +101,9 @@ Timeout values can be changed in advanced parameters section of the thing's conf
 * _Connect error delay_
     * Time in seconds between failed Websocket connect attempt and another attempt to connect. Websocket connection is established before authentication and data transfer. It can usually fail due to unreachable Miniserver.
     * Range: 0-600 s, default: 10 s
+* _Connect timeout_
+    * Time to wait for a response from Miniserver to a websocket connect request. If this time passed without connection established, connection  is finished and a new attempt will be made after _Connect error delay_ seconds.
+    * Range: 0-60 s, default: 4 s
 * _Authentication error delay_
     * Time in seconds between user authentication error and another connection attempt. User authentication error can be a result of a wrong name or password, or no authority granted to the user on the Miniserver. If this time is too short, Miniserver will eventually lock out user for longer period of time due to too many failed login attempts. This time should allow administrator to fix authentication issue without being locked out. Connection retry is required, because very rarely Miniserver seems to reject correct credentials, which pass on another exactly same attempt.
     * Range: 0-3600 s, default: 60 s
