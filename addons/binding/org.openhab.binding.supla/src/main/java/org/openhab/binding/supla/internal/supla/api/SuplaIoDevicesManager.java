@@ -14,11 +14,17 @@ import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 
 public final class SuplaIoDevicesManager implements IoDevicesManager {
-    private static final Type MAP_TYPE = new TypeToken<Map<String, List<SuplaIoDevice>>>(){}.getType();
+    private static final Type MAP_TYPE = new TypeToken<Map<String, List<SuplaIoDevice>>>() {
+    }.getType();
+    private static final Type LIST_TYPE = new TypeToken<List<SuplaIoDevice>>() {
+    }.getType();
     private static final String KEY_FOR_IO_DEVICES = "iodevices";
 
     private final HttpExecutor httpExecutor;
@@ -35,5 +41,19 @@ public final class SuplaIoDevicesManager implements IoDevicesManager {
         final Map<String, List<SuplaIoDevice>> map = jsonMapper.to(MAP_TYPE, response.getResponse());
 
         return map.get(KEY_FOR_IO_DEVICES);
+    }
+
+    @Override
+    public Optional<SuplaIoDevice> obtainIoDevice(long id) {
+        final Response response = httpExecutor.get(new Request("/iodevices/" + id));
+        final List<SuplaIoDevice> list = jsonMapper.to(LIST_TYPE, response.getResponse());
+        switch (list.size()) {
+            case 0:
+                return Optional.empty();
+            case 1:
+                return Optional.of(list.get(0));
+            default:
+                throw new IllegalArgumentException(format("List size was %s, full list: %s", list.size(), list));
+        }
     }
 }
