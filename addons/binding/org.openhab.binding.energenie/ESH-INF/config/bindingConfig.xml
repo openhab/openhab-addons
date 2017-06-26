@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+        http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="energenie:binding:config">
+		<parameter name="user" type="text">
+			<label>User's email address</label>
+			<required>true</required>
+			<context>email</context>
+		</parameter>
+		<parameter name="password" type="text">
+			<label>User's password</label>
+			<context>password</context>
+			<required>true</required>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
