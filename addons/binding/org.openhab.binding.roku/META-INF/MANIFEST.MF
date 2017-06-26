@@ -4,11 +4,11 @@ Bundle-Name: Roku Binding
 Bundle-SymbolicName: org.openhab.binding.roku;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
- org.apache.commons.collections;version="3.2.0",
- org.apache.commons.io;version="2.2.0",
+ org.apache.commons.collections,
+ org.apache.commons.io,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
