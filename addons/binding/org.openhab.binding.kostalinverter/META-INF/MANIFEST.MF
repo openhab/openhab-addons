@@ -16,5 +16,5 @@ Import-Package: org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.types,
  org.osgi.framework,
  org.slf4j
-Export-package: org.openhab.binding.kostal.inverter
+Export-Package: org.openhab.binding.kostal.inverter
 Service-Component: OSGI-INF/*.xml
