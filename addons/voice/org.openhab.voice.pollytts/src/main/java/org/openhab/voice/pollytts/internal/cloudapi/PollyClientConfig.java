@@ -98,7 +98,7 @@ public class PollyClientConfig {
             logger.error("Failed to activate PollyTTS: Missing user region, configure it first before using");
             configOK = false;
         }
-        if (!PollyClientConfig.audioFormat.equals("sys") && !PollyClientConfig.audioFormat.equals("mp3")
+        if (!PollyClientConfig.audioFormat.equals("disabled") && !PollyClientConfig.audioFormat.equals("mp3")
                 && !PollyClientConfig.audioFormat.equals("ogg")) {
             logger.error("Failed to activate PollyTTS:  Invalid Audio Format override specified in cfg: {}",
                     PollyClientConfig.audioFormat);

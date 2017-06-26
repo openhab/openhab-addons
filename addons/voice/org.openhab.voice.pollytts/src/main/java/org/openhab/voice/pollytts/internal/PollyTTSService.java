@@ -82,7 +82,7 @@ public class PollyTTSService implements TTSService {
                 polly.setSecretKey(val);
                 val = config.containsKey(CONFIG_REGION) ? config.get(CONFIG_REGION).toString() : null;
                 polly.setRegionVal(val);
-                val = config.containsKey(CONFIG_FORMAT) ? config.get(CONFIG_FORMAT).toString() : "sys";
+                val = config.containsKey(CONFIG_FORMAT) ? config.get(CONFIG_FORMAT).toString() : "disabled";
                 polly.setAudioFormat(val);
                 val = config.containsKey(CONFIG_EXPIRE) ? config.get(CONFIG_EXPIRE).toString() : "0";
                 polly.setExpireDate(Integer.parseInt(val));
@@ -147,7 +147,6 @@ public class PollyTTSService implements TTSService {
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from PollyTTS service");
             }
-
             AudioStream audioStream = new PollyTTSAudioStream(cacheAudioFile, requestedFormat);
             return audioStream;
         } catch (AudioException ex) {
@@ -210,8 +209,8 @@ public class PollyTTSService implements TTSService {
     }
 
     private final String getApiAudioFormat(AudioFormat format) {
-        if (!PollyClientConfig.getAudioFormat().equals("sys")) {
-            // Override system specified with user prefered value
+        if (!PollyClientConfig.getAudioFormat().equals("disabled")) {
+            // Override system specified with user preferred value
             return PollyClientConfig.getAudioFormat();
         }
         if (format.getCodec().equals(AudioFormat.CODEC_MP3)) {
