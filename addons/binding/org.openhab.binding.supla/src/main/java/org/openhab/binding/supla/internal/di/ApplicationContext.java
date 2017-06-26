@@ -1,7 +1,9 @@
 package org.openhab.binding.supla.internal.di;
 
+import org.openhab.binding.supla.internal.api.ChannelManager;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.server.http.OAuthApiHttpExecutor;
+import org.openhab.binding.supla.internal.supla.api.SuplaChannelManager;
 import org.openhab.binding.supla.internal.supla.api.SuplaIoDevicesManager;
 import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 import org.openhab.binding.supla.internal.api.TokenManager;
@@ -30,6 +32,7 @@ public final class ApplicationContext {
     // API
     private TokenManager tokenManager;
     private IoDevicesManager ioDevicesManager;
+    private ChannelManager channelManager;
 
     public ApplicationContext(SuplaCloudServer suplaCloudServer) {
         this.suplaCloudServer = checkNotNull(suplaCloudServer);
@@ -55,7 +58,7 @@ public final class ApplicationContext {
 
     public HttpExecutor getHttpExecutor() {
         final HttpExecutor httpExecutor = get(this.httpExecutor, () -> new SuplaHttpExecutor(suplaCloudServer), x -> this.httpExecutor = x);
-        if(httpExecutor instanceof OAuthApiHttpExecutor) {
+        if (httpExecutor instanceof OAuthApiHttpExecutor) {
             return httpExecutor;
         } else {
             return new OAuthApiHttpExecutor(httpExecutor, getTokenManager());
@@ -84,5 +87,13 @@ public final class ApplicationContext {
 
     public void setIoDevicesManager(IoDevicesManager ioDevicesManager) {
         this.ioDevicesManager = ioDevicesManager;
+    }
+
+    public ChannelManager getChannelManager() {
+        return get(channelManager, () -> new SuplaChannelManager(), x -> this.channelManager = x);
+    }
+
+    public void setChannelManager(ChannelManager channelManager) {
+        this.channelManager = channelManager;
     }
 }

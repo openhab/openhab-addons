@@ -21,9 +21,10 @@ public class SuplaBindingConstants {
     private static final String BINDING_ID = "supla";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "suplaCloudBridge");
+    public static final ThingTypeUID SUPLA_ZAMEL_ROW_01_THING_TYPE = new ThingTypeUID(BINDING_ID, "zamel-row-1");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String SWITCH_CHANNEL = "switch-channel";
 
 }

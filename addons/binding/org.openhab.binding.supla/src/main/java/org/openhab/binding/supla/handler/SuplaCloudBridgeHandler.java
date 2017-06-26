@@ -1,12 +1,16 @@
 package org.openhab.binding.supla.handler;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.supla.SuplaCloudConfiguration;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
+import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +46,21 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         this.configuration = getConfigAs(SuplaCloudConfiguration.class);
         this.applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
         startAutomaticRefresh();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void startAutomaticRefresh() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleAtFixedRate(poolingRunnable, 0, configuration.getRefreshInterval(), SECONDS);
+            pollingJob = scheduler.scheduleAtFixedRate(poolingRunnable, 0, configuration.refreshInterval, SECONDS);
+        }
+    }
+
+    void switchCommand(OnOffType command, Thing thing) {
+        final SuplaChannel channel = null; // TODO
+        if(command == OnOffType.ON) {
+            applicationContext.getChannelManager().turnOn(channel);
+        } else {
+            applicationContext.getChannelManager().turnOff(channel);
         }
     }
 

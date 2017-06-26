@@ -13,7 +13,11 @@ import static org.openhab.binding.supla.SuplaBindingConstants.*;
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.supla.handler.SuplaHandler;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
+import org.openhab.binding.supla.handler.SuplaZamelRow01Handler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -27,7 +31,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 public class SuplaHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_THING_TYPE, SUPLA_ZAMEL_ROW_01_THING_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -38,8 +42,10 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAMPLE)) {
-            return new SuplaHandler(thing);
+        if (thingTypeUID.equals(SUPLA_ZAMEL_ROW_01_THING_TYPE)) {
+            return new SuplaZamelRow01Handler(thing);
+        } else if(thingTypeUID.equals(BRIDGE_THING_TYPE)) {
+            return new SuplaCloudBridgeHandler((Bridge) thing);
         }
 
         return null;
