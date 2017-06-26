@@ -46,7 +46,7 @@ Example, 365 not used in a year.
 audioFormat - (only works under openhab 2.1) Optional User specified audio format. 
 The user can override the system default audio format with their prefered option. 
 "mp3" and "ogg" are the only audio formats that are supported.
-Once specified use "sys" to revert to system default since openhab caches cfg values.
+Once specified use "disabled" to revert to system default since openhab caches cfg values.
             
 
 
