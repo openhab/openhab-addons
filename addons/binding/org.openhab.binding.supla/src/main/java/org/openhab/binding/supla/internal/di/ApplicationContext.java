@@ -25,6 +25,7 @@ public final class ApplicationContext {
 
     // http
     private HttpExecutor httpExecutor;
+    private HttpExecutor noOAuthHttpExecutor;
 
     // API
     private TokenManager tokenManager;
@@ -53,7 +54,16 @@ public final class ApplicationContext {
     }
 
     public HttpExecutor getHttpExecutor() {
-        return get(httpExecutor, () -> new SuplaHttpExecutor(suplaCloudServer), x -> this.httpExecutor = x);
+        final HttpExecutor httpExecutor = get(this.httpExecutor, () -> new SuplaHttpExecutor(suplaCloudServer), x -> this.httpExecutor = x);
+        if(httpExecutor instanceof OAuthApiHttpExecutor) {
+            return httpExecutor;
+        } else {
+            return new OAuthApiHttpExecutor(httpExecutor, getTokenManager());
+        }
+    }
+
+    public HttpExecutor getNoOAuthHttpExecutor() {
+        return get(noOAuthHttpExecutor, () -> new SuplaHttpExecutor(suplaCloudServer), x -> this.noOAuthHttpExecutor = x);
     }
 
     public void setHttpExecutor(HttpExecutor httpExecutor) {
@@ -61,7 +71,7 @@ public final class ApplicationContext {
     }
 
     public TokenManager getTokenManager() {
-        return get(tokenManager, () -> new SuplaTokenManager(new JsonMapper(), getHttpExecutor(), suplaCloudServer), x -> this.tokenManager = x);
+        return get(tokenManager, () -> new SuplaTokenManager(new JsonMapper(), getNoOAuthHttpExecutor(), suplaCloudServer), x -> this.tokenManager = x);
     }
 
     public void setTokenManager(TokenManager tokenManager) {
@@ -69,7 +79,7 @@ public final class ApplicationContext {
     }
 
     public IoDevicesManager getIoDevicesManager() {
-        return get(ioDevicesManager, () -> new SuplaIoDevicesManager(getTokenManager(), getHttpExecutor(), new JsonMapper()), x -> this.ioDevicesManager = x);
+        return get(ioDevicesManager, () -> new SuplaIoDevicesManager(getHttpExecutor(), new JsonMapper()), x -> this.ioDevicesManager = x);
     }
 
     public void setIoDevicesManager(IoDevicesManager ioDevicesManager) {

@@ -1,5 +1,6 @@
 package org.openhab.binding.supla.internal.supla.api;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.openhab.binding.supla.internal.server.http.CommonHeaders.CONTENT_TYPE_JSON;
 
@@ -27,6 +28,7 @@ public final class SuplaTokenManager implements TokenManager {
         body = new JsonBody(ImmutableMap.<String, String> builder().put("client_id", server.getClientId())
                 .put("client_secret", server.getSecretAsString()).put("grant_type", "password")
                 .put("username", server.getUsername()).put("password", server.getPasswordAsString()).build(), jsonMapper);
+        checkArgument(!(httpExecutor instanceof OAuthApiHttpExecutor), "HttpExecutor cannot be OAuthApiHttpExecutor class!");
     }
 
     @Override

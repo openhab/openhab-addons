@@ -12,7 +12,7 @@ public final class Request {
     private final String path;
     private final List<Header> headers;
 
-    public Request(List<Header> headers, String path) {
+    public Request(String path, List<Header> headers) {
         this.path = checkNotNull(path);
         checkArgument(!path.isEmpty());
         checkArgument(path.startsWith("/"), "Path should starts with '/', was " + path + ".");
@@ -20,11 +20,11 @@ public final class Request {
     }
 
     public Request(String path) {
-        this(new ArrayList<Header>(0), path);
+        this(path, new ArrayList<Header>(0));
     }
 
     public Request(String path, Header header) {
-        this(of(header), path);
+        this(path, of(header));
     }
 
     public String getPath() {
