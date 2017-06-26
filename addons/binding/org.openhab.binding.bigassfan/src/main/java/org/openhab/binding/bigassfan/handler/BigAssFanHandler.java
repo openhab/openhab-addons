@@ -732,7 +732,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 logger.debug("FAN;WHOOSH has unexpected number of parameters: {}", Arrays.toString(messageParts));
                 return;
             }
-            OnOffType state = messageParts[3].toUpperCase().equals("ON") ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = messageParts[4].toUpperCase().equals("ON") ? OnOffType.ON : OnOffType.OFF;
             updateChannel(CHANNEL_FAN_WHOOSH, state);
             fanStateMap.put(CHANNEL_FAN_WHOOSH, state);
         }
