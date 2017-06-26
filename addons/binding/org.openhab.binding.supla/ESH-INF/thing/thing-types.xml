@@ -4,21 +4,26 @@
 						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<label>Supla Binding Thing</label>
-		<description>Sample thing for Supla Binding</description>
+	<thing-type id="zamel-row-1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="suplaCloudBridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Supla Zamel ROW-01</label>
+		<description>"ROW-01 module enables the control of lighting, switching on and switching off the sockets and
+			electrical devices. It is enough to mount SUPLA devices and you can check immediately, by means of your
+			smartphone, the status of you home appliances, whether they are switched on or switched off.
+		</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="switch" typeId="switch-channel"/>
 		</channels>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>suplaItem</item-type>
-		<label>Supla Binding Channel</label>
-		<description>Sample channel for Supla Binding</description>
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>ON/OFF switch</label>
+		<description>Allows you to turn thing ON/OFF</description>
 	</channel-type>
 
 </thing:thing-descriptions>
