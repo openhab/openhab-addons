@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+@SuppressWarnings("unused")
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SuplaCloudBridgeHandler.class);
 
