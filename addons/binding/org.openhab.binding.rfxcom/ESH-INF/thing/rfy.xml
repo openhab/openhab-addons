@@ -40,6 +40,7 @@
 				<options>
 					<option value="RFY">RFY</option>
 					<option value="RFY_EXT">RFY Ext</option>
+					<option value="ASA">ASA</option>
 				</options>
 			</parameter>
 		</config-description>
