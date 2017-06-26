@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Supla Binding
 Bundle-SymbolicName: org.openhab.binding.supla;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
@@ -16,11 +16,9 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.hamcrest;core=split,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.supla,
  org.openhab.binding.supla.handler
 Require-Bundle: com.google.guava,
- com.google.gson,
- org.junit;bundle-version="4.11.0"
+ com.google.gson
