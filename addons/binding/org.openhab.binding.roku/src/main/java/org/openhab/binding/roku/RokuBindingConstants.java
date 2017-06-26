@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.roku;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -83,7 +80,4 @@ public class RokuBindingConstants {
     public static final String ROKU_DEVICE_INFO = "/query/device-info";
     public static final String ROKU_ACTIVE_APP = "/query/active-app";
     public static final String ROKU_QUERY_APPS = "/query/apps";
-
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_ROKU);
-
 }
