@@ -38,6 +38,10 @@ public final class ApplicationContext {
         this.suplaCloudServer = checkNotNull(suplaCloudServer);
     }
 
+    public SuplaCloudServer getSuplaCloudServer() {
+        return suplaCloudServer;
+    }
+
     private <T> T get(T instance, Supplier<T> supplier, Consumer<T> setter) {
         if (instance != null) {
             return instance;

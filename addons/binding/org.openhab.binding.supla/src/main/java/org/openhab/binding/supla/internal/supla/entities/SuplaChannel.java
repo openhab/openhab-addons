@@ -1,6 +1,6 @@
 package org.openhab.binding.supla.internal.supla.entities;
 
-public final class SuplaChannel {
+public final class SuplaChannel implements Comparable<SuplaChannel> {
     private final long id;
     private final int channelNumber;
     private final String caption; // Nullable
@@ -63,5 +63,11 @@ public final class SuplaChannel {
                 ", type=" + type +
                 ", function=" + function +
                 '}';
+    }
+
+    @SuppressWarnings("NullableProblems")
+    @Override
+    public int compareTo(SuplaChannel o) {
+        return channelNumber - o.channelNumber;
     }
 }

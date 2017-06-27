@@ -7,19 +7,29 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.supla.SuplaBindingConstants;
 import org.openhab.binding.supla.SuplaCloudConfiguration;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
+import org.openhab.binding.supla.internal.discovery.SuplaDiscoveryService;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.Long.parseLong;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.binding.supla.SuplaBindingConstants.RELAY_CHANNEL_TYPE;
+import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.SWITCH_CHANNEL;
 
 @SuppressWarnings("unused")
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
@@ -30,6 +40,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
 
     private ScheduledFuture<?> pollingJob;
     private PoolingRunnable poolingRunnable = new PoolingRunnable();
+    private SuplaDiscoveryService discoveryService;
 
     public SuplaCloudBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -55,13 +66,47 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    void switchCommand(OnOffType command, Thing thing) {
-        final SuplaChannel channel = null; // TODO
-        if(command == OnOffType.ON) {
-            applicationContext.getChannelManager().turnOn(channel);
+    //
+    // Commands
+    //
+    void switchCommand(ChannelUID channelUID, OnOffType command, Thing thing) {
+        logger.trace("switchCommand: {} / {}", command, thing);
+        final long channelId = parseLong(thing.getProperties().get(channelUID.getId()));
+        if (command == OnOffType.ON) {
+            applicationContext.getChannelManager().turnOn(channelId);
         } else {
-            applicationContext.getChannelManager().turnOff(channel);
+            applicationContext.getChannelManager().turnOff(channelId);
         }
+    }
+
+    // TODO
+    void refreshCommand(ChannelUID channelUID, Thing thing) {
+//        final long deviceId = parseLong(thing.getProperties().get(SUPLA_IO_DEVICE_ID));
+//        final long channelId = parseLong(thing.getProperties().get(channelUID.getId()));
+//        applicationContext.getIoDevicesManager()
+//                .obtainIoDevice(deviceId)
+//                .ifPresent(device -> {
+//                    device.getChannels()
+//                            .stream()
+//                            .filter(c -> c.getId() == channelId)
+//                            .findFirst()
+//                            .ifPresent(c -> thing.);
+//                });
+//        thing.getChannels().forEach(channel -> channel.);
+    }
+
+    //
+    // Service Discovery
+    //
+
+    public void registerDiscoveryService(SuplaDiscoveryService discoveryService) {
+        logger.trace("Register Discovery Service {}", discoveryService);
+        this.discoveryService = checkNotNull(discoveryService);
+    }
+
+    public void unregisterDiscoveryService() {
+        logger.trace("Unregister Discovery Service");
+        discoveryService = null;
     }
 
     private final class PoolingRunnable implements Runnable {
@@ -72,8 +117,44 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
             logger.debug("Starting PoolingRunnable job...");
             final IoDevicesManager ioDevicesManager = applicationContext.getIoDevicesManager();
             final List<SuplaIoDevice> list = ioDevicesManager.obtainIoDevices();
+            if (list == null || list.size() == 0) {
+                logger.trace("There are no SuplaIoDevices on {}", applicationContext.getSuplaCloudServer());
+                return;
+            }
+            if (SuplaCloudBridgeHandler.this.discoveryService != null) {
+                logger.debug("Has discovery service. Send all ({}) SuplaIoDevices to it", list.size());
+                list.forEach(device -> discoveryService.addSuplaThing(findThingType(device), device.getId(),
+                        findThingLabel(device), buildThingProperties(device)));
+            }
         }
     }
 
+    private String findThingType(SuplaIoDevice device) {
+        // TODO need to do better logic
+        return SuplaBindingConstants.SUPLA_ZAMEL_ROW_01_THING_ID;
+    }
 
+    private String findThingLabel(SuplaIoDevice device) {
+        final String name = device.getName();
+        if (name != null && !name.trim().isEmpty()) {
+            logger.trace("Using name ad ID for {}", device);
+            return name;
+        }
+        final String comment = device.getComment();
+        if (comment != null && !comment.trim().isEmpty()) {
+            logger.trace("Using comment ad ID for {}", device);
+            return comment;
+        }
+        logger.trace("Using gUID ad ID for {}", device);
+        return device.getGuid();
+    }
+
+    private Map<String, Object> buildThingProperties(SuplaIoDevice device) {
+        Map<String, Object> properties = new HashMap<>();
+        final SuplaChannel firstChannel = device.getChannels().iterator().next();
+        checkArgument(RELAY_CHANNEL_TYPE.equals(firstChannel.getType().getName()),
+                "Wrong channel name! Expected %s got %s.", RELAY_CHANNEL_TYPE, firstChannel.getType().getName());
+        properties.put(SWITCH_CHANNEL, String.valueOf(firstChannel.getId()));
+        return properties;
+    }
 }

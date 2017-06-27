@@ -16,7 +16,7 @@
 		</description>
 
 		<channels>
-			<channel id="switch" typeId="switch-channel"/>
+			<channel id="switch-1" typeId="switch-channel"/>
 		</channels>
 	</thing-type>
 

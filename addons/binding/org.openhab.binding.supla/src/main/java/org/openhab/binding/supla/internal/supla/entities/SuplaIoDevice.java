@@ -2,8 +2,10 @@ package org.openhab.binding.supla.internal.supla.entities;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 
 import java.util.Set;
+import java.util.SortedSet;
 
 import static java.util.Collections.emptySet;
 
@@ -18,7 +20,7 @@ public final class SuplaIoDevice {
     private final String guid;
     private final String softwareVersion;
     private final int protocolVersion;
-    private final Set<SuplaChannel> channels;
+    private final SortedSet<SuplaChannel> channels;
 
     public SuplaIoDevice(long id, long locationId, boolean enabled, String name, String comment, SuplaDate registration,
                          SuplaDate lastConnected, String guid, String softwareVersion, int protocolVersion, Set<SuplaChannel> channels) {
@@ -33,9 +35,9 @@ public final class SuplaIoDevice {
         this.softwareVersion = softwareVersion;
         this.protocolVersion = protocolVersion;
         if (channels == null) {
-            this.channels = emptySet();
+            this.channels = ImmutableSortedSet.of();
         } else {
-            this.channels = ImmutableSet.copyOf(channels);
+            this.channels = ImmutableSortedSet.copyOf(channels);
         }
     }
 
