@@ -22,7 +22,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
 
 public class ZoneHandler extends AbstractOmnilinkHandler {
-    private Logger logger = LoggerFactory.getLogger(ZoneHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(ZoneHandler.class);
     private ZoneStatus zoneStatus;
 
     public ZoneHandler(Thing thing) {
