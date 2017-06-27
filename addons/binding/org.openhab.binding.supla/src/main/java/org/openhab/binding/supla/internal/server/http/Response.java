@@ -20,4 +20,12 @@ public final class Response {
     public boolean success() {
         return statusCode == 200;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "statusCode=" + statusCode +
+                ", response='" + response + '\'' +
+                '}';
+    }
 }
