@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="iec6205621meter"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="meter">
+		<label>IEC 62056-21 Meter Thing</label>
+		<description>Thing for IEC 62056-21 Meter Binding</description>
+        <channels>
+            <channel id="meterType" typeId="meterType"/>
+            <channel id="obisNumber" typeId="obisNumber" />
+            <channel id="obisString" typeId="obisString"/>
+        </channels>
+
+		<config-description>
+            <parameter name="port" type="text" required="true">
+                <label>Portname</label>
+                <description>Serial port to use connecting to the metering device e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+                <default>/dev/ttyS0</default>
+            </parameter>
+            <parameter name="baudRateChangeDelay" type="decimal"  min="0" max="250" step="1" required="false">
+                <label>Baud rate change delay</label>
+                <description>Delay of baud rate change in ms. Default is 0. USB to serial converters often require a delay of up to 250ms default is 0ms.</description>
+                <default>0</default>
+            </parameter>
+            <parameter name="echoHandling" type="boolean" required="true">
+                <label>Echo handling</label>
+                <description>Enable handling of echos caused by some optical tranceivers. Default value is true.</description>
+                <default>false</default>
+            </parameter>
+            <parameter name="initMessage" type="text" required="false">
+                <label>Extra pre init bytes</label>
+                <description>extra pre init bytes. Default value is empty.</description>
+                <default></default>
+            </parameter>
+            <parameter name="refresh" type="integer" required="true">
+                <label>Meter refresh rate</label>
+                <description>Refresh rate in [s] to query the meter data.</description>
+                <default>60</default>
+            </parameter>
+        </config-description>
+	</thing-type>
+
+	<!-- first channel shall be used to identify the meter type -->
+	<channel-type id="meterType">
+		<item-type>String</item-type>
+		<label>Type Designator Meter</label>
+		<description>Meter type designator of IEC 62056-21 Meter</description>
+		<state readOnly="true" />
+	</channel-type>
+
+    <!-- depending on meter there will be OBIS channel representing meter data values
+         This channels should be created dynamically from the binding depending on the first responds of the meter-->
+    <channel-type id="obisNumber" advanced="true">
+        <item-type>Number</item-type>
+        <label>OBIS Number Data</label>
+        <description>OBIS Number data channel of IEC 62056-21 Meter</description>
+        <category>Energy</category>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="obisString" advanced="true">
+        <item-type>String</item-type>
+        <label>OBIS String Data</label>
+        <description>OBIS String data channel of IEC 62056-21 Meter</description>
+        <state readOnly="true" />
+    </channel-type>
+
+</thing:thing-descriptions>

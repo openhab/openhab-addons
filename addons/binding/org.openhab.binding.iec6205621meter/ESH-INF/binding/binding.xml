@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="iec6205621meter"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>IEC 62056-21Meter Binding</name>
+	<description>This binding is used to communicate to metering devices supporting serial communication according mode C master. It can be used to read metering data from slaves such as gas, water, heat, or electricity meters.</description>
+	<author>Peter Kreutzer</author>
+
+</binding:binding>
