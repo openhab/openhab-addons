@@ -14,6 +14,12 @@
 			This thing is
 		</description>
 
+		<config-description>
+		<parameter name="ID" type="int" required="true">
+			<label>ID</label>
+		</parameter>
+		</config-description>
+
 		<channels>
 			<channel id="switch-1" typeId="switch-channel"/>
 		</channels>
@@ -28,6 +34,12 @@
 		<description>
 			This thing is
 		</description>
+
+		<config-description>
+			<parameter name="ID" type="int" required="true">
+				<label>ID</label>
+			</parameter>
+		</config-description>
 
 		<channels>
 			<channel id="switch-1" typeId="switch-channel"/>
