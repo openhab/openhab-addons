@@ -9,6 +9,7 @@
 package org.openhab.binding.mihome.internal.socket;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Takes care of the multicast communication with the bridge.
  *
- * @author Dieter Schmidt
+ * @author Dieter Schmidt - Initial contribution
  *
  */
 public class XiaomiBridgeSocket extends XiaomiSocket {
@@ -36,21 +37,19 @@ public class XiaomiBridgeSocket extends XiaomiSocket {
      * Starts the {@link ReceiverThread} for the socket.
      */
     @Override
-    synchronized void setupSocket() {
+    synchronized DatagramSocket setupSocket() {
+        if (getOpenSockets().contains(getPort())) {
+            return getOpenSockets().get(getPort());
+        }
         try {
             logger.debug("Setup socket");
-            socket = new MulticastSocket(port); // must bind receive side
-            ((MulticastSocket) socket).joinGroup(InetAddress.getByName(MCAST_ADDR));
-            logger.debug("Initialized socket to {}:{} on {}:{}", socket.getInetAddress(), socket.getPort(),
-                    socket.getLocalAddress(), socket.getLocalPort());
+            setSocket(new MulticastSocket(getPort())); // must bind receive side
+            ((MulticastSocket) getSocket()).joinGroup(InetAddress.getByName(MCAST_ADDR));
+            logger.debug("Initialized socket to {}:{} on {}:{}", getSocket().getRemoteSocketAddress(),
+                    getSocket().getPort(), getSocket().getLocalAddress(), getSocket().getLocalPort());
         } catch (IOException e) {
             logger.error("Setup socket error", e);
         }
-
-        socketReceiveThread = new ReceiverThread();
-        socketReceiveThread.start();
-        if (socket != null) {
-            openSockets.put(port, this);
-        }
+        return getSocket();
     }
 }

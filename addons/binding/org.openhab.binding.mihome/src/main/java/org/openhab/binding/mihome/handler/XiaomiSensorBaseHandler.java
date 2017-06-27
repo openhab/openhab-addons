@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * @author Dieter Schmidt
+ * Abstract base class for battery powered Xiaomi sensor devices
+ *
+ * @author Dieter Schmidt - Initial contribution
  */
 public abstract class XiaomiSensorBaseHandler extends XiaomiDeviceBaseHandler {
 
@@ -35,9 +37,6 @@ public abstract class XiaomiSensorBaseHandler extends XiaomiDeviceBaseHandler {
         super(thing);
     }
 
-    /**
-     * @param data
-     */
     @Override
     void parseHeartbeat(JsonObject data) {
         parseDefault(data);
@@ -61,9 +60,6 @@ public abstract class XiaomiSensorBaseHandler extends XiaomiDeviceBaseHandler {
         }
     }
 
-    /**
-     * @param voltage
-     */
     void calculateBatteryLevelFromVoltage(Integer voltage) {
         voltage = Math.min(VOLTAGE_MAX_MILLIVOLTS, voltage);
         voltage = Math.max(VOLTAGE_MIN_MILLIVOLTS, voltage);

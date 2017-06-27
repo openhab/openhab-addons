@@ -16,12 +16,11 @@ import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 /**
  * Maps the various JSON Strings reported from the devices to Channels
  *
- * @author Dieter Schmidt
+ * @author Dieter Schmidt - Initial contribution
  */
 public class ChannelMapper {
 
     private static final Map<String, String> systemButtonMapper = new HashMap<String, String>();
-
     static {
         // Alphabetical order
         systemButtonMapper.put("CLICK", CommonTriggerEvents.SHORT_PRESSED);

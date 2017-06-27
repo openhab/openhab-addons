@@ -20,11 +20,14 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * @author Dieter Schmidt
+ * Handles the Xiaomi wall switch with one button
+ *
+ * @author Dieter Schmidt - Initial contribution
  */
 public class XiaomiActorWallSwitch1 extends XiaomiActorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiActorWallSwitch1.class);
+    private String itemId;
 
     public XiaomiActorWallSwitch1(Thing thing) {
         super(thing);

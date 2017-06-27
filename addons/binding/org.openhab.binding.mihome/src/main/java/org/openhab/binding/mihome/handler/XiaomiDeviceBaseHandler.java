@@ -12,10 +12,8 @@ import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
-import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -58,7 +56,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
 
     private XiaomiBridgeHandler bridgeHandler;
 
-    String itemId;
+    private String itemId;
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiDeviceBaseHandler.class);
 
@@ -118,10 +116,6 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
         return itemId;
     }
 
-    /**
-     * @param command
-     * @param data
-     */
     void parseCommand(String command, JsonObject data) {
         switch (command) {
             case "report":
@@ -141,40 +135,24 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
         }
     }
 
-    /**
-     * @param data
-     */
     void parseReport(JsonObject data) {
         logger.debug("The binding does not parse this message yet, contact authors if you want it to");
     }
 
-    /**
-     * @param data
-     */
     void parseHeartbeat(JsonObject data) {
         logger.debug("The binding does not parse this message yet, contact authors if you want it to");
     }
 
-    /**
-     * @param data
-     */
     void parseReadAck(JsonObject data) {
         logger.debug("The binding does not parse this message yet, contact authors if you want it to");
     }
 
-    /**
-     * @param data
-     */
     void parseWriteAck(JsonObject data) {
         logger.debug("The binding does not parse this message yet, contact authors if you want it to");
     }
 
     abstract void parseDefault(JsonObject data);
 
-    /**
-     * @param channelUID
-     * @param command
-     */
     abstract void execute(ChannelUID channelUID, Command command);
 
     private void updateThingStatus() {
@@ -198,7 +176,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
@@ -220,10 +198,5 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
             }
         }
         return this.bridgeHandler;
-    }
-
-    synchronized Item getItemInChannel(String channel) {
-        Iterator<Item> iterator = linkRegistry.getLinkedItems(thing.getChannel(channel).getUID()).iterator();
-        return iterator.hasNext() ? iterator.next() : null;
     }
 }

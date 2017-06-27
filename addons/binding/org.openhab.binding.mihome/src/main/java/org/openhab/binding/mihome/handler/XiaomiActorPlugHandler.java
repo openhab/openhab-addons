@@ -21,12 +21,15 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
+ * Handles the Xiaomi smart plug device
+ *
  * @author Patrick Boos - Initial contribution
- * @author Dieter Schmidt
+ * @author Dieter Schmidt -Refactor
  */
 public class XiaomiActorPlugHandler extends XiaomiActorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiActorPlugHandler.class);
+    private String itemId;
 
     public XiaomiActorPlugHandler(Thing thing) {
         super(thing);
@@ -78,9 +81,6 @@ public class XiaomiActorPlugHandler extends XiaomiActorBaseHandler {
         }
     }
 
-    /**
-     * @param data
-     */
     private void getStatusFromData(JsonObject data) {
         if (data.has("status")) {
             boolean isOn = "on".equals(data.get("status").getAsString());

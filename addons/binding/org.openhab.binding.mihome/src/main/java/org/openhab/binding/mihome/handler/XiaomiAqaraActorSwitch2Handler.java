@@ -20,11 +20,14 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * @author Dieter Schmidt
+ * Handles the Xiaomi aqara wall switch with two buttons
+ *
+ * @author Dieter Schmidt - Initial contribution
  */
 public class XiaomiAqaraActorSwitch2Handler extends XiaomiActorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiAqaraActorSwitch2Handler.class);
+    private String itemId;
 
     public XiaomiAqaraActorSwitch2Handler(Thing thing) {
         super(thing);

@@ -8,11 +8,9 @@
  */
 package org.openhab.binding.mihome.handler;
 
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -25,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * which use a timer to update a certain channel. The user can configure the timer via an item
  * value.
  *
- * @author Dieter Schmidt
+ * @author Dieter Schmidt - Initial contribution
  *
  */
 public abstract class XiaomiSensorBaseHandlerWithTimer extends XiaomiSensorBaseHandler {
@@ -56,9 +54,8 @@ public abstract class XiaomiSensorBaseHandlerWithTimer extends XiaomiSensorBaseH
     };
 
     synchronized void startTimer() {
-        setTimerFromItemInSetpointChannel();
         cancelRunningTimer();
-        logger.debug("Set timer to {} sec", timerSetpoint);
+        logger.debug("Setting timer to {}s", timerSetpoint);
         trigger.schedule(new TimerAction(), timerSetpoint * 1000);
         timerIsRunning = true;
     }
@@ -87,18 +84,13 @@ public abstract class XiaomiSensorBaseHandlerWithTimer extends XiaomiSensorBaseH
         }
     }
 
-    void setTimerFromItemInSetpointChannel() {
-        ChannelUID uid = this.thing.getChannel(setpointChannel).getUID();
-        Set<Item> items = linkRegistry.getLinkedItems(uid);
-        if (items.size() == 1) {
-            State state = ((Item) items.toArray()[0]).getState();
-            if (state instanceof DecimalType) {
-                logger.debug("Trying to set timer setpoint to {}", state);
-                setTimerFromDecimalType((DecimalType) state);
+    @Override
+    public void handleUpdate(ChannelUID channelUID, State newState) {
+        if (setpointChannel.equals(channelUID.getId())) {
+            if (newState instanceof DecimalType) {
+                logger.debug("Received update for timer setpoint channel: {}", newState);
+                timerSetpoint = ((DecimalType) newState).intValue();
             }
-        } else {
-            logger.error("Cannot find item for timer value, using already set value {}", timerSetpoint);
         }
     }
-
 }

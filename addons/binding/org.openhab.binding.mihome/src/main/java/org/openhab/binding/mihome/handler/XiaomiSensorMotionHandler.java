@@ -22,8 +22,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
+ * Handles the Xiaomi human body motion sensor
+ *
  * @author Patrick Boos - Initial contribution
- * @author Dieter Schmidt
+ * @author Dieter Schmidt - Refactor
  */
 public class XiaomiSensorMotionHandler extends XiaomiSensorBaseHandlerWithTimer {
 

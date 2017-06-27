@@ -18,8 +18,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
+ * Handles the Xiaomi magic controller cube
+ *
  * @author Patrick Boos - Initial contribution
- * @author Dieter Schmidt
+ * @author Dieter Schmidt - Refactor
  */
 public class XiaomiSensorCubeHandler extends XiaomiSensorBaseHandler {
 
@@ -31,7 +33,7 @@ public class XiaomiSensorCubeHandler extends XiaomiSensorBaseHandler {
 
     @Override
     void parseReport(JsonObject data) {
-        logger.debug("Cube data: {}", data.toString());
+        logger.debug("Cube data: {}", data);
         if (data.has("status")) {
             triggerChannel(CHANNEL_CUBE_ACTION, data.get("status").getAsString().toUpperCase());
         } else if (data.has("rotate")) {

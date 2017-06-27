@@ -20,11 +20,13 @@ import org.eclipse.smarthome.core.thing.Thing;
 import com.google.gson.JsonObject;
 
 /**
- * @author Dieter Schmidt
+ * Abstract base class for Xiaomi sensor devices, which provide an alarm status message
+ *
+ * @author Dieter Schmidt - Initial contribution
  */
 public abstract class XiaomiSensorBaseAlarmHandler extends XiaomiSensorBaseHandler {
 
-    static final Map<Integer, String> ALARM_STATUS_MAP = new HashMap<>();
+    private static final Map<Integer, String> ALARM_STATUS_MAP = new HashMap<>();
 
     public XiaomiSensorBaseAlarmHandler(Thing thing) {
         super(thing);

@@ -49,7 +49,7 @@ import com.google.common.collect.Sets;
  * handlers.
  *
  * @author Patrick Boos - Initial contribution
- * @author Dieter Schmidt
+ * @author Dieter Schmidt - Refactor, add devices
  */
 public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
@@ -62,11 +62,11 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
         if (XiaomiBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            ThingUID miBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
-            return super.createThing(thingTypeUID, configuration, miBridgeUID, null);
+            ThingUID newBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
+            return super.createThing(thingTypeUID, configuration, newBridgeUID, null);
         } else if (XiaomiDeviceBaseHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            ThingUID itemUID = getItemUID(thingTypeUID, thingUID, configuration, bridgeUID);
-            return super.createThing(thingTypeUID, configuration, itemUID, bridgeUID);
+            ThingUID newThingUID = getThingUID(thingTypeUID, thingUID, configuration, bridgeUID);
+            return super.createThing(thingTypeUID, configuration, newThingUID, bridgeUID);
         }
         throw new IllegalArgumentException(
                 "The thing type " + thingTypeUID + " is not supported by the mihome binding.");
@@ -85,7 +85,7 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
         return thingUID;
     }
 
-    private ThingUID getItemUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
+    private ThingUID getThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
             ThingUID bridgeUID) {
         if (thingUID == null) {
             String itemId = (String) configuration.get(ITEM_ID);
@@ -153,7 +153,6 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerItemDiscoveryService(XiaomiBridgeHandler bridgeHandler) {
         XiaomiItemDiscoveryService discoveryService = new XiaomiItemDiscoveryService(bridgeHandler);
-        discoveryService.activate();
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }

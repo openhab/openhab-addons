@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Takes care of the discovery communication with the MiHome gateway
  *
- * @author Dieter Schmidt
+ * @author Dieter Schmidt - Initial contribution
  *
  */
 public class XiaomiDiscoverySocket extends XiaomiSocket {
@@ -29,7 +29,7 @@ public class XiaomiDiscoverySocket extends XiaomiSocket {
     private static final Logger logger = LoggerFactory.getLogger(XiaomiDiscoverySocket.class);
 
     public XiaomiDiscoverySocket() {
-        super();
+        super(0);
     }
 
     /**
@@ -39,23 +39,18 @@ public class XiaomiDiscoverySocket extends XiaomiSocket {
      * Starts the {@link ReceiverThread} for the socket.
      */
     @Override
-    void setupSocket() {
+    DatagramSocket setupSocket() {
         synchronized (XiaomiDiscoverySocket.class) {
             try {
                 logger.debug("Setup discovery socket");
-                socket = new DatagramSocket(port);
-                logger.debug("Initialized socket to {}:{} on {}:{}", socket.getInetAddress(), socket.getPort(),
-                        socket.getLocalAddress(), socket.getLocalPort());
+                setSocket(new DatagramSocket(0));
+                logger.debug("Initialized socket to {}:{} on {}:{}", getSocket().getInetAddress(),
+                        getSocket().getPort(), getSocket().getLocalAddress(), getSocket().getLocalPort());
             } catch (IOException e) {
                 logger.error("Setup socket error", e);
             }
-
-            socketReceiveThread = new ReceiverThread();
-            socketReceiveThread.start();
-            if (socket != null) {
-                openSockets.put(port, this);
-            }
         }
+        return getSocket();
     }
 
     /**

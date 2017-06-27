@@ -8,12 +8,19 @@
  */
 package org.openhab.binding.mihome.handler;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.smarthome.core.thing.Thing;
 
 /**
- * @author Dieter Schmidt
+ * Handles the Xiaomi smoke sensor
+ *
+ * @author Dieter Schmidt - Initial contribution
  */
 public class XiaomiSensorSmokeHandler extends XiaomiSensorBaseAlarmHandler {
+
+    private static final Map<Integer, String> ALARM_STATUS_MAP = new HashMap<>();
 
     static {
         ALARM_STATUS_MAP.put(0, "Release alarm");

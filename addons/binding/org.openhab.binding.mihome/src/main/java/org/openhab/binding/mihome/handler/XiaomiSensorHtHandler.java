@@ -16,6 +16,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import com.google.gson.JsonObject;
 
 /**
+ * Handles the Xiaomi temperature & humidity sensor
+ *
  * @author Patrick Boos - Initial contribution
  */
 public class XiaomiSensorHtHandler extends XiaomiSensorBaseHandler {

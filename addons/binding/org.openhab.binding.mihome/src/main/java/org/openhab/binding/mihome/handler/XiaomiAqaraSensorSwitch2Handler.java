@@ -17,7 +17,9 @@ import org.openhab.binding.mihome.internal.ChannelMapper;
 import com.google.gson.JsonObject;
 
 /**
- * @author Dieter Schmidt
+ * Handles the Xiaomi aqara smart switch with two buttons
+ *
+ * @author Dieter Schmidt - Initial contribution
  */
 public class XiaomiAqaraSensorSwitch2Handler extends XiaomiSensorBaseHandler {
 

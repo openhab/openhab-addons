@@ -27,11 +27,13 @@ import org.slf4j.LoggerFactory;
  * Encrypts communication between openhab & xiaomi bridge (required by xiaomi).
  *
  * @author Ondřej Pečta - 29. 12. 2016 - Contribution to Xiaomi MiHome Binding for OH 1.x
- * @author Dieter Schmidt
+ * @author Dieter Schmidt - Refactor logger
  */
 public class EncryptionHelper {
 
     protected static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+
+    // AES‐CBC 128 initial vector, taken from protocol description
     protected static final byte[] IV = parseHexBinary("17996D093D28DDB3BA695A2E6F58562E");
 
     private static final Logger logger = LoggerFactory.getLogger(EncryptionHelper.class);

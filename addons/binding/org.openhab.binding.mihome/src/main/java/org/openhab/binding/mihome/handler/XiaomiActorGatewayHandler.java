@@ -10,9 +10,6 @@ package org.openhab.binding.mihome.handler;
 
 import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
 
-import java.util.Iterator;
-
-import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -29,19 +26,28 @@ import com.google.gson.JsonObject;
 
 /**
  * @author Patrick Boos - Initial contribution
- * @author Dieter Schmidt
+ * @author Dieter Schmidt - Refactor & sound
  */
 public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
 
     private static final int COLOR_TEMPERATURE_MAX = 6500;
     private static final int COLOR_TEMPERATURE_MIN = 1700;
 
-    private Integer lastBrightness;
+    private static final int DEFAULT_BRIGTHNESS_PCENT = 100;
+    private static final int DEFAULT_VOLUME_PCENT = 50;
+    private static final int DEFAULT_COLOR = 0xffffff;
+
+    private Integer lastBrigthness;
+    private Integer lastVolume;
+    private Integer lastColor;
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiActorGatewayHandler.class);
 
     public XiaomiActorGatewayHandler(Thing thing) {
         super(thing);
+        lastBrigthness = DEFAULT_BRIGTHNESS_PCENT;
+        lastVolume = DEFAULT_VOLUME_PCENT;
+        lastColor = DEFAULT_COLOR;
     }
 
     @Override
@@ -50,24 +56,23 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
                     int newBright = ((PercentType) command).intValue();
-                    if (lastBrightness != newBright) {
-                        lastBrightness = newBright;
-                        logger.debug("Set brigthness to {}", lastBrightness);
-                        writeBridgeLightColor(getGatewayLightColor(), lastBrightness);
+                    if (lastBrigthness != newBright) {
+                        lastBrigthness = newBright;
+                        logger.debug("Set brigthness to {}", lastBrigthness);
+                        writeBridgeLightColor(lastColor, lastBrigthness);
                     } else {
                         logger.debug("Do not send this command, value {} already set", newBright);
                     }
                     return;
                 } else if (command instanceof OnOffType) {
-                    restoreBrightnessFromItem();
-
-                    writeBridgeLightColor(getGatewayLightColor(), command == OnOffType.ON ? lastBrightness : 0);
+                    writeBridgeLightColor(lastColor, command == OnOffType.ON ? lastBrigthness : 0);
                     return;
                 }
                 break;
             case CHANNEL_COLOR:
                 if (command instanceof HSBType) {
-                    writeBridgeLightColor(((HSBType) command).getRGB() & 0xffffff, getGatewayLightBrightness());
+                    lastColor = ((HSBType) command).getRGB() & 0xffffff;
+                    writeBridgeLightColor(lastColor, lastBrigthness);
                     return;
                 }
                 break;
@@ -77,24 +82,15 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
                     int kelvin = (COLOR_TEMPERATURE_MAX - COLOR_TEMPERATURE_MIN) / 100 * colorTemperature.intValue()
                             + COLOR_TEMPERATURE_MIN;
                     int color = ColorUtil.getRGBFromK(kelvin);
-                    writeBridgeLightColor(color, getGatewayLightBrightness());
+                    writeBridgeLightColor(color, lastBrigthness);
                     updateState(CHANNEL_COLOR,
-                            HSBType.fromRGB((color / 256 / 256) & 0xff, (color / 256) & 0xff, color & 0xff));
+                            HSBType.fromRGB((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff));
                     return;
                 }
                 break;
             case CHANNEL_GATEWAY_SOUND:
                 if (command instanceof DecimalType) {
-                    Item volumeItem = getItemInChannel(CHANNEL_GATEWAY_VOLUME);
-                    State state;
-                    if (volumeItem == null) {
-                        state = null;
-                        logger.debug("There was no Item found for soundVolume, default 50% is used");
-                    } else {
-                        state = volumeItem.getState();
-                    }
-                    int volume = state instanceof DecimalType ? ((DecimalType) state).intValue() : 50;
-                    writeBridgeRingtone(((DecimalType) command).intValue(), volume);
+                    writeBridgeRingtone(((DecimalType) command).intValue(), lastVolume);
                     updateState(CHANNEL_GATEWAY_SOUND_SWITCH, OnOffType.ON);
                     return;
                 }
@@ -108,32 +104,39 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
                 }
                 break;
             case CHANNEL_GATEWAY_VOLUME:
-                // nothing to do, just suppress error
+                if (command instanceof DecimalType) {
+                    updateLastVolume((DecimalType) command);
+                }
                 return;
         }
         // Only gets here, if no condition was met
         logger.warn("Can't handle command {} on channel {}", command, channelUID);
     }
 
-    private void restoreBrightnessFromItem() {
-        if (lastBrightness == null) {
-            try {
-                Iterator<Item> iter = linkRegistry
-                        .getLinkedItems(new ChannelUID(this.thing.getUID(), CHANNEL_BRIGHTNESS)).iterator();
-                while (iter.hasNext()) {
-                    Item item = iter.next();
-                    if (item.getState() instanceof PercentType) {
-                        lastBrightness = Integer.parseInt(item.getState().toString());
-                        logger.debug("last brightness value found: {}", lastBrightness);
-                        break;
-                    }
+    private void updateLastVolume(DecimalType newVolume) {
+        lastVolume = newVolume.intValue();
+        logger.debug("Changed volume to {}", lastVolume);
+    }
+
+    @Override
+    public void handleUpdate(ChannelUID channelUID, State newState) {
+        logger.debug("Update {} for channel {} received", newState, channelUID);
+        switch (channelUID.getId()) {
+            case CHANNEL_BRIGHTNESS:
+                if (newState instanceof PercentType) {
+                    lastBrigthness = ((PercentType) newState).intValue();
                 }
-                lastBrightness = lastBrightness == null || lastBrightness == 0 ? 100 : lastBrightness;
-                logger.debug("No dimmer value for brightness found, adjusted to {}", lastBrightness);
-            } catch (NumberFormatException e) {
-                lastBrightness = 100;
-                logger.debug("No last brightness value found - assuming 100");
-            }
+                break;
+            case CHANNEL_COLOR:
+                if (newState instanceof HSBType) {
+                    lastColor = ((HSBType) newState).getRGB();
+                }
+                break;
+            case CHANNEL_GATEWAY_VOLUME:
+                if (newState instanceof DecimalType) {
+                    updateLastVolume((DecimalType) newState);
+                }
+                break;
         }
     }
 
@@ -169,39 +172,6 @@ public class XiaomiActorGatewayHandler extends XiaomiActorBaseHandler {
             int illu = data.get("illumination").getAsInt();
             updateState(CHANNEL_ILLUMINATION, new DecimalType(illu));
         }
-    }
-
-    private int getGatewayLightColor() {
-        Item item = getItemInChannel(CHANNEL_COLOR);
-        if (item == null) {
-            return 0xffffff;
-        }
-
-        State state = item.getState();
-        if (state instanceof HSBType) {
-            return ((HSBType) state).getRGB() & 0xffffff;
-        }
-
-        return 0xffffff;
-    }
-
-    private int getGatewayLightBrightness() {
-        Item item = getItemInChannel(CHANNEL_BRIGHTNESS);
-        if (item == null) {
-            return 100;
-        }
-
-        State state = item.getState();
-        if (state == null) {
-            return 100;
-        } else if (state instanceof PercentType) {
-            PercentType brightness = (PercentType) state;
-            return brightness.intValue();
-        } else if (state instanceof OnOffType) {
-            return state == OnOffType.ON ? 100 : 0;
-        }
-
-        return 100;
     }
 
     private void writeBridgeLightColor(int color, int brightness) {

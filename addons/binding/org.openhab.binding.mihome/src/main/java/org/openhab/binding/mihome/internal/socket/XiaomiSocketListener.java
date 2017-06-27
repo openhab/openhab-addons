@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
  * Interface for a listener on the {@link XiaomiSocket}.
  * When it is registered on the socket, it gets called back each time, the {@link XiaomiSocket} receives data.
  *
- * @author Patrick Boos - Initial
+ * @author Patrick Boos - Initial contribution
  */
 public interface XiaomiSocketListener {
     /**

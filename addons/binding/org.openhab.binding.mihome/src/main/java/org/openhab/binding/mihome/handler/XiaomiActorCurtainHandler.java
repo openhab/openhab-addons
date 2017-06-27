@@ -30,6 +30,7 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiActorCurtainHandler.class);
     private String lastDirection;
+    private String itemId;
 
     public XiaomiActorCurtainHandler(Thing thing) {
         super(thing);

@@ -15,7 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Dieter Schmidt
+ * Abstract base class for controllable devices
+ *
+ * @author Dieter Schmidt - Initial contribution
  */
 public abstract class XiaomiActorBaseHandler extends XiaomiDeviceBaseHandler {
 
@@ -27,6 +29,6 @@ public abstract class XiaomiActorBaseHandler extends XiaomiDeviceBaseHandler {
 
     @Override
     void execute(ChannelUID channelUID, Command command) {
-        logger.debug("The binding does not parse this message yet, contact authors if you want it to");
+        logger.debug("The binding does not support this message yet, contact authors if you want it to");
     }
 }

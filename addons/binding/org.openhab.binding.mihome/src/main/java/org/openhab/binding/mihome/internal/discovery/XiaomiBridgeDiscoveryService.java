@@ -14,13 +14,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
+import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.mihome.handler.XiaomiBridgeHandler;
 import org.openhab.binding.mihome.internal.socket.XiaomiDiscoverySocket;
 import org.openhab.binding.mihome.internal.socket.XiaomiSocketListener;
 import org.slf4j.Logger;
@@ -34,16 +36,23 @@ import com.google.gson.JsonObject;
  * @author Patrick Boos - Initial contribution
  * @author Kuba Wolanin - logger fixes
  */
-public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService implements XiaomiSocketListener {
+public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService
+        implements XiaomiSocketListener, ExtendedDiscoveryService {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final int DISCOVERY_TIMEOUT_SEC = 10;
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiBridgeDiscoveryService.class);
     private XiaomiDiscoverySocket socket;
+    private DiscoveryServiceCallback discoveryServiceCallback;
 
     public XiaomiBridgeDiscoveryService() {
         super(SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SEC, false);
+    }
+
+    @Override
+    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
+        this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     @Override
@@ -52,31 +61,23 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService imple
         logger.debug("Start scan for bridges");
         socket.registerListener(this);
         discoverGateways();
-        waitUntilEnded();
-        socket.unregisterListener(this);
     }
 
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
+        logger.debug("Stop scan");
         removeOlderResults(getTimestampOfLastScan());
         if (socket != null) {
             socket.unregisterListener(this);
         }
     }
 
-    private void waitUntilEnded() {
-        final Semaphore discoveryEndedLock = new Semaphore(0);
-        scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                discoveryEndedLock.release();
-            }
-        }, DISCOVERY_TIMEOUT_SEC, TimeUnit.SECONDS);
-        try {
-            discoveryEndedLock.acquire();
-        } catch (InterruptedException e) {
-            logger.error("Discovery problem", e);
+    @Override
+    public void deactivate() {
+        super.deactivate();
+        if (socket != null) {
+            socket.unregisterListener(this);
         }
     }
 
@@ -86,6 +87,11 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService imple
         if (data.get("cmd").getAsString().equals("iam")) {
             getGatewayInfo(data);
         }
+    }
+
+    @Override
+    public int getScanTimeout() {
+        return DISCOVERY_TIMEOUT_SEC;
     }
 
     private void discoverGateways() {
@@ -105,8 +111,20 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService imple
         logger.debug("Discovered Xiaomi Gateway - sid: {} ip: {} port: {}", serialNumber, ipAddress, port);
 
         ThingUID thingUID = new ThingUID(THING_TYPE_BRIDGE, serialNumber);
-        thingDiscovered(
-                DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_BRIDGE).withProperties(properties)
-                        .withLabel("Xiaomi Gateway").withRepresentationProperty(SERIAL_NUMBER).build());
+
+        Thing existing = discoveryServiceCallback.getExistingThing(thingUID);
+        if (existing != null) {
+            logger.debug("Bridge {} already exists - asking it for devices", thingUID);
+            // "Thing " + thingUID.toString() + " already exists"
+            // Ask this bridge for connected devices
+            if (existing.getHandler() instanceof XiaomiBridgeHandler) {
+
+                ((XiaomiBridgeHandler) existing.getHandler()).discoverItems();
+            }
+        } else {
+            thingDiscovered(
+                    DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_BRIDGE).withProperties(properties)
+                            .withLabel("Xiaomi Gateway").withRepresentationProperty(SERIAL_NUMBER).build());
+        }
     }
 }

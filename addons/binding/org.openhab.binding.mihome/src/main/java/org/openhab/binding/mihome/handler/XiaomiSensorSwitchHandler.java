@@ -16,6 +16,8 @@ import org.openhab.binding.mihome.internal.ChannelMapper;
 import com.google.gson.JsonObject;
 
 /**
+ * Handles the Xiaomi smart switch device
+ *
  * @author Patrick Boos - Initial contribution
  */
 public class XiaomiSensorSwitchHandler extends XiaomiSensorBaseHandler {

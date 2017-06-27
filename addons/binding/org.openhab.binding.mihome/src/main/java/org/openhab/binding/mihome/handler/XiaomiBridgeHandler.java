@@ -17,7 +17,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +28,7 @@ import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -36,7 +36,6 @@ import org.openhab.binding.mihome.internal.EncryptionHelper;
 import org.openhab.binding.mihome.internal.XiaomiItemUpdateListener;
 import org.openhab.binding.mihome.internal.discovery.XiaomiItemDiscoveryService;
 import org.openhab.binding.mihome.internal.socket.XiaomiBridgeSocket;
-import org.openhab.binding.mihome.internal.socket.XiaomiSocket;
 import org.openhab.binding.mihome.internal.socket.XiaomiSocketListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ import com.google.gson.JsonParser;
 public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements XiaomiSocketListener {
 
     private static final int DISCOVERY_LOCK_TIME_MILLIS = 10000;
-    private static final int READ_ACK_RETENTION_MILLIS = 20000;
+    private static final int READ_ACK_RETENTION_MILLIS = 60 * 60 * 1000; // 2 hours
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final JsonParser PARSER = new JsonParser();
     private static Map<String, JsonObject> retentionBox = new ConcurrentHashMap<>();
@@ -68,7 +67,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
 
     private String gatewayToken;
     private long lastDiscoveryTime;
-    private Map<String, Long> lastOnlineMap = new HashMap<>();
+    private Map<String, Long> lastOnlineMap = new ConcurrentHashMap<>();
 
     private Configuration config;
     private InetAddress host;
@@ -93,20 +92,15 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             port = getConfigInteger(config, PORT);
         } catch (UnknownHostException e) {
             logger.warn("Bridge IP/PORT config is not set or not valid");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
-        if (XiaomiSocket.getOpenSockets().containsKey(port)) {
-            socket = (XiaomiBridgeSocket) XiaomiSocket.getOpenSockets().get(port);
-        } else {
-            socket = new XiaomiBridgeSocket(port);
-        }
+        logger.debug("Init socket on Port: {}", port);
+        socket = new XiaomiBridgeSocket(port);
         socket.registerListener(this);
 
-        scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                discoverItems();
-            }
+        scheduler.schedule(() -> {
+            discoverItems();
         }, 1, TimeUnit.SECONDS);
     }
 
@@ -219,7 +213,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             logger.warn("It's not allowed to pass a null XiaomiItemUpdateListener");
         } else if (listener instanceof XiaomiItemDiscoveryService) {
             result = !(itemDiscoveryListeners.contains(listener)) ? itemDiscoveryListeners.add(listener) : false;
-            logger.debug("Having {} Discovery listeners", itemDiscoveryListeners.size());
+            logger.debug("Having {} Item Discovery listeners", itemDiscoveryListeners.size());
         } else {
             logger.debug("Adding item listener for device {}", listener.getItemId());
             result = !(itemListeners.contains(listener)) ? itemListeners.add(listener) : false;
@@ -229,18 +223,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     }
 
     public synchronized boolean unregisterItemListener(XiaomiItemUpdateListener listener) {
-        boolean result = itemListeners.remove(listener);
-        if (result) {
-            checkForDevices();
-        }
-        return result;
-    }
-
-    private void checkForDevices() {
-        if (isInitialized()) {
-            logger.debug("Discovering all items");
-            discoverItems(); // this will as well send all items again to all listeners
-        }
+        return itemListeners.remove(listener);
     }
 
     private void sendMessageToBridge(String message) {
@@ -264,11 +247,11 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
         StringBuilder message = new StringBuilder("{");
         message.append("\"cmd\": \"").append(cmd).append("\"");
         if (sid != null) {
-            message.append("\"sid\": \"").append(sid).append("\"");
+            message.append(", \"sid\": \"").append(sid).append("\"");
         }
         if (keys != null) {
             for (int i = 0; i < keys.length; i++) {
-                message.append(",").append("\"").append(keys[i]).append("\"").append(": ");
+                message.append(", ").append("\"").append(keys[i]).append("\"").append(": ");
 
                 // write value
                 message.append(toJsonValue(values[i]));
@@ -353,12 +336,13 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     }
 
     public void discoverItems() {
-        if (System.currentTimeMillis() - lastDiscoveryTime > DISCOVERY_LOCK_TIME_MILLIS) {
+        long lockedFor = DISCOVERY_LOCK_TIME_MILLIS - (System.currentTimeMillis() - lastDiscoveryTime);
+        if (lockedFor <= 0) {
             logger.debug("Triggered discovery");
             sendCommandToBridge("get_id_list");
             lastDiscoveryTime = System.currentTimeMillis();
         } else {
-            logger.debug("Triggered unneccessary discovery");
+            logger.debug("Triggered discovery, but locked for {}ms", lockedFor);
         }
     }
 
@@ -370,7 +354,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     private void updateDeviceStatus(String sid) {
         if (sid != null) {
             lastOnlineMap.put(sid, System.currentTimeMillis());
-            logger.debug("Updated \"last time seen\" for device {}", sid);
+            logger.trace("Updated \"last time seen\" for device {}", sid);
         }
     }
 
