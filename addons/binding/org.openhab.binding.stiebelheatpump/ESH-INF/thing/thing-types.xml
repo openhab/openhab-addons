@@ -27,7 +27,19 @@
 	        <channel-group id="currentValues" typeId="channelGroupTypeCurrentValues"/>
             <channel-group id="operationCounters" typeId="channelGroupTypeOperationCounters"/>
             <channel-group id="nominalValues" typeId="channelGroupTypeNominalValues"/>
-
+            <channel-group id="ventilation" typeId="channelGroupTypeVentilation"/>
+            <channel-group id="heating1" typeId="channelGroupTypeHeating1"/>
+            <channel-group id="heating2" typeId="channelGroupTypeHeating2"/>
+            <channel-group id="evaporator1" typeId="channelGroupTypeEvaporator1"/>
+            <channel-group id="evaporator2" typeId="channelGroupTypeEvaporator2"/>
+            <channel-group id="circulationPump" typeId="channelGroupTypecirculationPump"/>
+            <channel-group id="heatingProgram" typeId="channelGroupTypeHeatingProgram"/>
+            <channel-group id="domesticHotWaterProgram" typeId="channelGroupTypeDomesticHotWaterProgram"/>
+            <channel-group id="ventilationProgram" typeId="channelGroupTypeVentilationProgram"/>
+            <channel-group id="absenceProgram" typeId="channelGroupTypeAbsenceProgram"/>
+            <channel-group id="restartAndMixerTime" typeId="channelGroupTypeRestartAndMixerTime"/>
+            <channel-group id="domesticHotWater" typeId="channelGroupTypeDomesticHotWater"/>
+            <channel-group id="LastErrors" typeId="channelGroupTypeLastErrors"/>
 	    </channel-groups>
         <properties>
              <property name="vendor">Stiebel Eltron</property>
@@ -68,7 +80,6 @@
             <channel-group id="currentValues" typeId="channelGroupTypeCurrentValues"/>
             <channel-group id="operationCounters" typeId="channelGroupTypeOperationCounters"/>
             <channel-group id="nominalValues" typeId="channelGroupTypeNominalValues"/>
-
         </channel-groups>
         <properties>
              <property name="vendor">Stiebel Eltron</property>
@@ -109,7 +120,6 @@
             <channel-group id="currentValues" typeId="channelGroupTypeCurrentValues"/>
             <channel-group id="operationCounters" typeId="channelGroupTypeOperationCounters"/>
             <channel-group id="nominalValues" typeId="channelGroupTypeNominalValues"/>
-
         </channel-groups>
         <properties>
              <property name="vendor">Stiebel Eltron</property>
@@ -155,12 +165,14 @@
                     <property name="scale">0.01</property>
                 </properties>
             </channel>
+            <channel id="dumpResponse" typeId="dumpResponse"/>
 	    </channels>
 	</channel-group-type>
     <channel-group-type id="channelGroupTypeTime" advanced="true" >
         <label>Time</label>
         <description>Date and time information of heat pump</description>
-        <channels >
+        <channels>
+            <channel id="setTime" typeId="setTime"/>
             <channel id="weekday" typeId="weekday">
                 <properties>
                     <property name="dataType">Settings</property>
@@ -168,10 +180,6 @@
                     <property name="position">5</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="min">1</property>
-                    <property name="max">6</property>
-                    <property name="step">1.0</property>
-                    <property name="unit">d</property>
                 </properties>
             </channel>
             <channel id="hours" typeId="hours" >
@@ -181,10 +189,6 @@
                     <property name="position">6</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="min">0</property>
-                    <property name="max">23</property>
-                    <property name="step">1.0</property>
-                    <property name="unit">h</property>
                 </properties>
             </channel>
             <channel id="minutes" typeId="minutes" >
@@ -194,10 +198,6 @@
                     <property name="position">7</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="min">0</property>
-                    <property name="max">59</property>
-                    <property name="step">1.0</property>
-                    <property name="unit">min</property>
                 </properties>
             </channel>
             <channel id="seconds" typeId="seconds" >
@@ -207,10 +207,6 @@
                     <property name="position">8</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="min">0</property>
-                    <property name="max">59</property>
-                    <property name="step">1.0</property>
-                    <property name="unit">s</property>
                 </properties>
             </channel>
             <channel id="year" typeId="year" >
@@ -220,10 +216,6 @@
                     <property name="position">9</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="min">0</property>
-                    <property name="max">99</property>
-                    <property name="step">1.0</property>
-                    <property name="unit">YY</property>
                 </properties>
             </channel>
             <channel id="month" typeId="month" >
@@ -233,10 +225,6 @@
                     <property name="position">11</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="min">1</property>
-                    <property name="max">12</property>
-                    <property name="step">1.0</property>
-                    <property name="unit">MM</property>
                 </properties>
             </channel>
             <channel id="day" typeId="day" >
@@ -246,10 +234,6 @@
                     <property name="position">12</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="min">1</property>
-                    <property name="max">31</property>
-                    <property name="step">1.0</property>
-                    <property name="unit">DD</property>
                 </properties>
             </channel>
         </channels>
@@ -267,7 +251,6 @@
                     <property name="position">4</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="outsideTemperatur" typeId="temperature">
@@ -279,7 +262,6 @@
                     <property name="position">6</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="flowTemperatur" typeId="temperature">
@@ -291,7 +273,6 @@
                     <property name="position">8</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="returnTemperatur" typeId="temperature">
@@ -303,7 +284,6 @@
                     <property name="position">10</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="hotGasTemperatur" typeId="temperature">
@@ -315,7 +295,6 @@
                     <property name="position">12</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="dHWTemperatur" typeId="temperature">
@@ -327,31 +306,28 @@
                     <property name="position">14</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="flowHC2Temperatur" typeId="temperature">
-                <label>Cylinder temperature</label>
-                <description>Cylinder temperature</description>
+                <label>Flow temperature HC2</label>
+                <description>Flow temperature HC2</description>
                 <properties>
                     <property name="dataType">Sensor</property>
                     <property name="requestByte">0xfb</property>
                     <property name="position">16</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="insideTemperatur" typeId="temperature">
-                <label>Cylinder temperature</label>
-                <description>Cylinder temperature</description>
+                <label>Inside temperature</label>
+                <description>Inside temperature</description>
                 <properties>
                     <property name="dataType">Sensor</property>
                     <property name="requestByte">0xfb</property>
                     <property name="position">18</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="evaporatorTemperatur" typeId="temperature">
@@ -363,7 +339,6 @@
                     <property name="position">20</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="condenserTemperature" typeId="temperature">
@@ -375,7 +350,6 @@
                     <property name="position">22</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
             <channel id="extractFanSpeed" typeId="speed">
@@ -387,7 +361,6 @@
                     <property name="position">30</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="unit">%</property>
                 </properties>
             </channel>
             <channel id="supplyFanSpeed" typeId="speed">
@@ -399,7 +372,6 @@
                     <property name="position">31</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="unit">rpm</property>
                 </properties>
             </channel>
             <channel id="exhaustFanSpeed" typeId="speed">
@@ -411,7 +383,6 @@
                     <property name="position">32</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="unit">%</property>
                 </properties>
             </channel>
             <channel id="filteredOutsideTemperatur" typeId="temperature">
@@ -423,7 +394,6 @@
                     <property name="position">34</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
                 </properties>
             </channel>
         </channels>
@@ -441,7 +411,6 @@
                     <property name="position">4</property>
                     <property name="length">2</property>
                     <property name="scale">1.0</property>
-                    <property name="unit">h</property>
                 </properties>
             </channel>
             <channel id="compressorB" typeId="hourCounter">
@@ -453,7 +422,6 @@
                     <property name="position">6</property>
                     <property name="length">2</property>
                     <property name="scale">1.0</property>
-                    <property name="unit">h</property>
                 </properties>
             </channel>
             <channel id="heatingMode" typeId="hourCounter">
@@ -465,7 +433,6 @@
                     <property name="position">8</property>
                     <property name="length">2</property>
                     <property name="scale">1.0</property>
-                    <property name="unit">h</property>
                 </properties>
             </channel>    
             <channel id="dHWMode" typeId="hourCounter">
@@ -477,7 +444,6 @@
                     <property name="position">10</property>
                     <property name="length">2</property>
                     <property name="scale">1.0</property>
-                    <property name="unit">h</property>
                 </properties>
             </channel>    
             <channel id="coolingMode" typeId="hourCounter">
@@ -489,7 +455,6 @@
                     <property name="position">12</property>
                     <property name="length">2</property>
                     <property name="scale">1.0</property>
-                    <property name="unit">h</property>
                 </properties>
             </channel>    
         </channels>
@@ -507,10 +472,6 @@
                     <property name="position">4</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
-                    <property name="min">10</property>
-                    <property name="max">30</property>
-                    <property name="step">0.1</property>
                 </properties>
             </channel>
             <channel id="p02RoomTemperatureSetbackMode" typeId="temperatureSetting">
@@ -522,10 +483,6 @@
                     <property name="position">6</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
-                    <property name="min">10</property>
-                    <property name="max">30</property>
-                    <property name="step">0.1</property>
                 </properties>
             </channel>
             <channel id="p03RoomTemperatureStandby" typeId="temperatureSetting">
@@ -537,10 +494,7 @@
                     <property name="position">8</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
-                    <property name="min">10</property>
-                    <property name="max">30</property>
-                    <property name="step">0.1</property>                </properties>
+                </properties>
             </channel>
             <channel id="p04DHWTemperatureStandardMode" typeId="temperatureSetting">
                 <label>P04 Domestic hot water temperature standard</label>
@@ -551,10 +505,7 @@
                     <property name="position">10</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
-                    <property name="min">10</property>
-                    <property name="max">55</property>
-                    <property name="step">0.1</property>                </properties>
+                </properties>
             </channel>
             <channel id="p05DHWTemperaturSetbackMode" typeId="temperatureSetting">
                 <label>P05 Domestic hot water temperature set back</label>
@@ -565,10 +516,7 @@
                     <property name="position">12</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
-                    <property name="min">10</property>
-                    <property name="max">55</property>
-                    <property name="step">0.1</property>                </properties>
+                </properties>
             </channel>
             <channel id="p06DHWTemperatureStandby" typeId="temperatureSetting">
                 <label>P06 Domestic hot water temperature set back</label>
@@ -579,10 +527,7 @@
                     <property name="position">14</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
-                    <property name="min">10</property>
-                    <property name="max">55</property>
-                    <property name="step">0.1</property>                </properties>
+                </properties>
             </channel>
             <channel id="p07FanStageStandardMode" typeId="fanStageSetting">
                 <label>P07 Fan stage standard</label>
@@ -594,10 +539,6 @@
                     <property name="position">16</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="unit"></property>
-                    <property name="min">0</property>
-                    <property name="max">3</property>
-                    <property name="step">1.0</property>
                 </properties>
             </channel>
             <channel id="p08FanStageSetbackMode" typeId="fanStageSetting">
@@ -609,10 +550,6 @@
                     <property name="position">17</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="unit"></property>
-                    <property name="min">0</property>
-                    <property name="max">3</property>
-                    <property name="step">1.0</property>
                 </properties>
             </channel>
             <channel id="p09FanStageStandby" typeId="fanStageSetting">
@@ -624,10 +561,6 @@
                     <property name="position">18</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="unit"></property>
-                    <property name="min">0</property>
-                    <property name="max">3</property>
-                    <property name="step">1.0</property>
                 </properties>
             </channel>
             <channel id="p10HeatingCircuitTemperatureManual" typeId="temperatureManualSetting">
@@ -639,10 +572,6 @@
                     <property name="position">19</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
-                    <property name="min">10</property>
-                    <property name="max">65</property>
-                    <property name="step">0.1</property>
                 </properties>
             </channel>
             <channel id="p11DHWTemperatureManual" typeId="temperatureManualSetting">
@@ -654,10 +583,6 @@
                     <property name="position">21</property>
                     <property name="length">2</property>
                     <property name="scale">0.1</property>
-                    <property name="unit">°C</property>
-                    <property name="min">10</property>
-                    <property name="max">65</property>
-                    <property name="step">0.1</property>
                 </properties>
             </channel>
             <channel id="p12FanStageManual" typeId="fanStageSetting">
@@ -669,20 +594,1547 @@
                     <property name="position">23</property>
                     <property name="length">1</property>
                     <property name="scale">1.0</property>
-                    <property name="unit"></property>
-                    <property name="min">0</property>
-                    <property name="max">3</property>
-                    <property name="step">1.0</property>
                 </properties>
             </channel>
         </channels>
     </channel-group-type>
-
+    <channel-group-type id="channelGroupTypeVentilation" advanced="true">
+        <label>Settings ventilation</label>
+        <description>Reads ventilation settings of the heat pump.</description>
+        <channels >
+            <channel id="p37FanStageSupplyAir1" typeId="fanStageSettingAir">
+                <label>P37 Fan stage 1 supply air</label>
+                <description>P37 Fan stage 1 supply air setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p38FanStageSupplyAir2" typeId="fanStageSettingAir">
+                <label>P38 Fan stage 2 supply air</label>
+                <description>P38 Fan stage 2 supply air setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p39FanStageSupplyAir3" typeId="fanStageSettingAir">
+                <label>P39 Fan stage 3 supply air</label>
+                <description>P39 Fan stage 3 supply air setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">8</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p40FanStageExtractAir1" typeId="fanStageSettingAir">
+                <label>P40 Fan stage 1 extract air</label>
+                <description>P40 Fan stage 1 extract air setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p41FanStageExtractAir2" typeId="fanStageSettingAir">
+                <label>P41 Fan stage 2 extract air</label>
+                <description>P41 Fan stage 2 extract air setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">12</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p42FanStageExtractAir3" typeId="fanStageSettingAir">
+                <label>P42 Fan stage 3 extract air</label>
+                <description>P42 Fan stage 3 extract air setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">14</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p43VentilationTimeUnscheduledStage3" typeId="ventilationTimeUnscheduled">
+                <label>P43 Unscheduled ventilation time stage 3</label>
+                <description>P43 Unscheduled ventilation time stage 3 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">16</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p44VentilationTimeUnscheduledStage2" typeId="ventilationTimeUnscheduled">
+                <label>P44 Unscheduled ventilation time stage 2</label>
+                <description>P44 Unscheduled ventilation time stage 2 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">18</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p45VentilationTimeUnscheduledStage1" typeId="ventilationTimeUnscheduled">
+                <label>P45 Unscheduled ventilation time stage 1</label>
+                <description>P45 Unscheduled ventilation time stage 1 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">20</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p46VentilationTimeUnscheduledStage0" typeId="ventilationTimeUnscheduled">
+                <label>P46 Unscheduled ventilation time stage 0</label>
+                <description>P46 Unscheduled ventilation time stage 0 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">22</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p75OperatingModePassiveCooling" typeId="operatingModePassiveCooling">
+                <label>P75 Operating mode passive cooling</label>
+                <description>P75 Operating mode passive cooling setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">24</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="stoveFireplaceOperation" typeId="stoveFireplaceOperation">
+                <label>Stove fireplace operation</label>
+                <description>Stove fireplace operation</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x01</property>
+                    <property name="position">24</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+        </channels>
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeHeating1" advanced="true" >
+        <label>Settings heating 1</label>
+        <description>Reads heating 1 settings of the heat pump.</description>
+        <channels >
+            <channel id="p13IncreaseHeatingHC1" typeId="increaseHeating">
+                <label>P13 Increase heating HC1</label>
+                <description>P13 Increase heating HC1 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p14LowEndPointHeatingHC1" typeId="lowEndPointHeating">
+                <label>P14 Low end point heating HC1</label>
+                <description>P14 Low end point heating HC1 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p15RoomInfluenceHeatingHC1" typeId="roomInfluenceHeating">
+                <label>P15 Room influence heating HC1</label>
+                <description>P15 Room influence heating HC1 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">8</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p16IncreaseHeatingHC2" typeId="increaseHeating">
+                <label>P16 Increase heating HC2</label>
+                <description>P16 Increase heating HC2 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">10</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p17LowEndPointHeatingHC2" typeId="lowEndPointHeating">
+                <label>P17 Low end point heating HC2</label>
+                <description>P17 Low end point heating HC2 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">11</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p18RoomInfluenceHeatingHC2" typeId="roomInfluenceHeating">
+                <label>P18 Room influence heating HC2</label>
+                <description>P18 Room influence heating HC2 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">13</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p19TemperatureCaptureReturnFlowHC1" typeId="temperatureCaptureReturnFlow">
+                <label>P19 Temperature capture return flow HC1</label>
+                <description>P19 Temperature capture return flow HC1 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">15</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p20TemperatureCaptureReturnFlowHC2" typeId="temperatureCaptureReturnFlow">
+                <label>P20 Temperature capture return flow HC2</label>
+                <description>P20 Temperature capture return flow HC2 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">16</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="maxSetHeatingCircuitTemperatureHC1" typeId="maxSetHeatingCircuitTemperature">
+                <label>Max Set heating circuit temperature HC1</label>
+                <description>Max Set heating circuit temperature HC1 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">18</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="minSetHeatingCircuitTemperatureHC1" typeId="minSetHeatingCircuitTemperature">
+                <label>Min Set heating circuit temperature HC1</label>
+                <description>Min Set heating circuit temperature HC1 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">20</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="maxSetHeatingCircuitTemperatureHC2" typeId="maxSetHeatingCircuitTemperature">
+                <label>Max Set heating circuit temperature HC2</label>
+                <description>Max Set heating circuit temperature HC2 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">22</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="minSetHeatingCircuitTemperatureHC2" typeId="minSetHeatingCircuitTemperature">
+                <label>Min Set heating circuit temperature HC2</label>
+                <description>Min Set heating circuit temperature HC2 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x05</property>
+                    <property name="position">24</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+        </channels>
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeHeating2" advanced="true" >
+        <label>Settings heating 2</label>
+        <description>Reads heating 2 settings of the heat pump.</description>
+        <channels >
+            <channel id="p21HysteresisHeating1" typeId="hysteresisHeatingWide">
+                <label>P21 Hysteresis heating stage 1</label>
+                <description>P21 Hysteresis heating stage 1 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">4</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p22HysteresisHeating2" typeId="hysteresisHeatingWide">
+                <label>P22 Hysteresis heating stage 2</label>
+                <description>P22 Hysteresis heating stage 2 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">5</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p23HysteresisHeating3" typeId="hysteresisHeatingNarrow">
+                <label>P23 Hysteresis heating stage 3</label>
+                <description>P23 Hysteresis heating stage 3 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">6</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p24HysteresisHeating4" typeId="hysteresisHeatingNarrow">
+                <label>P24 Hysteresis heating stage 4</label>
+                <description>P24 Hysteresis heating stage 4 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">7</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p25HysteresisHeating5" typeId="hysteresisHeatingNarrow">
+                <label>P25 Hysteresis heating stage 5</label>
+                <description>P25 Hysteresis heating stage 5 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p26HysteresisHeating6" typeId="hysteresisHeatingNarrow">
+                <label>P26 Hysteresis heating stage 6</label>
+                <description>P25 Hysteresis heating stage 6 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">9</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p27HysteresisHeating7" typeId="hysteresisHeatingNarrow">
+                <label>P27 Hysteresis heating stage 7</label>
+                <description>P27 Hysteresis heating stage 7 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">10</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p28HysteresisHeating8" typeId="hysteresisHeatingNarrow">
+                <label>P28 Hysteresis heating stage 8</label>
+                <description>P28 Hysteresis heating stage 8 setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">11</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p29SwitchingHysteresisAsymmetry" typeId="hysteresisHeatingSwitching">
+                <label>P29 Switching hysteresis asymmetry</label>
+                <description>P29 Switching hysteresis asymmetry setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">12</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>  
+            <channel id="p30SwitchingValueIntegralPortionHeating" typeId="switchingValueIntegralPortionHeating">
+                <label>P30 Switching value integral portion heating</label>
+                <description>P30 Switching value integral portion heating setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">13</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>  
+            <channel id="p31AmountOfUnlockedElectricalBoosterStages" typeId="fanStageSetting">
+                <label>P31 Amount of unlocked electrical booster stages</label>
+                <description>P31 Amount of unlocked electrical booster stages setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">15</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>  
+            <channel id="maxFlowTemperatureHeatingMode" typeId="maxFlowTemperatureSetting">
+                <label>Maximum flow temperature heating mode</label>
+                <description>Maximum flow temperature heating mode setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">16</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>                        
+            <channel id="p49ChangeoverTemperatureSummerWinter" typeId="changeoverTemperatureSummerWinter">
+                <label>P49 Change over temperature Summer Winter</label>
+                <description>P49 Change over temperature Summer Winter setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">18</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>                       
+            <channel id="p50HysteresisChangeoverTemperatureSummerWinter" typeId="hysteresisChangeoverTemperatureSummerWinter">
+                <label>P50 Hysteresis change over temperature Summer Winter</label>
+                <description>P50 Hysteresis change over temperature Summer Winter setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">20</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel> 
+            <channel id="p77OutsideTemperatureAdjustment" typeId="outsideTemperatureAdjustment">
+                <label>P77 Outside temperature adjustment</label>
+                <description>P77 Outside temperature adjustment setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">22</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel> 
+            <channel id="p78BivalencePoint" typeId="bivalencePoint">
+                <label>P78 Bivalence point</label>
+                <description>P78 Bivalence point setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">24</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel> 
+            <channel id="p79DelayedEnableReheating" typeId="delayedEnableReheating">
+                <label>P79 Delayed enable re-heating</label>
+                <description>P79 Delayed enable re-heating setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">26</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel> 
+            <channel id="outputElectricalHeatingStage1" typeId="outputElectricalHeatingStage">
+                <label>P79 Delayed enable re-heating</label>
+                <description>P79 Delayed enable re-heating setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x06</property>
+                    <property name="position">27</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>                
+            </channel>             
+        </channels>
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeEvaporator1" advanced="true" >
+        <label>Settings Evaporator 1</label>
+        <description>Reads Evaporator 1 settings of the heat pump.</description>
+        <channels >
+            <channel id="upperLimitEvaporatorTemperatureForDefrostEnd" typeId="temperaturLimitEvaporator">
+                <label>Upper limit evaporator temperature for defrost end</label>
+                <description>Upper limit evaporator temperature for defrost end setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x03</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="maxEvaporatorDefrostTime" typeId="maxEvaporatorDefrostTime">
+                <label>Max evaporator defrost time</label>
+                <description>Max evaporator defrost time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x03</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="limitTemperatureCondenserElectricalReheating" typeId="temperaturLimitEvaporator">
+                <label>Max evaporator defrost time</label>
+                <description>Max evaporator defrost time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x03</property>
+                    <property name="position">8</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="limitTemperatureCondenserDefrostTermination" typeId="temperaturLimitCondenser">
+                <label>Limit temperature condenser defrost termination</label>
+                <description>Limit temperature condenser defrost termination setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x03</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p47CompressorRestartDelay" typeId="compressorRestartDelayTime">
+                <label>P47 Compressor restart delay</label>
+                <description>P47 Compressor restart delay setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x03</property>
+                    <property name="position">12</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p48ExhaustFanSpeed" typeId="exhaustFanSpeed">
+                <label>P48 Exhaust fan speed</label>
+                <description>P48 Exhaust fan speed setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x03</property>
+                    <property name="position">13</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>            
+        </channels>
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeEvaporator2" advanced="true" >
+        <label>Settings Evaporator 2</label>
+        <description>Reads Evaporator 2 settings of the heat pump.</description>
+        <channels >
+            <channel id="maxDefrostDurationAAExchanger" typeId="compressorRestartDelayTime">
+                <label>Max defrost duration AA exchanger</label>
+                <description>Max defrost duration AA exchanger setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x04</property>
+                    <property name="position">4</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="defrostStartThreshold" typeId="defrostStartThreshold">
+                <label>Defrost start threshold</label>
+                <description>Defrost start threshold setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x04</property>
+                    <property name="position">5</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>            
+            <channel id="volumeFlowFilterReplacement" typeId="volumeFlowFilterReplacement">
+                <label>Volume flow filter replacement</label>
+                <description>Volume flow filter replacement setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x04</property>
+                    <property name="position">7</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p85DefrostModeAAHE" typeId="defrostModeAAHE">
+                <label>P85 Defrost mode AA HE</label>
+                <description>P85 Defrost mode AA HE setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x04</property>
+                    <property name="position">9</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>                        
+        </channels>        
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypecirculationPump" advanced="true" >
+        <label>Settings Circulation Pump</label>
+        <description>Reads Circulation Pump settings of the heat pump.</description>
+        <channels >
+            <channel id="p54minStartupCycles" typeId="minStartupCycles">
+                <label>P54 minimum startup cycles</label>
+                <description>P54 minimum startup cycles setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0A</property>
+                    <property name="position">4</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p55maxStartupCycles" typeId="maxStartupCycles">
+                <label>P55 max startup cycles</label>
+                <description>P55 max startup cycles setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0A</property>
+                    <property name="position">5</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p56OutsideTemperatureMinHeatingCycles" typeId="outsideTemperatureMinHeatingCycles">
+                <label>P56 Outside temperature min heating cycles</label>
+                <description>P56 Outside temperature min heating cycles</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0A</property>
+                    <property name="position">7</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p57OutsideTemperatureMaxHeatingCycles" typeId="outsideTemperatureMaxHeatingCycles">
+                <label>P56 Outside temperature max heating cycles</label>
+                <description>P56 Outside temperature max heating cycles</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0A</property>
+                    <property name="position">9</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="P58SuppressTemperatureCaptureDuringPumpStart" typeId="outsideTemperatureMinHeatingCycles">
+                <label>P58 Suppress temperature capture during pump start</label>
+                <description>P58 Suppress temperature capture during pump start</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0A</property>
+                    <property name="position">11</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+        </channels>        
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeHeatingProgram" advanced="true" >
+        <label>Settings Heating Program</label>
+        <description>Reads Heating Program settings of the heat pump.</description>
+        <channels >
+            <channel id="hP1StartTime" typeId="timeSetting">
+                <label>HP1 Start time</label>
+                <description>HP1 Start time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="hP1StopTime" typeId="timeSetting">
+                <label>HP1 Stop time</label>
+                <description>HP1 Stop time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="hP1Monday" typeId="switchSetting">
+                <label>HP1 Monday</label>
+                <description>HP1 Monday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">7</property>
+                </properties>
+            </channel>
+            <channel id="hP1Tuesday" typeId="switchSetting">
+                <label>HP1 Tuesday</label>
+                <description>HP1 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">6</property>
+                </properties>
+            </channel>
+            <channel id="hP1Wednesday" typeId="switchSetting">
+                <label>HP1 Tuesday</label>
+                <description>HP1 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">5</property>
+                </properties>
+            </channel>            
+            <channel id="hP1Thursday" typeId="switchSetting">
+                <label>HP1 Thursday</label>
+                <description>HP1 Thursday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">4</property>
+                </properties>
+            </channel> 
+            <channel id="hP1Friday" typeId="switchSetting">
+                <label>HP1 Friday</label>
+                <description>HP1 Friday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">3</property>
+                </properties>
+            </channel> 
+            <channel id="hP1Saturday" typeId="switchSetting">
+                <label>HP1 Saturday</label>
+                <description>HP1 Saturday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">2</property>
+                </properties>
+            </channel> 
+            <channel id="hP1Sunday" typeId="switchSetting">
+                <label>HP1 Sunday</label>
+                <description>HP1 Sunday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">1</property>
+                </properties>
+            </channel> 
+            <channel id="hP1Enabled" typeId="switchSetting">
+                <label>HP1 Enabled</label>
+                <description>HP1 Enabled setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">9</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel> 
+            <channel id="hP2StartTime" typeId="timeSetting">
+                <label>HP2 Start time</label>
+                <description>HP2 Start time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="hP2StopTime" typeId="timeSetting">
+                <label>HP2 Stop time</label>
+                <description>HP2 Stop time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">12</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="hP2Monday" typeId="switchSetting">
+                <label>HP2 Monday</label>
+                <description>HP2 Monday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">7</property>
+                </properties>
+            </channel>
+            <channel id="hP2Tuesday" typeId="switchSetting">
+                <label>HP2 Tuesday</label>
+                <description>HP2 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">6</property>
+                </properties>
+            </channel>
+            <channel id="hP2Wednesday" typeId="switchSetting">
+                <label>HP2 Tuesday</label>
+                <description>HP2 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">5</property>
+                </properties>
+            </channel>            
+            <channel id="hP2Thursday" typeId="switchSetting">
+                <label>HP2 Thursday</label>
+                <description>HP2 Thursday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">4</property>
+                </properties>
+            </channel> 
+            <channel id="hP2Friday" typeId="switchSetting">
+                <label>HP2 Friday</label>
+                <description>HP2 Friday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">3</property>
+                </properties>
+            </channel> 
+            <channel id="hP2Saturday" typeId="switchSetting">
+                <label>HP2 Saturday</label>
+                <description>HP2 Saturday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">2</property>
+                </properties>
+            </channel> 
+            <channel id="hP2Sunday" typeId="switchSetting">
+                <label>HP2 Sunday</label>
+                <description>HP2 Sunday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">1</property>
+                </properties>
+            </channel> 
+            <channel id="hP2Enabled" typeId="switchSetting">
+                <label>HP2 Enabled</label>
+                <description>HP2 Enabled setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0B</property>
+                    <property name="position">15</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>             
+        </channels>        
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeDomesticHotWaterProgram" advanced="true" >
+        <label>Settings Domestic Hot Water Program</label>
+        <description>Reads Domestic Hot Water Program settings of the heat pump.</description>
+        <channels >
+            <channel id="bP1StartTime" typeId="timeSetting">
+                <label>BP1 Start time</label>
+                <description>BP1 Start time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="bP1StopTime" typeId="timeSetting">
+                <label>BP1 Stop time</label>
+                <description>BP1 Stop time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="bP1Monday" typeId="switchSetting">
+                <label>BP1 Monday</label>
+                <description>BP1 Monday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">7</property>
+                </properties>
+            </channel>
+            <channel id="bP1Tuesday" typeId="switchSetting">
+                <label>BP1 Tuesday</label>
+                <description>BP1 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">6</property>
+                </properties>
+            </channel>
+            <channel id="bP1Wednesday" typeId="switchSetting">
+                <label>BP1 Tuesday</label>
+                <description>BP1 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">5</property>
+                </properties>
+            </channel>            
+            <channel id="bP1Thursday" typeId="switchSetting">
+                <label>BP1 Thursday</label>
+                <description>BP1 Thursday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">4</property>
+                </properties>
+            </channel> 
+            <channel id="bP1Friday" typeId="switchSetting">
+                <label>BP1 Friday</label>
+                <description>BP1 Friday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">3</property>
+                </properties>
+            </channel> 
+            <channel id="bP1Saturday" typeId="switchSetting">
+                <label>BP1 Saturday</label>
+                <description>BP1 Saturday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">2</property>
+                </properties>
+            </channel> 
+            <channel id="bP1Sunday" typeId="switchSetting">
+                <label>BP1 Sunday</label>
+                <description>BP1 Sunday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">1</property>
+                </properties>
+            </channel> 
+            <channel id="bP1Enabled" typeId="switchSetting">
+                <label>BP1 Enabled</label>
+                <description>BP1 Enabled setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0C</property>
+                    <property name="position">9</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel> 
+        </channels>        
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeVentilationProgram" advanced="true" >
+        <label>Settings Ventilation Program</label>
+        <description>Reads Ventilation Program settings of the heat pump.</description>
+        <channels >
+            <channel id="lP1StartTime" typeId="timeSetting">
+                <label>LP1 Start time</label>
+                <description>LP1 Start time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="lP1StopTime" typeId="timeSetting">
+                <label>LP1 Stop time</label>
+                <description>LP1 Stop time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="lP1Monday" typeId="switchSetting">
+                <label>LP1 Monday</label>
+                <description>LP1 Monday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">7</property>
+                </properties>
+            </channel>
+            <channel id="lP1Tuesday" typeId="switchSetting">
+                <label>LP1 Tuesday</label>
+                <description>LP1 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">6</property>
+                </properties>
+            </channel>
+            <channel id="lP1Wednesday" typeId="switchSetting">
+                <label>LP1 Tuesday</label>
+                <description>LP1 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">5</property>
+                </properties>
+            </channel>            
+            <channel id="lP1Thursday" typeId="switchSetting">
+                <label>LP1 Thursday</label>
+                <description>LP1 Thursday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">4</property>
+                </properties>
+            </channel> 
+            <channel id="lP1Friday" typeId="switchSetting">
+                <label>LP1 Friday</label>
+                <description>LP1 Friday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">3</property>
+                </properties>
+            </channel> 
+            <channel id="lP1Saturday" typeId="switchSetting">
+                <label>LP1 Saturday</label>
+                <description>LP1 Saturday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">2</property>
+                </properties>
+            </channel> 
+            <channel id="lP1Sunday" typeId="switchSetting">
+                <label>LP1 Sunday</label>
+                <description>LP1 Sunday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">1</property>
+                </properties>
+            </channel> 
+            <channel id="lP1Enabled" typeId="switchSetting">
+                <label>LP1 Enabled</label>
+                <description>LP1 Enabled setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">9</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel> 
+            <channel id="lP2StartTime" typeId="timeSetting">
+                <label>LP2 Start time</label>
+                <description>LP2 Start time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="lP2StopTime" typeId="timeSetting">
+                <label>LP2 Stop time</label>
+                <description>LP2 Stop time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">12</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="lP2Monday" typeId="switchSetting">
+                <label>LP2 Monday</label>
+                <description>LP2 Monday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">7</property>
+                </properties>
+            </channel>
+            <channel id="lP2Tuesday" typeId="switchSetting">
+                <label>LP2 Tuesday</label>
+                <description>LP2 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">6</property>
+                </properties>
+            </channel>
+            <channel id="lP2Wednesday" typeId="switchSetting">
+                <label>LP2 Tuesday</label>
+                <description>LP2 Tuesday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">5</property>
+                </properties>
+            </channel>            
+            <channel id="lP2Thursday" typeId="switchSetting">
+                <label>LP2 Thursday</label>
+                <description>LP2 Thursday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">4</property>
+                </properties>
+            </channel> 
+            <channel id="lP2Friday" typeId="switchSetting">
+                <label>LP2 Friday</label>
+                <description>LP2 Friday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">3</property>
+                </properties>
+            </channel> 
+            <channel id="lP2Saturday" typeId="switchSetting">
+                <label>LP2 Saturday</label>
+                <description>LP2 Saturday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">2</property>
+                </properties>
+            </channel> 
+            <channel id="lP2Sunday" typeId="switchSetting">
+                <label>LP2 Sunday</label>
+                <description>LP2 Sunday setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">14</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                    <property name="bitPosition">1</property>
+                </properties>
+            </channel> 
+            <channel id="lP2Enabled" typeId="switchSetting">
+                <label>LP2 Enabled</label>
+                <description>LP2 Enabled setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0D</property>
+                    <property name="position">15</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>             
+        </channels>        
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeAbsenceProgram" advanced="true" >
+        <label>Settings Absence Program</label>
+        <description>Reads Absence Program settings of the heat pump.</description>
+        <channels >
+            <channel id="aP0DurationUntilAbsenceStart" typeId="timeAp0Setting">
+                <label>Absence duration time</label>
+                <description>Absence duration time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0F</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="aP0AbsenceDuration" typeId="timeAp0Setting">
+                <label>Absence Duration</label>
+                <description>Absence duration time setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0F</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="aP0EnableAbsenceProgram" typeId="switchSetting">
+                <label>Enable Absence Program</label>
+                <description>Enable Absence Program</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0F</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+        </channels>        
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeRestartAndMixerTime" advanced="true" >
+        <label>Restart and mixer time</label>
+        <description>Read restart and mixer time setting values.</description>
+        <channels >
+            <channel id="p59RestartBeforeSetbackEnd" typeId="restartBeforSetbackEnd">
+                <label>P59 Restart before set back ends</label>
+                <description>P59 Restart before set back ends setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0E</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="mixerProportionalRange" typeId="mixerProportionalRange">
+                <label>Mixer Proportional Range</label>
+                <description>Mixer Proportional Range setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0E</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="derivativeMixerTime" typeId="derivativeMixerTime">
+                <label>Derivative Mixer Time</label>
+                <description>Derivative Mixer Time</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0E</property>
+                    <property name="position">8</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="mixerTimeInterval" typeId="mixerTimeInterval">
+                <label>Mixer Time Interval</label>
+                <description>Mixer Time Interval</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x0E</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+        </channels>        
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeDomesticHotWater" advanced="true" >
+        <label>Domestic Hot Water setting</label>
+        <description>Read Domestic Water setting values.</description>
+        <channels >
+            <channel id="p32StartupHysteresisDHWTemperature" typeId="startupHysteresisDHWTemperature">
+                <label>P32 Startup Hysteresis DHW Temperature</label>
+                <description>P32 Startup Hysteresis DHW Temperature setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x07</property>
+                    <property name="position">4</property>
+                    <property name="length">1</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p33TimeDelayElectricalReheating" typeId="timeDelayElectricalReheating">
+                <label>P33 Time Delay Electrical Re-heating</label>
+                <description>P33 Time Delay Electrical Re-heating setting</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x07</property>
+                    <property name="position">5</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p34OutsideTemperatureLimitForElectricalReheating" typeId="limitForElectricalReheating">
+                <label>P34 Outside Temperature limit for Electrical Re-heating</label>
+                <description>P34 Outside Temperature limit for Electrical Re-heating</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x07</property>
+                    <property name="position">6</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="p35PasteurisationInterval" typeId="pasteurisationInterval">
+                <label>P35 Pasteurization Interval</label>
+                <description>P35 Pasteurization Interval</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x07</property>
+                    <property name="position">8</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="p36MaxDurationDHWLoading" typeId="maxDurationDHWLoading">
+                <label>P36 Max Duration DHW Loading</label>
+                <description>P36 Max Duration DHW Loading</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x07</property>
+                    <property name="position">9</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="pasteurisationHeatupTemperature" typeId="pasteurisationHeatupTemperature">
+                <label>Pasteurization Heat-up Temperature</label>
+                <description>Pasteurization Heat-up Temperature</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x07</property>
+                    <property name="position">10</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>
+            <channel id="noOfEnabledElectricalReheatStagesDHWLoading" typeId="noOfEnabledElectricalReheatStagesDHWLoading">
+                <label>No Of Enabled Electrical Re-heat Stages DHW Loading</label>
+                <description>No Of Enabled Electrical Re-heat Stages DHW Loading</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x07</property>
+                    <property name="position">12</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>                        
+            <channel id="maxFlowTemperatureDHWMode" typeId="maxFlowTemperatureDHWMode">
+                <label>Max Flow Temperature DHW Mode</label>
+                <description>Max Flow Temperature DHW Mode</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x07</property>
+                    <property name="position">13</property>
+                    <property name="length">2</property>
+                    <property name="scale">0.1</property>
+                </properties>
+            </channel>                        
+            <channel id="compressorShutdownDHWLoading" typeId="switchSetting">
+                <label>Compressor Shutdown DHW Loading</label>
+                <description>Compressor Shutdown DHW Loading</description>
+                <properties>
+                    <property name="dataType">Settings</property>
+                    <property name="requestByte">0x07</property>
+                    <property name="position">15</property>
+                    <property name="length">1</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+        </channels>        
+    </channel-group-type>
+    <channel-group-type id="channelGroupTypeLastErrors" >
+        <label>Last Errors</label>
+        <description>Reads the list of last errors from the heat pump.</description>
+        <channels >
+            <channel id="fA00NoOfErrors" typeId="noOfErrors">
+                <label>FA00 Number of errors</label>
+                <description>FA00 Numbers of errors listed in the heat pump</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0xD1</property>
+                    <property name="position">4</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+	        <channel id="fn01NoOfErrors" typeId="errorCode">
+	            <label>FN01 Error Code 1</label>
+	            <description>FN01 Error Code 1st Error.</description>
+	            <properties>
+	                <property name="dataType">Status</property>
+	                <property name="requestByte">0xD1</property>
+	                <property name="position">8</property>
+	                <property name="length">2</property>
+	                <property name="scale">1.0</property>
+	            </properties>
+	        </channel>
+            <channel id="fn02NoOfErrors" typeId="errorCode">
+                <label>FN02 Error Code 2</label>
+                <description>FN02 Error Code 2nd Error.</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0xD1</property>
+                    <property name="position">20</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="fn03NoOfErrors" typeId="errorCode">
+                <label>FN03 Error Code 3</label>
+                <description>FN03 Error Code 3rd Error.</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0xD1</property>
+                    <property name="position">32</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+            <channel id="fn04NoOfErrors" typeId="errorCode">
+                <label>FN04 Error Code 4</label>
+                <description>FN04 Error Code 4rd Error.</description>
+                <properties>
+                    <property name="dataType">Status</property>
+                    <property name="requestByte">0xD1</property>
+                    <property name="position">44</property>
+                    <property name="length">2</property>
+                    <property name="scale">1.0</property>
+                </properties>
+            </channel>
+        </channels>     
+    </channel-group-type>
+  
     <channel-type id="version">
         <item-type>String</item-type>
         <label>Version</label>
         <description>Firmware version of heat pump.</description>
         <state readOnly="true" />
+    </channel-type>
+    <channel-type id="dumpResponse" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Dump heat pump response </label>
+        <description>Takes standard request bytes and ask for heat pump response , which are logged in the log.</description>
+    </channel-type>
+    <channel-type id="setTime" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Set time</label>
+        <description>Set the time of the heat pump to system time of openhap.</description>
     </channel-type>
     <channel-type id="temperature">
         <item-type>Number</item-type>
@@ -692,7 +2144,7 @@
     </channel-type>
     <channel-type id="speed">
         <item-type>Number</item-type>
-        <label>Fan speed</label>
+        <label>Fan speed in %</label>
         <state pattern="%d %%" readOnly="true"/>
     </channel-type>
     <channel-type id="hourCounter">
@@ -710,52 +2162,323 @@
         <label>Temperature Setting in [°C]</label>
         <state min="10" max="65" step="0.1" pattern="%.1f °C"/>
     </channel-type>
+    <channel-type id="maxFlowTemperatureSetting" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max flow temperature Setting in [°C]</label>
+        <state min="10" max="75" step="0.1" pattern="%.1f °C"/>
+    </channel-type>
+    <channel-type id="changeoverTemperatureSummerWinter" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max flow temperature Setting in [°C]</label>
+        <state min="10" max="25" step="0.1" pattern="%.1f °C"/>
+    </channel-type>
+    <channel-type id="hysteresisChangeoverTemperatureSummerWinter" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max flow temperature Setting in [K]</label>
+        <state min="1" max="5" step="0.1" pattern="%.1f K"/>
+    </channel-type>    
+    <channel-type id="outsideTemperatureAdjustment" advanced="true">
+        <item-type>Number</item-type>
+        <label>Outside temperature adjustment Setting in [h]</label>
+        <state min="0" max="24" step="1.0" pattern="%d h"/>
+    </channel-type>    
+    <channel-type id="bivalencePoint" advanced="true">
+        <item-type>Number</item-type>
+        <label>Bivalence point Setting in [°C]</label>
+        <state min="-10" max="20" step="0.1" pattern="%.1f °C"/>
+    </channel-type> 
+    <channel-type id="delayedEnableReheating" advanced="true">
+        <item-type>Number</item-type>
+        <label>Delayed enable re-heating</label>
+        <description>Delayed enable re-heating.</description>
+        <state  min="0" max="60" step="1" pattern="%d min"/>
+    </channel-type>
+    <channel-type id="outputElectricalHeating" advanced="true">
+        <item-type>Number</item-type>
+        <label>Output electrical heating</label>
+        <description>Output electrical heating.</description>
+        <state  min="0" max="10" step="1" pattern="%d kW"/>
+    </channel-type>
+    <channel-type id="increaseHeating" advanced="true">
+        <item-type>Number</item-type>
+        <label>Increase heating</label>
+        <description>Increase heating of heat circuit.</description>
+        <state  min="1" max="5" step="0.1"/>
+    </channel-type>
+    <channel-type id="lowEndPointHeating" advanced="true">
+        <item-type>Number</item-type>
+        <label>Low end point heating Setting in [K]</label>
+        <state min="1" max="20" step="0.1" pattern="%.1f K"/>
+    </channel-type>
+    <channel-type id="roomInfluenceHeating" advanced="true">
+        <item-type>Number</item-type>
+        <label>Room influence heating</label>
+        <description>Room influence heating of heat circuit.</description>
+        <state  min="1" max="10" step="0.1"/>
+    </channel-type>    
+    <channel-type id="temperatureCaptureReturnFlow" advanced="true">
+        <item-type>Number</item-type>
+        <label>Temperature capture return flow</label>
+        <state min="1" max="100" step="1.0" pattern="%d %%"/>
+    </channel-type>
+    <channel-type id="maxSetHeatingCircuitTemperature" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max set heating circuit temperature Setting in [°C]</label>
+        <state min="20" max="65" step="0.1" pattern="%.1f °C"/>
+    </channel-type>   
+    <channel-type id="minSetHeatingCircuitTemperature" advanced="true">
+        <item-type>Number</item-type>
+        <label>Min set heating circuit temperature Setting in [°C]</label>
+        <state min="5" max="40" step="0.1" pattern="%.1f °C"/>
+    </channel-type>   
+    <channel-type id="temperaturLimitEvaporator" advanced="true">
+        <item-type>Number</item-type>
+        <label>Temperature limit evaporator Setting in [°C]</label>
+        <state min="10" max="30" step="0.1" pattern="%.1f °C"/>
+    </channel-type>   
+    <channel-type id="maxEvaporatorDefrostTime" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max evaporator defrost time Setting in [°C]</label>
+        <state min="2" max="20" step="1.0" pattern="%d min"/>
+    </channel-type>   
+    <channel-type id="temperaturLimitCondenser" advanced="true">
+        <item-type>Number</item-type>
+        <label>Temperature limit condenser Setting in [°C]</label>
+        <state min="5" max="10" step="0.1" pattern="%.1f °C"/>
+    </channel-type>   
+    <channel-type id="compressorRestartDelayTime" advanced="true">
+        <item-type>Number</item-type>
+        <label>Compressor restart delay time in [min]</label>
+        <state min="0" max="20" step="1.0" pattern="%d min"/>
+    </channel-type> 
+    <channel-type id="maxDefrostDurationAAExchanger" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max defrost duration AA exchanger time in [min]</label>
+        <state min="0" max="120" step="1.0" pattern="%d min"/>
+    </channel-type>    
+    <channel-type id="defrostStartThreshold" advanced="true">
+        <item-type>Number</item-type>
+        <label>Defrost start threshold Setting</label>
+        <state min="0" max="100" step="1" pattern="%d %%"/>
+    </channel-type>           
+    <channel-type id="volumeFlowFilterReplacement" advanced="true">
+        <item-type>Number</item-type>
+        <label>Defrost start threshold Setting</label>
+        <state min="50" max="100" step="1" pattern="%d %%"/>
+    </channel-type>
+    <channel-type id="defrostModeAAHE" advanced="true">
+        <item-type>Number</item-type>
+        <label>Defrost mode AA HE Setting</label>
+        <state min="1" max="5" step="1"/>
+    </channel-type>
+    <channel-type id="exhaustFanSpeed" advanced="true">
+        <item-type>Number</item-type>
+        <label>Exhaust fan speed Setting</label>
+        <state min="10" max="100" step="1" pattern="%d %%"/>
+    </channel-type>   
     <channel-type id="fanStageSetting" advanced="true">
         <item-type>Number</item-type>
         <label>Fan stage Setting</label>
         <state min="0" max="3" step="1"/>
     </channel-type>
+    <channel-type id="fanStageSettingAir" advanced="true">
+        <item-type>Number</item-type>
+        <label>Fan stage air Setting</label>
+        <state min="60" max="280" step="1" pattern="%d m^3/h"/>
+    </channel-type>
+    <channel-type id="ventilationTimeUnscheduled" advanced="true">
+        <item-type>Number</item-type>
+        <label>Unscheduled ventilation time</label>
+        <state min="0" max="1000" step="1" pattern="%d min"/>
+    </channel-type>    
+    <channel-type id="operatingModePassiveCooling" advanced="true">
+        <item-type>Number</item-type>
+        <label>Operating mode passive cooling</label>
+        <state min="0" max="2" step="1"/>
+    </channel-type>        
+    <channel-type id="stoveFireplaceOperation" advanced="true">
+        <item-type>Number</item-type>
+        <label>Stove fireplace operation</label>
+        <state min="0" max="4" step="1"/>
+    </channel-type>       
+    <channel-type id="hysteresisHeatingWide" advanced="true">
+        <item-type>Number</item-type>
+        <label>Hysteresis heating Setting in [K]</label>
+        <state min="0" max="10" step="0.1" pattern="%.1f K"/>
+    </channel-type>
+    <channel-type id="hysteresisHeatingNarrow" advanced="true">
+        <item-type>Number</item-type>
+        <label>Hysteresis heating Setting in [K]</label>
+        <state min="0" max="5" step="0.1" pattern="%.1f K"/>
+    </channel-type>
+    <channel-type id="hysteresisHeatingSwitching" advanced="true">
+        <item-type>Number</item-type>
+        <label>Hysteresis switching heating Setting</label>
+        <state min="1" max="5" step="1.0"/>
+    </channel-type>
+    <channel-type id="switchingValueIntegralPortionHeating" advanced="true">
+        <item-type>Number</item-type>
+        <label>Switching value for integral portion heating Setting</label>
+        <state min="1" max="999" step="1.0"/>
+    </channel-type>
+    <channel-type id="outputElectricalHeatingStage" advanced="true">
+        <item-type>Number</item-type>
+        <label>Switching value for integral portion heating Setting</label>
+        <state min="0" max="10" step="1" pattern="%d kW"/>        
+    </channel-type> 
+    <channel-type id="minStartupCycles" advanced="true">
+        <item-type>Number</item-type>
+        <label>Minimum startup cycles Setting in [per/day]</label>
+        <state min="1" max="24" step="1" pattern="%d per/day"/>
+    </channel-type>    
+    <channel-type id="maxStartupCycles" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max startup cycles Setting in [per/day]</label>
+        <state min="1" max="288" step="1" pattern="%d per/day"/>
+    </channel-type>    
+    <channel-type id="outsideTemperatureMinHeatingCycles" advanced="true">
+        <item-type>Number</item-type>
+        <label>Outside temperature min heating cycles Setting in [°C]</label>
+        <state min="0" max="20" step="0.1" pattern="%.1f °C"/>
+    </channel-type>    
+    <channel-type id="outsideTemperatureMaxHeatingCycles" advanced="true">
+        <item-type>Number</item-type>
+        <label>Outside temperature max heating cycles Setting in [°C]</label>
+        <state min="0" max="25" step="0.1" pattern="%.1f °C"/>
+    </channel-type>    
+    <channel-type id="suppressTemperatureCaptureDuringPumpStart" advanced="true">
+        <item-type>Number</item-type>
+        <label>Suppress temperature capture during pump start Setting in [sec]</label>
+        <state min="0" max="120" step="1" pattern="%d sec"/>
+    </channel-type>
+    <channel-type id="timeSetting" advanced="true">
+        <item-type>String</item-type>
+        <label>Time settings  Setting in [hh:mm]</label>
+         <state min="0" max="2359"  pattern="%s hh:mm"/>
+    </channel-type>      
+    <channel-type id="switchSetting" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Enabling switch</label>
+         <state min="0" max="1"/>
+    </channel-type> 
+    <channel-type id="timeAp0Setting" advanced="true">
+        <item-type>Number</item-type>
+        <label>Time settings in [h]</label>
+         <state min="0" max="2388"  pattern="%.1f h"/>
+    </channel-type>
+    <channel-type id="restartBeforSetbackEnd" advanced="true">
+        <item-type>Number</item-type>
+        <label>Time settings  Setting in [min]</label>
+         <state min="0" max="300" step="1" pattern="%d min"/>
+    </channel-type>
+    <channel-type id="mixerProportionalRange" advanced="true">
+        <item-type>Number</item-type>
+        <label>Mixer proportional range Setting</label>
+        <state min="1" max="100" step="0.1" pattern="%.1f %%"/>
+    </channel-type>   
+    <channel-type id="derivativeMixerTime" advanced="true">
+        <item-type>Number</item-type>
+        <label>Derivative mixer time Setting</label>
+        <state min="1" max="100" step="0.1" pattern="%.1f sec"/>
+    </channel-type>   
+    <channel-type id="mixerTimeInterval" advanced="true">
+        <item-type>Number</item-type>
+        <label>Mixer time  interval Setting</label>
+        <state min="1" max="10" step="0.1" pattern="%.1f K/day"/>
+    </channel-type>   
+    <channel-type id="startupHysteresisDHWTemperature" advanced="true">
+        <item-type>Number</item-type>
+        <label>Startup Hysteresis DHW Temperature Setting in [K]</label>
+        <state min="2" max="20" step="0.1" pattern="%.1f K"/>
+    </channel-type>
+    <channel-type id="timeDelayElectricalReheating" advanced="true">
+        <item-type>Number</item-type>
+        <label>Time Delay Electrical Re-heating Setting in [K]</label>
+        <state min="0" max="240" step="1.0" pattern="%d min"/>
+    </channel-type>
+    <channel-type id="limitForElectricalReheating" advanced="true">
+        <item-type>Number</item-type>
+        <label>Limit for Electrical Re-heating Setting in [°C]</label>
+        <state min="-10" max="10" step="1.0" pattern="%d °C"/>
+    </channel-type>
+    <channel-type id="pasteurisationInterval" advanced="true">
+        <item-type>Number</item-type>
+        <label>Pasteurization Interval [K/day]</label>
+        <state min="1" max="30" step="1.0" pattern="%d K/day"/>
+    </channel-type>
+    <channel-type id="maxDurationDHWLoading" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max Duration DHW Loading [h]</label>
+        <state min="6" max="12" step="1.0" pattern="%d h"/>
+    </channel-type>
+    <channel-type id="pasteurisationHeatupTemperature" advanced="true">
+        <item-type>Number</item-type>
+        <label>Pasteurization Heat-up Temperature Setting in [°C]</label>
+        <state min="10" max="65" step="0.1" pattern="%.1f °C"/>
+    </channel-type>    
+    <channel-type id="noOfEnabledElectricalReheatStagesDHWLoading" advanced="true">
+        <item-type>Number</item-type>
+        <label>Number Of Enabled Electrical Re-heat Stages DHW Loading</label>
+        <state min="0" max="3" step="1.0"/>
+    </channel-type>    
+    <channel-type id="maxFlowTemperatureDHWMode" advanced="true">
+        <item-type>Number</item-type>
+        <label>Max Flow Temperature DHW Mode</label>
+        <state min="10" max="75" step="0.1" pattern="%.1f °C"/>
+    </channel-type>    
+    <channel-type id="noOfErrors">
+        <item-type>Number</item-type>
+        <label>Number of Errors</label>
+        <description>Number of Errors</description>
+        <state pattern="%d #ERR"  readOnly="true" />
+    </channel-type>
+    <channel-type id="errorCode" advanced="true">
+        <item-type>String</item-type>
+        <label>Error code</label>
+        <description>Error code</description>
+        <state pattern="F%s"  readOnly="true" />
+    </channel-type>    
     <channel-type id="weekday" advanced="true">
         <item-type>Number</item-type>
         <label>Week day</label>
         <description>Weekday of the current time.</description>
-        <state  min="1" max="7" step="1" readOnly="true" />
+        <state  min="1" max="7" step="1" pattern="%d"  readOnly="true" />
     </channel-type>
     <channel-type id="hours" advanced="true">
         <item-type>Number</item-type>
         <label>Hours</label>
         <description>Hours of the current time.</description>
-        <state  min="0" max="23" step="1" readOnly="true"/>
+        <state  min="0" max="23" step="1" pattern="%d h" readOnly="true"/>
     </channel-type>
     <channel-type id="minutes" advanced="true">
         <item-type>Number</item-type>
         <label>Minutes</label>
         <description>Minutes of the current time.</description>
-        <state  min="0" max="59" step="1" readOnly="true"/>
+        <state  min="0" max="59" step="1" pattern="%d min" readOnly="true"/>
     </channel-type>
     <channel-type id="seconds" advanced="true">
         <item-type>Number</item-type>
         <label>Seconds</label>
         <description>Seconds of the current time.</description>
-        <state  min="0" max="59" step="1" readOnly="true"/>
+        <state  min="0" max="59" step="1" pattern="%d s" readOnly="true"/>
     </channel-type>
     <channel-type id="year" advanced="true">
         <item-type>Number</item-type>
         <label>Seconds</label>
         <description>Year of the current time.</description>
-        <state  min="0" max="99" step="1" readOnly="true"/>
+        <state  min="0" max="99" step="1" pattern="%d YY" readOnly="true"/>
     </channel-type>
     <channel-type id="month" advanced="true">
         <item-type>Number</item-type>
         <label>Month</label>
         <description>Month of the current time.</description>
-        <state  min="1" max="12" step="1" readOnly="true"/>
+        <state  min="1" max="12" step="1" pattern="%d MM" readOnly="true"/>
     </channel-type>
     <channel-type id="day" advanced="true">
         <item-type>Number</item-type>
         <label>Day</label>
         <description>Hours of the current time.</description>
-        <state  min="1" max="31" step="1" readOnly="true"/>
+        <state  min="1" max="31" step="1" pattern="%d dd" readOnly="true"/>
     </channel-type>
 
 </thing:thing-descriptions>

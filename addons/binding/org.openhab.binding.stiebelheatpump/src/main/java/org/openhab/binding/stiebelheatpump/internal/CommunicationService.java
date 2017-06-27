@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class CommunicationService {
 
     private ProtocolConnector connector;
-    private static final int MAXRETRIES = 10;
+    private static int MAXRETRIES = 5;
     private final int INPUT_BUFFER_LENGTH = 1024;
     private byte buffer[] = new byte[INPUT_BUFFER_LENGTH];
 
@@ -58,8 +58,7 @@ public class CommunicationService {
         String version = "";
         logger.debug("Loading version info ...");
         Map<String, String> data = readData(versionRequest);
-        String versionKey = versionRequest.getName() + stiebelheatpumpBindingConstants.CHANNELGROUPSEPERATOR
-                + versionRequest.getRecordDefinitions().get(0).getName();
+        String versionKey = stiebelheatpumpBindingConstants.CHANNEL_VERSION;
         version = data.get(versionKey);
         return version;
     }
@@ -71,7 +70,6 @@ public class CommunicationService {
      * @return map of heat pump setting values
      */
     public Map<String, String> getRequestData(List<Request> requests) throws StiebelHeatPumpException {
-        logger.debug("Loading Settings");
         Map<String, String> data = new HashMap<String, String>();
         for (Request request : requests) {
             logger.debug("Loading data for request {} ...", request.getName());
@@ -202,25 +200,22 @@ public class CommunicationService {
         Map<String, String> data = new HashMap<String, String>();
         logger.debug("Request : Name -> {}, Description -> {} , RequestByte -> {}", request.getName(),
                 request.getDescription(), DatatypeConverter.printHexBinary(new byte[] { request.getRequestByte() }));
-        startCommunication();
         byte responseAvailable[] = new byte[0];
         byte requestMessage[] = createRequestMessage(request);
         boolean validData = false;
         try {
             while (!validData) {
+                startCommunication();
                 responseAvailable = getData(requestMessage);
                 responseAvailable = parser.fixDuplicatedBytes(responseAvailable);
                 validData = parser.headerCheck(responseAvailable);
                 if (validData) {
                     data = parser.parseRecords(responseAvailable, request);
-                    continue;
+                    break;
                 }
-                Thread.sleep(waitingTime);
-                startCommunication();
             }
         } catch (StiebelHeatPumpException e) {
             logger.error("Error reading data : {}", e.toString());
-        } catch (InterruptedException e) {
         }
         return data;
     }
@@ -273,6 +268,12 @@ public class CommunicationService {
             return data;
         }
 
+        if (Integer.parseInt(value) > updateRecord.getMax() || Integer.parseInt(value) < updateRecord.getMin()) {
+            logger.warn("The record {} can not be set to value {} as allowed range is {}<-->{} !",
+                    updateRecord.getName(), value, updateRecord.getMax(), updateRecord.getMin());
+            return data;
+        }
+
         try {
             // get actual value for the corresponding request, in case settings have changed locally
             // as we do no have individual requests for each settings we need to
@@ -281,6 +282,8 @@ public class CommunicationService {
             // connector object
             byte[] requestMessage = createRequestMessage(updateRequest);
             byte[] response = getData(requestMessage);
+            response = parser.fixDuplicatedBytes(response);
+
             data = parser.parseRecords(response, updateRequest);
 
             // lookup parameter value in the data
@@ -298,6 +301,7 @@ public class CommunicationService {
             Thread.sleep(waitingTime);
 
             response = setData(requestUpdateMessage);
+            response = parser.fixDuplicatedBytes(response);
 
             if (parser.setDataCheck(response)) {
                 logger.debug("Updated parameter {} successfully.", parameter);
@@ -322,23 +326,34 @@ public class CommunicationService {
      *            request byte to send to heat pump
      */
     public void dumpResponse(byte requestByte) {
+        int tmp = MAXRETRIES;
+        MAXRETRIES = 1;
+        logger.info(String.format("Prepare response for request byte %02X", requestByte));
         Request request = new Request();
         request.setRequestByte(requestByte);
 
         byte requestMessage[] = createRequestMessage(request);
 
         if (!establishRequest(requestMessage)) {
-            logger.info("Could not get response for request byte {} ...");
+            logger.info(String.format("Could not get response for request byte %02X", requestByte));
             return;
         }
+        MAXRETRIES = tmp;
         try {
             connector.write(DataParser.ESCAPE);
             byte[] response = receiveData();
+            response = parser.fixDuplicatedBytes(response);
+            logger.info("Request {} received response : {}", DataParser.bytesToHex(response),
+                    DataParser.bytesToHex(response));
 
-            logger.info("Received response from heatpump: {}", DataParser.bytesToHex(response));
+            boolean validData = parser.headerCheck(response);
+            if (validData) {
+                parser.parseRecords(response, request);
+            }
             return;
         } catch (Exception e) {
-            logger.error("Could not get data from heat pump! {}", e.toString());
+            logger.error(String.format("Could not get data from heat pump! for request %02X, {}", requestByte,
+                    e.toString()));
         }
         return;
     }
@@ -351,20 +366,30 @@ public class CommunicationService {
      * @return response bytes from heat pump
      *
      *         General overview of handshake between application and serial
-     *         interface of heat pump 1. Sending request bytes , e.g.: 01 00 FD
-     *         FC 10 03 for version request 01 -> header start 00 -> get request
-     *         FD -> checksum of request FC -> request byte 10 03 -> Footer
-     *         ending the communication
+     *         interface of heat pump
      *
-     *         2. Receive a data available 10 -> ok 02 -> it does have
-     *         data,which wants to send now
+     *         1. Sending request bytes ,
+     *         e.g.: 01 00 FD FC 10 03 for version request
+     *         01 -> header start
+     *         00 -> get request
+     *         FD -> checksum of request
+     *         FC -> request byte
+     *         10 03 -> Footer ending the communication
      *
-     *         3. acknowledge sending data 10 -> ok
+     *         2. Receive a data available
+     *         10 -> ok
+     *         02 -> it does have data,which wants to send now
      *
-     *         4. receive data until footer 01 -> header start 00 -> get request
-     *         CC -> checksum of send data FD -> request byte 00 CE -> data ,
-     *         e.g. short value as 2 bytes -> 206 -> 2.06 version 10 03 ->
-     *         Footer ending the communication
+     *         3. acknowledge sending data
+     *         10 -> ok
+     *
+     *         4. receive data until footer
+     *         01 -> header start
+     *         00 -> get request
+     *         CC -> checksum of send data
+     *         FD -> request byte
+     *         00 CE -> data, e.g. short value as 2 bytes -> 206 -> 2.06 version
+     *         10 03 -> Footer ending the communication
      */
     private byte[] getData(byte request[]) {
         if (!establishRequest(request)) {
@@ -381,7 +406,7 @@ public class CommunicationService {
     }
 
     /**
-     * Sets data to connected heat pump
+     * Sets setting value in heat pump
      *
      * @param request
      *            request bytes to send to heat pump
@@ -390,19 +415,26 @@ public class CommunicationService {
      *         General overview of handshake between application and serial
      *         interface of heat pump
      *
-     *         1. Sending request bytes, e.g update time in heat pump 01 ->
-     *         header start 80 -> set request F1 -> checksum of request FC ->
-     *         request byte 00 02 0a 22 1b 0e 00 03 1a -> new values according
-     *         record definition for time 10 03 -> Footer ending the
-     *         communication
+     *         1. Sending request bytes, e.g update time in heat pump
+     *         01 -> header start
+     *         80 -> set request
+     *         F1 -> checksum of request
+     *         FC -> request byte
+     *         00 02 0a 22 1b 0e 00 03 1a -> new values according record definition for time
+     *         10 03 -> Footer ending the communication
      *
-     *         2. Receive response message the confirmation message is ready for
-     *         sending 10 -> ok 02 -> it does have data ,which wants to send now
+     *         2. Receive response message the confirmation message is ready for sending
+     *         10 -> ok
+     *         02 -> it does have data, which wants to send now
      *
-     *         3. acknowledge sending data 10 -> ok
+     *         3. acknowledge sending data
+     *         10 -> ok
      *
-     *         4. receive confirmation message until footer 01 -> header start
-     *         80 -> set request 7D -> checksum of send data FC -> request byte
+     *         4. receive confirmation message until footer
+     *         01 -> header start
+     *         80 -> set request
+     *         7D -> checksum of send data
+     *         FC -> request byte
      *         10 03 -> Footer ending the communication
      */
     private byte[] setData(byte[] request) throws StiebelHeatPumpException {
@@ -476,9 +508,11 @@ public class CommunicationService {
                     return true;
                 }
                 logger.debug("retry request!");
+                retry++;
                 startCommunication();
             }
             if (!dataAvailable) {
+
                 logger.warn("heat pump has no data available for request!");
                 return false;
             }
@@ -551,5 +585,4 @@ public class CommunicationService {
         }
         return requestMessage;
     }
-
 }
