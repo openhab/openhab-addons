@@ -35,7 +35,6 @@ import org.openhab.binding.robonect.RobonectEndpoint;
 import org.openhab.binding.robonect.config.RobonectConfig;
 import org.openhab.binding.robonect.model.ErrorEntry;
 import org.openhab.binding.robonect.model.MowerInfo;
-import org.openhab.binding.robonect.model.MowerStatus;
 import org.openhab.binding.robonect.model.Name;
 import org.openhab.binding.robonect.model.RobonectAnswer;
 import org.openhab.binding.robonect.model.VersionInfo;
@@ -51,6 +50,7 @@ import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_REMOTE_START;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB_START;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_NAME;
+import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_STARTED;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS;
 import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_BATTERY;
@@ -171,8 +171,7 @@ public class RobonectHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (RobonectCommunicationException rce) {
-            logger.error("Failed to communicate with the mower. Taking it offline.", rce);
-            updateState(CHANNEL_STATUS, new DecimalType(MowerStatus.OFFLINE.getStatusCode()));
+            logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
         } catch (Exception e) {
             logger.error("Unexpected exception. Setting thing offline", e);
@@ -215,17 +214,16 @@ public class RobonectHandler extends BaseThingHandler {
 
     private void logErrorFromResponse(RobonectAnswer result) {
         if (!result.isSuccessful()) {
-            logger.error("Could not send EOD Trigger. Robonect error message: {}", result.getErrorMessage());
+            logger.debug("Could not send EOD Trigger. Robonect error message: {}", result.getErrorMessage());
         }
     }
 
-    private void handleStartStop(OnOffType command) throws InterruptedException {
-        OnOffType started = command;
+    private void handleStartStop(final OnOffType command) throws InterruptedException {
         RobonectAnswer answer = null;
         boolean currentlyStopped = robonectClient.getMowerInfo().getStatus().isStopped();
-        if (started == OnOffType.ON && currentlyStopped) {
+        if (command == OnOffType.ON && currentlyStopped) {
             answer = robonectClient.start();
-        } else if (!currentlyStopped) {
+        } else if (command == OnOffType.OFF && !currentlyStopped) {
             answer = robonectClient.stop();
         }
         if (answer != null) {
@@ -246,7 +244,6 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void refreshMowerInfo() throws InterruptedException {
-
         MowerInfo info = robonectClient.getMowerInfo();
         if (info.isSuccessful()) {
             if (info.getError() != null) {
@@ -305,7 +302,7 @@ public class RobonectHandler extends BaseThingHandler {
             calendar.setTime(nextTimer);
             return new DateTimeType(calendar);
         } catch (ParseException e) {
-            logger.error("Could not parse date: {}T{} with pattern 'dd.MM.yy'T'HH:mm:ss'", date, time, e);
+            logger.debug("Could not parse date: {}T{} with pattern 'dd.MM.yy'T'HH:mm:ss'", date, time, e);
             return UnDefType.UNDEF;
 
         }
@@ -320,7 +317,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_VERSION_COMMENT, new StringType(info.getRobonect().getComment()));
             updateState(CHANNEL_VERSION_SERIAL, new StringType(info.getRobonect().getSerial()));
         } else {
-            logger.error("Could not retrieve mower version info. Robonect error response message: {}",
+            logger.debug("Could not retrieve mower version info. Robonect error response message: {}",
                     info.getErrorMessage());
         }
 
@@ -337,14 +334,28 @@ public class RobonectHandler extends BaseThingHandler {
             robonectClient = new RobonectClient(httpClient, endpoint);
             refreshVersionInfo();
             Runnable runnable = new Runnable() {
+                
+                private long offlineSince = -1;
+                private long offlineTriggerDealay = robonectConfig.getOfflineTimeout() * 60 * 1000;
+                private boolean offlineTimeoutTriggered = false;
+                
                 @Override
                 public void run() {
                     try {
                         refreshMowerInfo();
                         updateStatus(ThingStatus.ONLINE);
+                        offlineSince = -1;
+                        offlineTimeoutTriggered = false;
                     } catch (RobonectCommunicationException rce) {
-                        logger.info("Failed to communicate with the mower. Taking it offline.", rce);
-                        updateState(CHANNEL_STATUS, new DecimalType(MowerStatus.OFFLINE.getStatusCode()));
+                        if(offlineSince < 0){
+                            offlineSince = System.currentTimeMillis();
+                        }
+                        if(!offlineTimeoutTriggered && System.currentTimeMillis() - offlineSince > offlineTriggerDealay){
+                            // trigger offline
+                            updateState(CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER, new StringType("OFFLINE_TIMEOUT") );
+                            offlineTimeoutTriggered = true;
+                        }
+                        logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
                     } catch (Exception e) {
                         logger.error("Unexpected exception. Setting thing offline", e);
@@ -352,15 +363,11 @@ public class RobonectHandler extends BaseThingHandler {
                     }
                 }
             };
-            int pollInterval = robonectConfig.getPollInterval() > 0 ? robonectConfig.getPollInterval() : 30;
+            int pollInterval = robonectConfig.getPollInterval();
             pollingJob = scheduler.scheduleAtFixedRate(runnable, 0, pollInterval, TimeUnit.SECONDS);
-
-            updateStatus(ThingStatus.ONLINE);
-
         } catch (Exception e) {
             logger.error("Exception when trying to initialize", e);
-            updateStatus(ThingStatus.UNINITIALIZED);
-
+            updateStatus(ThingStatus.OFFLINE);
         }
 
     }

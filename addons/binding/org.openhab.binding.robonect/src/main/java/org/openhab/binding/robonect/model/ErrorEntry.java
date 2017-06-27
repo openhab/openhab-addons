@@ -1,15 +1,17 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.robonect.model;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * {
-       "date": "02.05.2017", 
-       "error_code": 15, 
-       "error_message": "Grasi ist angehoben", 
-       "time": "20:36:43", 
-       "unix": 1493757403
-     }
+ * @author Marco Meyer - Initial contribution
  */
 public class ErrorEntry  {
     

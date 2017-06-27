@@ -1,14 +1,25 @@
+/**
+ * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.robonect;
 
 import org.eclipse.jetty.util.StringUtil;
 
+/**
+ * @author Marco Meyer - Initial contribution
+ */
 public class RobonectEndpoint {
     
-    private String ipAddress;
+    private final String ipAddress;
     
-    private String user;
+    private final String user;
     
-    private String password;
+    private final String password;
     
     private boolean useAuthentication = false;
 

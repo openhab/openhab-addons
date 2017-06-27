@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  * The {@link RobonectHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author marco.meyer - Initial contribution
+ * @author Marco Meyer - Initial contribution
  */
 public class RobonectHandlerFactory extends BaseThingHandlerFactory {
 

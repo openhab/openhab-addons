@@ -3,7 +3,7 @@
 Robonect is a piece of hardware which has to be put into your Husqvarna, Gardena and other branded automower and makes 
 it accessable in your internal network. More details about the Robonect module can be found at [robonect.de](http://www.robonect.de)
 
-This binding integrates mowers having the robonect module installed as thing into the openhab installation, allowing to
+This binding integrates mowers having the robonect module installed as a thing into the home automation solution, allowing to
 control the mower and react on mower status changes in rules. 
 
 ## Supported Things
@@ -29,6 +29,7 @@ following configuration settings are supported for the `mower` thing.
 |---------------|-----------|--------------------------------------------------------------------|
 | host          | yes       | the hostname or ip address of the mower.                           |
 | pollInterval  | no        | the interval for the binding to poll for mower status information. |
+| offlineTimeout| no        | the maximum time, the mower can be offline before the binding triggers the offlineTrigger channel  |
 | user          | no        | the username if authentication is enabled in the firmware.         |
 | password      | no        | the password if authenticaiton is enabled in the firmware.         |
 
@@ -48,6 +49,7 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 | `mowerStatus#mode`       | String                    | Retrieves or  sets the mode of the mower. Possible values retrieval values are <ul><li>HOME</li><li>AUTO</li><li>MAN</li></ul> In addition he channel allows to set following values for triggering special actions <ul><li>EOD : triggers the "end of day" mode. The mower will switch in to the HOME mode and stay int this mode for the rest of the day</li><li>JOB : The mower will start a job accoriding to the job parameters defined with the channels `job#remoteStart`, `job#afterMoe`, `job#start` and `job#end`</li>  </ul> |
 | `mowerStatus#status`     | Number                    | Retrieves the current mower status which can be <ul><li>0 : DETECTING_STATUS</li><li>1 : PARKING</li><li>2 : MOWING</li><li>3 : SEARCH_CHARGING_STATION</li><li>4 : CHARGING</li><li>5 : SEARCHING</li><li>6 : UNKNOWN_6</li><li>7 : ERROR_STATUS</li><li>16 : OFF</li><li>17 : SLEEPING</li><li>98 : OFFLINE (Binding cannot connect to mower)</li><li>99 : UNKNOWN</li></ul> |
 | `mowerStatus#started`    | Switch                    | Switches the mower ON (analog to start button on mower) or OFF (analog to stop button on mower). |
+| `mowerStatus#offlineTrigger`    | Trigger            | Is triggered if the mower is longer than the configured offlineTriggerTimeout offline. This might help if the mower is somewhere in error state but does not have a signal |
 | `job#remoteStart`        | String                    | Sets the remote start type for a JOB. Possible values are <ul><li>STANDARD : use the remote start option defined in the mower settings</li><li>REMOTE_1 : start from remote 1</li><li>REMOTE_2 : start from remote 2</li></ul>
 | `job#afterMode`          | String                    | Sets the mode the mower should be put in after a mowing Job. (See JOB on channel `owerStatus#mode`)
 | `job#start`              | String                    | Sets the start time for the next job in the form hh:mm  |

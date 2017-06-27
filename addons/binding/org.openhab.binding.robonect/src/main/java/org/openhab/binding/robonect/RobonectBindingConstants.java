@@ -14,7 +14,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link RobonectBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author marco.meyer - Initial contribution
+ * @author Marco Meyer - Initial contribution
  */
 public class RobonectBindingConstants {
 
@@ -31,6 +31,7 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_STATUS_MODE = "mowerStatus#mode";
     public static final String CHANNEL_STATUS = "mowerStatus#status";
     public static final String CHANNEL_MOWER_STATUS_STARTED = "mowerStatus#started";
+    public static final String CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER = "mowerStatus#offlineTrigger";
     public static final String CHANNEL_TIMER_STATUS = "timer#status";
     public static final String CHANNEL_TIMER_NEXT_TIMER = "timer#nextTimer";
     public static final String CHANNEL_WLAN_SIGNAL = "wlan#signal";

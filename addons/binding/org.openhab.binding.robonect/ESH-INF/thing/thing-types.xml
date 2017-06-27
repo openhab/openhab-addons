@@ -18,6 +18,7 @@
         </channel-groups>
         <config-description>
             <parameter name="host" type="text" required="true">
+                <context>network-address</context>
                 <label>Host</label>
                 <description>Host name or network address of the Robonect module</description>
             </parameter>
@@ -26,13 +27,21 @@
                 <description>The user id if authentication has been enabled on the mower</description>
             </parameter>
             <parameter name="password" type="text" required="false">
+                <context>password</context>
                 <label>Password</label>
                 <description>The password if authentication has been enabled on the mower</description>
             </parameter>
             <parameter name="pollInterval" type="integer" required="false" unit="s">
-                <label>Polling interval.</label>
-                <description>The interval for the binding to poll the mowers status information. Defaults to 30
+                <label>Polling interval</label>
+                <default>30</default>
+                <description>The interval for the binding to poll the mowers status information.
                     seconds.
+                </description>
+            </parameter>
+            <parameter name="offlineTimeout" type="integer" required="false" unit="m">
+                <label>Offline timeout</label>
+                <default>30</default>
+                <description>The maximum time the mower may be offline before the offline trigger is triggered.
                 </description>
             </parameter>
         </config-description>
@@ -54,6 +63,7 @@
             <channel id="mode" typeId="modeType"/>
             <channel id="status" typeId="mowerStatusType"/>
             <channel id="started" typeId="startedType"/>
+            <channel id="offlineTrigger" typeId="offlineTriggerType"/>
         </channels>
     </channel-group-type>
 
@@ -134,16 +144,16 @@
 
     <channel-type id="durationType">
         <item-type>Number</item-type>
-        <label>Mow duration</label>
-        <description>The mow duration</description>
-        <state readOnly="true"/>
+        <label>Status duration</label>
+        <description>The time the mower is in the current status.</description>
+        <state readOnly="true" pattern="%d seconds"/>
     </channel-type>
 
     <channel-type id="hoursType">
         <item-type>Number</item-type>
-        <label>Mow hours</label>
-        <description>The mow hours</description>
-        <state readOnly="true"/>
+        <label>Total mowing hours</label>
+        <description>The number of total mowing hours</description>
+        <state readOnly="true" pattern="%d hours"/>
     </channel-type>
 
     <channel-type id="modeType">
@@ -210,7 +220,6 @@
                 <option value="7">ERROR_STATUS</option>
                 <option value="16">OFF</option>
                 <option value="17">SLEEPING</option>
-                <option value="98">OFFLINE</option>
                 <option value="99">UNKNOWN</option>
             </options>
         </state>
@@ -221,6 +230,16 @@
         <label>Mower started</label>
         <description>The mower was started</description>
         <state readOnly="false"/>
+    </channel-type>
+
+    <channel-type id="offlineTriggerType">
+        <kind>trigger</kind>
+        <label>Offline Trigger</label>
+        <event>
+            <options>
+                <option value="OFFLINE_TIMEOUT">Offline timeout</option>
+            </options>
+        </event>
     </channel-type>
 
     <channel-type id="nextTimerType">
