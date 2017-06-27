@@ -14,6 +14,7 @@ import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.openhab.binding.supla.internal.discovery.SuplaDiscoveryService;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
+import org.openhab.binding.supla.internal.supla.entities.SuplaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +26,9 @@ import java.util.concurrent.ScheduledFuture;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Long.parseLong;
+import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.binding.supla.SuplaBindingConstants.RELAY_CHANNEL_TYPE;
-import static org.openhab.binding.supla.SuplaBindingConstants.SWITCH_1_CHANNEL;
+import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
 @SuppressWarnings("unused")
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
@@ -128,8 +129,23 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     }
 
     private String findThingType(SuplaIoDevice device) {
-        // TODO need to do better logic
-        return SuplaBindingConstants.ONE_CHANNEL_RELAY_THING_ID;
+        final long relayChannelsCount = findRelayChannelsCount(device);
+        if(relayChannelsCount == 2) {
+            return TWO_CHANNEL_RELAY_THING_ID;
+        } else if(relayChannelsCount == 1) {
+            return ONE_CHANNEL_RELAY_THING_ID;
+        } else {
+            throw new RuntimeException(format("relayChannelsCount = %s", relayChannelsCount));
+        }
+    }
+
+    private long findRelayChannelsCount(SuplaIoDevice device) {
+        return device.getChannels()
+                .stream()
+                .map(SuplaChannel::getType)
+                .map(SuplaType::getName)
+                .filter(RELAY_CHANNEL_TYPE::equals)
+                .count();
     }
 
     private String findThingLabel(SuplaIoDevice device) {
