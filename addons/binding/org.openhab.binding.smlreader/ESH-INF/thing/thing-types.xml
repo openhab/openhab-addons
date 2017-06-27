@@ -13,6 +13,7 @@
 				<label>Connected serial port</label>
 				<description>The device serial port (e.g. /dev/tty0 or COM1)</description>
 				<required>true</required>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Rate</label>
