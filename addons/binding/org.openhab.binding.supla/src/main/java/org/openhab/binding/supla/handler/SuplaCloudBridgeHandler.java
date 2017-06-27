@@ -151,18 +151,29 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     }
 
     private String findThingLabel(SuplaIoDevice device) {
+        final StringBuilder sb = new StringBuilder();
+
         final String name = device.getName();
-        if (name != null && !name.trim().isEmpty()) {
+        if (isValidString(name)) {
             logger.trace("Using name ad ID for {}", device);
-            return name;
+            sb.append(name);
         }
         final String comment = device.getComment();
-        if (comment != null && !comment.trim().isEmpty()) {
+        if (isValidString(comment)) {
             logger.trace("Using comment ad ID for {}", device);
-            return comment;
+            sb.append("(").append(comment).append(")");
         }
-        logger.trace("Using gUID ad ID for {}", device);
-        return device.getGuid();
+        final String primaryLabel = sb.toString();
+        if(isValidString(primaryLabel)) {
+            return primaryLabel;
+        } else {
+            logger.trace("Using gUID ad ID for {}", device);
+            return device.getGuid();
+        }
+    }
+
+    private boolean isValidString(String string) {
+        return string != null && !string.trim().isEmpty();
     }
 
     private Map<String, Object> buildThingProperties(SuplaIoDevice device) {
