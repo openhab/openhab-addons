@@ -15,9 +15,9 @@
 		</description>
 
 		<config-description>
-		<parameter name="ID" type="int" required="true">
-			<label>ID</label>
-		</parameter>
+			<parameter name="supla-cloud-id" type="integer" required="true">
+				<label>ID</label>
+			</parameter>
 		</config-description>
 
 		<channels>
@@ -36,7 +36,7 @@
 		</description>
 
 		<config-description>
-			<parameter name="ID" type="int" required="true">
+			<parameter name="supla-cloud-id" type="integer" required="true">
 				<label>ID</label>
 			</parameter>
 		</config-description>
