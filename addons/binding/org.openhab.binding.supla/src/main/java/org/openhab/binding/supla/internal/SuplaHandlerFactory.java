@@ -10,20 +10,18 @@ package org.openhab.binding.supla.internal;
 
 import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.openhab.binding.supla.SuplaBindingConstants;
 import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
-import org.openhab.binding.supla.handler.SuplaZamelRow01Handler;
+import org.openhab.binding.supla.handler.OneChannelRelayHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.supla.handler.TwoChannelRelayHandler;
 import org.openhab.binding.supla.internal.discovery.SuplaDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +44,16 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(SUPLA_ZAMEL_ROW_01_THING_TYPE)) {
-            return new SuplaZamelRow01Handler(thing);
-        } else if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
-            final SuplaCloudBridgeHandler bridgeHandler = new SuplaCloudBridgeHandler((Bridge) thing);
-            registerThingDiscovery(bridgeHandler);
-            return bridgeHandler;
+        if (thingTypeUID.equals(ONE_CHANNEL_RELAY_THING_TYPE)) {
+            return new OneChannelRelayHandler(thing);
+        } else if (thingTypeUID.equals(TWO_CHANNEL_RELAY_THING_TYPE)) {
+            return new TwoChannelRelayHandler(thing);
+        } else {
+            if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
+                final SuplaCloudBridgeHandler bridgeHandler = new SuplaCloudBridgeHandler((Bridge) thing);
+                registerThingDiscovery(bridgeHandler);
+                return bridgeHandler;
+            }
         }
 
         return null;

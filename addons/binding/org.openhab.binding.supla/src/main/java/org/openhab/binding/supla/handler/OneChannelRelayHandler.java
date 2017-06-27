@@ -20,30 +20,34 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Supplier;
-
 /**
- * The {@link SuplaZamelRow01Handler} is responsible for handling commands, which are
+ * The {@link OneChannelRelayHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Martin Grzeslowski - Initial contribution
  */
-public class SuplaZamelRow01Handler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(SuplaZamelRow01Handler.class);
+public class OneChannelRelayHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(OneChannelRelayHandler.class);
     private SuplaCloudBridgeHandler bridgeHandler;
 
-    public SuplaZamelRow01Handler(Thing thing) {
+    public OneChannelRelayHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(SWITCH_CHANNEL)) {
-            if(command instanceof OnOffType) {
-                executeCommand(() -> bridgeHandler.switchCommand(channelUID, (OnOffType) command, thing));
-            } else if (command instanceof RefreshType) {
-                executeCommand(() -> bridgeHandler.refreshCommand(channelUID, thing));
-            }
+        if (channelUID.getId().equals(SWITCH_1_CHANNEL)) {
+            executeCommandForSwitchChannel(channelUID, command);
+        } else {
+            logger.warn("Don't know this channel {}!", channelUID.getId());
+        }
+    }
+
+    void executeCommandForSwitchChannel(ChannelUID channelUID, Command command) {
+        if(command instanceof OnOffType) {
+            executeCommand(() -> bridgeHandler.switchCommand(channelUID, (OnOffType) command, thing));
+        } else if (command instanceof RefreshType) {
+            executeCommand(() -> bridgeHandler.refreshCommand(channelUID, thing));
         }
     }
 
@@ -55,7 +59,6 @@ public class SuplaZamelRow01Handler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
-
 
     @Override
     public void initialize() {

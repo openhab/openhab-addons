@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -28,8 +27,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Long.parseLong;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.supla.SuplaBindingConstants.RELAY_CHANNEL_TYPE;
-import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
-import static org.openhab.binding.supla.SuplaBindingConstants.SWITCH_CHANNEL;
+import static org.openhab.binding.supla.SuplaBindingConstants.SWITCH_1_CHANNEL;
 
 @SuppressWarnings("unused")
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
@@ -131,7 +129,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
 
     private String findThingType(SuplaIoDevice device) {
         // TODO need to do better logic
-        return SuplaBindingConstants.SUPLA_ZAMEL_ROW_01_THING_ID;
+        return SuplaBindingConstants.ONE_CHANNEL_RELAY_THING_ID;
     }
 
     private String findThingLabel(SuplaIoDevice device) {
@@ -154,7 +152,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         final SuplaChannel firstChannel = device.getChannels().iterator().next();
         checkArgument(RELAY_CHANNEL_TYPE.equals(firstChannel.getType().getName()),
                 "Wrong channel name! Expected %s got %s.", RELAY_CHANNEL_TYPE, firstChannel.getType().getName());
-        properties.put(SWITCH_CHANNEL, String.valueOf(firstChannel.getId()));
+        properties.put(SWITCH_1_CHANNEL, String.valueOf(firstChannel.getId()));
         return properties;
     }
 }
