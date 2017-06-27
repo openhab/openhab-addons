@@ -8,23 +8,22 @@
  */
 package org.openhab.binding.supla.internal;
 
-import static org.openhab.binding.supla.SuplaBindingConstants.*;
-
-import java.util.Hashtable;
-
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.openhab.binding.supla.SuplaBindingConstants;
-import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
-import org.openhab.binding.supla.handler.OneChannelRelayHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.supla.handler.OneChannelRelayHandler;
+import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
 import org.openhab.binding.supla.handler.TwoChannelRelayHandler;
 import org.openhab.binding.supla.internal.discovery.SuplaDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Hashtable;
+
+import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
 /**
  * The {@link SuplaHandlerFactory} is responsible for creating things and thing
@@ -48,12 +47,10 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
             return new OneChannelRelayHandler(thing);
         } else if (thingTypeUID.equals(TWO_CHANNEL_RELAY_THING_TYPE)) {
             return new TwoChannelRelayHandler(thing);
-        } else {
-            if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
-                final SuplaCloudBridgeHandler bridgeHandler = new SuplaCloudBridgeHandler((Bridge) thing);
-                registerThingDiscovery(bridgeHandler);
-                return bridgeHandler;
-            }
+        } else if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
+            final SuplaCloudBridgeHandler bridgeHandler = new SuplaCloudBridgeHandler((Bridge) thing);
+            registerThingDiscovery(bridgeHandler);
+            return bridgeHandler;
         }
 
         return null;
