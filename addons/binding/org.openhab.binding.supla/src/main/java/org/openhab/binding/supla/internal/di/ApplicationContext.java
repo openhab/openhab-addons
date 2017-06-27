@@ -2,16 +2,16 @@ package org.openhab.binding.supla.internal.di;
 
 import org.openhab.binding.supla.internal.api.ChannelManager;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
-import org.openhab.binding.supla.internal.server.http.OAuthApiHttpExecutor;
-import org.openhab.binding.supla.internal.supla.api.SuplaChannelManager;
-import org.openhab.binding.supla.internal.supla.api.SuplaIoDevicesManager;
-import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 import org.openhab.binding.supla.internal.api.TokenManager;
-import org.openhab.binding.supla.internal.supla.api.SuplaTokenManager;
-import org.openhab.binding.supla.internal.server.http.HttpExecutor;
-import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutor;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.mappers.Mapper;
+import org.openhab.binding.supla.internal.server.http.HttpExecutor;
+import org.openhab.binding.supla.internal.server.http.OAuthApiHttpExecutor;
+import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutor;
+import org.openhab.binding.supla.internal.supla.api.SuplaChannelManager;
+import org.openhab.binding.supla.internal.supla.api.SuplaIoDevicesManager;
+import org.openhab.binding.supla.internal.supla.api.SuplaTokenManager;
+import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -94,7 +94,7 @@ public final class ApplicationContext {
     }
 
     public ChannelManager getChannelManager() {
-        return get(channelManager, () -> new SuplaChannelManager(), x -> this.channelManager = x);
+        return get(channelManager, () -> new SuplaChannelManager(getHttpExecutor(), getMapper()), x -> this.channelManager = x);
     }
 
     public void setChannelManager(ChannelManager channelManager) {

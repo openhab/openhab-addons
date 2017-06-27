@@ -7,12 +7,12 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.supla.SuplaBindingConstants;
 import org.openhab.binding.supla.SuplaCloudConfiguration;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.openhab.binding.supla.internal.discovery.SuplaDiscoveryService;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
+import org.openhab.binding.supla.internal.supla.entities.SuplaChannelStatus;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.openhab.binding.supla.internal.supla.entities.SuplaType;
 import org.slf4j.Logger;
@@ -80,8 +80,10 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
 
     // TODO
     void refreshCommand(ChannelUID channelUID, Thing thing) {
-//        final long deviceId = parseLong(thing.getProperties().get(SUPLA_IO_DEVICE_ID));
-//        final long channelId = parseLong(thing.getProperties().get(channelUID.getId()));
+        final long deviceId = parseLong(thing.getProperties().get(SUPLA_IO_DEVICE_ID));
+        final long channelId = parseLong(thing.getProperties().get(channelUID.getId()));
+        final SuplaChannelStatus channelStatus = applicationContext.getChannelManager().obtainChannelStatus(channelId);
+        // TODO set this state to channel
 //        applicationContext.getIoDevicesManager()
 //                .obtainIoDevice(deviceId)
 //                .ifPresent(device -> {
