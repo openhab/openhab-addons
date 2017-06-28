@@ -21,7 +21,7 @@ Instructions for Debian/Ubuntu are given below.
 Installing [libpcap](http://www.tcpdump.org/) should be as simple as:
 
 ```shell
-apt-get install libpcap-dev
+sudo apt-get install libpcap-dev
 ```
 
 You can run Pcap4J with a non-root openHAB user by granting capabilities `CAP_NET_RAW` and `CAP_NET_ADMIN`
@@ -42,7 +42,7 @@ sudo getcap $(realpath /usr/bin/java)
 If you need mulitple capabilities (like "cap_net_bind_service" for the Network binding), you have to add them like this:
 
 ```shell
-sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' `realpath /usr/bin/java`
+sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' $(realpath /usr/bin/java)
 ```
 
 ### Installing WinPcap on Windows
@@ -80,12 +80,13 @@ There is one supported Thing, the "Amazon Dash Button".
 
 ## Discovery
 
-Background discovery is not supported as it is not possible to distinguish Dash Buttons and other Amazon devices like Kindle, Fire TV or Echo.
-You can start the discovery process explicitly for Dash Button devices.
-While scanning just press the button in order to put it into your inbox.
+Background discovery is not supported as it is not possible to distinguish between a Dash Button and other Amazon devices like the Kindle, a Fire TV or an Echo speaker.
+
+You can start the discovery process for Dash Button devices manually.
+While openHAB is in the scanning process, press the button on the Dash to be recognized and added to your inbox.
 
 **Caution:**
-You have to be aware that other Amazon devices might pop up in your inbox if they send an ARP request while scanning for Dash Buttons.
+You have to be aware that other Amazon devices might pop up in your inbox if they send an `ARP` request while scanning for Dash Buttons.
 You can ignore these devices in your inbox.
 
 ## Thing Configuration
