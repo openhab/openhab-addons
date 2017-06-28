@@ -1,8 +1,3 @@
-<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
-<<<<<<< 22e7f0057024a151fbe7e0c2e676ca9e9bcf6997
-=======
-=======
->>>>>>> Added Chamberlain MyQ skeleton
 /**
  * Copyright (c) 2014-2016 by the respective copyright holders.
  *
@@ -11,10 +6,6 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-<<<<<<< 60b2641262654f560ba41b55ecd404bec7547f0b
->>>>>>> Project skeleton.
-=======
->>>>>>> Added Chamberlain MyQ skeleton
 package org.openhab.binding.wink.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
