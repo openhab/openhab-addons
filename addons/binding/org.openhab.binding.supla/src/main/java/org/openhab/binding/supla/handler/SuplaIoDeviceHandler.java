@@ -29,6 +29,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     public SuplaIoDeviceHandler(Thing thing) {
         super(thing);
     }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(SWITCH_1_CHANNEL)) {
