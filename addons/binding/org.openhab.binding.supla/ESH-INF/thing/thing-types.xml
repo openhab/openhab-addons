@@ -14,15 +14,15 @@
 			This thing is
 		</description>
 
+		<channels>
+			<channel id="switch-1" typeId="switch-channel"/>
+		</channels>
+
 		<config-description>
 			<parameter name="supla-cloud-id" type="integer" required="true">
 				<label>ID</label>
 			</parameter>
 		</config-description>
-
-		<channels>
-			<channel id="switch-1" typeId="switch-channel"/>
-		</channels>
 	</thing-type>
 
 	<thing-type id="two-channel-relay">
@@ -35,16 +35,16 @@
 			This thing is
 		</description>
 
-		<config-description>
-			<parameter name="supla-cloud-id" type="integer" required="true">
-				<label>ID</label>
-			</parameter>
-		</config-description>
-
 		<channels>
 			<channel id="switch-1" typeId="switch-channel"/>
 			<channel id="switch-2" typeId="switch-channel"/>
 		</channels>
+
+		<!--<config-description>-->
+		<!--<parameter name="supla-cloud-id" type="integer" required="true">-->
+		<!--<label>ID</label>-->
+		<!--</parameter>-->
+		<!--</config-description>-->
 	</thing-type>
 
 	<channel-type id="switch-channel">
