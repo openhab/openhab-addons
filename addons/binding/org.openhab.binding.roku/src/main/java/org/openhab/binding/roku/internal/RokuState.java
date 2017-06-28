@@ -19,12 +19,12 @@ import org.openhab.binding.roku.internal.protocol.RokuCommunication;
  * functionality the binding offers.
  *
  * @author Jarod Peters - Initial contribution
+ * @auther Shawn Wilsher - Overhaul of channels and properties
  */
 public class RokuState {
     public StringType udn;
     public StringType serial_number;
     public StringType device_id;
-    public StringType advertising_id;
     public StringType vendor_name;
     public StringType model_name;
     public StringType model_number;
@@ -35,18 +35,7 @@ public class RokuState {
     public StringType user_device_name;
     public StringType software_version;
     public StringType software_build;
-    public StringType secure_device;
-    public StringType language;
-    public StringType country;
-    public StringType locale;
-    public StringType time_zone;
-    public StringType time_zone_offset;
     public StringType power_mode;
-    public StringType supports_suspend;
-    public StringType developer_enabled;
-    public StringType search_enabled;
-    public StringType voice_search_enabled;
-    public StringType notifications_enabled;
     public StringType headphones_connected;
     public StringType active_app;
     public StringType application_menu;
@@ -69,112 +58,60 @@ public class RokuState {
         return active_app_img;
     }
 
-    public StringType getUdn() {
-        return udn;
+    public String getUdn() {
+        return udn.toFullString();
     }
 
-    public StringType getSerialNumber() {
-        return serial_number;
+    public String getSerialNumber() {
+        return serial_number.toFullString();
     }
 
-    public StringType getDeviceId() {
-        return device_id;
+    public String getDeviceId() {
+        return device_id.toFullString();
     }
 
-    public StringType getAdvertisingId() {
-        return advertising_id;
+    public String getVendorName() {
+        return vendor_name.toFullString();
     }
 
-    public StringType getVendorName() {
-        return vendor_name;
+    public String getModelName() {
+        return model_name.toFullString();
     }
 
-    public StringType getModelName() {
-        return model_name;
+    public String getModelNumber() {
+        return model_number.toFullString();
     }
 
-    public StringType getModelNumber() {
-        return model_number;
+    public String getModelRegion() {
+        return model_region.toFullString();
     }
 
-    public StringType getModelRegion() {
-        return model_region;
+    public String getWifiMac() {
+        return wifi_mac.toFullString();
     }
 
-    public StringType getWifiMac() {
-        return wifi_mac;
+    public String getEthernetMac() {
+        return ethernet_mac.toFullString();
     }
 
-    public StringType getEthernetMac() {
-        return ethernet_mac;
+    public String getNetworkType() {
+        return network_type.toFullString();
     }
 
-    public StringType getNetworkType() {
-        return network_type;
+    public String getUserDeviceName() {
+        return user_device_name.toFullString();
     }
 
-    public StringType getUserDeviceName() {
-        return user_device_name;
+    public String getSoftwareVersion() {
+        return software_version + " build " + software_build;
     }
 
-    public StringType getSoftwareVersion() {
-        return software_version;
+    public String getPowerMode() {
+        return power_mode.toFullString();
     }
 
-    public StringType getSoftwareBuild() {
-        return software_build;
-    }
-
-    public StringType getSecureDevice() {
-        return secure_device;
-    }
-
-    public StringType getLanguage() {
-        return language;
-    }
-
-    public StringType getCountry() {
-        return country;
-    }
-
-    public StringType getLocale() {
-        return locale;
-    }
-
-    public StringType getTimeZone() {
-        return time_zone;
-    }
-
-    public StringType getTimeZoneOffSet() {
-        return time_zone_offset;
-    }
-
-    public StringType getPowerMode() {
-        return power_mode;
-    }
-
-    public StringType getSupportSuspend() {
-        return supports_suspend;
-    }
-
-    public StringType getDeveloperEnabled() {
-        return developer_enabled;
-    }
-
-    public StringType getSearchEnabled() {
-        return search_enabled;
-    }
-
-    public StringType getVoiceSearchEnabled() {
-        return voice_search_enabled;
-    }
-
-    public StringType getNotificationsEnabled() {
-        return notifications_enabled;
-    }
-
-    public StringType getHeadphonesConnected() {
-        return headphones_connected;
+    public String getHeadphonesConnected() {
+        return headphones_connected.toFullString();
     }
 
     public StringType getActive() {

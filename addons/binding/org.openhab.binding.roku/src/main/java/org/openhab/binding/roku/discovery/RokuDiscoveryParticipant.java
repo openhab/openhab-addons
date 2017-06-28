@@ -19,7 +19,6 @@ import java.util.Set;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.DeviceDetails;
@@ -63,13 +62,11 @@ public class RokuDiscoveryParticipant implements UpnpDiscoveryParticipant {
         }
         Map<String, Object> properties = new HashMap<>();
         properties.put(RokuBindingConstants.IP_ADDRESS, ipAddress);
-        properties.put(RokuBindingConstants.PORT, port);
-        properties.put(RokuBindingConstants.REFRESH_INTERVAL, 30);
-        properties.put(Thing.PROPERTY_VENDOR, state.getVendorName().toFullString());
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, state.getSerialNumber().toFullString());
+        properties.put(RokuBindingConstants.PORT, Integer.toString(port));
+        properties.put(RokuBindingConstants.REFRESH_INTERVAL, "30");
         String label = "Roku Device";
-        if (!state.getUserDeviceName().toFullString().equals("")) {
-            label = state.getUserDeviceName().toFullString();
+        if (state.getUserDeviceName() != null && !state.getUserDeviceName().equals("")) {
+            label = state.getUserDeviceName();
         }
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
     }

@@ -11,9 +11,11 @@ package org.openhab.binding.roku.internal.handler;
 import static org.openhab.binding.roku.RokuBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Jarod Peters - Initial contribution
+ * @auther Shawn Wilsher - Overhaul of channels and properties
  */
 public class RokuHandler extends BaseThingHandler {
 
@@ -81,49 +84,42 @@ public class RokuHandler extends BaseThingHandler {
             logger.debug("Roku device '{}' but is not communicating", ipAddress, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
         }
-        try {
-            updateState(CHANNEL_STATUS, state.getPowerMode());
-            updateState(CHANNEL_ACTIVE, state.getActive());
-            updateState(CHANNEL_UDN, state.getUdn());
-            updateState(CHANNEL_SERIAL, state.getSerialNumber());
-            updateState(CHANNEL_DEVICEID, state.getDeviceId());
-            updateState(CHANNEL_ADID, state.getAdvertisingId());
-            updateState(CHANNEL_VENDOR, state.getVendorName());
-            updateState(CHANNEL_MODELNAME, state.getModelName());
-            updateState(CHANNEL_MODELNUMBER, state.getModelNumber());
-            updateState(CHANNEL_MODELREGION, state.getModelRegion());
-            updateState(CHANNEL_WIFI, state.getWifiMac());
-            updateState(CHANNEL_ETHERNET, state.getEthernetMac());
-            updateState(CHANNEL_NETWORK, state.getNetworkType());
-            updateState(CHANNEL_DEVICENAME, state.getUserDeviceName());
-            updateState(CHANNEL_SOFTWAREV, state.getSoftwareVersion());
-            updateState(CHANNEL_SOFTWAREB, state.getSoftwareBuild());
-            updateState(CHANNEL_SECUREDEVICE, state.getSecureDevice());
-            updateState(CHANNEL_LANGUAGE, state.getLanguage());
-            updateState(CHANNEL_COUNTRY, state.getCountry());
-            updateState(CHANNEL_LOCALE, state.getLocale());
-            updateState(CHANNEL_TIMEZONE, state.getTimeZone());
-            updateState(CHANNEL_TIMEZONEOFF, state.getTimeZoneOffSet());
-            updateState(CHANNEL_SUSPENDED, state.getSupportSuspend());
-            updateState(CHANNEL_DEVELOPERENABLED, state.getDeveloperEnabled());
-            updateState(CHANNEL_SEARCHENABLED, state.getSearchEnabled());
-            updateState(CHANNEL_VOICESEARCHENABLED, state.getVoiceSearchEnabled());
-            updateState(CHANNEL_NOTIFICATIONSENABLED, state.getNotificationsEnabled());
-            updateState(CHANNEL_HEADPHONESCONNECTED, state.getHeadphonesConnected());
-            updateState(CHANNEL_ICON, state.getActiveImage());
-            /**
-             * Future Functionality
-             * updateState(CHANNEL_APPBROWSER, state.getApplicationMenu());
-             */
-            if (!state.getPowerMode().toFullString().matches("PowerOn")) {
-                updateStatus(ThingStatus.OFFLINE);
-            } else {
-                if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            }
-        } catch (NullPointerException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+
+        updatePropertiesFromState(state);
+
+        updateState(CHANNEL_ACTIVE, state.getActive());
+        updateState(CHANNEL_HEADPHONES, new StringType(state.getHeadphonesConnected()));
+        updateState(CHANNEL_ICON, state.getActiveImage());
+        /**
+         * Future Functionality
+         * updateState(CHANNEL_APPBROWSER, state.getApplicationMenu());
+         */
+        if (!state.getPowerMode().equals("PowerOn")) {
+            updateStatus(ThingStatus.OFFLINE);
+        } else {
+            updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    private void updatePropertiesFromState(RokuState state) {
+        Map<String, String> properties = editProperties();
+        properties.put(PROPERTY_UDN, state.getUdn());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, state.getSerialNumber());
+        properties.put(PROPERTY_DEVICE_ID, state.getDeviceId());
+        properties.put(Thing.PROPERTY_VENDOR, state.getVendorName());
+        properties.put(PROPERTY_MODEL_NAME, state.getModelName());
+        properties.put(Thing.PROPERTY_MODEL_ID, state.getModelNumber());
+        properties.put(PROPERTY_MODEL_REGION, state.getModelRegion());
+        if (state.getNetworkType().equals("ethernet")) {
+            properties.put(PROPERTY_MAC, state.getEthernetMac());
+        } else {
+            properties.put(PROPERTY_MAC, state.getWifiMac());
+        }
+        if (state.getUserDeviceName() != null && !state.getUserDeviceName().equals("")) {
+            properties.put(PROPERTY_USER_DEVICE_NAME, state.getUserDeviceName());
+        }
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, state.getSoftwareVersion());
+
+        updateProperties(properties);
     }
 }

@@ -85,11 +85,9 @@ public class RokuCommunication {
 
     public void updateState(RokuState state) throws IOException {
         Document doc = getRequest(ROKU_DEVICE_INFO);
-        String[] methodStringArray = { "udn", "serial-number", "device-id", "advertising-id", "vendor-name",
-                "model-name", "model-number", "model-region", "wifi-mac", "ethernet-mac", "network-type",
-                "user-device-name", "software-version", "software-build", "secure-device", "language", "country",
-                "locale", "time-zone", "time-zone-offset", "power-mode", "supports-suspend", "developer-enabled",
-                "search-enabled", "voice-search-enabled", "notifications-enabled", "headphones-connected" };
+        String[] methodStringArray = { "udn", "serial-number", "device-id", "vendor-name", "model-name", "model-number",
+                "model-region", "wifi-mac", "ethernet-mac", "network-type", "user-device-name", "software-version",
+                "software-build", "power-mode", "headphones-connected" };
         doc.getDocumentElement().normalize();
         if (doc != null) {
             NodeList nList = doc.getElementsByTagName("device-info");
