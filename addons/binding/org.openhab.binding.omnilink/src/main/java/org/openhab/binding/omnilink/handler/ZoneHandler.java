@@ -23,7 +23,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
 
 public class ZoneHandler extends AbstractOmnilinkHandler {
     private static Logger logger = LoggerFactory.getLogger(ZoneHandler.class);
-    private ZoneStatus zoneStatus;
+    private volatile ZoneStatus zoneStatus;
 
     public ZoneHandler(Thing thing) {
         super(thing);
