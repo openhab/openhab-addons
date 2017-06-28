@@ -60,7 +60,6 @@ public class RokuHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing RokuDevice handler '{}'", getThing().getUID());
-        updateStatus(ThingStatus.INITIALIZING);
         Number refreshInterval = (Number) this.getConfig().get(REFRESH_INTERVAL);
         scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -124,7 +123,7 @@ public class RokuHandler extends BaseThingHandler {
                 }
             }
         } catch (NullPointerException e) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
         }
     }
 }
