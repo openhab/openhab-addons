@@ -1,87 +1,106 @@
 # Amazon Dash Button Binding
 
-The Amazon Dash Button is a very cheap device in order to integrate it in your home automation setup.
+The [Amazon Dash Button](https://www.amazon.com/Dash-Buttons/b?node=10667898011) is a cheap and small Wi-Fi connected device to order products from Amazon with the simple press of a button.
+This Bindings allows to integrate Dash Buttons into your home automation setup.
+
+The Binding code is inspired by [github.com/hortinstein/node-dash-button](https://github.com/hortinstein/node-dash-button).
 
 ## Prerequisites
 
-The binding uses pcap4j (https://www.pcap4j.org/) in order to capture ARP and BOOTP requests send by the Amazon Dash Button. The code is inspired by https://github.com/hortinstein/node-dash-button.
+The Binding uses [Pcap4J](https://www.pcap4j.org/) in order to capture `ARP` and `BOOTP` requests send by the Amazon Dash Button.
 
+Start with installing libpcap (for Mac/Linux/UNIX) or WinPcap (for Windows) on your computer.
+They are native libraries that power the core functionalities of Pcap4J.
 
-### Install Native Library
+**Note:**
+Pcap4J needs administrator/root privileges.
+Instructions for Debian/Ubuntu are given below.
 
-Let’s start with installing libpcap (for Mac/Linux/UNIX) or WinPcap (for Windows) on your computer. They are native libraries that powers the core functionalities of Pcap4J. Pcap4J needs administrator/root privileges.
+### Installing libpcap on Debian/Ubuntu
 
-Source: [https://www.pcap4j.org/](https://www.pcap4j.org/)
-
-#### Debian/Ubuntu
+Installing [libpcap](http://www.tcpdump.org/) should be as simple as:
 
 ```shell
 apt-get install libpcap-dev
 ```
 
-Note: You can run Pcap4J with a non-root user by granting capabilities `CAP_NET_RAW` and `CAP_NET_ADMIN`
-to your java command by the following command: 
+You can run Pcap4J with a non-root openHAB user by granting capabilities `CAP_NET_RAW` and `CAP_NET_ADMIN`
+to the openHAB java environment by the following command: 
 
 ```shell
-sudo setcap cap_net_raw,cap_net_admin=eip `realpath /usr/bin/java`
+sudo setcap cap_net_raw,cap_net_admin=eip $(realpath /usr/bin/java)
 ```
 
-Be aware of other capabilities which are set by setcap. **These capabilities will be overwritten!** You can see which capabilities have already been set with the command:
+Be aware of other capabilities which were previously set by setcap.
+**These capabilities will be overwritten!**
+You can see which capabilities have already been set with the command:
 
 ```shell
-sudo getcap `realpath /usr/bin/java`
+sudo getcap $(realpath /usr/bin/java)
 ```
 
-If you need mulitple capabilities (like "cap_net_bind_service" for the Network binding), you have to add them like this :
+If you need mulitple capabilities (like "cap_net_bind_service" for the Network binding), you have to add them like this:
 
 ```shell
 sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' `realpath /usr/bin/java`
 ```
 
-#### Other Operating Systems
+### Installing WinPcap on Windows
+
+On a Windows system there are two options to go with.
+
+1. The prefered solution is [WinPcap](https://www.winpcap.org) if your network interface is supported.
+2. An alternative option is [npcap](https://github.com/nmap/npcap) with the settings "WinPcap 4.1.3 compatibility" and "Raw 802.11 Packet Capture"
+
+### Installing libpcap on Other Operating Systems
+
+The installation methods might differ.
+A few known operating systems are:
 
 | Operating System | Command                     |
 |:-----------------|:----------------------------|
 | CentOS           | `yum install libpcap-devel` |
 | Mac              | `brew install libpcap`      |
-| Windows          | `choco install winpcap`     |
-
 
 ## Setup Dash Button
 
-Setting up your Dash button is as simple as following the instructions provided by Amazon **EXCEPT FOR THE LAST STEP**. Just follow the instructions to set it up in their mobile app. When you get to the step where it asks you to pick which product you want to map it to, just quit the setup process.
+Setting up your Dash Button is as simple as following the instructions provided by [Amazon](https://www.amazon.com/Dash-Buttons/b?node=10667898011) **EXCEPT FOR THE LAST STEP**.
+Follow the instructions to set up the Dash Button in their mobile app.
+When you get to the step where it asks you to pick which product you want to map it to, just quit the setup process.
 
 ## Block Internet access for the Dash Button
 
-Completely deny internet access for the Amazon Dash Button in your router. You need to find out the Dash button's IP address first of all. This is not explained as this job depends on your environment.
+Completely deny internet access for the Amazon Dash Button in your router. Otherwise the Dash Button will always send notifications.
 
+How to configure your router to block internet access for a certain device is highly depends on your environment and is not explained in this article.
 
 ## Supported Things
 
-There is one supported thing:
-
-* Amazon Dash Button: Thing 
+There is one supported Thing, the "Amazon Dash Button". 
 
 ## Discovery
 
-Background discovery is not supported as it is not possible to distinguish Dash buttons and other Amazon devices like Kindle, Fire TV or Echo.
-You can start the discovery process explicitly for Dash button devices. While scanning just press the button in order to put it into your inbox.
+Background discovery is not supported as it is not possible to distinguish Dash Buttons and other Amazon devices like Kindle, Fire TV or Echo.
+You can start the discovery process explicitly for Dash Button devices.
+While scanning just press the button in order to put it into your inbox.
 
-__ Caution:__  You have to be aware that other Amazon devices might pop up in your inbox if they send an ARP request while scanning for dash buttons. You can ignore that devices in your inbox.
+**Caution:**
+You have to be aware that other Amazon devices might pop up in your inbox if they send an ARP request while scanning for Dash Buttons.
+You can ignore these devices in your inbox.
 
 ## Thing Configuration
 
 ### Amazon Dash Button
 
-* MAC address: The MAC address of the Amazon Dash Button
-* Network interface: The network interface which receives the packets of the Amazon Dash Button
-* Packet processing interval: Often a single button press is recognized multiple times. You can specify how long any further detected button pressed should be ignored after one click is handled (in ms).
+* **MAC address:** The MAC address of the Amazon Dash Button
+* **Network interface:** The network interface which receives the packets of the Amazon Dash Button
+* **Packet processing interval:** Often a single button press is recognized multiple times. You can specify how long any further detected button pressed should be ignored after one click is handled (in ms).
 
 ## Channels
 
-* Press: Trigger channel for recognizing presses on the Amazon Dash Button. You do not have to link this channel to an item. Just reference the channel in your .rules-file like documented in the 'Example usage' section.
+* **Press:** Trigger channel for recognizing presses on the Amazon Dash Button. You do not have to link this channel to an item. Just reference the channel in your .rules-file like documented in the "Example Usage" section.
 
-## Example usage
+## Example Usage
 
 ```
 rule "Dash button pressed"
