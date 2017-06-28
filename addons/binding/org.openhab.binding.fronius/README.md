@@ -23,7 +23,7 @@ The thing has a few configuration parameters:
 
 | Parameter | Description                                                              |
 |-----------|------------------------------------------------------------------------- |
-| Ip        | the ip-adresse of your Fronius Datalogger |
+| Ip        | the ip-address of your Fronius Datalogger |
 | DeviceId  | The identifier of your device ( Default: 1) |
 | refresh   | Refresh interval in seconds |
 
