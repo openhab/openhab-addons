@@ -120,6 +120,17 @@ public class OceanicThingHandler extends BaseThingHandler {
             // User=root
             // Restart=always
             // RestartSec=10
+            //
+            //
+            // However, in order to fix permissions at the OS level, one has to issue following commands:
+            //
+            // sudo useradd openhab dialout
+            // sudo chgrp dialout /dev/ttyS1
+            // sudo chmod 777 /dev/ttyS1
+            //
+            // in order to make /dev/ttyS1 accessible by the 'openhab' system user (that is used to start up the openHAB
+            // runtime), and to make the tty both readable and writable. Alternatively, these commands can be executed
+            // through a script that is attached to the systemd system manager script
 
             if (portId == null) {
                 try {
