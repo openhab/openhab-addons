@@ -21,18 +21,24 @@ import java.util.Set;
  */
 public class SuplaBindingConstants {
 
-    private static final String BINDING_ID = "supla";
+    public static final String BINDING_ID = "supla";
 
     // IDs
+    public static final String SUPLA_DEVICE_THING_ID = "supla-io-device";
+    public static final String BRIDGE_THING_ID = "suplaCloudBridge";
     public static final String ONE_CHANNEL_RELAY_THING_ID = "one-channel-relay";
     public static final String TWO_CHANNEL_RELAY_THING_ID = "two-channel-relay";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "suplaCloudBridge");
+    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_THING_ID);
+    public static final ThingTypeUID SUPLA_IO_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, SUPLA_DEVICE_THING_ID);
     public static final ThingTypeUID ONE_CHANNEL_RELAY_THING_TYPE = new ThingTypeUID(BINDING_ID, ONE_CHANNEL_RELAY_THING_ID);
     public static final ThingTypeUID TWO_CHANNEL_RELAY_THING_TYPE = new ThingTypeUID(BINDING_ID, TWO_CHANNEL_RELAY_THING_ID);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_THING_TYPE, ONE_CHANNEL_RELAY_THING_TYPE, TWO_CHANNEL_RELAY_THING_TYPE);
+
+    // Channels IDs
+    public static final String SWITCH_CHANNEL_ID = "switch-channel";
 
     // List of all Channel ids
     public static final String SWITCH_1_CHANNEL = "switch-1";

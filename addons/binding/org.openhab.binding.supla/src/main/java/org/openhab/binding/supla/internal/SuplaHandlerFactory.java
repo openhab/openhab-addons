@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.supla.handler.OneChannelRelayHandler;
 import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
+import org.openhab.binding.supla.handler.SuplaIoDeviceHandler;
 import org.openhab.binding.supla.handler.TwoChannelRelayHandler;
 import org.openhab.binding.supla.internal.discovery.SuplaDiscoveryService;
 import org.slf4j.Logger;
@@ -47,6 +48,8 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
             return new OneChannelRelayHandler(thing);
         } else if (thingTypeUID.equals(TWO_CHANNEL_RELAY_THING_TYPE)) {
             return new TwoChannelRelayHandler(thing);
+        } else if (thingTypeUID.equals(SUPLA_IO_DEVICE_THING_TYPE)) {
+            return new SuplaIoDeviceHandler(thing);
         } else if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
             final SuplaCloudBridgeHandler bridgeHandler = new SuplaCloudBridgeHandler((Bridge) thing);
             registerThingDiscovery(bridgeHandler);

@@ -4,6 +4,23 @@
 						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
+	<thing-type id="supla-io-device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="suplaCloudBridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Supla Device</label>
+		<description>
+			Thing that represents devices added to Supla Cloud. All channels will be discovered after connecting to Supla Cloud.
+		</description>
+
+		<config-description>
+			<parameter name="supla-cloud-id" type="integer" required="true">
+				<label>ID</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="one-channel-relay">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="suplaCloudBridge"/>

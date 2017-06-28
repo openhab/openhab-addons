@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2010-2017 by the respective copyright holders.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- */
 package org.openhab.binding.supla.handler;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -29,20 +21,14 @@ import static java.lang.String.format;
 import static org.openhab.binding.supla.SuplaBindingConstants.SWITCH_1_CHANNEL;
 import static org.openhab.binding.supla.SuplaBindingConstants.SWITCH_CHANNEL_ID;
 
-/**
- * The {@link OneChannelRelayHandler} is responsible for handling commands, which are
- * sent to one of the channels.
- *
- * @author Martin Grzeslowski - Initial contribution
- */
-public class OneChannelRelayHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(OneChannelRelayHandler.class);
+@SuppressWarnings("Duplicates")
+public final class SuplaIoDeviceHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(SuplaIoDeviceHandler.class);
     private SuplaCloudBridgeHandler bridgeHandler;
 
-    public OneChannelRelayHandler(Thing thing) {
+    public SuplaIoDeviceHandler(Thing thing) {
         super(thing);
     }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(SWITCH_1_CHANNEL)) {
@@ -52,7 +38,7 @@ public class OneChannelRelayHandler extends BaseThingHandler {
         }
     }
 
-    void executeCommandForSwitchChannel(ChannelUID channelUID, Command command) {
+    private void executeCommandForSwitchChannel(ChannelUID channelUID, Command command) {
         if(command instanceof OnOffType) {
             executeCommand(() -> bridgeHandler.switchCommand(channelUID, (OnOffType) command, thing));
         } else if (command instanceof RefreshType) {
@@ -91,7 +77,7 @@ public class OneChannelRelayHandler extends BaseThingHandler {
     private static List<Channel> buildChannels(SuplaIoDevice suplaIoDevice) {
         return suplaIoDevice.getChannels()
                 .stream()
-                .map(OneChannelRelayHandler::buildChannel)
+                .map(SuplaIoDeviceHandler::buildChannel)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());

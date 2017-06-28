@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
@@ -52,6 +51,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        // TODO add checking if all data is correct for bridge, i.e. can we connect to supla cloud
         logger.debug("Initializing SuplaCloudBridgeHandler");
         this.configuration = getConfigAs(SuplaCloudConfiguration.class);
         this.applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
@@ -178,10 +178,14 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
 
     private Map<String, Object> buildThingProperties(SuplaIoDevice device) {
         Map<String, Object> properties = new HashMap<>();
-        final SuplaChannel firstChannel = device.getChannels().iterator().next();
-        checkArgument(RELAY_CHANNEL_TYPE.equals(firstChannel.getType().getName()),
-                "Wrong channel name! Expected %s got %s.", RELAY_CHANNEL_TYPE, firstChannel.getType().getName());
-        properties.put(SWITCH_1_CHANNEL, String.valueOf(firstChannel.getId()));
+        properties.put("supla-cloud-id", (int) device.getId());
+
+        // TODO support multiple channels
+//        final SuplaChannel firstChannel = device.getChannels().iterator().next();
+//        checkArgument(RELAY_CHANNEL_TYPE.equals(firstChannel.getType().getName()),
+//                "Wrong channel name! Expected %s got %s.", RELAY_CHANNEL_TYPE, firstChannel.getType().getName());
+//        properties.put(SWITCH_1_CHANNEL, String.valueOf(firstChannel.getId()));
+
         return properties;
     }
 }
