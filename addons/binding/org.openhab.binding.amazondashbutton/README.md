@@ -1,13 +1,19 @@
 # Amazon Dash Button Binding
 
 The [Amazon Dash Button](https://www.amazon.com/Dash-Buttons/b?node=10667898011) is a cheap and small Wi-Fi connected device to order products from Amazon with the simple press of a button.
-This Bindings allows to integrate Dash Buttons into your home automation setup.
+This Binding allows to integrate Dash Buttons into your home automation setup.
 
-The Binding code is inspired by [github.com/hortinstein/node-dash-button](https://github.com/hortinstein/node-dash-button).
+The Binding code is inspired by [hortinstein/node-dash-button](https://github.com/hortinstein/node-dash-button).
+
+**Warning:**
+The Dash Button will try to contact the Amazon servers every time the button is pressed.
+This might not be in line with your privacy preferences but can be prevented.
+Please refer to the ["Preventing Communication with Amazon Servers"](#no-phonehome) section for details.
 
 ## Prerequisites
 
 The Binding uses [Pcap4J](https://www.pcap4j.org/) in order to capture `ARP` and `BOOTP` requests send by the Amazon Dash Button.
+Buttons will hence only be usable within the same network as your openHAB instance.
 
 Start with installing libpcap (for Mac/Linux/UNIX) or WinPcap (for Windows) on your computer.
 They are native libraries that power the core functionalities of Pcap4J.
@@ -49,7 +55,7 @@ sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' $(realpath
 
 On a Windows system there are two options to go with.
 
-1. The prefered solution is [WinPcap](https://www.winpcap.org) if your network interface is supported.
+1. The preferred solution is [WinPcap](https://www.winpcap.org) if your network interface is supported.
 2. An alternative option is [npcap](https://github.com/nmap/npcap) with the settings "WinPcap 4.1.3 compatibility" and "Raw 802.11 Packet Capture"
 
 ### Installing libpcap on Other Operating Systems
@@ -68,11 +74,18 @@ Setting up your Dash Button is as simple as following the instructions provided 
 Follow the instructions to set up the Dash Button in their mobile app.
 When you get to the step where it asks you to pick which product you want to map it to, just quit the setup process.
 
-## Block Internet access for the Dash Button
+{: #no-phonehome}
+## Preventing Communication with Amazon Servers
 
-Completely deny internet access for the Amazon Dash Button in your router. Otherwise the Dash Button will always send notifications.
+Be aware:
+Every time a Dash Button is pressed a request will be sent to the Amazon servers.
+If no product was configured for the Button, a notification will be presented by the Amazon app on your smartphone.
 
-How to configure your router to block internet access for a certain device is highly depends on your environment and is not explained in this article.
+To prevent the Dash Button from contacting the Amazon Servers, block Internet access for the device.
+Please refer to the documentation of your network's router for details.
+If your network doesn't provide that option, you can at least deal with the notifications by either uninstalling the Amazon app or disabling notifications for it (possible on most smartphone OSs).
+
+Preventing the communication with the Amazon servers or the Amazon app is **not** necessary to integrate the Dash Button in openHAB.
 
 ## Supported Things
 
@@ -83,11 +96,11 @@ There is one supported Thing, the "Amazon Dash Button".
 Background discovery is not supported as it is not possible to distinguish between a Dash Button and other Amazon devices like the Kindle, a Fire TV or an Echo speaker.
 
 You can start the discovery process for Dash Button devices manually.
-While openHAB is in the scanning process, press the button on the Dash to be recognized and added to your inbox.
+While openHAB is in the scanning process, press the button on the Dash to be recognized and added to your Inbox.
 
 **Caution:**
-You have to be aware that other Amazon devices might pop up in your inbox if they send an `ARP` request while scanning for Dash Buttons.
-You can ignore these devices in your inbox.
+You have to be aware that other Amazon devices might pop up in your Inbox if they send an `ARP` request while scanning for Dash Buttons.
+You can ignore these devices in your Inbox.
 
 ## Thing Configuration
 
