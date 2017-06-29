@@ -60,6 +60,5 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
 
         SuplaDiscoveryService discoveryService = new SuplaDiscoveryService(bridgeHandler);
         bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
-        discoveryService.activate();
     }
 }
