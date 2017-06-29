@@ -3,7 +3,6 @@ package org.openhab.binding.supla.handler;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -13,6 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+
+import static java.lang.String.format;
+import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SuplaCloudBridgeHandler.class);
@@ -43,11 +47,17 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        // TODO add checking if all data is correct for bridge, i.e. can we connect to supla cloud
         logger.debug("Initializing SuplaCloudBridgeHandler");
         this.configuration = getConfigAs(SuplaCloudConfiguration.class);
         this.applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
-        updateStatus(ThingStatus.ONLINE);
+        try {
+            applicationContext.getIoDevicesManager().obtainIoDevices();
+            updateStatus(ONLINE);
+        } catch (Exception e) {
+            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
+                    format("Supla Cloud data access is wrong! Please double check that everything is passed correctly! %s",
+                            e.getLocalizedMessage()));
+        }
     }
 
     public Optional<ApplicationContext> getApplicationContext() {
