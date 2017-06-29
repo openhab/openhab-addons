@@ -27,8 +27,10 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_ZONE_CURRENT_CONDITION = "current_condition";
     public final static String CHANNEL_ZONE_LATCHED_ALARM_STATUS = "latched_alarm_status";
     public final static String CHANNEL_ZONE_ARMING_STATUS = "arming_status";
+    public final static String CHANNEL_ZONE_BYPASS = "bypass";
+    public final static String CHANNEL_ZONE_RESTORE = "restore";
 
-    // areas activate_keypad_emergency
+    // areas
     public final static String CHANNEL_AREA_MODE = "mode";
     public final static String CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY = "activate_keypad_emergency";
     public final static String CHANNEL_AREA_ALARM_BURGLARY = "alarm_burglary";
@@ -42,6 +44,13 @@ public class OmnilinkBindingConstants {
     public final static String[] CHANNEL_AREA_ALARMS = { CHANNEL_AREA_ALARM_BURGLARY, CHANNEL_AREA_ALARM_FIRE,
             CHANNEL_AREA_ALARM_GAS, CHANNEL_AREA_ALARM_AUXILARY, CHANNEL_AREA_ALARM_FREEZE, CHANNEL_AREA_ALARM_WATER,
             CHANNEL_AREA_ALARM_DURESS, CHANNEL_AREA_ALARM_TEMPERATURE };
+    public final static String CHANNEL_AREA_SECURITY_MODE_DISARM = "disarm";
+    public final static String CHANNEL_AREA_SECURITY_MODE_DAY = "day";
+    public final static String CHANNEL_AREA_SECURITY_MODE_NIGHT = "night";
+    public final static String CHANNEL_AREA_SECURITY_MODE_AWAY = "away";
+    public final static String CHANNEL_AREA_SECURITY_MODE_VACATION = "vacation";
+    public final static String CHANNEL_AREA_SECURITY_MODE_DAY_INSTANT = "day_instant";
+    public final static String CHANNEL_AREA_SECURITY_MODE_NIGHT_DELAYED = "night_delayed";
 
     // units
     public final static String CHANNEL_UNIT_LEVEL = "level";
