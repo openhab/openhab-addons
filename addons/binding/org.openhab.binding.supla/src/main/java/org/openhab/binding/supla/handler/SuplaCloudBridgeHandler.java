@@ -49,9 +49,11 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing SuplaCloudBridgeHandler");
         this.configuration = getConfigAs(SuplaCloudConfiguration.class);
-        this.applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
+        ApplicationContext applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
         try {
             applicationContext.getIoDevicesManager().obtainIoDevices();
+            // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
+            this.applicationContext  = applicationContext;
             updateStatus(ONLINE);
         } catch (Exception e) {
             updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
