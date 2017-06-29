@@ -9,6 +9,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.channels.ChannelBuilder;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
@@ -41,9 +43,10 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        Consumer<State> updateState = state -> this.updateState(channelUID, state);
         applicationContext.getCommandExecutorFactory()
                 .findCommand(channelUID)
-                .ifPresent(executor -> executor.execute(command));
+                .ifPresent(executor -> executor.execute(updateState, command));
     }
 
     @Override

@@ -118,7 +118,7 @@ public final class ApplicationContext {
     }
 
     public CommandExecutorFactory getCommandExecutorFactory() {
-        return get(commandExecutorFactory, () -> new CommandExecutorFactoryImpl(), x -> this.commandExecutorFactory = x);
+        return get(commandExecutorFactory, () -> new CommandExecutorFactoryImpl(getChannelManager()), x -> this.commandExecutorFactory = x);
     }
 
     public void setCommandExecutorFactory(CommandExecutorFactory commandExecutorFactory) {
