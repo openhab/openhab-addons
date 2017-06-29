@@ -36,10 +36,6 @@ public class SuplaBindingConstants {
     // Channels IDs
     public static final String SWITCH_CHANNEL_ID = "switch-channel";
 
-    // List of all Channel ids
-    public static final String SWITCH_1_CHANNEL = "switch-1";
-    public static final String SWITCH_2_CHANNEL = "switch-2";
-
     // Supla Consts
     // Channel
     public static final String SUPLA_IO_DEVICE_ID = "supla-io-device-id";

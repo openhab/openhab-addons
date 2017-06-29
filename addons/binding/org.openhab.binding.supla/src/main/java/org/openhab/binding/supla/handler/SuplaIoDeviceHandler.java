@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static org.openhab.binding.supla.SuplaBindingConstants.SWITCH_1_CHANNEL;
 import static org.openhab.binding.supla.SuplaBindingConstants.SWITCH_CHANNEL_ID;
 
 @SuppressWarnings("Duplicates")
@@ -32,7 +31,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(SWITCH_1_CHANNEL)) {
+        if (channelUID.getId().equals("")) { // TODO pass correct ID from SuplaConstants
             executeCommandForSwitchChannel(channelUID, command);
         } else {
             logger.warn("Don't know this channel {}!", channelUID.getId());
