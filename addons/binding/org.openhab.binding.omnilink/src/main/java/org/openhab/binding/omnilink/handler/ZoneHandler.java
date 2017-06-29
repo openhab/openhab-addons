@@ -90,6 +90,7 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
     public void initialize() {
         updateZoneStatus();
         updateChannels();
+        super.initialize();
     }
 
     @Override
