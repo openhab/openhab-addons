@@ -6,19 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.robonect.model.org.openhab.binding.robonect.model;
+package org.openhab.binding.robonect.model;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.robonect.model.ErrorList;
-import org.openhab.binding.robonect.model.ModelParser;
-import org.openhab.binding.robonect.model.MowerInfo;
-import org.openhab.binding.robonect.model.MowerMode;
-import org.openhab.binding.robonect.model.MowerStatus;
-import org.openhab.binding.robonect.model.Name;
-import org.openhab.binding.robonect.model.RobonectAnswer;
-import org.openhab.binding.robonect.model.Timer;
-import org.openhab.binding.robonect.model.VersionInfo;
 
 import static org.junit.Assert.*;
 
