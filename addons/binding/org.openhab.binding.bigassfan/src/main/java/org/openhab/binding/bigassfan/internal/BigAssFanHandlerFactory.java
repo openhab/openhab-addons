@@ -15,6 +15,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.bigassfan.handler.BigAssFanHandler;
+import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BigAssFanHandlerFactory} is responsible for creating things and thing
@@ -23,6 +26,13 @@ import org.openhab.binding.bigassfan.handler.BigAssFanHandler;
  * @author Mark Hilbush - Initial contribution
  */
 public class BigAssFanHandlerFactory extends BaseThingHandlerFactory {
+    private Logger logger = LoggerFactory.getLogger(BigAssFanHandlerFactory.class);
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        logger.info("BigAssFan binding v{}", bundleContext.getBundle().getVersion());
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
