@@ -69,22 +69,26 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private void internalInitialize() {
-        final Optional<ApplicationContext> optional = bridgeHandler.getApplicationContext();
-        if (optional.isPresent()) {
-            final ApplicationContext applicationContext = optional.get();
-            final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(applicationContext.getIoDevicesManager());
-            if (suplaIoDevice.isPresent()) {
-                setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
+        try {
+            final Optional<ApplicationContext> optional = bridgeHandler.getApplicationContext();
+            if (optional.isPresent()) {
+                final ApplicationContext applicationContext = optional.get();
+                final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(applicationContext.getIoDevicesManager());
+                if (suplaIoDevice.isPresent()) {
+                    setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
+                } else {
+                    updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "Can not find Supla device!");
+                    return;
+                }
             } else {
-                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "Can not find Supla device!");
+                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!", this.bridgeHandler.getThing().getUID()));
                 return;
             }
-        } else {
-            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!", this.bridgeHandler.getThing().getUID()));
-            return;
-        }
 
-        updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (Exception e) {
+            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Error occurred during initialization! %s", e.getLocalizedMessage()));
+        }
     }
 
 
