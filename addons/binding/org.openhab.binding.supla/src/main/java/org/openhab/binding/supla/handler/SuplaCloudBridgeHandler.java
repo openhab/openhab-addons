@@ -2,8 +2,10 @@ package org.openhab.binding.supla.handler;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.supla.SuplaCloudConfiguration;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
@@ -25,6 +27,18 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // no channels - nothing to do
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        super.childHandlerInitialized(childHandler, childThing);
+        // TODO add to pool that updates all child handlers
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        super.childHandlerDisposed(childHandler, childThing);
+        // TODO remove from pool that updates all child handlers
     }
 
     @Override
