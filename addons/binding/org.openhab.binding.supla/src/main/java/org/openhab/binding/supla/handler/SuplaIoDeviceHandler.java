@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static org.openhab.binding.supla.SuplaBindingConstants.LIGHT_CHANNEL_ID;
 
-@SuppressWarnings("Duplicates")
 public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SuplaIoDeviceHandler.class);
     private SuplaCloudBridgeHandler bridgeHandler;
