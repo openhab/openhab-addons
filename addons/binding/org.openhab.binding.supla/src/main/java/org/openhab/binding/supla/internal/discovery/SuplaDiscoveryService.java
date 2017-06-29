@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
 public class SuplaDiscoveryService extends AbstractDiscoveryService {
@@ -70,26 +71,22 @@ public class SuplaDiscoveryService extends AbstractDiscoveryService {
         final StringBuilder sb = new StringBuilder();
 
         final String name = device.getName();
-        if (isValidString(name)) {
+        if (!isNullOrEmpty(name)) {
             logger.trace("Using name ad ID for {}", device);
             sb.append(name);
         }
         final String comment = device.getComment();
-        if (isValidString(comment)) {
+        if (!isNullOrEmpty(comment)) {
             logger.trace("Using comment ad ID for {}", device);
             sb.append("(").append(comment).append(")");
         }
         final String primaryLabel = sb.toString();
-        if (isValidString(primaryLabel)) {
+        if (!isNullOrEmpty(primaryLabel)) {
             return primaryLabel;
         } else {
             logger.trace("Using gUID ad ID for {}", device);
             return device.getGuid();
         }
-    }
-
-    private boolean isValidString(String string) {
-        return string != null && !string.trim().isEmpty();
     }
 
     private Map<String, Object> buildThingProperties(SuplaIoDevice device) {
