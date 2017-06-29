@@ -23,8 +23,8 @@
 
 	<channel-type id="light-channel">
 		<item-type>Switch</item-type>
-		<label>ON/OFF switch</label>
-		<description>Allows you to turn thing ON/OFF</description>
+		<label>Light switch</label>
+		<description>Allows you to turn light ON/OFF</description>
 		<category>Light</category>
 	</channel-type>
 
