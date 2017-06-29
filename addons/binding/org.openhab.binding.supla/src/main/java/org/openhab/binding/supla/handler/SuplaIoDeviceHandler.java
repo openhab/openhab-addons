@@ -34,7 +34,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         if (channelUID.getId().equals("")) { // TODO pass correct ID from SuplaConstants
             executeCommandForSwitchChannel(channelUID, command);
         } else {
-            logger.warn("Don't know this channel {}!", channelUID.getId());
+            logger.debug("Don't know this channel {}!", channelUID.getId());
         }
     }
 
