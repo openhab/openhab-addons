@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -58,6 +59,10 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         this.applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
         startAutomaticRefresh();
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    public Optional<ApplicationContext> getApplicationContext() {
+        return Optional.ofNullable(applicationContext);
     }
 
     private void startAutomaticRefresh() {
@@ -133,9 +138,9 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
 
     private String findThingType(SuplaIoDevice device) {
         final long relayChannelsCount = findRelayChannelsCount(device);
-        if(relayChannelsCount == 2) {
+        if (relayChannelsCount == 2) {
 //            return TWO_CHANNEL_RELAY_THING_ID;
-        } else if(relayChannelsCount == 1) {
+        } else if (relayChannelsCount == 1) {
 //            return ONE_CHANNEL_RELAY_THING_ID;
         } else {
             throw new RuntimeException(format("relayChannelsCount = %s", relayChannelsCount));
@@ -166,7 +171,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
             sb.append("(").append(comment).append(")");
         }
         final String primaryLabel = sb.toString();
-        if(isValidString(primaryLabel)) {
+        if (isValidString(primaryLabel)) {
             return primaryLabel;
         } else {
             logger.trace("Using gUID ad ID for {}", device);
