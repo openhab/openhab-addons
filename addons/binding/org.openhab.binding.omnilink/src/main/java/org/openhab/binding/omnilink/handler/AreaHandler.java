@@ -33,14 +33,13 @@ public class AreaHandler extends AbstractOmnilinkHandler {
             return;
         }
 
-        int areaNumber = (int) getThing().getConfiguration().get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER);
+        int areaNumber = getThingID();
 
         // keypad command
         if (OmnilinkBindingConstants.CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY.equals(channelUID.getId())) {
             try {
                 getOmnilinkBridgeHander().activateKeypadEmergency(areaNumber, ((DecimalType) command).intValue());
-            } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
-                    | BridgeOfflineException e) {
+            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
             }
             return;
@@ -49,25 +48,25 @@ public class AreaHandler extends AbstractOmnilinkHandler {
         // security mode commands;
         int mode = -1;
         switch (channelUID.getId()) {
-            case "disarm":
+            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_DISARM:
                 mode = OmniLinkCmd.CMD_SECURITY_OMNI_DISARM.getNumber();
                 break;
-            case "day":
+            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_DAY:
                 mode = OmniLinkCmd.CMD_SECURITY_OMNI_DAY_MODE.getNumber();
                 break;
-            case "night":
+            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_NIGHT:
                 mode = OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_MODE.getNumber();
                 break;
-            case "away":
+            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_AWAY:
                 mode = OmniLinkCmd.CMD_SECURITY_OMNI_AWAY_MODE.getNumber();
                 break;
-            case "vacation":
+            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_VACATION:
                 mode = OmniLinkCmd.CMD_SECURITY_OMNI_VACATION_MODE.getNumber();
                 break;
-            case "day_instant":
+            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_DAY_INSTANT:
                 mode = OmniLinkCmd.CMD_SECURITY_OMNI_DAY_INSTANCE_MODE.getNumber();
                 break;
-            case "night_delayed":
+            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_NIGHT_DELAYED:
                 mode = OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_DELAYED_MODE.getNumber();
                 break;
             default:
