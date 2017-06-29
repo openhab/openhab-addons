@@ -17,6 +17,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.binding.supla.SuplaBindingConstants.LIGHT_CHANNEL_ID;
 
 public final class SuplaIoDeviceHandler extends BaseThingHandler {
@@ -37,7 +39,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private void executeCommandForSwitchChannel(ChannelUID channelUID, Command command) {
-        if(command instanceof OnOffType) {
+        if (command instanceof OnOffType) {
             executeCommand(() -> bridgeHandler.switchCommand(channelUID, (OnOffType) command, thing));
         } else if (command instanceof RefreshType) {
             executeCommand(() -> bridgeHandler.refreshCommand(channelUID, thing));
@@ -47,7 +49,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private void executeCommand(Runnable command) {
         try {
             command.run();
-        }catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             // TODO can do more generic
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -55,7 +57,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        bridgeHandler = getBridgeHandler();
+        getBridgeHandler().ifPresent(bridge -> this.bridgeHandler = bridge);
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
         updateStatus(ThingStatus.ONLINE);
@@ -91,22 +93,27 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private synchronized SuplaCloudBridgeHandler getBridgeHandler() {
+    private synchronized Optional<SuplaCloudBridgeHandler> getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            throw new RuntimeException("Required bridge not defined for device {}."); // TODO set thing offline
+            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "Required bridge not defined for device");
+            return Optional.empty();
         } else {
             return getBridgeHandler(bridge);
         }
 
     }
 
-    private synchronized SuplaCloudBridgeHandler getBridgeHandler(Bridge bridge) {
+    private synchronized Optional<SuplaCloudBridgeHandler> getBridgeHandler(Bridge bridge) {
         ThingHandler handler = bridge.getHandler();
         if (handler instanceof SuplaCloudBridgeHandler) {
-            return (SuplaCloudBridgeHandler) handler;
+            return Optional.of((SuplaCloudBridgeHandler) handler);
         } else {
-            throw new RuntimeException(format("No available bridge handler found yet. Bridge: %s.", bridge.getUID())); // TODO set thing offline
+            updateStatus(UNINITIALIZED,
+                    CONFIGURATION_ERROR,
+                    format("Bridge has wrong class! Should be %s instead of %s.",
+                            SuplaCloudBridgeHandler.class.getSimpleName(), bridge.getClass().getSimpleName()));
+            return Optional.empty();
         }
     }
 }
