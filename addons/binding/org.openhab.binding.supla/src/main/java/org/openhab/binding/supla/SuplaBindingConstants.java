@@ -22,6 +22,7 @@ import java.util.Set;
 public class SuplaBindingConstants {
 
     public static final String BINDING_ID = "supla";
+    public static final String THREAD_POOL_NAME = "supla-thread-pool";
 
     // IDs
     public static final String BRIDGE_THING_ID = "supla-cloud-bridge";

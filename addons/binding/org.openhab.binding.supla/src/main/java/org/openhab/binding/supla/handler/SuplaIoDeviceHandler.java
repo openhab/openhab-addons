@@ -1,5 +1,6 @@
 package org.openhab.binding.supla.handler;
 
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -22,6 +23,7 @@ import static java.util.Optional.empty;
 import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
 
 public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SuplaIoDeviceHandler.class);
@@ -59,28 +61,32 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO should be done on separate thread to prevent stopping everything...
         final Optional<SuplaCloudBridgeHandler> bridgeHandler = getBridgeHandler();
         if (bridgeHandler.isPresent()) {
             this.bridgeHandler = bridgeHandler.get();
-            final Optional<ApplicationContext> optional = this.bridgeHandler.getApplicationContext();
-            if (optional.isPresent()) {
-                final ApplicationContext applicationContext = optional.get();
-                final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(applicationContext.getIoDevicesManager());
-                if (suplaIoDevice.isPresent()) {
-                    setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
-                } else {
-                    updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "Can not find Supla device!");
-                    return;
-                }
-            } else {
-                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Bridge, %s is not fully initialized, there is no ApplicationContext!", this.bridgeHandler.getThing().getUID()));
-                return;
-            }
-
-            updateStatus(ThingStatus.ONLINE);
+            ThreadPoolManager.getPool(THREAD_POOL_NAME).submit(this::internalInitialize);
         }
     }
+
+    private void internalInitialize() {
+        final Optional<ApplicationContext> optional = this.bridgeHandler.getApplicationContext();
+        if (optional.isPresent()) {
+            final ApplicationContext applicationContext = optional.get();
+            final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(applicationContext.getIoDevicesManager());
+            if (suplaIoDevice.isPresent()) {
+                setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
+            } else {
+                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "Can not find Supla device!");
+                return;
+            }
+        } else {
+            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Bridge, %s is not fully initialized, there is no ApplicationContext!", this.bridgeHandler.getThing().getUID()));
+            return;
+        }
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
 
     private Optional<SuplaIoDevice> getSuplaIoDevice(IoDevicesManager ioDevicesManager) {
         final String stringId = thing.getProperties().get(SUPLA_IO_DEVICE_ID);
