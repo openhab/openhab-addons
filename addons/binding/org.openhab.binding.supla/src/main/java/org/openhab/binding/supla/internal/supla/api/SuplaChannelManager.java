@@ -9,6 +9,8 @@ import org.openhab.binding.supla.internal.supla.entities.SuplaChannelStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SuplaChannelManager implements ChannelManager {
@@ -33,8 +35,12 @@ public class SuplaChannelManager implements ChannelManager {
     }
 
     @Override
-    public SuplaChannelStatus obtainChannelStatus(long channelId) {
+    public Optional<SuplaChannelStatus> obtainChannelStatus(long channelId) {
         final Response response = httpExecutor.get(new Request("/channels/" + channelId));
-        return mapper.to(SuplaChannelStatus.class, response.getResponse());
+        if (response.success()) {
+            return Optional.of(mapper.to(SuplaChannelStatus.class, response.getResponse()));
+        } else {
+            return Optional.empty();
+        }
     }
 }
