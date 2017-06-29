@@ -4,7 +4,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -12,17 +12,18 @@ import static org.openhab.binding.supla.SuplaBindingConstants.LIGHT_CHANNEL_FUNC
 import static org.openhab.binding.supla.SuplaBindingConstants.RELAY_CHANNEL_TYPE;
 
 public final class ChannelBuilderImpl implements ChannelBuilder {
+
     @Override
-    public List<Channel> buildChannels(Collection<SuplaChannel> channel) {
+    public Map<Channel, SuplaChannel> buildChannels(Collection<SuplaChannel> channel) {
         return channel.stream()
                 .map(this::buildChannel)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     @Override
-    public Optional<Channel> buildChannel(SuplaChannel channel) {
+    public Optional<Map.Entry<Channel, SuplaChannel>> buildChannel(SuplaChannel channel) {
         if (RELAY_CHANNEL_TYPE.equals(channel.getType().getName())) {
             if (LIGHT_CHANNEL_FUNCTION.equals(channel.getFunction().getName())) {
                 // TODO return light-channel

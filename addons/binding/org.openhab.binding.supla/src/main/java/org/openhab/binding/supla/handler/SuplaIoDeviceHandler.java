@@ -1,10 +1,7 @@
 package org.openhab.binding.supla.handler;
 
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
@@ -13,10 +10,13 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.channels.ChannelBuilder;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
+import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -36,6 +36,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SuplaIoDeviceHandler.class);
     private SuplaCloudBridgeHandler bridgeHandler;
     private ApplicationContext applicationContext;
+    private Map<Channel, SuplaChannel> suplaChannelChannelMap;
 
     public SuplaIoDeviceHandler(Thing thing) {
         super(thing);
@@ -43,10 +44,23 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        Consumer<State> updateState = state -> this.updateState(channelUID, state);
-        applicationContext.getCommandExecutorFactory()
-                .findCommand(channelUID)
-                .ifPresent(executor -> executor.execute(updateState, command));
+        Optional<SuplaChannel> suplaChannel = findSuplaChannel(channelUID);
+        if (suplaChannel.isPresent()) {
+            Consumer<State> updateState = state -> this.updateState(channelUID, state);
+            applicationContext.getCommandExecutorFactory()
+                    .findCommand(suplaChannel.get(), channelUID)
+                    .ifPresent(executor -> executor.execute(updateState, command));
+        } else {
+            logger.debug("There is no SuplaChannel for {}!", channelUID);
+        }
+    }
+
+    private Optional<SuplaChannel> findSuplaChannel(ChannelUID channelUID) {
+        return suplaChannelChannelMap.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().getUID().equals(channelUID))
+                .map(Map.Entry::getValue)
+                .findFirst();
     }
 
     @Override
@@ -77,9 +91,9 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private Optional<ApplicationContext> getApplicationContextWithRetries() {
-        for(int i = 1; i <= MAX_RETRIES; i++) {
+        for (int i = 1; i <= MAX_RETRIES; i++) {
             final Optional<ApplicationContext> applicationContext = bridgeHandler.getApplicationContext();
-            if(applicationContext.isPresent()) {
+            if (applicationContext.isPresent()) {
                 return applicationContext;
             } else {
                 logger.trace("BridgeHandler does not have ApplicationContext. Trying {}/{}", i, MAX_RETRIES);
@@ -115,8 +129,10 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private void setChannelsForThing(ChannelBuilder channelBuilder, SuplaIoDevice device) {
+        suplaChannelChannelMap = channelBuilder.buildChannels(device.getChannels());
+
         ThingBuilder thingBuilder = editThing();
-        thingBuilder.withChannels(channelBuilder.buildChannels(device.getChannels()));
+        thingBuilder.withChannels(new ArrayList<>(suplaChannelChannelMap.keySet()));
         updateThing(thingBuilder.build());
     }
 

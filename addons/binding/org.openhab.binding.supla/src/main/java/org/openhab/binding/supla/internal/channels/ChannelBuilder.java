@@ -4,11 +4,11 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ChannelBuilder {
-    List<Channel> buildChannels(Collection<SuplaChannel> channel);
+    Map<Channel, SuplaChannel> buildChannels(Collection<SuplaChannel> channel);
 
-    Optional<Channel> buildChannel(SuplaChannel channel);
+    Optional<Map.Entry<Channel, SuplaChannel>> buildChannel(SuplaChannel channel);
 }

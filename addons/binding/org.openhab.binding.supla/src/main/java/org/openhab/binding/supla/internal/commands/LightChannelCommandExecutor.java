@@ -5,6 +5,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.supla.internal.api.ChannelManager;
+import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannelStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +18,11 @@ import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 class LightChannelCommandExecutor implements CommandExecutor {
     private final Logger logger = LoggerFactory.getLogger(LightChannelCommandExecutor.class);
     private final ChannelManager channelManager;
-    private final long channelId;
+    private final SuplaChannel suplaChannel;
 
-    LightChannelCommandExecutor(ChannelManager channelManager, long channelId) {
+    LightChannelCommandExecutor(ChannelManager channelManager, SuplaChannel suplaChannel) {
         this.channelManager = checkNotNull(channelManager);
-        this.channelId = channelId;
+        this.suplaChannel = suplaChannel;
     }
 
     @Override
@@ -29,12 +30,12 @@ class LightChannelCommandExecutor implements CommandExecutor {
         if (command instanceof OnOffType) {
             final OnOffType switchCommand = (OnOffType) command;
             if(switchCommand == ON) {
-                channelManager.turnOn(channelId);
+                channelManager.turnOn(suplaChannel);
             } else {
-                channelManager.turnOff(channelId);
+                channelManager.turnOff(suplaChannel);
             }
         } else if (command instanceof RefreshType) {
-            channelManager.obtainChannelStatus(channelId)
+            channelManager.obtainChannelStatus(suplaChannel)
                     .map(this::getState)
                     .ifPresent(updateState);
         } else {

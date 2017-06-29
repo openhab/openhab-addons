@@ -5,6 +5,7 @@ import org.openhab.binding.supla.internal.mappers.Mapper;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
 import org.openhab.binding.supla.internal.server.http.Request;
 import org.openhab.binding.supla.internal.server.http.Response;
+import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannelStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +26,18 @@ public class SuplaChannelManager implements ChannelManager {
     }
 
     @Override
-    public void turnOn(long channelId) {
-        logger.warn("turnOn({}) not implemented!", channelId);
+    public void turnOn(SuplaChannel channel) {
+        logger.warn("turnOn({}) not implemented!", channel);
     }
 
     @Override
-    public void turnOff(long channelId) {
-        logger.warn("turnOff({}) not implemented!", channelId);
+    public void turnOff(SuplaChannel channel) {
+        logger.warn("turnOff({}) not implemented!", channel);
     }
 
     @Override
-    public Optional<SuplaChannelStatus> obtainChannelStatus(long channelId) {
-        final Response response = httpExecutor.get(new Request("/channels/" + channelId));
+    public Optional<SuplaChannelStatus> obtainChannelStatus(SuplaChannel channel) {
+        final Response response = httpExecutor.get(new Request("/channels/" + channel.getId()));
         if (response.success()) {
             return Optional.of(mapper.to(SuplaChannelStatus.class, response.getResponse()));
         } else {

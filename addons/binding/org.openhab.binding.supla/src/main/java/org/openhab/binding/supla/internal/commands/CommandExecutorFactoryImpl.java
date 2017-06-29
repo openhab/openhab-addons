@@ -2,6 +2,7 @@ package org.openhab.binding.supla.internal.commands;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.openhab.binding.supla.internal.api.ChannelManager;
+import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +21,12 @@ public class CommandExecutorFactoryImpl implements CommandExecutorFactory {
     }
 
     @Override
-    public Optional<CommandExecutor> findCommand(ChannelUID channelUID) {
-        long channelId = -1; // TODO
+    public Optional<CommandExecutor> findCommand(SuplaChannel suplaChannel, ChannelUID channelUID) {
         final String id = channelUID.getId();
         if (LIGHT_CHANNEL_ID.equals(id)) {
-            return Optional.of(new LightChannelCommandExecutor(channelManager, channelId));
+            return Optional.of(new LightChannelCommandExecutor(channelManager, suplaChannel));
         } else if (SWITCH_CHANNEL_ID.equals(id)) {
-            return Optional.of(new SwitchChannelCommandExecutor(channelManager, channelId));
+            return Optional.of(new SwitchChannelCommandExecutor(channelManager, suplaChannel));
         } else {
             logger.debug("Don't know how to handle channel " + id);
             return Optional.empty();
