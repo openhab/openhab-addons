@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import static org.openhab.binding.supla.SuplaBindingConstants.ONE_CHANNEL_RELAY_THING_ID;
-import static org.openhab.binding.supla.SuplaBindingConstants.ONE_CHANNEL_RELAY_THING_TYPE;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 public class SuplaDiscoveryService extends AbstractDiscoveryService {
@@ -30,12 +28,13 @@ public class SuplaDiscoveryService extends AbstractDiscoveryService {
     private void addThing(ThingUID bridgeUID, String thingType, long thingID, String label, Map<String, Object> properties) {
         logger.trace("Adding new Supla thing: {}", thingID);
         ThingUID thingUID = null;
-        switch (thingType) {
-            case ONE_CHANNEL_RELAY_THING_ID:
-                logger.trace("New {}", ONE_CHANNEL_RELAY_THING_TYPE);
-                thingUID = new ThingUID(ONE_CHANNEL_RELAY_THING_TYPE, bridgeUID, String.valueOf(thingID));
-                break;
-        }
+        // TODO
+//        switch (thingType) {
+//            case ONE_CHANNEL_RELAY_THING_ID:
+//                logger.trace("New {}", ONE_CHANNEL_RELAY_THING_TYPE);
+//                thingUID = new ThingUID(ONE_CHANNEL_RELAY_THING_TYPE, bridgeUID, String.valueOf(thingID));
+//                break;
+//        }
 
         if (thingUID != null) {
             logger.trace("Adding new Discovery thingType: {} bridgeType: {}", thingUID, bridgeUID);

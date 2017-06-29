@@ -21,49 +21,6 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="one-channel-relay">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="suplaCloudBridge"/>
-		</supported-bridge-type-refs>
-
-		<label>One channel relay</label>
-		<description>
-			This thing is
-		</description>
-
-		<channels>
-			<channel id="switch-1" typeId="switch-channel"/>
-		</channels>
-
-		<config-description>
-			<parameter name="supla-cloud-id" type="integer" required="true">
-				<label>ID</label>
-			</parameter>
-		</config-description>
-	</thing-type>
-
-	<thing-type id="two-channel-relay">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="suplaCloudBridge"/>
-		</supported-bridge-type-refs>
-
-		<label>One channel relay</label>
-		<description>
-			This thing is
-		</description>
-
-		<channels>
-			<channel id="switch-1" typeId="switch-channel"/>
-			<channel id="switch-2" typeId="switch-channel"/>
-		</channels>
-
-		<!--<config-description>-->
-		<!--<parameter name="supla-cloud-id" type="integer" required="true">-->
-		<!--<label>ID</label>-->
-		<!--</parameter>-->
-		<!--</config-description>-->
-	</thing-type>
-
 	<channel-type id="switch-channel">
 		<item-type>Switch</item-type>
 		<label>ON/OFF switch</label>

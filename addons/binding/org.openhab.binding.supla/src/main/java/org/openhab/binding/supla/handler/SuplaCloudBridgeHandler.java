@@ -27,7 +27,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.binding.supla.SuplaBindingConstants.*;
+import static org.openhab.binding.supla.SuplaBindingConstants.RELAY_CHANNEL_TYPE;
+import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
 
 @SuppressWarnings("unused")
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
@@ -133,12 +134,13 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     private String findThingType(SuplaIoDevice device) {
         final long relayChannelsCount = findRelayChannelsCount(device);
         if(relayChannelsCount == 2) {
-            return TWO_CHANNEL_RELAY_THING_ID;
+//            return TWO_CHANNEL_RELAY_THING_ID;
         } else if(relayChannelsCount == 1) {
-            return ONE_CHANNEL_RELAY_THING_ID;
+//            return ONE_CHANNEL_RELAY_THING_ID;
         } else {
             throw new RuntimeException(format("relayChannelsCount = %s", relayChannelsCount));
         }
+        throw new UnsupportedOperationException();
     }
 
     private long findRelayChannelsCount(SuplaIoDevice device) {
