@@ -50,6 +50,7 @@ public class SuplaHandlerFactory extends BaseThingHandlerFactory {
             return bridgeHandler;
         }
 
+        logger.debug("Does not know this thing type {}", thingTypeUID);
         return null;
     }
 
