@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static org.openhab.binding.supla.SuplaBindingConstants.SWITCH_CHANNEL_ID;
+import static org.openhab.binding.supla.SuplaBindingConstants.LIGHT_CHANNEL_ID;
 
 @SuppressWarnings("Duplicates")
 public final class SuplaIoDeviceHandler extends BaseThingHandler {
@@ -86,7 +86,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private static Optional<Channel> buildChannel(SuplaChannel channel) {
         if ("TYPE_RELAY".equals(channel.getType().getName())) {
             return Optional.of(
-                    ChannelBuilder.create(new ChannelUID(SWITCH_CHANNEL_ID), "String").build()
+                    ChannelBuilder.create(new ChannelUID(LIGHT_CHANNEL_ID), "String").build()
             );
         } else {
             return Optional.empty();

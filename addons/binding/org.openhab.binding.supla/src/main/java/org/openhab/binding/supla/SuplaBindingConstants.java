@@ -34,7 +34,7 @@ public class SuplaBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_THING_TYPE);
 
     // Channels IDs
-    public static final String SWITCH_CHANNEL_ID = "switch-channel";
+    public static final String LIGHT_CHANNEL_ID = "light-channel";
 
     // Supla Consts
     // Channel
