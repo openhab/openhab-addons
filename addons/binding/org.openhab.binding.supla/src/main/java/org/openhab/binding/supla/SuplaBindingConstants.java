@@ -26,11 +26,11 @@ public class SuplaBindingConstants {
 
     // IDs
     public static final String BRIDGE_THING_ID = "supla-cloud-bridge";
-    public static final String SUPLA_DEVICE_THING_ID = "supla-io-device";
+    public static final String SUPLA_IO_DEVICE_THING_ID = "supla-io-device";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_THING_ID);
-    public static final ThingTypeUID SUPLA_IO_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, SUPLA_DEVICE_THING_ID);
+    public static final ThingTypeUID SUPLA_IO_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, SUPLA_IO_DEVICE_THING_ID);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_THING_TYPE, SUPLA_IO_DEVICE_THING_TYPE);
 
