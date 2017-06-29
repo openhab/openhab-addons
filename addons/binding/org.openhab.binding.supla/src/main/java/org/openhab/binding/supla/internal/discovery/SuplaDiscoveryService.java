@@ -9,6 +9,8 @@ import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Map;
@@ -18,6 +20,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
 public class SuplaDiscoveryService extends AbstractDiscoveryService {
+    private final Logger logger = LoggerFactory.getLogger(SuplaDiscoveryService.class);
     private final SuplaCloudBridgeHandler suplaCloudBridgeHandler;
 
     public SuplaDiscoveryService(SuplaCloudBridgeHandler suplaCloudBridgeHandler) {
@@ -27,6 +30,7 @@ public class SuplaDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        logger.debug("Starting Supla discovery service");
         suplaCloudBridgeHandler.getApplicationContext()
                 .map(ApplicationContext::getIoDevicesManager)
                 .map(IoDevicesManager::obtainIoDevices)
