@@ -6,11 +6,13 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
+import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,28 +21,27 @@ import static org.openhab.binding.supla.SuplaBindingConstants.*;
 public class SuplaDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(SuplaDiscoveryService.class);
     private final SuplaCloudBridgeHandler suplaCloudBridgeHandler;
-    private final ApplicationContext applicationContext;
 
-    @SuppressWarnings("ConstantConditions")
     public SuplaDiscoveryService(SuplaCloudBridgeHandler suplaCloudBridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
         this.suplaCloudBridgeHandler = suplaCloudBridgeHandler;
-        this.applicationContext = suplaCloudBridgeHandler.getApplicationContext().get();
     }
 
     @Override
     protected void startScan() {
-        applicationContext.getIoDevicesManager()
-                .obtainIoDevices()
-                .forEach(this::addSuplaThing);
+        suplaCloudBridgeHandler.getApplicationContext()
+                .map(ApplicationContext::getIoDevicesManager)
+                .map(IoDevicesManager::obtainIoDevices)
+                .ifPresent(this::addSuplaThing);
     }
 
-    private void addSuplaThing(SuplaIoDevice device) {
-        addThing(suplaCloudBridgeHandler.getThing().getUID(),
-                SUPLA_IO_DEVICE_THING_ID,
-                device.getId(),
-                buildThingLabel(device),
-                buildThingProperties(device));
+    private void addSuplaThing(Collection<SuplaIoDevice> devices) {
+        devices.forEach(device ->
+                addThing(suplaCloudBridgeHandler.getThing().getUID(),
+                        SUPLA_IO_DEVICE_THING_ID,
+                        device.getId(),
+                        buildThingLabel(device),
+                        buildThingProperties(device)));
     }
 
     private void addThing(ThingUID bridgeUID, String thingType, long thingID, String label, Map<String, Object> properties) {
