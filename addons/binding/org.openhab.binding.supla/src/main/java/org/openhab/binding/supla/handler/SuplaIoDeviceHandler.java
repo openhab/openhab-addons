@@ -60,7 +60,9 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         getBridgeHandler().ifPresent(bridge -> this.bridgeHandler = bridge);
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
-        updateStatus(ThingStatus.ONLINE);
+        if(bridgeHandler != null) {
+            updateStatus(ThingStatus.ONLINE);
+        }
 
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
