@@ -77,13 +77,16 @@ When you get to the step where it asks you to pick which product you want to map
 {: #no-phonehome}
 ## Preventing Communication with Amazon Servers
 
-Be aware:
 Every time a Dash Button is pressed a request will be sent to the Amazon servers.
 If no product was configured for the Button, a notification will be presented by the Amazon app on your smartphone.
 
 To prevent the Dash Button from contacting the Amazon Servers, block Internet access for the device.
 Please refer to the documentation of your network's router for details.
 If your network doesn't provide that option, you can at least deal with the notifications by either uninstalling the Amazon app or disabling notifications for it (possible on most smartphone OSs).
+
+It has shown that blocking the Dash Button communication with the Amazon servers will provoke reconnection attempts.
+This increased amount of communication causes a reduced overall battery life.
+The built-in AAA battery can be easily replaced. 
 
 Preventing the communication with the Amazon servers or the Amazon app is **not** necessary to integrate the Dash Button in openHAB.
 
