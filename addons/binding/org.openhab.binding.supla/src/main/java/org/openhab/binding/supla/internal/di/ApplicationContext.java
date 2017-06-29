@@ -3,6 +3,8 @@ package org.openhab.binding.supla.internal.di;
 import org.openhab.binding.supla.internal.api.ChannelManager;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.api.TokenManager;
+import org.openhab.binding.supla.internal.channels.ChannelBuilder;
+import org.openhab.binding.supla.internal.channels.ChannelBuilderImpl;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.mappers.Mapper;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
@@ -33,6 +35,9 @@ public final class ApplicationContext {
     private TokenManager tokenManager;
     private IoDevicesManager ioDevicesManager;
     private ChannelManager channelManager;
+
+    // OpenHab
+    private ChannelBuilder channelBuilder;
 
     public ApplicationContext(SuplaCloudServer suplaCloudServer) {
         this.suplaCloudServer = checkNotNull(suplaCloudServer);
@@ -99,5 +104,13 @@ public final class ApplicationContext {
 
     public void setChannelManager(ChannelManager channelManager) {
         this.channelManager = channelManager;
+    }
+
+    public ChannelBuilder getChannelBuilder() {
+        return get(channelBuilder, () -> new ChannelBuilderImpl(), (x) -> this.channelBuilder = x);
+    }
+
+    public void setChannelBuilder(ChannelBuilder channelBuilder) {
+        this.channelBuilder = channelBuilder;
     }
 }
