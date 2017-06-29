@@ -9,8 +9,6 @@ import org.openhab.binding.supla.handler.SuplaCloudBridgeHandler;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Map;
@@ -20,7 +18,6 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
 public class SuplaDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(SuplaDiscoveryService.class);
     private final SuplaCloudBridgeHandler suplaCloudBridgeHandler;
 
     public SuplaDiscoveryService(SuplaCloudBridgeHandler suplaCloudBridgeHandler) {
@@ -72,13 +69,11 @@ public class SuplaDiscoveryService extends AbstractDiscoveryService {
 
         final String name = device.getName();
         if (!isNullOrEmpty(name)) {
-            logger.trace("Using name ad ID for {}", device);
             sb.append(name);
 
             // comment cannot appear without name
             final String comment = device.getComment();
             if (!isNullOrEmpty(comment)) {
-                logger.trace("Using comment ad ID for {}", device);
                 sb.append("(").append(comment).append(")");
             }
         }
@@ -87,7 +82,6 @@ public class SuplaDiscoveryService extends AbstractDiscoveryService {
         if (!isNullOrEmpty(primaryLabel)) {
             return primaryLabel;
         } else {
-            logger.trace("Using gUID ad ID for {}", device);
             return device.getGuid();
         }
     }
