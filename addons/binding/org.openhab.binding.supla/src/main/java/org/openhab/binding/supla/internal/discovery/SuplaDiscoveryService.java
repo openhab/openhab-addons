@@ -74,12 +74,15 @@ public class SuplaDiscoveryService extends AbstractDiscoveryService {
         if (!isNullOrEmpty(name)) {
             logger.trace("Using name ad ID for {}", device);
             sb.append(name);
+
+            // comment cannot appear without name
+            final String comment = device.getComment();
+            if (!isNullOrEmpty(comment)) {
+                logger.trace("Using comment ad ID for {}", device);
+                sb.append("(").append(comment).append(")");
+            }
         }
-        final String comment = device.getComment();
-        if (!isNullOrEmpty(comment)) {
-            logger.trace("Using comment ad ID for {}", device);
-            sb.append("(").append(comment).append(")");
-        }
+
         final String primaryLabel = sb.toString();
         if (!isNullOrEmpty(primaryLabel)) {
             return primaryLabel;
