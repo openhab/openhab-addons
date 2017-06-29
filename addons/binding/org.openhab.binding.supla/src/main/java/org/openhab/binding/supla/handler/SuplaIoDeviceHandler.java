@@ -46,13 +46,16 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         Optional<SuplaChannel> suplaChannel = findSuplaChannel(channelUID);
         if (suplaChannel.isPresent()) {
-            Consumer<State> updateState = state -> this.updateState(channelUID, state);
             applicationContext.getCommandExecutorFactory()
                     .findCommand(suplaChannel.get(), channelUID)
-                    .ifPresent(executor -> executor.execute(updateState, command));
+                    .ifPresent(executor -> executor.execute(buildStateConsumer(channelUID), command));
         } else {
             logger.debug("There is no SuplaChannel for {}!", channelUID);
         }
+    }
+
+    private Consumer<State> buildStateConsumer(ChannelUID channelUID) {
+        return state -> this.updateState(channelUID, state);
     }
 
     private Optional<SuplaChannel> findSuplaChannel(ChannelUID channelUID) {
