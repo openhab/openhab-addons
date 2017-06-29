@@ -2,21 +2,19 @@ package org.openhab.binding.supla.internal.supla.api;
 
 import com.google.gson.reflect.TypeToken;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
-import org.openhab.binding.supla.internal.api.TokenManager;
-import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
-import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
-import org.openhab.binding.supla.internal.server.http.CommonHeaders;
+import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
 import org.openhab.binding.supla.internal.server.http.Request;
 import org.openhab.binding.supla.internal.server.http.Response;
-import org.openhab.binding.supla.internal.mappers.JsonMapper;
+import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
@@ -27,6 +25,7 @@ public final class SuplaIoDevicesManager implements IoDevicesManager {
     }.getType();
     private static final String KEY_FOR_IO_DEVICES = "iodevices";
 
+    private final Logger logger = LoggerFactory.getLogger(SuplaIoDevicesManager.class);
     private final HttpExecutor httpExecutor;
     private final JsonMapper jsonMapper;
 
@@ -45,6 +44,7 @@ public final class SuplaIoDevicesManager implements IoDevicesManager {
 
     @Override
     public Optional<SuplaIoDevice> obtainIoDevice(long id) {
+        logger.trace("SuplaIoDevicesManager.obtainIoDevice({})", id);
         final Response response = httpExecutor.get(new Request("/iodevices/" + id));
         final List<SuplaIoDevice> list = jsonMapper.to(LIST_TYPE, response.getResponse());
         switch (list.size()) {
