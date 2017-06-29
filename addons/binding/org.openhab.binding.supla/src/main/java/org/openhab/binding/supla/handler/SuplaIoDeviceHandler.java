@@ -8,6 +8,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
+import org.openhab.binding.supla.internal.channels.ChannelBuilder;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.slf4j.Logger;
@@ -67,7 +68,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
                 final ApplicationContext applicationContext = optional.get();
                 final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(applicationContext.getIoDevicesManager());
                 if (suplaIoDevice.isPresent()) {
-                    setChannelsForThing(applicationContext, suplaIoDevice.get());
+                    setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
                 } else {
                     updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "Can not find Supla device!");
                     return;
@@ -97,9 +98,9 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private void setChannelsForThing(ApplicationContext ctx, SuplaIoDevice device) {
+    private void setChannelsForThing(ChannelBuilder channelBuilder, SuplaIoDevice device) {
         ThingBuilder thingBuilder = editThing();
-        thingBuilder.withChannels(ctx.getChannelBuilder().buildChannels(device.getChannels()));
+        thingBuilder.withChannels(channelBuilder.buildChannels(device.getChannels()));
         updateThing(thingBuilder.build());
     }
 
