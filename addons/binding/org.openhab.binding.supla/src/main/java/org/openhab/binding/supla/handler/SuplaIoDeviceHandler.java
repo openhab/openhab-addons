@@ -13,9 +13,7 @@ import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
@@ -101,17 +99,8 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     private void setChannelsForThing(ApplicationContext ctx, SuplaIoDevice device) {
         ThingBuilder thingBuilder = editThing();
-        thingBuilder.withChannels(buildChannels(ctx, device));
+        thingBuilder.withChannels(ctx.getChannelBuilder().buildChannels(device.getChannels()));
         updateThing(thingBuilder.build());
-    }
-
-    private static List<Channel> buildChannels(ApplicationContext ctx, SuplaIoDevice suplaIoDevice) {
-        return suplaIoDevice.getChannels()
-                .stream()
-                .map(channel -> ctx.getChannelBuilder().buildChannel(channel))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
     }
 
     private synchronized Optional<SuplaCloudBridgeHandler> getBridgeHandler() {
