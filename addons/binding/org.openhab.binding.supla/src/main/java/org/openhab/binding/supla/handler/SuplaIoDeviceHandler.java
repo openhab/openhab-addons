@@ -32,6 +32,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SuplaIoDeviceHandler.class);
     private SuplaCloudBridgeHandler bridgeHandler;
+    private ApplicationContext applicationContext;
 
     public SuplaIoDeviceHandler(Thing thing) {
         super(thing);
@@ -76,7 +77,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         try {
             final Optional<ApplicationContext> optional = getApplicationContextWithRetries();
             if (optional.isPresent()) {
-                final ApplicationContext applicationContext = optional.get();
+                this.applicationContext = optional.get();
                 getSuplaIoDevice(applicationContext.getIoDevicesManager())
                         .ifPresent(device -> setChannelsForThing(applicationContext.getChannelBuilder(), device));
             } else {
