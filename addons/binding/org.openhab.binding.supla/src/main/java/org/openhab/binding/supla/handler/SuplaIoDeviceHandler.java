@@ -5,7 +5,6 @@ import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
@@ -69,9 +68,9 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
 
-        ThingBuilder thingBuilder = editThing();
-        thingBuilder.withChannels(buildChannels(null));
-        updateThing(thingBuilder.build());
+//        ThingBuilder thingBuilder = editThing();
+//        thingBuilder.withChannels(buildChannels(null));
+//        updateThing(thingBuilder.build());
     }
 
     private static List<Channel> buildChannels(SuplaIoDevice suplaIoDevice) {
