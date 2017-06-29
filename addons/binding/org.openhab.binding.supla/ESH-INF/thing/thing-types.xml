@@ -6,7 +6,7 @@
 
 	<thing-type id="supla-io-device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="suplaCloudBridge"/>
+			<bridge-type-ref id="supla-cloud-bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Supla Device</label>
