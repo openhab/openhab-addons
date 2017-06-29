@@ -5,6 +5,8 @@ import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.channels.ChannelBuilder;
 import org.openhab.binding.supla.internal.channels.ChannelBuilderImpl;
+import org.openhab.binding.supla.internal.commands.CommandExecutorFactory;
+import org.openhab.binding.supla.internal.commands.CommandExecutorFactoryImpl;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.mappers.Mapper;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
@@ -38,6 +40,7 @@ public final class ApplicationContext {
 
     // OpenHab
     private ChannelBuilder channelBuilder;
+    private CommandExecutorFactory commandExecutorFactory;
 
     public ApplicationContext(SuplaCloudServer suplaCloudServer) {
         this.suplaCloudServer = checkNotNull(suplaCloudServer);
@@ -112,5 +115,13 @@ public final class ApplicationContext {
 
     public void setChannelBuilder(ChannelBuilder channelBuilder) {
         this.channelBuilder = channelBuilder;
+    }
+
+    public CommandExecutorFactory getCommandExecutorFactory() {
+        return get(commandExecutorFactory, () -> new CommandExecutorFactoryImpl(), x -> this.commandExecutorFactory = x);
+    }
+
+    public void setCommandExecutorFactory(CommandExecutorFactory commandExecutorFactory) {
+        this.commandExecutorFactory = commandExecutorFactory;
     }
 }

@@ -41,7 +41,9 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO handle command for channels
+        applicationContext.getCommandExecutorFactory()
+                .findCommand(channelUID)
+                .ifPresent(executor -> executor.execute(command));
     }
 
     @Override
