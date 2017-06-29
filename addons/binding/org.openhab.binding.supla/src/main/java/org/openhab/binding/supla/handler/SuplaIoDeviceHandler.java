@@ -73,13 +73,8 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
             final Optional<ApplicationContext> optional = bridgeHandler.getApplicationContext();
             if (optional.isPresent()) {
                 final ApplicationContext applicationContext = optional.get();
-                final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(applicationContext.getIoDevicesManager());
-                if (suplaIoDevice.isPresent()) {
-                    setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
-                } else {
-                    updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "Can not find Supla device!");
-                    return;
-                }
+                getSuplaIoDevice(applicationContext.getIoDevicesManager())
+                        .ifPresent(device -> setChannelsForThing(applicationContext.getChannelBuilder(), device));
             } else {
                 updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!", this.bridgeHandler.getThing().getUID()));
                 return;
@@ -97,7 +92,11 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         if (!isNullOrEmpty(stringId)) {
             try {
                 final long id = Long.parseLong(stringId);
-                return ioDevicesManager.obtainIoDevice(id);
+                final Optional<SuplaIoDevice> suplaIoDevice = ioDevicesManager.obtainIoDevice(id);
+                if (!suplaIoDevice.isPresent()) {
+                    updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Can not find Supla device with ID \"%s\"!", id));
+                }
+                return suplaIoDevice;
             } catch (NumberFormatException e) {
                 updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("ID \"%s\" is not valid long! %s", stringId, e.getLocalizedMessage()));
                 return empty();
