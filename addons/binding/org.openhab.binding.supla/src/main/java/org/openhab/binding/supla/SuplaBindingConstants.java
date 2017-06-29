@@ -24,8 +24,8 @@ public class SuplaBindingConstants {
     public static final String BINDING_ID = "supla";
 
     // IDs
-    public static final String SUPLA_DEVICE_THING_ID = "supla-io-device";
     public static final String BRIDGE_THING_ID = "supla-cloud-bridge";
+    public static final String SUPLA_DEVICE_THING_ID = "supla-io-device";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_THING_ID);
