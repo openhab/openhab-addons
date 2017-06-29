@@ -28,4 +28,11 @@
 		<category>Light</category>
 	</channel-type>
 
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>ON/OFF switch</label>
+		<description>Allows you to turn thing ON/OFF</description>
+		<category>Switch</category>
+	</channel-type>
+
 </thing:thing-descriptions>

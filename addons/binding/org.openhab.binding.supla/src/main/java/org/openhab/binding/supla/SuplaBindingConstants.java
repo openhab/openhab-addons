@@ -35,9 +35,11 @@ public class SuplaBindingConstants {
 
     // Channels IDs
     public static final String LIGHT_CHANNEL_ID = "light-channel";
+    public static final String SWITCH_CHANNEL_ID = "switch-channel";
 
     // Supla Consts
     // Channel
     public static final String SUPLA_IO_DEVICE_ID = "supla-io-device-id";
     public static final String RELAY_CHANNEL_TYPE = "TYPE_RELAY";
+    public static final String LIGHT_CHANNEL_FUNCTION = "FNC_LIGHTSWITCH";
 }
