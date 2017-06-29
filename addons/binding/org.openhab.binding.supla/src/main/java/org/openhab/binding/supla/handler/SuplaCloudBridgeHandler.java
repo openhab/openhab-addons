@@ -1,9 +1,7 @@
 package org.openhab.binding.supla.handler;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -12,7 +10,6 @@ import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.openhab.binding.supla.internal.discovery.SuplaDiscoveryService;
 import org.openhab.binding.supla.internal.supla.entities.SuplaChannel;
-import org.openhab.binding.supla.internal.supla.entities.SuplaChannelStatus;
 import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.openhab.binding.supla.internal.supla.entities.SuplaType;
 import org.slf4j.Logger;
@@ -25,11 +22,9 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.supla.SuplaBindingConstants.RELAY_CHANNEL_TYPE;
-import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
 
 @SuppressWarnings("unused")
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
@@ -69,37 +64,6 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         if (pollingJob == null || pollingJob.isCancelled()) {
             pollingJob = scheduler.scheduleAtFixedRate(poolingRunnable, 0, configuration.refreshInterval, SECONDS);
         }
-    }
-
-    //
-    // Commands
-    //
-    void switchCommand(ChannelUID channelUID, OnOffType command, Thing thing) {
-        logger.trace("switchCommand: {} / {}", command, thing);
-        final long channelId = parseLong(thing.getProperties().get(channelUID.getId()));
-        if (command == OnOffType.ON) {
-            applicationContext.getChannelManager().turnOn(channelId);
-        } else {
-            applicationContext.getChannelManager().turnOff(channelId);
-        }
-    }
-
-    // TODO
-    void refreshCommand(ChannelUID channelUID, Thing thing) {
-        final long deviceId = parseLong(thing.getProperties().get(SUPLA_IO_DEVICE_ID));
-        final long channelId = parseLong(thing.getProperties().get(channelUID.getId()));
-        final SuplaChannelStatus channelStatus = applicationContext.getChannelManager().obtainChannelStatus(channelId);
-        // TODO set this state to channel
-//        applicationContext.getIoDevicesManager()
-//                .obtainIoDevice(deviceId)
-//                .ifPresent(device -> {
-//                    device.getChannels()
-//                            .stream()
-//                            .filter(c -> c.getId() == channelId)
-//                            .findFirst()
-//                            .ifPresent(c -> thing.);
-//                });
-//        thing.getChannels().forEach(channel -> channel.);
     }
 
     //
