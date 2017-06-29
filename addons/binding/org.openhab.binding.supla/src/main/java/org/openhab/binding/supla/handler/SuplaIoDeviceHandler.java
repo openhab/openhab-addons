@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
@@ -26,6 +27,9 @@ import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID
 import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
 
 public final class SuplaIoDeviceHandler extends BaseThingHandler {
+    private static final int MAX_RETRIES = 20;
+    private static final long WAIT_IN_MILLISECONDS = TimeUnit.SECONDS.toMillis(1);
+
     private final Logger logger = LoggerFactory.getLogger(SuplaIoDeviceHandler.class);
     private SuplaCloudBridgeHandler bridgeHandler;
 
@@ -70,7 +74,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     private void internalInitialize() {
         try {
-            final Optional<ApplicationContext> optional = bridgeHandler.getApplicationContext();
+            final Optional<ApplicationContext> optional = getApplicationContextWithRetries();
             if (optional.isPresent()) {
                 final ApplicationContext applicationContext = optional.get();
                 getSuplaIoDevice(applicationContext.getIoDevicesManager())
@@ -86,6 +90,23 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         }
     }
 
+    private Optional<ApplicationContext> getApplicationContextWithRetries() {
+        for(int i = 1; i <= MAX_RETRIES; i++) {
+            final Optional<ApplicationContext> applicationContext = bridgeHandler.getApplicationContext();
+            if(applicationContext.isPresent()) {
+                return applicationContext;
+            } else {
+                logger.trace("BridgeHandler does not have ApplicationContext. Trying {}/{}", i, MAX_RETRIES);
+                try {
+                    Thread.sleep(WAIT_IN_MILLISECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        return empty();
+    }
 
     private Optional<SuplaIoDevice> getSuplaIoDevice(IoDevicesManager ioDevicesManager) {
         final String stringId = thing.getProperties().get(SUPLA_IO_DEVICE_ID);
