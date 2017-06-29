@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 import static java.util.Optional.empty;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
@@ -31,7 +31,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
 
 public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private static final int MAX_RETRIES = 20;
-    private static final long WAIT_IN_MILLISECONDS = TimeUnit.SECONDS.toMillis(1);
+    private static final long WAIT_IN_MILLISECONDS = SECONDS.toMillis(1);
 
     private final Logger logger = LoggerFactory.getLogger(SuplaIoDeviceHandler.class);
     private SuplaCloudBridgeHandler bridgeHandler;
