@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
@@ -22,43 +23,9 @@ public class SuplaDiscoveryService extends AbstractDiscoveryService {
 
     @SuppressWarnings("ConstantConditions")
     public SuplaDiscoveryService(SuplaCloudBridgeHandler suplaCloudBridgeHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, 10, false);
+        super(SUPPORTED_THING_TYPES_UIDS, 10, true);
         this.suplaCloudBridgeHandler = suplaCloudBridgeHandler;
         this.applicationContext = suplaCloudBridgeHandler.getApplicationContext().get();
-    }
-
-    private void addSuplaThing(SuplaIoDevice device) {
-        addThing(suplaCloudBridgeHandler.getThing().getUID(),
-                SUPLA_DEVICE_THING_ID,
-                device.getId(),
-                buildThingLabel(device),
-                buildThingProperties(device));
-    }
-
-    private void addThing(ThingUID bridgeUID, String thingType, long thingID, String label, Map<String, Object> properties) {
-        logger.trace("Adding new Supla thing: {}", thingID);
-        ThingUID thingUID = null;
-        // TODO
-//        switch (thingType) {
-//            case ONE_CHANNEL_RELAY_THING_ID:
-//                logger.trace("New {}", ONE_CHANNEL_RELAY_THING_TYPE);
-//                thingUID = new ThingUID(ONE_CHANNEL_RELAY_THING_TYPE, bridgeUID, String.valueOf(thingID));
-//                break;
-//        }
-
-        if (thingUID != null) {
-            logger.trace("Adding new Discovery thingType: {} bridgeType: {}", thingUID, bridgeUID);
-
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                    .withBridge(bridgeUID)
-                    .withProperties(properties)
-                    .withLabel(label)
-                    .build();
-            logger.trace("call register: {} label: {}", discoveryResult.getBindingId(), discoveryResult.getLabel());
-            thingDiscovered(discoveryResult);
-        } else {
-            logger.debug("Discovered Thing is unsupported: type '{}'", thingID);
-        }
     }
 
     @Override
@@ -66,6 +33,36 @@ public class SuplaDiscoveryService extends AbstractDiscoveryService {
         applicationContext.getIoDevicesManager()
                 .obtainIoDevices()
                 .forEach(this::addSuplaThing);
+    }
+
+    private void addSuplaThing(SuplaIoDevice device) {
+        addThing(suplaCloudBridgeHandler.getThing().getUID(),
+                SUPLA_IO_DEVICE_THING_ID,
+                device.getId(),
+                buildThingLabel(device),
+                buildThingProperties(device));
+    }
+
+    private void addThing(ThingUID bridgeUID, String thingType, long thingID, String label, Map<String, Object> properties) {
+        findThingUID(bridgeUID, thingType, thingID)
+                .map(uid -> createDiscoveryResult(uid, bridgeUID, label, properties))
+                .ifPresent(this::thingDiscovered);
+    }
+
+    private Optional<ThingUID> findThingUID(ThingUID bridgeUID, String thingType, long thingID) {
+        switch (thingType) {
+            case SUPLA_IO_DEVICE_THING_ID:
+                return Optional.of(new ThingUID(SUPLA_IO_DEVICE_THING_TYPE, bridgeUID, String.valueOf(thingID)));
+        }
+        return Optional.empty();
+    }
+
+    private DiscoveryResult createDiscoveryResult(ThingUID thingUID, ThingUID bridgeUID, String label, Map<String, Object> properties) {
+        return DiscoveryResultBuilder.create(thingUID)
+                .withBridge(bridgeUID)
+                .withProperties(properties)
+                .withLabel(label)
+                .build();
     }
 
     private String buildThingLabel(SuplaIoDevice device) {
