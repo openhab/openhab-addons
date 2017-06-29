@@ -31,7 +31,7 @@ public class SuplaBindingConstants {
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_THING_ID);
     public static final ThingTypeUID SUPLA_IO_DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, SUPLA_DEVICE_THING_ID);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_THING_TYPE, SUPLA_IO_DEVICE_THING_TYPE);
 
     // Channels IDs
     public static final String LIGHT_CHANNEL_ID = "light-channel";
