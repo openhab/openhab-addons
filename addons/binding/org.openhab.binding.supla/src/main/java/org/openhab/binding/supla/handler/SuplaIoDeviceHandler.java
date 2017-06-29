@@ -1,13 +1,14 @@
 package org.openhab.binding.supla.handler;
 
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.*;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
 import org.openhab.binding.supla.internal.channels.ChannelBuilder;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
@@ -40,28 +41,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals("")) { // TODO pass correct ID from SuplaConstants
-            executeCommandForSwitchChannel(channelUID, command);
-        } else {
-            logger.debug("Don't know this channel {}!", channelUID.getId());
-        }
-    }
-
-    private void executeCommandForSwitchChannel(ChannelUID channelUID, Command command) {
-        if (command instanceof OnOffType) {
-            executeCommand(() -> bridgeHandler.switchCommand(channelUID, (OnOffType) command, thing));
-        } else if (command instanceof RefreshType) {
-            executeCommand(() -> bridgeHandler.refreshCommand(channelUID, thing));
-        }
-    }
-
-    private void executeCommand(Runnable command) {
-        try {
-            command.run();
-        } catch (RuntimeException e) {
-            // TODO can do more generic
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        // TODO handle command for channels
     }
 
     @Override
