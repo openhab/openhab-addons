@@ -69,7 +69,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private void internalInitialize() {
-        final Optional<ApplicationContext> optional = this.bridgeHandler.getApplicationContext();
+        final Optional<ApplicationContext> optional = bridgeHandler.getApplicationContext();
         if (optional.isPresent()) {
             final ApplicationContext applicationContext = optional.get();
             final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(applicationContext.getIoDevicesManager());
@@ -80,7 +80,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
                 return;
             }
         } else {
-            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Bridge, %s is not fully initialized, there is no ApplicationContext!", this.bridgeHandler.getThing().getUID()));
+            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!", this.bridgeHandler.getThing().getUID()));
             return;
         }
 
