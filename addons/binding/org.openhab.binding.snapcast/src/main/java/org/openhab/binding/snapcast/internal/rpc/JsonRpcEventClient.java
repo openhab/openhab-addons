@@ -24,6 +24,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +49,7 @@ public class JsonRpcEventClient {
 
     private ConnectionThread connectionThread;
     private Socket socket;
+    private CountDownLatch latch = new CountDownLatch(1);
 
     public JsonRpcEventClient(final String hostname, final Integer port) {
         this.hostname = hostname;
@@ -61,7 +63,7 @@ public class JsonRpcEventClient {
         this.connectionExecutor.submit(connectionThread);
 
         Runtime.getRuntime().addShutdownHook(new ShutdownThread());
-        Thread.sleep(5000);
+        latch.await();
     }
 
     public void addNotificationHandler(JsonRpcNotificationHandler notificationHandler) {
@@ -189,7 +191,7 @@ public class JsonRpcEventClient {
             logger.info("Interrupt received... Closing socket.");
             running = false;
             try {
-                connectionExecutor.awaitTermination(5, TimeUnit.SECONDS);
+                connectionExecutor.awaitTermination(30, TimeUnit.SECONDS);
                 socket.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -203,6 +205,7 @@ public class JsonRpcEventClient {
                 while (!isInterrupted()) {
                     if (socket.isConnected() && !socket.isClosed()) {
                         logger.info("Connected to control server {}:{}", hostname, port);
+                        latch.countDown();
                         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         String inputLine;
                         while ((inputLine = in.readLine()) != null && !socket.isClosed()) {
@@ -253,7 +256,7 @@ public class JsonRpcEventClient {
 
         private void connect() throws IOException {
             socket = new Socket();
-            socket.connect(new InetSocketAddress(hostname, port), 5);
+            socket.connect(new InetSocketAddress(hostname, port), 30);
         }
     }
 

@@ -9,6 +9,8 @@ package org.openhab.binding.snapcast.handler;
 
 import static org.openhab.binding.snapcast.SnapcastBindingConstants.CHANNEL_NAME;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -19,6 +21,7 @@ import org.openhab.binding.snapcast.SnapcastBindingConstants;
 import org.openhab.binding.snapcast.discovery.SnapclientDiscoveryService;
 import org.openhab.binding.snapcast.internal.protocol.SnapcastClientController;
 import org.openhab.binding.snapcast.internal.protocol.SnapcastController;
+import org.openhab.binding.snapcast.internal.protocol.SnapcastGroupController;
 import org.openhab.binding.snapcast.internal.rpc.JsonRpcEventClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,7 @@ public class SnapserverHandler extends BaseBridgeHandler {
     private String host;
     private Integer port = 1705;
     private SnapcastController snapcastController;
+    private CountDownLatch latch = new CountDownLatch(1);
 
     public SnapserverHandler(Bridge bridge) {
         super(bridge);
@@ -52,8 +56,14 @@ public class SnapserverHandler extends BaseBridgeHandler {
         }
     }
 
-    public SnapcastClientController getClient(final String mac) {
+    public SnapcastClientController getClient(final String mac) throws InterruptedException {
+        latch.await();
         return snapcastController.getClient(mac);
+    }
+
+    public SnapcastGroupController getGroup(final String id) throws InterruptedException {
+        latch.await();
+        return snapcastController.getGroup(id);
     }
 
     @Override
@@ -73,10 +83,14 @@ public class SnapserverHandler extends BaseBridgeHandler {
 
             // if (snapcastController.getProtocolVersion() <= 2) {
             updateStatus(ThingStatus.ONLINE);
+            latch.countDown();
+
             SnapclientDiscoveryService discoveryService = new SnapclientDiscoveryService(host, snapcastController,
                     thing.getUID());
             discoveryService.start(bundleContext);
+
             // } else {
+
             // updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
             // "Protocol version 1 is not support please use a never version of snapcast.");
             // logger.error("Protocol version 1 is not support please use a never version of snapcast.");

@@ -22,54 +22,92 @@ import java.util.ArrayList;
  * Generic POJO for Unmashalling Json Response from Snapcast
  */
 public class ServerStatus {
-	private String host;
-	private int id;
-	private ArrayList<Client> clients;
-	private Server server;
-	private ArrayList<Stream> streams;
+    class InternalServer {
+        private Server server;
+        private ArrayList<Group> groups;
+        private ArrayList<Stream> streams;
 
-	public void setStreams(ArrayList<Stream> streams) {
-		this.streams = streams;
-	}
+        public Server getServer() {
+            return server;
+        }
 
-	public void setServer(Server server) {
-		this.server = server;
-	}
+        public ArrayList<Group> getGroups() {
+            return groups;
+        }
 
-	public ArrayList<Client> getClients() {
-		return clients;
-	}
+        public ArrayList<Stream> getStreams() {
+            return streams;
+        }
 
-	public void setClients(ArrayList<Client> clients) {
-		this.clients = clients;
-	}
+    }
 
-	public String getHost() {
-		return host;
-	}
+    private InternalServer server;
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+    public Server getServer() {
+        return server.getServer();
+    }
 
-	public int getId() {
-		return id;
-	}
+    public ArrayList<Group> getGroups() {
+        return server.getGroups();
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public ArrayList<Stream> getStreams() {
+        return server.getStreams();
+    }
 
-	public ArrayList<Stream> getStreams() {
-		return streams;
-	}
+    public void setServer(InternalServer server) {
+        this.server = server;
+    }
 
-	@Override
-	public String toString() {
-		return "ServerStatus{}";
-	}
-
-	public Server getServer() {
-		return server;
-	}
+    /*
+     * private int id;
+     * private ArrayList<Group> groups;
+     * private Server server;
+     * private ArrayList<Stream> streams;
+     *
+     * public void setStreams(ArrayList<Stream> streams) {
+     * this.streams = streams;
+     * }
+     *
+     * public void setServer(Server server) {
+     * this.server = server;
+     * }
+     *
+     * public ArrayList<Group> getGroups() {
+     * return groups;
+     * }
+     *
+     * public void setGroups(ArrayList<Group> groups) {
+     * this.groups = groups;
+     * }
+     *
+     * public String getHost() {
+     * return host;
+     * }
+     *
+     * public void setHost(String host) {
+     * this.host = host;
+     * }
+     *
+     * public int getId() {
+     * return id;
+     * }
+     *
+     * public void setId(int id) {
+     * this.id = id;
+     * }
+     *
+     * public ArrayList<Stream> getStreams() {
+     * return streams;
+     * }
+     *
+     * @Override
+     * public String toString() {
+     * return "ServerStatus{}";
+     * }
+     *
+     * public Server getServer() {
+     * return server;
+     * }
+     */
 }

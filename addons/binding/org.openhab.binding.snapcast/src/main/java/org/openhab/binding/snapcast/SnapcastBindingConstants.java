@@ -22,6 +22,7 @@ public class SnapcastBindingConstants {
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_SNAPSERVER = new ThingTypeUID(BINDING_ID, "snapserver");
     public final static ThingTypeUID THING_TYPE_SNAPCLIENT = new ThingTypeUID(BINDING_ID, "snapclient");
+    public final static ThingTypeUID THING_TYPE_SNAPGROUP = new ThingTypeUID(BINDING_ID, "snapgroup");
 
     // List of all Channel ids
     public final static String CHANNEL_STREAM = "stream";
@@ -31,4 +32,6 @@ public class SnapcastBindingConstants {
 
     public static final String CONFIG_HOST_NAME = "HOST";
     public static final String CONFIG_MAC_ADDRESS = "MAC";
+    public static final String CONFIG_GROUP_ID = "GROUP_ID";
+
 }

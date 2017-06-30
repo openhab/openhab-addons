@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.snapcast.handler.SnapclientHandler;
+import org.openhab.binding.snapcast.handler.SnapgroupHandler;
 import org.openhab.binding.snapcast.handler.SnapserverHandler;
 
 /**
@@ -30,7 +31,7 @@ import org.openhab.binding.snapcast.handler.SnapserverHandler;
 public class SnapcastHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_SNAPSERVER, THING_TYPE_SNAPCLIENT));
+            Arrays.asList(THING_TYPE_SNAPSERVER, THING_TYPE_SNAPCLIENT, THING_TYPE_SNAPGROUP));
     // Collections.addAll(ThingTypeUID.class, THING_TYPE_SNAPSERVER, THING_TYPE_SNAPCLIENT);
 
     // Collections.singleton(THING_TYPE_SNAPSERVER);
@@ -50,6 +51,9 @@ public class SnapcastHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_SNAPCLIENT)) {
             return new SnapclientHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_SNAPGROUP)) {
+            return new SnapgroupHandler(thing);
         }
 
         return null;

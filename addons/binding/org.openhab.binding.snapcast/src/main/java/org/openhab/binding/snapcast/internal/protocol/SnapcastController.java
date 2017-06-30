@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.openhab.binding.snapcast.internal.rpc.JsonRpcEventClient;
 import org.openhab.binding.snapcast.internal.types.Client;
+import org.openhab.binding.snapcast.internal.types.Group;
 import org.openhab.binding.snapcast.internal.types.ServerStatus;
 import org.openhab.binding.snapcast.internal.types.Stream;
 
@@ -33,20 +34,29 @@ public class SnapcastController {
     private final JsonRpcEventClient client;
     private final Map<String, Client> clientMap = new HashMap<>();
     private final Map<String, Stream> streamMap = new HashMap<>();
-    private final List<SnapcastUpdateListener> updateListeners = new ArrayList<>();
+    private final Map<String, Group> groupMap = new HashMap<>();
+    private final List<SnapclientUpdateListener> snapclientUpdateListeners = new ArrayList<>();
+    private final List<SnapgroupUpdateListener> snapgroupUpdateListeners = new ArrayList<>();
     private ServerStatus serverStatus;
 
     public SnapcastController(JsonRpcEventClient client) {
         this.client = client;
     }
 
-    public void connect() throws IOException, InterruptedException {
+    public synchronized void connect() throws IOException, InterruptedException {
         client.addNotificationHandler(new SnapcastMethodClientOnConnect(clientMap, this));
         client.addNotificationHandler(new SnapcastMethodClientOnDisconnect(clientMap, this));
         client.addNotificationHandler(new SnapcastMethodClientOnUpdate(clientMap, this));
         client.connect();
+
         serverStatus = client.sendRequestAndReadResponse("Server.GetStatus", null, ServerStatus.class);
-        serverStatus.getClients().forEach(c -> clientMap.put(c.getHost().getMac(), c));
+        serverStatus.getServer();
+        serverStatus.getGroups().forEach(g -> {
+            groupMap.put(g.getId(), g);
+            g.getClients().forEach(c -> clientMap.put(c.getHost().getMac(), c));
+        });
+
+        // serverStatus.getGroups().forEach(g -> g.getClients().forEach(c -> clientMap.put(c.getHost().getMac(), c)));
         serverStatus.getStreams().forEach(s -> streamMap.put(s.getId(), s));
     }
 
@@ -56,19 +66,34 @@ public class SnapcastController {
     }
 
     public SnapcastClientController getClient(final String mac) {
-        return new SnapcastClientController(client, mac, clientMap, updateListeners);
+        return new SnapcastClientController(client, mac, clientMap, snapclientUpdateListeners);
+    }
+
+    public SnapcastGroupController getGroup(final String id) {
+        return new SnapcastGroupController(client, id, groupMap, snapgroupUpdateListeners);
     }
 
     public Collection<Client> getClients() {
         return clientMap.values();
     }
 
-    public Integer getProtocolVersion() {
-        return serverStatus.getServer().getSnapserver().getControlProtocolVersion();
+    public Collection<Group> getGroups() {
+        return groupMap.values();
+    }
+
+    /*
+     * public Integer getProtocolVersion() {
+     * return serverStatus.getServer().getSnapserver().getControlProtocolVersion();
+     * }
+     */
+    @SuppressWarnings("unused")
+    public void addClientUpdateListener(final SnapclientUpdateListener updateListener) {
+        snapclientUpdateListeners.add(updateListener);
     }
 
     @SuppressWarnings("unused")
-    public void addUpdateListener(final SnapcastUpdateListener updateListener) {
-        updateListeners.add(updateListener);
+    public void addGroupUpdateListener(final SnapgroupUpdateListener updateListener) {
+        snapgroupUpdateListeners.add(updateListener);
     }
+
 }

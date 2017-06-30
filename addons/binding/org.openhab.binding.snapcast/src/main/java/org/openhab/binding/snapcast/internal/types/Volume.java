@@ -19,12 +19,12 @@ package org.openhab.binding.snapcast.internal.types;
 /**
  * Generic POJO for Unmashalling Json Response from Snapcast
  */
-public class ClientVolume {
+public class Volume {
 
 	private Integer percent;
 	private Boolean muted;
 
-	public ClientVolume() {
+	public Volume() {
 	}
 
 	public void setPercent(Integer percent) {

@@ -23,7 +23,7 @@ public class ClientConfig {
 
 	private Integer latency;
 	private String name;
-	private ClientVolume volume;
+	private Volume volume;
 	private String stream;
 
 	public ClientConfig() {
@@ -37,7 +37,7 @@ public class ClientConfig {
 		this.name = name;
 	}
 
-	public void setVolume(ClientVolume volume) {
+	public void setVolume(Volume volume) {
 		this.volume = volume;
 	}
 
@@ -45,7 +45,7 @@ public class ClientConfig {
 		this.stream = stream;
 	}
 
-	public ClientVolume getVolume() {
+	public Volume getVolume() {
 		return volume;
 	}
 

@@ -23,16 +23,17 @@ import java.util.Map;
 
 import org.openhab.binding.snapcast.internal.rpc.JsonRpcEventClient;
 import org.openhab.binding.snapcast.internal.types.Client;
+import org.openhab.binding.snapcast.internal.types.VolumeResponse;
 
 public class SnapcastClientController {
 
     private final JsonRpcEventClient connection;
     private final String mac;
     private final Map<String, Client> clientMap;
-    private final List<SnapcastUpdateListener> updateListeners = new ArrayList<>();
+    private final List<SnapclientUpdateListener> updateListeners = new ArrayList<>();
 
     public SnapcastClientController(final JsonRpcEventClient connection, final String mac,
-            final Map<String, Client> clientMap, final List<SnapcastUpdateListener> updateListeners) {
+            final Map<String, Client> clientMap, final List<SnapclientUpdateListener> updateListeners) {
         this.connection = connection;
         this.mac = mac;
         this.clientMap = clientMap;
@@ -49,7 +50,7 @@ public class SnapcastClientController {
 
     private Map<String, Object> createParamsObject() {
         Map<String, Object> params = new HashMap<>();
-        params.put("client", mac);
+        params.put("id", mac);
         return params;
     }
 
@@ -65,13 +66,14 @@ public class SnapcastClientController {
             throws IOException, InterruptedException {
         client().getConfig().getVolume().setPercent(volume);
         final Map<String, Object> params = createParamsObject();
-        params.put("volume", volume);
+        params.put("volume", client().getConfig().getVolume());
+        // params.put("muted", isMuted());
         if (async) {
             connection.invoke("Client.SetVolume", params);
         } else {
-            final Integer volumeResoponse = connection.sendRequestAndReadResponse("Client.SetVolume", params,
-                    Integer.class);
-            client().getConfig().getVolume().setPercent(volumeResoponse);
+            final VolumeResponse clientVolume = connection.sendRequestAndReadResponse("Client.SetVolume", params,
+                    VolumeResponse.class);
+            client().getConfig().setVolume(clientVolume.getVolume());
             notifyUpdateListeners();
         }
         return this;
@@ -83,9 +85,11 @@ public class SnapcastClientController {
 
     public SnapcastClientController mute(final Boolean muted) throws IOException, InterruptedException {
         final Map<String, Object> params = createParamsObject();
-        params.put("mute", muted);
-        final Boolean aBoolean = connection.sendRequestAndReadResponse("Client.SetMute", params, Boolean.class);
-        client().getConfig().getVolume().setMuted(aBoolean);
+        // params.put("muted", muted);
+        params.put("volume", client().getConfig().getVolume());
+        final VolumeResponse clientVolume = connection.sendRequestAndReadResponse("Client.SetVolume", params,
+                VolumeResponse.class);
+        client().getConfig().setVolume(clientVolume.getVolume());
         notifyUpdateListeners();
         return this;
     }
@@ -94,21 +98,27 @@ public class SnapcastClientController {
         return client().getConfig().getVolume().getMuted();
     }
 
-    public SnapcastClientController stream(final String streamId) throws IOException, InterruptedException {
-        final Map<String, Object> params = createParamsObject();
-        params.put("id", streamId);
-        connection.sendRequestAndReadResponse("Client.SetStream", params, Boolean.class);
-        client().getConfig().setStream(streamId);
-        notifyUpdateListeners();
-        return this;
-    }
-
-    public String stream() {
-        return client().getConfig().getStream();
-    }
+    /*
+     * public SnapcastClientController stream(final String streamId) throws IOException, InterruptedException {
+     * final Map<String, Object> params = createParamsObject();
+     * params.put("id", streamId);
+     * connection.sendRequestAndReadResponse("Client.SetStream", params, Boolean.class);
+     * client().getConfig().setStream(streamId);
+     * notifyUpdateListeners();
+     * return this;
+     * }
+     *
+     * public String stream() {
+     * return client().getConfig().getStream();
+     * }
+     */
 
     public boolean connected() {
-        return client().isConnected();
+        if (client() != null) {
+            return client().isConnected();
+        } else {
+            return false;
+        }
     }
 
     /*
@@ -138,7 +148,7 @@ public class SnapcastClientController {
     }
 
     @SuppressWarnings("unused")
-    public void addUpdateListener(final SnapcastUpdateListener updateListener) {
+    public void addUpdateListener(final SnapclientUpdateListener updateListener) {
         updateListeners.add(updateListener);
     }
 

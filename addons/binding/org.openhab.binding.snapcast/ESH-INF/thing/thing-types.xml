@@ -29,6 +29,24 @@
         </config-description>
     </thing-type>
 
+
+    <thing-type id="snapgroup">
+        <label>Snapgroup</label>
+        <description>Snapcast Client Group</description>
+
+        <config-description>
+            <parameter name="HOST" type="text" required="true">
+                <label>Hostname</label>
+                <description>The hostname of the snapserver</description>
+            </parameter>
+            <parameter name="GROUP_ID" type="text" required="true">
+                <label>UUID</label>
+                <description>Group UUID</description>
+            </parameter>
+
+        </config-description>
+    </thing-type>
+
     
     <thing-type id="snapclient">
         <label>Snapclient</label>
@@ -66,6 +84,18 @@
         <item-type>String</item-type>        
         <label>Name</label>
         <description>Name</description>
+    </channel-type>
+
+    <channel-type id="relativeVolume">
+        <item-type>Number</item-type>        
+        <label>Relative Volume</label>
+        <description>Group Relative Volume</description>
+    </channel-type>
+
+    <channel-type id="clients">
+        <item-type>String</item-type>        
+        <label>Group Clients</label>
+        <description>Group clients</description>
     </channel-type>
 
 

@@ -17,11 +17,12 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.snapcast.SnapcastBindingConstants;
 import org.openhab.binding.snapcast.internal.protocol.SnapcastClientController;
-import org.openhab.binding.snapcast.internal.protocol.SnapcastUpdateListener;
+import org.openhab.binding.snapcast.internal.protocol.SnapclientUpdateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,12 +84,14 @@ public class SnapclientHandler extends BaseThingHandler {
                     logger.error("Invalid type: {} -> {}", command.getClass(), command);
                 }
             }
-            if (channelUID.getId().equals(CHANNEL_STREAM)) {
-                if (StringType.class.isAssignableFrom(command.getClass())) {
-                    StringType string = (StringType) command;
-                    clientController.stream(string.toString());
-                }
-            }
+            /*
+             * if (channelUID.getId().equals(CHANNEL_STREAM)) {
+             * if (StringType.class.isAssignableFrom(command.getClass())) {
+             * StringType string = (StringType) command;
+             * clientController.stream(string.toString());
+             * }
+             * }
+             */
             logger.info("Message: {}", command);
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,26 +100,31 @@ public class SnapclientHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        mac = (String) thing.getConfiguration().get(SnapcastBindingConstants.CONFIG_MAC_ADDRESS);
+        try {
+            mac = (String) thing.getConfiguration().get(SnapcastBindingConstants.CONFIG_MAC_ADDRESS);
 
-        final UpdateHandler updateHandler = new UpdateHandler();
-        clientController = ((SnapserverHandler) getBridge().getHandler()).getClient(mac);
-        clientController.addUpdateListener(updateHandler);
-        if (clientController.connected()) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE);
+            final UpdateHandler updateHandler = new UpdateHandler();
+            final SnapserverHandler serverHandler = ((SnapserverHandler) getBridge().getHandler());
+            clientController = serverHandler.getClient(mac);
+
+            clientController.addUpdateListener(updateHandler);
+            if (clientController.connected()) {
+                updateStatus(ThingStatus.ONLINE);
+                updateHandler.updateClient(clientController);
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR, e.getMessage());
         }
-        updateHandler.updateClient(clientController);
     }
 
-    private class UpdateHandler implements SnapcastUpdateListener {
+    private class UpdateHandler implements SnapclientUpdateListener {
 
         @Override
         public void updateClient(SnapcastClientController clientController) {
             updateState(SnapcastBindingConstants.CHANNEL_VOLUME, new PercentType(clientController.volume()));
             updateState(SnapcastBindingConstants.CHANNEL_NAME, new StringType(clientController.name()));
-            updateState(SnapcastBindingConstants.CHANNEL_STREAM, new StringType(clientController.stream()));
             if (clientController.isMuted()) {
                 updateState(SnapcastBindingConstants.CHANNEL_MUTE, OnOffType.ON);
             } else {

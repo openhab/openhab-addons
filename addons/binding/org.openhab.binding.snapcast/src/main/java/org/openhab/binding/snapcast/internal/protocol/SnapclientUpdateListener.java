@@ -15,6 +15,6 @@
  */
 package org.openhab.binding.snapcast.internal.protocol;
 
-public interface SnapcastUpdateListener {
-	void updateClient(final SnapcastClientController clientController);
+public interface SnapclientUpdateListener {
+    void updateClient(final SnapcastClientController clientController);
 }
