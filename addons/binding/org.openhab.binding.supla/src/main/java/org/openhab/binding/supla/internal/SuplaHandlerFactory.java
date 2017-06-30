@@ -30,7 +30,7 @@ import static org.openhab.binding.supla.SuplaBindingConstants.*;
  *
  * @author Martin Grzeslowski - Initial contribution
  */
-public class SuplaHandlerFactory extends BaseThingHandlerFactory {
+public final class SuplaHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SuplaHandlerFactory.class);
 
     @Override

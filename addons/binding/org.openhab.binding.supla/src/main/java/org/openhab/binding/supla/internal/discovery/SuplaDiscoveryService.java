@@ -19,7 +19,7 @@ import java.util.Optional;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.openhab.binding.supla.SuplaBindingConstants.*;
 
-public class SuplaDiscoveryService extends AbstractDiscoveryService {
+public final class SuplaDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(SuplaDiscoveryService.class);
     private final SuplaCloudBridgeHandler suplaCloudBridgeHandler;
 

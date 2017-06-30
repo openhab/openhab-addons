@@ -19,7 +19,7 @@ import java.util.Set;
  *
  * @author Martin Grzeslowski - Initial contribution
  */
-public class SuplaBindingConstants {
+public final class SuplaBindingConstants {
 
     public static final String BINDING_ID = "supla";
     public static final String THREAD_POOL_NAME = "supla-thread-pool";

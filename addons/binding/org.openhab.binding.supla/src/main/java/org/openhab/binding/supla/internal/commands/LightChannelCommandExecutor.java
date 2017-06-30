@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.smarthome.core.library.types.OnOffType.ON;
 
-class LightChannelCommandExecutor implements CommandExecutor {
+final class LightChannelCommandExecutor implements CommandExecutor {
     private final Logger logger = LoggerFactory.getLogger(LightChannelCommandExecutor.class);
     private final ChannelManager channelManager;
     private final SuplaChannel suplaChannel;
