@@ -31,7 +31,7 @@
 				<context>password</context>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false">
-				<label>refreshInterval</label>
+				<label>Refresh Interval</label>
 				<description>Refreshtime in seconds.</description>
 				<default>30</default>
 				<max>600</max>
