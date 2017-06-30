@@ -1,5 +1,6 @@
 package org.openhab.binding.supla.handler;
 
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -11,16 +12,25 @@ import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
 
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
+    private static final long REFRESH_THREAD_DELAY_IN_SECONDS = 10;
     private final Logger logger = LoggerFactory.getLogger(SuplaCloudBridgeHandler.class);
 
+    private final ReadWriteLock handlersLock = new ReentrantReadWriteLock();
+    private final List<SuplaIoDeviceHandler> handlers = new ArrayList<>();
     private SuplaCloudConfiguration configuration;
     private ApplicationContext applicationContext;
 
@@ -36,13 +46,26 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
-        // TODO add to pool that updates all child handlers
+        handlersLock.writeLock().lock();
+        try {
+            if (childHandler instanceof SuplaIoDeviceHandler) {
+                handlers.add((SuplaIoDeviceHandler) childHandler);
+            }
+        } finally {
+            handlersLock.writeLock().unlock();
+        }
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         super.childHandlerDisposed(childHandler, childThing);
-        // TODO remove from pool that updates all child handlers
+        handlersLock.writeLock().lock();
+        try {
+            handlers.remove(childHandler);
+        } finally {
+            handlersLock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -54,6 +77,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
             applicationContext.getIoDevicesManager().obtainIoDevices();
             // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
             this.applicationContext = applicationContext;
+            ThreadPoolManager.getScheduledPool(THREAD_POOL_NAME).scheduleAtFixedRate(new RefreshThread(), REFRESH_THREAD_DELAY_IN_SECONDS, configuration.refreshInterval, SECONDS);
             updateStatus(ONLINE);
         } catch (Exception e) {
             updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
@@ -64,6 +88,19 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
 
     public Optional<ApplicationContext> getApplicationContext() {
         return Optional.ofNullable(applicationContext);
+    }
+
+    private final class RefreshThread implements Runnable {
+
+        @Override
+        public void run() {
+            handlersLock.readLock().lock();
+            try {
+                handlers.forEach(SuplaIoDeviceHandler::refreshChannels);
+            } finally {
+                handlersLock.readLock().unlock();
+            }
+        }
     }
 
 }

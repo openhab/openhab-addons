@@ -26,6 +26,7 @@ import static java.util.Optional.empty;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
 
@@ -161,5 +162,12 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
                             SuplaCloudBridgeHandler.class.getSimpleName(), bridge.getClass().getSimpleName()));
             return empty();
         }
+    }
+
+    void refreshChannels() {
+        suplaChannelChannelMap.keySet()
+                .stream()
+                .map(Channel::getUID)
+                .forEach(uuid -> handleCommand(uuid, REFRESH));
     }
 }
