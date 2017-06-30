@@ -33,9 +33,9 @@
 			<parameter name="refreshInterval" type="integer" required="false">
 				<label>refreshInterval</label>
 				<description>Refreshtime in seconds.</description>
-				<default>300</default>
+				<default>30</default>
 				<max>600</max>
-				<min>60</min>
+				<min>10</min>
 			</parameter>
 		</config-description>
 
