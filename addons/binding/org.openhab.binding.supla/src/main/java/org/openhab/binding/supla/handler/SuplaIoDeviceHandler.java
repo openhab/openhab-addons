@@ -1,5 +1,6 @@
 package org.openhab.binding.supla.handler;
 
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -15,12 +16,12 @@ import org.openhab.binding.supla.internal.supla.entities.SuplaIoDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 import static java.util.Optional.empty;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -118,17 +119,21 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private Optional<SuplaIoDevice> getSuplaIoDevice(IoDevicesManager ioDevicesManager) {
-        final String stringId = thing.getProperties().get(SUPLA_IO_DEVICE_ID);
-        if (!isNullOrEmpty(stringId)) {
-            try {
-                final long id = Long.parseLong(stringId);
+        final Configuration config = this.getConfig();
+        if (config.containsKey(SUPLA_IO_DEVICE_ID)) {
+            final Object decimalId = config.get(SUPLA_IO_DEVICE_ID);
+            if (decimalId instanceof BigDecimal) {
+                long id = ((BigDecimal) decimalId).longValue();
                 final Optional<SuplaIoDevice> suplaIoDevice = ioDevicesManager.obtainIoDevice(id);
                 if (!suplaIoDevice.isPresent()) {
-                    updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Can not find Supla device with ID \"%s\"!", id));
+                    updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
+                            format("Can not find Supla device with ID \"%s\"!", id));
                 }
                 return suplaIoDevice;
-            } catch (NumberFormatException e) {
-                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("ID \"%s\" is not valid long! %s", stringId, e.getLocalizedMessage()));
+            } else {
+                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
+                        format("ID \"%s\" is not valid long! Current type is %s.", decimalId,
+                                decimalId.getClass().getSimpleName()));
                 return empty();
             }
         } else {
@@ -138,7 +143,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private void setChannelsForThing(ChannelBuilder channelBuilder, SuplaIoDevice device) {
-        suplaChannelChannelMap = channelBuilder.buildChannels(device.getChannels());
+        suplaChannelChannelMap = channelBuilder.buildChannels(getThing().getUID(), device.getChannels());
 
         ThingBuilder thingBuilder = editThing();
         thingBuilder.withChannels(new ArrayList<>(suplaChannelChannelMap.keySet()));
