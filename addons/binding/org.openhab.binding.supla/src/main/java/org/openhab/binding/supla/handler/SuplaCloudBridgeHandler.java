@@ -23,7 +23,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
+import static org.openhab.binding.supla.SuplaBindingConstants.SCHEDULED_THREAD_POOL_NAME;
 
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     private static final long REFRESH_THREAD_DELAY_IN_SECONDS = 10;
@@ -77,13 +77,16 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
             applicationContext.getIoDevicesManager().obtainIoDevices();
             // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
             this.applicationContext = applicationContext;
-            ThreadPoolManager.getScheduledPool(THREAD_POOL_NAME).scheduleAtFixedRate(new RefreshThread(), REFRESH_THREAD_DELAY_IN_SECONDS, configuration.refreshInterval, SECONDS);
-            updateStatus(ONLINE);
         } catch (Exception e) {
             updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
                     format("Supla Cloud data access is wrong! Please double check that everything is passed correctly! %s",
                             e.getLocalizedMessage()));
+            return;
         }
+
+        ThreadPoolManager.getScheduledPool(SCHEDULED_THREAD_POOL_NAME).scheduleAtFixedRate(new RefreshThread(),
+                REFRESH_THREAD_DELAY_IN_SECONDS, configuration.refreshInterval, SECONDS);
+        updateStatus(ONLINE);
     }
 
     public Optional<ApplicationContext> getApplicationContext() {
