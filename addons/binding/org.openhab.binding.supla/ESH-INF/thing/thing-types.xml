@@ -15,7 +15,7 @@
 		</description>
 
 		<config-description>
-			<parameter name="supla-cloud-id" type="integer" required="true">
+			<parameter name="supla-io-device-id" type="integer" required="true">
 				<label>ID</label>
 			</parameter>
 		</config-description>
