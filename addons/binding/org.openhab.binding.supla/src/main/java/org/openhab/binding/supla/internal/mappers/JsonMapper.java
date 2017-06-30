@@ -1,19 +1,18 @@
 package org.openhab.binding.supla.internal.mappers;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
-import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import org.openhab.binding.supla.internal.supla.entities.SuplaToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public final class JsonMapper implements Mapper {
     private final Gson gson;
@@ -77,7 +76,7 @@ public final class JsonMapper implements Mapper {
                         validTimeInSeconds = jsonReader.nextInt();
                         break;
                     default:
-                        logger.warn("Can't parse this name '" + name + "'!");
+                        logger.trace("Can't parse this name '" + name + "'. Probably this does no harm");
                         jsonReader.skipValue();
                 }
             }
