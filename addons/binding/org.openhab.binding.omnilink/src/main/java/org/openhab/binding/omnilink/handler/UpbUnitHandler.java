@@ -1,6 +1,5 @@
 package org.openhab.binding.omnilink.handler;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -20,17 +19,14 @@ import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
+import com.google.common.collect.ImmutableMap;
 
 public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandler {
 
-    private static Map<Type, OmniLinkCmd> sCommandMappingMap = new HashMap<Type, OmniLinkCmd>();
-
-    static {
-        sCommandMappingMap.put(IncreaseDecreaseType.INCREASE, OmniLinkCmd.CMD_UNIT_UPB_BRIGHTEN_STEP_1);
-        sCommandMappingMap.put(IncreaseDecreaseType.DECREASE, OmniLinkCmd.CMD_UNIT_UPB_DIM_STEP_1);
-        sCommandMappingMap.put(OnOffType.ON, OmniLinkCmd.CMD_UNIT_ON);
-        sCommandMappingMap.put(OnOffType.OFF, OmniLinkCmd.CMD_UNIT_OFF);
-    }
+    private final static Map<Type, OmniLinkCmd> sCommandMappingMap = ImmutableMap.<Type, OmniLinkCmd> of(
+            IncreaseDecreaseType.INCREASE, OmniLinkCmd.CMD_UNIT_UPB_BRIGHTEN_STEP_1, IncreaseDecreaseType.DECREASE,
+            OmniLinkCmd.CMD_UNIT_UPB_DIM_STEP_1, OnOffType.ON, OmniLinkCmd.CMD_UNIT_ON, OnOffType.OFF,
+            OmniLinkCmd.CMD_UNIT_OFF);
 
     public UpbUnitHandler(Thing thing) {
         super(thing);
@@ -95,7 +91,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channel linked: {}", channelUID);
+        logger.debug("UPB Unit channel linked: {}", channelUID);
 
         try {
             int unitId = getThingID();
