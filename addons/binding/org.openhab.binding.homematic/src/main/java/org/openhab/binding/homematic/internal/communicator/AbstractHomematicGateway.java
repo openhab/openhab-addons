@@ -473,7 +473,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         if (channel.getDevice().isGatewayExtras()) {
             if (channel.getNumber() != HmChannel.CHANNEL_NUMBER_EXTRAS) {
                 Map<HmDatapointInfo, HmDatapoint> datapoints = channel.getDatapoints();
-                datapoints.clear();
 
                 if (channel.getNumber() == HmChannel.CHANNEL_NUMBER_VARIABLE) {
                     loadVariables(channel);

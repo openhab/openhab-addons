@@ -15,11 +15,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.homematic.discovery.HomematicDeviceDiscoveryService;
@@ -223,10 +225,14 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     /**
      * Updates the thing for the given Homematic device.
      */
-    public void updateThing(HmDevice device) {
+    private void updateThing(HmDevice device) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
         if (hmThing != null && hmThing.getHandler() != null) {
-            hmThing.getHandler().thingUpdated(hmThing);
+            ThingHandler thingHandler = hmThing.getHandler();
+            thingHandler.thingUpdated(hmThing);
+            for (Channel channel : hmThing.getChannels()) {
+                thingHandler.channelLinked(channel.getUID());
+            }
         }
     }
 
