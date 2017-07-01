@@ -254,11 +254,12 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                     .builder(bridgeHandler, ObjectPropertyRequests.UNIT).selectNamed().areaFilter(areaFilter)
                     .selectAnyLoad().build();
 
+            int currentRoom = 0;
+            String currentRoomName = "";
+
             for (UnitProperties unitProperties : objectPropertyRequest) {
 
                 int objnum = unitProperties.getNumber();
-                int currentRoom = 0;
-                String currentRoomName = "";
 
                 // boolean isInRoom = false;
                 boolean isRoomController = false;

@@ -22,16 +22,16 @@ public class ObjectPropertyRequests<T extends ObjectProperties> {
             Message.OBJ_TYPE_CONSOLE, ConsoleProperties.class);
 
     public final static ObjectPropertyRequests<AreaProperties> AREA = new ObjectPropertyRequests<>(
-            Message.OBJ_TYPE_CONSOLE, AreaProperties.class);
+            Message.OBJ_TYPE_AREA, AreaProperties.class);
 
     public final static ObjectPropertyRequests<ZoneProperties> ZONE = new ObjectPropertyRequests<>(
-            Message.OBJ_TYPE_CONSOLE, ZoneProperties.class);
+            Message.OBJ_TYPE_ZONE, ZoneProperties.class);
 
     public final static ObjectPropertyRequests<UnitProperties> UNIT = new ObjectPropertyRequests<>(
-            Message.OBJ_TYPE_CONSOLE, UnitProperties.class);
+            Message.OBJ_TYPE_UNIT, UnitProperties.class);
 
     public final static ObjectPropertyRequests<AudioZoneProperties> AUDIO_ZONE = new ObjectPropertyRequests<>(
-            Message.OBJ_TYPE_CONSOLE, AudioZoneProperties.class);
+            Message.OBJ_TYPE_AUDIO_ZONE, AudioZoneProperties.class);
 
     private final int propertyRequest;
     private final Class<T> responseType;
