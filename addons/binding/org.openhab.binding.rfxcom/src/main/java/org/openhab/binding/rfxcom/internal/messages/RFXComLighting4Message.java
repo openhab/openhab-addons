@@ -8,18 +8,27 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.RFXComValueSelector.*;
+import static org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration.*;
+
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RFXCOM data class for lighting4 message.
@@ -46,8 +55,14 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Alessandro Ballini (ITA) - Initial contribution
  * @author Pauli Anttila
+ * @author Martin van Wingerden - Extended support for more complex PT2262 devices
  */
 public class RFXComLighting4Message extends RFXComBaseMessage {
+    // this loger is used from a static context, so is static as well
+    private static final Logger LOGGER = LoggerFactory.getLogger(RFXComLighting4Message.class);
+
+    private static final byte DEFAULT_OFF_COMMAND_ID = Commands.OFF_4.toByte();
+    private static final byte DEFAULT_ON_COMMAND_ID = Commands.ON_1.toByte();
 
     public enum SubType {
         PT2262(0);
@@ -74,43 +89,61 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     }
 
     public enum Commands {
-        UNDEFINED_0(0),
-        ON(1),
-        UNDEFINED_2(2),
-        UNDEFINED_3(3),
-        OFF(4);
+        OFF_0(0, false),
+        ON_1(1, true),
+        OFF_2(2, false),
+        ON_3(3, true),
+        OFF_4(4, false),
+        ON_5(5, true),
+        ON_7(7, true),
+        ON_9(9, true),
+        ON_12(12, true),
+        UNKNOWN(-1, false);
 
         private final int command;
+        private final boolean on;
 
-        Commands(int command) {
+        Commands(int command, boolean on) {
             this.command = command;
+            this.on = on;
         }
 
         public byte toByte() {
             return (byte) command;
         }
 
-        public static Commands fromByte(int input) throws RFXComUnsupportedValueException {
+        public boolean isOn() {
+            return on;
+        }
+
+        public static Commands fromByte(int input) {
             for (Commands c : Commands.values()) {
                 if (c.command == input) {
                     return c;
                 }
             }
-            throw new RFXComUnsupportedValueException(Commands.class, input);
+            LOGGER.info(
+                    "A not completely supported command with value {} was received, we can send it but please report "
+                            + "it as an issue including what the command means, this helps to extend the binding with better support.",
+                    input);
+            return UNKNOWN;
         }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays
-            .asList(RFXComValueSelector.COMMAND, RFXComValueSelector.SIGNAL_LEVEL);
+    private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(COMMAND, COMMAND_ID,
+            SIGNAL_LEVEL);
 
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
-            .asList(RFXComValueSelector.COMMAND);
+    private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays.asList(COMMAND,
+            COMMAND_ID);
 
-    public SubType subType;
-    public int sensorId;
-    public Commands command;
-    public int pulse;
-    public byte signalLevel;
+    private SubType subType;
+    private int sensorId;
+    private int pulse;
+    private Commands command;
+    private int commandId;
+    private int offCommandId;
+    private int onCommandId;
+    private byte signalLevel;
 
     public RFXComLighting4Message() {
         packetType = PacketType.LIGHTING4;
@@ -127,7 +160,7 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
         str += super.toString();
         str += ", Sub type = " + subType;
         str += ", Device Id = " + getDeviceId();
-        str += ", Command = " + command;
+        str += ", Command = " + command + "(" + commandId + ")";
         str += ", Pulse = " + pulse;
 
         return str;
@@ -135,14 +168,15 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = SubType.fromByte(super.subType);
-        sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF) >>> 4;
+        sensorId = (data[4] & 0xFF) << 12 | (data[5] & 0xFF) << 4 | (data[6] & 0xF0) >> 4;
 
-        int commandID = (data[6] & 0x0F); // 4 OFF - 1 ON
-        command = Commands.fromByte(commandID);
+        commandId = (data[6] & 0x0F);
+        command = Commands.fromByte(commandId);
+        onCommandId = command.isOn() ? commandId : DEFAULT_ON_COMMAND_ID;
+        offCommandId = command.isOn() ? DEFAULT_OFF_COMMAND_ID : commandId;
 
         pulse = (data[7] & 0xFF) << 8 | (data[8] & 0xFF);
 
@@ -152,27 +186,24 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
     @Override
     public byte[] decodeMessage() {
 
-        byte[] data = new byte[11];
+        byte[] data = new byte[10];
 
-        data[0] = 0x0A;
-        data[1] = RFXComBaseMessage.PacketType.LIGHTING4.toByte();
+        data[0] = 0x09;
+        data[1] = PacketType.LIGHTING4.toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
 
-        // SENSORID + COMMAND
-        data[4] = (byte) ((sensorId >> 16) & 0xFF);
-        data[5] = (byte) ((sensorId >> 8) & 0xFF);
-        data[6] = (byte) (((sensorId >> 4) & 0xFF) | command.ordinal() & 0x0F);
+        // SENSOR_ID + COMMAND
+        data[4] = (byte) ((sensorId >> 12) & 0xFF);
+        data[5] = (byte) ((sensorId >> 4) & 0xFF);
+        data[6] = (byte) ((sensorId << 4 & 0xF0) | (command.toByte() & 0x0F));
 
         // PULSE
-        data[7] = (byte) ((pulse >> 8) & 0xFF);
+        data[7] = (byte) (pulse >> 8 & 0xFF);
         data[8] = (byte) (pulse & 0xFF);
 
         // SIGNAL
-        data[9] = 0;
-
-        // UNUSED
-        data[10] = 0;
+        data[9] = (byte) ((signalLevel & 0x0F) << 4);
 
         return data;
     }
@@ -184,26 +215,30 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
     @Override
     public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
+
         if (valueSelector.getItemClass() == SwitchItem.class) {
-            if (valueSelector == RFXComValueSelector.COMMAND) {
-                switch (command) {
-                    case OFF:
-                        return OnOffType.OFF;
-                    case ON:
-                        return OnOffType.ON;
-                }
+            if (valueSelector == COMMAND || valueSelector == MOTION) {
+                return command.isOn() ? OnOffType.ON : OnOffType.OFF;
+            } else {
+                throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem: not supported");
+            }
+        } else if (valueSelector.getItemClass() == ContactItem.class) {
+            if (valueSelector == RFXComValueSelector.CONTACT) {
+                return command.isOn() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            } else {
                 throw new RFXComException("Can't convert " + valueSelector + " to SwitchItem: not supported");
             }
         } else if (valueSelector.getItemClass() == NumberItem.class) {
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
+            if (valueSelector == SIGNAL_LEVEL) {
                 return new DecimalType(signalLevel);
+            } else if (valueSelector == COMMAND_ID) {
+                return new DecimalType(commandId);
             } else {
                 throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
             }
         }
 
         throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
-
     }
 
     @Override
@@ -213,28 +248,28 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
     @Override
     public void setDeviceId(String deviceId) throws RFXComException {
-        String[] ids = deviceId.split("\\" + ID_DELIMITER);
-        if (ids.length != 2) {
-            throw new RFXComException("Invalid device id '" + deviceId + "'");
-        }
-
-        sensorId = Integer.parseInt(ids[0]);
-        pulse = Integer.parseInt(ids[1]);
+        sensorId = Integer.parseInt(deviceId);
     }
 
     @Override
     public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-
         switch (valueSelector) {
-
             case COMMAND:
                 if (type instanceof OnOffType) {
-                    command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
+                    command = Commands.fromByte(type == OnOffType.ON ? onCommandId : offCommandId);
+                    commandId = command.toByte();
                 } else {
                     throw new RFXComException("Can't convert " + type + " to Command");
                 }
                 break;
-
+            case COMMAND_ID:
+                if (type instanceof DecimalType) {
+                    commandId = ((DecimalType) type).toBigDecimal().byteValue();
+                    command = Commands.fromByte(commandId);
+                } else {
+                    throw new RFXComException("Can't convert " + type + " to CommandId");
+                }
+                break;
             default:
                 throw new RFXComException("Can't convert " + type + " to " + valueSelector);
         }
@@ -242,7 +277,6 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
     @Override
     public Object convertSubType(String subType) throws RFXComException {
-
         for (SubType s : SubType.values()) {
             if (s.toString().equals(subType)) {
                 return s;
@@ -258,12 +292,34 @@ public class RFXComLighting4Message extends RFXComBaseMessage {
 
     @Override
     public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+        return SUPPORTED_INPUT_VALUE_SELECTORS;
     }
 
     @Override
     public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+        return SUPPORTED_OUTPUT_VALUE_SELECTORS;
     }
 
+    @Override
+    public void addDevicePropertiesTo(DiscoveryResultBuilder discoveryResultBuilder) throws RFXComException {
+        super.addDevicePropertiesTo(discoveryResultBuilder);
+        discoveryResultBuilder.withProperty(PULSE_LABEL, pulse);
+        discoveryResultBuilder.withProperty(ON_COMMAND_ID_LABEL, onCommandId);
+        discoveryResultBuilder.withProperty(OFF_COMMAND_ID_LABEL, offCommandId);
+    }
+
+    @Override
+    public void setConfig(RFXComDeviceConfiguration config) throws RFXComException {
+        super.setConfig(config);
+        this.pulse = config.pulse != null ? config.pulse : 350;
+        this.onCommandId = valueOrDefault(config.onCommandId, DEFAULT_ON_COMMAND_ID);
+        this.offCommandId = valueOrDefault(config.offCommandId, DEFAULT_OFF_COMMAND_ID);
+    }
+
+    private int valueOrDefault(Integer commandId, byte defaultValue) {
+        if (commandId != null) {
+            return commandId;
+        }
+        return defaultValue;
+    }
 }

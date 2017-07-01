@@ -141,14 +141,14 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     STOP(null, "stop", OnOffType.class, false),
     SWITCH(null, "switch", OnOffType.class, false);
 
-    protected Logger logger = LoggerFactory.getLogger(OvenChannelSelector.class);
+    private final Logger logger = LoggerFactory.getLogger(OvenChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    private OvenChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    OvenChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;

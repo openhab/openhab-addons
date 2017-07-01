@@ -66,14 +66,14 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
     },
     START(null, "start", OnOffType.class, false);
 
-    protected Logger logger = LoggerFactory.getLogger(FridgeChannelSelector.class);
+    private final Logger logger = LoggerFactory.getLogger(FridgeChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    private FridgeChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    FridgeChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;

@@ -11,25 +11,25 @@ package org.openhab.binding.tesla.internal.protocol;
 /**
  * The {@link Vehicle} is a datastructure to capture
  * variables sent by the Tesla Vehicle
- * 
+ *
  * @author Karel Goderis - Initial contribution
  */
 public class Vehicle {
 
-	public  String color;
-	public  String display_name;
-	public  String id;
-	public  String option_codes;
-	public  String vehicle_id;
-	public  String vin;
-	public  String tokens[];
-	public  String state;
-	public  boolean remote_start_enabled;
-	public  boolean calendar_enabled;
-	public  boolean notifications_enabled;
-	public  String backseat_token;
-	public  String backseat_token_updated_at;
+    public String color;
+    public String display_name;
+    public String id;
+    public String option_codes;
+    public String vehicle_id;
+    public String vin;
+    public String tokens[];
+    public String state;
+    public boolean remote_start_enabled;
+    public boolean calendar_enabled;
+    public boolean notifications_enabled;
+    public String backseat_token;
+    public String backseat_token_updated_at;
 
-	Vehicle() {
-	}
+    Vehicle() {
+    }
 }

@@ -9,8 +9,10 @@
         <description>Ethernet access point to Russound RIO control system (usually the main controller)</description>
         
         <channels>
-            <channel id="lang" typeId="syslang"/>
-            <channel id="allon" typeId="sysallon"/>
+            <channel id="lang" typeId="sysLang"/>
+            <channel id="allon" typeId="sysAllOn"/>
+            <channel id="controllers" typeId="sysControllers"/>
+            <channel id="sources" typeId="sysSources"/>
         </channels>
 
         <config-description>
@@ -31,6 +33,12 @@
                 <default>10</default>
                 <advanced>true</advanced>
             </parameter>
+            <parameter name="scanDevice" type="boolean" required="false">
+                <label>Scan Device</label>
+                <description>Scan device at startup (creating zones, sources, etc dynamically)</description>
+                <default>false</default>
+                <advanced>true</advanced>
+            </parameter>
         </config-description>
         
     </bridge-type>
@@ -43,6 +51,10 @@
         <label>Russound Controller</label>
         <description>Controller of Zones, Sources, etc</description>
 
+        <channels>
+            <channel id="zones" typeId="ctlZones"/>
+        </channels>
+        
         <config-description>
             <parameter name="controller" type="integer" min="1" max="6" required="true">
                 <label>Controller ID</label>
@@ -51,7 +63,7 @@
         </config-description>
     </bridge-type>
 
-    <bridge-type id="zone">
+    <thing-type id="zone">
         <supported-bridge-type-refs>
             <bridge-type-ref id="controller"/>
         </supported-bridge-type-refs>
@@ -85,6 +97,14 @@
             <channel id="keyhold" typeId="zoneKeyHold"/>
             <channel id="keycode" typeId="zoneKeyCode"/>
             <channel id="event" typeId="zoneEvent"/>
+            
+            <channel id="systemfavorites" typeId="zoneSysFavorites"/>
+            <channel id="zonefavorites" typeId="zoneFavorites"/>
+            <channel id="presets" typeId="zonePresets"/>
+
+            <channel id="mminit" typeId="zoneMMInit"/>
+            <channel id="mmcontextmenu" typeId="zoneMMContextMenu"/>
+            
         </channels>
 
         <config-description>
@@ -93,9 +113,9 @@
                 <description>The zone identifier</description>
             </parameter>
         </config-description>
-    </bridge-type>
+    </thing-type>
 
-    <bridge-type id="source">
+    <thing-type id="source">
         <supported-bridge-type-refs>
             <bridge-type-ref id="rio"/>
         </supported-bridge-type-refs>
@@ -105,6 +125,7 @@
         
         <channels>
             <channel id="name" typeId="srcName"/>
+            <channel id="type" typeId="srcType"/>
             <channel id="channel" typeId="srcChannel"/>
             <channel id="channelname" typeId="srcChannelName"/>
             <channel id="composername" typeId="srcComposerName"/>
@@ -112,7 +133,6 @@
             <channel id="artistname" typeId="srcArtistName"/>
             <channel id="albumname" typeId="srcAlbumName"/>
             <channel id="coverarturl" typeId="srcCoverArtUrl"/>
-            <channel id="coverart" typeId="srcCoverArt"/>
             <channel id="playlistname" typeId="srcPlayListName"/>
             <channel id="songname" typeId="srcSongName"/>
             <channel id="rating" typeId="srcRating"/>
@@ -125,6 +145,19 @@
             <channel id="radiotext3" typeId="srcRadioText3"/>
             <channel id="radiotext4" typeId="srcRadioText4"/>
             <channel id="volume" typeId="srcVolume"/>
+            
+            <channel id="banks" typeId="srcBanks"/>
+            
+            <channel id="mmscreen" typeId="srcMMScreen"/>
+            <channel id="mmtitle" typeId="srcMMTitle"/>
+            <channel id="mmmenu" typeId="srcMMMenu"/>
+            <channel id="mmattr" typeId="srcMMAttr"/>
+            <channel id="mmmenubuttonoktext" typeId="srcMMMenuButtonOkText"/>
+            <channel id="mmmenubuttonbacktext" typeId="srcMMMenuButtonBackText"/>
+            <channel id="mminfotext" typeId="srcMMInfoText"/>
+            <channel id="mmhelptext" typeId="srcMMHelpText"/>
+            <channel id="mmtextfield" typeId="srcMMTextField"/>
+            
         </channels>
 
         <config-description>
@@ -134,116 +167,10 @@
             </parameter>
         </config-description>
         
-    </bridge-type>
-
-    <bridge-type id="bank">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="source"/>
-        </supported-bridge-type-refs>
-
-        <label>Russound Bank</label>
-        <description>Bank of Presets for a specific Source (usually a tuner source)</description>
-
-        <channels>
-            <channel id="name" typeId="bankName"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="bank" type="integer" min="1" max="6" required="true">
-                <label>Bank ID</label>
-                <description>The bank identifier</description>
-            </parameter>
-        </config-description>
-    </bridge-type>
-
-    <thing-type id="sysfavorite">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="rio"/>
-        </supported-bridge-type-refs>
-
-        <label>System Favorite</label>
-        <description>System Favorite</description>
-
-        <channels>
-            <channel id="name" typeId="favName"/>
-            <channel id="valid" typeId="favValid"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="favorite" type="integer" min="1" max="32" required="true">
-                <label>Favorite ID</label>
-                <description>The favorite identifier</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-    
-    <thing-type id="zonefavorite">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="zone"/>
-        </supported-bridge-type-refs>
-
-        <label>Zone Favorite</label>
-        <description>Favorite for a Zone</description>
-
-        <channels>
-            <channel id="name" typeId="zfavName"/>
-            <channel id="valid" typeId="zfavValid"/>
-            <channel id="cmd" typeId="zfavCmd"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="favorite" type="integer" min="1" max="2" required="true">
-                <label>Favorite ID</label>
-                <description>The favorite identifier</description>
-            </parameter>
-        </config-description>
     </thing-type>
 
-    <thing-type id="bankpreset">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bank"/>
-        </supported-bridge-type-refs>
 
-        <label>Russound Bank Preset</label>
-        <description>Preset (usually frequency) within a Bank for a Source (usually a tuner)</description>
-
-        <channels>
-            <channel id="name" typeId="bkpreName"/>
-            <channel id="valid" typeId="bkpreValid"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="preset" type="integer" min="1" max="6" required="true">
-                <label>Preset ID</label>
-                <description>The preset identifier</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-    
-
-    <thing-type id="zonepreset">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="zone"/>
-        </supported-bridge-type-refs>
-
-        <label>Russound Zone Presets</label>
-        <description>Zone Preset Commands to save/restore/delete presets for the zone</description>
-
-        <channels>
-            <channel id="name" typeId="zpreName"/>
-            <channel id="valid" typeId="zpreValid"/>
-            <channel id="cmd" typeId="zpreCmd"/>
-        </channels>
-        
-        <config-description>
-            <parameter name="preset" type="integer" min="1" max="36" required="true">
-                <label>Preset ID</label>
-                <description>The preset identifier (1-36 corresponds to banks 1-6, presets 1-6)</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-
-    <channel-type id="syslang">
+    <channel-type id="sysLang">
         <item-type>String</item-type>
         <label>Language</label>
         <description>System Language</description>
@@ -255,12 +182,31 @@
             </options>
         </state>
     </channel-type>    
-    <channel-type id="sysallon">
+    <channel-type id="sysAllOn">
         <item-type>Switch</item-type>
         <label>All Zones</label>
         <description>Toggles All Zones</description>
     </channel-type>
+    <channel-type id="sysControllers" advanced="true">
+        <item-type>String</item-type>
+        <label>Controllers</label>
+        <description>JSON Array containing the valid controllers ([{id: 1, name: 'xxx'}, ...])</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="sysSources" advanced="true">
+        <item-type>String</item-type>
+        <label>Sources</label>
+        <description>JSON Array containing the sources ([{id: 1, name: 'xxx'}, ...])</description>
+        <state readOnly="true"/>
+    </channel-type>
     
+    <channel-type id="ctlZones" advanced="true">
+        <item-type>String</item-type>
+        <label>Zones</label>
+        <description>JSON Array containing the zones ([{id: 1, name: 'xxx'}, ...])</description>
+        <state readOnly="true"/>
+    </channel-type>
+        
     <channel-type id="zoneName">
         <item-type>String</item-type>
         <label>Zone Name</label>
@@ -296,10 +242,9 @@
         <description>Loudness</description>
     </channel-type>
     <channel-type id="zoneTurnOnVolume" advanced="true">
-        <item-type>Number</item-type>
+        <item-type>Dimmer</item-type>
         <label>Turn On Volume</label>
         <description>The volume the zone will default to when turned on</description>
-        <state min="0" max="50"/>
     </channel-type>
     <channel-type id="zoneDoNotDisturb" advanced="true">
         <item-type>String</item-type>
@@ -320,7 +265,6 @@
         <item-type>Dimmer</item-type>
         <label>Volume</label>
         <description>Volume level of zone</description>
-        <state min="0" max="50"/>
     </channel-type>
     <channel-type id="zoneMute">
         <item-type>Switch</item-type>
@@ -394,11 +338,47 @@
         <label>Generic Event</label>
         <description>Send a generic event to the zone</description>
     </channel-type>
-    
+
+    <channel-type id="zoneSysFavorites" advanced="true">
+        <item-type>String</item-type>
+        <label>System Favorites</label>
+        <description>JSON Array containing the system favorites ([{id: 1, valid: true/false, name: 'xxx'}, ...])</description>
+    </channel-type>
+    <channel-type id="zoneFavorites" advanced="true">
+        <item-type>String</item-type>
+        <label>Zone Favorites</label>
+        <description>JSON Array containing the zone favorites ([{id: 1, valid: true/false, name: 'xxx'}, ...])</description>
+    </channel-type>
+    <channel-type id="zonePresets" advanced="true">
+        <item-type>String</item-type>
+        <label>Zone Presets</label>
+        <description>JSON Array containing the zone presets ([{id: 1, valid: true/false, name: 'xxx'}, ...])</description>
+    </channel-type>
+
+
+    <channel-type id="zoneMMInit" advanced="true">
+        <item-type>Switch</item-type>
+        <label>MM Initialize</label>
+        <description>Send MM back to home screen</description>
+    </channel-type>
+
+    <channel-type id="zoneMMContextMenu" advanced="true">
+        <item-type>Switch</item-type>
+        <label>MM Context Menu</label>
+        <description>Request a source context menu</description>
+    </channel-type>
+
+
     <channel-type id="srcName">
         <item-type>String</item-type>
         <label>Name</label>
         <description>Source Name</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="srcType">
+        <item-type>String</item-type>
+        <label>Type</label>
+        <description>Source Type</description>
         <state readOnly="true"/>
     </channel-type>
     <channel-type id="srcChannel">
@@ -442,11 +422,6 @@
         <label>Cover Art URL</label>
         <description>Current song's covert art url</description>
         <state readOnly="true"/>
-    </channel-type>
-    <channel-type id="srcCoverArt" advanced="true">
-        <item-type>Image</item-type>
-        <label>Cover Art Image</label>
-        <description>Cover Art Image</description>
     </channel-type>
     <channel-type id="srcPlayListName" advanced="true">
         <item-type>String</item-type>
@@ -521,86 +496,73 @@
         <state readOnly="true"/>
     </channel-type>
     
-    <channel-type id="bankName">
+    <channel-type id="srcBanks" advanced="true">
         <item-type>String</item-type>
-        <label>Name</label>
-        <description>The name of the bank</description>
+        <label>Banks</label>
+        <description>JSON Array containing the banks ([{id: 1, name: 'xxx', presets: [{id:1 ,valid:true/false, name='xxx'}, ...], ...])</description>
+    </channel-type>
+        
+    <channel-type id="srcMMScreen" advanced="true">
+        <item-type>String</item-type>
+        <label>MM Screen</label>
+        <description>The MM Screen ID</description>
         <state readOnly="true"/>
     </channel-type>
     
-    <channel-type id="favName">
+    <channel-type id="srcMMTitle" advanced="true">
         <item-type>String</item-type>
-        <label>Name</label>
-        <description>The name of the favorite</description>
+        <label>MM Screen Title</label>
+        <description>The MM Screen Title</description>
         <state readOnly="true"/>
     </channel-type>
-    <channel-type id="favValid" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Valid</label>
-        <description>If the favorite is valid or not</description>
-    </channel-type>
     
-    <channel-type id="zfavName">
+    <channel-type id="srcMMMenu" advanced="true">
         <item-type>String</item-type>
-        <label>Name</label>
-        <description>The name of the zone favorite</description>
+        <label>MM Menus</label>
+        <description>The MM Menu Item JSON</description>
+        <state readOnly="true"/>
+    </channel-type>    
+    
+    <channel-type id="srcMMAttr" advanced="true">
+        <item-type>String</item-type>
+        <label>MM Menus Attribute</label>
+        <description>The MM Menu Info Attributes</description>
+        <state readOnly="true"/>
+    </channel-type>    
+    
+    <channel-type id="srcMMMenuButtonOkText" advanced="true">
+        <item-type>String</item-type>
+        <label>MM OK Button Text</label>
+        <description>The MM OK Button Text</description>
         <state readOnly="true"/>
     </channel-type>
-    <channel-type id="zfavValid" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Valid</label>
-        <description>If the zone favorite is valid or not</description>
-    </channel-type>
-    <channel-type id="zfavCmd" advanced="true">
-        <item-type>String</item-type>
-        <label>Favorite Command</label>
-        <description>Preset Command ("savesys", "restoresys", "deletesys", "savezone", "restorezone", "deletezone")</description>
-        <state>
-            <options>
-                <option value="savesys">Save as system favorite</option>
-                <option value="restoresys">Restore system favorite</option>
-                <option value="deletesys">Delete system favorite</option>
-                <option value="savezone">Save as zone favorite</option>
-                <option value="restorezone">Restore zone favorite</option>
-                <option value="deletezone">Delete zone favorite</option>
-            </options>
-        </state>
-    </channel-type>
     
-    <channel-type id="bkpreName">
+    <channel-type id="srcMMMenuButtonBackText" advanced="true">
         <item-type>String</item-type>
-        <label>Name</label>
-        <description>The name of the bank preset</description>
+        <label>MM Back Button Text</label>
+        <description>The MM Back Button Text</description>
         <state readOnly="true"/>
     </channel-type>
-    <channel-type id="bkpreValid" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Valid</label>
-        <description>If the bank preset is valid or not</description>
-    </channel-type>
     
-    <channel-type id="zpreName">
+    <channel-type id="srcMMInfoText" advanced="true">
         <item-type>String</item-type>
-        <label>Name</label>
-        <description>The name of the zone preset</description>
+        <label>MM Info Text</label>
+        <description>The MM Info Text</description>
         <state readOnly="true"/>
     </channel-type>
-    <channel-type id="zpreValid" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Valid</label>
-        <description>If the zone preset is valid or not</description>
-    </channel-type>
-    <channel-type id="zpreCmd" advanced="true">
+    
+   <channel-type id="srcMMHelpText" advanced="true">
         <item-type>String</item-type>
-        <label>Preset Command</label>
-        <description>Preset Command ("save", "restore", "delete")</description>
-        <state>
-            <options>
-                <option value="save">Save as preset</option>
-                <option value="restore">Restore preset</option>
-                <option value="delete">Delete preset</option>
-            </options>
-        </state>
+        <label>MM Help Text</label>
+        <description>The MM Help Text (label for form)</description>
+        <state readOnly="true"/>
     </channel-type>
     
+    <channel-type id="srcMMTextField" advanced="true">
+        <item-type>String</item-type>
+        <label>MM Text Field</label>
+        <description>The MM Text Field</description>
+        <state readOnly="true"/>
+    </channel-type>
+        
 </thing:thing-descriptions>

@@ -9,6 +9,7 @@
 package org.openhab.binding.gardena.handler;
 
 import static org.openhab.binding.gardena.GardenaBindingConstants.*;
+import static org.openhab.binding.gardena.internal.GardenaSmartCommandName.*;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -29,11 +30,11 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.gardena.internal.GardenaSmart;
+import org.openhab.binding.gardena.internal.GardenaSmartCommandName;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.Ability;
 import org.openhab.binding.gardena.internal.model.Device;
-import org.openhab.binding.gardena.internal.model.Property;
 import org.openhab.binding.gardena.internal.util.DateUtils;
 import org.openhab.binding.gardena.util.UidUtils;
 import org.slf4j.Logger;
@@ -58,14 +59,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
-            GardenaSmart gardena = getGardenaSmart();
-
-            String deviceId = getConfig().as(GardenaDeviceConfig.class).deviceId;
-            if (deviceId == null) {
-                deviceId = UidUtils.getGardenaDeviceId(getThing());
-            }
-            Device device = gardena.getDevice(deviceId);
-
+            Device device = getDevice();
             updateProperties(device);
             updateStatus(device);
         } catch (GardenaException ex) {
@@ -91,6 +85,18 @@ public class GardenaThingHandler extends BaseThingHandler {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        try {
+            updateChannel(channelUID);
+        } catch (Exception ex) {
+            logger.error("{}", ex.getMessage(), ex);
+        }
+    }
+
+    /**
      * Updates the channel from the Gardena device.
      */
     protected void updateChannel(ChannelUID channelUID) throws GardenaException, AccountHandlerNotAvailableException {
@@ -99,7 +105,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Converts a Gardena property value to a openHab state.
+     * Converts a Gardena property value to a openHAB state.
      */
     private State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
         String abilityName = channelUID.getGroupId();
@@ -157,20 +163,57 @@ public class GardenaThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            String abilityName = channelUID.getGroupId();
-            String propertyName = channelUID.getIdWithoutGroup();
+            GardenaSmartCommandName commandName = getCommandName(channelUID);
+            logger.debug("Received Gardena command: {}", commandName);
 
             if (RefreshType.REFRESH == command) {
                 logger.debug("Refreshing channel '{}'", channelUID);
-                updateChannel(channelUID);
-            } else {
-                Property commandProperty = getDevice().getAbility(abilityName).getProperty(propertyName);
-                getGardenaSmart().sendCommand(commandProperty, convertFromType(command));
+                if (commandName != null && commandName.toString().startsWith("MEASURE_")) {
+                    getGardenaSmart().sendCommand(getDevice(), commandName, null);
+                } else {
+                    updateChannel(channelUID);
+                }
+            } else if (commandName != null) {
+                getGardenaSmart().sendCommand(getDevice(), commandName, convertFromType(command));
             }
         } catch (AccountHandlerNotAvailableException | GardenaDeviceNotFoundException ex) {
             // ignore
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Returns the Gardena command from the channel.
+     */
+    private GardenaSmartCommandName getCommandName(ChannelUID channelUID) {
+        switch (channelUID.getId()) {
+            case "mower#park_until_further_notice":
+                return PARK_UNTIL_FURTHER_NOTICE;
+            case "mower#park_until_next_timer":
+                return PARK_UNTIL_NEXT_TIMER;
+            case "mower#start_override_timer":
+                return START_OVERRIDE_TIMER;
+            case "mower#start_resume_schedule":
+                return START_RESUME_SCHEDULE;
+            case "mower#duration_property":
+                return DURATION_PROPERTY;
+
+            case "ambient_temperature#temperature":
+                return MEASURE_AMBIENT_TEMPERATURE;
+            case "soil_temperature#temperature":
+                return MEASURE_SOIL_TEMPERATURE;
+            case "humidity#humidity":
+                return MEASURE_SOIL_HUMIDITY;
+            case "light#light":
+                return MEASURE_LIGHT;
+
+            case "outlet#button_manual_override_time":
+                return OUTLET_MANUAL_OVERRIDE_TIME;
+            case "outlet#valve_open":
+                return OUTLET_VALVE;
+            default:
+                return null;
         }
     }
 

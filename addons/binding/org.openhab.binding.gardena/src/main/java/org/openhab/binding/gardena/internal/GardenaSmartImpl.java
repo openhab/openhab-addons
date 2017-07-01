@@ -44,10 +44,15 @@ import org.openhab.binding.gardena.internal.model.NoResult;
 import org.openhab.binding.gardena.internal.model.Property;
 import org.openhab.binding.gardena.internal.model.Session;
 import org.openhab.binding.gardena.internal.model.SessionWrapper;
+import org.openhab.binding.gardena.internal.model.command.Command;
 import org.openhab.binding.gardena.internal.model.command.MowerParkUntilFurtherNoticeCommand;
 import org.openhab.binding.gardena.internal.model.command.MowerParkUntilNextTimerCommand;
 import org.openhab.binding.gardena.internal.model.command.MowerStartOverrideTimerCommand;
 import org.openhab.binding.gardena.internal.model.command.MowerStartResumeScheduleCommand;
+import org.openhab.binding.gardena.internal.model.command.SensorMeasureAmbientTemperatureCommand;
+import org.openhab.binding.gardena.internal.model.command.SensorMeasureLightCommand;
+import org.openhab.binding.gardena.internal.model.command.SensorMeasureSoilHumidityCommand;
+import org.openhab.binding.gardena.internal.model.command.SensorMeasureSoilTemperatureCommand;
 import org.openhab.binding.gardena.internal.model.command.WateringCancelOverrideCommand;
 import org.openhab.binding.gardena.internal.model.command.WateringManualOverrideCommand;
 import org.openhab.binding.gardena.internal.model.deser.DateDeserializer;
@@ -65,20 +70,16 @@ import com.google.gson.GsonBuilder;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaSmartImpl implements GardenaSmart {
-
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
-
-    private static final String MOWER_COMMAND_PARK_UNTIL_NEXT_TIMER_COMMAND = "park_until_next_timer_command";
-    private static final String MOWER_COMMAND_PARK_UNTIL_FURTHER_NOTICE = "park_until_further_notice_command";
-    private static final String MOWER_COMMAND_START_RESUME_SCHEDULE = "start_resume_schedule_command";
-    private static final String MOWER_COMMAND_START_OVERRIDE_TIMER = "start_override_timer_command";
-    private static final String MOWER_COMMAND_DURATION = "mower_command_duration";
 
     private static final String ABILITY_MOWER = "mower";
     private static final String ABILITY_OUTLET = "outlet";
+    private static final String ABILITY_HUMIDITY = "humidity";
+    private static final String ABILITY_LIGHT = "light";
+    private static final String ABILITY_AMBIENT_TEMPERATURE = "ambient_temperature";
+    private static final String ABILITY_SOIL_TEMPERATURE = "soil_temperature";
 
     private static final String PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME = "button_manual_override_time";
-    private static final String PROPERTY_VALVE_OPEN = "valve_open";
 
     private static final String DEVICE_CATEGORY_MOWER = "mower";
     private static final String DEVICE_CATEGORY_GATEWAY = "gateway";
@@ -141,7 +142,7 @@ public class GardenaSmartImpl implements GardenaSmart {
      */
     @Override
     public void dispose() {
-        stopRefreshThread();
+        stopRefreshThread(true);
         if (httpClient != null) {
             try {
                 httpClient.stop();
@@ -158,27 +159,16 @@ public class GardenaSmartImpl implements GardenaSmart {
      * Schedules the device refresh thread.
      */
     private void startRefreshThread() {
-        refreshThreadFuture = scheduler.scheduleWithFixedDelay(refreshDevicesThread, config.getRefresh(),
-                config.getRefresh(), TimeUnit.SECONDS);
+        refreshThreadFuture = scheduler.scheduleWithFixedDelay(refreshDevicesThread, 6, config.getRefresh(),
+                TimeUnit.SECONDS);
     }
 
     /**
      * Stops the device refresh thread.
      */
-    private void stopRefreshThread() {
+    private void stopRefreshThread(boolean force) {
         if (refreshThreadFuture != null) {
-            refreshThreadFuture.cancel(true);
-        }
-    }
-
-    /**
-     * Schedules a intermediate device refresh.
-     */
-    private void scheduleIntermediateRefresh() {
-        if (refreshThreadFuture != null) {
-            if (refreshThreadFuture.getDelay(TimeUnit.SECONDS) > 5) {
-                scheduler.schedule(refreshDevicesThread, 3, TimeUnit.SECONDS);
-            }
+            refreshThreadFuture.cancel(force);
         }
     }
 
@@ -216,7 +206,7 @@ public class GardenaSmartImpl implements GardenaSmart {
      */
     @Override
     public void loadAllDevices() throws GardenaException {
-        stopRefreshThread();
+        stopRefreshThread(false);
         try {
             allLocations.clear();
             allDevicesById.clear();
@@ -257,12 +247,12 @@ public class GardenaSmartImpl implements GardenaSmart {
 
             if (DEVICE_CATEGORY_MOWER.equals(device.getCategory())) {
                 Ability mower = device.getAbility(ABILITY_MOWER);
-                mower.addProperty(new Property(MOWER_COMMAND_PARK_UNTIL_NEXT_TIMER_COMMAND, "false"));
-                mower.addProperty(new Property(MOWER_COMMAND_PARK_UNTIL_FURTHER_NOTICE, "false"));
-                mower.addProperty(new Property(MOWER_COMMAND_START_RESUME_SCHEDULE, "false"));
-                mower.addProperty(new Property(MOWER_COMMAND_START_OVERRIDE_TIMER, "false"));
+                mower.addProperty(new Property(GardenaSmartCommandName.PARK_UNTIL_NEXT_TIMER, "false"));
+                mower.addProperty(new Property(GardenaSmartCommandName.PARK_UNTIL_FURTHER_NOTICE, "false"));
+                mower.addProperty(new Property(GardenaSmartCommandName.START_RESUME_SCHEDULE, "false"));
+                mower.addProperty(new Property(GardenaSmartCommandName.START_OVERRIDE_TIMER, "false"));
 
-                mower.addProperty(new Property(MOWER_COMMAND_DURATION, mowerDuration));
+                mower.addProperty(new Property(GardenaSmartCommandName.DURATION_PROPERTY, mowerDuration));
             }
         }
         return devices;
@@ -272,49 +262,92 @@ public class GardenaSmartImpl implements GardenaSmart {
      * {@inheritDoc}
      */
     @Override
-    public void sendCommand(Property property, Object value) throws GardenaException {
-        Device device = property.getAbility().getDevice();
-        String commandUrl = String.format(URL_COMMAND, device.getId(), property.getAbility().getName(),
-                device.getLocation().getId());
+    public void sendCommand(Device device, GardenaSmartCommandName commandName, Object value) throws GardenaException {
+        Ability ability = null;
+        Command command = null;
 
-        switch (property.getName()) {
-            case MOWER_COMMAND_DURATION:
-                mowerDuration = String.valueOf(value);
+        switch (commandName) {
+            case PARK_UNTIL_NEXT_TIMER:
+                ability = device.getAbility(ABILITY_MOWER);
+                command = new MowerParkUntilNextTimerCommand();
+                break;
+            case PARK_UNTIL_FURTHER_NOTICE:
+                ability = device.getAbility(ABILITY_MOWER);
+                command = new MowerParkUntilFurtherNoticeCommand();
+                break;
+            case START_RESUME_SCHEDULE:
+                ability = device.getAbility(ABILITY_MOWER);
+                command = new MowerStartResumeScheduleCommand();
+                break;
+            case START_OVERRIDE_TIMER:
+                ability = device.getAbility(ABILITY_MOWER);
+                command = new MowerStartOverrideTimerCommand(mowerDuration);
+                break;
+            case DURATION_PROPERTY:
+                if (value == null) {
+                    throw new GardenaException("Command '" + commandName + "' requires a value");
+                }
+                mowerDuration = ObjectUtils.toString(value);
                 return;
-            case MOWER_COMMAND_PARK_UNTIL_NEXT_TIMER_COMMAND:
-                executeRequest(HttpMethod.POST, commandUrl, new MowerParkUntilNextTimerCommand(), NoResult.class);
+            case MEASURE_AMBIENT_TEMPERATURE:
+                ability = device.getAbility(ABILITY_AMBIENT_TEMPERATURE);
+                command = new SensorMeasureAmbientTemperatureCommand();
                 break;
-            case MOWER_COMMAND_PARK_UNTIL_FURTHER_NOTICE:
-                executeRequest(HttpMethod.POST, commandUrl, new MowerParkUntilFurtherNoticeCommand(), NoResult.class);
+            case MEASURE_LIGHT:
+                ability = device.getAbility(ABILITY_LIGHT);
+                command = new SensorMeasureLightCommand();
                 break;
-            case MOWER_COMMAND_START_RESUME_SCHEDULE:
-                executeRequest(HttpMethod.POST, commandUrl, new MowerStartResumeScheduleCommand(), NoResult.class);
+            case MEASURE_SOIL_HUMIDITY:
+                ability = device.getAbility(ABILITY_HUMIDITY);
+                command = new SensorMeasureSoilHumidityCommand();
                 break;
-            case MOWER_COMMAND_START_OVERRIDE_TIMER:
-                executeRequest(HttpMethod.POST, commandUrl, new MowerStartOverrideTimerCommand(mowerDuration),
-                        NoResult.class);
+            case MEASURE_SOIL_TEMPERATURE:
+                ability = device.getAbility(ABILITY_SOIL_TEMPERATURE);
+                command = new SensorMeasureSoilTemperatureCommand();
                 break;
-            case PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME:
-                SimpleProperties prop = new SimpleProperties(property.getName(), ObjectUtils.toString(value));
-                String propertyUrl = String.format(URL_PROPERTY, device.getId(), property.getAbility().getName(),
-                        property.getName(), device.getLocation().getId());
+            case OUTLET_MANUAL_OVERRIDE_TIME:
+                if (value == null) {
+                    throw new GardenaException("Command '" + commandName + "' requires a value");
+                }
+                SimpleProperties prop = new SimpleProperties(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME,
+                        ObjectUtils.toString(value));
+                String propertyUrl = String.format(URL_PROPERTY, device.getId(), ABILITY_OUTLET,
+                        PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME, device.getLocation().getId());
+
+                stopRefreshThread(false);
                 executeRequest(HttpMethod.PUT, propertyUrl, new SimplePropertiesWrapper(prop), NoResult.class);
+                device.getAbility(ABILITY_OUTLET).getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME)
+                        .setValue(prop.getValue());
+                startRefreshThread();
+
                 break;
-            case PROPERTY_VALVE_OPEN:
+            case OUTLET_VALVE:
+                ability = device.getAbility(ABILITY_OUTLET);
                 if (value != null && value == Boolean.TRUE) {
                     String wateringDuration = device.getAbility(ABILITY_OUTLET)
                             .getProperty(PROPERTY_BUTTON_MANUAL_OVERRIDE_TIME).getValue();
-                    executeRequest(HttpMethod.POST, commandUrl, new WateringManualOverrideCommand(wateringDuration),
-                            NoResult.class);
+                    command = new WateringManualOverrideCommand(wateringDuration);
                 } else {
-                    executeRequest(HttpMethod.POST, commandUrl, new WateringCancelOverrideCommand(), NoResult.class);
+                    command = new WateringCancelOverrideCommand();
                 }
                 break;
+
             default:
-                throw new GardenaException(
-                        "Unknown command " + property.getAbility().getName() + "/" + property.getName());
+                throw new GardenaException("Unknown command " + commandName);
         }
-        scheduleIntermediateRefresh();
+
+        if (command != null) {
+            stopRefreshThread(false);
+            executeRequest(HttpMethod.POST, getCommandUrl(device, ability), command, NoResult.class);
+            startRefreshThread();
+        }
+    }
+
+    /**
+     * Returns the command url.
+     */
+    private String getCommandUrl(Device device, Ability ability) throws GardenaException {
+        return String.format(URL_COMMAND, device.getId(), ability.getName(), device.getLocation().getId());
     }
 
     /**
@@ -457,7 +490,7 @@ public class GardenaSmartImpl implements GardenaSmart {
                 if (!connectionLost) {
                     connectionLost = true;
                     logger.warn("Connection lost to Gardena Smart Home with id '{}'", id);
-                    logger.trace(ex.getMessage(), ex);
+                    logger.trace("{}", ex.getMessage(), ex);
                     eventListener.onConnectionLost();
                 }
             }

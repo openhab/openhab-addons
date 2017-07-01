@@ -20,11 +20,12 @@ Currently supported devices include:
 * iTach Flex WiFi
 * GC-100-6
 * GC-100-12
+* ZMOTE Wi-Fi Universal Remote
      
 
 ## Device Discovery
 
-GlobalCache GC-100 and iTach devices emit an **announcement beacon** every 10-20 seconds on multicast address 239.255.250.250:9131.  The GlobalCache binding will automatically detect those devices, then add them to the inbox.
+GlobalCache GC-100, iTach, and Zmote devices emit an **announcement beacon** every 10-20 seconds on multicast address 239.255.250.250:9131.  The GlobalCache binding will automatically detect those devices, then add them to the inbox.
 
 Background discovery is **enabled** by default.  To disable background discovery, add the following line to the *conf/services/runtime.cfg* file:
 
@@ -37,7 +38,7 @@ Note that automatic device discovery **will not work** with GC-100's running fir
 
 ## Thing Configuration
 
-The iTach IR, iTach SL, and GC-100 devices require a MAP file in order to transform the openHAB command to an IR command or to a serial command.  In the thing configuration, enter the name of the MAP file containing the IR and/or serial codes ().  The MAP file should be placed in the *conf/transform* directory.  See example below.
+The iTach IR, iTach SL, GC-100, and Zmote devices require a MAP file in order to transform the openHAB command to an IR command or to a serial command.  In the thing configuration, enter the name of the MAP file containing the IR and/or serial codes ().  The MAP file should be placed in the *conf/transform* directory.  See example below.
 
 For iTach SL and GC-100 devices that support serial connections, you must use the GlobalCache device web application to set the serial port parameters for **baud rate**, **flow control**, and **parity**.  These settings must match the serial port settings of the AV device being controlled.
 
@@ -137,7 +138,7 @@ String RS232ME      "My RS232-controlled Device"   { channel="globalcache:gc100_
 Serial commands strings are contained in a MAP file contained within the conf/transform directory. Serial command strings can contain URL-encoded characters in order to represent special characters such as spaces, tabs, carriage returns, line feeds, etc.  See example below.
 
 
-## Serial Direct (SL) Channel
+## Serial (SL) Direct Channel
 
 The Serial Direct channel type enables serial commands to be sent directly to the device without attempting to map the command using the transformation service.  This is useful in rules where the serial command might be constructed "on the fly" in the body of the rule.
 
@@ -145,6 +146,28 @@ For example, the following item links to the module 1 connector 1 channel on an 
 
 ```
 String RUSSCAA66    "Russound CAA66"   { channel="globalcache:itachFlex:000C45D530B9:sl-m1#c1-direct" }
+```
+
+## Serial (SL) Receive Channel
+
+The Serial Receive channel receives feedback from the device connected to the GlobalCache's serial port.  You enable 
+this functionality by setting the **Enable Two Way** switch to ON in the thing configuration. In addition, you must 
+set the **End-of-Message Delimiter** in the thing configuration.  The End-of-Message can be a single character, 
+or a sequence of characters.  Use URL encoding for non-printable characters.
+
+For example, the following item links to the receive channel on module 1 connector 1 on a GC-100.  A rule that looks for 
+updates on this item will be able to process messages sent from the device connected to the GlobalCache's serial port. 
+
+```
+String RUSSCAA66_Receive    "Russound CAA66 Receive"   { channel="globalcache:gc100_06:000C1EFFF039:sl-m1#c1-receive" }
+```
+
+Here are some examples of common **End-ofMessage** delimiters.
+
+```
+%0D%0A      Carriage return / Line feed
+%0D         Carriage return
+%F7         Russound RNET message terminator
 ```
 
 ## Example Configuration
@@ -200,6 +223,8 @@ String SAMSUNGHLS       "Samsung HL-S DLP TV"               { channel="globalcac
 String RS232ME          "Preamp"                            { channel="globalcache:itachIR:000C7720B39F:sl-m1#c1" }
 
 String RUSSCAA66        "Russound CAA66"                    { channel="globalcache:itachFlex:000C45D530B9:sl-m1#c1-direct" }
+
+String ZSAMSUNGHLS      "Samsung HL-S DLP TV"               { channel="globalcache:zmote:CI00073306:ir-m1-c1#c1" }
 ```
 
 ### Sitemap File
@@ -299,4 +324,5 @@ globalcache:itachFlex:000C07BA7E11 [ ipAddress="192.168.12.66", mapFilename="ser
 globalcache:itachFlex:000CED0B3402 [ ipAddress="192.168.12.67", activeCable="FLEX_RELAY"]
 globalcache:gc100_06:000C1065AE17 [ ipAddress="192.168.12.68", mapFilename="ir-serial-codes.map" ]
 globalcache:gc100_12:000C162D7902 [ ipAddress="192.168.12.69", mapFilename="ir-serial-codes.map" ]
+globalcache:zmote:CI00073306 [ ipAddress="192.168.12.142", mapFilename="ir-serial-codes.map" ]
 ```

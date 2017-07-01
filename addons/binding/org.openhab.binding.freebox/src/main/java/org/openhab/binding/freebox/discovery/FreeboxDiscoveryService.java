@@ -9,18 +9,23 @@
 package org.openhab.binding.freebox.discovery;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.matmaul.freeboxos.FreeboxException;
+import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
 import org.matmaul.freeboxos.lan.LanHostConfig;
 import org.matmaul.freeboxos.lan.LanHostL3Connectivity;
 import org.matmaul.freeboxos.lan.LanHostsConfig;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
+import org.openhab.binding.freebox.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.config.FreeboxNetDeviceConfiguration;
 import org.openhab.binding.freebox.config.FreeboxNetInterfaceConfiguration;
 import org.openhab.binding.freebox.handler.FreeboxHandler;
@@ -36,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FreeboxDiscoveryService extends AbstractDiscoveryService implements FreeboxDataListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(FreeboxDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(FreeboxDiscoveryService.class);
 
     private static final int SEARCH_TIME = 10;
 
@@ -64,77 +69,97 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     @Override
     protected void startScan() {
         logger.debug("Starting Freebox discovery scan");
-        try {
-            LanHostsConfig lanHostsConfiguration = bridgeHandler.getFbClient().getLanManager().getAllLanHostsConfig();
-            onDataFetched(bridgeHandler.getThing().getUID(), lanHostsConfiguration);
-        } catch (FreeboxException e) {
-            logger.error(e.getMessage());
+        if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+            try {
+                LanHostsConfig lanHostsConfiguration = bridgeHandler.getFbClient().getLanManager()
+                        .getAllLanHostsConfig();
+                List<AirMediaReceiver> airPlayDevices = bridgeHandler.getFbClient().getAirMediaManager().getReceivers();
+                onDataFetched(bridgeHandler.getThing().getUID(), lanHostsConfiguration, airPlayDevices);
+            } catch (FreeboxException e) {
+                logger.warn("Error while requesting data for things discovery", e);
+            }
         }
     }
 
     @Override
-    public void onDataFetched(ThingUID bridge, LanHostsConfig hostsConfig) {
+    public void onDataFetched(ThingUID bridge, LanHostsConfig hostsConfig, List<AirMediaReceiver> airPlayDevices) {
         if (bridge == null) {
             return;
         }
 
         // Phone
         ThingUID thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_PHONE, bridge, PHONE_ID);
-        if (thingUID != null) {
-            logger.trace("Adding new Freebox Phone {} to inbox", thingUID);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridge)
-                    .withLabel("Wired phone").build();
-            thingDiscovered(discoveryResult);
-        }
+        logger.trace("Adding new Freebox Phone {} to inbox", thingUID);
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridge)
+                .withLabel("Wired phone").build();
+        thingDiscovered(discoveryResult);
 
         if (hostsConfig != null) {
 
             // Network devices
             for (LanHostConfig hostConfig : hostsConfig.getConfig()) {
                 String mac = hostConfig.getMAC();
-                if ((mac != null) && !mac.isEmpty()) {
+                if (StringUtils.isNotEmpty(mac)) {
                     String uid = mac.replaceAll("[^A-Za-z0-9_]", "_");
                     thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE, bridge, uid);
-                    String name = ((hostConfig.getPrimaryName() == null) || hostConfig.getPrimaryName().isEmpty())
-                            ? ("Freebox Network Device " + mac) : hostConfig.getPrimaryName();
-                    if (thingUID != null) {
-                        logger.trace("Adding new Freebox Network Device {} to inbox", thingUID);
-                        Map<String, Object> properties = new HashMap<>(1);
-                        if ((hostConfig.getVendorName() != null) && !hostConfig.getVendorName().isEmpty()) {
-                            properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
-                        }
-                        properties.put(FreeboxNetDeviceConfiguration.MAC_ADDRESS, mac);
-                        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                                .withProperties(properties).withBridge(bridge).withLabel(name).build();
-                        thingDiscovered(discoveryResult);
+                    String name = StringUtils.isEmpty(hostConfig.getPrimaryName()) ? ("Freebox Network Device " + mac)
+                            : hostConfig.getPrimaryName();
+                    logger.trace("Adding new Freebox Network Device {} to inbox", thingUID);
+                    Map<String, Object> properties = new HashMap<>(1);
+                    if (StringUtils.isNotEmpty(hostConfig.getVendorName())) {
+                        properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
                     }
+                    properties.put(FreeboxNetDeviceConfiguration.MAC_ADDRESS, mac);
+                    discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                            .withBridge(bridge).withLabel(name).build();
+                    thingDiscovered(discoveryResult);
 
                     // Network interfaces
                     if (hostConfig.getL3connectivities() != null) {
                         for (LanHostL3Connectivity l3 : hostConfig.getL3connectivities()) {
                             String addr = l3.getAddr();
-                            if ((addr != null) && !addr.isEmpty()) {
+                            if (StringUtils.isNotEmpty(addr)) {
                                 uid = addr.replaceAll("[^A-Za-z0-9_]", "_");
                                 thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE,
                                         bridge, uid);
                                 name = addr;
-                                if ((hostConfig.getPrimaryName() != null) && !hostConfig.getPrimaryName().isEmpty()) {
+                                if (StringUtils.isNotEmpty(hostConfig.getPrimaryName())) {
                                     name += " (" + (hostConfig.getPrimaryName() + ")");
                                 }
-                                if (thingUID != null) {
-                                    logger.trace("Adding new Freebox Network Interface {} to inbox", thingUID);
-                                    Map<String, Object> properties = new HashMap<>(1);
-                                    if ((hostConfig.getVendorName() != null) && !hostConfig.getVendorName().isEmpty()) {
-                                        properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
-                                    }
-                                    properties.put(FreeboxNetInterfaceConfiguration.IP_ADDRESS, addr);
-                                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                                            .withProperties(properties).withBridge(bridge).withLabel(name).build();
-                                    thingDiscovered(discoveryResult);
+                                logger.trace("Adding new Freebox Network Interface {} to inbox", thingUID);
+                                properties = new HashMap<>(1);
+                                if (StringUtils.isNotEmpty(hostConfig.getVendorName())) {
+                                    properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
                                 }
+                                properties.put(FreeboxNetInterfaceConfiguration.IP_ADDRESS, addr);
+                                discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                                        .withBridge(bridge).withLabel(name).build();
+                                thingDiscovered(discoveryResult);
                             }
                         }
                     }
+                }
+            }
+        }
+
+        if (airPlayDevices != null) {
+            // AirPlay devices
+            for (AirMediaReceiver device : airPlayDevices) {
+                String name = device.getName();
+                Boolean videoCapable = device.isVideoCapable();
+                logger.debug("AirPlay Device name {} video capable {}", name, videoCapable);
+                // The Freebox API allows pushing media only to receivers with photo or video capabilities
+                // but not to receivers with only audio capability; so receivers without video capability
+                // are ignored by the discovery
+                if (StringUtils.isNotEmpty(name) && Boolean.TRUE.equals(videoCapable)) {
+                    String uid = name.replaceAll("[^A-Za-z0-9_]", "_");
+                    thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY, bridge, uid);
+                    logger.trace("Adding new Freebox AirPlay Device {} to inbox", thingUID);
+                    Map<String, Object> properties = new HashMap<>(1);
+                    properties.put(FreeboxAirPlayDeviceConfiguration.NAME, name);
+                    discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                            .withBridge(bridge).withLabel(name + " (AirPlay)").build();
+                    thingDiscovered(discoveryResult);
                 }
             }
         }

@@ -158,6 +158,12 @@
 		<description>Image of cover art of the current song</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="albumArtUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>Album Art Url</label>
+		<description>Url to the image of cover art of the current song</description>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="artist" advanced="true">
 		<item-type>String</item-type>
 		<label>Artist</label>

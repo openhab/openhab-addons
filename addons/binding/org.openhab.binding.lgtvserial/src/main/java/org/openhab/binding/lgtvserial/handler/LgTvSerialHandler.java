@@ -36,7 +36,7 @@ import gnu.io.NRSerialPort;
 public class LgTvSerialHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(LgTvSerialHandler.class);
-    private final static int BAUD = 9600;
+    private static final int BAUD = 9600;
     private NRSerialPort serialPort;
     private OutputStreamWriter output;
     private String portName;
@@ -59,7 +59,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to connect to serial port " + portName);
-                logger.debug("Failed to connect to serial port " + portName);
+                logger.debug("Failed to connect to serial port {}", portName);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port name not configured");

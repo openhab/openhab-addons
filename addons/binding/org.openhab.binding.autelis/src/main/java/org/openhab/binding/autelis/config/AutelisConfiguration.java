@@ -10,33 +10,33 @@ package org.openhab.binding.autelis.config;
 
 /**
  * Configuration properties for connecting to a Autelis Controller
- * 
+ *
  * @author Dan Cunningham
  *
  */
 public class AutelisConfiguration {
 
-	/**
-	 * Host of the Autelis controller
-	 */
-	public String host;
-	/**
-	 * port of the Autelis controller
-	 */
-	public Integer port;
+    /**
+     * Host of the Autelis controller
+     */
+    public String host;
+    /**
+     * port of the Autelis controller
+     */
+    public Integer port;
 
-	/**
-	 * user to us when connecting to the Autelis controller
-	 */
-	public String user;
+    /**
+     * user to us when connecting to the Autelis controller
+     */
+    public String user;
 
-	/**
-	 * password to us when connecting to the Autelis controller
-	 */
-	public String password;
+    /**
+     * password to us when connecting to the Autelis controller
+     */
+    public String password;
 
-	/**
-	 * Rate we poll for new data
-	 */
-	public Integer refresh;
+    /**
+     * Rate we poll for new data
+     */
+    public Integer refresh;
 }

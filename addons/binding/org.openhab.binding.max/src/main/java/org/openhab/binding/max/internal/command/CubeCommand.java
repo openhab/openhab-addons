@@ -20,8 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class CubeCommand {
 
-    protected final Logger logger = LoggerFactory.getLogger(CubeCommand.class);
-
     /**
      * @return the String to be send to the MAX! Cube
      */

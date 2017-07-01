@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.security.auth.login.FailedLoginException;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -39,6 +41,7 @@ import com.google.common.collect.Sets;
 
 import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
 import name.eskildsen.zoneminder.IZoneMinderDaemonStatus;
+import name.eskildsen.zoneminder.IZoneMinderEventData;
 import name.eskildsen.zoneminder.IZoneMinderEventSubscriber;
 import name.eskildsen.zoneminder.IZoneMinderMonitor;
 import name.eskildsen.zoneminder.IZoneMinderMonitorData;
@@ -477,16 +480,41 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
                         getLogIdentifier(), thing.getUID());
             }
 
+            IZoneMinderMonitor monitorProxy = null;
+            IZoneMinderDaemonStatus captureDaemon = null;
             // TODO:: Also look at Analysis and Frame Daemons (only if they are supposed to be running)
-            IZoneMinderSession session = aquireSession();
-            // IZoneMinderServer serverProxy = ZoneMinderFactory.getServerProxy(session);
-            IZoneMinderMonitor monitorProxy = ZoneMinderFactory.getMonitorProxy(session, getZoneMinderId());
-            // serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_);
-            // serverProxy.getConfig(ZoneMinderConfigEnum.ZM_OPT_FRAME_SERVER);
-            IZoneMinderDaemonStatus captureDaemon = monitorProxy.getCaptureDaemonStatus();
-            releaseSession();
+            // IZoneMinderSession session = aquireSession();
 
-            if (!captureDaemon.getStatus()) {
+            IZoneMinderSession curSession = null;
+            try {
+                curSession = ZoneMinderFactory.CreateSession(connection);
+            } catch (FailedLoginException | IllegalArgumentException | IOException
+                    | ZoneMinderUrlNotFoundException ex) {
+                logger.error("{}: Create Session failed with exception {}", getLogIdentifier(), ex.getMessage());
+
+                newThingStatus = ThingStatus.OFFLINE;
+                thingStatusDetailed = ThingStatusDetail.COMMUNICATION_ERROR;
+                thingStatusDescription = "Failed to connect. (Check Log)";
+
+                updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
+                return;
+            }
+
+            if (curSession != null) {
+                monitorProxy = ZoneMinderFactory.getMonitorProxy(curSession, getZoneMinderId());
+
+                captureDaemon = monitorProxy.getCaptureDaemonStatus();
+            }
+
+            if (captureDaemon == null) {
+                msg = String.format("Capture Daemon not accssible");
+                newThingStatus = ThingStatus.OFFLINE;
+                thingStatusDetailed = ThingStatusDetail.COMMUNICATION_ERROR;
+                thingStatusDescription = msg;
+                updateThingStatus(newThingStatus, thingStatusDetailed, thingStatusDescription);
+                logger.error("{}: {}", getLogIdentifier(), msg);
+                return;
+            } else if (!captureDaemon.getStatus()) {
                 msg = String.format("Capture Daemon is not running");
                 newThingStatus = ThingStatus.OFFLINE;
                 thingStatusDetailed = ThingStatusDetail.COMMUNICATION_ERROR;
@@ -750,13 +778,11 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
 
                     logger.warn("{}: HTTP Response AnalysisDaemon: Code='{}', Message='{}'", getLogIdentifier(),
                             analysisDaemon.getHttpResponseCode(), analysisDaemon.getHttpResponseMessage());
-
                 }
                 if (frameDaemon.getHttpResponseCode() != 200) {
                     channelDaemonFrame = false;
                     logger.warn("{}: HTTP Response MonitorData: Code='{}', Message'{}'", getLogIdentifier(),
                             frameDaemon.getHttpResponseCode(), frameDaemon.getHttpResponseMessage());
-
                 }
 
             } else {
@@ -768,7 +794,13 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
 
                     channelFunction = data.getFunction();
                     channelEnabled = data.getEnabled();
-                    channelEventCause = monitorProxy.getLastEvent().getCause();
+                    IZoneMinderEventData event = monitorProxy.getLastEvent();
+                    if (event != null) {
+                        channelEventCause = event.getCause();
+                    } else {
+                        channelEventCause = "";
+                    }
+
                     channelDaemonCapture = captureDaemon.getStatus();
                     channelDaemonAnalysis = analysisDaemon.getStatus();
                     channelDaemonFrame = frameDaemon.getStatus();
@@ -806,7 +838,7 @@ public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler im
             }
 
         } catch (Exception ex) {
-            logger.debug(ex.getMessage());
+            logger.debug("{}", ex.getMessage());
         }
 
         return state;

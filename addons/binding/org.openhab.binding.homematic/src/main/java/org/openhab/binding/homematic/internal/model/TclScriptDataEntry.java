@@ -48,4 +48,6 @@ public class TclScriptDataEntry {
     @XStreamAsAttribute
     public String unit;
 
+    @XStreamAsAttribute
+    public String operations;
 }

@@ -17,6 +17,10 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import com.beowulfe.hap.accessories.TemperatureSensor;
 import com.beowulfe.hap.accessories.properties.TemperatureUnit;
 
+/**
+ *
+ * @author Andy Lintner - Initial contribution
+ */
 abstract class AbstractTemperatureHomekitAccessoryImpl<T extends GenericItem> extends AbstractHomekitAccessoryImpl<T>
         implements TemperatureSensor {
 

@@ -35,16 +35,13 @@ import gnu.io.UnsupportedCommOperationException;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComSerialConnector extends RFXComBaseConnector implements SerialPortEventListener {
+    private final Logger logger = LoggerFactory.getLogger(RFXComSerialConnector.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(RFXComSerialConnector.class);
+    private InputStream in;
+    private OutputStream out;
+    private SerialPort serialPort;
 
-    InputStream in = null;
-    OutputStream out = null;
-    SerialPort serialPort = null;
-    Thread readerThread = null;
-
-    public RFXComSerialConnector() {
-    }
+    private Thread readerThread;
 
     @Override
     public void connect(RFXComBridgeConfiguration device)
@@ -56,7 +53,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
         serialPort = (SerialPort) commPort;
         serialPort.setSerialPortParams(38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
         serialPort.enableReceiveThreshold(1);
-        serialPort.disableReceiveTimeout();
+        serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
 
         in = serialPort.getInputStream();
         out = serialPort.getOutputStream();
@@ -91,6 +88,10 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
         if (readerThread != null) {
             logger.debug("Interrupt serial listener");
             readerThread.interrupt();
+            try {
+                readerThread.join();
+            } catch (InterruptedException e) {
+            }
         }
 
         if (out != null) {
@@ -117,6 +118,10 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
 
     @Override
     public void sendMessage(byte[] data) throws IOException {
+        if (out == null) {
+            throw new IOException("Not connected sending messages is not possible");
+        }
+
         logger.trace("Send data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
         out.write(data);
         out.flush();
@@ -131,7 +136,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
              */
             logger.trace("RXTX library CPU load workaround, sleep forever");
             Thread.sleep(Long.MAX_VALUE);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignore) {
         }
     }
 }

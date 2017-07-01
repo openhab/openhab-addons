@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ZoneMinder Binding
 Bundle-SymbolicName: org.openhab.binding.zoneminder;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Version: 2.2.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/gson-2.7.jar,
  lib/guava-17.0.jar,
@@ -16,6 +16,7 @@ Import-Package:
  com.google.common.collect,
  javax.ws.rs.client,
  javax.ws.rs.core,
+ org.apache.commons.lang,
  org.apache.commons.net.util,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,

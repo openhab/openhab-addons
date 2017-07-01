@@ -15,6 +15,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.globalcache.handler.GlobalCacheHandler;
+import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GlobalCacheHandlerFactory} is responsible for creating thing handlers.
@@ -22,6 +25,13 @@ import org.openhab.binding.globalcache.handler.GlobalCacheHandler;
  * @author Mark Hilbush - Initial contribution
  */
 public class GlobalCacheHandlerFactory extends BaseThingHandlerFactory {
+    private Logger logger = LoggerFactory.getLogger(GlobalCacheHandlerFactory.class);
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        logger.info("GlobalCache binding v{}", bundleContext.getBundle().getVersion());
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

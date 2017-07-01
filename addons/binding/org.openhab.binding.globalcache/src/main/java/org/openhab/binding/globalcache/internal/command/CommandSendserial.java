@@ -16,7 +16,7 @@ import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
+/**
  * The {@link CommandSendserial} class sends a serial command string to the device.
  *
  * @author Mark Hilbush - Initial contribution
@@ -30,7 +30,7 @@ public class CommandSendserial extends AbstractCommand {
             String con, String code) {
         super(thing, queue, "sendserial", CommandType.SERIAL1);
         // Check to see if this is for the second serial port on a GC-100-12
-        if (isGC_100_12() && mod.equals("2")) {
+        if (isGC100Model12() && mod.equals("2")) {
             setCommandType(CommandType.SERIAL2);
         }
         this.command = command;

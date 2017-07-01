@@ -9,17 +9,17 @@
 package org.openhab.binding.vitotronic;
 
 /**
- * The {@link VitotronicBindingConfiguration} class defines variables which are 
+ * The {@link VitotronicBindingConfiguration} class defines variables which are
  * used for the binding configuration.
- * 
+ *
  * @author Stefan Andres - Initial contribution
  */
 
 public class VitotronicBindingConfiguration {
-	
-	public String ipAddress;
-	public Integer port;
-	public String adapterId;
-	public Integer refreshInterval;
+
+    public String ipAddress;
+    public Integer port;
+    public String adapterId;
+    public Integer refreshInterval;
 
 }

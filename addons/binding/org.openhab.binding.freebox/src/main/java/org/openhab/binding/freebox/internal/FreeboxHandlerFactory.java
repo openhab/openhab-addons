@@ -8,13 +8,19 @@
  */
 package org.openhab.binding.freebox.internal;
 
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.audio.AudioHTTPServer;
+import org.eclipse.smarthome.core.audio.AudioSink;
+import org.eclipse.smarthome.core.net.HttpServiceUtil;
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -26,6 +32,9 @@ import org.openhab.binding.freebox.discovery.FreeboxDiscoveryService;
 import org.openhab.binding.freebox.handler.FreeboxHandler;
 import org.openhab.binding.freebox.handler.FreeboxThingHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
@@ -38,10 +47,26 @@ import com.google.common.collect.Sets;
  */
 public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
+    private final Logger logger = LoggerFactory.getLogger(FreeboxHandlerFactory.class);
+
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
+    private AudioHTTPServer audioHTTPServer;
+
+    private Map<ThingUID, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+
+    // url (scheme+server+port) to use for playing notification sounds
+    private String callbackUrl;
+
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
             FreeboxBindingConstants.SUPPORTED_BRIDGE_TYPES_UIDS, FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS);
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        Dictionary<String, Object> properties = componentContext.getProperties();
+        callbackUrl = (String) properties.get("callbackUrl");
+    };
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -76,7 +101,11 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
             registerDiscoveryService(handler);
             return handler;
         } else if (FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new FreeboxThingHandler(thing);
+            FreeboxThingHandler handler = new FreeboxThingHandler(thing);
+            if (FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY.equals(thingTypeUID)) {
+                registerAudioSink(handler);
+            }
+            return handler;
         }
 
         return null;
@@ -85,15 +114,9 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof FreeboxHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                // remove discovery service, if bridge handler is removed
-                FreeboxDiscoveryService service = (FreeboxDiscoveryService) bundleContext
-                        .getService(serviceReg.getReference());
-                service.deactivate();
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
+            unregisterDiscoveryService(thingHandler.getThing());
+        } else if (thingHandler instanceof FreeboxThingHandler) {
+            unregisterAudioSink(thingHandler.getThing());
         }
         super.removeHandler(thingHandler);
     }
@@ -101,8 +124,65 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     private void registerDiscoveryService(FreeboxHandler bridgeHandler) {
         FreeboxDiscoveryService discoveryService = new FreeboxDiscoveryService(bridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
+        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    private void unregisterDiscoveryService(Thing thing) {
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thing.getUID());
+        if (serviceReg != null) {
+            // remove discovery service, if bridge handler is removed
+            FreeboxDiscoveryService service = (FreeboxDiscoveryService) bundleContext
+                    .getService(serviceReg.getReference());
+            service.deactivate();
+            serviceReg.unregister();
+            discoveryServiceRegs.remove(thing.getUID());
+        }
+    }
+
+    private void registerAudioSink(FreeboxThingHandler thingHandler) {
+        String callbackUrl = createCallbackUrl();
+        FreeboxAirPlayAudioSink audioSink = new FreeboxAirPlayAudioSink(thingHandler, audioHTTPServer, callbackUrl);
+        @SuppressWarnings("unchecked")
+        ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+        audioSinkRegistrations.put(thingHandler.getThing().getUID(), reg);
+    }
+
+    private void unregisterAudioSink(Thing thing) {
+        ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(thing.getUID());
+        if (reg != null) {
+            reg.unregister();
+        }
+    }
+
+    private String createCallbackUrl() {
+        if (callbackUrl != null) {
+            return callbackUrl;
+        } else {
+            String ipAddress = NetUtil.getLocalIpv4HostAddress();
+            if (ipAddress == null) {
+                logger.warn("No network interface could be found.");
+                return null;
+            }
+
+            // we do not use SSL as it can cause certificate validation issues.
+            int port = HttpServiceUtil.getHttpServicePort(bundleContext);
+            if (port == -1) {
+                logger.warn("Cannot find port of the http service.");
+                return null;
+            }
+
+            return "http://" + ipAddress + ":" + port;
+        }
+    }
+
+    protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = audioHTTPServer;
+    }
+
+    protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
+        this.audioHTTPServer = null;
     }
 
 }

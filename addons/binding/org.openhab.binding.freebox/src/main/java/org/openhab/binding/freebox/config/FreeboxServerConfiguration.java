@@ -19,9 +19,11 @@ public class FreeboxServerConfiguration {
     public static final String FQDN = "fqdn";
     public static final String APP_TOKEN = "appToken";
     public static final String REFRESH_INTERVAL = "refreshInterval";
+    public static final String USE_ONLY_HTTP = "useOnlyHttp";
 
     public String fqdn;
     public String appToken;
     public Integer refreshInterval;
+    public Boolean useOnlyHttp;
 
 }

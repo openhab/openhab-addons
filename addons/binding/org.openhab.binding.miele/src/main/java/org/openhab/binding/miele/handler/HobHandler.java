@@ -23,8 +23,6 @@ import org.slf4j.LoggerFactory;
  */
 public class HobHandler extends MieleApplianceHandler<HobChannelSelector> {
 
-    protected Logger logger = LoggerFactory.getLogger(HobHandler.class);
-
     public HobHandler(Thing thing) {
         super(thing, HobChannelSelector.class, "Hob");
     }

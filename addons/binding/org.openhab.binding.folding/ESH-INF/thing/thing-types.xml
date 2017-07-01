@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="folding"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="client">
+        <label>Client</label>
+        <description>Folding@home client daemon (represented as bridge).</description>
+        
+        <channels>
+            <channel id="run" typeId="run"/>
+            <channel id="finish" typeId="finish"/>
+        </channels>
+            
+        <config-description>
+            <parameter name="host" type="text">
+                <label>Host</label>
+                <description>Hostname or IP address</description>
+                <default>127.0.0.1</default>
+                <context>network-address</context>
+            </parameter>
+            <parameter name="port" type="integer">
+                <label>Port</label>
+                <description></description>
+                <default>36330</default>
+            </parameter>
+            <parameter name="password" type="text">
+                <label>Password</label>
+                <description>Authentication password (leave empty for no p/w).</description>
+                <context>password</context>
+            </parameter>
+            <parameter name="polling" type="integer">
+                <label>Polling interval (s)</label>
+                <description>Polling interval in seconds (0=polling disabled).</description>
+                <default>120</default>
+            </parameter>
+        </config-description>
+    </bridge-type>
+    <channel-type id="run">
+        <item-type>Switch</item-type>
+        <label>Run</label>
+        <description>Slot running.</description>
+    </channel-type>
+    <channel-type id="finish">
+        <item-type>Switch</item-type>
+        <label>Finish</label>
+        <description>Finish current work then pause.</description>
+    </channel-type>
+
+    <thing-type id="slot">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="client" />
+        </supported-bridge-type-refs>
+        
+        <label>Slot</label>
+        <description>Folding client compute slot.</description>
+
+        <channels>
+            <channel id="description" typeId="description"/>
+            <channel id="run" typeId="run"/>
+            <channel id="finish" typeId="finish"/>
+            <channel id="status" typeId="status"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="id" type="text">
+                <label>Slot ID</label>
+                <description>Slot ID, "00", "01", etc.</description>
+                <default>00</default>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <channel-type id="description">
+        <item-type>String</item-type>
+        <label>Description</label>
+        <description>Description of the Folding@home slot.</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="status">
+        <item-type>String</item-type>
+        <label>Status</label>
+        <description>Current status</description>
+        <state readOnly="true"/>
+    </channel-type>
+
+        
+</thing:thing-descriptions>

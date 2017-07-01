@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -74,8 +73,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     private TemperatureFormat temperatureFormat;
 
-    private ScheduledFuture<?> scheduledRefresh;
-    // private CacheHolder<Unit> nodes;
     private DisconnectListener retryingDisconnectListener;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
@@ -232,8 +229,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
 
                         updateStatus(ThingStatus.ONLINE);
-                        // let's start a task which refreshes status
-                        scheduleRefresh();
                     } catch (UnknownHostException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         logger.debug(e.toString());
@@ -455,31 +450,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
-    /**
-     * Every six hours let's poll the omnilink to make sure we have correct state
-     */
-    private void scheduleRefresh() {
-        // TODO this could be configurable
-        int interval = 60 * 60 * 6;
-        logger.info("Scheduling refresh updates at {} seconds", interval);
-        scheduledRefresh = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Running scheduled refresh");
-                try {
-                    getSystemStatus();
-                    for (UnitStatus unitStatus : getUnitStatuses()) {
-                        handleUnitStatus(unitStatus);
-                    }
-                } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException
-                        | IOException | OmniNotConnectedException e) {
-                    logger.error("Unable to refresh unit statuses");
-                }
-                // TODO add areas, zones, flags, etc
-            }
-        }, interval, interval, TimeUnit.SECONDS);
-    }
-
     @Override
     public void channelLinked(ChannelUID channelUID) {
         try {
@@ -498,9 +468,5 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             omniConnection.removeDisconnecListener(retryingDisconnectListener);
             omniConnection.disconnect();
         }
-        if (scheduledRefresh != null) {
-            scheduledRefresh.cancel(true);
-        }
-        scheduledRefresh = null;
     }
 }

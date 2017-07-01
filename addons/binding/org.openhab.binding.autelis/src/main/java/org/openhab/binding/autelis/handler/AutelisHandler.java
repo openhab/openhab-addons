@@ -319,7 +319,7 @@ public class AutelisHandler extends BaseThingHandler {
         String[] statuses = { "status", "chem", "pumps" };
         for (String status : statuses) {
             String response = getUrl(baseURL + "/" + status + ".xml", TIMEOUT);
-            logger.trace(baseURL + "/" + status + ".xml \n {}", response);
+            logger.trace("{}/{}.xml \n {}", baseURL, status, response);
             if (response == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
                 return;

@@ -23,8 +23,9 @@ public class HomematicConfig {
     private static final String ISO_ENCODING = "ISO-8859-1";
     private static final String UTF_ENCODING = "UTF-8";
 
-    public static final String GATEWAY_TYPE_AUTO = "AUTO";
-    public static final String GATEWAY_TYPE_CCU = "CCU";
+    private static final String GATEWAY_TYPE_AUTO = "AUTO";
+    private static final String GATEWAY_TYPE_CCU = "CCU";
+    private static final String GATEWAY_TYPE_NOCCU = "NOCCU";
 
     private static final int DEFAULT_PORT_RF = 2001;
     private static final int DEFAULT_PORT_WIRED = 2000;
@@ -315,6 +316,20 @@ public class HomematicConfig {
         } else {
             return ISO_ENCODING;
         }
+    }
+
+    /**
+     * Returns true, if the configured gatewayType is CCU.
+     */
+    public boolean isCCUType() {
+        return gatewayType.equalsIgnoreCase(HomematicConfig.GATEWAY_TYPE_CCU);
+    }
+
+    /**
+     * Returns true, if the configured gatewayType is NoCCU.
+     */
+    public boolean isNoCCUType() {
+        return gatewayType.equalsIgnoreCase(HomematicConfig.GATEWAY_TYPE_NOCCU);
     }
 
     /**

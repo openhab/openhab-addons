@@ -20,8 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class A_Message extends Message {
 
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
-
     public A_Message(String raw) {
         super(raw);
     }

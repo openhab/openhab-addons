@@ -46,6 +46,7 @@
 			<channel id="listenmode" typeId="listenmode" />
 			<channel id="playuri" typeId="playuri" />
 			<channel id="albumArt" typeId="albumArt" />
+			<channel id="albumArtUrl" typeId="albumArtUrl" />
 		</channels>
 	</channel-group-type>
 

@@ -27,7 +27,7 @@ import org.openhab.binding.boschindego.handler.BoschIndegoHandler;
  */
 public class BoschIndegoHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_INDEGO);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_INDEGO);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
