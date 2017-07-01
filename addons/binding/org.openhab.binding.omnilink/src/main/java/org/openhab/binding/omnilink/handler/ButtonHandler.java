@@ -24,7 +24,7 @@ public class ButtonHandler extends AbstractOmnilinkHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof RefreshType)) {
             try {
-                int buttonNumber = getThingID();
+                int buttonNumber = getThingNumber();
                 logger.debug("Executing Button (macro) {}", buttonNumber);
                 getOmnilinkBridgeHander().sendOmnilinkCommand(CommandMessage.CMD_BUTTON, 0, buttonNumber);
             } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException

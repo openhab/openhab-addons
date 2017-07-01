@@ -33,7 +33,7 @@ public class AreaHandler extends AbstractOmnilinkHandler {
             return;
         }
 
-        int areaNumber = (int) getThing().getConfiguration().get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER);
+        int areaNumber = getThingNumber();
 
         // keypad command
         if (OmnilinkBindingConstants.CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY.equals(channelUID.getId())) {
@@ -146,7 +146,7 @@ public class AreaHandler extends AbstractOmnilinkHandler {
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         try {
-            int areaId = getThingID();
+            int areaId = getThingNumber();
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AREA, areaId,
                     areaId, false);
             handleAreaEvent((AreaStatus) objStatus.getStatuses()[0]);

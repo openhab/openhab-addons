@@ -39,7 +39,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
 
         logger.debug("handleCommand called");
         OmniLinkCmd omniCmd;
-        int unitId = getThingID();
+        int unitId = getThingNumber();
 
         if (command instanceof PercentType) {
             int lightLevel = ((PercentType) command).intValue();
@@ -94,7 +94,7 @@ public class UpbUnitHandler extends AbstractOmnilinkHandler implements UnitHandl
         logger.debug("UPB Unit channel linked: {}", channelUID);
 
         try {
-            int unitId = getThingID();
+            int unitId = getThingNumber();
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId,
                     unitId, false);
             handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);

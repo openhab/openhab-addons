@@ -47,7 +47,7 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
             default:
                 mode = -1;
         }
-        int zoneNumber = getThingID();
+        int zoneNumber = getThingNumber();
         int areaNumber = Integer
                 .parseInt(getThing().getProperties().get(OmnilinkBindingConstants.THING_PROPERTIES_AREA));
         logger.debug("mode {} on zone {} with code {}", mode, zoneNumber, command.toFullString());
@@ -103,14 +103,14 @@ public class ZoneHandler extends AbstractOmnilinkHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channel linked: {} for zone {}", channelUID, getThingID());
+        logger.debug("channel linked: {} for zone {}", channelUID, getThingNumber());
         updateChannels();
     }
 
     private void updateZoneStatus() {
         logger.debug("Updating zone status");
         try {
-            int zoneId = getThingID();
+            int zoneId = getThingNumber();
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_ZONE, zoneId,
                     zoneId, false);
             zoneStatus = (ZoneStatus) objStatus.getStatuses()[0];

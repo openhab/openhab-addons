@@ -34,7 +34,12 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
         }
     }
 
-    protected int getThingID() {
+    /**
+     * Gets the configured number for a thing.
+     * 
+     * @return Configured number for a thing.
+     */
+    protected int getThingNumber() {
         return ((Number) getThing().getConfiguration().get(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER))
                 .intValue();
     }
