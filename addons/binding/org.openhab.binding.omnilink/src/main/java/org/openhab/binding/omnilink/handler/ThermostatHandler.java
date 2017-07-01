@@ -1,6 +1,8 @@
 package org.openhab.binding.omnilink.handler;
 
 import java.math.BigInteger;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -17,6 +19,8 @@ import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 
 public class ThermostatHandler extends AbstractOmnilinkHandler {
 
@@ -35,6 +39,14 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
         }
     }
 
+    private final Supplier<Optional<ExtendedThermostatStatus>> statusSupplier = Suppliers
+            .synchronizedSupplier(Suppliers.memoizeWithExpiration(new Supplier<Optional<ExtendedThermostatStatus>>() {
+                @Override
+                public Optional<ExtendedThermostatStatus> get() {
+                    return retrieveStatus();
+                }
+            }, 1, TimeUnit.SECONDS));
+
     private Logger logger = LoggerFactory.getLogger(ThermostatHandler.class);
 
     public ThermostatHandler(Thing thing) {
@@ -43,8 +55,9 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Thermostat Command Received.  ChannelUID({}) Command({})", channelUID, command);
 
-        int thermostatID = getThingID();
+        int thermostatID = getThingNumber();
         String channelID = channelUID.getId();
 
         try {
@@ -226,16 +239,25 @@ public class ThermostatHandler extends AbstractOmnilinkHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channel linked: {}", channelUID);
+        logger.debug("Thermostat channel linked: {}", channelUID);
+        Optional<ExtendedThermostatStatus> status = statusSupplier.get();
+        if (status.isPresent()) {
+            handleThermostatStatus(status.get());
+        }
+    }
+
+    private final Optional<ExtendedThermostatStatus> retrieveStatus() {
         try {
-            int thermostatID = getThingID();
+            int thermostatID = getThingNumber();
+            logger.debug("Requesting status for thermostat ID: {}", thermostatID);
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_THERMO,
                     thermostatID, thermostatID, true);
-            handleThermostatStatus((ExtendedThermostatStatus) objStatus.getStatuses()[0]);
-
+            return Optional.of((ExtendedThermostatStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Unexpected exception refreshing unit:", e);
+            return Optional.empty();
         }
+
     }
 
 }

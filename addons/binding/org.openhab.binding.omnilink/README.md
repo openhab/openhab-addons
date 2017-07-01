@@ -112,11 +112,11 @@ Switch    AlarmWater                "Water Alarm [%s]"        (Alarms)    {chann
 Switch    AlarmDuress               "Duress Alarm [%s]"       (Alarms)    {channel="omnilink:area:home:1:alarm_duress"}
 Switch    AlarmTemperature          "Temperature Alarm [%s]"  (Alarms)    {channel="omnilink:area:home:1:alarm_temperature"}
 
-String    AlarmModeDisarm                                                 {channel="omnilink:area:home:1:disarm"}
-String    AlarmModeDay                                                    {channel="omnilink:area:home:1:day"}
-String    AlarmModeNight                                                  {channel="omnilink:area:home:1:night"}
-String    AlarmModeAway                                                   {channel="omnilink:area:home:1:away"}
-String    AlarmModeVacation                                               {channel="omnilink:area:home:1:vacation"}
-String    AlarmModeDayInstant                                             {channel="omnilink:area:home:1:day_instant"}
-String    AlarmModeNightDelayed                                           {channel="omnilink:area:home:1:night_delayed"}
+Number    AlarmModeDisarm                                                 {channel="omnilink:area:home:1:disarm"}
+Number    AlarmModeDay                                                    {channel="omnilink:area:home:1:day"}
+Number    AlarmModeNight                                                  {channel="omnilink:area:home:1:night"}
+Number    AlarmModeAway                                                   {channel="omnilink:area:home:1:away"}
+Number    AlarmModeVacation                                               {channel="omnilink:area:home:1:vacation"}
+Number    AlarmModeDayInstant                                             {channel="omnilink:area:home:1:day_instant"}
+Number    AlarmModeNightDelayed                                           {channel="omnilink:area:home:1:night_delayed"}
 ```

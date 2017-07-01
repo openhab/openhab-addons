@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
-import com.digitaldan.jomnilinkII.MessageTypes.ObjectProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AreaProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
@@ -341,7 +340,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             ObjectPropertyRequest<ZoneProperties> objectPropertyRequest = ObjectPropertyRequest
                     .builder(bridgeHandler, ObjectPropertyRequests.ZONE).selectNamed().areaFilter(areaFilter).build();
 
-            for (ObjectProperties zoneProperties : objectPropertyRequest) {
+            for (ZoneProperties zoneProperties : objectPropertyRequest) {
 
                 int objnum = zoneProperties.getNumber();
 
