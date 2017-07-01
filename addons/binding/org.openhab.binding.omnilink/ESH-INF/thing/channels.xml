@@ -163,7 +163,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="area_command">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Security Command</label>
 		<description>Sends a user code and command to the area.</description>
 		<category>Alarm</category>
