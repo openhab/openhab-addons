@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link XiaomiVacuumHandler} is responsible for handling commands, which are
@@ -360,10 +361,18 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
     }
 
     private JsonObject getResultHelper(String res) {
-        JsonObject vacuumResponse = (JsonObject) parser.parse(res);
-        JsonObject result = vacuumResponse.getAsJsonArray("result").get(0).getAsJsonObject();
-        logger.debug("Response ID:     '{}'", vacuumResponse.get("id").getAsString());
-        logger.debug("Response Result: '{}'", result);
-        return result;
+        try {
+            JsonObject result;
+            JsonObject vacuumResponse = (JsonObject) parser.parse(res);
+            result = vacuumResponse.getAsJsonArray("result").get(0).getAsJsonObject();
+            logger.debug("Response ID:     '{}'", vacuumResponse.get("id").getAsString());
+            logger.debug("Response Result: '{}'", result);
+            return result;
+        } catch (JsonSyntaxException e) {
+            logger.debug("Could not parse result from response: '{}'", res);
+        } catch (NullPointerException e) {
+            logger.debug("Empty response received.");
+        }
+        return null;
     }
 }
