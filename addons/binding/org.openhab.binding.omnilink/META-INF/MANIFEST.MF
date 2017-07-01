@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Omnilink Binding
 Bundle-SymbolicName: org.openhab.binding.omnilink;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .,
  lib/guava-18.0.jar,
