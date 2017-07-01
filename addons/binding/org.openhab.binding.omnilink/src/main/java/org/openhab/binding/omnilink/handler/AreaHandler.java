@@ -2,6 +2,7 @@ package org.openhab.binding.omnilink.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -28,15 +29,15 @@ public class AreaHandler extends AbstractOmnilinkHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand: {}, command: {}", channelUID, command);
 
-        if (!(command instanceof DecimalType)) {
-            logger.debug("Command {} is not valid, only DecimalTypes are accepted", command);
-            return;
-        }
-
         int areaNumber = getThingID();
 
         // keypad command
         if (OmnilinkBindingConstants.CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY.equals(channelUID.getId())) {
+            if (!(command instanceof DecimalType)) {
+                logger.debug("Command {} is not valid for channel {}, only DecimalTypes are accepted", command,
+                        channelUID.getId());
+                return;
+            }
             try {
                 getOmnilinkBridgeHander().activateKeypadEmergency(areaNumber, ((DecimalType) command).intValue());
             } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
@@ -72,6 +73,12 @@ public class AreaHandler extends AbstractOmnilinkHandler {
             default:
                 logger.debug("Unknown channel {}", channelUID.getId());
                 return;
+        }
+
+        if (!(command instanceof StringType)) {
+            logger.debug("Command {} is not valid for channel {}, only StringType are accepted", command,
+                    channelUID.getId());
+            return;
         }
 
         logger.debug("Receievd mode {} on area {}", mode, areaNumber);
