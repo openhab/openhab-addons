@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CometVisu client not found or not accessible</title>
+<style type="text/css">
+.cause {
+    font-weight: bold;
+}
+.check {
+    color: darkgreen;
+}
+.false {
+    color: red;
+}
+.optional {
+    color: #999;
+}
+.problem {
+    background-color: rgba(255,0,0,0.1);
+    margin-bottom: 10px;
+}
+.problem h2 { 
+    background-color: rgba(255,0,0,0.2);
+    padding: 5px 10px;
+ }
+ .problem .explanation {
+    padding: 0 10px 10px 10px;
+ }
+</style>
+</head>
+<body>
+    <div class="problem">
+        <h2>CometVisu client not found or not accessible</h2>
+        <div class="explanation">The CometVisu add-on was not able to find your local CometVisu-client installation.</div>
+    </div>
+    
+    The prerequisites for a running version of the CometVisu are:
+    <ul>
+        <li class="check">The installed an running "CometVisu" add-on</li>
+        <li class="false">A local installation of the CometVisu Client, the correct configured path to it and access rights for the openHAB instance</li>
+        <li class="optional">The optional installed "PHP support for CometVisu", which is not required to run, but adds some additional features</li>
+    </ul>
+    
+    <h3>There are several reasons why this happened</h3>
+    <ol>
+        <li>You have not installed the CometVisu client on your local openHAB server yet</li>
+        <li>You do not have set the (absolute) path to your local CometVisu client in the 'conf/cometvisu.cfg' file (webFolder=&lt;absolute-path-to-your-local-cometvisu-client&gt;)
+        </li>
+        <li>The openHAB service has no access rights to the local CometVisu client folder</li>
+    </ol>
+    
+    <h3>Possible solutions:</h3>
+    <ol>
+        <li>Download the latest release of the CometVisu here: <a href="https://github.com/CometVisu/CometVisu/releases">CometVisu releases</a> and extract it 
+        and copy the 'release'-folder from the extracted archive to a local folder on your openHAB-server (e.g. /var/www/cometvisu)</a></li>
+        <li>Set the 'webFolder' setting in your 'conf/cometvisu.cfg' to the path from the step above, e.g.:
+            <pre>webFolder=/var/www/cometvisu</pre>
+        </li>
+        <li>Change the owner of the CometVisu-clients folder to openhab, e.g. for linux systems: <pre>chown -R openhab:openhab /var/www/cometvisu</pre></li>
+    </ol>
+</body>
+</html>

@@ -52,12 +52,13 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - Improved handling of player status, prevent REFRESH from causing exception
  * @author Mark Hilbush - Implement AudioSink and notifications
+ * @author Mark Hilbush - Added duration channel
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SQUEEZEBOXPLAYER_THING_TYPE);
 
     /**
@@ -318,6 +319,15 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         if (isMe(mac)) {
             currentTime = time;
         }
+    }
+
+    @Override
+    public void durationEvent(String mac, int duration) {
+        if (getThing().getChannel(CHANNEL_DURATION) == null) {
+            logger.debug("Channel 'duration' does not exist.  Delete and readd player thing to pick up channel.");
+            return;
+        }
+        updateChannel(mac, CHANNEL_DURATION, new DecimalType(duration));
     }
 
     @Override

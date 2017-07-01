@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class XmlRpcClient extends RpcClient {
-    private final static Logger logger = LoggerFactory.getLogger(XmlRpcClient.class);
+public class XmlRpcClient extends RpcClient<String> {
+    private final Logger logger = LoggerFactory.getLogger(XmlRpcClient.class);
     private HttpClient httpClient;
 
     public XmlRpcClient(HomematicConfig config) throws IOException {
@@ -59,7 +59,7 @@ public class XmlRpcClient extends RpcClient {
      * {@inheritDoc}
      */
     @Override
-    public RpcRequest createRpcRequest(String methodName) {
+    public RpcRequest<String> createRpcRequest(String methodName) {
         return new XmlRpcRequest(methodName);
     }
 
@@ -75,7 +75,7 @@ public class XmlRpcClient extends RpcClient {
      * {@inheritDoc}
      */
     @Override
-    protected synchronized Object[] sendMessage(int port, RpcRequest request) throws IOException {
+    protected synchronized Object[] sendMessage(int port, RpcRequest<String> request) throws IOException {
         if (logger.isTraceEnabled()) {
             logger.trace("Client XmlRpcRequest (port {}):\n{}", port, request);
         }
@@ -85,9 +85,11 @@ public class XmlRpcClient extends RpcClient {
     /**
      * Sends the message, retries if there was an error.
      */
-    private synchronized Object[] sendMessage(int port, RpcRequest request, int rpcRetryCounter) throws IOException {
+    private synchronized Object[] sendMessage(int port, RpcRequest<String> request, int rpcRetryCounter)
+            throws IOException {
         try {
-            BytesContentProvider content = new BytesContentProvider(request.createMessage());
+            BytesContentProvider content = new BytesContentProvider(
+                    request.createMessage().getBytes(config.getEncoding()));
             String url = String.format("http://%s:%s", config.getGatewayAddress(), port);
             if (port == config.getGroupPort()) {
                 url += "/groups";

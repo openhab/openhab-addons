@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
-    private static final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
     private static URI configDescriptionUriChannel;
 
     private HomematicThingTypeProvider thingTypeProvider;
@@ -128,20 +128,17 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     List<ChannelDefinition> channelDefinitions = new ArrayList<ChannelDefinition>();
                     // generate channel
                     for (HmDatapoint dp : channel.getDatapoints().values()) {
-                        if (!isIgnoredDatapoint(dp)) {
-                            if (dp.getParamsetType() == HmParamsetType.VALUES) {
-                                ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                                ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
-                                        Locale.getDefault());
-                                if (channelType == null) {
-                                    channelType = createChannelType(dp, channelTypeUID);
-                                    channelTypeProvider.addChannelType(channelType);
-                                }
-
-                                ChannelDefinition channelDef = new ChannelDefinition(dp.getName(),
-                                        channelType.getUID());
-                                channelDefinitions.add(channelDef);
+                        if (!isIgnoredDatapoint(dp) && dp.getParamsetType() == HmParamsetType.VALUES) {
+                            ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
+                            ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID,
+                                    Locale.getDefault());
+                            if (channelType == null) {
+                                channelType = createChannelType(dp, channelTypeUID);
+                                channelTypeProvider.addChannelType(channelType);
                             }
+
+                            ChannelDefinition channelDef = new ChannelDefinition(dp.getName(), channelType.getUID());
+                            channelDefinitions.add(channelDef);
                         }
                     }
 
@@ -253,7 +250,11 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             if (dp.isNumberType()) {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-                BigDecimal step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
+
+                BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
+                if (step == null) {
+                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : 1L);
+                }
                 state = new StateDescription(min, max, step, MetadataUtils.getStatePattern(dp), dp.isReadOnly(),
                         options);
             } else {

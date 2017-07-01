@@ -14,4 +14,6 @@
    <service>
       <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
    </service>
+   <reference interface="org.openhab.binding.silvercrestwifisocket.handler.SilvercrestWifiSocketMediator" 
+       name="mediator" policy="static" bind="setMediator" cardinality="1..1" unbind="unsetMediator"/>
 </scr:component>

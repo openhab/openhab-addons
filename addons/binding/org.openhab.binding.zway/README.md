@@ -114,7 +114,6 @@ The following channels are currently supported.
 
 Currently unsupported Z-Way probe types:
 
-- SwitchMultilevel: motor (selection criterion for rollershutter - will be implemented soon)
 - SensorBinary: cooling, all alarm types (resulting from Z-Wave command class AlarmSensor(deprecated) and Alarm)
 - SensorMultilevel: meterElectric_pulse_count, meterElectric_voltage, meterElectric_ampere, meterElectric_power_factor
 
@@ -129,12 +128,13 @@ The following channels represent universial channels if no further device inform
 | sensorBinary      | Switch | Switch       | SensorBinary |
 | sensorMultilevel  | Number | -            | SensorMultilevel |
 | switchBinary      | Switch | Switch       | SwitchBinary |
-| switchMultilevel  | Number | -            | SwitchMultilevel |
+| switchMultilevel  | Dimmer | -            | SwitchMultilevel |
 | switchColor       | Color  | ColorLight   | SwitchRGBW |
-| switchControl     | Switch | Switch       | SwitchControl |
+| switchControl     | Switch | Switch       | SwitchControl, ToggleButton, SwitchToggle |
 | thermostat        | Number | Temperature  | Thermostat |
+| sensorDiscrete    | Number | -            | SensorDiscrete |
 
-Currently unsupported Z-Way device types: SwitchToggle, ToggleButton.
+Unsupported Z-Way device types: Camera, SensorMultiline, Text. The integration of these types isn't planned.
 
 ### Channels for the Z-Way Server (Bridge)
 
@@ -172,8 +172,8 @@ Because textual configuration isn't useful, follow the instructions in the [Gett
 ### Restrictions
 
 - Z-Way device types (especially the probe types) supported by openHAB channels with detailed information (scale types and so on) are not complete.
-- Configuration of the Z-Wave network by the binding is currently not possible (device inclusion or physical device configuration)
-- Z-Way App "OpenHAB Connector" is required. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
+- Configuration of the Z-Wave network by the binding is currently not possible (physical device configuration)
+- Z-Way App "openHAB Connector" is required. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
 
 <br>
 <img src="doc/BMWi_4C_Gef_en.jpg" width="200">

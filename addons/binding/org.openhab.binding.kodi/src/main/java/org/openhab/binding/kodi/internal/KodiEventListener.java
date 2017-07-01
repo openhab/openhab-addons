@@ -13,9 +13,11 @@ import java.util.EventListener;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 
 /**
- * Interface which has to be implemented by a class in order to get status updates from a {@link KodiConnection}
+ * Interface which has to be implemented by a class in order to get status
+ * updates from a {@link KodiConnection}
  *
- * @author Paul Frank
+ * @author Paul Frank - Initial contribution
+ * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
  *
  */
 public interface KodiEventListener extends EventListener {
@@ -47,4 +49,6 @@ public interface KodiEventListener extends EventListener {
     void updateArtist(String artist);
 
     void updateMediaType(String mediaType);
+
+    void updatePVRChannel(final String channel);
 }

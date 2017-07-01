@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  * @author Christian Schneider
  */
 public class WebscrapeHandlerFactory extends BaseThingHandlerFactory {
-    public final static ThingTypeUID KOSTAL_INVERTER = new ThingTypeUID("kostalinverter", "kostalinverter");
+    public static final ThingTypeUID KOSTAL_INVERTER = new ThingTypeUID("kostalinverter", "kostalinverter");
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

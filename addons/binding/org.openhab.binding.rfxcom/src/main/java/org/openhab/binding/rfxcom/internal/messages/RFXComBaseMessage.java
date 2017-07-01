@@ -10,6 +10,8 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
@@ -20,7 +22,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  */
 public abstract class RFXComBaseMessage implements RFXComMessage {
 
-    public final static String ID_DELIMITER = ".";
+    public static final String ID_DELIMITER = ".";
 
     public enum PacketType {
         INTERFACE_CONTROL(0),
@@ -146,5 +148,40 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
     @Override
     public String getDeviceId() {
         return id1 + ID_DELIMITER + id2;
+    }
+
+    /**
+     * Procedure for converting sub type as string to sub type object.
+     *
+     * @return sub type object.
+     */
+    abstract Object convertSubType(String subType) throws RFXComException;
+
+    /**
+     * Procedure to set sub type.
+     *
+     */
+    abstract void setSubType(Object subType) throws RFXComException;
+
+    /**
+     * Procedure to set device id.
+     *
+     */
+    abstract void setDeviceId(String deviceId) throws RFXComException;
+
+    @Override
+    public void setConfig(RFXComDeviceConfiguration config) throws RFXComException {
+        this.setSubType(this.convertSubType(config.subType));
+        this.setDeviceId(config.deviceId);
+    }
+
+    public void addDevicePropertiesTo(DiscoveryResultBuilder discoveryResultBuilder) throws RFXComException {
+        String subTypeString = convertSubType(String.valueOf(subType)).toString();
+        String label = packetType + "-" + getDeviceId();
+
+        discoveryResultBuilder
+                .withLabel(label)
+                .withProperty(RFXComDeviceConfiguration.DEVICE_ID_LABEL, getDeviceId())
+                .withProperty(RFXComDeviceConfiguration.SUB_TYPE_LABEL, subTypeString);
     }
 }

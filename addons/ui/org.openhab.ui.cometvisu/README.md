@@ -1,4 +1,4 @@
-Documentation of the CometVisu Backend for openHAB2
+# CometVisu Backend for openHAB2
 
 ## Introduction
 
@@ -86,7 +86,7 @@ You can use the editor to change and store this config. You can start with the d
 
 ## New features (compared to the 1.x version)
 
-* PHP support: Editor is working, rrslog-plugin can be used (see examples)
+* PHP support: Editor is working, rsslog-plugin can be used (see examples)
 * Persistence support: Any persisted item can be used to create a chart
 * GroupItem support: as known from the openHAB UI´s the group-functions like the number of open windows in a group of contacts
 can be shown in the visu

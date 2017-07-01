@@ -28,6 +28,30 @@
 				<label>Map File</label>
 				<description>Enter name of file containing mapping of commands to IR and Serial codes</description>
 			</parameter>
+
+			<parameter name="enableTwoWay1" type="boolean">
+				<label>Enable Two Way Port 1</label>
+				<description>Enable two-way serial communication on serial port 1</description>
+				<default>false</default>
+			</parameter>
+
+			<parameter name="eomDelimiter1" type="text">
+				<label>End-of-message Delimiter Port 1</label>
+				<description>URL encoded end-of-message delimiter string for receiving messages on serial port 1</description>
+				<default>%0A</default>
+			</parameter>
+
+			<parameter name="enableTwoWay2" type="boolean">
+				<label>Enable Two Way Port 2</label>
+				<description>Enable two-way serial communication on serial port 2</description>
+				<default>false</default>
+			</parameter>
+
+			<parameter name="eomDelimiter2" type="text">
+				<label>End-of-message Delimiter Port 2</label>
+				<description>URL encoded end-of-message delimiter string for receiving messages on serial port 2</description>
+				<default>%0A</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>

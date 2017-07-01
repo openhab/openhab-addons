@@ -14,37 +14,38 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Callback implementation for updating switch states Supports reauthorization
- * 
+ *
  * @author Robert Bausdorf
- * 
+ *
  */
 public class FritzAhaSetSwitchCallback extends FritzAhaReauthCallback {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	/**
-	 * Item to update
-	 */
-	private String itemName;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    /**
+     * Item to update
+     */
+    private String itemName;
 
-	/**
-	 * Constructor
-	 * @param webIface Interface to FRITZ!Box
-	 * @param ain AIN of the device that should be switched
-	 * @param switchOn true - switch on, false - switch off
-	 */
-	public FritzAhaSetSwitchCallback(FritzahaWebInterface webIface, String ain, boolean switchOn) {
-		super(WEBSERVICE_PATH, 
-				"ain=" + ain + "&switchcmd=" + (switchOn ? "setswitchon" : "setswitchoff"), 
-				webIface, Method.GET, 1);
-		this.itemName = ain;
-	}
+    /**
+     * Constructor
+     *
+     * @param webIface Interface to FRITZ!Box
+     * @param ain AIN of the device that should be switched
+     * @param switchOn true - switch on, false - switch off
+     */
+    public FritzAhaSetSwitchCallback(FritzahaWebInterface webIface, String ain, boolean switchOn) {
+        super(WEBSERVICE_PATH, "ain=" + ain + "&switchcmd=" + (switchOn ? "setswitchon" : "setswitchoff"), webIface,
+                Method.GET, 1);
+        itemName = ain;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void execute(int status, String response) {
-		super.execute(status, response);
-		if (this.isValidRequest()) {
-			logger.debug("Received State response " + response + " for item " + itemName);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void execute(int status, String response) {
+        super.execute(status, response);
+        if (isValidRequest()) {
+            logger.debug("Received State response {} for item {}", response, itemName);
+        }
+    }
 }

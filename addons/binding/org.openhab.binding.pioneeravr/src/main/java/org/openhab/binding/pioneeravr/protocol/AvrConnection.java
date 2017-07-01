@@ -85,7 +85,7 @@ public interface AvrConnection {
     public boolean sendSourceInputQuery(int zone);
 
     /**
-     * Send a power command ot the AVR based on the OpenHAB command
+     * Send a power command ot the AVR based on the openHAB command
      *
      * @param command
      * @param zone
@@ -94,7 +94,7 @@ public interface AvrConnection {
     public boolean sendPowerCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
-     * Send a volume command to the AVR based on the OpenHAB command
+     * Send a volume command to the AVR based on the openHAB command
      *
      * @param command
      * @param zone
@@ -103,7 +103,7 @@ public interface AvrConnection {
     public boolean sendVolumeCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
-     * Send a source input selection command to the AVR based on the OpenHAB command
+     * Send a source input selection command to the AVR based on the openHAB command
      *
      * @param command
      * @param zone
@@ -112,7 +112,7 @@ public interface AvrConnection {
     public boolean sendInputSourceCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
-     * Send a mute command to the AVR based on the OpenHAB command
+     * Send a mute command to the AVR based on the openHAB command
      *
      * @param command
      * @param zone

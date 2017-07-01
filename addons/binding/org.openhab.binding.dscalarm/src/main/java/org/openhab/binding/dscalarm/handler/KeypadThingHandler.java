@@ -16,12 +16,10 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.dscalarm.internal.DSCAlarmCode;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageInfoType;
-//import org.openhab.binding.dscalarm.internal.DSCAlarmProperties.LEDStateType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +48,6 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
     @Override
     public void updateChannel(ChannelUID channelUID, int state, String description) {
         logger.debug("updateChannel(): Keypad Channel UID: {}", channelUID);
-
-        // int state;
 
         if (channelUID != null) {
             switch (channelUID.getId()) {
@@ -91,14 +87,6 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
                     break;
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // No Commands to Handle
     }
 
     /**

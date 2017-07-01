@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
-    private static final Logger logger = LoggerFactory.getLogger(DisplayOptionsParser.class);
+    private final Logger logger = LoggerFactory.getLogger(DisplayOptionsParser.class);
     private static final String[] onOff = new String[] { "ON", "OFF" };
 
     private HmChannel channel;

@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
     <name>AVM FRITZ! Binding</name>
-    <description>This is the binding for AVM Fritz! devices.</description>
+    <description>This is the binding for AVM FRITZ! devices.</description>
     <author>Robert Bausdorf</author>
 
 </binding:binding>

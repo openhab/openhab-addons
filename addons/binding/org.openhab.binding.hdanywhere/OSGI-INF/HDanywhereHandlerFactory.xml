@@ -10,9 +10,9 @@
 
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.openhab.binding.hdanywhere.internal.HDanywhereHandlerFactory">
-
+  
    <implementation class="org.openhab.binding.hdanywhere.internal.HDanywhereHandlerFactory"/>
-
+   
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>

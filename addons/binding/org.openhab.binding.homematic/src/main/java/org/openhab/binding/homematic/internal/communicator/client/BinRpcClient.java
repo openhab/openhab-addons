@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class BinRpcClient extends RpcClient {
-    private static final Logger logger = LoggerFactory.getLogger(BinRpcClient.class);
+public class BinRpcClient extends RpcClient<byte[]> {
+    private final Logger logger = LoggerFactory.getLogger(BinRpcClient.class);
 
     private SocketHandler socketHandler;
 
@@ -46,7 +46,7 @@ public class BinRpcClient extends RpcClient {
      * {@inheritDoc}
      */
     @Override
-    protected RpcRequest createRpcRequest(String methodName) {
+    protected RpcRequest<byte[]> createRpcRequest(String methodName) {
         return new BinRpcMessage(methodName, config.getEncoding());
     }
 
@@ -71,7 +71,7 @@ public class BinRpcClient extends RpcClient {
      * Sends a BIN-RPC message and parses the response to see if there was an error.
      */
     @Override
-    protected synchronized Object[] sendMessage(int port, RpcRequest request) throws IOException {
+    protected synchronized Object[] sendMessage(int port, RpcRequest<byte[]> request) throws IOException {
         if (logger.isTraceEnabled()) {
             logger.trace("Client BinRpcRequest:\n{}", request);
         }
@@ -81,7 +81,7 @@ public class BinRpcClient extends RpcClient {
     /**
      * Sends the message, retries if there was an error.
      */
-    private Object[] sendMessage(int port, RpcRequest request, int rpcRetryCounter) throws IOException {
+    private Object[] sendMessage(int port, RpcRequest<byte[]> request, int rpcRetryCounter) throws IOException {
         BinRpcMessage resp = null;
         try {
             Socket socket = socketHandler.getSocket(port);
