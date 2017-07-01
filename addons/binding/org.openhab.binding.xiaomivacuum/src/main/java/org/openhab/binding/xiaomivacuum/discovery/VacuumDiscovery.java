@@ -13,6 +13,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -77,6 +78,8 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
         for (Entry<String, byte[]> i : responses.entrySet()) {
             logger.trace("Discovery responses from : {}:{}", i.getKey(), Utils.getSpacedHex(i.getValue()));
             Message msg = new Message(i.getValue());
+            logger.debug("Vacuum time stamp: {}, OH time {}, delta {}", msg.getTimestamp(), LocalDateTime.now(),
+                    LocalDateTime.now().compareTo(msg.getTimestamp()));
             String token = Utils.getHex(msg.getChecksum());
             String id = Utils.getHex(msg.getSerialByte());
             ThingUID uid = new ThingUID(XiaomiVacuumBindingConstants.THING_TYPE_VACUUM, id);
@@ -141,7 +144,7 @@ public class VacuumDiscovery extends AbstractDiscoveryService {
             for (int i = 1; i <= 2; i++) {
                 clientSocket.send(sendPacket);
             }
-            sendPacket.setData(new byte[1024]);
+            sendPacket.setData(new byte[256]);
             while (true) {
                 clientSocket.receive(sendPacket);
                 responses.put(sendPacket.getAddress().getHostAddress(), sendPacket.getData());

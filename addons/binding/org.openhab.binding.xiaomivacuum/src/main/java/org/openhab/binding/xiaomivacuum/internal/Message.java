@@ -10,6 +10,9 @@ package org.openhab.binding.xiaomivacuum.internal;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -31,7 +34,7 @@ public class Message {
     private byte[] unknowns = new byte[4];
 
     private byte[] serialByte = new byte[4];
-    private Date timeStamp;
+    private LocalDateTime timeStamp;
     private byte[] tsByte = new byte[4];
     private byte[] checksum;
     private byte[] raw;
@@ -45,7 +48,8 @@ public class Message {
         this.unknowns = java.util.Arrays.copyOfRange(raw, 4, 8);
         this.serialByte = java.util.Arrays.copyOfRange(raw, 8, 12);
         this.tsByte = java.util.Arrays.copyOfRange(raw, 12, 16);
-        this.timeStamp = new Date(ByteBuffer.wrap(tsByte).getInt() * 1000L);
+        this.timeStamp = LocalDateTime.ofInstant(Instant.ofEpochSecond(ByteBuffer.wrap(tsByte).getInt()),
+                ZoneId.systemDefault());
         this.checksum = java.util.Arrays.copyOfRange(raw, 16, 32);
         this.data = java.util.Arrays.copyOfRange(raw, 32, length);
     }
@@ -176,7 +180,7 @@ public class Message {
     /**
      * @return the timestamp
      */
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timeStamp;
     }
 

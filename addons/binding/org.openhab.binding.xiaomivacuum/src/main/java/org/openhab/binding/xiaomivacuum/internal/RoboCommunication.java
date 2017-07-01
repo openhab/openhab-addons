@@ -66,7 +66,13 @@ public class RoboCommunication {
             throws RoboCryptoException, IOException {
         byte[] encr;
         encr = RoboCrypto.encrypt(command.concat("\0").getBytes(), token);
-        byte[] response = comms(Message.createMsgData(encr, token, serial), ip);
+        byte[] sendMsg = Message.createMsgData(encr, token, serial);
+        byte[] response = comms(sendMsg, ip);
+        if (response.length == 0) {
+            logger.debug("len {}", response.length);
+            logger.debug("No response from vacuum for command {}.\r\n{}", command, (new Message(sendMsg)).toSting());
+            return null;
+        }
         Message roboResponse = new Message(response);
         logger.trace("Message Details:{} ", roboResponse.toSting());
         String decryptedResponse = new String(RoboCrypto.decrypt(roboResponse.getData(), token)).trim();
