@@ -36,13 +36,13 @@ public class EncryptionHelper {
     // AES‐CBC 128 initial vector, taken from protocol description
     protected static final byte[] IV = parseHexBinary("17996D093D28DDB3BA695A2E6F58562E");
 
-    private static final Logger logger = LoggerFactory.getLogger(EncryptionHelper.class);
+    private final Logger logger = LoggerFactory.getLogger(EncryptionHelper.class);
 
-    public static String encrypt(String text, String key) {
+    public String encrypt(String text, String key) {
         return encrypt(text, key, IV);
     }
 
-    public static String encrypt(String text, String key, byte[] iv) {
+    public String encrypt(String text, String key, byte[] iv) {
         IvParameterSpec vector = new IvParameterSpec(iv);
         Cipher cipher;
         try {
@@ -74,7 +74,7 @@ public class EncryptionHelper {
         }
     }
 
-    public static byte[] parseHexBinary(String s) {
+    private static byte[] parseHexBinary(String s) {
         final int len = s.length();
 
         // "111" is not a valid hex encoding.
@@ -110,7 +110,7 @@ public class EncryptionHelper {
         return -1;
     }
 
-    public static String bytesToHex(byte[] bytes) {
+    private String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;

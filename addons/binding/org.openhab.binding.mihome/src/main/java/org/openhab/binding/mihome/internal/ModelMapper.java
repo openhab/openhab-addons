@@ -24,50 +24,50 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class ModelMapper {
 
-    private static final Map<String, ThingTypeUID> thingMapper = new HashMap<String, ThingTypeUID>();
-    private static final Map<String, String> labelMapper = new HashMap<String, String>();
+    private static final Map<String, ThingTypeUID> THING_MAP = new HashMap<String, ThingTypeUID>();
+    private static final Map<String, String> LABEL_MAP = new HashMap<String, String>();
     static {
         // Alphabetical order
-        thingMapper.put("curtain", THING_TYPE_ACTOR_CURTAIN);
-        thingMapper.put("gateway", THING_TYPE_GATEWAY);
-        thingMapper.put("plug", THING_TYPE_ACTOR_PLUG);
-        thingMapper.put("ctrl_neutral1", THING_TYPE_ACTOR_AQARA1);
-        thingMapper.put("ctrl_neutral2", THING_TYPE_ACTOR_AQARA2);
-        thingMapper.put("ctrl_ln1", THING_TYPE_ACTOR_WALL1);
-        thingMapper.put("ctrl_ln2", THING_TYPE_ACTOR_WALL2);
-        thingMapper.put("86sw1", THING_TYPE_SENSOR_AQARA1);
-        thingMapper.put("86sw2", THING_TYPE_SENSOR_AQARA2);
-        thingMapper.put("cube", THING_TYPE_SENSOR_CUBE);
-        thingMapper.put("sensor_ht", THING_TYPE_SENSOR_HT);
-        thingMapper.put("magnet", THING_TYPE_SENSOR_MAGNET);
-        thingMapper.put("motion", THING_TYPE_SENSOR_MOTION);
-        thingMapper.put("natgas", THING_TYPE_SENSOR_GAS);
-        thingMapper.put("smoke", THING_TYPE_SENSOR_SMOKE);
-        thingMapper.put("switch", THING_TYPE_SENSOR_SWITCH);
+        THING_MAP.put("curtain", THING_TYPE_ACTOR_CURTAIN);
+        THING_MAP.put("gateway", THING_TYPE_GATEWAY);
+        THING_MAP.put("plug", THING_TYPE_ACTOR_PLUG);
+        THING_MAP.put("ctrl_neutral1", THING_TYPE_ACTOR_AQARA1);
+        THING_MAP.put("ctrl_neutral2", THING_TYPE_ACTOR_AQARA2);
+        THING_MAP.put("ctrl_ln1", THING_TYPE_ACTOR_AQARA_ZERO1);
+        THING_MAP.put("ctrl_ln2", THING_TYPE_ACTOR_AQARA_ZERO2);
+        THING_MAP.put("86sw1", THING_TYPE_SENSOR_AQARA1);
+        THING_MAP.put("86sw2", THING_TYPE_SENSOR_AQARA2);
+        THING_MAP.put("cube", THING_TYPE_SENSOR_CUBE);
+        THING_MAP.put("sensor_ht", THING_TYPE_SENSOR_HT);
+        THING_MAP.put("magnet", THING_TYPE_SENSOR_MAGNET);
+        THING_MAP.put("motion", THING_TYPE_SENSOR_MOTION);
+        THING_MAP.put("natgas", THING_TYPE_SENSOR_GAS);
+        THING_MAP.put("smoke", THING_TYPE_SENSOR_SMOKE);
+        THING_MAP.put("switch", THING_TYPE_SENSOR_SWITCH);
 
-        labelMapper.put("curtain", "Xiaomi Aqara Intelligent Curtain Motor");
-        labelMapper.put("gateway", "Xiaomi Mi Smart Home Gateway");
-        labelMapper.put("plug", "Xiaomi Mi Smart Socket Plug");
-        labelMapper.put("ctrl_neutral1", "Xiaomi Aqara Wall Switch 1 Button");
-        labelMapper.put("ctrl_neutral2", "Xiaomi Aqara Wall Switch 2 Button");
-        labelMapper.put("ctrl_ln1", "Xiaomi \"zero-fire\" 1 Channel Wall Switch");
-        labelMapper.put("ctrl_ln2", "Xiaomi \"zero-fire\" 2 Channel Wall Switch");
-        labelMapper.put("86sw1", "Xiaomi Aqara Smart Switch 1 Button");
-        labelMapper.put("86sw2", "Xiaomi Aqara Smart Switch 2 Button");
-        labelMapper.put("cube", "Xiaomi Mi Smart Cube");
-        labelMapper.put("sensor_ht", "Xiaomi Mi Temperature & Humidity Sensor");
-        labelMapper.put("magnet", "Xiaomi Door/Window Sensor");
-        labelMapper.put("motion", "Xiaomi Mi Motion Sensor");
-        labelMapper.put("natgas", "New, yet unconfirmed device");
-        labelMapper.put("smoke", "New, yet unconfirmed device");
-        labelMapper.put("switch", "Xiaomi Mi Wireless Switch");
+        LABEL_MAP.put("curtain", "Xiaomi Aqara Intelligent Curtain Motor");
+        LABEL_MAP.put("gateway", "Xiaomi Mi Smart Home Gateway");
+        LABEL_MAP.put("plug", "Xiaomi Mi Smart Socket Plug");
+        LABEL_MAP.put("ctrl_neutral1", "Xiaomi Aqara Wall Switch 1 Button");
+        LABEL_MAP.put("ctrl_neutral2", "Xiaomi Aqara Wall Switch 2 Button");
+        LABEL_MAP.put("ctrl_ln1", "Xiaomi \"zero-fire\" 1 Channel Wall Switch");
+        LABEL_MAP.put("ctrl_ln2", "Xiaomi \"zero-fire\" 2 Channel Wall Switch");
+        LABEL_MAP.put("86sw1", "Xiaomi Aqara Smart Switch 1 Button");
+        LABEL_MAP.put("86sw2", "Xiaomi Aqara Smart Switch 2 Button");
+        LABEL_MAP.put("cube", "Xiaomi Mi Smart Cube");
+        LABEL_MAP.put("sensor_ht", "Xiaomi Mi Temperature & Humidity Sensor");
+        LABEL_MAP.put("magnet", "Xiaomi Door/Window Sensor");
+        LABEL_MAP.put("motion", "Xiaomi Mi Motion Sensor");
+        LABEL_MAP.put("natgas", "New, yet unconfirmed device");
+        LABEL_MAP.put("smoke", "New, yet unconfirmed device");
+        LABEL_MAP.put("switch", "Xiaomi Mi Wireless Switch");
     }
 
     public static ThingTypeUID getThingTypeForModel(String model) {
-        return thingMapper.get(model);
+        return THING_MAP.get(model);
     }
 
     public static String getLabelForModel(String model) {
-        return labelMapper.get(model);
+        return LABEL_MAP.get(model);
     }
 }

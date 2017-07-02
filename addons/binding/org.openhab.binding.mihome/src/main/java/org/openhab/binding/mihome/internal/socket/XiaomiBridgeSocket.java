@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class XiaomiBridgeSocket extends XiaomiSocket {
 
-    private static final Logger logger = LoggerFactory.getLogger(XiaomiBridgeSocket.class);
+    private final Logger logger = LoggerFactory.getLogger(XiaomiBridgeSocket.class);
 
     public XiaomiBridgeSocket(int port) {
         super(port);

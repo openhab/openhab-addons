@@ -280,7 +280,7 @@ end
 // This rule is applicable for every battery powered sensor device
 rule "Xiaomi Motion Sensor Low Battery"
 when
-    Channel "mihome:sensor_motion:<ID>:lowBattery" changed to ON
+    Item MotionSensor_BatteryLow changed to ON
 then
     <ACTION>
 end

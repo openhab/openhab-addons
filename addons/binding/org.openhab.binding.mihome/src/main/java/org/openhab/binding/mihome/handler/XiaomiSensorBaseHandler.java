@@ -30,6 +30,9 @@ public abstract class XiaomiSensorBaseHandler extends XiaomiDeviceBaseHandler {
     private static final int VOLTAGE_MAX_MILLIVOLTS = 3100;
     private static final int VOLTAGE_MIN_MILLIVOLTS = 2700;
     private static final int BATT_LEVEL_LOW = 20;
+    private static final int BATT_LEVEL_LOW_HYS = 5;
+
+    private boolean isBatteryLow = false;
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiSensorBaseHandler.class);
 
@@ -66,10 +69,13 @@ public abstract class XiaomiSensorBaseHandler extends XiaomiDeviceBaseHandler {
         Integer battLevel = (int) ((float) (voltage - VOLTAGE_MIN_MILLIVOLTS)
                 / (float) (VOLTAGE_MAX_MILLIVOLTS - VOLTAGE_MIN_MILLIVOLTS) * 100);
         updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(battLevel));
-        if (battLevel <= BATT_LEVEL_LOW) {
+        int lowThreshold = isBatteryLow ? BATT_LEVEL_LOW + BATT_LEVEL_LOW_HYS : BATT_LEVEL_LOW;
+        if (battLevel <= lowThreshold) {
             updateState(CHANNEL_LOW_BATTERY, OnOffType.ON);
+            isBatteryLow = true;
         } else {
             updateState(CHANNEL_LOW_BATTERY, OnOffType.OFF);
+            isBatteryLow = false;
         }
     }
 

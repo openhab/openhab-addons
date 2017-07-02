@@ -27,7 +27,6 @@ import com.google.gson.JsonObject;
 public class XiaomiAqaraActorSwitch2Handler extends XiaomiActorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiAqaraActorSwitch2Handler.class);
-    private String itemId;
 
     public XiaomiAqaraActorSwitch2Handler(Thing thing) {
         super(thing);
@@ -38,10 +37,12 @@ public class XiaomiAqaraActorSwitch2Handler extends XiaomiActorBaseHandler {
         String status = command.toString().toLowerCase();
         switch (channelUID.getId()) {
             case CHANNEL_SWITCH_CH0:
-                getXiaomiBridgeHandler().writeToDevice(itemId, new String[] { "channel_0" }, new Object[] { status });
+                getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "channel_0" },
+                        new Object[] { status });
                 return;
             case CHANNEL_SWITCH_CH1:
-                getXiaomiBridgeHandler().writeToDevice(itemId, new String[] { "channel_1" }, new Object[] { status });
+                getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "channel_1" },
+                        new Object[] { status });
                 return;
         }
         // Only gets here, if no condition was met

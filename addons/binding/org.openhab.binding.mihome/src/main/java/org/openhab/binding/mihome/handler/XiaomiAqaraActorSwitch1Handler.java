@@ -27,7 +27,6 @@ import com.google.gson.JsonObject;
 public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiAqaraActorSwitch1Handler.class);
-    private String itemId;
 
     public XiaomiAqaraActorSwitch1Handler(Thing thing) {
         super(thing);
@@ -37,7 +36,7 @@ public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
     void execute(ChannelUID channelUID, Command command) {
         if (CHANNEL_SWITCH_CH0.equals(channelUID.getId())) {
             String status = command.toString().toLowerCase();
-            getXiaomiBridgeHandler().writeToDevice(itemId, new String[] { "channel_0" }, new Object[] { status });
+            getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "channel_0" }, new Object[] { status });
         }
         // Only gets here, if no condition was met
         logger.error("Can't handle command {} on channel {}", command, channelUID);
