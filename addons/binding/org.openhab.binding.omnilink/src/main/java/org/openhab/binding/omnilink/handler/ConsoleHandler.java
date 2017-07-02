@@ -38,7 +38,7 @@ public class ConsoleHandler extends AbstractOmnilinkHandler {
             return;
         }
 
-        int consoleNumber = getThingID();
+        int consoleNumber = getThingNumber();
         try {
             getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, p1, consoleNumber);
         } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException

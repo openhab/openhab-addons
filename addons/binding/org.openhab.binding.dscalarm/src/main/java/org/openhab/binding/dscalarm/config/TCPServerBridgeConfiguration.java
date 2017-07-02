@@ -22,6 +22,7 @@ public class TCPServerBridgeConfiguration {
     public static final String PASSWORD = "password";
     public static final String CONNECTION_TIMEOUT = "connectionTimeout";
     public static final String POLL_PERIOD = "pollPeriod";
+    public static final String PROTOCOL = "protocol";
 
     /**
      * The IP address of the TCP Server
@@ -42,4 +43,10 @@ public class TCPServerBridgeConfiguration {
      * The Panel Poll Period. Can be set in range 1-15 minutes. Default is 1 minute;
      */
     public Integer pollPeriod;
+
+    /**
+     * The Protocol Type - 1 for IT-100 API or 2 for Envisalink TPI.
+     */
+    public Integer protocol;
+
 }

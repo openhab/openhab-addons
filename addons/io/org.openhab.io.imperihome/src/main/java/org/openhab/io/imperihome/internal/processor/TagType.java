@@ -22,7 +22,12 @@ public enum TagType {
     LINK("link", true),
     UNIT("unit", false),
     INVERT("invert", false),
-    ICON("icon", false);
+    ICON("icon", false),
+
+    STEP("step", false),
+    MIN_VAL("minVal", false),
+    MAX_VAL("maxVal", false),
+    MODES("modes", false);
 
     private final String prefix;
     private final boolean multiValue;

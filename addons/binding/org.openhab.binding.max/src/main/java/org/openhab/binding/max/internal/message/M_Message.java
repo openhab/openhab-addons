@@ -27,11 +27,11 @@ import org.slf4j.LoggerFactory;
  * @since 1.4.0
  */
 public final class M_Message extends Message {
+    private final Logger logger = LoggerFactory.getLogger(M_Message.class);
 
     public ArrayList<RoomInformation> rooms;
     public ArrayList<DeviceInformation> devices;
     private Boolean hasConfiguration;
-    Logger logger = LoggerFactory.getLogger(MaxBinding.class);
 
     public M_Message(String raw) {
         super(raw);

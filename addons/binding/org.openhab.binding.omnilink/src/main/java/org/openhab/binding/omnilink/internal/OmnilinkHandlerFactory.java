@@ -61,7 +61,7 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_ZONE, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM, THING_TYPE_BUTTON,
             THING_TYPE_UNIT_UPB, THING_TYPE_THERMOSTAT, THING_TYPE_CONSOLE, THING_TYPE_AUDIO_ZONE);
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

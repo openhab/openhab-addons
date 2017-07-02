@@ -10,6 +10,10 @@ package org.openhab.ui.cometvisu.internal;
 
 import org.openhab.ui.dashboard.DashboardTile;
 
+/**
+ *
+ * @author Tobias Bräutigam - Initial contribution
+ */
 public class CometVisuDashboardTile implements DashboardTile {
     @Override
     public String getName() {

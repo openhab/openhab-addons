@@ -13,6 +13,13 @@
 
    <implementation class="org.openhab.binding.tesla.internal.TeslaHandlerFactory"/>
 
+   <reference bind="setStorageService"
+                  unbind="unsetStorageService"
+                  cardinality="1..1"
+                  interface="org.eclipse.smarthome.core.storage.StorageService"
+                  policy="static"
+                  name="StorageService"/>
+
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>

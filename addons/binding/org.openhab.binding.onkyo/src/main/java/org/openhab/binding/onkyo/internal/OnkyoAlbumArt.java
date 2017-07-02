@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -148,11 +149,25 @@ public class OnkyoAlbumArt {
                     break;
                 case URL:
                     data = downloadAlbumArt(coverArtUrl);
+                    //Workaround firmware bug providing incorrect headers causing them to be seen as body instead.
+                    if (data != null) {
+                        int bodyLength = data.length;
+                        int i = new String(data).indexOf("image/");
+                        if (i > 0) {
+                            while (i < bodyLength && data[i] != '\r') {
+                                i++;
+                            }
+                            while (i < bodyLength && (data[i] == '\r' || data[i] == '\n')) {
+                                i++;
+                            }
+                            data = Arrays.copyOfRange(data, i, bodyLength);
+                            logger.trace("Onkyo fixed picture data @ {}: {} ", i, new String(data));
+                        }
+                    }
                     break;
                 case NONE:
                 default:
             }
-
             return data;
         }
 

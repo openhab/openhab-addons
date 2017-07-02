@@ -26,6 +26,10 @@ import org.openhab.binding.yamahareceiver.internal.protocol.YamahaReceiverCommun
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+ /**
+ *
+ * @author David Gräff - Initial contribution
+ */
 public class ZoneDiscoveryService extends AbstractDiscoveryService {
 
     private ServiceRegistration<?> reg = null;
@@ -47,13 +51,13 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
 
     public void detectZones(YamahaReceiverState state, String base_udn) {
         Map<String, Object> properties = new HashMap<>(3);
-        properties.put((String) YamahaReceiverBindingConstants.CONFIG_HOST_NAME, state.getHost());
+        properties.put(YamahaReceiverBindingConstants.CONFIG_HOST_NAME, state.getHost());
 
         for (Zone zone : state.additional_zones) {
             String zoneName = zone.name();
             ThingUID uid = new ThingUID(YamahaReceiverBindingConstants.THING_TYPE_YAMAHAAV, base_udn + zoneName);
 
-            properties.put((String) YamahaReceiverBindingConstants.CONFIG_ZONE, zoneName);
+            properties.put(YamahaReceiverBindingConstants.CONFIG_ZONE, zoneName);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(state.name + " " + zoneName).build();
             thingDiscovered(discoveryResult);

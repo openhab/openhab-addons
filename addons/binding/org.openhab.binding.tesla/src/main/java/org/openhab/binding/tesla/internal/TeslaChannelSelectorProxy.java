@@ -297,7 +297,7 @@ public class TeslaChannelSelectorProxy {
 
             }
         },
-        EST_HEADING("est_heading", "headingestimation", DecimalType.class, false),
+        EST_HEADING("est_heading", "estimatedheading", DecimalType.class, false),
         EST_RANGE("est_range", "estimatedrange", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -869,11 +869,9 @@ public class TeslaChannelSelectorProxy {
         TIMESTAMP("timestamp", "eventstamp", DateTimeType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                Date date = new Date();
-                SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
-                date.setTime(Long.valueOf(s));
-                return super.getState(DATE_FORMATTER.format(date));
+                Date date = new Date(Long.valueOf(s));
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+                return super.getState(dateFormatter.format(date));
             }
         },
         TRIP_CARGING("trip_charging", "tripcharging", OnOffType.class, false) {

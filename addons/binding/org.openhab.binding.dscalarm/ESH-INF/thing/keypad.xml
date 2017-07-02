@@ -4,7 +4,6 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="keypad">
-
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="envisalink" />
 			<bridge-type-ref id="it100" />
@@ -60,27 +59,6 @@
 				<description>Keypad LCD Cursor Position Changes</description>
 			</channel>
 		</channels>
-
 	</thing-type>
-
-	<channel-type id="led">
-		<item-type>Number</item-type>
-		<label>Keypad LED</label>
-		<description>Keypad LED (0=Off, 1=On, 2=Flashing)</description>
-		<state pattern="%d" readOnly="true">
-			<options>
-				<option value="0">Off</option>
-				<option value="1">On</option>
-				<option value="2">Flashing</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="message">
-		<item-type>String</item-type>
-		<label>Message</label>
-		<description>Message Received</description>
-		<state pattern="%s" readOnly="true"></state>
-	</channel-type>
 
 </thing:thing-descriptions>

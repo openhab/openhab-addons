@@ -27,7 +27,7 @@ public class AudioZoneHandler extends AbstractOmnilinkHandler implements ThingHa
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        int audioZoneID = getThingID();
+        int audioZoneID = getThingNumber();
         String channelID = channelUID.getId();
         try {
             switch (channelID) {
@@ -120,7 +120,7 @@ public class AudioZoneHandler extends AbstractOmnilinkHandler implements ThingHa
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         try {
-            int audioZoneID = getThingID();
+            int audioZoneID = getThingNumber();
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AUDIO_ZONE,
                     audioZoneID, audioZoneID, true);
             handleAudioZoneStatus((AudioZoneStatus) objStatus.getStatuses()[0]);

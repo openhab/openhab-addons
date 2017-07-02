@@ -89,7 +89,7 @@ class MaryTTSAudioStream extends FixedLengthAudioStream {
         byte format = 0x10; // PCM
         byte bits = 16;
         byte channel = 1;
-        int srate = 48000;
+        long srate = (this.audioFormat != null) ? this.audioFormat.getFrequency() : 48000l;
         long rawLength = length - 36;
         long bitrate = srate * channel * bits;
 

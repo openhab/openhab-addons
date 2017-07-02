@@ -100,15 +100,19 @@ public class MetadataUtils {
         List<T> options = null;
         if (dp.isEnumType()) {
             options = new ArrayList<T>();
-            for (int i = 0; i < dp.getOptions().length; i++) {
-                String description = null;
-                if (!dp.isVariable() && !dp.isScript()) {
-                    description = getDescription(dp.getChannel().getType(), dp.getName(), dp.getOptions()[i]);
+            if (dp.getOptions() == null) {
+                logger.warn("No options for ENUM datapoint {}", dp);
+            } else {
+                for (int i = 0; i < dp.getOptions().length; i++) {
+                    String description = null;
+                    if (!dp.isVariable() && !dp.isScript()) {
+                        description = getDescription(dp.getChannel().getType(), dp.getName(), dp.getOptions()[i]);
+                    }
+                    if (description == null) {
+                        description = dp.getOptions()[i];
+                    }
+                    options.add(optionsBuilder.createOption(dp.getOptions()[i], description));
                 }
-                if (description == null) {
-                    description = dp.getOptions()[i];
-                }
-                options.add(optionsBuilder.createOption(dp.getOptions()[i], description));
             }
         }
         return options;
@@ -197,7 +201,9 @@ public class MetadataUtils {
             }
             sb.append(key).append(", ");
         }
-        logger.debug("Description not found for: {}", StringUtils.substring(sb.toString(), 0, -2));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Description not found for: {}", StringUtils.substring(sb.toString(), 0, -2));
+        }
         return null;
     }
 
@@ -247,6 +253,9 @@ public class MetadataUtils {
      * Helper method for creating a BigDecimal.
      */
     public static BigDecimal createBigDecimal(Number number) {
+        if (number == null) {
+            return null;
+        }
         try {
             return new BigDecimal(number.toString());
         } catch (Exception ex) {
@@ -271,7 +280,8 @@ public class MetadataUtils {
                 return ITEM_TYPE_SWITCH;
             }
         } else if (dp.isNumberType()) {
-            if (dpName.startsWith(DATAPOINT_NAME_LEVEL) && channelType.equals(CHANNEL_TYPE_BLIND)) {
+            if (dpName.startsWith(DATAPOINT_NAME_LEVEL)
+                    && (channelType.equals(CHANNEL_TYPE_BLIND) || channelType.equals(CHANNEL_TYPE_JALOUSIE))) {
                 return ITEM_TYPE_ROLLERSHUTTER;
             } else if (dpName.startsWith(DATAPOINT_NAME_LEVEL) && !channelType.equals(CHANNEL_TYPE_WINMATIC)
                     && !channelType.equals(CHANNEL_TYPE_AKKU)) {

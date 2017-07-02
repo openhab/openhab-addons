@@ -10,18 +10,21 @@ package org.openhab.binding.globalcache.handler;
 
 import static org.openhab.binding.globalcache.GlobalCacheBindingConstants.*;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -30,7 +33,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -64,15 +69,21 @@ import org.slf4j.LoggerFactory;
 public class GlobalCacheHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(GlobalCacheHandler.class);
 
+    private static final String GLOBALCACHE_THREAD_POOL = "globalCacheHandler";
+
     private InetAddress ifAddress;
     private CommandProcessor commandProcessor;
-    ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(MAX_GC_DEVICES);
-    ScheduledFuture<?> scheduledFuture;
+    private ScheduledExecutorService scheduledExecutorService = ThreadPoolManager
+            .getScheduledPool(GLOBALCACHE_THREAD_POOL + "-" + thingID());
+    private ScheduledFuture<?> scheduledFuture;
 
     private LinkedBlockingQueue<RequestMessage> sendQueue = null;
 
     // IR transaction counter
     private AtomicInteger irCounter;
+
+    // Character set to use for URL encoding & decoding
+    private String CHARSET = "ISO-8859-1";
 
     public GlobalCacheHandler(Thing gcDevice) {
         super(gcDevice);
@@ -176,7 +187,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
     private void handleInfrared(String modNum, String conNum, Command command, ChannelUID channelUID) {
         logger.debug("Handling infrared command {} on channel {} of thing {}", command, channelUID.getId(), thingID());
 
-        String irCode = lookupCode(command, channelUID);
+        String irCode = lookupCode(command);
         if (irCode != null) {
             CommandSendir sendir = new CommandSendir(thing, command, sendQueue, modNum, conNum, irCode, getCounter());
             sendir.execute();
@@ -186,7 +197,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
     private void handleSerial(String modNum, String conNum, Command command, ChannelUID channelUID) {
         logger.debug("Handle serial command {} on channel {} of thing {}", command, channelUID.getId(), thingID());
 
-        String slCode = lookupCode(command, channelUID);
+        String slCode = lookupCode(command);
         if (slCode != null) {
             CommandSendserial sendserial = new CommandSendserial(thing, command, sendQueue, modNum, conNum, slCode);
             sendserial.execute();
@@ -222,7 +233,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
      * Look up the IR or serial command code in the MAP file.
      *
      */
-    private String lookupCode(Command command, ChannelUID channelUID) {
+    private String lookupCode(Command command) {
         if (command.toString() == null) {
             logger.warn("Unable to perform transform on null command string");
             return null;
@@ -264,7 +275,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 code = convertHexToGC(code);
                 logger.debug("Converted hex code is: {}", code);
             } catch (HexCodeConversionException e) {
-                logger.warn("Failed to convert hex code to GC format");
+                logger.info("Failed to convert hex code to globalcache format: {}", e.getMessage());
                 return null;
             }
         }
@@ -284,8 +295,8 @@ public class GlobalCacheHandler extends BaseThingHandler {
      */
     private String convertHexToGC(String hexCode) throws HexCodeConversionException {
         // Magic number for converting frequency to GC format
-        final int FREQ_CONVERSION_FACTOR = 4145146;
-        final int REPEAT = 1;
+        final int freqConversionFactor = 4145146;
+        final int repeat = 1;
         int frequency;
         int sequence1Length;
         int offset;
@@ -302,7 +313,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         try {
             // Use magic number to get frequency
-            frequency = Math.round(FREQ_CONVERSION_FACTOR / Integer.parseInt(hexCodeArray[1], 16));
+            frequency = Math.round(freqConversionFactor / Integer.parseInt(hexCodeArray[1], 16));
         } catch (Exception e) {
             throw new HexCodeConversionException("Unable to convert frequency from element 1");
         }
@@ -317,10 +328,10 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         // sequenceLength2 (hexCodeArray[3]) is not used
 
-        StringBuffer gcCode = new StringBuffer();
+        StringBuilder gcCode = new StringBuilder();
         gcCode.append(frequency);
         gcCode.append(",");
-        gcCode.append(REPEAT);
+        gcCode.append(repeat);
         gcCode.append(",");
         gcCode.append(offset);
 
@@ -335,6 +346,16 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         return gcCode.toString();
+    }
+
+    public static String getAsHexString(byte[] b) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int j = 0; j < b.length; j++) {
+            String s = String.format("%02x ", b[j] & 0xff);
+            sb.append(s);
+        }
+        return sb.toString();
     }
 
     public String getIP() {
@@ -425,7 +446,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private final int SEND_QUEUE_MAX_DEPTH = 10;
         private final int SEND_QUEUE_TIMEOUT = 2000;
 
-        ConnectionManager connectionManager;
+        private ConnectionManager connectionManager;
 
         public CommandProcessor() {
             super("GlobalCache Command Processor");
@@ -469,8 +490,13 @@ public class GlobalCacheHandler extends BaseThingHandler {
                         if (connectionManager.isConnected()) {
                             try {
                                 long startTime = System.currentTimeMillis();
-                                writeCommandToDevice(requestMessage);
-                                deviceReply = readReplyFromDevice(requestMessage);
+                                if (requestMessage.isCommand()) {
+                                    writeCommandToDevice(requestMessage);
+                                    deviceReply = readReplyFromDevice(requestMessage);
+                                } else {
+                                    writeSerialToDevice(requestMessage);
+                                    deviceReply = "successful";
+                                }
                                 long endTime = System.currentTimeMillis();
                                 logger.debug("Transaction '{}' for thing {} at {} took {} ms",
                                         requestMessage.getCommandName(), thingID(), getIP(), endTime - startTime);
@@ -506,49 +532,46 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private void writeCommandToDevice(RequestMessage requestMessage) throws IOException {
             logger.trace("Processor for thing {} writing command to device", thingID());
 
-            if (connectionManager.getOut(requestMessage.getCommandType()) == null) {
+            if (connectionManager.getCommandOut() == null) {
                 logger.debug("Error writing to device because output stream object is null");
                 return;
             }
 
-            byte[] deviceCommand;
-            if (requestMessage.isSerial()) {
-                String charset = "ISO-8859-1";
-                deviceCommand = URLDecoder.decode(requestMessage.getDeviceCommand(), charset).getBytes(charset);
-                logger.debug("Decoded deviceCommand byte array: {}", getAsHexString(deviceCommand));
-            } else {
-                deviceCommand = (requestMessage.getDeviceCommand() + '\r').getBytes();
-            }
-            connectionManager.getOut(requestMessage.getCommandType()).write(deviceCommand);
-            connectionManager.getOut(requestMessage.getCommandType()).flush();
-        }
-
-        private String getAsHexString(byte[] b) {
-            StringBuffer sb = new StringBuffer();
-
-            for (int j = 0; j < b.length; j++) {
-                String s = String.format("%02x ", b[j] & 0xff);
-                sb.append(s);
-            }
-            return sb.toString();
+            byte[] deviceCommand = (requestMessage.getDeviceCommand() + '\r').getBytes();
+            connectionManager.getCommandOut().write(deviceCommand);
+            connectionManager.getCommandOut().flush();
         }
 
         /*
-         * Read reply from the device, then remove the CR at the end of the line.
+         * Read command reply from the device, then remove the CR at the end of the line.
          */
         private String readReplyFromDevice(RequestMessage requestMessage) throws IOException {
-            // Nothing to do if it's a serial command, as the device won't reply to serial commands
-            if (requestMessage.isSerial()) {
-                return "successful";
-            }
+            logger.trace("Processor for thing {} reading reply from device", thingID());
 
-            if (connectionManager.getIn() == null) {
+            if (connectionManager.getCommandIn() == null) {
                 logger.debug("Error reading from device because input stream object is null");
                 return "ERROR: BufferedReader is null!";
             }
 
             logger.trace("Processor for thing {} reading response from device", thingID());
-            return connectionManager.getIn().readLine().trim();
+            return connectionManager.getCommandIn().readLine().trim();
+        }
+
+        /*
+         * Write a serial command to the device
+         */
+        private void writeSerialToDevice(RequestMessage requestMessage) throws IOException {
+            DataOutputStream out = connectionManager.getSerialOut(requestMessage.getCommandType());
+            if (out == null) {
+                logger.warn("Can't send serial command; output stream is null!");
+                return;
+            }
+
+            byte[] deviceCommand;
+            deviceCommand = URLDecoder.decode(requestMessage.getDeviceCommand(), CHARSET).getBytes(CHARSET);
+
+            logger.debug("Writing decoded deviceCommand byte array: {}", getAsHexString(deviceCommand));
+            out.write(deviceCommand);
         }
     }
 
@@ -562,8 +585,11 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
 
         private DeviceConnection commandConnection;
-        private DeviceConnection serial1Connection;
-        private DeviceConnection serial2Connection;
+        private DeviceConnection serialPort1Connection;
+        private DeviceConnection serialPort2Connection;
+
+        private SerialPortReader serialReaderPort1;
+        private SerialPortReader serialReaderPort2;
 
         private boolean deviceIsConnected;
 
@@ -577,11 +603,11 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         private final int SOCKET_CONNECT_TIMEOUT = 1500;
 
-        ScheduledFuture<?> connectionMonitorJob;
+        private ScheduledFuture<?> connectionMonitorJob;
         private final int CONNECTION_MONITOR_FREQUENCY = 60;
         private final int CONNECTION_MONITOR_START_DELAY = 15;
 
-        Runnable connectionMonitorRunnable = new Runnable() {
+        private Runnable connectionMonitorRunnable = new Runnable() {
             @Override
             public void run() {
                 logger.trace("Performing connection check for thing {} at IP {}", thingID(), commandConnection.getIP());
@@ -591,12 +617,12 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         public ConnectionManager() {
             commandConnection = new DeviceConnection(COMMAND_NAME, COMMAND_PORT);
-            serial1Connection = new DeviceConnection(SERIAL1_NAME, SERIAL1_PORT);
-            serial2Connection = new DeviceConnection(SERIAL2_NAME, SERIAL2_PORT);
+            serialPort1Connection = new DeviceConnection(SERIAL1_NAME, SERIAL1_PORT);
+            serialPort2Connection = new DeviceConnection(SERIAL2_NAME, SERIAL2_PORT);
 
             commandConnection.setIP(getIPAddress());
-            serial1Connection.setIP(getIPAddress());
-            serial2Connection.setIP(getIPAddress());
+            serialPort1Connection.setIP(getIPAddress());
+            serialPort2Connection.setIP(getIPAddress());
 
             deviceIsConnected = false;
         }
@@ -619,57 +645,51 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 return;
             }
 
-            // If device doesn't have a serial module, just open the command connection
-            if (!deviceSupportsSerial1()) {
-                if (deviceConnect(commandConnection)) {
-                    markThingOnline();
-                    deviceIsConnected = true;
+            // Get a connection to the command port
+            if (!commandConnect(commandConnection)) {
+                return;
+            }
+
+            // Get a connection to serial port 1
+            if (deviceSupportsSerialPort1()) {
+                if (!serialConnect(serialPort1Connection)) {
+                    commandDisconnect(commandConnection);
                     return;
                 }
-            } else {
-                // Open the command connection and either 1 or 2 serial connections
-                if (deviceConnect(commandConnection) && deviceConnect(serial1Connection)) {
-                    if (deviceSupportsSerial2()) {
-                        if (deviceConnect(serial2Connection)) {
-                            markThingOnline();
-                            deviceIsConnected = true;
-                            return;
-                        }
-                    } else {
-                        markThingOnline();
-                        deviceIsConnected = true;
-                        return;
-                    }
+            }
+
+            // Get a connection to serial port 2
+            if (deviceSupportsSerialPort2()) {
+                if (!serialConnect(serialPort2Connection)) {
+                    commandDisconnect(commandConnection);
+                    serialDisconnect(serialPort1Connection);
+                    return;
                 }
             }
-            disconnect();
+
+            /*
+             * All connections opened successfully, so we can mark the thing online
+             * and start the serial port readers
+             */
+            markThingOnline();
+            deviceIsConnected = true;
+            startSerialPortReaders();
         }
 
-        private boolean deviceConnect(DeviceConnection conn) {
+        private boolean commandConnect(DeviceConnection conn) {
             logger.debug("Connecting to {} port for thing {} at IP {}", conn.getName(), thingID(), conn.getIP());
-
-            // open socket
-            try {
-                conn.setSocket(new Socket());
-                conn.getSocket().bind(new InetSocketAddress(ifAddress, 0));
-                conn.getSocket().connect(new InetSocketAddress(conn.getIP(), conn.getPort()), SOCKET_CONNECT_TIMEOUT);
-            } catch (IOException e) {
-                logger.debug("Error connecting to {} port for thing {} at IP {}, exception={}", conn.getName(),
-                        thingID(), conn.getIP(), e.getMessage());
-                markThingOfflineWithError(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                deviceDisconnect(conn);
+            if (!openSocket(conn)) {
                 return false;
             }
-
             // create streams
             try {
-                conn.setIn(new BufferedReader(new InputStreamReader(conn.getSocket().getInputStream())));
-                conn.setOut(new DataOutputStream(conn.getSocket().getOutputStream()));
+                conn.setCommandIn(new BufferedReader(new InputStreamReader(conn.getSocket().getInputStream())));
+                conn.setCommandOut(new DataOutputStream(conn.getSocket().getOutputStream()));
             } catch (IOException e) {
                 logger.debug("Error getting streams to {} port for thing {} at {}, exception={}", conn.getName(),
                         thingID(), conn.getIP(), e.getMessage());
                 markThingOfflineWithError(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                deviceDisconnect(conn);
+                closeSocket(conn);
                 return false;
             }
             logger.info("Got a connection to {} port for thing {} at {}", conn.getName(), thingID(), conn.getIP());
@@ -677,33 +697,89 @@ public class GlobalCacheHandler extends BaseThingHandler {
             return true;
         }
 
+        private boolean serialConnect(DeviceConnection conn) {
+            logger.debug("Connecting to {} port for thing {} at {}", conn.getName(), thingID(), conn.getIP());
+            if (!openSocket(conn)) {
+                return false;
+            }
+            // create streams
+            try {
+                conn.setSerialIn(new BufferedInputStream(conn.getSocket().getInputStream()));
+                conn.setSerialOut(new DataOutputStream(conn.getSocket().getOutputStream()));
+            } catch (IOException e) {
+                logger.debug("Failed to get streams on {} port for thing {} at {}", conn.getName(), thingID(),
+                        conn.getIP());
+                closeSocket(conn);
+                return false;
+            }
+            logger.info("Got a connection to {} port for thing {} at {}", conn.getName(), thingID(), conn.getIP());
+
+            return true;
+        }
+
+        private boolean openSocket(DeviceConnection conn) {
+            try {
+                conn.setSocket(new Socket());
+                conn.getSocket().bind(new InetSocketAddress(ifAddress, 0));
+                conn.getSocket().connect(new InetSocketAddress(conn.getIP(), conn.getPort()), SOCKET_CONNECT_TIMEOUT);
+            } catch (IOException e) {
+                logger.debug("Failed to get socket on {} port for thing {} at {}", conn.getName(), thingID(),
+                        conn.getIP());
+                return false;
+            }
+            return true;
+        }
+
+        private void closeSocket(DeviceConnection conn) {
+            if (conn.getSocket() != null) {
+                try {
+                    conn.getSocket().close();
+                } catch (IOException e) {
+                    logger.debug("Failed to close socket on {} port for thing {} at {}", conn.getName(), thingID(),
+                            conn.getIP());
+                }
+            }
+        }
+
+        /*
+         * Disconnect from the command and serial port(s) on the device. Only disconnect the serial port
+         * connections if the devices have serial ports.
+         */
         protected void disconnect() {
             if (!isConnected()) {
                 return;
             }
-            deviceDisconnect(commandConnection);
+            commandDisconnect(commandConnection);
 
-            if (deviceSupportsSerial1()) {
-                deviceDisconnect(serial1Connection);
+            stopSerialPortReaders();
+            if (deviceSupportsSerialPort1()) {
+                serialDisconnect(serialPort1Connection);
             }
-
-            if (deviceSupportsSerial2()) {
-                deviceDisconnect(serial2Connection);
+            if (deviceSupportsSerialPort2()) {
+                serialDisconnect(serialPort2Connection);
             }
 
             markThingOffline();
             deviceIsConnected = false;
         }
 
+        private void commandDisconnect(DeviceConnection conn) {
+            deviceDisconnect(conn);
+        }
+
+        private void serialDisconnect(DeviceConnection conn) {
+            deviceDisconnect(conn);
+        }
+
         private void deviceDisconnect(DeviceConnection conn) {
             logger.debug("Disconnecting from {} port for thing {} at IP {}", conn.getName(), thingID(), conn.getIP());
 
             try {
-                if (conn.getOut() != null) {
-                    conn.getOut().close();
+                if (conn.getSerialOut() != null) {
+                    conn.getSerialOut().close();
                 }
-                if (conn.getIn() != null) {
-                    conn.getIn().close();
+                if (conn.getSerialIn() != null) {
+                    conn.getSerialIn().close();
                 }
                 if (conn.getSocket() != null) {
                     conn.getSocket().close();
@@ -725,23 +801,38 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         /*
          * Retrieve the input/output streams for command and serial connections.
-         * We will never read from input stream for serial commands, so just return the command input stream
          */
-        protected BufferedReader getIn() {
-            return commandConnection.getIn();
+        protected BufferedReader getCommandIn() {
+            return commandConnection.getCommandIn();
         }
 
-        protected DataOutputStream getOut(CommandType commandType) {
+        protected DataOutputStream getCommandOut() {
+            return commandConnection.getCommandOut();
+        }
+
+        protected BufferedInputStream getSerialIn(CommandType commandType) {
+            if (commandType != CommandType.SERIAL1 && commandType != CommandType.SERIAL2) {
+                return null;
+            }
             if (commandType == CommandType.SERIAL1) {
-                return serial1Connection.getOut();
-            } else if (commandType == CommandType.SERIAL2) {
-                return serial2Connection.getOut();
+                return serialPort1Connection.getSerialIn();
             } else {
-                return commandConnection.getOut();
+                return serialPort2Connection.getSerialIn();
             }
         }
 
-        private boolean deviceSupportsSerial1() {
+        protected DataOutputStream getSerialOut(CommandType commandType) {
+            if (commandType != CommandType.SERIAL1 && commandType != CommandType.SERIAL2) {
+                return null;
+            }
+            if (commandType == CommandType.SERIAL1) {
+                return serialPort1Connection.getSerialOut();
+            } else {
+                return serialPort2Connection.getSerialOut();
+            }
+        }
+
+        private boolean deviceSupportsSerialPort1() {
             ThingTypeUID typeUID = thing.getThingTypeUID();
 
             if (typeUID.equals(THING_TYPE_ITACH_SL)) {
@@ -754,7 +845,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
             return false;
         }
 
-        private boolean deviceSupportsSerial2() {
+        private boolean deviceSupportsSerialPort2() {
             if (thing.getThingTypeUID().equals(THING_TYPE_GC_100_12)) {
                 return true;
             }
@@ -788,8 +879,205 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 markThingOnline();
                 deviceIsConnected = true;
             } else {
-                logger.trace("Connection check failed for thing {} at IP {}", thingID(), commandConnection.getIP());
+                logger.debug("Connection check failed for thing {} at IP {}", thingID(), commandConnection.getIP());
                 disconnect();
+            }
+        }
+
+        private void startSerialPortReaders() {
+            if (deviceSupportsSerialPort1()) {
+                serialReaderPort1 = startSerialPortReader(CommandType.SERIAL1, CONFIG_ENABLE_TWO_WAY_PORT_1,
+                        CONFIG_END_OF_MESSAGE_DELIMITER_PORT_1);
+            }
+            if (deviceSupportsSerialPort2()) {
+                serialReaderPort2 = startSerialPortReader(CommandType.SERIAL2, CONFIG_ENABLE_TWO_WAY_PORT_2,
+                        CONFIG_END_OF_MESSAGE_DELIMITER_PORT_2);
+            }
+        }
+
+        private SerialPortReader startSerialPortReader(CommandType serialDevice, String enableTwoWayConfig,
+                String endOfMessageDelimiterConfig) {
+            Boolean enableTwoWay = (Boolean) thing.getConfiguration().get(enableTwoWayConfig);
+            logger.debug("Enable two-way is {} for thing {} {}", enableTwoWay, thingID(), serialDevice);
+
+            if (Boolean.TRUE.equals(enableTwoWay)) {
+                // Get the end of message delimiter from the config, URL decode it, and convert it to a byte array
+                String endOfMessageString = (String) thing.getConfiguration().get(endOfMessageDelimiterConfig);
+                if (StringUtils.isNotEmpty(endOfMessageString)) {
+                    logger.debug("End of message is {} for thing {} {}", endOfMessageString, thingID(), serialDevice);
+                    byte[] endOfMessage;
+                    try {
+                        endOfMessage = URLDecoder.decode(endOfMessageString, CHARSET).getBytes(CHARSET);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.info("Unable to decode end of message delimiter {} for thing {} {}", endOfMessageString,
+                                thingID(), serialDevice);
+                        return null;
+                    }
+
+                    // Start the serial reader using the above end-of-message delimiter
+                    SerialPortReader serialPortReader = new SerialPortReader(serialDevice, getSerialIn(serialDevice),
+                            endOfMessage);
+                    serialPortReader.start();
+                    return serialPortReader;
+                } else {
+                    logger.warn("End of message delimiter is not defined in configuration of thing {}", thingID());
+                }
+            }
+            return null;
+        }
+
+        private void stopSerialPortReaders() {
+            if (deviceSupportsSerialPort1() && serialReaderPort1 != null) {
+                logger.debug("Stopping serial port 1 reader for thing {} at IP {}", thingID(),
+                        commandConnection.getIP());
+                serialReaderPort1.stop();
+                serialReaderPort1 = null;
+            }
+            if (deviceSupportsSerialPort2() && serialReaderPort2 != null) {
+                logger.debug("Stopping serial port 2 reader for thing {} at IP {}", thingID(),
+                        commandConnection.getIP());
+                serialReaderPort2.stop();
+                serialReaderPort2 = null;
+            }
+        }
+    }
+
+    /*
+     * The {@link SerialReader} class reads data from the serial connection. When data is
+     * received, the receive channel is updated with the data. Data is read up to the
+     * end-of-message delimiter defined in the Thing configuration.
+     *
+     * @author Mark Hilbush - Initial contribution
+     */
+    private class SerialPortReader {
+        private Logger logger = LoggerFactory.getLogger(SerialPortReader.class);
+
+        private CommandType serialPort;
+        private BufferedInputStream serialPortIn;
+        private ScheduledFuture<?> serialPortReaderJob;
+        private boolean terminateSerialPortReader;
+
+        private byte[] endOfMessage;
+
+        private Runnable serialPortReaderRunnable = new Runnable() {
+            @Override
+            public void run() {
+                serialPortReader();
+            }
+        };
+
+        SerialPortReader(CommandType serialPort, BufferedInputStream serialIn, byte[] endOfMessage) {
+            if (serialIn == null) {
+                throw new IllegalArgumentException("Serial input stream is not set");
+            }
+            this.serialPort = serialPort;
+            this.serialPortIn = serialIn;
+            this.endOfMessage = endOfMessage;
+            serialPortReaderJob = null;
+            terminateSerialPortReader = false;
+        }
+
+        public void start() {
+            serialPortReaderJob = scheduledExecutorService.schedule(serialPortReaderRunnable, 0, TimeUnit.SECONDS);
+        }
+
+        public void stop() {
+            if (serialPortReaderJob != null) {
+                terminateSerialPortReader = true;
+                serialPortReaderJob.cancel(true);
+                serialPortReaderJob = null;
+            }
+        }
+
+        private void serialPortReader() {
+            logger.info("Serial reader RUNNING for {} on {}:{}", thingID(), getIP(), serialPort);
+
+            while (!terminateSerialPortReader) {
+                byte[] buffer;
+                try {
+                    buffer = readUntilEndOfMessage(endOfMessage);
+                    if (buffer == null) {
+                        logger.debug("Received end-of-stream from {} on {}", getIP(), serialPort);
+                        continue;
+                    }
+                    logger.debug("Rcv data from {} at {}:{}: {}", thingID(), getIP(), serialPort,
+                            getAsHexString(buffer));
+                    updateFeedbackChannel(buffer);
+                } catch (UnsupportedEncodingException e) {
+                    logger.info("Unsupported encoding exception: {}", e.getMessage(), e);
+                    continue;
+                } catch (IOException e) {
+                    logger.debug("Serial Reader got IOException: {}", e.getMessage());
+                    break;
+                } catch (InterruptedException e) {
+                    logger.debug("Serial Reader got InterruptedException: {}", e.getMessage());
+                    break;
+                }
+            }
+            logger.debug("Serial reader STOPPING for {} on {}:{}", thingID(), getIP(), serialPort);
+        }
+
+        private byte[] readUntilEndOfMessage(byte[] endOfMessageDelimiter) throws IOException, InterruptedException {
+            logger.debug("Serial reader waiting for available data");
+
+            int val;
+            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+
+            // Read from the serial input stream until the endOfMessage delimiter is found
+            while (true) {
+                val = serialPortIn.read();
+                if (val == -1) {
+                    logger.debug("Serial reader got unexpected end of input stream");
+                    throw new IOException("Unexpected end of stream");
+                }
+
+                buf.write(val);
+                if (findEndOfMessage(buf.toByteArray(), endOfMessageDelimiter)) {
+                    // Found the end-of-message delimiter in the serial input stream
+                    break;
+                }
+            }
+            logger.debug("Serial reader returning a message");
+            return buf.toByteArray();
+        }
+
+        private boolean findEndOfMessage(byte[] buf, byte[] endOfMessage) {
+            int lengthEOM = endOfMessage.length;
+            int lengthBuf = buf.length;
+
+            // Look for the end-of-message delimiter at the end of the buffer
+            while (lengthEOM > 0) {
+                lengthEOM--;
+                lengthBuf--;
+                if (lengthBuf < 0 || endOfMessage[lengthEOM] != buf[lengthBuf]) {
+                    // No match on end of message
+                    return false;
+                }
+            }
+            logger.debug("Serial reader found the end-of-message delimiter in the input buffer");
+            return true;
+        }
+
+        private void updateFeedbackChannel(byte[] buffer) {
+            String channelId;
+            if (serialPort.equals(CommandType.SERIAL1)) {
+                channelId = CHANNEL_SL_M1_RECEIVE;
+            } else if (serialPort.equals(CommandType.SERIAL2)) {
+                channelId = CHANNEL_SL_M2_RECEIVE;
+            } else {
+                logger.warn("Unknown serial port; can't update feedback channel: {}", serialPort);
+                return;
+            }
+            Channel channel = getThing().getChannel(channelId);
+            if (channel != null && isLinked(channelId)) {
+                logger.debug("Updating feedback channel for port {}", serialPort);
+                try {
+                    String encodedReply = URLEncoder.encode(new String(buffer, CHARSET), CHARSET);
+                    logger.debug("encodedReply='{}'", encodedReply);
+                    updateState(channel.getUID(), new StringType(encodedReply));
+                } catch (UnsupportedEncodingException e) {
+                    logger.warn("Exception while encoding data read from serial device: {}", e.getMessage());
+                }
             }
         }
     }
@@ -807,22 +1095,28 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private int port;
         private String ipAddress;
         private Socket socket;
-        private BufferedReader in;
-        private DataOutputStream out;
+        private BufferedReader commandIn;
+        private DataOutputStream commandOut;
+        private BufferedInputStream serialIn;
+        private DataOutputStream serialOut;
 
         DeviceConnection(String connectionName, int port) {
             setName(connectionName);
             setPort(port);
             setIP(null);
             setSocket(null);
-            setIn(null);
-            setOut(null);
+            setCommandIn(null);
+            setCommandOut(null);
+            setSerialIn(null);
+            setSerialOut(null);
         }
 
         public void reset() {
             setSocket(null);
-            setIn(null);
-            setOut(null);
+            setCommandIn(null);
+            setCommandOut(null);
+            setSerialIn(null);
+            setSerialOut(null);
         }
 
         public String getName() {
@@ -857,20 +1151,36 @@ public class GlobalCacheHandler extends BaseThingHandler {
             this.socket = socket;
         }
 
-        public BufferedReader getIn() {
-            return in;
+        public BufferedReader getCommandIn() {
+            return commandIn;
         }
 
-        public void setIn(BufferedReader in) {
-            this.in = in;
+        public void setCommandIn(BufferedReader commandIn) {
+            this.commandIn = commandIn;
         }
 
-        public DataOutputStream getOut() {
-            return out;
+        public DataOutputStream getCommandOut() {
+            return commandOut;
         }
 
-        public void setOut(DataOutputStream out) {
-            this.out = out;
+        public void setCommandOut(DataOutputStream commandOut) {
+            this.commandOut = commandOut;
+        }
+
+        public BufferedInputStream getSerialIn() {
+            return serialIn;
+        }
+
+        public void setSerialIn(BufferedInputStream serialIn) {
+            this.serialIn = serialIn;
+        }
+
+        public DataOutputStream getSerialOut() {
+            return serialOut;
+        }
+
+        public void setSerialOut(DataOutputStream serialOut) {
+            this.serialOut = serialOut;
         }
     }
 }

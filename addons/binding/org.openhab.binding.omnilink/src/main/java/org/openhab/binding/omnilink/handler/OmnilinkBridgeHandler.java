@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -74,8 +73,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     private TemperatureFormat temperatureFormat;
 
-    private ScheduledFuture<?> scheduledRefresh;
-    // private CacheHolder<Unit> nodes;
     private DisconnectListener retryingDisconnectListener;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
@@ -232,8 +229,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
 
                         updateStatus(ThingStatus.ONLINE);
-                        // let's start a task which refreshes status
-                        scheduleRefresh();
                     } catch (UnknownHostException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         logger.debug(e.toString());
@@ -327,76 +322,42 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         logger.debug("childHandlerInitialized called with '{}', childThing '{}'", childHandler, childThing);
         if (childHandler instanceof AreaHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int areaNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                areaNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                areaNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int areaNumber = getNumberProperty(childThing);
             areaThings.put(areaNumber, childThing);
         } else if (childHandler instanceof UnitHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int unitNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                unitNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                unitNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int unitNumber = getNumberProperty(childThing);
             unitThings.put(unitNumber, childThing);
         } else if (childHandler instanceof ZoneHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int zoneNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                zoneNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                zoneNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int zoneNumber = getNumberProperty(childThing);
             zoneThings.put(zoneNumber, childThing);
         } else if (childHandler instanceof ButtonHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int buttonNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                buttonNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                buttonNumber = Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int buttonNumber = getNumberProperty(childThing);
             buttonThings.put(buttonNumber, childThing);
         } else if (childHandler instanceof ThermostatHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int thermostatNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                thermostatNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number"))
-                        .intValue();
-            } else {
-                thermostatNumber = Integer
-                        .parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int thermostatNumber = getNumberProperty(childThing);
             thermostatThings.put(thermostatNumber, childThing);
         } else if (childHandler instanceof AudioZoneHandler) {
-            if (!childThing.getConfiguration().getProperties().containsKey("number")) {
-                throw new IllegalArgumentException("childThing does not have required 'number' property");
-            }
-            int audioZoneNumber;
-            if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
-                audioZoneNumber = ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
-            } else {
-                audioZoneNumber = Integer
-                        .parseInt(childThing.getConfiguration().getProperties().get("number").toString());
-            }
+            int audioZoneNumber = getNumberProperty(childThing);
             audioZoneThings.put(audioZoneNumber, childThing);
         } else {
             logger.warn("Did not add childThing to a map: {}", childThing);
+        }
+    }
+
+    /**
+     * Get the number property as an integer for the supplied childThing
+     *
+     * @param childThing item to extract the number property from.
+     * @return Number of the item.
+     */
+    private int getNumberProperty(Thing childThing) {
+        if (!childThing.getConfiguration().getProperties().containsKey("number")) {
+            throw new IllegalArgumentException("childThing does not have required 'number' property");
+        }
+        if (childThing.getConfiguration().getProperties().get("number") instanceof BigDecimal) {
+            return ((BigDecimal) childThing.getConfiguration().getProperties().get("number")).intValue();
+        } else {
+            return Integer.parseInt(childThing.getConfiguration().getProperties().get("number").toString());
         }
     }
 
@@ -489,31 +450,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     }
 
-    /**
-     * Every six hours let's poll the omnilink to make sure we have correct state
-     */
-    private void scheduleRefresh() {
-        // TODO this could be configurable
-        int interval = 60 * 60 * 6;
-        logger.info("Scheduling refresh updates at {} seconds", interval);
-        scheduledRefresh = scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("Running scheduled refresh");
-                try {
-                    getSystemStatus();
-                    for (UnitStatus unitStatus : getUnitStatuses()) {
-                        handleUnitStatus(unitStatus);
-                    }
-                } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException
-                        | IOException | OmniNotConnectedException e) {
-                    logger.error("Unable to refresh unit statuses");
-                }
-                // TODO add areas, zones, flags, etc
-            }
-        }, interval, interval, TimeUnit.SECONDS);
-    }
-
     @Override
     public void channelLinked(ChannelUID channelUID) {
         try {
@@ -532,9 +468,5 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             omniConnection.removeDisconnecListener(retryingDisconnectListener);
             omniConnection.disconnect();
         }
-        if (scheduledRefresh != null) {
-            scheduledRefresh.cancel(true);
-        }
-        scheduledRefresh = null;
     }
 }

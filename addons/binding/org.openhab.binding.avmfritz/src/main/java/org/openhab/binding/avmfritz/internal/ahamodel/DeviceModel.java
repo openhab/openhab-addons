@@ -16,138 +16,151 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * See {@link DevicelistModel}.
- * 
+ *
  * In the functionbitmask element value the following bits are used:
- * 
+ *
  * <ol>
+ * <li>Bit 6: Comet DECT, Heizkostenregler</li>
  * <li>Bit 7: Energie Messgerät</li>
  * <li>Bit 8: Temperatursensor</li>
  * <li>Bit 9: Schaltsteckdose</li>
  * <li>Bit 10: AVM DECT Repeater</li>
  * </ol>
- * 
+ *
  * @author Robert Bausdorf
- * 
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
+ *         DECT
  * 
  */
 @XmlRootElement(name = "device")
 public class DeviceModel {
-	public static final int POWERMETER_BIT = 128;
-	public static final int TEMPSENSOR_BIT = 256;
-	public static final int SWITCH_BIT = 512;
-	public static final int DECT_REPEATER_BIT = 1024;
+    public static final int HEATING_THERMOSTAT_BIT = 64;
+    public static final int POWERMETER_BIT = 128;
+    public static final int TEMPSENSOR_BIT = 256;
+    public static final int SWITCH_BIT = 512;
+    public static final int DECT_REPEATER_BIT = 1024;
 
-	@XmlAttribute(name = "identifier")
-	private String ident;
+    @XmlAttribute(name = "identifier")
+    private String ident;
 
-	@XmlAttribute(name = "id")
-	private String deviceId;
+    @XmlAttribute(name = "id")
+    private String deviceId;
 
-	@XmlAttribute(name = "functionbitmask")
-	private int bitmask;
+    @XmlAttribute(name = "functionbitmask")
+    private int bitmask;
 
-	@XmlAttribute(name = "fwversion")
-	private String firmwareVersion;
+    @XmlAttribute(name = "fwversion")
+    private String firmwareVersion;
 
-	@XmlAttribute(name = "manufacturer")
-	private String deviceManufacturer;
+    @XmlAttribute(name = "manufacturer")
+    private String deviceManufacturer;
 
-	@XmlAttribute(name = "productname")
-	private String productName;
+    @XmlAttribute(name = "productname")
+    private String productName;
 
-	@XmlElement(name = "present")
-	private Integer present;
-	
-	@XmlElement(name = "name")
-	private String name;
-	
-	private SwitchModel switchModel;
-	
-	private PowerMeterModel powermeterModel;
+    @XmlElement(name = "present")
+    private Integer present;
 
-	private TemperatureModel temperatureModel;
+    @XmlElement(name = "name")
+    private String name;
 
-	public PowerMeterModel getPowermeter() {
-		return powermeterModel;
-	}
+    @XmlElement(name = "switch")
+    private SwitchModel switchModel;
 
-	public void setPowermeter(PowerMeterModel powermeter) {
-		this.powermeterModel = powermeter;
-	}
+    @XmlElement(name = "powermeter")
+    private PowerMeterModel powermeterModel;
 
-	public TemperatureModel getTemperature() {
-		return temperatureModel;
-	}
+    @XmlElement(name = "temperature")
+    private TemperatureModel temperatureModel;
 
-	public void setTemperature(TemperatureModel temperature) {
-		this.temperatureModel = temperature;
-	}
+    @XmlElement(name = "hkr")
+    private HeatingModel heatingModel;
 
-	public SwitchModel getSwitch() {
-		return switchModel;
-	}
+    public PowerMeterModel getPowermeter() {
+        return powermeterModel;
+    }
 
-	public void setSwitch(SwitchModel switchModel) {
-		this.switchModel = switchModel;
-	}
+    public void setPowermeter(PowerMeterModel powermeter) {
+        this.powermeterModel = powermeter;
+    }
 
-	public String getIdentifier() {
-		return ident != null ? ident.replace(" ", "") : null;
-	}
+    public TemperatureModel getTemperature() {
+        return temperatureModel;
+    }
 
-	public void setIdentifier(String identifier) {
-		this.ident = identifier;
-	}
+    public void setTemperature(TemperatureModel temperature) {
+        this.temperatureModel = temperature;
+    }
 
-	public boolean isSwitchableOutlet() {
-		return (bitmask & DeviceModel.SWITCH_BIT) > 0;
-	}
+    public HeatingModel getHkr() {
+        return heatingModel;
+    }
 
-	public boolean isTempSensor() {
-		return (bitmask & DeviceModel.TEMPSENSOR_BIT) > 0;
-	}
+    public void setHkr(HeatingModel heating) {
+        this.heatingModel = heating;
+    }
 
-	public boolean isPowermeter() {
-		return (bitmask & DeviceModel.POWERMETER_BIT) > 0;
-	}
+    public SwitchModel getSwitch() {
+        return switchModel;
+    }
 
-	public boolean isDectRepeater() {
-		return (bitmask & DeviceModel.DECT_REPEATER_BIT) > 0;
-	}
+    public void setSwitch(SwitchModel switchModel) {
+        this.switchModel = switchModel;
+    }
 
-	public String getFirmwareVersion() {
-		return firmwareVersion;
-	}
+    public String getIdentifier() {
+        return ident != null ? ident.replace(" ", "") : null;
+    }
 
-	public String getProductName() {
-		return productName;
-	}
+    public void setIdentifier(String identifier) {
+        this.ident = identifier;
+    }
 
-	public int getPresent() {
-		return present;
-	}
+    public boolean isSwitchableOutlet() {
+        return (bitmask & DeviceModel.SWITCH_BIT) > 0;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public boolean isTempSensor() {
+        return (bitmask & DeviceModel.TEMPSENSOR_BIT) > 0;
+    }
 
-	public String toString() {
-		return new ToStringBuilder(this)
-				.append("ain", this.getIdentifier())
-				.append("bitmask", this.bitmask)
-				.append("isDectRepeater", this.isDectRepeater())
-				.append("isPowermeter", this.isPowermeter())
-				.append("isTempSensor", this.isTempSensor())
-				.append("isSwitchableOutlet", this.isSwitchableOutlet())
-				.append("id", this.deviceId)
-				.append("manufacturer", this.deviceManufacturer)
-				.append("productname", this.getProductName())
-				.append("fwversion", this.getFirmwareVersion())
-				.append("present", this.present)
-				.append("name", this.name)
-				.append(this.getSwitch())
-				.append(this.getPowermeter())
-				.append(this.getTemperature())
-				.toString();
-	}
+    public boolean isPowermeter() {
+        return (bitmask & DeviceModel.POWERMETER_BIT) > 0;
+    }
+
+    public boolean isDectRepeater() {
+        return (bitmask & DeviceModel.DECT_REPEATER_BIT) > 0;
+    }
+
+    public boolean isHeatingThermostat() {
+        return (bitmask & DeviceModel.HEATING_THERMOSTAT_BIT) > 0;
+    }
+
+    public String getFirmwareVersion() {
+        return firmwareVersion;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public int getPresent() {
+        return present;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("ain", this.getIdentifier()).append("bitmask", this.bitmask)
+                .append("isDectRepeater", this.isDectRepeater()).append("isPowermeter", this.isPowermeter())
+                .append("isTempSensor", this.isTempSensor()).append("isSwitchableOutlet", this.isSwitchableOutlet())
+                .append("isHeatingThermostat", this.isHeatingThermostat()).append("id", this.deviceId)
+                .append("manufacturer", this.deviceManufacturer).append("productname", this.getProductName())
+                .append("fwversion", this.getFirmwareVersion()).append("present", this.present)
+                .append("name", this.name).append(this.getSwitch()).append(this.getPowermeter())
+                .append(this.getTemperature()).append(this.getHkr()).toString();
+    }
 }

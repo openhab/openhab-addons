@@ -19,8 +19,9 @@ import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- * The {@link CommandSetstate} class implements the GlobalCache setstate command for devices that support contact closure.
+/**
+ * The {@link CommandSetstate} class implements the GlobalCache setstate command for devices that support contact
+ * closure.
  *
  * @author Mark Hilbush - Initial contribution
  */

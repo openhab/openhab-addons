@@ -98,7 +98,7 @@ String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Coo
 ```
 
 ## Additional Notes
-HomeKit allows only a single pairing to be established with the bridge. This pairing is normally shared across devices via iCloud. If you need to establish a new pairing, you'll need to clear the existing pairings. To do this, you can issue the command ```smarthome homekit clearPairings``` from the OSGi console.
+HomeKit allows only a single pairing to be established with the bridge. This pairing is normally shared across devices via iCloud. If you need to establish a new pairing, you'll need to clear the existing pairings. To do this, you can issue the command ```smarthome:homekit clearPairings``` from the OSGi console.
 
 HomeKit requires a unique identifier for each accessory advertised by the bridge. This unique identifier is hashed from the Item's name. For that reason, it is important that the name of your Items exposed to HomeKit remain consistent.
 

@@ -33,7 +33,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand called for channel:{}, command:{}", channelUID, command);
 
-        int flagID = getThingID();
+        int flagID = getThingNumber();
         if (command instanceof DecimalType) {
             logger.debug("updating omnilink flag change: {}, command: {}", channelUID, command);
             OmniLinkCmd omniCmd;
@@ -78,7 +78,7 @@ public class FlagHandler extends AbstractOmnilinkHandler implements UnitHandler 
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channel linked: {}", channelUID);
         try {
-            int flagId = getThingID();
+            int flagId = getThingNumber();
             ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, flagId,
                     flagId, false);
             handleUnitStatus((UnitStatus) objStatus.getStatuses()[0]);

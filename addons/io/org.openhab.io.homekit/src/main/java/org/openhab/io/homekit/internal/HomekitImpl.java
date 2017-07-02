@@ -54,13 +54,13 @@ public class HomekitImpl implements Homekit {
             settings.fill(componentContext.getProperties());
             changeListener.setSettings(settings);
         } catch (UnknownHostException e) {
-            logger.debug("Could not initialize homekit: " + e.getMessage(), e);
+            logger.debug("Could not initialize homekit: {}", e.getMessage(), e);
             return;
         }
         try {
             start();
         } catch (Exception e) {
-            logger.error("Could not initialize homekit: " + e.getMessage(), e);
+            logger.error("Could not initialize homekit: {}", e.getMessage(), e);
         }
     }
 

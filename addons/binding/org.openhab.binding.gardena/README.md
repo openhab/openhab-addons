@@ -74,6 +74,30 @@ In the items file, you can link items to channels of your Things:
 Number Battery_Level "Battery [%d %%]" {channel="gardena:mower:home:myMower:battery#level"}
 ```
 
+## Sensor refresh
+
+You can send a REFRESH command to items linked to these Sensor channels: 
+
+* ambient_temperature#temperature
+* soil_temperature#temperature
+* humidity#humidity
+* light#light
+
+In the console:
+
+```
+smarthome:send ITEM_NAME REFRESH
+```
+
+In scripts:
+
+```
+import org.eclipse.smarthome.core.types.RefreshType
+...
+sendCommand(ITEM_NAME, RefreshType.REFRESH)
+```
+
+
 ### Debugging and Tracing
 
 If you want to see what's going on in the binding, switch the loglevel to TRACE in the Karaf console

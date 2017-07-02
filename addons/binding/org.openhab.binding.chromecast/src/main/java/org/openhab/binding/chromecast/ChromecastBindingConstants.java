@@ -25,11 +25,13 @@ public class ChromecastBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_CHROMECAST = new ThingTypeUID(BINDING_ID, "chromecast");
     public static final ThingTypeUID THING_TYPE_AUDIO = new ThingTypeUID(BINDING_ID, "audio");
+    public static final ThingTypeUID THING_TYPE_AUDIOGROUP = new ThingTypeUID(BINDING_ID, "audiogroup");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_AUDIO);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_AUDIOGROUP);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CHROMECAST);
     }
 
@@ -41,6 +43,7 @@ public class ChromecastBindingConstants {
 
     // config parameters
     public static final String HOST = "ipAddress";
+    public static final String PORT = "port";
 
     // properties
     public static final String SERIAL_NUMBER = "serialNumber";

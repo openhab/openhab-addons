@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Exec Binding
 Bundle-SymbolicName: org.openhab.binding.exec;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Version: 2.2.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
  org.apache.commons.exec,
