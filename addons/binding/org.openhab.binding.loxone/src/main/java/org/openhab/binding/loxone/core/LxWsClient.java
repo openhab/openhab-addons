@@ -269,16 +269,7 @@ class LxWsClient {
 
                 wsClient.connect(socket, target, request);
                 setClientState(ClientState.CONNECTING);
-
-                timeout = SCHEDULER.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        logger.debug("[{}] websocket connect timeout", debugId);
-                        notifyMaster(EventType.SERVER_OFFLINE, OfflineReason.COMMUNICATION_ERROR,
-                                "Websocket connect timeout");
-                        disconnect();
-                    }
-                }, connectTimeout, TimeUnit.SECONDS);
+                startResponseTimeout();
 
                 logger.debug("[{}] Connecting to server : {} ", debugId, target);
                 return true;
@@ -293,7 +284,7 @@ class LxWsClient {
 
     /**
      * Disconnect from the websocket with provided reason. This method is called from {@link LxServer} level and also
-     * from unsuccesful connect attempt.
+     * from unsuccessful connect attempt.
      * After calling this method, client is ready to perform a new connection request with {@link #connect()}.
      *
      * @param reason
@@ -334,7 +325,7 @@ class LxWsClient {
     private void close(String reason) {
         logger.trace("[{}] close() websocket", debugId);
         synchronized (state) {
-            stopTimeout();
+            stopResponseTimeout();
             if (socket != null) {
                 if (socket.session != null) {
                     if (state != ClientState.IDLE) {
@@ -430,13 +421,38 @@ class LxWsClient {
     }
 
     /**
-     * Stops scheduled websocket connect timeout event, called on successful connection
+     * Start a timer to wait for a Miniserver response to an action sent from the binding.
+     * When timer expires, connection is removed and server error is reported. Further connection attempt can be made
+     * later by the upper layer.
+     * If a previous time is running, it will be stopped before a new timer is started.
      */
-    private void stopTimeout() {
-        logger.trace("[{}] stopping timeout in state {}", debugId, state.toString());
-        if (timeout != null) {
-            timeout.cancel(true);
-            timeout = null;
+    private void startResponseTimeout() {
+        synchronized (state) {
+            stopResponseTimeout();
+            timeout = SCHEDULER.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (state) {
+                        logger.debug("[{}] Miniserver response timeout", debugId);
+                        notifyMaster(EventType.SERVER_OFFLINE, OfflineReason.COMMUNICATION_ERROR,
+                                "Miniserver response timeout occured");
+                        disconnect();
+                    }
+                }
+            }, connectTimeout, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Stops scheduled timeout waiting for a Miniserver response
+     */
+    private void stopResponseTimeout() {
+        logger.trace("[{}] stopping response timeout in state {}", debugId, state.toString());
+        synchronized (state) {
+            if (timeout != null) {
+                timeout.cancel(true);
+                timeout = null;
+            }
         }
     }
 
@@ -586,6 +602,7 @@ class LxWsClient {
                         // data expected now
                         switch (header.type) {
                             case EVENT_TABLE_OF_VALUE_STATES:
+                                stopResponseTimeout();
                                 while (length > 0) {
                                     LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(true, data, offset);
                                     offset += event.getSize();
@@ -644,6 +661,7 @@ class LxWsClient {
                                 if (credentials != null) {
                                     sendString(CMD_AUTHENTICATE + credentials);
                                     setClientState(ClientState.AUTHENTICATING);
+                                    startResponseTimeout();
                                 } else {
                                     notifyAndClose(OfflineReason.INTERNAL_ERROR, "Error creating credentials");
                                 }
@@ -660,6 +678,7 @@ class LxWsClient {
                                 logger.debug("[{}] Websocket authentication successfull.", debugId);
                                 sendString(CMD_GET_APP_CONFIG);
                                 setClientState(ClientState.UPDATING_CONFIGURATION);
+                                startResponseTimeout();
                             }
                             break;
                         case UPDATING_CONFIGURATION:
@@ -669,6 +688,7 @@ class LxWsClient {
                                 notifyMaster(EventType.RECEIVED_CONFIG, null, config);
                                 sendString(CMD_ENABLE_UPDATES);
                                 setClientState(ClientState.RUNNING);
+                                startResponseTimeout();
                                 notifyMaster(EventType.SERVER_ONLINE, null, null);
                             } else {
                                 notifyAndClose(OfflineReason.INTERNAL_ERROR, "Error processing received configuration");

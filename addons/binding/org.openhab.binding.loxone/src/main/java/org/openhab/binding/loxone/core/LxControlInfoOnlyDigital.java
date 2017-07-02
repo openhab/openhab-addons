@@ -71,7 +71,7 @@ public class LxControlInfoOnlyDigital extends LxControl {
      * Obtain current value of the virtual state, expressed in a format configured on the Miniserver
      *
      * @return
-     *         string for on/off value of the state or null if current value is not compatible with this control
+     *         string for on/off value of the state or null if current value is not available
      */
     public String getFormattedValue() {
         LxControlState state = getState(STATE_ACTIVE);
@@ -86,16 +86,16 @@ public class LxControlInfoOnlyDigital extends LxControl {
     }
 
     /**
-     * Obtain current value of an analog virtual state, expressed as a number
+     * Obtain current value of a digital virtual state
      *
      * @return
-     *         value of the state or zero if current value is not compatible with this control
+     *         1 for ON, 0 for OFF and -1 if current value is not available
      */
     public double getValue() {
         LxControlState state = getState(STATE_ACTIVE);
         if (state != null) {
             return state.getValue();
         }
-        return 0;
+        return -1;
     }
 }

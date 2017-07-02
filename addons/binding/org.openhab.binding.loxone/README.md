@@ -6,18 +6,19 @@ Binding has the Loxone-specific code separated in a .core package. This code doe
 
 ## Features
 Following features are currently supported:
-* [Discovery](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) of Miniservers available on the local network
-* Creation of channels for Loxone controls that are exposed in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/)
-* Tagging of channels and [items](http://docs.openhab.org/configuration/items.html) with tags that can be recognized by [Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) openHAB [skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L), so voice can be used to command Loxone controls
-* Management of a Websocket connection to the Miniserver and updating Thing status accordingly
-* Updates of OpenHAB channel's state in runtime according to control's state changes on the Miniserver
-* Passing channel commands to the Miniserver's controls
+
+  * [Discovery](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) of Miniservers available on the local network
+  * Creation of channels for Loxone controls that are exposed in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/)
+  * Tagging of channels and [items](http://docs.openhab.org/configuration/items.html) with tags that can be recognized by [Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) openHAB [skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L), so voice can be used to command Loxone controls
+  * Management of a Websocket connection to the Miniserver and updating Thing status accordingly
+  * Updates of OpenHAB channel's state in runtime according to control's state changes on the Miniserver
+  * Passing channel commands to the Miniserver's controls
 
 ## Supported Things
 
 This binding supports [Loxone Miniservers](https://www.loxone.com/enen/products/miniserver-extensions/) for accessing controls that are configured in their UI.
 
-Thing ID is defined in the following way: `loxone:miniserver:<serial>`, where <serial> is a serial number of the Miniserver (effectively this is the MAC address of its network interface).
+Thing ID is defined in the following way: `loxone:miniserver:<serial>`, where `<serial>` is a serial number of the Miniserver (effectively this is the MAC address of its network interface).
 
 ## Discovery
 
@@ -101,8 +102,8 @@ Timeout values can be changed in advanced parameters section of the thing's conf
 * _Connect error delay_
     * Time in seconds between failed Websocket connect attempt and another attempt to connect. Websocket connection is established before authentication and data transfer. It can usually fail due to unreachable Miniserver.
     * Range: 0-600 s, default: 10 s
-* _Connect timeout_
-    * Time to wait for a response from Miniserver to a websocket connect request. If this time passed without connection established, connection  is finished and a new attempt will be made after _Connect error delay_ seconds.
+* _Response timeout_
+    * Time to wait for a response from Miniserver to a request sent from the binding. A request can be any of: websocket connect request, credentials hashing key request, configuration request, enabling of state updates (until initial states are received). If this time passed without the expecte reaction from the Miniserver, connection will be closed. A new connection attempt may be made, depending on the situation.
     * Range: 0-60 s, default: 4 s
 * _Authentication error delay_
     * Time in seconds between user authentication error and another connection attempt. User authentication error can be a result of a wrong name or password, or no authority granted to the user on the Miniserver. If this time is too short, Miniserver will eventually lock out user for longer period of time due to too many failed login attempts. This time should allow administrator to fix authentication issue without being locked out. Connection retry is required, because very rarely Miniserver seems to reject correct credentials, which pass on another exactly same attempt.

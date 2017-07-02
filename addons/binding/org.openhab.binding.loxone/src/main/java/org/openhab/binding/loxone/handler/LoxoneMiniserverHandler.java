@@ -211,7 +211,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
             // check if server does not need to be created from scratch
             if (server != null && !server.isChanged(ip, cfg.port, cfg.user, cfg.password)) {
-                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.connectTimeout,
+                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
                         cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
             } else {
                 if (server != null) {
@@ -219,7 +219,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 }
                 server = new LxServer(ip, cfg.port, cfg.user, cfg.password);
                 server.addListener(this);
-                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.connectTimeout,
+                server.update(cfg.firstConDelay, cfg.keepAlivePeriod, cfg.connectErrDelay, cfg.responseTimeout,
                         cfg.userErrorDelay, cfg.comErrorDelay, cfg.maxBinMsgSize, cfg.maxTextMsgSize);
                 server.start();
             }
@@ -433,7 +433,12 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 updateState(channelId, new PercentType((int) (value * 100)));
             }
         } else if (control instanceof LxControlInfoOnlyDigital) {
-            updateState(channelId, new DecimalType(((LxControlInfoOnlyDigital) control).getValue()));
+            double value = ((LxControlInfoOnlyDigital) control).getValue();
+            if (value == 0) {
+                updateState(channelId, OnOffType.OFF);
+            } else if (value == 1.0) {
+                updateState(channelId, OnOffType.ON);
+            }
         } else if (control instanceof LxControlInfoOnlyAnalog) {
             updateState(channelId, new DecimalType(((LxControlInfoOnlyAnalog) control).getValue()));
         } else if (control instanceof LxControlLightController) {
@@ -458,7 +463,6 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 updateState(channelId, new StringType(value));
             }
         }
-
     }
 
     /**

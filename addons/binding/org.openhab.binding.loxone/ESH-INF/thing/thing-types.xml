@@ -73,9 +73,9 @@
                 <advanced>true</advanced>
                 <default>10</default>                
             </parameter>
-            <parameter name="connectTimeout" type="integer" min="0" max="60" required="true" groupName="timeouts">
-                <label>Connection timeout</label>
-                <description>Time to wait for websocket connection response from the Miniserver (seconds, 0-60)</description>
+            <parameter name="responseTimeout" type="integer" min="0" max="60" required="true" groupName="timeouts">
+                <label>Miniserver response timeout</label>
+                <description>Time to wait for a response from Miniserver to a request sent from the binding (seconds, 0-60)</description>
                 <advanced>true</advanced>
                 <default>4</default>                
             </parameter>
