@@ -37,8 +37,8 @@ public class XiaomiGatewayBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACTOR_PLUG = new ThingTypeUID(BINDING_ID, "sensor_plug");
     public static final ThingTypeUID THING_TYPE_ACTOR_AQARA1 = new ThingTypeUID(BINDING_ID, "ctrl_neutral1");
     public static final ThingTypeUID THING_TYPE_ACTOR_AQARA2 = new ThingTypeUID(BINDING_ID, "ctrl_neutral2");
-    public static final ThingTypeUID THING_TYPE_ACTOR_WALL1 = new ThingTypeUID(BINDING_ID, "ctrl_ln1");
-    public static final ThingTypeUID THING_TYPE_ACTOR_WALL2 = new ThingTypeUID(BINDING_ID, "ctrl_ln2");
+    public static final ThingTypeUID THING_TYPE_ACTOR_AQARA_ZERO1 = new ThingTypeUID(BINDING_ID, "ctrl_ln1");
+    public static final ThingTypeUID THING_TYPE_ACTOR_AQARA_ZERO2 = new ThingTypeUID(BINDING_ID, "ctrl_ln2");
     public static final ThingTypeUID THING_TYPE_ACTOR_CURTAIN = new ThingTypeUID(BINDING_ID, "curtain");
 
     // List of all Channel ids

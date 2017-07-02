@@ -29,7 +29,6 @@ import com.google.gson.JsonObject;
 public class XiaomiActorPlugHandler extends XiaomiActorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiActorPlugHandler.class);
-    private String itemId;
 
     public XiaomiActorPlugHandler(Thing thing) {
         super(thing);
@@ -39,7 +38,7 @@ public class XiaomiActorPlugHandler extends XiaomiActorBaseHandler {
     void execute(ChannelUID channelUID, Command command) {
         if (CHANNEL_POWER_ON.equals(channelUID.getId())) {
             String status = command.toString().toLowerCase();
-            getXiaomiBridgeHandler().writeToDevice(itemId, new String[] { "status" }, new Object[] { status });
+            getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "status" }, new Object[] { status });
             return;
         }
         // Only gets here, if no condition was met

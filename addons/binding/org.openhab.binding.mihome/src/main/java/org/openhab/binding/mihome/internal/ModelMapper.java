@@ -33,8 +33,8 @@ public class ModelMapper {
         thingMapper.put("plug", THING_TYPE_ACTOR_PLUG);
         thingMapper.put("ctrl_neutral1", THING_TYPE_ACTOR_AQARA1);
         thingMapper.put("ctrl_neutral2", THING_TYPE_ACTOR_AQARA2);
-        thingMapper.put("ctrl_ln1", THING_TYPE_ACTOR_WALL1);
-        thingMapper.put("ctrl_ln2", THING_TYPE_ACTOR_WALL2);
+        thingMapper.put("ctrl_ln1", THING_TYPE_ACTOR_AQARA_ZERO1);
+        thingMapper.put("ctrl_ln2", THING_TYPE_ACTOR_AQARA_ZERO2);
         thingMapper.put("86sw1", THING_TYPE_SENSOR_AQARA1);
         thingMapper.put("86sw2", THING_TYPE_SENSOR_AQARA2);
         thingMapper.put("cube", THING_TYPE_SENSOR_CUBE);

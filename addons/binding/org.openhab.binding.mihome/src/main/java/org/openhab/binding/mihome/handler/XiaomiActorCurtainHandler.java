@@ -30,7 +30,6 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiActorCurtainHandler.class);
     private String lastDirection;
-    private String itemId;
 
     public XiaomiActorCurtainHandler(Thing thing) {
         super(thing);
@@ -55,8 +54,9 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
                         status = lastDirection;
                     }
                 } else if (command instanceof PercentType) {
-                    getXiaomiBridgeHandler().writeToDevice(itemId, new String[] { "status" }, new Object[] { "auto" });
-                    getXiaomiBridgeHandler().writeToDevice(itemId, new String[] { "curtain_level" },
+                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "status" },
+                            new Object[] { "auto" });
+                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "curtain_level" },
                             new Object[] { status });
                 } else {
                     logger.warn("Only UpDown or StopMove commands supported - not the command {}", command);
@@ -67,7 +67,7 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
                         lastDirection = status;
                     }
                 }
-                getXiaomiBridgeHandler().writeToDevice(itemId, new String[] { "status" }, new Object[] { status });
+                getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { "status" }, new Object[] { status });
                 break;
             default:
                 logger.warn("Can't handle command {} on channel {}", command, channelUID);
