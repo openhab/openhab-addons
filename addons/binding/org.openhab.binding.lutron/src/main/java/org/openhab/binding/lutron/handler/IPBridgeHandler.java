@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.lutron.config.IPBridgeConfig;
+import org.openhab.binding.lutron.internal.config.IPBridgeConfig;
 import org.openhab.binding.lutron.internal.discovery.LutronDeviceDiscoveryService;
 import org.openhab.binding.lutron.internal.net.TelnetSession;
 import org.openhab.binding.lutron.internal.net.TelnetSessionListener;

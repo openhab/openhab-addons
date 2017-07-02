@@ -17,9 +17,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
-import org.openhab.binding.hdpowerview.discovery.HDPowerViewShadeDiscoveryService;
 import org.openhab.binding.hdpowerview.handler.HDPowerViewHubHandler;
 import org.openhab.binding.hdpowerview.handler.HDPowerViewShadeHandler;
+import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewShadeDiscoveryService;
 
 /**
  * The {@link HDPowerViewHandlerFactory} is responsible for creating things and thing

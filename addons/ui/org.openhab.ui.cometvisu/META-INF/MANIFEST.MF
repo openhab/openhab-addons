@@ -45,11 +45,17 @@ Import-Package:
  org.osgi.service.http,
  org.slf4j,
  org.xml.sax,
- org.openhab.ui.cometvisu.php
+ org.openhab.ui.cometvisu.backend,
+ org.openhab.ui.cometvisu.backend.beans,
+ org.openhab.ui.cometvisu.php,
+ org.openhab.ui.cometvisu.servlet
 Service-Component: OSGI-INF/*.xml
 Bundle-ClassPath: .,
  lib/rrd4j-2.2.jar,
  lib/sqlite-jdbc-3.8.7.jar
-Export-Package: org.openhab.ui.cometvisu.php
+Export-Package: org.openhab.ui.cometvisu.backend,
+ org.openhab.ui.cometvisu.backend.beans,
+ org.openhab.ui.cometvisu.php,
+ org.openhab.ui.cometvisu.servlet
 Bundle-Activator: org.openhab.ui.cometvisu.internal.CvActivator
 Bundle-ActivationPolicy: lazy

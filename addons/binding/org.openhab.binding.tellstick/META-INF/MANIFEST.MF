@@ -26,10 +26,16 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.osgi.framework,
- org.slf4j,
  org.openhab.binding.tellstick,
- org.openhab.binding.tellstick.handler
+ org.openhab.binding.tellstick.handler,
+ org.openhab.binding.tellstick.handler.core,
+ org.openhab.binding.tellstick.handler.live,
+ org.openhab.binding.tellstick.handler.live.xml,
+ org.osgi.framework,
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.tellstick,
- org.openhab.binding.tellstick.handler
+ org.openhab.binding.tellstick.handler,
+ org.openhab.binding.tellstick.handler.core,
+ org.openhab.binding.tellstick.handler.live,
+ org.openhab.binding.tellstick.handler.live.xml

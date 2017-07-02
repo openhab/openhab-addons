@@ -19,8 +19,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.Station;
-import org.openhab.binding.opensprinkler.config.OpenSprinklerConfig;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
+import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

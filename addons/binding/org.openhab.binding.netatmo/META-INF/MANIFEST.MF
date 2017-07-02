@@ -28,7 +28,11 @@ Import-Package:
  javax.net,
  javax.net.ssl,
  org.openhab.binding.netatmo,
- org.openhab.binding.netatmo.handler
+ org.openhab.binding.netatmo.handler,
+ org.openhab.binding.netatmo.handler.station, 
+ org.openhab.binding.netatmo.handler.thermostat
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.netatmo,
- org.openhab.binding.netatmo.handler
+ org.openhab.binding.netatmo.handler, 
+ org.openhab.binding.netatmo.handler.station, 
+ org.openhab.binding.netatmo.handler.thermostat

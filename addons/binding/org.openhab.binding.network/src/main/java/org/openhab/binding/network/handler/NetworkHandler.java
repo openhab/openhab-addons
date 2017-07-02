@@ -20,9 +20,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.network.service.InvalidConfigurationException;
-import org.openhab.binding.network.service.NetworkService;
-import org.openhab.binding.network.service.StateUpdate;
+import org.openhab.binding.network.internal.service.InvalidConfigurationException;
+import org.openhab.binding.network.internal.service.NetworkService;
+import org.openhab.binding.network.internal.service.StateUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
