@@ -32,7 +32,7 @@ public abstract class XiaomiSensorBaseHandlerWithTimer extends XiaomiSensorBaseH
     private int minTimer;
     private Integer timerSetpoint;
     private final String setpointChannel;
-    boolean timerIsRunning;
+    private boolean timerIsRunning;
     private Timer trigger = new Timer();
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiSensorBaseHandlerWithTimer.class);

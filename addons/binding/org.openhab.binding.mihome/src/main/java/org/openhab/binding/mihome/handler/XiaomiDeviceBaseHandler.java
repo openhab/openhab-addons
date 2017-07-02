@@ -48,7 +48,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
             THING_TYPE_SENSOR_HT, THING_TYPE_SENSOR_MOTION, THING_TYPE_SENSOR_SWITCH, THING_TYPE_SENSOR_MAGNET,
             THING_TYPE_SENSOR_CUBE, THING_TYPE_SENSOR_AQARA1, THING_TYPE_SENSOR_AQARA2, THING_TYPE_SENSOR_GAS,
             THING_TYPE_SENSOR_SMOKE, THING_TYPE_ACTOR_AQARA1, THING_TYPE_ACTOR_AQARA2, THING_TYPE_ACTOR_PLUG,
-            THING_TYPE_ACTOR_WALL1, THING_TYPE_ACTOR_WALL2, THING_TYPE_ACTOR_CURTAIN));
+            THING_TYPE_ACTOR_AQARA_ZERO1, THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN));
 
     private static final long ONLINE_TIMEOUT_MILLIS = 2 * 60 * 60 * 1000; // 2 hours
 
@@ -58,6 +58,10 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
 
     private String itemId;
 
+    private final void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
     private final Logger logger = LoggerFactory.getLogger(XiaomiDeviceBaseHandler.class);
 
     public XiaomiDeviceBaseHandler(Thing thing) {
@@ -66,31 +70,31 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
 
     @Override
     public void initialize() {
-        itemId = (String) getConfig().get(ITEM_ID);
+        setItemId((String) getConfig().get(ITEM_ID));
         updateThingStatus();
     }
 
     @Override
     public void dispose() {
         logger.debug("Handler disposes. Unregistering listener");
-        if (itemId != null) {
+        if (getItemId() != null) {
             if (bridgeHandler != null) {
                 bridgeHandler.unregisterItemListener(this);
                 bridgeHandler = null;
             }
-            itemId = null;
+            setItemId(null);
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Device {} on channel {} received command {}", itemId, channelUID, command);
+        logger.debug("Device {} on channel {} received command {}", getItemId(), channelUID, command);
         if (command instanceof RefreshType) {
-            JsonObject message = getXiaomiBridgeHandler().getRetentedMessage(itemId);
+            JsonObject message = getXiaomiBridgeHandler().getRetentedMessage(getItemId());
             if (message != null) {
                 String cmd = message.get("cmd").getAsString();
-                logger.debug("Update Item {} with retented message", itemId);
-                onItemUpdate(itemId, cmd, message);
+                logger.debug("Update Item {} with retented message", getItemId());
+                onItemUpdate(getItemId(), cmd, message);
             }
             return;
         }
@@ -99,7 +103,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
 
     @Override
     public void onItemUpdate(String sid, String command, JsonObject message) {
-        if (itemId != null && itemId.equals(sid)) {
+        if (getItemId() != null && getItemId().equals(sid)) {
             logger.debug("Item got update: {}", message);
             try {
                 JsonObject data = parser.parse(message.get("data").getAsString()).getAsJsonObject();
@@ -131,7 +135,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
                 parseWriteAck(data);
                 break;
             default:
-                logger.debug("Device {} got unknown command {}", itemId, command);
+                logger.debug("Device {} got unknown command {}", getItemId(), command);
         }
     }
 
@@ -156,21 +160,19 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     abstract void execute(ChannelUID channelUID, Command command);
 
     private void updateThingStatus() {
-        if (itemId != null) {
+        if (getItemId() != null) {
             // note: this call implicitly registers our handler as a listener on the bridge, if it's not already
             if (getXiaomiBridgeHandler() != null) {
                 Bridge bridge = getBridge();
                 ThingStatus bridgeStatus = (bridge == null) ? null : bridge.getStatus();
                 if (bridgeStatus == ThingStatus.ONLINE) {
                     ThingStatus itemStatus = getThing().getStatus();
-                    boolean hasItemActivity = getXiaomiBridgeHandler().hasItemActivity(itemId, ONLINE_TIMEOUT_MILLIS);
+                    boolean hasItemActivity = getXiaomiBridgeHandler().hasItemActivity(getItemId(),
+                            ONLINE_TIMEOUT_MILLIS);
                     ThingStatus newStatus = hasItemActivity ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
 
                     if (!newStatus.equals(itemStatus)) {
                         updateStatus(newStatus);
-
-                        // TODO initialize properties?
-                        // initializeProperties();
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);

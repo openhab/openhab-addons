@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2010-2017 by the respective copyright holders.
  *
@@ -7,6 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.openhab.binding.mihome.handler;
 
 import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
@@ -58,6 +58,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     private static final int READ_ACK_RETENTION_MILLIS = 60 * 60 * 1000; // 2 hours
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final JsonParser PARSER = new JsonParser();
+    private static final EncryptionHelper CRYPTER = new EncryptionHelper();
     private static Map<String, JsonObject> retentionBox = new ConcurrentHashMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(XiaomiBridgeHandler.class);
@@ -287,7 +288,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             logger.warn("No key set in the gateway settings. Edit it in the configuration.");
             return "";
         }
-        key = EncryptionHelper.encrypt(gatewayToken, key);
+        key = CRYPTER.encrypt(gatewayToken, key);
         return key;
     }
 
