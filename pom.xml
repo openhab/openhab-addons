@@ -26,8 +26,8 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:https://github.com/openhab/openhab2-addons.git</connection>
-        <developerConnection>scm:git:https://github.com/openhab/openhab2-addons.git</developerConnection>
+        <connection>scm:git:${scm.gitBaseUrl}/openhab2-addons.git</connection>
+        <developerConnection>scm:git:${scm.gitBaseUrl}/openhab2-addons.git</developerConnection>
         <url>https://github.com/openhab/openhab2-addons</url>
     </scm>
 
