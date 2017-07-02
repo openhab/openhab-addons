@@ -371,7 +371,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         } catch (JsonSyntaxException e) {
             logger.debug("Could not parse result from response: '{}'", res);
         } catch (NullPointerException e) {
-            logger.debug("Empty response received.");
+            logger.debug("Empty response received.", e);
         }
         return null;
     }

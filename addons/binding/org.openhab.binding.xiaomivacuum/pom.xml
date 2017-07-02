@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.openhab.binding</groupId>
     <artifactId>pom</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.2.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.binding</groupId>
   <artifactId>org.openhab.binding.xiaomivacuum</artifactId>
-  <version>2.1.0-SNAPSHOT</version>
+  <version>2.2.0-SNAPSHOT</version>
   
   <name>XiaomiVacuum Binding</name>
   <packaging>eclipse-plugin</packaging>
