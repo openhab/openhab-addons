@@ -148,7 +148,7 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
         long now = new Date().getTime();
         long diff = now - PollyClientConfig.getlastDelete();
         // only execute ~ once every 2 days if cache called
-        int oneDay = 24 * 60 * 60 * 1000;
+        long oneDay = 24 * 60 * 60 * 1000;
         logger.debug("PollyTTS cache cleaner lastdelete {}", diff);
         if (diff > (2 * oneDay)) {
             PollyClientConfig.setLastDelete(now);

@@ -94,7 +94,10 @@ public class PollyTTSService implements TTSService {
             if (successful) {
                 logger.info("PollyTTS cfg data loaded and static elements (re)initialized");
                 logger.info("Using PollyTTS cache folder {}", getCacheFolderName());
+            } else {
+                logger.info("PollyTTS not initialized");
             }
+
         } catch (Throwable t) {
             logger.error("Failed to activate PollyTTS: {}", t.getMessage(), t);
         }
