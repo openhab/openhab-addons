@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.keba.handler.KeContactP20Handler;
+import org.openhab.binding.keba.handler.KeContactHandler;
 
 /**
  * The {@link KebaHandlerFactory} is responsible for creating things and thing
@@ -40,7 +40,7 @@ public class KebaHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_KECONTACTP20)) {
-            return new KeContactP20Handler(thing);
+            return new KeContactHandler(thing);
         }
 
         return null;

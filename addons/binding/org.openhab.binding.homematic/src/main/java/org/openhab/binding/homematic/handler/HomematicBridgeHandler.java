@@ -86,7 +86,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                             logger.error("{}", ex.getMessage(), ex);
                         }
                     }
-
+                    gateway.startWatchdogs();
                 } catch (IOException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                     dispose();
@@ -167,7 +167,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 gateway.getDevice(UidUtils.getHomematicAddress(hmThing));
             } catch (HomematicClientException e) {
                 if (hmThing.getHandler() != null) {
-                    ((HomematicThingHandler) hmThing.getHandler()).updateStatus(ThingStatus.OFFLINE);
+                    ((HomematicThingHandler) hmThing.getHandler()).handleRemoval();
                 }
             }
         }
@@ -236,9 +236,12 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     @Override
     public void onStateUpdated(HmDatapoint dp) {
         Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
-        if (hmThing != null) {
-            HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
-            thingHandler.updateDatapointState(dp);
+        if (hmThing != null && hmThing.getHandler() != null) {
+            final ThingStatus status = hmThing.getStatus();
+            if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE) {
+                HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
+                thingHandler.updateDatapointState(dp);
+            }
         }
     }
 

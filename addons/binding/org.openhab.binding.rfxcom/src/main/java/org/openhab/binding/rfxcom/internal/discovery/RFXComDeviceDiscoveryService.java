@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.rfxcom.RFXComBindingConstants;
 import org.openhab.binding.rfxcom.handler.RFXComBridgeHandler;
+import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
@@ -77,12 +78,16 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService imple
             ThingTypeUID uid = RFXComBindingConstants.PACKET_TYPE_THING_TYPE_UID_MAP.get(msg.packetType);
             ThingUID thingUID = new ThingUID(uid, bridge, id.replace(ID_DELIMITER, "_"));
 
-            if (callback.getExistingThing(thingUID) != null) {
-                logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
-                DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID).withBridge(bridge);
-                msg.addDevicePropertiesTo(discoveryResultBuilder);
+            if (callback.getExistingThing(thingUID) == null) {
+                if (!bridgeHandler.getConfiguration().disableDiscovery) {
+                    logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
+                    DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID).withBridge(bridge);
+                    msg.addDevicePropertiesTo(discoveryResultBuilder);
 
-                thingDiscovered(discoveryResultBuilder.build());
+                    thingDiscovered(discoveryResultBuilder.build());
+                } else {
+                    logger.trace("Ignoring RFXCOM {} with id '{}' - discovery disabled", thingUID, id);
+                }
             } else {
                 logger.trace("Ignoring already known RFXCOM {} with id '{}'", thingUID, id);
             }

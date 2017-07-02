@@ -175,7 +175,6 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         logger.debug("Used Homematic transfer modes: {}", sb.toString());
         startClients();
         startServers();
-        startWatchdogs();
     }
 
     /**
@@ -252,9 +251,10 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     }
 
     /**
-     * Starts the connection and event tracker threads.
+     * {@inheritDoc}
      */
-    private void startWatchdogs() {
+    @Override
+    public void startWatchdogs() {
         ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
 
         if (config.getReconnectInterval() == 0) {

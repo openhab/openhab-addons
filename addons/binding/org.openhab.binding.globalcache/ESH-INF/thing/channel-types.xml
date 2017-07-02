@@ -29,4 +29,11 @@
 		<description>Transmits serial command on module:connector bypassing MAP transform</description>
 	</channel-type>
 
+	<channel-type id="channel-type-sl-receive" advanced="true">
+		<item-type>String</item-type>
+		<label>Serial Receive</label>
+		<description>Data received on the serial port from the device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>

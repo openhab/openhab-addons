@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.pioneeravr.protocol.states;
 
+/**
+ *
+ * @author Antoine Besnard - Initial contribution
+ */
 public interface MuteStateValues {
 
     public static final String ON_VALUE = "0";
