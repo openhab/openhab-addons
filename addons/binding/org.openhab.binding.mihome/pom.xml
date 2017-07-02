@@ -14,48 +14,4 @@
   <name>Xiaomi Mi Smart Home Binding</name>
   <packaging>eclipse-plugin</packaging>
 
-  <profiles>
-    <profile>
-    <id>check</id>
-    <build>
-      <pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.openhab.tools</groupId>
-            <artifactId>static-code-analysis</artifactId>
-            <version>${sat.version}</version>
-            <executions>
-              <execution>
-                <phase>verify</phase>
-                <goals>
-                  <goal>checkstyle</goal>
-                  <goal>pmd</goal>
-                  <goal>findbugs</goal>
-                  <goal>report</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </pluginManagement>
-    </build>
-  </profile>
-  <profile>
-    <id>check-bundles</id>
-    <activation>
-      <file>
-        <exists>META-INF/MANIFEST.MF</exists>
-      </file>
-    </activation>
-    <build>
-      <plugins>
-        <plugin>
-            <groupId>org.openhab.tools</groupId>
-            <artifactId>static-code-analysis</artifactId>
-        </plugin>
-      </plugins>
-    </build>
-  </profile>
-  </profiles>
-  
 </project>
