@@ -20,17 +20,17 @@ import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
  */
 public class ChannelMapper {
 
-    private static final Map<String, String> systemButtonMapper = new HashMap<String, String>();
+    private static final Map<String, String> SYSTEM_BUTTON_MAP = new HashMap<String, String>();
     static {
         // Alphabetical order
-        systemButtonMapper.put("CLICK", CommonTriggerEvents.SHORT_PRESSED);
-        systemButtonMapper.put("DOUBLE_CLICK", CommonTriggerEvents.DOUBLE_PRESSED);
-        systemButtonMapper.put("LONG_CLICK_PRESS", CommonTriggerEvents.LONG_PRESSED);
-        systemButtonMapper.put("LONG_CLICK_RELEASE", "LONG_RELEASED");
+        SYSTEM_BUTTON_MAP.put("CLICK", CommonTriggerEvents.SHORT_PRESSED);
+        SYSTEM_BUTTON_MAP.put("DOUBLE_CLICK", CommonTriggerEvents.DOUBLE_PRESSED);
+        SYSTEM_BUTTON_MAP.put("LONG_CLICK_PRESS", CommonTriggerEvents.LONG_PRESSED);
+        SYSTEM_BUTTON_MAP.put("LONG_CLICK_RELEASE", "LONG_RELEASED");
     }
 
     public static String getChannelEvent(String reportedString) {
-        String ret = systemButtonMapper.get(reportedString);
+        String ret = SYSTEM_BUTTON_MAP.get(reportedString);
         if (ret != null) {
             return ret;
         } else {

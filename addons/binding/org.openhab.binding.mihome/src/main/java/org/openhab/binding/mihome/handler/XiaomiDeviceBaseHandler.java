@@ -173,9 +173,6 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
 
                     if (!newStatus.equals(itemStatus)) {
                         updateStatus(newStatus);
-
-                        // TODO initialize properties?
-                        // initializeProperties();
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
