@@ -44,8 +44,8 @@ public class PollyTTSCloudImplementation {
 
     private static Set<String> supportedAudioFormats = new HashSet<String>();
     static {
-        supportedAudioFormats.add("mp3");
-        supportedAudioFormats.add("ogg");
+        supportedAudioFormats.add("MP3");
+        supportedAudioFormats.add("OGG");
     }
 
     /**
@@ -105,6 +105,7 @@ public class PollyTTSCloudImplementation {
         InputStream is = null;
         try {
             String voiceID = PollyClientConfig.labelToID.get(label);
+            audioFormat = audioFormat.toLowerCase();
             if (audioFormat.equals("ogg")) {
                 audioFormat = "ogg_vorbis";
             }

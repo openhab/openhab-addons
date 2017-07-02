@@ -152,15 +152,17 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
         logger.debug("PollyTTS cache cleaner lastdelete {}", diff);
         if (diff > (2 * oneDay)) {
             PollyClientConfig.setLastDelete(now);
-            logger.info("PollyTTS cache cleaner for aged files executed");
             long xDaysAgo = PollyClientConfig.getExpireDate() * oneDay;
             // Now search folders and delete old files
+            int filesDeleted = 0;
             for (File f : cacheFolder.listFiles()) {
                 diff = now - f.lastModified();
                 if (diff > xDaysAgo) {
+                    filesDeleted++;
                     f.delete();
                 }
             }
+            logger.info("PollyTTS cache cleaner deleted '{}' aged files", filesDeleted);
         }
     }
 }
