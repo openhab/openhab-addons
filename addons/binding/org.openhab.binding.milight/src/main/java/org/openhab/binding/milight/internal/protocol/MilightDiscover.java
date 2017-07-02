@@ -272,7 +272,7 @@ public class MilightDiscover extends Thread {
                         if (state == SessionState.SESSION_VALID) {
                             s.release();
                         }
-                    });
+                    }, null);
             boolean success = s.tryAcquire(1, 1300, TimeUnit.MILLISECONDS);
             session.dispose();
             queuedSend.dispose();
