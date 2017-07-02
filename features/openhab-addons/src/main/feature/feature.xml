@@ -67,7 +67,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.coolmasternet/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
@@ -283,6 +283,11 @@
     <feature name="openhab-binding-russound" description="Russound Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.russound/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-russoundserial" description="Russound Serial Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.russoundserial/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-samsungtv" description="Samsung TV Binding" version="${project.version}">

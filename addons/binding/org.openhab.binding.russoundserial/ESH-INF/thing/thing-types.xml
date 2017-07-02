@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="russoundserial"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+              xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+  <bridge-type id="russound-serial-bridge">
+    <label>Russound Serial Device</label>
+    <description>Serial access point to a Russound control system (the main controller)</description>
+
+    <config-description>
+      <parameter name="serialPort" type="text" required="true">
+        <context>serial-port</context>
+        <label>Serial Port</label>
+        <description>The serial port that the Russound is connected to</description>
+      </parameter>
+    </config-description>
+  </bridge-type>
+
+  <thing-type id="zone">
+    <supported-bridge-type-refs>
+      <bridge-type-ref id="russound-serial-bridge"/>
+    </supported-bridge-type-refs>
+
+    <label>Russound Zone</label>
+    <description>Zone within a Controller</description>
+
+    <channels>
+      <channel id="power" typeId="zonePower"/>
+      <channel id="volume" typeId="zoneVolume"/>
+      <channel id="source" typeId="zoneSource"/>
+      <channel id="bass" typeId="zoneBass"/>
+      <channel id="treble" typeId="zoneTreble"/>
+      <channel id="balance" typeId="zoneBalance"/>
+      <channel id="loudness" typeId="zoneLoudness"/>
+      <channel id="turnonvolume" typeId="zoneTurnOnVolume"/>
+    </channels>
+
+    <config-description>
+      <parameter name="zoneNumber" type="integer" min="0" max="7" required="true">
+        <label>Zone Number</label>
+        <description>The zone number (0-based)</description>
+      </parameter>
+    </config-description>
+  </thing-type>
+
+  <channel-type id="zonePower">
+    <item-type>Switch</item-type>
+    <label>Power</label>
+    <description>Whether the zone is ON or OFF</description>
+  </channel-type>
+  <channel-type id="zoneVolume">
+    <item-type>Dimmer</item-type>
+    <label>Volume</label>
+    <description>Volume level of zone</description>
+  </channel-type>
+  <channel-type id="zoneSource">
+    <item-type>Number</item-type>
+    <label>Source</label>
+    <description>Physical Source Number</description>
+    <state min="0" max="12"/>
+  </channel-type>
+
+  <channel-type id="zoneBass" advanced="true">
+    <item-type>Number</item-type>
+    <label>Bass</label>
+    <description>Bass Setting</description>
+    <state min="-10" max="10"/>
+  </channel-type>
+  <channel-type id="zoneTreble" advanced="true">
+    <item-type>Number</item-type>
+    <label>Treble</label>
+    <description>Treble Setting</description>
+    <state min="-10" max="10"/>
+  </channel-type>
+  <channel-type id="zoneBalance" advanced="true">
+    <item-type>Number</item-type>
+    <label>Balance</label>
+    <description>Balance (-10 full left, 10 full right)</description>
+    <state min="-10" max="10"/>
+  </channel-type>
+  <channel-type id="zoneLoudness" advanced="true">
+    <item-type>Switch</item-type>
+    <label>Loudness</label>
+    <description>Loudness</description>
+  </channel-type>
+  <channel-type id="zoneTurnOnVolume" advanced="true">
+    <item-type>Dimmer</item-type>
+    <label>Turn On Volume</label>
+    <description>The volume the zone will default to when turned on</description>
+  </channel-type>
+</thing:thing-descriptions>
