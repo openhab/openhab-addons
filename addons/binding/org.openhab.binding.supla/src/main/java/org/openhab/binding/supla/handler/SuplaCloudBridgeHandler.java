@@ -125,6 +125,8 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
             handlersLock.readLock().lock();
             try {
                 handlers.forEach(SuplaIoDeviceHandler::refresh);
+            } catch (Exception e) {
+                logger.debug("Got error while refreshing SuplaIoDeviceHandler!", e);
             } finally {
                 handlersLock.readLock().unlock();
             }
