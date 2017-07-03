@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -43,9 +43,7 @@ public class NibeHeatPumpProtocol {
         if (data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
                 && data[OFFSET_ADR] == ADR_MODBUS40) {
 
-            if (data[OFFSET_CMD] == CMD_MODBUS_DATA_MSG && data[OFFSET_LEN] >= (byte) 0x50) {
-                return true;
-            }
+            return data[OFFSET_CMD] == CMD_MODBUS_DATA_MSG && data[OFFSET_LEN] >= (byte) 0x50;
         }
 
         return false;
@@ -56,9 +54,7 @@ public class NibeHeatPumpProtocol {
         if (data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
                 && data[OFFSET_ADR] == ADR_MODBUS40) {
 
-            if (data[OFFSET_CMD] == CMD_MODBUS_READ_RESP && data[OFFSET_LEN] >= (byte) 0x06) {
-                return true;
-            }
+            return data[OFFSET_CMD] == CMD_MODBUS_READ_RESP && data[OFFSET_LEN] >= (byte) 0x06;
         }
 
         return false;
@@ -68,9 +64,7 @@ public class NibeHeatPumpProtocol {
 
         if (data[0] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00 && data[OFFSET_ADR] == ADR_RMU40) {
 
-            if (data[OFFSET_CMD] == CMD_RMU_DATA_MSG && data[OFFSET_LEN] >= (byte) 0x18) {
-                return true;
-            }
+            return data[OFFSET_CMD] == CMD_RMU_DATA_MSG && data[OFFSET_LEN] >= (byte) 0x18;
         }
 
         return false;
@@ -78,51 +72,31 @@ public class NibeHeatPumpProtocol {
 
     public static boolean isModbus40WriteResponsePdu(byte[] data) {
 
-        if (data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
-                && data[OFFSET_ADR] == ADR_MODBUS40 && data[OFFSET_CMD] == CMD_MODBUS_WRITE_RESP) {
-            return true;
-        }
-
-        return false;
+        return data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
+                && data[OFFSET_ADR] == ADR_MODBUS40 && data[OFFSET_CMD] == CMD_MODBUS_WRITE_RESP;
     }
 
     public static boolean isModbus40WriteTokenPdu(byte[] data) {
 
-        if (data[0] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00 && data[OFFSET_ADR] == ADR_MODBUS40
-                && data[OFFSET_CMD] == CMD_MODBUS_WRITE_REQ && data[OFFSET_LEN] == 0x00) {
-            return true;
-        }
-
-        return false;
+        return data[0] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00 && data[OFFSET_ADR] == ADR_MODBUS40
+                && data[OFFSET_CMD] == CMD_MODBUS_WRITE_REQ && data[OFFSET_LEN] == 0x00;
     }
 
     public static boolean isModbus40ReadTokenPdu(byte[] data) {
 
-        if (data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
+        return data[OFFSET_START] == FRAME_START_CHAR_FROM_NIBE && data[1] == (byte) 0x00
                 && data[OFFSET_ADR] == ADR_MODBUS40 && data[OFFSET_CMD] == CMD_MODBUS_READ_REQ
-                && data[OFFSET_LEN] == 0x00) {
-            return true;
-        }
-
-        return false;
+                && data[OFFSET_LEN] == 0x00;
     }
 
     public static boolean isModbus40WriteRequestPdu(byte[] data) {
 
-        if (data[0] == FRAME_START_CHAR_TO_NIBE && data[1] == CMD_MODBUS_WRITE_REQ) {
-            return true;
-        }
-
-        return false;
+        return data[0] == FRAME_START_CHAR_TO_NIBE && data[1] == CMD_MODBUS_WRITE_REQ;
     }
 
     public static boolean isModbus40ReadRequestPdu(byte[] data) {
 
-        if (data[OFFSET_START] == FRAME_START_CHAR_TO_NIBE && data[1] == CMD_MODBUS_READ_REQ) {
-            return true;
-        }
-
-        return false;
+        return data[OFFSET_START] == FRAME_START_CHAR_TO_NIBE && data[1] == CMD_MODBUS_READ_REQ;
     }
 
     public static byte calculateChecksum(byte[] data) {

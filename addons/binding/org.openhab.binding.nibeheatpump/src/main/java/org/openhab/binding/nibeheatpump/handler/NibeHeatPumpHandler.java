@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -65,10 +65,10 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private PumpModel pumpModel;
     private NibeHeatPumpConfiguration configuration;
 
-    private NibeHeatPumpConnector connector = null;
+    private NibeHeatPumpConnector connector;
     private int timeout = 4500;
 
-    private boolean reconnectionRequest = false;
+    private boolean reconnectionRequest;
 
     private NibeHeatPumpCommandResult writeResult;
     private NibeHeatPumpCommandResult readResult;
@@ -81,9 +81,22 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private Map<Integer, CacheObject> stateMap = Collections.synchronizedMap(new HashMap<Integer, CacheObject>());
 
     protected class CacheObject {
+
+        /** Time when cache object updated in milliseconds */
         long lastUpdateTime;
+
+        /** Cache value */
         Double value;
 
+        /**
+         * Initialize cache object.
+         *
+         * @param lastUpdateTimeMs
+         *            Time in milliseconds.
+         *
+         * @param value
+         *            Cache value.
+         */
         CacheObject(long lastUpdateTime, Double value) {
             this.lastUpdateTime = lastUpdateTime;
             this.value = value;
@@ -107,13 +120,13 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             return;
         }
 
-        if (configuration.enableWriteCommands == false) {
+        if (!configuration.enableWriteCommands) {
             logger.info(
                     "All write commands denied, ignoring command! Change Nibe heat pump binding configuration if you want to enable write commands.");
             return;
         }
 
-        if (itemsToEnableWrite.contains(coilAddress) == false) {
+        if (!itemsToEnableWrite.contains(coilAddress)) {
             logger.info(
                     "Write commands to register '{}' not allowed, ignoring command! Add this register to Nibe heat pump binding configuration if you want to enable write commands.",
                     coilAddress);
@@ -126,7 +139,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
             logger.debug("Usig variable information for register {}: {}", coilAddress, variableInfo);
 
-            if (variableInfo != null && variableInfo.type == VariableInformation.Type.Setting) {
+            if (variableInfo != null && variableInfo.type == VariableInformation.Type.SETTING) {
 
                 int value = convertStateToNibeValue(command);
                 value = value * variableInfo.factor;
@@ -145,10 +158,13 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                         } else {
                             logger.error("Message sending to heat pump failed, value not accepted by the heat pump");
                         }
+                    } else {
+                        logger.debug("Something weird happen, result for write command is null");
                     }
                 } catch (TimeoutException e) {
                     logger.error("Message sending to heat pump failed, no response");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "No response received from the heat pump");
                 } catch (InterruptedException e) {
                     logger.error("Message sending to heat pump failed, sending interrupted");
                 } catch (NibeHeatPumpException e) {
@@ -217,15 +233,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
         try {
             parseWriteEnabledItems();
-        } catch (IllegalArgumentException e) {
-            String description = String.format("Illegal configuration, %s", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
-            return;
-        }
-
-        try {
             connector = ConnectorFactory.getConnector(thing.getThingTypeUID());
-        } catch (NibeHeatPumpException e) {
+        } catch (IllegalArgumentException | NibeHeatPumpException e) {
             String description = String.format("Illegal configuration, %s", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
             return;
@@ -264,7 +273,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                     pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, 1, TimeUnit.SECONDS);
                 }
             } catch (NibeHeatPumpException e) {
-                logger.debug("Error occured when connecting to heat pump, exception {}", e.getMessage());
+                logger.debug("Error occurred when connecting to heat pump, exception {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } else {
@@ -297,7 +306,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             try {
                 connector.disconnect();
             } catch (NibeHeatPumpException e) {
-                logger.error("Error occured when disconnecting form heat pump, exception {}", e.getMessage());
+                logger.error("Error occurred when disconnecting from heat pump, exception {}", e.getMessage());
             }
         }
     }
@@ -306,7 +315,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         @Override
         public void run() {
 
-            if (configuration.enableReadCommands == false) {
+            if (!configuration.enableReadCommands) {
                 logger.trace("All read commands denied, skip polling!");
                 return;
             }
@@ -318,12 +327,11 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
             for (int item : items) {
                 if (connector != null && connector.isConnected()
-                        && getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) { // TODO
+                        && getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
 
                     CacheObject oldValue = stateMap.get(item);
                     if (oldValue == null
-                            || (oldValue.lastUpdateTime + configuration.refreshInterval) < System.currentTimeMillis()
-                                    / 1000) {
+                            || (oldValue.lastUpdateTime + refreshIntervalMillis()) < System.currentTimeMillis()) {
 
                         // it's time to refresh data
                         logger.debug("Time to refresh variable '{}' data", item);
@@ -362,6 +370,10 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         }
     };
 
+    private long refreshIntervalMillis() {
+        return configuration.refreshInterval * 1000;
+    }
+
     private int convertStateToNibeValue(Command command) {
         int value;
 
@@ -384,7 +396,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                     VariableInformation variableInformation = VariableInformation.getVariableInfo(pumpModel,
                             coilAddress);
                     if (variableInformation == null) {
-                        String description = String.format("Uknown register %s", coilAddress);
+                        String description = String.format("Unknown register %s", coilAddress);
                         throw new IllegalArgumentException(description);
                     }
                     itemsToEnableWrite.add(coilAddress);
@@ -435,9 +447,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
     private synchronized NibeHeatPumpCommandResult sendMessageToNibe(NibeHeatPumpMessage msg)
             throws NibeHeatPumpException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Sending message: {}", msg.toString());
-        }
+
+        logger.debug("Sending message: {}", msg);
         connector.sendDatagram(msg);
         return new NibeHeatPumpCommandResult();
     }
@@ -450,9 +461,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                 logger.trace("Received raw data: {}", msg.toHexString());
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Received message: {}", msg.toString());
-            }
+            logger.debug("Received message: {}", msg);
 
             updateStatus(ThingStatus.ONLINE);
 
@@ -463,16 +472,16 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             } else if (msg instanceof ModbusDataReadOutMessage) {
                 handleDataReadOutMessage((ModbusDataReadOutMessage) msg);
             } else {
-                logger.debug("Received unknow message: {}", msg.toString());
+                logger.debug("Received unknown message: {}", msg.toString());
             }
         } catch (Exception e) {
-            logger.debug("Error occured when parsing recevied message, reason: {}", e.getMessage());
+            logger.debug("Error occurred when parsing received message, reason: {}", e.getMessage());
         }
     }
 
     @Override
-    public void errorOccured(String error) {
-        logger.debug("Error '{}' occured, re-establish the connection", error);
+    public void errorOccurred(String error) {
+        logger.debug("Error '{}' occurred, re-establish the connection", error);
         reconnectionRequest = true;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
     }
@@ -512,12 +521,12 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             logger.debug("{} = {}", coilAddress + ":" + variableInfo.variable, val);
 
             CacheObject oldValue = stateMap.get(coilAddress);
-            stateMap.put(coilAddress, new CacheObject(System.currentTimeMillis() / 1000, val));
+            stateMap.put(coilAddress, new CacheObject(System.currentTimeMillis(), val));
 
             if (oldValue != null && val == oldValue.value) {
-                logger.trace("Value haven't been changed, ignore update");
+                logger.trace("Value did not change, ignoring update");
             } else {
-                final String channelPrefix = (variableInfo.type == Type.Setting ? "setting#" : "sensor#");
+                final String channelPrefix = (variableInfo.type == Type.SETTING ? "setting#" : "sensor#");
                 final String channelId = channelPrefix + String.valueOf(coilAddress);
                 final String acceptedItemType = thing.getChannel(channelId).getAcceptedItemType();
 

@@ -397,9 +397,9 @@ int main(int argc, char **argv)
 			localPort4readCmds = atoi(optarg);
 			break;
 
-        case 'w':
-            localPort4writeCmds = atoi(optarg);
-            break;
+		case 'w':
+			localPort4writeCmds = atoi(optarg);
+			break;
 
 		case 'r':
 			rs485addr = atoi(optarg);
@@ -460,12 +460,12 @@ int main(int argc, char **argv)
 	server4read.sin_addr.s_addr = htonl(INADDR_ANY);
 	server4read.sin_port = htons(localPort4readCmds);
 
-    // Initialize server address for write commands
-    struct sockaddr_in server4write;
-    memset((char *)&server4write, 0, sizeof(server4write));
-    server4write.sin_family = AF_INET;
-    server4write.sin_addr.s_addr = htonl(INADDR_ANY);
-    server4write.sin_port = htons(localPort4writeCmds);
+	// Initialize server address for write commands
+	struct sockaddr_in server4write;
+	memset((char *)&server4write, 0, sizeof(server4write));
+	server4write.sin_family = AF_INET;
+	server4write.sin_addr.s_addr = htonl(INADDR_ANY);
+	server4write.sin_port = htons(localPort4writeCmds);
 	
 	int maxdatalen = 200;
 	
@@ -521,38 +521,38 @@ int main(int argc, char **argv)
 			
 			// Set non blocking flag to UDP socket
 			int flags = fcntl(udp_fd, F_GETFL, 0);
-    		fcntl(udp_fd, F_SETFL, flags | O_NONBLOCK);
-    
+			fcntl(udp_fd, F_SETFL, flags | O_NONBLOCK);
+
 			//bind socket to port
 			if( bind(udp_fd, (struct sockaddr*)&server4read, sizeof(server4read) ) == -1)
 			{
-        		fprintf(stderr, "Failed to bind UDP port for read commands: %s\n", strerror(errno));
+				fprintf(stderr, "Failed to bind UDP port for read commands: %s\n", strerror(errno));
 			}
 		}
 		
 		if ( udp4writeCmds_fd < 0 )
-        {
-            // Open UDP socket
-            udp4writeCmds_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-            
-            if (udp4writeCmds_fd < 0)
-            {
-                fprintf(stderr, "Failed to open UDP socket for write commands: %s\n", strerror(errno));
-            }
-            
-            if (verbose) printf("Initialize UDP server\n");
-            
-            // Set non blocking flag to UDP socket
-            int flags = fcntl(udp4writeCmds_fd, F_GETFL, 0);
-            fcntl(udp4writeCmds_fd, F_SETFL, flags | O_NONBLOCK);
-    
-            //bind socket to port
-            if( bind(udp4writeCmds_fd, (struct sockaddr*)&server4write, sizeof(server4write) ) == -1)
-            {
-                fprintf(stderr, "Failed to bind UDP port for write commands: %s\n", strerror(errno));
-            }
-        }
-        
+		{
+			// Open UDP socket
+			udp4writeCmds_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+			if (udp4writeCmds_fd < 0)
+			{
+				fprintf(stderr, "Failed to open UDP socket for write commands: %s\n", strerror(errno));
+			}
+
+			if (verbose) printf("Initialize UDP server\n");
+
+			// Set non blocking flag to UDP socket
+			int flags = fcntl(udp4writeCmds_fd, F_GETFL, 0);
+			fcntl(udp4writeCmds_fd, F_SETFL, flags | O_NONBLOCK);
+
+			//bind socket to port
+			if( bind(udp4writeCmds_fd, (struct sockaddr*)&server4write, sizeof(server4write) ) == -1)
+			{
+				fprintf(stderr, "Failed to bind UDP port for write commands: %s\n", strerror(errno));
+			}
+		}
+
 		if (testmode || serialport_fd >= 0)
 		{
 			char timestamp[80];

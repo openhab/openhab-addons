@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,9 +17,9 @@ import java.nio.ByteBuffer;
  * @author Pauli Anttila - Initial contribution
  */
 public class NibeHeatPumpProtocolDefaultContext implements NibeHeatPumpProtocolContext {
-    NibeHeatPumpProtocolStates state = NibeHeatPumpProtocolStates.WAIT_START;
-    ByteBuffer buffer = ByteBuffer.allocate(1000);
-    ByteBuffer msg = ByteBuffer.allocate(100);
+    private NibeHeatPumpProtocolStates state = NibeHeatPumpProtocolStates.WAIT_START;
+    private ByteBuffer buffer = ByteBuffer.allocate(1000);
+    private ByteBuffer msg = ByteBuffer.allocate(100);
 
     @Override
     public NibeHeatPumpProtocolStates state() {

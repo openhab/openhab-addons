@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,16 +35,14 @@ import org.slf4j.LoggerFactory;
  */
 public class SimulatorConnector extends NibeHeatPumpBaseConnector {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimulatorConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(SimulatorConnector.class);
 
     private Thread readerThread = null;
-    @SuppressWarnings("unused")
-    private NibeHeatPumpConfiguration conf = null;
 
     private List<byte[]> readQueue = new ArrayList<byte[]>();
     private List<byte[]> writeQueue = new ArrayList<byte[]>();
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     @SuppressWarnings("serial")
     ArrayList<ModbusValue> dataReadoutValues = new ArrayList<ModbusValue>() {
@@ -83,7 +81,6 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
         if (isConnected()) {
             return;
         }
-        conf = configuration;
         readerThread = new Reader();
         readerThread.start();
         connected = true;
@@ -122,9 +119,6 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
 
     private class Reader extends Thread {
         boolean interrupted = false;
-
-        public Reader() {
-        }
 
         @Override
         public void interrupt() {
@@ -202,7 +196,9 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
                         }
                     }
 
-                    logger.debug("Read queue: {}, Write queue: {}", readQueue.size(), writeQueue.size());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Read queue: {}, Write queue: {}", readQueue.size(), writeQueue.size());
+                    }
                     Thread.sleep(800);
 
                 } catch (InterruptedException e) {
@@ -220,13 +216,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
     }
 
     private int getCacheValue(int coilAddress) {
-        int retval = 0;
-        Integer val = cache.get(coilAddress);
-        if (val != null) {
-            retval = val.intValue();
-        }
-
-        return retval;
+        return cache.getOrDefault(coilAddress, 0);
     }
 
     private void setCacheValue(int coilAddress, int value) {
@@ -262,6 +252,6 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
     }
 
     public static double random(double min, double max) {
-        return min + (random.nextDouble() * (max - min));
+        return min + (RANDOM.nextDouble() * (max - min));
     }
 }

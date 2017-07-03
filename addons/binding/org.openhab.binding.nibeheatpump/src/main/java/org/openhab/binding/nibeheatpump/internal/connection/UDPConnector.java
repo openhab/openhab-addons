@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,11 +41,11 @@ import org.slf4j.LoggerFactory;
  */
 public class UDPConnector extends NibeHeatPumpBaseConnector {
 
-    private static final Logger logger = LoggerFactory.getLogger(UDPConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(UDPConnector.class);
 
-    private Thread readerThread = null;
-    private NibeHeatPumpConfiguration conf = null;
-    private DatagramSocket socket = null;
+    private Thread readerThread;
+    private NibeHeatPumpConfiguration conf;
+    private DatagramSocket socket;
 
     public UDPConnector() {
 
@@ -109,7 +109,7 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
             } else if (msg instanceof ModbusReadRequestMessage) {
                 port = conf.readCommandsPort;
             } else {
-                logger.trace("Ignore PDU: {}", msg.getClass().toString());
+                logger.trace("Ignore PDU: {}", msg.getClass());
             }
 
             if (port > 0) {
@@ -134,9 +134,6 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
     private class Reader extends Thread {
         boolean interrupted = false;
 
-        public Reader() {
-        }
-
         @Override
         public void interrupt() {
             interrupted = true;
@@ -149,7 +146,7 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
             logger.debug("Data listener started");
             while (!interrupted) {
 
-                final int PACKETSIZE = 255;
+                final int packetSize = 255;
 
                 try {
 
@@ -158,7 +155,7 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
                     }
 
                     // Create a packet
-                    DatagramPacket packet = new DatagramPacket(new byte[PACKETSIZE], PACKETSIZE);
+                    DatagramPacket packet = new DatagramPacket(new byte[packetSize], packetSize);
 
                     // Receive a packet (blocking)
                     socket.receive(packet);
@@ -168,8 +165,6 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
                 } catch (InterruptedIOException e) {
                     Thread.currentThread().interrupt();
                     logger.error("Interrupted via InterruptedIOException");
-                } catch (SocketException e) {
-                    sendErrorToListeners(e.getMessage());
                 } catch (IOException e) {
                     sendErrorToListeners(e.getMessage());
                 }

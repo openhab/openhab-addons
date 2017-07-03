@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -156,20 +156,20 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                 }
 
                 // calculate XOR checksum
-                byte calc_checksum = 0;
+                byte calcChecksum = 0;
                 for (int i = 2; i < (datalen + 5); i++) {
-                    calc_checksum ^= byteBuffer.get(i);
+                    calcChecksum ^= byteBuffer.get(i);
                 }
 
-                byte msg_checksum = byteBuffer.get(datalen + 5);
+                byte msgChecksum = byteBuffer.get(datalen + 5);
 
-                if (calc_checksum != msg_checksum) {
+                if (calcChecksum != msgChecksum) {
 
                     // if checksum is 0x5C (start character), heat pump seems to
                     // send 0xC5 checksum
-                    if (calc_checksum != 0x5C && msg_checksum != 0xC5) {
+                    if (calcChecksum != 0x5C && msgChecksum != 0xC5) {
                         throw new NibeHeatPumpException(String.format(
-                                "Checksum failure, expected checksum 0x%02X was 0x%02X", msg_checksum, calc_checksum));
+                                "Checksum failure, expected checksum 0x%02X was 0x%02X", msgChecksum, calcChecksum));
                     }
                 }
 

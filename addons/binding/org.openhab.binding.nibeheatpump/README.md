@@ -8,12 +8,11 @@ Binding support data telegrams (contains max 20 registers) from the heat pump, b
 
 This binding supports direct serial port connection (RS-485 adapter needed) to heat pump but also UDP connection via NibeGW software.
 
-| Thing type | Description |
-|------------|-------------|
-| f1x45-serial     | Serial port connected F1145 and F1245 Heat Pumps |
-| f1x45-udp        | UDP connected Nibe F1145 and F1245 Heat Pumps |
-| f1x45-simulator  | Simulator for Nibe F1145 and F1245 Heat Pumps |
-
+| Thing type      | Description                                      |
+|-----------------|--------------------------------------------------|
+| f1x45-serial    | Serial port connected F1145 and F1245 Heat Pumps |
+| f1x45-udp       | UDP connected Nibe F1145 and F1245 Heat Pumps    |
+| f1x45-simulator | Simulator for Nibe F1145 and F1245 Heat Pumps    |
 
 ## Discovery
 

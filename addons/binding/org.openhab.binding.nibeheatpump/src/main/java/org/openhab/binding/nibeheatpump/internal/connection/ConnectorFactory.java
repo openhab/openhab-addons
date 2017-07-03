@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,12 @@ import static org.openhab.binding.nibeheatpump.NibeHeatPumpBindingConstants.*;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 
+/**
+ * The {@link ConnectorFactory} implements factory class to create Nibe connectors.
+ *
+ *
+ * @author Pauli Anttila - Initial contribution
+ */
 public class ConnectorFactory {
 
     public static NibeHeatPumpConnector getConnector(ThingTypeUID type) throws NibeHeatPumpException {
@@ -27,7 +33,7 @@ public class ConnectorFactory {
             }
         }
 
-        String description = String.format("Uknown connector type %s", type);
+        String description = String.format("Unknown connector type %s", type);
         throw new NibeHeatPumpException(description);
     }
 }

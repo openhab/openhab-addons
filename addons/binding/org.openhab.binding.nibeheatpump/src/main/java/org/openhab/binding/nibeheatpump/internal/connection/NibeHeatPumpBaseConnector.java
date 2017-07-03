@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 public abstract class NibeHeatPumpBaseConnector implements NibeHeatPumpConnector {
-    private static final Logger logger = LoggerFactory.getLogger(NibeHeatPumpBaseConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(NibeHeatPumpBaseConnector.class);
 
     private List<NibeHeatPumpEventListener> listeners = new ArrayList<NibeHeatPumpEventListener>();
     public boolean connected = false;
@@ -59,25 +59,26 @@ public abstract class NibeHeatPumpBaseConnector implements NibeHeatPumpConnector
 
     public void sendMsgToListeners(NibeHeatPumpMessage msg) {
         if (msg != null) {
-            try {
-                Iterator<NibeHeatPumpEventListener> iterator = listeners.iterator();
-                while (iterator.hasNext()) {
+
+            Iterator<NibeHeatPumpEventListener> iterator = listeners.iterator();
+            while (iterator.hasNext()) {
+                try {
                     iterator.next().msgReceived(msg);
+                } catch (Exception e) {
+                    logger.error("Event listener invoking error, exception {}", e);
                 }
-            } catch (Exception e) {
-                logger.error("Event listener invoking error, exception {}", e.getMessage());
             }
         }
     }
 
     public void sendErrorToListeners(String error) {
-        try {
-            Iterator<NibeHeatPumpEventListener> iterator = listeners.iterator();
-            while (iterator.hasNext()) {
-                iterator.next().errorOccured(error);
+        Iterator<NibeHeatPumpEventListener> iterator = listeners.iterator();
+        while (iterator.hasNext()) {
+            try {
+                iterator.next().errorOccurred(error);
+            } catch (Exception e) {
+                logger.error("Event listener invoking error, exception {}", e);
             }
-        } catch (Exception e) {
-            logger.error("Event listener invoking error, exception {}", e.getMessage());
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 
@@ -24,10 +23,6 @@ import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
  * @author Pauli Anttila
  */
 public class ModbusDataReadOutMessageTest {
-
-    @Before
-    public void Before() {
-    }
 
     @Test
     public void createMessageTest() throws NibeHeatPumpException {
@@ -185,32 +180,20 @@ public class ModbusDataReadOutMessageTest {
         checkRegisters(message, expectedValues);
     }
 
-    @Test
-    public void badCrcTest() {
+    @Test(expected = NibeHeatPumpException.class)
+    public void badCrcTest() throws Exception {
         final String message = "5C0020685001A81F0100A86400FDA7D003449C1E004F9CA000509C7800519C0301529C1B01879C14014E9CC601479C010115B9B0FF3AB94B00C9AF0000489C0D014C9CE7004B9C0000FFFF0000FFFF0000FFFF000044";
 
         final byte[] msg = DatatypeConverter.parseHexBinary(message);
-        try {
-            @SuppressWarnings("unused")
-            final ModbusDataReadOutMessage m = (ModbusDataReadOutMessage) MessageFactory.getMessage(msg);
-            fail("Method didn't throw NibeHeatPumpException when expected");
-        } catch (NibeHeatPumpException e) {
-            assertTrue(e.getMessage().startsWith("Checksum does not match"));
-        }
+        MessageFactory.getMessage(msg);
     }
 
-    @Test
-    public void notModbusDataReadOutMessageTest() {
+    @Test(expected = NibeHeatPumpException.class)
+    public void notModbusDataReadOutMessageTest() throws NibeHeatPumpException {
         final String message = "519C0301529C1B01879C14014E9CC601479C010115B9B0FF3AB94B00C9AF0000489C0D014C9CE7004B9C0000FFFF0000FFFF0000FFFF000044";
 
         final byte[] msg = DatatypeConverter.parseHexBinary(message);
-        try {
-            @SuppressWarnings("unused")
-            final ModbusDataReadOutMessage m = new ModbusDataReadOutMessage(msg);
-            fail("Method didn't throw NibeHeatPumpException when expected");
-        } catch (NibeHeatPumpException e) {
-            assertEquals(e.getMessage(), "Not Modbus data readout message");
-        }
+        new ModbusDataReadOutMessage(msg);
     }
 
     private void checkRegisters(final String message, final ArrayList<ModbusValue> expectedRegs)

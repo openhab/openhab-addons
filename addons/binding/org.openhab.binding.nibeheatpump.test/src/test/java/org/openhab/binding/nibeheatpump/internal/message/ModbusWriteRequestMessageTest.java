@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nibeheatpump.internal.message;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -47,29 +47,17 @@ public class ModbusWriteRequestMessageTest {
         assertEquals(value, m.getValue());
     }
 
-    @Test
-    public void badCrcTest() {
+    @Test(expected = NibeHeatPumpException.class)
+    public void badCrcTest() throws NibeHeatPumpException {
         final String strMessage = "C06B06393006120F00BA";
         final byte[] msg = DatatypeConverter.parseHexBinary(strMessage);
-        try {
-            @SuppressWarnings("unused")
-            final ModbusWriteRequestMessage m = new ModbusWriteRequestMessage(msg);
-            fail("Method didn't throw NibeHeatPumpException when expected");
-        } catch (NibeHeatPumpException e) {
-            assertTrue(e.getMessage().startsWith("Checksum does not match"));
-        }
+        new ModbusWriteRequestMessage(msg);
     }
 
-    @Test
-    public void notWriteRequestMessageTest() {
+    @Test(expected = NibeHeatPumpException.class)
+    public void notWriteRequestMessageTest() throws NibeHeatPumpException {
         final String strMessage = "C06A06393006120F00BF";
         final byte[] byteMessage = DatatypeConverter.parseHexBinary(strMessage);
-        try {
-            @SuppressWarnings("unused")
-            ModbusWriteRequestMessage m = new ModbusWriteRequestMessage(byteMessage);
-            fail("Method didn't throw NibeHeatPumpException when expected");
-        } catch (NibeHeatPumpException e) {
-            assertEquals(e.getMessage(), "Not Write Request message");
-        }
+        new ModbusWriteRequestMessage(byteMessage);
     }
 }

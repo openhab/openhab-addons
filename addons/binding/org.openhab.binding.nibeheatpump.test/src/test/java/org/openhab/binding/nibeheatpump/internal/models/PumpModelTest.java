@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nibeheatpump.internal.models;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,15 +26,8 @@ public class PumpModelTest {
         assertEquals(PumpModel.F1X45, pumpModel);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void badPumpModelTest() {
-        final String pumpModelString = "XXXX";
-        try {
-            @SuppressWarnings("unused")
-            final PumpModel pumpModel = PumpModel.getPumpModel(pumpModelString);
-            fail("Method didn't throw IllegalArgumentException when expected");
-        } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().equalsIgnoreCase("Not valid pump model"));
-        }
+        PumpModel.getPumpModel("XXXX");
     }
 }

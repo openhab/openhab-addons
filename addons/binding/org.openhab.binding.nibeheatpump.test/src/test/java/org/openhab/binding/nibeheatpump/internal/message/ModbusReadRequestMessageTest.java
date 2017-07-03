@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.nibeheatpump.internal.message;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 
@@ -23,12 +22,8 @@ import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
  */
 public class ModbusReadRequestMessageTest {
 
-    @Before
-    public void Before() {
-    }
-
-    final String okMessage = "C069023930A2";
-    final int coilAddress = 12345;
+    private final String okMessage = "C069023930A2";
+    private final int coilAddress = 12345;
 
     @Test
     public void createMessageTest() throws NibeHeatPumpException {
@@ -44,30 +39,17 @@ public class ModbusReadRequestMessageTest {
         assertEquals(coilAddress, m.getCoilAddress());
     }
 
-    @Test
-    public void badCrcTest() {
+    @Test(expected = NibeHeatPumpException.class)
+    public void badCrcTest() throws NibeHeatPumpException {
         final String strMessage = "C069023930A1";
-
         final byte[] msg = DatatypeConverter.parseHexBinary(strMessage);
-        try {
-            @SuppressWarnings("unused")
-            ModbusReadRequestMessage m = new ModbusReadRequestMessage(msg);
-            fail("Method didn't throw NibeHeatPumpException when expected");
-        } catch (NibeHeatPumpException e) {
-            assertTrue(e.getMessage().startsWith("Checksum does not match"));
-        }
+        new ModbusReadRequestMessage(msg);
     }
 
-    @Test
-    public void notReadRequestMessageTest() {
+    @Test(expected = NibeHeatPumpException.class)
+    public void notReadRequestMessageTest() throws NibeHeatPumpException {
         final String strMessage = "C169023930A2";
         final byte[] byteMessage = DatatypeConverter.parseHexBinary(strMessage);
-        try {
-            @SuppressWarnings("unused")
-            ModbusReadRequestMessage m = new ModbusReadRequestMessage(byteMessage);
-            fail("Method didn't throw NibeHeatPumpException when expected");
-        } catch (NibeHeatPumpException e) {
-            assertEquals(e.getMessage(), "Not Read Request message");
-        }
+        new ModbusReadRequestMessage(byteMessage);
     }
 }

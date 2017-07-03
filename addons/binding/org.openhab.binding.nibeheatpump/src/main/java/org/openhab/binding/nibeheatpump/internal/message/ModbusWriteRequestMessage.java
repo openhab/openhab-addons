@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -76,35 +76,6 @@ public class ModbusWriteRequestMessage extends NibeHeatPumpBaseMessage {
         data[6] = (byte) ((value >> 8) & 0xFF);
         data[7] = (byte) ((value >> 16) & 0xFF);
         data[8] = (byte) ((value >> 24) & 0xFF);
-
-        /*
-         * switch (variableInfo.dataType) {
-         *
-         * case U8:
-         * case S8:
-         * data[5] = (byte) (value & 0xFF);
-         * data[6] = 0;
-         * data[7] = 0;
-         * data[8] = 0;
-         * break;
-         *
-         * case U16:
-         * case S16:
-         * data[5] = (byte) (value & 0xFF);
-         * data[6] = (byte) ((value >> 8) & 0xFF);
-         * data[7] = 0;
-         * data[8] = 0;
-         * break;
-         *
-         * case U32:
-         * case S32:
-         * data[5] = (byte) (value & 0xFF);
-         * data[6] = (byte) ((value >> 8) & 0xFF);
-         * data[7] = (byte) ((value >> 16) & 0xFF);
-         * data[8] = (byte) ((value >> 24) & 0xFF);
-         * break;
-         * }
-         */
         data[9] = NibeHeatPumpProtocol.calculateChecksum(data, 0, 9);
 
         return data;

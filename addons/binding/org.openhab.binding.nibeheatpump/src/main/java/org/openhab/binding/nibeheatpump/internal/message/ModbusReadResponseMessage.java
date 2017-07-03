@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -57,7 +57,7 @@ public class ModbusReadResponseMessage extends NibeHeatPumpBaseMessage {
         super.encodeMessage(data);
 
         coilAddress = (data[3] & 0xFF) << 8 | (data[4] & 0xFF);
-        ParseMessage(data);
+        parseMessage(data);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class ModbusReadResponseMessage extends NibeHeatPumpBaseMessage {
         return str;
     }
 
-    private void ParseMessage(byte[] data) throws NibeHeatPumpException {
+    private void parseMessage(byte[] data) throws NibeHeatPumpException {
         if (NibeHeatPumpProtocol.isModbus40ReadResponse(data)) {
             super.encodeMessage(data);
             coilAddress = ((data[NibeHeatPumpProtocol.OFFSET_DATA + 1] & 0xFF) << 8

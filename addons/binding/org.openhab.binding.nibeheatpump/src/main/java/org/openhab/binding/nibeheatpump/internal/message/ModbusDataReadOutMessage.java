@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,7 +21,7 @@ import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocol;
  */
 public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
 
-    List<ModbusValue> values;
+    private List<ModbusValue> values;
 
     private ModbusDataReadOutMessage(MessageBuilder builder) {
         super.msgType = MessageType.MODBUS_DATA_READ_OUT_MSG;
@@ -38,7 +38,7 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws NibeHeatPumpException {
-        values = ParseMessage(data);
+        values = parseMessage(data);
     }
 
     @Override
@@ -80,35 +80,31 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
 
     @Override
     public String toString() {
-        String str = "";
-
-        str += super.toString();
+        String str = super.toString();
         str += ", Values: ";
         str += values.toString();
         return str;
     }
 
-    private List<ModbusValue> ParseMessage(byte[] data) throws NibeHeatPumpException {
+    private List<ModbusValue> parseMessage(byte[] data) throws NibeHeatPumpException {
         if (NibeHeatPumpProtocol.isModbus40DataReadOut(data)) {
             super.encodeMessage(data);
-            data = super.rawMessage;
-            final int datalen = data[NibeHeatPumpProtocol.OFFSET_LEN];
-            final int msglen = 5 + datalen;
+            final int msglen = 5 + rawMessage[NibeHeatPumpProtocol.OFFSET_LEN];
 
             List<ModbusValue> vals = new ArrayList<ModbusValue>();
 
             try {
                 for (int i = NibeHeatPumpProtocol.OFFSET_DATA; i < (msglen - 1); i += 4) {
 
-                    int id = ((data[i + 1] & 0xFF) << 8 | (data[i + 0] & 0xFF));
-                    int value = (short) ((data[i + 3] & 0xFF) << 8 | (data[i + 2] & 0xFF));
+                    int id = ((rawMessage[i + 1] & 0xFF) << 8 | (rawMessage[i + 0] & 0xFF));
+                    int value = (short) ((rawMessage[i + 3] & 0xFF) << 8 | (rawMessage[i + 2] & 0xFF));
 
                     if (id != 0xFFFF) {
                         vals.add(new ModbusValue(id, value));
                     }
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
-                throw new NibeHeatPumpException("Error occured during data parsing", e);
+                throw new NibeHeatPumpException("Error occurred during data parsing", e);
             }
 
             return vals;

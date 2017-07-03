@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,12 +30,11 @@ public enum PumpModel {
 
     public static PumpModel getPumpModel(String pumpModel) throws IllegalArgumentException {
 
-        for (PumpModel c : PumpModel.values()) {
-            if (c.pumpModel.equalsIgnoreCase(pumpModel)) {
-                return c;
-            }
+        try {
+            return PumpModel.valueOf(pumpModel.toUpperCase());
+        } catch (Exception e) {
+            String description = String.format("Illegal pump model '%s'", pumpModel);
+            throw new IllegalArgumentException(description);
         }
-
-        throw new IllegalArgumentException("Not valid pump model");
     }
 }

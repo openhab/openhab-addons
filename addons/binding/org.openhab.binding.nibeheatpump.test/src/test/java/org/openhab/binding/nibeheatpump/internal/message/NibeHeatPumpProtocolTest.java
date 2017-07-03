@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -58,15 +58,10 @@ public class NibeHeatPumpProtocolTest {
 
         @Override
         public void log(String format) {
-            // for debugging purposes
-            // System.out.println(format);
         }
 
         @Override
         public void log(String format, Object... arg) {
-            // for debugging purposes
-            // String log = MessageFormatter.arrayFormat(format, arg).getMessage();
-            // System.out.println(log);
         }
 
     };

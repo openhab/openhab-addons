@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,7 +32,6 @@ import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocolDe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
@@ -48,13 +47,13 @@ import gnu.io.UnsupportedCommOperationException;
  */
 public class SerialConnector extends NibeHeatPumpBaseConnector {
 
-    private static final Logger logger = LoggerFactory.getLogger(SerialConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(SerialConnector.class);
 
-    private InputStream in = null;
-    private OutputStream out = null;
-    private SerialPort serialPort = null;
-    private Thread readerThread = null;
-    private NibeHeatPumpConfiguration conf = null;
+    private InputStream in;
+    private OutputStream out;
+    private SerialPort serialPort;
+    private Thread readerThread;
+    private NibeHeatPumpConfiguration conf;
 
     private List<byte[]> readQueue = new ArrayList<byte[]>();
     private List<byte[]> writeQueue = new ArrayList<byte[]>();
@@ -74,9 +73,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
         try {
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(conf.serialPort);
 
-            CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
-
-            serialPort = (SerialPort) commPort;
+            serialPort = portIdentifier.open(this.getClass().getName(), 2000);
             serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 
             serialPort.enableReceiveThreshold(1);
@@ -141,14 +138,17 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
 
     @Override
     public void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException {
-        logger.trace("Add request to queue: {}", msg.toHexString());
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Add request to queue: {}", msg.toHexString());
+        }
 
         if (msg instanceof ModbusWriteRequestMessage) {
             writeQueue.add(msg.decodeMessage());
         } else if (msg instanceof ModbusReadRequestMessage) {
             readQueue.add(msg.decodeMessage());
         } else {
-            logger.trace("Ignore PDU: {}", msg.getClass().toString());
+            logger.trace("Ignore PDU: {}", msg.getClass());
         }
 
         logger.trace("Read queue: {}, Write queue: {}", readQueue.size(), writeQueue.size());
@@ -249,7 +249,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                 }
             };
 
-            while (interrupted != true) {
+            while (!interrupted) {
                 try {
                     final byte[] data = getAllAvailableBytes(in);
                     if (data != null) {
@@ -265,7 +265,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                     logger.error("Reading from serial port failed", e);
                     sendErrorToListeners(e.getMessage());
                 } catch (Exception e) {
-                    logger.debug("Error occured during serial port read, reason: {}", e.getMessage());
+                    logger.debug("Error occurred during serial port read, reason: {}", e);
                 }
 
                 // run state machine to process all received data

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -44,14 +44,7 @@ public class NibeHeatPumpHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private PumpModel parsePumpModel(Thing thing) {
-        PumpModel pumpModel;
-        try {
-            String[] pumpModelStrings = thing.getThingTypeUID().getId().toString().split("-");
-            pumpModel = PumpModel.getPumpModel(pumpModelStrings[0]);
-        } catch (IllegalArgumentException e) {
-            String description = String.format("Illegal pump model '%s'", thing.getThingTypeUID().toString());
-            throw new IllegalArgumentException(description);
-        }
-        return pumpModel;
+        String[] pumpModelStrings = thing.getThingTypeUID().getId().toString().split("-");
+        return PumpModel.getPumpModel(pumpModelStrings[0]);
     }
 }

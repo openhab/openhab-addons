@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nibeheatpump.internal.message;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -59,29 +59,17 @@ public class ModbusWriteResponseMessageTest {
         assertEquals(false, m.isSuccessfull());
     }
 
-    @Test
-    public void badCrcTest() {
+    @Test(expected = NibeHeatPumpException.class)
+    public void badCrcTest() throws NibeHeatPumpException {
         final String strMessage = "5C00206C01004A";
         final byte[] msg = DatatypeConverter.parseHexBinary(strMessage);
-        try {
-            @SuppressWarnings("unused")
-            ModbusWriteResponseMessage m = new ModbusWriteResponseMessage(msg);
-            fail("Method didn't throw NibeHeatPumpException when expected");
-        } catch (NibeHeatPumpException e) {
-            assertTrue(e.getMessage().startsWith("Checksum does not match"));
-        }
+        new ModbusWriteResponseMessage(msg);
     }
 
-    @Test
-    public void notWriteResponseMessageTest() {
+    @Test(expected = NibeHeatPumpException.class)
+    public void notWriteResponseMessageTest() throws NibeHeatPumpException {
         final String strMessage = "5C00206B060102030405064A";
         final byte[] byteMessage = DatatypeConverter.parseHexBinary(strMessage);
-        try {
-            @SuppressWarnings("unused")
-            ModbusWriteResponseMessage m = new ModbusWriteResponseMessage(byteMessage);
-            fail("Method didn't throw NibeHeatPumpException when expected");
-        } catch (NibeHeatPumpException e) {
-            assertEquals(e.getMessage(), "Not Write Response message");
-        }
+        new ModbusWriteResponseMessage(byteMessage);
     }
 }

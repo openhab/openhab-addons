@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2017 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -46,10 +46,6 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
             this.msgType = msgType;
         }
 
-        MessageType(byte msgType) {
-            this.msgType = msgType;
-        }
-
         public byte toByte() {
             return (byte) msgType;
         }
@@ -58,7 +54,7 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
 
     public byte[] rawMessage;
     public MessageType msgType = MessageType.UNKNOWN;
-    public byte msgId = 0;
+    public byte msgId;
 
     public NibeHeatPumpBaseMessage() {
 
@@ -80,8 +76,7 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
 
     @Override
     public String toString() {
-        String str = "";
-        str += "Message type = " + msgType;
+        String str = "Message type = " + msgType;
         return str;
     }
 
