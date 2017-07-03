@@ -62,7 +62,7 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_ROOM_SCENEB = "sceneb";
     public final static String CHANNEL_ROOM_SCENEC = "scenec";
     public final static String CHANNEL_ROOM_SCENED = "scened";
-    public final static String CHANNEL_ROOM_STATE = "room_state";
+    public final static String CHANNEL_ROOM_STATE = "state";
 
     public final static String CHANNEL_FLAGSWITCH = "switch";
     public final static String CHANNEL_BUTTON_PRESS = "press";
