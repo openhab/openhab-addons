@@ -12,9 +12,9 @@ import org.openhab.binding.supla.internal.di.ApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -31,7 +31,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SuplaCloudBridgeHandler.class);
 
     private final ReadWriteLock handlersLock = new ReentrantReadWriteLock();
-    private final List<SuplaIoDeviceHandler> handlers = new ArrayList<>();
+    private final Set<SuplaIoDeviceHandler> handlers = new HashSet<>();
     private SuplaCloudConfiguration configuration;
     private ApplicationContext applicationContext;
     private ScheduledExecutorService scheduledPool;
@@ -49,12 +49,8 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
         handlersLock.writeLock().lock();
-        try {
-            if (childHandler instanceof SuplaIoDeviceHandler) {
-                handlers.add((SuplaIoDeviceHandler) childHandler);
-            }
-        } finally {
-            handlersLock.writeLock().unlock();
+        if (childHandler instanceof SuplaIoDeviceHandler) {
+            registerSuplaIoDeviceManagerHandler((SuplaIoDeviceHandler) childHandler);
         }
     }
 
@@ -62,9 +58,24 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         super.childHandlerDisposed(childHandler, childThing);
+        if (childHandler instanceof SuplaIoDeviceHandler) {
+            unregisterSuplaIoDeviceManagerHandler((SuplaIoDeviceHandler) childHandler);
+        }
+    }
+
+    void registerSuplaIoDeviceManagerHandler(SuplaIoDeviceHandler handler) {
         handlersLock.writeLock().lock();
         try {
-            handlers.remove(childHandler);
+            handlers.add(handler);
+        } finally {
+            handlersLock.writeLock().unlock();
+        }
+    }
+
+    void unregisterSuplaIoDeviceManagerHandler(SuplaIoDeviceHandler handler) {
+        handlersLock.writeLock().lock();
+        try {
+            handlers.remove(handler);
         } finally {
             handlersLock.writeLock().unlock();
         }
@@ -95,8 +106,8 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        if(scheduledPool != null) {
-            if(!scheduledPool.isShutdown()) {
+        if (scheduledPool != null) {
+            if (!scheduledPool.isShutdown()) {
                 scheduledPool.shutdownNow();
             }
             scheduledPool = null;
@@ -113,7 +124,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         public void run() {
             handlersLock.readLock().lock();
             try {
-                handlers.forEach(SuplaIoDeviceHandler::refreshChannels);
+                handlers.forEach(SuplaIoDeviceHandler::refresh);
             } finally {
                 handlersLock.readLock().unlock();
             }

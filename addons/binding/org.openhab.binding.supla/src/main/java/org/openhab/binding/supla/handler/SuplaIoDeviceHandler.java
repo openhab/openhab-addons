@@ -25,8 +25,9 @@ import java.util.function.Consumer;
 import static java.lang.String.format;
 import static java.util.Optional.empty;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
+import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.NONE;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
@@ -48,8 +49,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         Optional<SuplaChannel> suplaChannel = findSuplaChannel(channelUID);
         if (suplaChannel.isPresent()) {
-            applicationContext.getCommandExecutorFactory()
-                    .findCommand(suplaChannel.get(), channelUID)
+            applicationContext.getCommandExecutorFactory().findCommand(suplaChannel.get(), channelUID)
                     .ifPresent(executor -> executor.execute(buildStateConsumer(channelUID), command));
         } else {
             logger.debug("There is no SuplaChannel for {}!", channelUID);
@@ -61,11 +61,8 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private Optional<SuplaChannel> findSuplaChannel(ChannelUID channelUID) {
-        return suplaChannelChannelMap.entrySet()
-                .stream()
-                .filter(entry -> entry.getKey().getUID().equals(channelUID))
-                .map(Map.Entry::getValue)
-                .findFirst();
+        return suplaChannelChannelMap.entrySet().stream().filter(entry -> entry.getKey().getUID().equals(channelUID))
+                .map(Map.Entry::getValue).findFirst();
     }
 
     @Override
@@ -82,21 +79,30 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
             final Optional<ApplicationContext> optional = getApplicationContextWithRetries();
             if (optional.isPresent()) {
                 this.applicationContext = optional.get();
-                final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(applicationContext.getIoDevicesManager());
-                if(suplaIoDevice.isPresent()) {
+                final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(
+                        applicationContext.getIoDevicesManager());
+                if (suplaIoDevice.isPresent()) {
                     setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
+                    final boolean refreshed = refreshDeviceStatus(suplaIoDevice.get());
+                    if (!refreshed) {
+                        return;
+                    }
+                    bridgeHandler.registerSuplaIoDeviceManagerHandler(this);
                 } else {
                     // configuration is not good
                     return;
                 }
             } else {
-                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!", this.bridgeHandler.getThing().getUID()));
+                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
+                        format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!",
+                                this.bridgeHandler.getThing().getUID()));
                 return;
             }
 
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("Error occurred during initialization! %s", e.getLocalizedMessage()));
+            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
+                    format("Error occurred during initialization! %s", e.getLocalizedMessage()));
         }
     }
 
@@ -174,10 +180,46 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         }
     }
 
-    void refreshChannels() {
-        suplaChannelChannelMap.keySet()
-                .stream()
-                .map(Channel::getUID)
-                .forEach(uuid -> handleCommand(uuid, REFRESH));
+    void refresh() {
+        final boolean refreshed = refreshDeviceStatus();
+        if (refreshed) {
+            refreshChannels();
+        }
+    }
+
+    private boolean refreshDeviceStatus() {
+        if (applicationContext != null) {
+            final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(applicationContext.getIoDevicesManager());
+            if (suplaIoDevice.isPresent()) {
+                return refreshDeviceStatus(suplaIoDevice.get());
+            } else {
+                updateStatus(UNKNOWN, NONE, "Could not find device in Supla Cloud!");
+                return false;
+            }
+        } else {
+            updateStatus(UNKNOWN, NONE, "ApplicationContext is not present!");
+            return false;
+        }
+    }
+
+    private boolean refreshDeviceStatus(SuplaIoDevice device) {
+        if (device.isEnabled()) {
+            updateStatus(ONLINE);
+            return true;
+        } else {
+            updateStatus(OFFLINE, NONE,
+                    "Device was disabled in Supla Cloud. If you want to enable it check https://cloud.supla.org/");
+            return false;
+        }
+    }
+
+    private void refreshChannels() {
+        suplaChannelChannelMap.keySet().stream().map(Channel::getUID).forEach(uuid -> handleCommand(uuid, REFRESH));
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        bridgeHandler.unregisterSuplaIoDeviceManagerHandler(this);
     }
 }
