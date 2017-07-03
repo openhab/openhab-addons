@@ -19,14 +19,6 @@ import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 public interface NibeHeatPumpMessage {
 
     /**
-     * Procedure for present class information in string format. Used for
-     * logging purposes.
-     *
-     */
-    @Override
-    String toString();
-
-    /**
      * Procedure for encode raw data.
      *
      * @param data
