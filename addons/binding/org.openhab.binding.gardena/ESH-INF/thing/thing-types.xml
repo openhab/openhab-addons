@@ -298,7 +298,7 @@
 	</channel-type>
 
 	<channel-type id="firmwareUploadProgress" advanced="true">
-		<item-type>Numper</item-type>
+		<item-type>Number</item-type>
 		<label>Upload progress</label>
 		<description>Firmware upload in progress</description>
 		<state readOnly="true" />

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel;
 
+import static org.openhab.binding.avmfritz.BindingConstants.*;
+
 import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,25 +29,27 @@ import org.apache.commons.lang.builder.ToStringBuilder;
         "nextchange" })
 public class HeatingModel {
     public static final BigDecimal TEMP_FACTOR = new BigDecimal("0.5");
-    public static final BigDecimal TEMP_MIN = new BigDecimal("8.0");
-    public static final BigDecimal TEMP_MAX = new BigDecimal("28.0");
-    public static final BigDecimal TEMP_OFF = new BigDecimal("253.0");
-    public static final BigDecimal TEMP_ON = new BigDecimal("254.0");
+    public static final BigDecimal TEMP_CELSIUS_MIN = new BigDecimal("8.0");
+    public static final BigDecimal TEMP_CELSIUS_MAX = new BigDecimal("28.0");
+    public static final BigDecimal TEMP_FRITZ_MIN = new BigDecimal("16.0");
+    public static final BigDecimal TEMP_FRITZ_MAX = new BigDecimal("56.0");
+    public static final BigDecimal TEMP_FRITZ_OFF = new BigDecimal("253.0");
+    public static final BigDecimal TEMP_FRITZ_ON = new BigDecimal("254.0");
     public static final BigDecimal BATTERY_OFF = BigDecimal.ZERO;
     public static final BigDecimal BATTERY_ON = BigDecimal.ONE;
 
-    protected BigDecimal tist;
-    protected BigDecimal tsoll;
-    protected BigDecimal absenk;
-    protected BigDecimal komfort;
-    protected BigDecimal lock;
-    protected BigDecimal devicelock;
-    protected String errorcode;
-    protected BigDecimal batterylow;
-    protected Nextchange nextchange;
+    private BigDecimal tist;
+    private BigDecimal tsoll;
+    private BigDecimal absenk;
+    private BigDecimal komfort;
+    private BigDecimal lock;
+    private BigDecimal devicelock;
+    private String errorcode;
+    private BigDecimal batterylow;
+    private Nextchange nextchange;
 
     public BigDecimal getTist() {
-        return tist != null ? tist.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+        return tist;
     }
 
     public void setTist(BigDecimal tist) {
@@ -53,15 +57,7 @@ public class HeatingModel {
     }
 
     public BigDecimal getTsoll() {
-        if (tsoll == null) {
-            return BigDecimal.ZERO;
-        } else if (tsoll.compareTo(TEMP_ON) == 0) {
-            return TEMP_MAX.add(new BigDecimal("2.0"));
-        } else if (tsoll.compareTo(TEMP_OFF) == 0) {
-            return TEMP_MIN.subtract(new BigDecimal("2.0"));
-        } else {
-            return tsoll.multiply(TEMP_FACTOR);
-        }
+        return tsoll;
     }
 
     public void setTsoll(BigDecimal tsoll) {
@@ -69,7 +65,7 @@ public class HeatingModel {
     }
 
     public BigDecimal getKomfort() {
-        return komfort != null ? komfort.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+        return komfort;
     }
 
     public void setKomfort(BigDecimal komfort) {
@@ -77,11 +73,37 @@ public class HeatingModel {
     }
 
     public BigDecimal getAbsenk() {
-        return absenk != null ? absenk.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+        return absenk;
     }
 
     public void setAbsenk(BigDecimal absenk) {
         this.absenk = absenk;
+    }
+
+    public String getMode() {
+        if (getNextchange() != null && getNextchange().getEndperiod() != 0) {
+            return MODE_AUTO;
+        } else {
+            return MODE_MANUAL;
+        }
+    }
+
+    public String getRadiatorMode() {
+        if (tsoll == null) {
+            return MODE_UNKNOWN;
+        } else if (TEMP_FRITZ_ON.compareTo(tsoll) == 0) {
+            return MODE_ON;
+        } else if (TEMP_FRITZ_OFF.compareTo(tsoll) == 0) {
+            return MODE_OFF;
+        } else if (tsoll.compareTo(komfort) == 0) {
+            return MODE_COMFORT;
+        } else if (tsoll.compareTo(absenk) == 0) {
+            return MODE_ECO;
+        } else if (TEMP_FRITZ_MAX.compareTo(tsoll) == 0) {
+            return MODE_BOOST;
+        } else {
+            return MODE_UNKNOWN;
+        }
     }
 
     public BigDecimal getLock() {
@@ -131,11 +153,37 @@ public class HeatingModel {
                 .append("nextchange", getNextchange()).toString();
     }
 
+    public static boolean inCelsiusRange(BigDecimal celsiusValue) {
+        return (TEMP_CELSIUS_MIN.compareTo(celsiusValue) <= 0) && (TEMP_CELSIUS_MAX.compareTo(celsiusValue) >= 0);
+    }
+
+    public static BigDecimal fromCelsius(BigDecimal celsiusValue) {
+        if (celsiusValue == null) {
+            return BigDecimal.ZERO;
+        } else if (TEMP_CELSIUS_MIN.compareTo(celsiusValue) == 1) {
+            return TEMP_FRITZ_MIN;
+        } else if (TEMP_CELSIUS_MAX.compareTo(celsiusValue) == -1) {
+            return TEMP_FRITZ_MAX;
+        }
+        return celsiusValue.divide(TEMP_FACTOR);
+    }
+
+    public static BigDecimal toCelsius(BigDecimal fritzValue) {
+        if (fritzValue == null) {
+            return BigDecimal.ZERO;
+        } else if (TEMP_FRITZ_ON.compareTo(fritzValue) == 0) {
+            return TEMP_CELSIUS_MAX.add(new BigDecimal("2.0"));
+        } else if (TEMP_FRITZ_OFF.compareTo(fritzValue) == 0) {
+            return TEMP_CELSIUS_MIN.subtract(new BigDecimal("2.0"));
+        }
+        return TEMP_FACTOR.multiply(fritzValue);
+    }
+
     @XmlType(name = "", propOrder = { "endperiod", "tchange" })
     public static class Nextchange {
 
-        protected int endperiod;
-        protected BigDecimal tchange;
+        private int endperiod;
+        private BigDecimal tchange;
 
         public int getEndperiod() {
             return endperiod;
@@ -146,7 +194,7 @@ public class HeatingModel {
         }
 
         public BigDecimal getTchange() {
-            return tchange != null ? tchange.multiply(TEMP_FACTOR) : BigDecimal.ZERO;
+            return tchange;
         }
 
         public void setTchange(BigDecimal tchange) {
