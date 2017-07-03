@@ -1,14 +1,18 @@
 package org.openhab.binding.supla.internal.server.http;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.io.*;
-import java.net.*;
-
-import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 import org.openhab.binding.supla.internal.mappers.Mapper;
+import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.function.Consumer;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class SuplaHttpExecutor implements HttpExecutor {
     private final Logger logger = LoggerFactory.getLogger(SuplaHttpExecutor.class);
@@ -28,8 +32,17 @@ public final class SuplaHttpExecutor implements HttpExecutor {
 
     @Override
     public Response post(Request request, Body body) {
+        return runNotGetMethod(request, body, SuplaHttpExecutor::setPostRequestMethod);
+    }
+
+    @Override
+    public Response patch(Request request, Body body) {
+        return runNotGetMethod(request, body, SuplaHttpExecutor::setPatchRequestMethod);
+    }
+
+    private Response runNotGetMethod(Request request, Body body, Consumer<HttpURLConnection> setMethod) {
         final HttpURLConnection connection = buildConnection(request);
-        setPostRequestMethod(connection);
+        setMethod.accept(connection);
         setHeaders(request, connection);
 
         // only for POST
@@ -41,6 +54,7 @@ public final class SuplaHttpExecutor implements HttpExecutor {
 
         return execute(connection);
     }
+
 
     private static void connect(HttpURLConnection connection) {
         try {
@@ -105,6 +119,10 @@ public final class SuplaHttpExecutor implements HttpExecutor {
 
     private static void setPostRequestMethod(HttpURLConnection connection) {
         setRequestMethod("POST", connection);
+    }
+
+    private static void setPatchRequestMethod(HttpURLConnection connection) {
+        setRequestMethod("PATCH", connection);
     }
 
     private String readStream(BufferedReader in) {

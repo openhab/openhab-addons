@@ -35,4 +35,9 @@ public final class OAuthApiHttpExecutor implements HttpExecutor {
     public Response post(Request request, Body body) {
         return httpExecutor.post(buildOAuthRequest(request), body);
     }
+
+    @Override
+    public Response patch(Request request, Body body) {
+        return httpExecutor.patch(buildOAuthRequest(request), body);
+    }
 }
