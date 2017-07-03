@@ -24,9 +24,13 @@ public final class SuplaTokenManager implements TokenManager {
         this.jsonMapper = checkNotNull(jsonMapper);
         this.httpExecutor = httpExecutor;
         this.server = checkNotNull(server);
-        body = new JsonBody(ImmutableMap.<String, String> builder().put("client_id", server.getClientId())
+        body = new JsonBody(ImmutableMap.<String, String>builder()
+                .put("client_id", server.getClientId())
                 .put("client_secret", server.getSecretAsString()).put("grant_type", "password")
-                .put("username", server.getUsername()).put("password", server.getPasswordAsString()).build(), jsonMapper);
+                .put("username", server.getUsername())
+                .put("password", server.getPasswordAsString())
+                .build(),
+                jsonMapper);
         checkArgument(!(httpExecutor instanceof OAuthApiHttpExecutor), "HttpExecutor cannot be OAuthApiHttpExecutor class!");
     }
 
