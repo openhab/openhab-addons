@@ -562,28 +562,28 @@
         <item-type>String</item-type>
         <label>Pump 1</label>
         <description>Pump 1</description>
-        <state readOnly="true" pattern="%s">
+        <state pattern="%s">
         </state>
     </channel-type>
     <channel-type id="pumps-vsp2">
         <item-type>String</item-type>
         <label>Pump 2</label>
         <description>Pump 2</description>
-        <state readOnly="true"  pattern="%s">
+        <state pattern="%s">
         </state>
     </channel-type>
     <channel-type id="pumps-vsp3">
         <item-type>String</item-type>
         <label>Pump 3</label>
         <description>Pump 3</description>
-        <state readOnly="true"  pattern="%s">
+        <state pattern="%s">
         </state>
     </channel-type>
     <channel-type id="pumps-vsp4">
         <item-type>String</item-type>
         <label>Pump 4</label>
         <description>Pump 4</description>
-        <state readOnly="true" pattern="%s">
+        <state pattern="%s">
         </state>
     </channel-type>
    
@@ -600,7 +600,7 @@
         <item-type>Number</item-type>
         <label>Pool Chlorination Setpoint</label>
         <description>Pool chlorination setpoint</description>
-        <state readOnly="true" pattern="%d">
+        <state pattern="%d">
         </state>
     </channel-type>
     <channel-type id="chem-saltp" advanced="true">
@@ -614,7 +614,7 @@
         <item-type>Number</item-type>
         <label>Spa Chlorination Setpoint</label>
         <description>Spa chlorination setpoint</description>
-        <state readOnly="true" pattern="%d">
+        <state pattern="%d">
         </state>
     </channel-type>
     <channel-type id="chem-salts" advanced="true">

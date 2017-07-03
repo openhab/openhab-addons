@@ -241,6 +241,12 @@ public class AutelisHandler extends BaseThingHandler {
                 }
                 String response = getUrl(baseURL + "/set.cgi?wait=1&name=" + name + "&" + cmd + "=" + value, TIMEOUT);
                 logger.debug("temp set name:{} cmd:{} value:{} : result {}", name, cmd, value, response);
+            } else if (type.equals("chem")) {
+                String response = getUrl(baseURL + "/set.cgi?name=" + name + "&chem=" + command.toString(), TIMEOUT);
+                logger.debug("chlrp {} {}: result {}", name, command, response);
+            } else if (type.equals("pumps")) {
+                String response = getUrl(baseURL + "/set.cgi?name=" + name + "&speed=" + command.toString(), TIMEOUT);
+                logger.debug("pumps {} {}: result {}", name, command, response);
             } else {
                 logger.error("Unsupported type {}", type);
             }

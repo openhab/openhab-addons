@@ -513,14 +513,14 @@
         <item-type>Number</item-type>
         <label>Chlorine Pool Setpoint</label>
         <description>Chlorine Pool Setpoint</description>
-        <state readOnly="true" pattern="%d">
+        <state pattern="%d">
         </state>
     </channel-type>
     <channel-type id="chlor-spasp" advanced="true">
         <item-type>Number</item-type>
         <label>Chlorine Spa Setpoint</label>
         <description>Chlorine Sap Setpoint</description>
-        <state readOnly="true" pattern="%d">
+        <state pattern="%d">
         </state>
     </channel-type>
     <channel-type id="chlor-salt">
