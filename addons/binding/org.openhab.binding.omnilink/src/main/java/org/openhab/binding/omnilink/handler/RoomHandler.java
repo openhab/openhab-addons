@@ -36,16 +36,16 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
             int param1 = 0;
             int linkNum = -1;
             switch (channelID) {
-                case "scenea":
+                case "scene_a":
                     linkNum = 0;
                     break;
-                case "sceneb":
+                case "scene_b":
                     linkNum = 1;
                     break;
-                case "scenec":
+                case "scene_c":
                     linkNum = 2;
                     break;
-                case "scened":
+                case "scene_d":
                     linkNum = 3;
                     break;
                 default:
@@ -142,16 +142,16 @@ public class RoomHandler extends AbstractOmnilinkHandler implements UnitHandler 
             updateState(OmnilinkBindingConstants.CHANNEL_ROOM_ON, OnOffType.OFF);
         }
         if (unitStatus.getStatus() != 2) {
-            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENEA, OnOffType.OFF);
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENE_A, OnOffType.OFF);
         }
         if (unitStatus.getStatus() != 3) {
-            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENEB, OnOffType.OFF);
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENE_B, OnOffType.OFF);
         }
         if (unitStatus.getStatus() != 4) {
-            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENEC, OnOffType.OFF);
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENE_C, OnOffType.OFF);
         }
         if (unitStatus.getStatus() != 5) {
-            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENED, OnOffType.OFF);
+            updateState(OmnilinkBindingConstants.CHANNEL_ROOM_SCENE_D, OnOffType.OFF);
         }
 
     }

@@ -27,8 +27,7 @@ public class ButtonHandler extends AbstractOmnilinkHandler {
                 int buttonNumber = getThingNumber();
                 logger.debug("Executing Button (macro) {}", buttonNumber);
                 getOmnilinkBridgeHander().sendOmnilinkCommand(CommandMessage.CMD_BUTTON, 0, buttonNumber);
-            } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
-                    | BridgeOfflineException e) {
+            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
             }
         }
