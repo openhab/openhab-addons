@@ -1,0 +1,1247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sony" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="simpleip">
+		<label>Sony Simple IP</label>
+		<description>Sony Simple IP Device</description>
+
+		<channels>
+			<channel id="ir" typeId="ir" />
+			<channel id="power" typeId="power" />
+			<channel id="volume" typeId="volume" />
+			<channel id="audiomute" typeId="audiomute" />
+			<channel id="channel" typeId="channel" />
+			<channel id="tripletchannel" typeId="tripletchannel" />
+			<channel id="inputsource" typeId="inputsource" />
+			<channel id="input" typeId="input" />
+			<channel id="picturemute" typeId="picturemute" />
+			<channel id="togglepicturemute" typeId="togglepicturemute" />
+			<channel id="pip" typeId="pip" />
+			<channel id="togglepip" typeId="togglepip" />
+			<channel id="togglepipposition" typeId="togglepipposition" />
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the simple ip access point</description>
+			</parameter>
+			<parameter name="commandsMapFile" type="text" required="true">
+				<context>mappings</context>
+				<label>Commands Map File</label>
+				<description>The Commands Map File</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="netInterface" type="text">
+				<context>setup</context>
+				<label>Interface</label>
+				<description>The interface being used (eth0 for wired, wlan1 for wireless)</description>
+				<default>eth0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ping" type="integer" required="false">
+				<context>polling</context>
+				<label>Ping Interval</label>
+				<description>The ping interval in seconds to keep the connection alive</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<context>polling</context>
+				<label>Refresh Interval</label>
+				<description>The ping interval in seconds to keep the connection alive</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryPolling" type="integer" required="false">
+				<context>polling</context>
+				<label>Retry Polling</label>
+				<description>The polling, in seconds, to retry a connection attempt</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+    <thing-type id="scalar">
+        <label>Sony Scalar Web</label>
+        <description>Sony Scalar Web</description>
+
+        <config-description>
+            <parameter name="scalarWebUri" type="text" required="true">
+                <context>network-address</context>
+                <label>Scalar Web URL</label>
+                <description>The URI access point for the Scalar Web</description>
+            </parameter>
+            <parameter name="deviceMacAddress" type="text" required="false">
+                <context>network-address</context>
+                <label>Device MAC Address</label>
+                <description>The MAC address of the device (TV, bluray, etc)</description>
+            </parameter>
+            <parameter name="commandsMapFile" type="text" required="true">
+                <context>mappings</context>
+                <label>Commands Map File</label>
+                <description>The Commands Map File</description>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="accessCode" type="text" required="false">
+                <context>authentication</context>
+                <label>Access Code</label>
+                <description>The access code (or "RQST" to request one)</description>
+                <default>0000</default>
+            </parameter>
+            <parameter name="ignoreChannels" type="text" required="true">
+                <context>options</context>
+                <default>analog</default>
+                <label>Ignore Channels</label>
+                <description>Channel Types to ignore</description>
+		        <options>
+		          <option value="all">All</option>
+                  <option value="analog">Analog Only</option>
+                  <option value="digital">Digital Only</option>
+                  <option value="none">None</option>
+		        </options>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="refresh" type="integer" required="false">
+                <context>polling</context>
+                <label>Refresh Interval</label>
+                <description>The interval (in seconds) to refresh the state from the device</description>
+                <default>2</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="retryPolling" type="integer" required="false">
+                <context>polling</context>
+                <label>Retry Interval</label>
+                <description>Interval (in seconds) to retry connecting to the device</description>
+                <default>5</default>
+                <advanced>true</advanced>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+	<thing-type id="ircc">
+		<label>Sony Ircc</label>
+		<description>Sony Ircc device</description>
+
+		<channel-groups>
+			<channel-group id="primary" typeId="irccprimary" />
+			<channel-group id="viewing" typeId="irccviewing" />
+			<channel-group id="content" typeId="ircccontent" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="irccUri" type="text" required="true">
+				<context>network-address</context>
+				<label>Ircc URL</label>
+				<description>The URI access point for the Ircc</description>
+			</parameter>
+			<parameter name="deviceMacAddress" type="text" required="false">
+				<context>network-address</context>
+				<label>Device MAC Address</label>
+				<description>The MAC address of the device (TV, bluray, etc)</description>
+			</parameter>
+			<parameter name="commandsMapFile" type="text" required="true">
+				<context>mappings</context>
+				<label>Commands Map File</label>
+				<description>The Commands Map File</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="accessCode" type="text" required="false">
+				<context>authentication</context>
+				<label>Access Code</label>
+				<description>The access code (or "RQST" to request one)</description>
+				<default>0000</default>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<context>polling</context>
+				<label>Refresh Interval</label>
+				<description>The interval (in seconds) to refresh the state from the device</description>
+				<default>2</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryPolling" type="integer" required="false">
+				<context>polling</context>
+				<label>Retry Interval</label>
+				<description>Interval (in seconds) to retry connecting to the device</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="dial">
+		<label>Sony Dial</label>
+		<description>Sony Dial (DIscovery And Launch) device</description>
+
+		<config-description>
+			<parameter name="dialUri" type="text" required="true">
+				<context>network-address</context>
+				<label>Dial URL</label>
+				<description>The URI access point for the DIAL service</description>
+			</parameter>
+			<parameter name="deviceMacAddress" type="text" required="false">
+				<context>network-address</context>
+				<label>MAC Address</label>
+				<description>The MAC address of the device</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<context>polling</context>
+				<label>Refresh Interval</label>
+                <description>The interval (in seconds) to refresh the state from the device</description>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryPolling" type="integer" required="false">
+				<context>polling</context>
+				<label>Retry Interval</label>
+				<description>Interval (in seconds) to retry connecting to the device</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="irccprimary" advanced="false">
+		<label>Primary Channels</label>
+		<description>The main channels for IRCC</description>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="command" typeId="ircccmd" />
+			<channel id="contenturl" typeId="ircccontenturl" />
+			<channel id="textfield" typeId="ircctext" />
+			<channel id="intext" typeId="irccintext" />
+			<channel id="inbrowser" typeId="irccinbrowser" />
+			<channel id="isviewing" typeId="irccisviewing" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="irccviewing" advanced="true">
+		<label>Viewing Channels</label>
+		<description>The channels that are active when viewing a source</description>
+		<channels>
+			<channel id="id" typeId="irccid" />
+			<channel id="source" typeId="irccsource" />
+            <channel id="zone2source" typeId="irccsource2" />
+			<channel id="class" typeId="irccclass" />
+			<channel id="title" typeId="ircctitle" />
+			<channel id="duration" typeId="irccduration" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="ircccontent" advanced="true">
+		<label>Content Channels</label>
+		<description>The channels that are active when content is available</description>
+		<channels>
+			<channel id="id" typeId="irccid" />
+			<channel id="title" typeId="ircctitle" />
+			<channel id="class" typeId="irccclass" />
+			<channel id="source" typeId="irccsource" />
+			<channel id="mediatype" typeId="irccmediatype" />
+			<channel id="mediaformat" typeId="irccmediaformat" />
+			<channel id="edition" typeId="irccedition" />
+			<channel id="description" typeId="irccdescription" />
+			<channel id="genre" typeId="irccgenre" />
+			<channel id="duration" typeId="irccduration" />
+			<channel id="rating" typeId="irccrating" />
+			<channel id="daterelease" typeId="irccdaterelease" />
+			<channel id="director" typeId="irccdirector" />
+			<channel id="producer" typeId="irccproducer" />
+			<channel id="screenwriter" typeId="irccscreenwriter" />
+			<channel id="image" typeId="irccimage" />
+		</channels>
+	</channel-group-type>
+
+    <channel-group-type id="scalarappcontrol" advanced="false">
+        <label>App Control</label>
+        <description>Application Control</description>
+        <channels>
+            <channel id="title" typeId="scalarappcontroltitle" />
+            <channel id="icon" typeId="scalarappcontrolicon" />
+            <channel id="uri" typeId="scalarappcontroluri" />
+            <channel id="data" typeId="scalarappcontroldata" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="scalaraudio" advanced="false">
+        <label>Audio Control</label>
+        <description>Audio Control</description>
+        <channels>
+            <channel id="target" typeId="scalaraudiotarget" />
+            <channel id="mute" typeId="scalaraudiomute" />
+            <channel id="volume" typeId="scalaraudiovolume" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="scalaravcontent" advanced="false">
+        <label>AV Control</label>
+        <description>Audio/Visual Control</description>
+        <channels>
+            <channel id="title" typeId="scalarappcontroltitle" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="scalarcec" advanced="false">
+        <label>CEC Control</label>
+        <description>HDMI CEC Control</description>
+        <channels>
+            <channel id="controlmode" typeId="scalarceccontrolmode" />
+            <channel id="mhlautoinputchangemode" typeId="scalarcecmhlautoinputchangemode" />
+            <channel id="mhlpowerfeedmode" typeId="scalarcecmhlpowerfeedmode" />
+            <channel id="powersyncmode" typeId="scalarcecpowersyncmode" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="scalarsystem" advanced="false">
+        <label>System Control</label>
+        <description>System Control</description>
+        <channels>
+            <channel id="currenttime" typeId="scalarsystemcurrenttime" />
+            <channel id="devicemode" typeId="scalarsystemdevicemode" />
+            <channel id="ledindicatorstatus" typeId="scalarsystemledindicatorstatus" />
+            <channel id="powersavingmode" typeId="scalarsystempowersavingmode" />
+            <channel id="powerstatus" typeId="scalarsystempowerstatus" />
+            <channel id="wolmode" typeId="scalarsystemwolmode" />
+            <channel id="sysCmd" typeId="scalarsystemircc" />
+        </channels>
+    </channel-group-type>
+
+    <channel-group-type id="scalarvideoscreen" advanced="false">
+        <label>Video Screen Control</label>
+        <description>Vidio Screen Control</description>
+        <channels>
+            <channel id="audiosourcescreen" typeId="scalarvideoscreenaudiosourcescreen" />
+            <channel id="bannermode" typeId="scalarvideoscreenbannermode" />
+            <channel id="multiscreenmode" typeId="scalarvideoscreenmultiscreenmode" />
+            <channel id="pipsubscreenposition" typeId="scalarvideoscreenpipsubscreenposition" />
+            <channel id="scenesetting" typeId="scalarvideoscreenscenesetting" />
+        </channels>
+    </channel-group-type>
+
+
+	<channel-type id="ir" advanced="true">
+		<item-type>String</item-type>
+		<label>IR Code</label>
+		<description>The IR Code to send</description>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power on/off device</description>
+	</channel-type>
+
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>The volume</description>
+	</channel-type>
+
+	<channel-type id="audiomute">
+		<item-type>Switch</item-type>
+		<label>Audio Mute</label>
+		<description>Mute/Unmute the audio</description>
+	</channel-type>
+
+	<channel-type id="channel">
+		<item-type>String</item-type>
+		<label>Channel</label>
+		<description>The channel ("5.1", "50.2", etc)</description>
+	</channel-type>
+
+	<channel-type id="tripletchannel" advanced="true">
+		<item-type>String</item-type>
+		<label>Triplet Channel</label>
+		<description>The triplet channel ("32736.32736.1024")</description>
+	</channel-type>
+
+	<channel-type id="inputsource" advanced="true">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>The Input Source ("atsct", etc)</description>
+	</channel-type>
+
+	<channel-type id="input">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>The Input ("HDMI", "TV", etc)</description>
+	</channel-type>
+
+	<channel-type id="picturemute" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Picture Mute</label>
+		<description>Mute/Unmute the picture</description>
+	</channel-type>
+
+	<channel-type id="togglepicturemute" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Picture Mute</label>
+		<description>Toggles the picture mute</description>
+	</channel-type>
+
+	<channel-type id="pip" advanced="true">
+		<item-type>Switch</item-type>
+		<label>PIP</label>
+		<description>Enables/Disabled Picture-in-Picture</description>
+	</channel-type>
+
+	<channel-type id="togglepip" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle PIP</label>
+		<description>Toggles Picture-in-Picture</description>
+	</channel-type>
+
+	<channel-type id="togglepipposition" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle PIP Position</label>
+		<description>Toggles Picture-in-Picture Position</description>
+	</channel-type>
+
+	<channel-type id="ircccmd">
+		<item-type>String</item-type>
+		<label>IRCC Command</label>
+		<description>The IRCC Command to send</description>
+	</channel-type>
+
+	<channel-type id="ircccontenturl" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Url</label>
+		<description>The URL of the current content</description>
+	</channel-type>
+	
+	<channel-type id="ircctext" advanced="true">
+		<item-type>String</item-type>
+		<label>Field Text</label>
+		<description>The text for the current field</description>
+	</channel-type>
+
+	<channel-type id="irccintext" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Text Field</label>
+		<description>True if in a text field, false otherwise</description>
+        <state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccinbrowser" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Web Browser</label>
+		<description>True if in a web browser, false otherwise</description>
+        <state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccisviewing" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Viewing Source</label>
+		<description>True if viewing a source, false otherwise</description>
+        <state readOnly="true" />
+	</channel-type>
+
+
+	<channel-type id="irccid" advanced="true">
+		<item-type>String</item-type>
+		<label>ID</label>
+		<description>The material identifier</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="ircctitle">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>The title of the material</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccclass" advanced="true">
+		<item-type>String</item-type>
+		<label>Class</label>
+		<description>The class of the material (video, etc)</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccsource" advanced="true">
+		<item-type>String</item-type>
+		<label>Source</label>
+		<description>The source of the material (DVD, etc)</description>
+		<state readOnly="true" />
+	</channel-type>
+
+    <channel-type id="irccsource2" advanced="true">
+        <item-type>String</item-type>
+        <label>Zone 2 Source</label>
+        <description>The source of the material on zone 2(DVD, etc)</description>
+        <state readOnly="true" />
+    </channel-type>
+
+	<channel-type id="irccmediatype" advanced="true">
+		<item-type>String</item-type>
+		<label>Media Type</label>
+		<description>The media type of the material (DVD, USB, etc)</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccmediaformat" advanced="true">
+		<item-type>String</item-type>
+		<label>Media Format</label>
+		<description>The media format of the material (VIDEO, etc)</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccedition" advanced="true">
+		<item-type>String</item-type>
+		<label>Edition</label>
+		<description>The edition of the material</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccdescription">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>The material's description</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccgenre" advanced="true">
+		<item-type>String</item-type>
+		<label>Genre</label>
+		<description>The genre of the material (Action, Adventure, etc)</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccduration" advanced="true">
+		<item-type>Number</item-type>
+		<label>Duration</label>
+		<description>The duration (in seconds) of the material</description>
+	</channel-type>
+
+	<channel-type id="irccrating" advanced="true">
+		<item-type>String</item-type>
+		<label>Rating</label>
+		<description>The rating of the material (G, PG, etc)</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccdaterelease" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Release Date</label>
+		<description>The release date of the material</description>
+	</channel-type>
+
+	<channel-type id="irccdirector" advanced="true">
+		<item-type>String</item-type>
+		<label>Director</label>
+		<description>The director(s) of the material</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccproducer" advanced="true">
+		<item-type>String</item-type>
+		<label>Producer</label>
+		<description>The producer(s) of the material</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccscreenwriter" advanced="true">
+		<item-type>String</item-type>
+		<label>Screen Writer</label>
+		<description>The screen writer(s) of the material</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="irccimage" advanced="true">
+		<item-type>Image</item-type>
+		<label>Icon</label>
+		<description>The icon representing the material</description>
+        <state readOnly="true" />
+	</channel-type>
+
+    <channel-type id="dialtitle">
+        <item-type>String</item-type>
+        <label>Title</label>
+        <description>The title of the application</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="dialicon" advanced="true">
+        <item-type>Image</item-type>
+        <label>Dial Icon</label>
+        <description>The icon representing the DIAL application</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="dialState">
+        <item-type>Button</item-type>
+        <label>Dial State</label>
+        <description>Whether the DIAL application is active (ON) or not (OFF)</description>
+    </channel-type>
+
+    <channel-type id="dialuri">
+        <item-type>String</item-type>
+        <label>URI</label>
+        <description>The URI (unique identifier) of the application</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="dialdata">
+        <item-type>String</item-type>
+        <label>Data</label>
+        <description>The startup data for the application</description>
+    </channel-type>
+
+    <channel-type id="scalaraudiovolume">
+        <item-type>Dimmer</item-type>
+        <label>Scalar Volume</label>
+        <description>Scalar Volume</description>
+    </channel-type>
+
+    <channel-type id="scalaraudiomute">
+        <item-type>Switch</item-type>
+        <label>Mute Audio</label>
+        <description>Mute audio on all modes [headphone, speakers, etc]</description>
+    </channel-type>
+
+    <channel-type id="scalarsystemcurrenttime" advanced="true">
+        <item-type>DateTime</item-type>
+        <label>Current Time</label>
+        <description>Current time of the device</description>
+    </channel-type>
+
+    <channel-type id="scalarsystemlanguage" advanced="true">
+        <item-type>String</item-type>
+        <label>System Language</label>
+        <description>The current language of the device</description>
+    </channel-type>
+
+    <channel-type id="scalarsystemledindicatorstatus" advanced="true">
+        <item-type>String</item-type>
+        <label>LED Status</label>
+        <description>The status of the LED indicator (Off/Low/High)</description>
+    </channel-type>
+
+    <channel-type id="scalarsystempowersavingmode" advanced="true">
+        <item-type>String</item-type>
+        <label>Power Savings Mode</label>
+        <description>The power savings mode (Off/Low/High)</description>
+    </channel-type>
+
+    <channel-type id="scalarsystempowerstatus">
+        <item-type>Switch</item-type>
+        <label>Power Status</label>
+        <description>The power status of the device</description>
+    </channel-type>
+
+    <channel-type id="scalarsystemwolmode" advanced="true">
+        <item-type>Switch</item-type>
+        <label>WOL Mode</label>
+        <description>The wake on lan (WOL) mode</description>
+    </channel-type>
+
+    <channel-type id="scalarsystemircc">
+        <item-type>String</item-type>
+        <label>IRCC Command</label>
+        <description>The IRCC command to send to the system</description>
+    </channel-type>
+
+    <channel-type id="scalarsystemreboot" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Device Reboot</label>
+        <description>Send 'ON' to reboot the device</description>
+    </channel-type>
+
+    <channel-type id="scalarsystempostalcode" advanced="true">
+        <item-type>String</item-type>
+        <label>Postal Code</label>
+        <description>The postal code of the device</description>
+    </channel-type>
+
+    <channel-type id="scalarappcontrolapptitle" advanced="true">
+        <item-type>String</item-type>
+        <label>App Title</label>
+        <description>App title</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarappcontrolappicon" advanced="true">
+        <item-type>String</item-type>
+        <label>App Icon</label>
+        <description>App Icon</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarappcontrolappdata" advanced="true">
+        <item-type>String</item-type>
+        <label>App Data</label>
+        <description>App Data</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarappcontrolappstatus" advanced="false">
+        <item-type>Switch</item-type>
+        <label>App Status</label>
+        <description>Status of App</description>
+    </channel-type>
+
+    <channel-type id="scalarappcontrolstatus" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Indicator status</label>
+        <description>Status of indicator</description>
+    </channel-type>
+
+    <channel-type id="scalarappcontroltextform" advanced="true">
+        <item-type>String</item-type>
+        <label>Text Form Entry</label>
+        <description>Current Text Form entry</description>
+    </channel-type>
+
+    <channel-type id="scalarceccontrolmode" advanced="true">
+        <item-type>Switch</item-type>
+        <label>CEC Control Mode</label>
+        <description>Whether the device will control CEC devices or not</description>
+    </channel-type>
+
+    <channel-type id="scalarcecmhlautoinputchangemode" advanced="true">
+        <item-type>Switch</item-type>
+        <label>CEC MHL Auto Input Change</label>
+        <description>Whether the device will automatically change inputs to active MHL sources</description>
+    </channel-type>
+
+    <channel-type id="scalarcecmhlpowerfeedmode" advanced="true">
+        <item-type>Switch</item-type>
+        <label>CEC MHL Power Feed</label>
+        <description>Whether the device will feed power to MHL devices</description>
+    </channel-type>
+
+    <channel-type id="scalarcecpoweroffsyncmode" advanced="true">
+        <item-type>Switch</item-type>
+        <label>CEC Power Off Sync</label>
+        <description>Whether the device will turn off with CEC</description>
+    </channel-type>
+
+    <channel-type id="scalarcecpoweronsyncmode" advanced="true">
+        <item-type>Switch</item-type>
+        <label>CEC Power On Sync</label>
+        <description>Whether the device will power on with source</description>
+    </channel-type>
+
+    <channel-type id="scalarvideoscreenaudiosource" advanced="true">
+        <item-type>String</item-type>
+        <label>Screen Audio Source</label>
+        <description>Source of audio for the screen</description>
+    </channel-type>
+
+    <channel-type id="scalarvideoscreenbannermode" advanced="true">
+        <item-type>String</item-type>
+        <label>Screen Banner Mode</label>
+        <description>Banner mode for TV source</description>
+    </channel-type>
+
+    <channel-type id="scalarvideoscreenmultiscreenmode" advanced="true">
+        <item-type>String</item-type>
+        <label>Multi Screen Mode</label>
+        <description>Multiple Screen Mode</description>
+    </channel-type>
+
+    <channel-type id="scalarvideoscreenpipsubscreenposition" advanced="true">
+        <item-type>String</item-type>
+        <label>PIP Position</label>
+        <description>Picture-in-Picture (PIP) screen position</description>
+    </channel-type>
+
+    <channel-type id="scalarvideoscreenscenesetting" advanced="true">
+        <item-type>String</item-type>
+        <label>Scene Setting</label>
+        <description>The scene setting for the video screen</description>
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolschemes" advanced="true">
+        <item-type>String</item-type>
+        <label>Schemes</label>
+        <description>Comma separated list of schemes</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolsources" advanced="true">
+        <item-type>String</item-type>
+        <label>Sources</label>
+        <description>Comma separated list of sources</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentstatus">
+        <item-type>Switch</item-type>
+        <label>Content Status</label>
+        <description>The status of the content (ON is Playing)</description>
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontenturi" advanced="true">
+        <item-type>String</item-type>
+        <label>Content URI</label>
+        <description>The URI of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontenttitle" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Title</label>
+        <description>The title of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentidx" advanced="true">
+        <item-type>Number</item-type>
+        <label>Content Index</label>
+        <description>The index position of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentdispnum" advanced="true">
+        <item-type>Number</item-type>
+        <label>Content Display Number</label>
+        <description>The display number of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentoriginaldispnum" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Original Display Number</label>
+        <description>The original display number of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontenttripletstr" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Triplet ID</label>
+        <description>The triplet identifier of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentprogramnum" advanced="true">
+        <item-type>Number</item-type>
+        <label>Content Program Number</label>
+        <description>The program number of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentprogrammediatype" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Program Media Type</label>
+        <description>The program media type of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentdirectremotenum" advanced="true">
+        <item-type>Number</item-type>
+        <label>Content Remote Number</label>
+        <description>The direct remote number for the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentepgvisibility" advanced="true">
+        <item-type>String</item-type>
+        <label>Content EPG Visibility</label>
+        <description>The EPG visibility for the content</description>
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentchannelsurfingvisibility" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Channel Surfing Visibility</label>
+        <description>The channel surfing visibility for the content</description>
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentvisibility" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Visibility</label>
+        <description>The visibility for the content</description>
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentstartdatetime" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Start Date</label>
+        <description>The date the content was started</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentchannelname" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Channel Name</label>
+        <description>The channel name of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentfilesizebyte" advanced="true">
+        <item-type>Number</item-type>
+        <label>Content File Size</label>
+        <description>The content file size (in bytes)</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentisprotected" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Content Protected</label>
+        <description>Whether the content is protected or not</description>
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentisalreadyplayed" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Content Already Played</label>
+        <description>Whether the content has been already been played or not</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentproductid" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Product ID</label>
+        <description>The content product id</description>
+        <state readOnly="true" />
+    </channel-type>
+
+
+    <channel-type id="scalarwebavcontrolcontentcontenttype" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Type</label>
+        <description>The type of content</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="scalarwebavcontrolcontentstorageuri" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Storage URI</label>
+        <description>The content storage URI</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentvideocodec" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Video Codec</label>
+        <description>The video codec of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentchaptercount" advanced="true">
+        <item-type>Number</item-type>
+        <label>Content Chapter Count</label>
+        <description>The chapter count the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentdurationsec" advanced="true">
+        <item-type>Number</item-type>
+        <label>Content Duration</label>
+        <description>The duration (in seconds) of the content</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentaudiocodec" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Audio Codec</label>
+        <description>Comma separated list of audio codecs available</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentaudiofrequency" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Audio Frequency</label>
+        <description>Comma separated list of audio frequencies available</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentaudiochannel" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Audio Channel</label>
+        <description>Comma separated list of audio channels available</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentsubtitlelanguage" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Subtitle Language</label>
+        <description>Comma separated list of subtitle languages available</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentsubtitletitle" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Subtitle Titles</label>
+        <description>Comma separated list of subtitle titles available</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentparentalrating" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Parental Rating</label>
+        <description>Comma separated list of parental ratings</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentparentalsystem" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Parental System</label>
+        <description>Comma separated list of parental rating systems</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentparentalcountry" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Parental Country</label>
+        <description>Comma separated list of parental rating countries</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentsizemb" advanced="true">
+        <item-type>Number</item-type>
+        <label>Content Size</label>
+        <description>Size of the content (in MB)</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentcreatedtime" advanced="true">
+        <item-type>String</item-type>
+        <label>Content Created Time</label>
+        <description>Time content was created</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolcontentusercontentflag" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Content User Created</label>
+        <description>Whether the content was user created or not</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolinpstatusuri" advanced="true">
+        <item-type>String</item-type>
+        <label>Input URI</label>
+        <description>URI of the input</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolinpstatustitle" advanced="true">
+        <item-type>String</item-type>
+        <label>Input Title</label>
+        <description>Title of the input</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolinpstatusconnection" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Input Status</label>
+        <description>Whether the input is currently being used or not</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolinpstatuslabel" advanced="true">
+        <item-type>String</item-type>
+        <label>Input Label</label>
+        <description>Label of the input</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolinpstatusicon" advanced="true">
+        <item-type>String</item-type>
+        <label>Input Icon</label>
+        <description>Icon representing the input</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolinpstatusstatus" advanced="true">
+        <item-type>String</item-type>
+        <label>Input Status</label>
+        <description>The input status</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolprratingtypeage" advanced="true">
+        <item-type>Number</item-type>
+        <label>Parental Rating Age</label>
+        <description>The parental rating age type</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolprratingtypesony" advanced="true">
+        <item-type>String</item-type>
+        <label>Parental Rating Sony</label>
+        <description>Sony's parental rating type</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolprratingcountry" advanced="true">
+        <item-type>String</item-type>
+        <label>Parental Rating Country</label>
+        <description>The parental rating country</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolprratingcustomtypetv" advanced="true">
+        <item-type>String</item-type>
+        <label>Parental Rating TV</label>
+        <description>The TV parental rating</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolprratingcustomtypempaa" advanced="true">
+        <item-type>String</item-type>
+        <label>Parental Rating MPAA</label>
+        <description>The MPAA parental rating</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolprratingcustomtypecaenglish" advanced="true">
+        <item-type>String</item-type>
+        <label>Parental CA English</label>
+        <description>The CA English rating</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolprratingcustomtypecafrench" advanced="true">
+        <item-type>String</item-type>
+        <label>Parental CA French</label>
+        <description>The CA French rating</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolprunratedlock" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Parental Unrated Lock</label>
+        <description>Whether unrated is locked or not</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolpluri" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing URI</label>
+        <description>The URI of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolplsource" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing Source</label>
+        <description>The Source of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolpltitle" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing Title</label>
+        <description>The Title of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolpldispnum" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing Display Number</label>
+        <description>The display number of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolploriginaldispnum" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing Original Display Number</label>
+        <description>The original display number of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolpltripletstr" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing Triplet</label>
+        <description>The triplet of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolplprogramnum" advanced="true">
+        <item-type>Number</item-type>
+        <label>Playing Program Number</label>
+        <description>The program number of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolplprogramtitle" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing Program Title</label>
+        <description>The program title of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolplstartdatetime" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing Start Date</label>
+        <description>The start date of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolpldurationsec" advanced="true">
+        <item-type>Number</item-type>
+        <label>Playing Duration</label>
+        <description>The duration (in seconds) of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="scalarwebavcontrolplmediatype" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing Media Type</label>
+        <description>The media type of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="scalarwebavcontrolplplayspeed" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing Speed</label>
+        <description>The speed of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="scalarwebavcontrolplbivlserviceid" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing BIVL Service ID</label>
+        <description>The Bravia Internet Video Link (BIVL) service id of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="scalarwebavcontrolplbivlassetid" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing BIVL Asset ID</label>
+        <description>The Bravia Internet Video Link (BIVL) asset id of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="scalarwebavcontrolplbivlprovider" advanced="true">
+        <item-type>String</item-type>
+        <label>Playing BIVL Provider</label>
+        <description>The Bravia Internet Video Link (BIVL) provider of the content currently playing</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="scalarbrowseractivate" advanced="false">
+        <item-type>String</item-type>
+        <label>Browser Activate</label>
+        <description>The activates the browser</description>
+    </channel-type>
+    
+    <channel-type id="scalarbrowsertexturl" advanced="false">
+        <item-type>String</item-type>
+        <label>Browser URL</label>
+        <description>The URL of the browser</description>
+    </channel-type>
+    
+    <channel-type id="scalarbrowsertexttitle" advanced="false">
+        <item-type>String</item-type>
+        <label>Browser URL Title</label>
+        <description>The title of the URL</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="scalarbrowsertexttype" advanced="false">
+        <item-type>String</item-type>
+        <label>Browser URL Type</label>
+        <description>The type of the URL</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="scalarbrowsertextfavicon" advanced="false">
+        <item-type>String</item-type>
+        <label>Browser URL FavIcon</label>
+        <description>The favicon of the URL</description>
+        <state readOnly="true" />
+    </channel-type>
+</thing:thing-descriptions>
