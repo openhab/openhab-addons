@@ -34,7 +34,7 @@ When the Niko Home Control bridge is added as a thing, from the discovery inbox 
 Subsequently, all defined actions that can be triggered from a smartphone/tablet in the Niko Home Control system will be discovered and put in the inbox.
 It is possible to trigger a manual scan for things on the Niko Home Control bridge.
 
-If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such in PaperUI.
+If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such in PaperUI. Locations can subsequently be changed through the thing location paramter in PaperUI.
 
 ## Thing Configuration
 
@@ -54,7 +54,7 @@ Bridge nikohomecontrol:bridge:<bridgeId> [ addr="<IP-address of IP-interface>", 
 The thing configuration for the actions has the following syntax:
 
 ```
-Thing nikohomecontrol:<thing type>:<bridgeId>:<thingId>
+Thing nikohomecontrol:<thing type>:<bridgeId>:<thingId> "Label" @ "Location"
                         [ actionId=<Niko Home Control action ID>,
                           step=<dimmer increase/decrease step value> ]
 ```
@@ -62,7 +62,7 @@ Thing nikohomecontrol:<thing type>:<bridgeId>:<thingId>
 or nested in the bridge configuration:
 
 ```
-<thing type> <thingId> [ actionId=<Niko Home Control action ID>,
+<thing type> <thingId> "Label" @ "Location" [ actionId=<Niko Home Control action ID>,
                          step=<dimmer increase/decrease step value> ]
 ```
                                
@@ -73,6 +73,10 @@ onOff, dimmer, blind
 ```
 
 `thingId` can have any value, but will be set to the same value as the actionId parameter if discovery is used.
+
+`"Label"` is een optional label for the thing.
+
+`@ "Location"` is optional, and represents the location of the thing. Auto-discovery would have assigned a value automatically.
 
 The `actionId` parameter is the unique ip Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control programming software. It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery. For textual configuration, you can be manually retrieve it from the content of the .nhcp configuration file created by the programming software. Open the file with an unzip tool to read it's content.
 
@@ -103,13 +107,13 @@ Beyond action events, the Niko Home Control communication also supports thermost
 
 ```
 Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300 ] {
-    onOff 1 [ actionId=1 ]
-    dimmer 2 [ actionId=2, step=5 ]
+    onOff 1 "LivingRoom" @ "Downstairs" [ actionId=1 ]
+    dimmer 2 "TVRoom" [ actionId=2, step=5 ]
     blind 3 [ actionId=3 ]
 }
 
 Bridge nikohomecontrol:bridge:nhc2 [ addr="192.168.0.110" ] {
-    onOff 11 [ actionId=11 ]
+    onOff 11 @ "Upstairs"[ actionId=11 ]
     dimmer 12 [ actionId=12, step=5 ]
     blind 13 [ actionId=13 ]
 }
@@ -118,9 +122,9 @@ Bridge nikohomecontrol:bridge:nhc2 [ addr="192.168.0.110" ] {
 .items:
 
 ```
-Switch LivingRoom       {channel="nikohomecontrol:onOff:nhc1:1#switch"}          # Switch for onOff type action
-Dimmer TVRoom           {channel="nikohomecontrol:dimmer:nhc1:2#brightness"}     # Changing brightness dimmer type action
-Rollershutter Kitchen   {channel="nikohomecontrol:blind:nhc1:3#rollershutter"}   # Controlling rollershutter or blind type action
+Switch LivingRoom       {channel="nikohomecontrol:onOff:nhc1:1:switch"}          # Switch for onOff type action
+Dimmer TVRoom           {channel="nikohomecontrol:dimmer:nhc1:2:brightness"}     # Changing brightness dimmer type action
+Rollershutter Kitchen   {channel="nikohomecontrol:blind:nhc1:3:rollershutter"}   # Controlling rollershutter or blind type action
 ```
 
 .sitemap:
