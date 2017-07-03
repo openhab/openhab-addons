@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -33,6 +34,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     private final List<SuplaIoDeviceHandler> handlers = new ArrayList<>();
     private SuplaCloudConfiguration configuration;
     private ApplicationContext applicationContext;
+    private ScheduledExecutorService scheduledPool;
 
     public SuplaCloudBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -84,9 +86,21 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        ThreadPoolManager.getScheduledPool(SCHEDULED_THREAD_POOL_NAME).scheduleAtFixedRate(new RefreshThread(),
+        scheduledPool = ThreadPoolManager.getScheduledPool(SCHEDULED_THREAD_POOL_NAME);
+        scheduledPool.scheduleAtFixedRate(new RefreshThread(),
                 REFRESH_THREAD_DELAY_IN_SECONDS, configuration.refreshInterval, SECONDS);
         updateStatus(ONLINE);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if(scheduledPool != null) {
+            if(!scheduledPool.isShutdown()) {
+                scheduledPool.shutdownNow();
+            }
+            scheduledPool = null;
+        }
     }
 
     public Optional<ApplicationContext> getApplicationContext() {
