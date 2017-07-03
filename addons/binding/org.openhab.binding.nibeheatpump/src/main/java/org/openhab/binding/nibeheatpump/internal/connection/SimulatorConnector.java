@@ -114,7 +114,9 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
             logger.debug("Ignore PDU: {}", msg.getClass().toString());
         }
 
-        logger.debug("Read queue: {}, Write queue: {}", readQueue.size(), writeQueue.size());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Read queue: {}, Write queue: {}", readQueue.size(), writeQueue.size());
+        }
     }
 
     private class Reader extends Thread {

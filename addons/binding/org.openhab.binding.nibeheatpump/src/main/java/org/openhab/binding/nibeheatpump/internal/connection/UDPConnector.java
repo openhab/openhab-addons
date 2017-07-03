@@ -121,10 +121,6 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
                 sock.close();
             }
 
-        } catch (SocketException e) {
-
-            throw new NibeHeatPumpException(e);
-
         } catch (IOException e) {
 
             throw new NibeHeatPumpException(e);
