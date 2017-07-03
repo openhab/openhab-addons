@@ -3,7 +3,6 @@ package org.openhab.binding.supla.internal.supla.api;
 import com.google.common.collect.ImmutableMap;
 import org.openhab.binding.supla.internal.api.ChannelManager;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
-import org.openhab.binding.supla.internal.mappers.Mapper;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
 import org.openhab.binding.supla.internal.server.http.JsonBody;
 import org.openhab.binding.supla.internal.server.http.Request;
@@ -24,11 +23,11 @@ public class SuplaChannelManager implements ChannelManager {
     private final Logger logger = LoggerFactory.getLogger(SuplaChannelManager.class);
 
     private final HttpExecutor httpExecutor;
-    private final Mapper mapper;
+    private final JsonMapper jsonMapper;
 
-    public SuplaChannelManager(HttpExecutor httpExecutor, Mapper mapper) {
+    public SuplaChannelManager(HttpExecutor httpExecutor, JsonMapper jsonMapper) {
         this.httpExecutor = checkNotNull(httpExecutor);
-        this.mapper = checkNotNull(mapper);
+        this.jsonMapper = checkNotNull(jsonMapper);
     }
 
     @Override
@@ -42,14 +41,14 @@ public class SuplaChannelManager implements ChannelManager {
     }
 
     private Response turn(long id, Map<String, String> paramsMap) {
-        return httpExecutor.patch(new Request("/channels/" + id), new JsonBody(paramsMap, (JsonMapper) mapper));
+        return httpExecutor.patch(new Request("/channels/" + id), new JsonBody(paramsMap, jsonMapper));
     }
 
     @Override
     public Optional<SuplaChannelStatus> obtainChannelStatus(SuplaChannel channel) {
         final Response response = httpExecutor.get(new Request("/channels/" + channel.getId()));
         if (response.success()) {
-            return Optional.of(mapper.to(SuplaChannelStatus.class, response.getResponse()));
+            return Optional.of(jsonMapper.to(SuplaChannelStatus.class, response.getResponse()));
         } else {
             return Optional.empty();
         }

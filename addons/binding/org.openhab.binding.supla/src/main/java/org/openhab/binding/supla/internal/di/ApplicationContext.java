@@ -7,8 +7,8 @@ import org.openhab.binding.supla.internal.channels.ChannelBuilder;
 import org.openhab.binding.supla.internal.channels.ChannelBuilderImpl;
 import org.openhab.binding.supla.internal.commands.CommandExecutorFactory;
 import org.openhab.binding.supla.internal.commands.CommandExecutorFactoryImpl;
+import org.openhab.binding.supla.internal.mappers.GsonMapper;
 import org.openhab.binding.supla.internal.mappers.JsonMapper;
-import org.openhab.binding.supla.internal.mappers.Mapper;
 import org.openhab.binding.supla.internal.server.http.HttpExecutor;
 import org.openhab.binding.supla.internal.server.http.OAuthApiHttpExecutor;
 import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutor;
@@ -27,7 +27,7 @@ public final class ApplicationContext {
     private final SuplaCloudServer suplaCloudServer;
 
     // mappers
-    private Mapper mapper;
+    private JsonMapper jsonMapper;
 
     // http
     private HttpExecutor httpExecutor;
@@ -60,12 +60,12 @@ public final class ApplicationContext {
         }
     }
 
-    public Mapper getMapper() {
-        return get(mapper, JsonMapper::new, x -> this.mapper = x);
+    public JsonMapper getJsonMapper() {
+        return get(jsonMapper, GsonMapper::new, x -> this.jsonMapper = x);
     }
 
-    public void setMapper(Mapper mapper) {
-        this.mapper = mapper;
+    public void setJsonMapper(JsonMapper jsonMapper) {
+        this.jsonMapper = jsonMapper;
     }
 
     public HttpExecutor getHttpExecutor() {
@@ -86,7 +86,7 @@ public final class ApplicationContext {
     }
 
     public TokenManager getTokenManager() {
-        return get(tokenManager, () -> new SuplaTokenManager(new JsonMapper(), getNoOAuthHttpExecutor(), suplaCloudServer), x -> this.tokenManager = x);
+        return get(tokenManager, () -> new SuplaTokenManager(getJsonMapper(), getNoOAuthHttpExecutor(), suplaCloudServer), x -> this.tokenManager = x);
     }
 
     public void setTokenManager(TokenManager tokenManager) {
@@ -94,7 +94,7 @@ public final class ApplicationContext {
     }
 
     public IoDevicesManager getIoDevicesManager() {
-        return get(ioDevicesManager, () -> new SuplaIoDevicesManager(getHttpExecutor(), new JsonMapper()), x -> this.ioDevicesManager = x);
+        return get(ioDevicesManager, () -> new SuplaIoDevicesManager(getHttpExecutor(), getJsonMapper()), x -> this.ioDevicesManager = x);
     }
 
     public void setIoDevicesManager(IoDevicesManager ioDevicesManager) {
@@ -102,7 +102,7 @@ public final class ApplicationContext {
     }
 
     public ChannelManager getChannelManager() {
-        return get(channelManager, () -> new SuplaChannelManager(getHttpExecutor(), getMapper()), x -> this.channelManager = x);
+        return get(channelManager, () -> new SuplaChannelManager(getHttpExecutor(), getJsonMapper()), x -> this.channelManager = x);
     }
 
     public void setChannelManager(ChannelManager channelManager) {

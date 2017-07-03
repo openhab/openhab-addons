@@ -1,6 +1,6 @@
 package org.openhab.binding.supla.internal.server.http;
 
-import org.openhab.binding.supla.internal.mappers.Mapper;
+import org.openhab.binding.supla.internal.mappers.JsonMapper;
 import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,9 +64,9 @@ public final class SuplaHttpExecutor implements HttpExecutor {
         }
     }
 
-    private static byte[] buildBytesToSend(Body body, Mapper mapper) {
+    private static byte[] buildBytesToSend(Body body, JsonMapper jsonMapper) {
         try {
-            return mapper.map(body.getBody()).getBytes("UTF-8");
+            return jsonMapper.map(body.getBody()).getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
