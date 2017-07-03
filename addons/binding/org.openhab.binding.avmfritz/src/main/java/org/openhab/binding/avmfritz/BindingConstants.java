@@ -32,6 +32,9 @@ public class BindingConstants {
     public static final String BRIDGE_MODEL_NAME = "FRITZ!Box";
     public static final String PL546E_MODEL_NAME = "FRITZ!Powerline";
     public static final String THING_AIN = "ain";
+    public static final String THING_SETTEMP = "set";
+    public static final String THING_ECOTEMP = "eco";
+    public static final String THING_COMFORTTEMP = "comfort";
 
     // List of main device types
     public static final String DEVICE_DECT300 = "FRITZ_DECT_300";
@@ -55,6 +58,8 @@ public class BindingConstants {
     public static final ThingTypeUID COMETDECT_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_COMETDECT);
 
     // List of all Channel ids
+    public static final String CHANNEL_MODE = "mode";
+    public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_TEMP = "temperature";
     public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_POWER = "power";
@@ -63,11 +68,13 @@ public class BindingConstants {
     public static final String CHANNEL_SETTEMP = "set_temp";
     public static final String CHANNEL_ECOTEMP = "eco_temp";
     public static final String CHANNEL_COMFORTTEMP = "comfort_temp";
+    public static final String CHANNEL_RADIATOR_MODE = "radiator_mode";
     public static final String CHANNEL_NEXTCHANGE = "next_change";
     public static final String CHANNEL_NEXTTEMP = "next_temp";
     public static final String CHANNEL_BATTERY = "battery_low";
 
     // List of all Input tags
+    public static final String INPUT_PRESENT = "present";
     public static final String INPUT_ACTUALTEMP = "tist";
     public static final String INPUT_SETTEMP = "tsoll";
     public static final String INPUT_ECOTEMP = "absenk";
@@ -75,6 +82,16 @@ public class BindingConstants {
     public static final String INPUT_NEXTCHANGE = "endperiod";
     public static final String INPUT_NEXTTEMP = "tchange";
     public static final String INPUT_BATTERY = "batterylow";
+
+    // List of all Mode types
+    public static final String MODE_AUTO = "AUTOMATIC";
+    public static final String MODE_MANUAL = "MANUAL";
+    public static final String MODE_ON = "ON";
+    public static final String MODE_OFF = "OFF";
+    public static final String MODE_COMFORT = "COMFORT";
+    public static final String MODE_ECO = "ECO";
+    public static final String MODE_BOOST = "BOOST";
+    public static final String MODE_UNKNOWN = "UNKNOWN";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(DECT100_THING_TYPE,
             DECT200_THING_TYPE, DECT210_THING_TYPE, DECT300_THING_TYPE, PL546E_THING_TYPE, BRIDGE_THING_TYPE,

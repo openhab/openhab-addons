@@ -69,7 +69,7 @@ public class FritzahaWebInterface {
      */
     protected IFritzHandler fbHandler;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(FritzahaWebInterface.class);
     // Uses RegEx to handle bad FRITZ!Box XML
     /**
      * RegEx Pattern to grab the session ID from a login XML response
@@ -198,7 +198,7 @@ public class FritzahaWebInterface {
      * @return Response to the challenge
      */
     protected String createResponse(String challenge) {
-        String handshake = challenge.concat("-").concat(this.config.getPassword());
+        String handshake = challenge.concat("-").concat(config.getPassword());
         MessageDigest md5;
         try {
             md5 = MessageDigest.getInstance("MD5");
@@ -247,8 +247,8 @@ public class FritzahaWebInterface {
      * @return URL
      */
     public String getURL(String path) {
-        return this.config.getProtocol() + "://" + this.config.getIpAddress()
-                + (this.config.getPort() != null ? ":" + this.config.getPort() : "") + "/" + path;
+        return config.getProtocol() + "://" + config.getIpAddress()
+                + (config.getPort() != null ? ":" + config.getPort() : "") + "/" + path;
     }
 
     /**
@@ -284,7 +284,7 @@ public class FritzahaWebInterface {
             authenticate();
         }
         FritzahaContentExchange getExchange = new FritzahaContentExchange(callback);
-        asyncclient.newRequest(getURL(path, this.addSID(args))).method(HttpMethod.GET).onResponseSuccess(getExchange)
+        asyncclient.newRequest(getURL(path, addSID(args))).method(HttpMethod.GET).onResponseSuccess(getExchange)
                 .onResponseFailure(getExchange) // .onComplete(getExchange)
                 .send(getExchange);
         logger.debug("GETting URL {}", getURL(path, addSID(args)));
@@ -292,7 +292,7 @@ public class FritzahaWebInterface {
     }
 
     public FritzahaContentExchange asyncGet(FritzAhaCallback callback) {
-        return this.asyncGet(callback.getPath(), callback.getArgs(), callback);
+        return asyncGet(callback.getPath(), callback.getArgs(), callback);
     }
 
     /**
@@ -307,8 +307,8 @@ public class FritzahaWebInterface {
             authenticate();
         }
         FritzahaContentExchange postExchange = new FritzahaContentExchange(callback);
-        asyncclient.newRequest(getURL(path)).timeout(this.config.getAsyncTimeout(), TimeUnit.SECONDS)
-                .method(HttpMethod.POST).onResponseSuccess(postExchange).onResponseFailure(postExchange) // .onComplete(postExchange)
+        asyncclient.newRequest(getURL(path)).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS).method(HttpMethod.POST)
+                .onResponseSuccess(postExchange).onResponseFailure(postExchange) // .onComplete(postExchange)
                 .content(new StringContentProvider(addSID(args), "UTF-8")).send(postExchange);
         return postExchange;
     }
