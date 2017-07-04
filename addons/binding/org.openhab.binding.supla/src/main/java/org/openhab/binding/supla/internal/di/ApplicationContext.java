@@ -129,7 +129,7 @@ public final class ApplicationContext {
     }
 
     public ServerInfoManager getServerInfoManager() {
-        return get(serverInfoManager, SuplaServerInfoManager::new, (x) -> this.serverInfoManager = x);
+        return get(serverInfoManager, () -> new SuplaServerInfoManager(getHttpExecutor(), getJsonMapper()), (x) -> this.serverInfoManager = x);
     }
 
     public void setServerInfoManager(ServerInfoManager serverInfoManager) {

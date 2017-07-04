@@ -22,6 +22,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.UNINITIALIZED;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.binding.supla.SuplaBindingConstants.SCHEDULED_THREAD_POOL_NAME;
 
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
@@ -84,11 +86,10 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         this.configuration = getConfigAs(SuplaCloudConfiguration.class);
         final ApplicationContext applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
         final Optional<SuplaServerInfo> suplaServerInfo = applicationContext.getServerInfoManager().obtainServerInfo();
-        // TODO uncomment after implementing obtainServerInfo method
-//            if(!suplaServerInfo.isPresent()) {
-//                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "There is no server info! Please check if all configuration parameters are OK.");
-//                return;
-//            }
+        if(!suplaServerInfo.isPresent()) {
+            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "There is no server info! Please check if all configuration parameters are OK.");
+            return;
+        }
 
         // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
         this.applicationContext = applicationContext;
