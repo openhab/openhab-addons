@@ -75,35 +75,30 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     }
 
     private void internalInitialize() {
-        try {
-            final Optional<ApplicationContext> optional = getApplicationContextWithRetries();
-            if (optional.isPresent()) {
-                this.applicationContext = optional.get();
-                final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(
-                        applicationContext.getIoDevicesManager());
-                if (suplaIoDevice.isPresent()) {
-                    setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
-                    final boolean refreshed = refreshDeviceStatus(suplaIoDevice.get());
-                    if (!refreshed) {
-                        return;
-                    }
-                    bridgeHandler.registerSuplaIoDeviceManagerHandler(this);
-                } else {
-                    // configuration is not good
+        final Optional<ApplicationContext> optional = getApplicationContextWithRetries();
+        if (optional.isPresent()) {
+            this.applicationContext = optional.get();
+            final Optional<SuplaIoDevice> suplaIoDevice = getSuplaIoDevice(
+                    applicationContext.getIoDevicesManager());
+            if (suplaIoDevice.isPresent()) {
+                setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
+                final boolean refreshed = refreshDeviceStatus(suplaIoDevice.get());
+                if (!refreshed) {
                     return;
                 }
+                bridgeHandler.registerSuplaIoDeviceManagerHandler(this);
             } else {
-                updateStatus(UNKNOWN, CONFIGURATION_ERROR,
-                        format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!",
-                                this.bridgeHandler.getThing().getUID()));
+                // configuration is not good
                 return;
             }
-
-            updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
+        } else {
             updateStatus(UNKNOWN, CONFIGURATION_ERROR,
-                    format("Error occurred during initialization! %s", e.getLocalizedMessage()));
+                    format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!",
+                            this.bridgeHandler.getThing().getUID()));
+            return;
         }
+
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private Optional<ApplicationContext> getApplicationContextWithRetries() {
