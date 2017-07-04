@@ -25,9 +25,10 @@ import java.util.function.Consumer;
 import static java.lang.String.format;
 import static java.util.Optional.empty;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
+import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.NONE;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.*;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.supla.SuplaBindingConstants.SUPLA_IO_DEVICE_ID;
 import static org.openhab.binding.supla.SuplaBindingConstants.THREAD_POOL_NAME;
@@ -70,6 +71,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         final Optional<SuplaCloudBridgeHandler> bridgeHandler = getBridgeHandler();
         if (bridgeHandler.isPresent()) {
             this.bridgeHandler = bridgeHandler.get();
+            updateStatus(UNKNOWN, CONFIGURATION_PENDING, "Thing is being configured asynchronously");
             ThreadPoolManager.getPool(THREAD_POOL_NAME).submit(this::internalInitialize);
         }
     }
