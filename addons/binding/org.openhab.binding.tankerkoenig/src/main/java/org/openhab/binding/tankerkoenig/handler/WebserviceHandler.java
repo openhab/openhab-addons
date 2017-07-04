@@ -136,9 +136,21 @@ public class WebserviceHandler extends BaseBridgeHandler {
             }
             TankerkoenigListResult result = service.getStationListData(this.getApiKey(), locationIDsString, userAgent);
             if (!result.isOk()) {
-                // if the result is not OK, no updates are done and the status of the Bridge goes to OFFLINE!
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Empty return or no internet connection");
+                // two possibel reasons for result.isOK=false
+                // A-tankerkoenig returns false on a web-request
+                // in this case the field "message" holds information for the reason.
+                // B-the web-request does not return a valid json-string,
+                // in this case an emptyReturn object is created with the message "No valid response from the
+                // web-request!"
+                // in both cases the Webservice and the Station(s) will go OFFLINE
+                // only in case A the pollingJob gets canceled!
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, result.getMessage());
+                // if the Bridge goes OFFLINE, all connected Stations will go OFFLINE as well.
+                // The bridge reports its statusUpdate and the things react using the bridgeStatusChanged-Method!
+                // Only if the message is NOT "No valid response from the web-request!" the scheduled job gets stopped!
+                if (!result.getMessage().equals(TankerkoenigBindingConstants.NO_VALID_RESPONSE)) {
+                    pollingJob.cancel(true);
+                }
             } else {
                 updateStatus(ThingStatus.ONLINE);
                 setTankerkoenigListResult(result);
