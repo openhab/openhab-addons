@@ -28,7 +28,7 @@ public final class CommandExecutorFactoryImpl implements CommandExecutorFactory 
         } else if (SWITCH_CHANNEL_ID.equals(id)) {
             return Optional.of(new SwitchChannelCommandExecutor(channelManager, suplaChannel));
         } else {
-            logger.debug("Don't know how to handle channel " + id);
+            logger.debug("Don't know how to handle channel {}", id);
             return Optional.empty();
         }
     }

@@ -76,7 +76,7 @@ public final class GsonMapper implements JsonMapper {
                         validTimeInSeconds = jsonReader.nextInt();
                         break;
                     default:
-                        logger.trace("Can't parse this name '" + name + "'. Probably this does no harm");
+                        logger.trace("Can't parse this name '{}'. Probably this does no harm", name);
                         jsonReader.skipValue();
                 }
             }
