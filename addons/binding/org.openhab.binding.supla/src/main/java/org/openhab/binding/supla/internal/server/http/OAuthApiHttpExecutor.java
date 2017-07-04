@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.openhab.binding.supla.internal.server.http.CommonHeaders.AUTHORIZATION_HEADER;
+import static org.openhab.binding.supla.internal.server.http.CommonHeaders.authorizationHeader;
 
 public final class OAuthApiHttpExecutor implements HttpExecutor {
     private final HttpExecutor httpExecutor;
@@ -26,7 +26,7 @@ public final class OAuthApiHttpExecutor implements HttpExecutor {
     private Request buildOAuthRequest(Request request) {
         final SuplaToken token = tokenManager.obtainToken();
         final List<Header> headers = new ArrayList<>(request.getHeaders());
-        headers.add(AUTHORIZATION_HEADER(token));
+        headers.add(authorizationHeader(token));
         final String path = "/api" + request.getPath();
         return new Request(path, headers);
     }

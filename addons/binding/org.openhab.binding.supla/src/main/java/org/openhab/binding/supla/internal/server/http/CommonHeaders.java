@@ -7,7 +7,7 @@ public final class CommonHeaders {
 
     private CommonHeaders() {}
 
-    public static Header AUTHORIZATION_HEADER(SuplaToken suplaToken) {
+    public static Header authorizationHeader(SuplaToken suplaToken) {
         return new Header("Authorization", "Bearer " + suplaToken.getToken());
     }
 
