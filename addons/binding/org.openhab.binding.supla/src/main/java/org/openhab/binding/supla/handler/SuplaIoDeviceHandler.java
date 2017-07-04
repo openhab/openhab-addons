@@ -82,10 +82,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
                     applicationContext.getIoDevicesManager());
             if (suplaIoDevice.isPresent()) {
                 setChannelsForThing(applicationContext.getChannelBuilder(), suplaIoDevice.get());
-                final boolean refreshed = refreshDeviceStatus(suplaIoDevice.get());
-                if (!refreshed) {
-                    return;
-                }
+                refreshDeviceStatus(suplaIoDevice.get());
                 bridgeHandler.registerSuplaIoDeviceManagerHandler(this);
             } else {
                 // configuration is not good
