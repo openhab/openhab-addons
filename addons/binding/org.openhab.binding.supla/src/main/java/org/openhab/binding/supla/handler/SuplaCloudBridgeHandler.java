@@ -87,7 +87,7 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         this.configuration = getConfigAs(SuplaCloudConfiguration.class);
         final ApplicationContext applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
         try {
-            applicationContext.getIoDevicesManager().obtainIoDevices();
+            applicationContext.getIoDevicesManager().obtainIoDevices(); // TODO change into server info
             // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
             this.applicationContext = applicationContext;
         } catch (Exception e) {
