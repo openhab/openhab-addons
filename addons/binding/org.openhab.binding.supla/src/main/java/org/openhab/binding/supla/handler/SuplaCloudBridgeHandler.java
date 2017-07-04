@@ -20,11 +20,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
-import static org.eclipse.smarthome.core.thing.ThingStatus.UNKNOWN;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.binding.supla.SuplaBindingConstants.SCHEDULED_THREAD_POOL_NAME;
 
 public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
@@ -86,21 +83,15 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing SuplaCloudBridgeHandler");
         this.configuration = getConfigAs(SuplaCloudConfiguration.class);
         final ApplicationContext applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
-        try {
-            final Optional<SuplaServerInfo> suplaServerInfo = applicationContext.getServerInfoManager().obtainServerInfo();
-            // TODO uncomment after implementing obtainServerInfo method
+        final Optional<SuplaServerInfo> suplaServerInfo = applicationContext.getServerInfoManager().obtainServerInfo();
+        // TODO uncomment after implementing obtainServerInfo method
 //            if(!suplaServerInfo.isPresent()) {
 //                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "There is no server info! Please check if all configuration parameters are OK.");
 //                return;
 //            }
-            // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
-            this.applicationContext = applicationContext;
-        } catch (Exception e) {
-            updateStatus(UNKNOWN, CONFIGURATION_ERROR,
-                    format("Supla Cloud data access is wrong! Please double check that everything is passed correctly! %s",
-                            e.getLocalizedMessage()));
-            return;
-        }
+
+        // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
+        this.applicationContext = applicationContext;
 
         scheduledPool = ThreadPoolManager.getScheduledPool(SCHEDULED_THREAD_POOL_NAME);
         scheduledPool.scheduleAtFixedRate(new RefreshThread(),
