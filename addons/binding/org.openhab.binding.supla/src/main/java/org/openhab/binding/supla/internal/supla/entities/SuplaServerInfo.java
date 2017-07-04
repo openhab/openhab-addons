@@ -1,10 +1,7 @@
 package org.openhab.binding.supla.internal.supla.entities;
 
-import java.time.LocalDateTime;
-
 public final class SuplaServerInfo {
     private String address;
-    private LocalDateTime time;
 
     public String getAddress() {
         return address;
@@ -14,14 +11,6 @@ public final class SuplaServerInfo {
         this.address = address;
     }
 
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -29,8 +18,7 @@ public final class SuplaServerInfo {
 
         SuplaServerInfo that = (SuplaServerInfo) o;
 
-        if (address != null ? !address.equals(that.address) : that.address != null) return false;
-        return time != null ? time.equals(that.time) : that.time == null;
+        return address != null ? address.equals(that.address) : that.address == null;
     }
 
     @Override
@@ -42,7 +30,6 @@ public final class SuplaServerInfo {
     public String toString() {
         return "SuplaServerInfo{" +
                 "address='" + address + '\'' +
-                ", time=" + time +
                 '}';
     }
 }
