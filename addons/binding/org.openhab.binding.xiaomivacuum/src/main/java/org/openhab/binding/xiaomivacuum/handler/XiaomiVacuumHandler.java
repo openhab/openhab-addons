@@ -140,12 +140,9 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
         }
-
         scheduler.schedule(this::updateConnection, 0, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
-        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-            updateData();
-        } , 5, pollingPeriod, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 5, pollingPeriod, TimeUnit.SECONDS);
         logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
     }
 
@@ -314,17 +311,38 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             return false;
         }
         status = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            return sendCommand(VacuumCommand.GET_STATUS);
+            try {
+                return sendCommand(VacuumCommand.GET_STATUS);
+            } catch (Exception e) {
+                logger.debug("Error during status refresh: {}", e.getMessage(), e);
+            }
+            return null;
         });
         consumables = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            return sendCommand(VacuumCommand.CONSUMABLES_GET);
+            try {
+                return sendCommand(VacuumCommand.CONSUMABLES_GET);
+            } catch (Exception e) {
+                logger.debug("Error during consumables refresh: {}", e.getMessage(), e);
+            }
+            return null;
         });
         dnd = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            return sendCommand(VacuumCommand.DND_GET);
+            try {
+                return sendCommand(VacuumCommand.DND_GET);
+            } catch (Exception e) {
+                logger.debug("Error during dnd refresh: {}", e.getMessage(), e);
+            }
+            return null;
         });
         history = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
-            return sendCommand(VacuumCommand.CLEAN_SUMMARY_GET);
+            try {
+                return sendCommand(VacuumCommand.CLEAN_SUMMARY_GET);
+            } catch (Exception e) {
+                logger.debug("Error during cleaning data refresh: {}", e.getMessage(), e);
+            }
+            return null;
         });
+        //TODO: Put status OFFLINE if any of the above throws an error
         updateStatus(ThingStatus.ONLINE);
         return true;
     }
@@ -370,7 +388,7 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         } catch (JsonSyntaxException e) {
             logger.debug("Could not parse result from response: '{}'", res);
         } catch (NullPointerException e) {
-            logger.debug("Empty response received.", e);
+            logger.debug("Empty response received.");
         }
         return null;
     }
