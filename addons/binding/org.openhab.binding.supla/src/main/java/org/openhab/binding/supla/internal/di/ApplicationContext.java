@@ -2,6 +2,7 @@ package org.openhab.binding.supla.internal.di;
 
 import org.openhab.binding.supla.internal.api.ChannelManager;
 import org.openhab.binding.supla.internal.api.IoDevicesManager;
+import org.openhab.binding.supla.internal.api.ServerInfoManager;
 import org.openhab.binding.supla.internal.api.TokenManager;
 import org.openhab.binding.supla.internal.channels.ChannelBuilder;
 import org.openhab.binding.supla.internal.channels.ChannelBuilderImpl;
@@ -14,6 +15,7 @@ import org.openhab.binding.supla.internal.server.http.OAuthApiHttpExecutor;
 import org.openhab.binding.supla.internal.server.http.SuplaHttpExecutor;
 import org.openhab.binding.supla.internal.supla.api.SuplaChannelManager;
 import org.openhab.binding.supla.internal.supla.api.SuplaIoDevicesManager;
+import org.openhab.binding.supla.internal.supla.api.SuplaServerInfoManager;
 import org.openhab.binding.supla.internal.supla.api.SuplaTokenManager;
 import org.openhab.binding.supla.internal.supla.entities.SuplaCloudServer;
 
@@ -37,6 +39,7 @@ public final class ApplicationContext {
     private TokenManager tokenManager;
     private IoDevicesManager ioDevicesManager;
     private ChannelManager channelManager;
+    private ServerInfoManager serverInfoManager;
 
     // OpenHab
     private ChannelBuilder channelBuilder;
@@ -123,5 +126,13 @@ public final class ApplicationContext {
 
     public void setCommandExecutorFactory(CommandExecutorFactory commandExecutorFactory) {
         this.commandExecutorFactory = commandExecutorFactory;
+    }
+
+    public ServerInfoManager getServerInfoManager() {
+        return get(serverInfoManager, SuplaServerInfoManager::new, (x) -> this.serverInfoManager = x);
+    }
+
+    public void setServerInfoManager(ServerInfoManager serverInfoManager) {
+        this.serverInfoManager = serverInfoManager;
     }
 }
