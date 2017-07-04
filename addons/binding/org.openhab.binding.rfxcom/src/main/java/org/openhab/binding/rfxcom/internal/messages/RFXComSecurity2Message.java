@@ -11,13 +11,10 @@ package org.openhab.binding.rfxcom.internal.messages;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.NumberItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -61,13 +58,12 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
     }
 
     private static final List<RFXComValueSelector> SUPPORTED_INPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL,
-            RFXComValueSelector.CONTACT, RFXComValueSelector.CONTACT_1,
-            RFXComValueSelector.CONTACT_2, RFXComValueSelector.CONTACT_3);
+            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.CONTACT,
+            RFXComValueSelector.CONTACT_1, RFXComValueSelector.CONTACT_2, RFXComValueSelector.CONTACT_3);
 
     private static final List<RFXComValueSelector> SUPPORTED_OUTPUT_VALUE_SELECTORS = Arrays.asList(
-            RFXComValueSelector.CONTACT, RFXComValueSelector.CONTACT_1,
-            RFXComValueSelector.CONTACT_2, RFXComValueSelector.CONTACT_3);
+            RFXComValueSelector.CONTACT, RFXComValueSelector.CONTACT_1, RFXComValueSelector.CONTACT_2,
+            RFXComValueSelector.CONTACT_3);
 
     public SubType subType;
     public int sensorId;
@@ -90,12 +86,8 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
 
     @Override
     public String toString() {
-        return super.toString()
-            + ", Sub type = " + subType
-            + ", Device Id = " + getDeviceId()
-            + ", Button status = " + buttonStatus
-            + ", Battery level = " + batteryLevel
-            + ", Signal level = " + signalLevel;
+        return super.toString() + ", Sub type = " + subType + ", Device Id = " + getDeviceId() + ", Button status = "
+                + buttonStatus + ", Battery level = " + batteryLevel + ", Signal level = " + signalLevel;
     }
 
     @Override
@@ -198,7 +190,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
         switch (valueSelector) {
             case CONTACT:
                 if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.CLOSED ) {
+                    if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_0_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_0_BIT;
@@ -210,7 +202,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
 
             case CONTACT_1:
                 if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.CLOSED ) {
+                    if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_1_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_1_BIT;
@@ -222,7 +214,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
 
             case CONTACT_2:
                 if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.CLOSED ) {
+                    if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_2_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_2_BIT;
@@ -234,7 +226,7 @@ public class RFXComSecurity2Message extends RFXComBaseMessage {
 
             case CONTACT_3:
                 if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.CLOSED ) {
+                    if (type == OpenClosedType.CLOSED) {
                         buttonStatus |= BUTTON_3_BIT;
                     } else {
                         buttonStatus &= ~BUTTON_3_BIT;
