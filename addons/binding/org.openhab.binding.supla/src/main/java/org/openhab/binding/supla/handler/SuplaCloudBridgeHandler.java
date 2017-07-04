@@ -89,11 +89,11 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         final ApplicationContext applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
         try {
             final Optional<SuplaServerInfo> suplaServerInfo = applicationContext.getServerInfoManager().obtainServerInfo();
-            if(!suplaServerInfo.isPresent()) {
-                // TODO uncomment after implementing obtainServerInfo method
+            // TODO uncomment after implementing obtainServerInfo method
+//            if(!suplaServerInfo.isPresent()) {
 //                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "There is no server info! Please check if all configuration parameters are OK.");
-                return;
-            }
+//                return;
+//            }
             // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
             this.applicationContext = applicationContext;
         } catch (Exception e) {
