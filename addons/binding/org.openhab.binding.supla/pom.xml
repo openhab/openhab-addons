@@ -23,7 +23,6 @@
 	</parent>
 
 	<artifactId>org.openhab.binding.supla</artifactId>
-	<version>2.2.0-SNAPSHOT</version>
 
 	<name>Supla Binding</name>
 	<packaging>eclipse-plugin</packaging>
