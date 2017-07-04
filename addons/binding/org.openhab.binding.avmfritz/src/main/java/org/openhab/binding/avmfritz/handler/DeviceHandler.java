@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -179,6 +180,10 @@ public class DeviceHandler extends BaseThingHandler implements IFritzHandler {
                 if (command instanceof DecimalType) {
                     BigDecimal temperature = new BigDecimal(command.toString());
                     fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(temperature));
+                } else if (command instanceof IncreaseDecreaseType) {
+                    BigDecimal settemp = (BigDecimal) getThing().getConfiguration().get(THING_SETTEMP);
+                    fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(command.equals(IncreaseDecreaseType.INCREASE)
+                            ? settemp.add(new BigDecimal("0.5")) : settemp.subtract(new BigDecimal("0.5"))));
                 } else if (command instanceof OnOffType) {
                     BigDecimal temperature = command.equals(OnOffType.ON) ? HeatingModel.TEMP_FRITZ_ON
                             : HeatingModel.TEMP_FRITZ_OFF;
