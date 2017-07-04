@@ -54,6 +54,20 @@
                 <required>true</required></parameter>
             <parameter name="device_config_string" type="text" required="true"></parameter></config-description>
     </thing-type>
+    <thing-type id="lock">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="wink_hub_2"/>
+        </supported-bridge-type-refs>
+        <label>Lock</label>
+        <description>Generic Connected Lock</description>
+        <channels>
+            <channel typeId="lockState" id="lockstate" />
+        </channels>
+       <config-description>
+            <parameter name="device_id" type="text" required="true" />
+            <parameter name="device_config_string" type="text" required="true" />
+       </config-description>        
+    </thing-type>
     <channel-type id="lightDimmer">
         <item-type>Dimmer</item-type>
         <label>Light Level</label>
@@ -67,6 +81,12 @@
         <description>The switch channel allows to switch the light on and off.
         </description>
         <category>Light</category>
+    </channel-type>
+    <channel-type id="lockState">
+        <item-type>Switch</item-type>
+        <label>Lock State</label>
+        <description>The Lock State</description>
+        <category>Lock</category>
     </channel-type>
 
 </thing:thing-descriptions>
