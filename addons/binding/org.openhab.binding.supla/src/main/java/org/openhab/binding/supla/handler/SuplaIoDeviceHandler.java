@@ -93,7 +93,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
                     return;
                 }
             } else {
-                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
+                updateStatus(UNKNOWN, CONFIGURATION_ERROR,
                         format("Bridge, \"%s\" is not fully initialized, there is no ApplicationContext!",
                                 this.bridgeHandler.getThing().getUID()));
                 return;
@@ -101,7 +101,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
+            updateStatus(UNKNOWN, CONFIGURATION_ERROR,
                     format("Error occurred during initialization! %s", e.getLocalizedMessage()));
         }
     }
@@ -132,18 +132,18 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
                 long id = ((BigDecimal) decimalId).longValue();
                 final Optional<SuplaIoDevice> suplaIoDevice = ioDevicesManager.obtainIoDevice(id);
                 if (!suplaIoDevice.isPresent()) {
-                    updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
+                    updateStatus(UNKNOWN, CONFIGURATION_ERROR,
                             format("Can not find Supla device with ID \"%s\"!", id));
                 }
                 return suplaIoDevice;
             } else {
-                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR,
+                updateStatus(UNKNOWN, CONFIGURATION_ERROR,
                         format("ID \"%s\" is not valid long! Current type is %s.", decimalId,
                                 decimalId.getClass().getSimpleName()));
                 return empty();
             }
         } else {
-            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, format("At property \"%s\" should be Supla device ID", SUPLA_IO_DEVICE_ID));
+            updateStatus(UNKNOWN, CONFIGURATION_ERROR, format("At property \"%s\" should be Supla device ID", SUPLA_IO_DEVICE_ID));
             return empty();
         }
     }
@@ -159,7 +159,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
     private synchronized Optional<SuplaCloudBridgeHandler> getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "Required bridge not defined for device");
+            updateStatus(UNKNOWN, CONFIGURATION_ERROR, "Required bridge not defined for device");
             return empty();
         } else {
             return getBridgeHandler(bridge);
@@ -172,7 +172,7 @@ public final class SuplaIoDeviceHandler extends BaseThingHandler {
         if (handler instanceof SuplaCloudBridgeHandler) {
             return Optional.of((SuplaCloudBridgeHandler) handler);
         } else {
-            updateStatus(UNINITIALIZED,
+            updateStatus(UNKNOWN,
                     CONFIGURATION_ERROR,
                     format("Bridge has wrong class! Should be %s instead of %s.",
                             SuplaCloudBridgeHandler.class.getSimpleName(), bridge.getClass().getSimpleName()));
