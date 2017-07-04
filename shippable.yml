@@ -4,7 +4,7 @@ jdk:
   - oraclejdk8
 branches:
   only:
-    - omnilink-binding 
+    - digitaldan-omnilink-binding-thing-types
 env:
   global:
     #secure variable contains values for AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
