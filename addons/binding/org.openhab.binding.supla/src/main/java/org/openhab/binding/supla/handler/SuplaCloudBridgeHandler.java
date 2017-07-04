@@ -9,6 +9,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.supla.SuplaCloudConfiguration;
 import org.openhab.binding.supla.internal.di.ApplicationContext;
+import org.openhab.binding.supla.internal.supla.entities.SuplaServerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +88,12 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
         this.configuration = getConfigAs(SuplaCloudConfiguration.class);
         final ApplicationContext applicationContext = new ApplicationContext(configuration.toSuplaCloudServer());
         try {
-            applicationContext.getIoDevicesManager().obtainIoDevices(); // TODO change into server info
+            final Optional<SuplaServerInfo> suplaServerInfo = applicationContext.getServerInfoManager().obtainServerInfo();
+            if(!suplaServerInfo.isPresent()) {
+                // TODO uncomment after implementing obtainServerInfo method
+//                updateStatus(UNINITIALIZED, CONFIGURATION_ERROR, "There is no server info! Please check if all configuration parameters are OK.");
+                return;
+            }
             // Set this after check so no one else cannot use ApplicationContext if SuplaCloudServer is malformed
             this.applicationContext = applicationContext;
         } catch (Exception e) {
