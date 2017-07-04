@@ -5,7 +5,7 @@ import org.openhab.binding.supla.internal.supla.entities.SuplaServerInfo;
 
 import java.util.Optional;
 
-public class SuplaServerInfoManager implements ServerInfoManager {
+public final class SuplaServerInfoManager implements ServerInfoManager {
     @Override
     public Optional<SuplaServerInfo> obtainServerInfo() {
         return null; // TODO implement
