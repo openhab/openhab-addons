@@ -49,7 +49,6 @@ public final class SuplaCloudBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
-        handlersLock.writeLock().lock();
         if (childHandler instanceof SuplaIoDeviceHandler) {
             registerSuplaIoDeviceManagerHandler((SuplaIoDeviceHandler) childHandler);
         }
