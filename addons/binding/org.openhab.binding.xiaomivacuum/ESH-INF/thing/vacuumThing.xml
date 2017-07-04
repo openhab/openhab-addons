@@ -29,9 +29,9 @@
 				<description>Token for communication (in Hex)</description>
 				<default>FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</default>
 			</parameter>
-			<parameter name="serial" type="text" required="false">
-				<label>Serial</label>
-				<description>Serial number for communication (in Hex)</description>
+			<parameter name="deviceId" type="text" required="false">
+				<label>Device ID</label>
+				<description>Device ID number for communication (in Hex)</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" max="9999" required="false">

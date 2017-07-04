@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openhab.binding.xiaomivacuum.XiaomiVacuumBindingConstants;
@@ -26,19 +27,21 @@ import org.slf4j.LoggerFactory;
  */
 public class RoboCommunication {
 
+    private static final int MSG_BUFFER_SIZE = 1024;
+
     private static final int TIMEOUT = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(RoboCommunication.class);
 
     private final String ip;
     private final byte[] token;
-    private final byte[] serial;
+    private final byte[] deviceId;
     private AtomicInteger id = new AtomicInteger();
 
-    public RoboCommunication(String ip, byte[] token, byte[] serial) {
+    public RoboCommunication(String ip, byte[] token, byte[] did) {
         this.ip = ip;
         this.token = token;
-        this.serial = serial;
+        this.deviceId = did;
     }
 
     public String sendCommand(VacuumCommand command) throws RoboCryptoException, IOException {
@@ -56,10 +59,7 @@ public class RoboCommunication {
         String idString = "'id': " + Integer.toString(id.incrementAndGet());
         String fullCommand = "{'method': '" + command + "', " + params + idString + "}";
         logger.debug("Send command: {} -> {} (token: {})", fullCommand, ip, new String(token));
-        String response = sendCommand(fullCommand, token, ip, serial);
-        // TODO: Change this to trace level later onwards
-        logger.debug("Received response from {}: {}", ip, response);
-        return response;
+        return sendCommand(fullCommand, token, ip, deviceId);
     }
 
     private String sendCommand(String command, byte[] token, String ip, byte[] serial)
@@ -76,22 +76,29 @@ public class RoboCommunication {
         Message roboResponse = new Message(response);
         logger.trace("Message Details:{} ", roboResponse.toSting());
         String decryptedResponse = new String(RoboCrypto.decrypt(roboResponse.getData(), token)).trim();
+        // TODO: Change this to trace level later onwards
+        logger.debug("Received response from {}: {}", ip, decryptedResponse);
         return decryptedResponse;
     }
 
-    public static byte[] comms(byte[] message, String ip) throws IOException {
-        DatagramSocket clientSocket = new DatagramSocket();
-        InetAddress ipAddress = InetAddress.getByName(ip);
-        byte[] sendData = new byte[1024];
-        clientSocket.setSoTimeout(TIMEOUT);
-        sendData = message;
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress,
-                XiaomiVacuumBindingConstants.PORT);
-        clientSocket.send(sendPacket);
-        sendPacket.setData(new byte[1024]);
-        clientSocket.receive(sendPacket);
-        byte[] response = sendPacket.getData();
-        clientSocket.close();
-        return response;
+    public byte[] comms(byte[] message, String ip) throws IOException {
+        try (DatagramSocket clientSocket = new DatagramSocket()) {
+            InetAddress ipAddress = InetAddress.getByName(ip);
+            logger.trace("Connection {}:{}", ip, clientSocket.getLocalPort());
+            byte[] sendData = new byte[MSG_BUFFER_SIZE];
+            clientSocket.setSoTimeout(TIMEOUT);
+            sendData = message;
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress,
+                    XiaomiVacuumBindingConstants.PORT);
+            clientSocket.send(sendPacket);
+            sendPacket.setData(new byte[1024]);
+            clientSocket.receive(sendPacket);
+            byte[] response = sendPacket.getData();
+            clientSocket.close();
+            return response;
+        } catch (SocketTimeoutException e) {
+            logger.debug("Communication error for vacuum at {}: {}", ip, e.getMessage());
+            return new byte[0];
+        }
     }
 }

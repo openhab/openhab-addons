@@ -261,12 +261,10 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
         }
         logger.debug("Do not disturb data: {}", dndData.toString());
         updateState(CHANNEL_DND_FUNCTION, new DecimalType(dndData.get("enabled").getAsBigDecimal()));
-        //TODO: format with leading 0
-        updateState(CHANNEL_DND_START, new StringType(
-                dndData.get("start_hour").getAsString() + ":" + dndData.get("start_minute").getAsString()));
-
-        updateState(CHANNEL_DND_END,
-                new StringType(dndData.get("end_hour").getAsString() + ":" + dndData.get("end_minute").getAsString()));
+        updateState(CHANNEL_DND_START, new StringType(String.format("%02d:%02d", dndData.get("start_hour").getAsInt(),
+                dndData.get("start_minute").getAsInt())));
+        updateState(CHANNEL_DND_END, new StringType(
+                String.format("%02d:%02d", dndData.get("end_hour").getAsInt(), dndData.get("end_minute").getAsInt())));
         return true;
     }
 
@@ -336,22 +334,23 @@ public class XiaomiVacuumHandler extends BaseThingHandler {
             return roboCom;
         }
         XiaomiVacuumBindingConfiguration configuration = getConfigAs(XiaomiVacuumBindingConfiguration.class);
-        String serial = configuration.serial;
+        String deviceID = configuration.deviceID;
         try {
-            if (serial != null && serial.length() == 8) {
-                logger.debug("Using vacuum serial {}", serial);
-                roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(serial));
+            if (deviceID != null && deviceID.length() == 8) {
+                logger.debug("Using vacuum device ID {}", deviceID);
+                roboCom = new RoboCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceID));
                 return roboCom;
             } else {
-                logger.debug("Getting vacuum serial");
-                byte[] response = RoboCommunication.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING,
-                        configuration.host);
+                logger.debug("No device ID defined. Retrieving vacuum device ID");
+                roboCom = new RoboCommunication(configuration.host, token, new byte[0]);
+                byte[] response = roboCom.comms(XiaomiVacuumBindingConstants.DISCOVER_STRING, configuration.host);
                 Message roboResponse = new Message(response);
-                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getSpacedHex(roboResponse.getSerialByte()));
+                updateProperty(Thing.PROPERTY_SERIAL_NUMBER, Utils.getSpacedHex(roboResponse.getDeviceID()));
                 Configuration config = editConfiguration();
-                config.put(PROPERTY_SERIAL, Utils.getHex(roboResponse.getSerialByte()));
+                config.put(PROPERTY_DID, Utils.getHex(roboResponse.getDeviceID()));
                 updateConfiguration(config);
-                roboCom = new RoboCommunication(configuration.host, token, roboResponse.getSerialByte());
+                logger.debug("Using retrieved vacuum device ID {}", Utils.getHex(roboResponse.getDeviceID()));
+                roboCom = new RoboCommunication(configuration.host, token, roboResponse.getDeviceID());
                 return roboCom;
             }
         } catch (IOException e) {

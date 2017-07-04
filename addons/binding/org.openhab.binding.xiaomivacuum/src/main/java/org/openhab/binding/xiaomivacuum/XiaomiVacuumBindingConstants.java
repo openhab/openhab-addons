@@ -61,7 +61,7 @@ public final class XiaomiVacuumBindingConstants {
     public static final String CHANNEL_HISTORY_COUNT = "history#total_clean_count";
 
     public static final String PROPERTY_HOST_IP = "host";
-    public static final String PROPERTY_SERIAL = "serial";
+    public static final String PROPERTY_DID = "deviceId";
     public static final String PROPERTY_TOKEN = "token";
     public static final String PROPERTY_REFRESH_INTERVAL = "refreshInterval";
 

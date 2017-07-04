@@ -33,7 +33,7 @@ public class Message {
     private int length = 0;
     private byte[] unknowns = new byte[4];
 
-    private byte[] serialByte = new byte[4];
+    private byte[] deviceID = new byte[4];
     private LocalDateTime timeStamp;
     private byte[] tsByte = new byte[4];
     private byte[] checksum;
@@ -46,7 +46,7 @@ public class Message {
         byte[] msgL = java.util.Arrays.copyOfRange(raw, 2, 4);
         this.length = ByteBuffer.wrap(msgL).getShort();
         this.unknowns = java.util.Arrays.copyOfRange(raw, 4, 8);
-        this.serialByte = java.util.Arrays.copyOfRange(raw, 8, 12);
+        this.deviceID = java.util.Arrays.copyOfRange(raw, 8, 12);
         this.tsByte = java.util.Arrays.copyOfRange(raw, 12, 16);
         this.timeStamp = LocalDateTime.ofInstant(Instant.ofEpochSecond(ByteBuffer.wrap(tsByte).getInt()),
                 ZoneId.systemDefault());
@@ -58,13 +58,13 @@ public class Message {
         return new Message(createMsgData(data, token, serial));
     }
 
-    public static byte[] createMsgData(byte[] data, byte[] token, byte[] serial) throws RoboCryptoException {
+    public static byte[] createMsgData(byte[] data, byte[] token, byte[] deviceID) throws RoboCryptoException {
         short msgLength = (short) (data.length + 32);
         ByteBuffer header = ByteBuffer.allocate(16);
         header.put(MAGIC);
         header.putShort(msgLength);
         header.put(new byte[4]);
-        header.put(serial);
+        header.put(deviceID);
         header.putInt(nowtimestamp());
 
         ByteBuffer msg = ByteBuffer.allocate(msgLength);
@@ -103,7 +103,7 @@ public class Message {
             s += "\r\ncontent : N/A";
         }
         s += "\r\nHeader Details: Magic:" + Utils.getSpacedHex(magic) + "\r\nLength:   " + Integer.toString(length);
-        s += "\r\nSerial:   " + Utils.getSpacedHex(serialByte) + "\r\nTS:" + formattedDate;
+        s += "\r\nSerial:   " + Utils.getSpacedHex(deviceID) + "\r\nTS:" + formattedDate;
         return s;
     }
 
@@ -164,17 +164,17 @@ public class Message {
     }
 
     /**
-     * @return the serialByte
+     * @return the deviceID
      */
-    public byte[] getSerialByte() {
-        return serialByte;
+    public byte[] getDeviceID() {
+        return deviceID;
     }
 
     /**
-     * @param serialByte the serialByte to set
+     * @param deviceID
      */
-    public void setSerialByte(byte[] serialByte) {
-        this.serialByte = serialByte;
+    public void setDeviceID(byte[] serialByte) {
+        this.deviceID = serialByte;
     }
 
     /**
