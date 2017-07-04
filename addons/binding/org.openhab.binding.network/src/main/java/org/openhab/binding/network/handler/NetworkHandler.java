@@ -19,30 +19,27 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.network.service.InvalidConfigurationException;
 import org.openhab.binding.network.service.NetworkService;
-import org.openhab.binding.network.service.StateUpdate;
+import org.openhab.binding.network.service.StateUpdateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NetworkHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * This handler is handling the CHANNEL_ONLINE (boolean) and CHANNEL_TIME (time in ms)
+ * commands and is starting a {@see NetworkService} instance for the configured device.
  *
- * @author Marc Mettke - Initial contribution
+ * @author Marc Mettke
+ * @author David Graeff
  */
-public class NetworkHandler extends BaseThingHandler implements StateUpdate {
+public class NetworkHandler extends BaseThingHandler implements StateUpdateListener {
     private Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
     private NetworkService networkService;
 
+    private boolean lastKnownOnlineState = false;
+    private double lastKnownPingTime = 0;
+
     public NetworkHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void dispose() {
-        networkService.stopAutomaticRefresh();
     }
 
     @Override
@@ -50,20 +47,13 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_ONLINE:
-                    try {
-                        State state = networkService.updateDeviceState() < 0 ? OnOffType.OFF : OnOffType.ON;
-                        updateState(CHANNEL_ONLINE, state);
-                    } catch (InvalidConfigurationException invalidConfigurationException) {
-                        updateStatus(ThingStatus.OFFLINE);
-                    }
+                    // The GUI requested a refresh. We send the cached value immediately and reset the refresh timer to
+                    // get the device reachable state as fast as possible.
+                    updateState(CHANNEL_ONLINE, lastKnownOnlineState ? OnOffType.ON : OnOffType.OFF);
+                    networkService.startAutomaticRefresh(scheduler);
                     break;
                 case CHANNEL_TIME:
-                    try {
-                        State state = new DecimalType(networkService.updateDeviceState());
-                        updateState(CHANNEL_TIME, state);
-                    } catch (InvalidConfigurationException invalidConfigurationException) {
-                        updateStatus(ThingStatus.OFFLINE);
-                    }
+                    updateState(CHANNEL_TIME, new DecimalType(lastKnownPingTime));
                     break;
                 default:
                     logger.debug("Command received for an unknown channel: {}", channelUID.getId());
@@ -75,11 +65,12 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
     }
 
     @Override
-    public void newState(double state) {
-        State onlineState = state < 0 ? OnOffType.OFF : OnOffType.ON;
-        State timeState = new DecimalType(state);
-        updateState(CHANNEL_ONLINE, onlineState);
-        updateState(CHANNEL_TIME, timeState);
+    public void updatedDeviceState(double state) {
+        lastKnownOnlineState = state >= 0;
+        lastKnownPingTime = state;
+
+        updateState(CHANNEL_ONLINE, lastKnownOnlineState ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_TIME, new DecimalType(lastKnownPingTime));
     }
 
     @Override
@@ -97,9 +88,15 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
     }
 
     @Override
+    public void dispose() {
+        networkService.stopAutomaticRefresh();
+        networkService = null;
+    }
+
+    // Create a new network service and apply all configurations.
+    @Override
     public void initialize() {
-        logger.debug("Initialize Network handler.");
-        this.networkService = new NetworkService();
+        this.networkService = new NetworkService(this);
         Configuration conf = this.getConfig();
 
         super.initialize();
@@ -138,7 +135,7 @@ public class NetworkHandler extends BaseThingHandler implements StateUpdate {
             networkService.setUseSystemPing(confValueToBoolean(value));
         }
 
-        networkService.startAutomaticRefresh(scheduler, this);
+        networkService.startAutomaticRefresh(scheduler);
     }
 
 }

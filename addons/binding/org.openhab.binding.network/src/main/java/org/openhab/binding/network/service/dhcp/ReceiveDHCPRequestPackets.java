@@ -17,7 +17,7 @@ import java.net.SocketException;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.openhab.binding.network.service.StateUpdate;
+import org.openhab.binding.network.service.StateUpdateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +37,9 @@ public class ReceiveDHCPRequestPackets extends Thread {
     private boolean willbeclosed = false;
     private Logger logger = LoggerFactory.getLogger(ReceiveDHCPRequestPackets.class);
     private static ReceiveDHCPRequestPackets instance;
-    private static Map<String, StateUpdate> registeredListeners = new TreeMap<>();
+    private static Map<String, StateUpdateListener> registeredListeners = new TreeMap<>();
 
-    public static synchronized void register(String hostAddress, StateUpdate receiveParseSimpleUDP)
+    public static synchronized void register(String hostAddress, StateUpdateListener receiveParseSimpleUDP)
             throws SocketException {
         if (instance == null) {
             instance = new ReceiveDHCPRequestPackets();
@@ -104,14 +104,14 @@ public class ReceiveDHCPRequestPackets extends Thread {
 
                 InetAddress requestedAddress = request.getRequestedIPAddress();
                 if (requestedAddress == null) {
-                    logger.error("DHCPREQUEST field is missing");
+                    logger.warn("DHCPREQUEST field is missing");
                     continue;
                 }
                 String requestedAddressStr = requestedAddress.getHostAddress();
-                StateUpdate receiver = registeredListeners.get(requestedAddressStr);
+                StateUpdateListener receiver = registeredListeners.get(requestedAddressStr);
                 if (receiver != null) {
                     logger.info("DHCP request for registered address: {}", requestedAddressStr);
-                    receiver.newState(0);
+                    receiver.updatedDeviceState(0);
                 } else {
                     logger.info("DHCP request for unknown address: {}", requestedAddressStr);
                 }
@@ -120,7 +120,7 @@ public class ReceiveDHCPRequestPackets extends Thread {
             if (willbeclosed) {
                 return;
             }
-            logger.error("{}", e.getLocalizedMessage());
+            logger.warn("{}", e.getLocalizedMessage());
         }
     }
 
