@@ -97,7 +97,7 @@ public class AutelisHandler extends BaseThingHandler {
     /**
      * How long should we wait to poll after we send an update, derived from trial and error
      */
-    static final int COMMAND_UPDATE_TIME = 6; // 5 seconds
+    static final int COMMAND_UPDATE_TIME = 6; // 6 seconds
 
     /**
      * Autelis web port
